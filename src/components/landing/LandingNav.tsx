@@ -54,14 +54,14 @@ export function LandingNav() {
 
         <div className="hidden md:flex items-center gap-2.5">
           <a
-            href="/dashboard"
+            href="/auth"
             className="text-sm font-medium px-3 py-2 transition-colors duration-150"
             style={{ color: "rgba(240,239,232,0.6)" }}
           >
             Login
           </a>
           <a
-            href="/dashboard"
+            href="/auth"
             className="btn-acid"
             style={{ padding: "9px 18px", fontSize: "0.85rem" }}
           >
@@ -105,10 +105,10 @@ export function LandingNav() {
           ))}
         </div>
         <div className="flex flex-col gap-3">
-          <a href="/dashboard" onClick={closeMenu} className="btn-ghost justify-center">
+          <a href="/auth" onClick={closeMenu} className="btn-ghost justify-center">
             Login
           </a>
-          <a href="/dashboard" onClick={closeMenu} className="btn-acid justify-center">
+          <a href="/auth" onClick={closeMenu} className="btn-acid justify-center">
             Kostenlos starten →
           </a>
         </div>

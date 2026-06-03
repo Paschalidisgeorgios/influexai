@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 const FLOWS = [
   {
     id: "live",
@@ -40,6 +42,8 @@ const FLOWS = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+
   return (
     <div style={{ maxWidth: 960, margin: "0 auto" }}>
       {/* Welcome */}
@@ -146,7 +150,9 @@ export default function DashboardPage() {
               }}>
                 {flow.credits}
               </span>
-              <button style={{
+              <button
+              onClick={() => router.push(`/dashboard/${flow.id}`)}
+              style={{
                 padding: "9px 18px",
                 borderRadius: 9,
                 background: flow.color,

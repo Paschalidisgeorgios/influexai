@@ -203,7 +203,7 @@ export function PricingSection() {
               </div>
               <div className="text-[0.75rem] mt-1.5 mb-1" style={{ color: "var(--wd)" }}>{plan.credits}</div>
               <div className="text-[0.82rem] mb-4 leading-[1.55]" style={{ color: "var(--grey)" }}>{plan.desc}</div>
-              <a href="/dashboard"
+              <a href="/auth"
                 className="block text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer"
                 style={plan.hot ? { background: "var(--acid)", color: "#060608", fontFamily: "var(--font-dm), sans-serif" } : { background: "transparent", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(240,239,232,0.6)", fontFamily: "var(--font-dm), sans-serif" }}>
                 {plan.cta}
@@ -245,7 +245,7 @@ export function CtaSection() {
           Für Creator die viral gehen wollen.<br />Für Marken die skalieren möchten.
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center">
-          <a href="/dashboard" className="btn-acid justify-center">→ Kostenlos starten</a>
+          <a href="/auth" className="btn-acid justify-center">→ Kostenlos starten</a>
           <a href="#brands" className="btn-ghost justify-center">Für Marken →</a>
         </div>
         <p className="mt-4 text-[0.78rem]" style={{ color: "var(--grey)" }}>50 gratis Credits · Keine Kreditkarte · DSGVO-konform</p>
