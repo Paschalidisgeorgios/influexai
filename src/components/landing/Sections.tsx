@@ -4,9 +4,18 @@ import { useState } from "react";
 
 /* ── TICKER ── */
 const TICKER_ITEMS = [
-  "HeyGen LiveAvatar","Nano Banana Pro","Akool Face Swap",
-  "ElevenLabs TTS","Claude AI","Runway Gen-3",
-  "Suno Music AI","Made in Germany","DSGVO-konform","Fal.ai Flux.1",
+  "InfluexAI LiveSwap™",
+  "InfluexAI Vision",
+  "InfluexAI Avatar Engine",
+  "InfluexAI Voice",
+  "InfluexAI Music",
+  "InfluexAI Brain",
+  "InfluexAI Video Engine",
+  "InfluexAI Image Engine",
+  "Made in Germany",
+  "DSGVO-konform",
+  "Face Consistency™",
+  "Multi-Platform Export",
 ];
 
 export function TickerStrip() {
@@ -34,8 +43,8 @@ const BRAND_FEATS = [
 
 const BRAND_EXAMPLES = [
   { src: "https://images.unsplash.com/photo-1503602642458-232111445657?w=500&q=80&fit=crop", cat: "Beauty Brand", title: "Produkt-Kampagne", sub: "URL → 5 TikTok-Ads · 3 Min." },
-  { src: "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=500&q=80&fit=crop", cat: "E-Commerce", title: "Produktfoto KI", sub: "Flux.1 · Hintergrund-Tausch" },
-  { src: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=500&q=80&fit=crop", cat: "Tech Company", title: "KI-Sprecher Video", sub: "HeyGen · Erklärfilm" },
+  { src: "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=500&q=80&fit=crop", cat: "E-Commerce", title: "Produktfoto KI", sub: "InfluexAI Image Engine" },
+  { src: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=500&q=80&fit=crop", cat: "Tech Company", title: "KI-Sprecher Video", sub: "InfluexAI Avatar Engine" },
 ];
 
 export function ForBrandsSection() {
@@ -88,10 +97,10 @@ export function ForBrandsSection() {
 
 /* ── FEATURES ── */
 const FEATURES = [
-  { n: "01", icon: "🎭", title: "Live Creator", desc: "Live streamen ohne dein Gesicht. Echtzeit-Face-Swap via WebRTC auf TikTok, YouTube und Instagram Live.", apis: ["Akool", "HeyGen", "Echtzeit"] },
-  { n: "02", icon: "📸", title: "Mein KI-Ich", desc: "Nano Banana Pro setzt dich in jede Szene der Welt. Face Consistency über alle generierten Inhalte.", apis: ["Nano Banana", "Higgsfield", "4K"] },
-  { n: "03", icon: "🛍️", title: "Produkt-Werbung", desc: "URL oder Produktfoto → Claude analysiert → Video-Ad in TikTok, Reel und YouTube. A/B-Varianten automatisch.", apis: ["Claude AI", "Runway", "A/B Test"] },
-  { n: "04", icon: "🎵", title: "Stimme & Musik", desc: "Stimme klonen in 60 Sekunden. Lizenzfreie Hintergrundmusik und Soundeffekte für jeden Content-Typ.", apis: ["ElevenLabs", "Suno", "Lizenzfrei"] },
+  { n: "01", icon: "🎭", title: "Live Creator", desc: "Live streamen ohne dein Gesicht. Echtzeit-Face-Swap auf TikTok, YouTube und Instagram Live.", apis: ["Echtzeit", "Face Consistent", "Multi-Platform"] },
+  { n: "02", icon: "📸", title: "Mein KI-Ich", desc: "InfluexAI Vision setzt dich in jede Szene der Welt. Face Consistency über alle generierten Inhalte.", apis: ["4K Output", "Face Consistent", "Sofort"] },
+  { n: "03", icon: "🛍️", title: "Produkt-Werbung", desc: "URL oder Produktfoto → InfluexAI Brain analysiert → Video-Ad in TikTok, Reel und YouTube. A/B-Varianten automatisch.", apis: ["URL-to-Video", "A/B Varianten", "Multi-Format"] },
+  { n: "04", icon: "🎵", title: "Stimme & Musik", desc: "Stimme klonen in 60 Sekunden. Lizenzfreie Hintergrundmusik und Soundeffekte für jeden Content-Typ.", apis: ["30+ Sprachen", "Lizenzfrei", "60 Sek. Klonung"] },
 ];
 
 export function FeaturesSection() {
