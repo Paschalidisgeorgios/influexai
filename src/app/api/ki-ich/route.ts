@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
   }
 
-  // Auth + Credits prüfen
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -32,9 +31,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Base64 zu Blob konvertieren und zu fal.ai hochladen
+    const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    const blob = new Blob([buffer], { type: "image/jpeg" });
+    const file = new File([blob], "face.jpg", { type: "image/jpeg" });
+
+    // Bild zu fal.ai Storage hochladen
+    const uploadedUrl = await fal.storage.upload(file);
+
+    // Bild generieren
     const result = await fal.subscribe("fal-ai/instant-id", {
       input: {
-        face_image_url: imageUrl,
+        face_image_url: uploadedUrl,
         prompt: `professional high quality photo of a person, ${scene}, photorealistic, 8k`,
         negative_prompt: "cartoon, anime, illustration, painting, drawing, bad quality, blurry",
         num_inference_steps: 30,
@@ -62,7 +71,7 @@ export async function POST(request: NextRequest) {
       creditsLeft: profile.credits - CREDIT_COST,
     });
   } catch (error: any) {
-    console.error("InfluexAI Vision Error:", error);
+    console.error("InfluexAI Vision Error:", error?.message || error);
     return NextResponse.json(
       { error: "Bildgenerierung fehlgeschlagen. Bitte versuche es erneut." },
       { status: 500 }
