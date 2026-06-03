@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -9,9 +9,7 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
@@ -27,23 +25,26 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Wenn nicht eingeloggt und versucht Dashboard zu öffnen → zu /auth weiterleiten
+  // Nicht eingeloggte Nutzer können nur diese Seiten sehen:
+  const publicPaths = ["/", "/login", "/signup", "/auth/callback"];
+  const isPublic = publicPaths.some((p) =>
+    request.nextUrl.pathname === p ||
+    request.nextUrl.pathname.startsWith("/auth")
+  );
+
+  // Wenn nicht eingeloggt und Dashboard-Seite → zum Login
   if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Wenn eingeloggt und auf /auth → zu /dashboard weiterleiten
-  if (user && request.nextUrl.pathname === "/auth") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  // Wenn eingeloggt und Login/Signup-Seite → zum Dashboard
+  if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*", "/auth"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };
