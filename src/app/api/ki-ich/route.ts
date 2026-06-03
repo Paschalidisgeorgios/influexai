@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const uploadedUrl = await fal.storage.upload(file);
 
     // Bild generieren
-    const result = await fal.subscribe("fal-ai/instant-id", {
+    const result = await fal.subscribe("fal-ai/instantid", {
       input: {
         face_image_url: uploadedUrl,
         prompt: `professional high quality photo of a person, ${scene}, photorealistic, 8k`,
@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
       creditsLeft: profile.credits - CREDIT_COST,
     });
   } catch (error: any) {
-    console.error("InfluexAI Vision Error:", error?.message || error);
+    console.error("InfluexAI Vision Error:", JSON.stringify(error?.body || error?.message || error));
     return NextResponse.json(
-      { error: "Bildgenerierung fehlgeschlagen. Bitte versuche es erneut." },
+      { error: error?.message || "Bildgenerierung fehlgeschlagen" },
       { status: 500 }
     );
   }
