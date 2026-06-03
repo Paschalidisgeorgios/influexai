@@ -1,10 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+const CREDIT_COST = 5;
 
 export async function POST(request: NextRequest) {
   const { product, platform } = await request.json();
 
   if (!product || !platform) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
+  }
+
+  // Nutzer prüfen und Credits kontrollieren
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.credits < CREDIT_COST) {
+    return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
   }
 
   const platformGuides: Record<string, string> = {
@@ -51,7 +72,6 @@ Antworte mit diesem JSON-Format (auf Deutsch):
 
     const data = await response.json();
     const text = data.content?.[0]?.text || "";
-
     const clean = text.replace(/```json|```/g, "").trim();
     const result = JSON.parse(clean);
 
@@ -59,7 +79,17 @@ Antworte mit diesem JSON-Format (auf Deutsch):
       result.hashtags = [];
     }
 
-    return NextResponse.json(result);
+    // Credits abziehen
+    await supabase
+      .from("profiles")
+      .update({ credits: profile.credits - CREDIT_COST })
+      .eq("id", user.id);
+
+    return NextResponse.json({
+      ...result,
+      creditsUsed: CREDIT_COST,
+      creditsLeft: profile.credits - CREDIT_COST,
+    });
   } catch (error) {
     console.error("InfluexAI Brain Error:", error);
     return NextResponse.json({ error: "Generierung fehlgeschlagen" }, { status: 500 });

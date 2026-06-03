@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
   { id: "live",    icon: "🎭", label: "Live Creator",    href: "/dashboard/live" },
@@ -17,6 +19,30 @@ const BOTTOM_NAV = [
 
 export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [credits, setCredits] = useState<number | null>(null);
+  const [maxCredits, setMaxCredits] = useState(500);
+  const pathname = usePathname();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const loadCredits = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("credits, plan")
+        .eq("id", user.id)
+        .single();
+      if (data) {
+        setCredits(data.credits);
+        setMaxCredits(data.plan === "business" ? 2500 : data.plan === "creator" ? 500 : 50);
+      }
+    };
+    loadCredits();
+  }, []);
+
+  const creditPercent = credits !== null ? Math.min((credits / maxCredits) * 100, 100) : 74;
+  const creditColor = creditPercent > 50 ? "#B4FF00" : creditPercent > 20 ? "#f59e0b" : "#ff6b7a";
 
   return (
     <aside style={{
@@ -28,7 +54,6 @@ export function DashboardSidebar() {
       flexDirection: "column",
       transition: "width 0.3s ease",
       flexShrink: 0,
-      position: "relative",
     }}>
       {/* Logo */}
       <div style={{
@@ -87,44 +112,36 @@ export function DashboardSidebar() {
           </p>
         )}
 
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href}
-            title={collapsed ? item.label : undefined}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: collapsed ? "10px 17px" : "10px 12px",
-              borderRadius: 10,
-              textDecoration: "none",
-              color: "rgba(240,239,232,0.45)",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              transition: "all 0.15s",
-              justifyContent: collapsed ? "center" : "flex-start",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(180,255,0,0.08)";
-              (e.currentTarget as HTMLAnchorElement).style.color = "#B4FF00";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(240,239,232,0.45)";
-            }}
-          >
-            <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>{item.icon}</span>
-            {!collapsed && item.label}
-          </Link>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: collapsed ? "10px 17px" : "10px 12px",
+                borderRadius: 10,
+                textDecoration: "none",
+                color: isActive ? "#B4FF00" : "rgba(240,239,232,0.45)",
+                fontSize: "0.875rem",
+                fontWeight: isActive ? 700 : 500,
+                background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
+                transition: "all 0.15s",
+                justifyContent: collapsed ? "center" : "flex-start",
+                borderLeft: isActive ? "2px solid #B4FF00" : "2px solid transparent",
+              }}
+            >
+              <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>{item.icon}</span>
+              {!collapsed && item.label}
+            </Link>
+          );
+        })}
 
-        {/* Divider */}
-        <div style={{
-          height: 1,
-          background: "rgba(255,255,255,0.05)",
-          margin: "8px 4px",
-        }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "8px 4px" }} />
 
         {BOTTOM_NAV.map((item) => (
           <Link
@@ -143,14 +160,6 @@ export function DashboardSidebar() {
               fontWeight: 500,
               transition: "all 0.15s",
               justifyContent: collapsed ? "center" : "flex-start",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(240,239,232,0.7)";
-              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(240,239,232,0.3)";
-              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
             }}
           >
             <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>{item.icon}</span>
@@ -175,7 +184,9 @@ export function DashboardSidebar() {
             marginBottom: 8,
           }}>
             <span style={{ fontSize: "0.72rem", color: "#505055", fontWeight: 500 }}>Credits</span>
-            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#B4FF00" }}>373</span>
+            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: creditColor }}>
+              {credits ?? "..."}
+            </span>
           </div>
           <div style={{
             height: 4,
@@ -185,16 +196,17 @@ export function DashboardSidebar() {
             marginBottom: 4,
           }}>
             <div style={{
-              width: "74%",
+              width: `${creditPercent}%`,
               height: "100%",
-              background: "linear-gradient(90deg, #B4FF00, #caffb0)",
+              background: creditColor,
               borderRadius: 99,
+              transition: "width 0.5s ease",
             }} />
           </div>
           <div style={{ fontSize: "0.65rem", color: "#505055", marginBottom: 10 }}>
-            von 500 · Creator Plan
+            von {maxCredits} Credits
           </div>
-          <a href="/pricing" style={{
+          <a href="/dashboard/credits" style={{
             display: "block",
             textAlign: "center",
             padding: "7px",
@@ -223,16 +235,7 @@ export function DashboardSidebar() {
           color: "#505055",
           cursor: "pointer",
           fontSize: "0.75rem",
-          transition: "all 0.2s",
           fontFamily: "var(--font-dm), sans-serif",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = "#F0EFE8";
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.12)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = "#505055";
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.06)";
         }}
       >
         {collapsed ? "→" : "← Einklappen"}
