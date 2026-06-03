@@ -38,6 +38,7 @@ export default function ProduktWerbungPage() {
         body: JSON.stringify({ product, platform }),
       });
       const data = await res.json();
+      console.log("API Response:", JSON.stringify(data, null, 2));
       setResult(data);
       setStep("result");
     } catch {
@@ -274,7 +275,7 @@ export default function ProduktWerbungPage() {
               </button>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-              {result.hashtags.map((tag) => (
+              {(result.hashtags || []).map((tag) => (
                 <span key={tag} style={{
                   padding: "4px 10px", borderRadius: 99,
                   background: "rgba(255,255,255,0.05)",

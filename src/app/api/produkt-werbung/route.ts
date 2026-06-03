@@ -55,6 +55,10 @@ Antworte mit diesem JSON-Format (auf Deutsch):
     const clean = text.replace(/```json|```/g, "").trim();
     const result = JSON.parse(clean);
 
+    if (!Array.isArray(result.hashtags)) {
+      result.hashtags = [];
+    }
+
     return NextResponse.json(result);
   } catch (error) {
     console.error("InfluexAI Brain Error:", error);
