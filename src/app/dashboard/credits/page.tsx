@@ -170,7 +170,6 @@ export default function CreditsPage() {
             key={pkg.id}
             style={{
               padding: 24, borderRadius: 18,
-              background: "#0f0f12",
               border: `1px solid ${pkg.popular ? "rgba(180,255,0,0.35)" : "rgba(255,255,255,0.07)"}`,
               display: "flex", flexDirection: "column",
               position: "relative",
