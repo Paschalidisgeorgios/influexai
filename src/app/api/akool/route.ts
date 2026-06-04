@@ -1,76 +1,94 @@
 import { NextRequest, NextResponse } from "next/server";
-import { akoolAuthHeaders, getAkoolToken } from "@/lib/akool";
+import {
+  createTalkingPhotoVideo,
+  getAkoolVideoResult,
+  mapAkoolVideoStatus,
+} from "@/lib/akool";
 
-const AKOOL_BASE_URL = "https://openapi.akool.com/api/open/v3";
+export const maxDuration = 300;
 
+/** POST — submit talking-photo job, return job id immediately */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const headers = await akoolAuthHeaders();
+    const { talking_photo_url, audio_url } = body as {
+      talking_photo_url?: string;
+      audio_url?: string;
+      imageUrl?: string;
+      audioUrl?: string;
+    };
 
-    const response = await fetch(`${AKOOL_BASE_URL}/content/video/lipsync`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
+    const photoUrl = talking_photo_url ?? body.imageUrl;
+    const audioUrl = audio_url ?? body.audioUrl;
 
-    const data = await response.json();
-    if (!response.ok || data.code !== 1000) {
+    if (!photoUrl || !audioUrl) {
       return NextResponse.json(
-        {
-          success: false,
-          error: data.msg ?? "Akool request failed",
-          data,
-        },
-        { status: response.status >= 400 ? response.status : 502 }
-      );
-    }
-
-    return NextResponse.json({ success: true, data });
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Akool request failed";
-    if (message.includes("authentication")) {
-      return NextResponse.json(
-        { success: false, error: "Akool authentication failed" },
-        { status: 401 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const videoModelId = request.nextUrl.searchParams.get("video_model_id");
-    if (!videoModelId) {
-      return NextResponse.json(
-        { success: false, error: "video_model_id required" },
+        { success: false, error: "talking_photo_url and audio_url required" },
         { status: 400 }
       );
     }
 
-    const token = await getAkoolToken();
-    if (!token && !process.env.AKOOL_API_KEY) {
+    if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
       return NextResponse.json(
         { success: false, error: "Akool authentication failed" },
         { status: 401 }
       );
     }
 
-    const headers = await akoolAuthHeaders();
-    const url = `${AKOOL_BASE_URL}/content/video/infobymodelid?video_model_id=${encodeURIComponent(videoModelId)}`;
-    const response = await fetch(url, { method: "GET", headers });
-    const data = await response.json();
-    return NextResponse.json({ success: true, data });
+    const job = await createTalkingPhotoVideo({
+      talking_photo_url: photoUrl,
+      audio_url: audioUrl,
+    });
+
+    return NextResponse.json({
+      success: true,
+      jobId: job._id,
+      status: "processing",
+    });
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Akool request failed";
+    const status = message.includes("authentication") ? 401 : 500;
+    return NextResponse.json(
+      { success: false, error: message },
+      { status }
+    );
+  }
+}
+
+/** GET ?jobId= — poll Akool video status (fast, no long wait) */
+export async function GET(request: NextRequest) {
+  try {
+    const jobId = request.nextUrl.searchParams.get("jobId");
+    if (!jobId) {
+      return NextResponse.json(
+        { success: false, error: "jobId required" },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: "Auth failed" },
+        { status: 401 }
+      );
+    }
+
+    const job = await getAkoolVideoResult(jobId);
+    const mapped = mapAkoolVideoStatus(job.video_status);
+
+    return NextResponse.json({
+      success: true,
+      status: mapped.status,
+      videoUrl: job.video_status === 3 ? (job.video ?? null) : null,
+      progress: mapped.progress,
+      videoStatus: job.video_status,
+    });
   } catch (error: unknown) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Akool status failed",
+        error: error instanceof Error ? error.message : "Status check failed",
       },
       { status: 500 }
     );

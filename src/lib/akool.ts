@@ -89,6 +89,23 @@ export async function getAkoolVideoResult(
   return json.data;
 }
 
+/** 1=queueing, 2=processing, 3=completed, 4=failed */
+export function mapAkoolVideoStatus(videoStatus: AkoolVideoStatus): {
+  status: "processing" | "completed" | "failed";
+  progress: number;
+} {
+  switch (videoStatus) {
+    case 3:
+      return { status: "completed", progress: 100 };
+    case 4:
+      return { status: "failed", progress: 0 };
+    case 2:
+      return { status: "processing", progress: 55 };
+    default:
+      return { status: "processing", progress: 15 };
+  }
+}
+
 export async function waitForAkoolVideo(
   videoModelId: string,
   maxAttempts = 60,

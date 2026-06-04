@@ -3,5 +3,13 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
-  "regions": ["fra1"]
+  "regions": ["fra1"],
+  "functions": {
+    "src/app/api/akool/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/live-creator/route.ts": {
+      "maxDuration": 300
+    }
+  }
 }

@@ -1,22 +1,22 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { VoiceSelector } from "@/components/voice-selector";
-import { ImageGenerationLoading } from "@/components/image-generation-loading";
+import { RotatingTips } from "@/components/rotating-tips";
 import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/elevenlabs-tts";
 
 type Step = "input" | "generating" | "result";
+type VideoStatus = "idle" | "processing" | "completed" | "failed";
 type AudioSource = "elevenlabs" | "own";
 
 const CREDIT_COST = 10;
 
-const LOADING_MESSAGES = [
-  "Audio wird vorbereitet...",
-  "Gesicht wird analysiert...",
-  "Talking Avatar wird erstellt...",
-  "Lippenbewegung wird synchronisiert...",
+const POLLING_TIPS = [
+  "Akool analysiert das Gesichtsfoto...",
+  "Lippensynchronisation wird berechnet...",
+  "Video wird gerendert...",
   "Fast fertig...",
 ];
 
@@ -38,10 +38,13 @@ export default function LiveCreatorPage() {
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoStatus, setVideoStatus] = useState<VideoStatus>("idle");
+  const [progress, setProgress] = useState(0);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -56,11 +59,97 @@ export default function LiveCreatorPage() {
       ? !!recordedBlob
       : script.trim().length > 0);
 
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const stopPolling = () => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+  };
+
+  const finalizeJob = async (jobId: string) => {
+    const res = await fetch(`/api/live-creator?jobId=${encodeURIComponent(jobId)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || "Abschluss fehlgeschlagen");
+    }
+    if (data.status === "completed" && data.videoUrl) {
+      setVideoStatus("completed");
+      setVideoUrl(data.videoUrl);
+      setProgress(100);
+      if (typeof data.creditsLeft === "number") {
+        setCreditsLeft(data.creditsLeft);
+      }
+      window.dispatchEvent(new Event("credits-updated"));
+      setStep("result");
+      stopPolling();
+      return true;
+    }
+    if (data.status === "failed") {
+      setVideoStatus("failed");
+      setError("Video-Generierung fehlgeschlagen");
+      setStep("input");
+      stopPolling();
+      return true;
+    }
+    setProgress(data.progress ?? progress);
+    return false;
+  };
+
+  const pollOnce = async (jobId: string) => {
+      try {
+        const statusRes = await fetch(
+          `/api/akool?jobId=${encodeURIComponent(jobId)}`
+        );
+        const statusData = await statusRes.json();
+
+        if (statusData.progress != null) {
+          setProgress(statusData.progress);
+        }
+
+        if (statusData.status === "failed") {
+          setVideoStatus("failed");
+          setError(statusData.error || "Video-Generierung fehlgeschlagen");
+          setStep("input");
+          stopPolling();
+          return;
+        }
+
+        if (statusData.status === "completed" && statusData.videoUrl) {
+          await finalizeJob(jobId);
+          return;
+        }
+
+        if (statusData.status === "completed") {
+          const done = await finalizeJob(jobId);
+          if (!done && statusData.videoUrl) {
+            setVideoStatus("completed");
+            setVideoUrl(statusData.videoUrl);
+            setStep("result");
+            stopPolling();
+          }
+        }
+      } catch {
+        /* keep polling until timeout */
+      }
+    }, 5000);
+  };
+
   const handleGenerate = async () => {
     if (!canGenerate) return;
     setError(null);
     setStep("generating");
     setVideoUrl(null);
+    setVideoStatus("processing");
+    setProgress(0);
+    stopPolling();
 
     try {
       let audioDataUrl: string | undefined;
@@ -80,30 +169,30 @@ export default function LiveCreatorPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.videoUrl) {
+      if (!res.ok || !data.jobId) {
         throw new Error(data.error || "Generierung fehlgeschlagen");
       }
-      setVideoUrl(data.videoUrl);
-      if (typeof data.creditsLeft === "number") {
-        setCreditsLeft(data.creditsLeft);
-      }
-      window.dispatchEvent(new Event("credits-updated"));
-      setStep("result");
+      startPolling(data.jobId);
     } catch (err: unknown) {
+      setVideoStatus("failed");
       setError(
         err instanceof Error ? err.message : "Generierung fehlgeschlagen"
       );
       setStep("input");
+      stopPolling();
     }
   };
 
   const reset = () => {
+    stopPolling();
     setStep("input");
     setPhoto(null);
     setScript("");
     setRecordedUrl(null);
     setRecordedBlob(null);
     setVideoUrl(null);
+    setVideoStatus("idle");
+    setProgress(0);
     setError(null);
     setCreditsLeft(null);
     setAudioSource("own");
@@ -399,11 +488,55 @@ export default function LiveCreatorPage() {
         </div>
       )}
 
-      {step === "generating" && (
-        <ImageGenerationLoading
-          title="Live Creator generiert dein Video..."
-          subtitle={LOADING_MESSAGES.join(" · ")}
-        />
+      {step === "generating" && videoStatus === "processing" && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "48px 20px",
+            background: "#0f0f12",
+            borderRadius: 20,
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,0.1)",
+              borderRadius: 999,
+              height: 8,
+              marginBottom: 24,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                background: "#B4FF00",
+                height: 8,
+                borderRadius: 999,
+                width: `${Math.max(progress, 5)}%`,
+                transition: "width 1s ease",
+              }}
+            />
+          </div>
+          <p style={{ color: "#F0EFE8", fontWeight: 600, marginBottom: 8 }}>
+            Video wird generiert...
+          </p>
+          <p
+            style={{
+              color: "rgba(240,239,232,0.45)",
+              fontSize: "0.9rem",
+              marginBottom: 16,
+            }}
+          >
+            Das dauert 1–3 Minuten. Bitte dieses Fenster nicht schließen.
+          </p>
+          {progress > 0 && (
+            <p style={{ color: "#B4FF00", fontSize: "0.85rem", marginBottom: 16 }}>
+              {Math.round(progress)}% fertig
+            </p>
+          )}
+          <RotatingTips tips={POLLING_TIPS} />
+        </div>
       )}
 
       {step === "result" && videoUrl && (
@@ -420,6 +553,7 @@ export default function LiveCreatorPage() {
             <video
               src={videoUrl}
               controls
+              autoPlay
               playsInline
               style={{ width: "100%", display: "block" }}
             />
@@ -454,7 +588,11 @@ export default function LiveCreatorPage() {
             </a>
             <button
               type="button"
-              onClick={reset}
+              onClick={() => {
+                setVideoStatus("idle");
+                setVideoUrl(null);
+                reset();
+              }}
               style={{
                 padding: "12px 20px",
                 borderRadius: 12,
@@ -465,7 +603,7 @@ export default function LiveCreatorPage() {
                 cursor: "pointer",
               }}
             >
-              Neues Video
+              Neu generieren
             </button>
           </div>
         </div>

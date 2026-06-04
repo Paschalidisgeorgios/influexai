@@ -7,10 +7,116 @@ import {
 } from "@/lib/elevenlabs-tts";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
 import { uploadAudioDataUrlToFal } from "@/lib/upload-audio-fal";
-import { createTalkingPhotoVideo, waitForAkoolVideo } from "@/lib/akool";
+import {
+  createTalkingPhotoVideo,
+  getAkoolVideoResult,
+  mapAkoolVideoStatus,
+} from "@/lib/akool";
+
+export const maxDuration = 300;
 
 const CREDIT_COST = 10;
+const JOB_PROMPT_PREFIX = "akool-job:";
 
+async function generationExistsForJob(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  userId: string,
+  jobId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("generations")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("type", "live-creator")
+    .eq("prompt", `${JOB_PROMPT_PREFIX}${jobId}`)
+    .maybeSingle();
+  return !!data;
+}
+
+/** GET ?jobId= — poll status and deduct credits once when video is ready */
+export async function GET(request: NextRequest) {
+  const jobId = request.nextUrl.searchParams.get("jobId");
+  if (!jobId) {
+    return NextResponse.json({ error: "jobId required" }, { status: 400 });
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
+  }
+
+  try {
+    const job = await getAkoolVideoResult(jobId);
+    const mapped = mapAkoolVideoStatus(job.video_status);
+
+    if (mapped.status !== "completed" || !job.video) {
+      return NextResponse.json({
+        success: true,
+        status: mapped.status,
+        progress: mapped.progress,
+        videoUrl: null,
+      });
+    }
+
+    const alreadyCharged = await generationExistsForJob(
+      supabase,
+      user.id,
+      jobId
+    );
+
+    let creditsLeft: number | undefined;
+    if (!alreadyCharged) {
+      const deduction = await deductCredits(
+        supabase,
+        user.id,
+        CREDIT_COST,
+        "Live Creator",
+        {
+          generationType: "live-creator",
+          prompt: `${JOB_PROMPT_PREFIX}${jobId}`,
+        }
+      );
+      if (!deduction.success) {
+        return NextResponse.json(
+          { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
+          { status: 402 }
+        );
+      }
+      creditsLeft = deduction.remainingCredits;
+    } else {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("credits")
+        .eq("id", user.id)
+        .single();
+      creditsLeft = profile?.credits ?? undefined;
+    }
+
+    return NextResponse.json({
+      success: true,
+      status: "completed",
+      videoUrl: job.video,
+      progress: 100,
+      creditsLeft,
+    });
+  } catch (err: unknown) {
+    console.error("[live-creator GET]", err);
+    return NextResponse.json(
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "Status-Abfrage fehlgeschlagen",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/** POST — upload media, start Akool job, return jobId immediately (no blocking wait) */
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
@@ -107,35 +213,13 @@ export async function POST(request: NextRequest) {
       audio_url: akoolAudioUrl,
     });
 
-    const videoUrl = await waitForAkoolVideo(job._id);
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      CREDIT_COST,
-      audioSource === "own"
-        ? "Live Creator – Eigene Stimme"
-        : "Live Creator – KI Stimme",
-      {
-        generationType: "live-creator",
-        prompt: trimmedScript.slice(0, 200) || "own-voice",
-      }
-    );
-
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
-        { status: 402 }
-      );
-    }
-
     return NextResponse.json({
       success: true,
-      videoUrl,
-      creditsLeft: deduction.remainingCredits,
+      jobId: job._id,
+      status: "processing",
     });
   } catch (err: unknown) {
-    console.error("[live-creator]", err);
+    console.error("[live-creator POST]", err);
     return NextResponse.json(
       {
         error:
