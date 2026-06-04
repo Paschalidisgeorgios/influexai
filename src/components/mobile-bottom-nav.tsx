@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import {
   Home,
   Video,
+  Images,
   Sparkles,
-  Zap,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -46,10 +46,10 @@ export function MobileBottomNav() {
       isActive: (p) => p.startsWith("/dashboard/ki-ich"),
     },
     {
-      href: "/dashboard/credits",
-      icon: Zap,
-      label: tNav("credits"),
-      isActive: (p) => p.startsWith("/dashboard/credits"),
+      href: "/dashboard/gallery",
+      icon: Images,
+      label: "Gallery",
+      isActive: (p) => p.startsWith("/dashboard/gallery"),
     },
     {
       href: "/dashboard/settings",

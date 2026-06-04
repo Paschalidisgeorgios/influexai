@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { Flame } from "lucide-react";
 import {
   detectOutliers,
@@ -75,9 +76,10 @@ function scoreColor(score: number) {
   return "#ff6b7a";
 }
 
-export default function OutlierDetectorPage() {
+function OutlierDetectorPageInner() {
   const t = useTranslations("flows.outlier");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("input");
   const [niche, setNiche] = useState("");
   const [period, setPeriod] = useState(PERIOD_OPTIONS[1]);
@@ -90,6 +92,11 @@ export default function OutlierDetectorPage() {
   const analyzeStarted = useRef(false);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
+
+  useEffect(() => {
+    const nicheParam = getSafeSearchParam(searchParams, "niche");
+    if (nicheParam) setNiche(nicheParam);
+  }, [searchParams]);
 
   const inputStyle = {
     width: "100%",
@@ -630,5 +637,13 @@ export default function OutlierDetectorPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function OutlierDetectorPage() {
+  return (
+    <Suspense fallback={<CardGridSkeleton />}>
+      <OutlierDetectorPageInner />
+    </Suspense>
   );
 }

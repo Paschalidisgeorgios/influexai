@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Image, type LucideIcon } from "lucide-react";
+import { BarChart2, Image, Images, type LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FeatureNudge } from "@/components/feature-nudge";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
@@ -72,6 +72,12 @@ const NAV_ITEMS: NavItem[] = [
     lucideIcon: BarChart2,
     label: "Meine Stats",
     href: "/dashboard/analytics",
+  },
+  {
+    id: "gallery",
+    lucideIcon: Images,
+    label: "Meine Gallery",
+    href: "/dashboard/gallery",
   },
 ];
 
