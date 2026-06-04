@@ -82,6 +82,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description: home.description,
       images: [ogImage],
     },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "InfluexAI",
+    },
+    other: {
+      "mobile-web-app-capable": "yes",
+    },
   };
 }
 
@@ -113,12 +121,6 @@ export default async function RootLayout({
       className={`${bebasNeue.variable} ${dmSans.variable} ${notoSansArabic.variable} dark`}
     >
       <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta name="apple-mobile-web-app-title" content={branding.appName} />
         <TenantBrandingStyles tenant={tenant} />
       </head>
       <body

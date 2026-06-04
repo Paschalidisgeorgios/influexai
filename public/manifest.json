@@ -1,0 +1,9 @@
+{
+  "name": "InfluexAI",
+  "short_name": "InfluexAI",
+  "description": "Das KI Creator Studio für virale YouTube Shorts",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#060608",
+  "theme_color": "#B4FF00"
+}
