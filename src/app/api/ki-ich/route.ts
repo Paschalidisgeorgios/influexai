@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // Bild generieren
     const result = await fal.subscribe("fal-ai/pulid", {
       input: {
-        image_url: uploadedUrl,
+        reference_images: [{ image_url: uploadedUrl }],
         prompt: `${scene}, professional high quality photo, photorealistic, 8k, sharp focus`,
         negative_prompt: "bad quality, blurry, distorted face, ugly, cartoon",
         num_inference_steps: 20,
