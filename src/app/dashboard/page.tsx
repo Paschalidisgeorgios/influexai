@@ -10,10 +10,12 @@ import {
   Image,
   Repeat2,
   TrendingUp,
+  Video,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { CreditPackagePicker } from "@/components/credit-package-picker";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import type { CreditPackageId } from "@/lib/credit-packages";
 
 type FlowItem = {
@@ -33,13 +35,22 @@ type FlowItem = {
 const FLOWS: FlowItem[] = [
   {
     id: "live-creator",
-    icon: "🎭",
+    LucideIcon: Video,
     title: "Live Creator",
-    desc: "Talking Avatar aus deinem Foto und Script — KI-Gesicht mit synchronisierter Stimme.",
-    tags: ["Akool", "Talking Avatar", "ElevenLabs"],
+    desc: "KI-Avatar live mit deiner Mimik — Webcam unten rechts, 9:16 Shorts",
+    tags: ["Akool", "Agora", "LIVE"],
     color: "#B4FF00",
-    credits: "10 Credits / Video",
+    credits: "1 Credit / Minute",
     badge: "NEU",
+  },
+  {
+    id: "live-creator-new",
+    icon: "🎬",
+    title: "Face Swap",
+    desc: "Face Swap + Video — werde zu jedem Creator",
+    tags: ["Face Swap", "Akool", "Video"],
+    color: "#06b6d4",
+    credits: "10 Credits / Video",
   },
   {
     id: "ki-ich",
@@ -166,6 +177,7 @@ const TYPE_ICONS: Record<string, string> = {
   "script-generator": "📝",
   "thumbnail-concept": "🖼️",
   "live-creator": "🎭",
+  "live-creator-new": "🎬",
 };
 
 function firstName(fullName: string | null): string | null {
@@ -216,6 +228,7 @@ export default function DashboardPage() {
   const [hoveredLocked, setHoveredLocked] = useState<string | null>(null);
   const [purchaseModal, setPurchaseModal] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -226,13 +239,14 @@ export default function DashboardPage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name, credits")
+        .select("full_name, credits, onboarding_completed")
         .eq("id", user.id)
         .single();
 
       if (profile) {
         setCredits(profile.credits);
         setDisplayName(firstName(profile.full_name));
+        setShowOnboarding(!(profile.onboarding_completed ?? false));
       }
 
       const { data: gens } = await supabase
@@ -279,6 +293,10 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto w-full">
+      <OnboardingModal
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+      />
       <div style={{ marginBottom: 28 }}>
         <DashboardGreeting
           firstName={displayName ?? "Creator"}

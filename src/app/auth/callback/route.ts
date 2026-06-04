@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           | string
           | undefined;
         if (referredBy) {
-          await registerReferralOnSignup(user.id, referredBy);
+          await registerReferralOnSignup(user.id, String(referredBy));
         }
         await confirmReferralRewards(user.id);
         const betaCode = user.user_metadata?.beta_code as string | undefined;

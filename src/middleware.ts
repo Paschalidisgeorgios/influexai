@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { shouldRequireOnboarding } from "@/lib/onboarding";
 import {
   isMainHost,
   subdomainFromHost,
@@ -10,34 +9,10 @@ import {
 } from "@/lib/tenant";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { isValidLocale, locales, resolveLocaleFromRequest } from "@/lib/locale";
-
-async function getOnboardingState(
-  supabase: ReturnType<typeof createServerClient>,
-  userId: string
-) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("onboarding_completed, created_at")
-    .eq("id", userId)
-    .single();
-
-  if (!profile) return { needsOnboarding: false };
-
-  const { count } = await supabase
-    .from("generations")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId);
-
-  const needsOnboarding = shouldRequireOnboarding(
-    {
-      onboarding_completed: profile.onboarding_completed ?? false,
-      created_at: profile.created_at,
-    },
-    count ?? 0
-  );
-
-  return { needsOnboarding };
-}
+import {
+  REFERRAL_REF_COOKIE,
+  REFERRAL_REF_MAX_AGE,
+} from "@/lib/referral-ref-cookie";
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
@@ -157,32 +132,22 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    let needsOnboarding = false;
-    if (isDashboard || isOnboarding || isAuthPage) {
-      try {
-        const state = await getOnboardingState(supabase, user.id);
-        needsOnboarding = state.needsOnboarding;
-      } catch {
-        needsOnboarding = false;
-      }
-    }
-
-    if (isAuthPage) {
-      const dest = needsOnboarding ? "/onboarding" : "/dashboard";
-      return NextResponse.redirect(new URL(dest, request.url));
-    }
-
-    if (needsOnboarding && isDashboard) {
-      return NextResponse.redirect(new URL("/onboarding", request.url));
-    }
-
-    if (!needsOnboarding && isOnboarding) {
+    if (isAuthPage || isOnboarding) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
   if (!user && isDashboard) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  const refParam = request.nextUrl.searchParams.get("ref")?.trim();
+  if (refParam) {
+    supabaseResponse.cookies.set(REFERRAL_REF_COOKIE, refParam, {
+      maxAge: REFERRAL_REF_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+    });
   }
 
   if (pathname === "/" && abVariant) {

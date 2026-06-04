@@ -260,6 +260,15 @@ function ScriptGeneratorPageInner() {
 
   const runGenerate = async () => {
     if (!topic.trim() || genStarted.current || credits === null) return;
+    if (credits < GENERATE_COST) {
+      onGenerationActionResult({
+        success: false,
+        error: "Nicht genug Credits.",
+        credits,
+        required: GENERATE_COST,
+      });
+      return;
+    }
     genStarted.current = true;
     setError(null);
     setStep("loading");

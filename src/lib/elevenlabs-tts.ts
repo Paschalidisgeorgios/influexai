@@ -1,6 +1,17 @@
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
+import {
+  DEFAULT_ELEVENLABS_VOICE_ID,
+  ELEVENLABS_TTS_MODEL_ID,
+  ELEVENLABS_VOICES,
+  getDefaultVoiceIdForLocale,
+  resolveElevenLabsVoiceId,
+} from "@/lib/elevenlabs-config";
 
-export const DEFAULT_ELEVENLABS_VOICE_ID = ELEVENLABS_VOICES[0].id;
+export {
+  DEFAULT_ELEVENLABS_VOICE_ID,
+  ELEVENLABS_VOICES,
+  getDefaultVoiceIdForLocale,
+  resolveElevenLabsVoiceId,
+};
 
 /** Any non-empty ElevenLabs voice_id from the voice browser or API. */
 export function isValidElevenLabsVoiceId(voiceId: string): boolean {
@@ -28,12 +39,14 @@ export async function synthesizeElevenLabsSpeech(
       return { ok: false, error: "ELEVENLABS_API_KEY fehlt", code: "NO_KEY" };
     }
 
-    if (!isValidElevenLabsVoiceId(voiceId)) {
+    const resolvedVoiceId = resolveElevenLabsVoiceId(voiceId);
+
+    if (!isValidElevenLabsVoiceId(resolvedVoiceId)) {
       return { ok: false, error: "Voice-ID ungültig", code: "INVALID_VOICE" };
     }
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${resolvedVoiceId}`,
       {
         method: "POST",
         headers: {
@@ -43,7 +56,7 @@ export async function synthesizeElevenLabsSpeech(
         },
         body: JSON.stringify({
           text,
-          model_id: "eleven_multilingual_v2",
+          model_id: ELEVENLABS_TTS_MODEL_ID,
           voice_settings: {
             stability: stabilityPercent / 100,
             similarity_boost: 0.75,

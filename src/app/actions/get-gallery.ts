@@ -2,11 +2,16 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { NicheIdea } from "@/app/actions/analyze-niche";
-import type { OutlierConcept } from "@/app/actions/detect-outliers";
-import type { RemixConcept } from "@/app/actions/remix-video";
+import type { OutlierConcept } from "@/lib/outlier-analysis";
+import type { RemixConcept } from "@/lib/remix-analysis";
 import type { ThumbnailConcept } from "@/app/actions/generate-thumbnail";
 import type { ScriptSettings } from "@/app/actions/generate-script";
-import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
+import {
+  GALLERY_PAGE_SIZE,
+  type GalleryFilter,
+  type GalleryItem,
+} from "@/lib/gallery-types";
+import { resolveGenerationMediaUrls } from "@/lib/gallery-media";
 
 function isImageGenerationType(type: string): boolean {
   const t = type.toLowerCase();
@@ -126,14 +131,21 @@ function normalizeGeneration(row: {
 }): GalleryItem | null {
   const type = row.type;
   const prompt = row.prompt?.trim() || type;
+  const media = resolveGenerationMediaUrls(type, prompt);
+  const displayTitle =
+    media.imageUrl || media.videoUrl
+      ? type.replace(/-/g, " ")
+      : prompt.slice(0, 80);
+
   if (isImageGenerationType(type)) {
     return {
       id: row.id,
       _type: "image",
       created_at: row.created_at,
-      title: prompt.slice(0, 80),
+      title: displayTitle,
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
+      imageUrl: media.imageUrl,
     };
   }
   if (isVideoGenerationType(type)) {
@@ -141,10 +153,10 @@ function normalizeGeneration(row: {
       id: row.id,
       _type: "video",
       created_at: row.created_at,
-      title: prompt.slice(0, 80),
+      title: displayTitle,
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
-      videoUrl: prompt.startsWith("http") ? prompt : null,
+      videoUrl: media.videoUrl,
     };
   }
   return null;
@@ -160,10 +172,21 @@ function matchesSearch(item: GalleryItem, search: string): boolean {
   return item.searchText.includes(search.trim().toLowerCase());
 }
 
+async function fetchTableRows<T>(
+  query: PromiseLike<{ data: T[] | null; error: { message: string } | null }>
+): Promise<T[]> {
+  const { data, error } = await query;
+  if (error) {
+    console.error("getGallery query:", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
 export async function getGallery(
   filter: GalleryFilter = "all",
   page = 0,
-  limit = 12,
+  limit = GALLERY_PAGE_SIZE,
   search = ""
 ): Promise<{
   items: GalleryItem[];
@@ -184,26 +207,26 @@ export async function getGallery(
 
   if (filter === "all" || filter === "script") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("saved_scripts")
           .select("id, topic, script, settings, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) => (r.data ?? []).map(normalizeScript))
+      ).then((rows) => rows.map(normalizeScript))
     );
   }
 
   if (filter === "all" || filter === "thumbnail") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("thumbnail_concepts")
           .select("id, topic, concepts, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) =>
-        (r.data ?? []).map((row) =>
+      ).then((rows) =>
+        rows.map((row) =>
           normalizeThumbnail({
             ...row,
             concepts: row.concepts as ThumbnailConcept[],
@@ -215,14 +238,14 @@ export async function getGallery(
 
   if (filter === "all" || filter === "niche") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("niche_saves")
           .select("id, niche_data, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) =>
-        (r.data ?? []).map((row) =>
+      ).then((rows) =>
+        rows.map((row) =>
           normalizeNiche({
             ...row,
             niche_data: row.niche_data as NicheIdea,
@@ -234,14 +257,14 @@ export async function getGallery(
 
   if (filter === "all" || filter === "outlier") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("outlier_results")
           .select("id, niche, results, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) =>
-        (r.data ?? []).map((row) =>
+      ).then((rows) =>
+        rows.map((row) =>
           normalizeOutlier({
             ...row,
             results: row.results as OutlierConcept[],
@@ -253,14 +276,14 @@ export async function getGallery(
 
   if (filter === "all" || filter === "remix") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("remix_results")
           .select("id, original_url, results, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) =>
-        (r.data ?? []).map((row) =>
+      ).then((rows) =>
+        rows.map((row) =>
           normalizeRemix({
             ...row,
             results: row.results as RemixConcept[],
@@ -272,14 +295,14 @@ export async function getGallery(
 
   if (filter === "all" || filter === "image" || filter === "video") {
     queries.push(
-      Promise.resolve(
+      fetchTableRows(
         supabase
           .from("generations")
           .select("id, type, prompt, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-      ).then((r) =>
-        (r.data ?? [])
+      ).then((rows) =>
+        rows
           .map(normalizeGeneration)
           .filter((item): item is GalleryItem => item !== null)
           .filter((item) => matchesFilter(item, filter))

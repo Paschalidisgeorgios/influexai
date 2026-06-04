@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import { Music2 } from "lucide-react";
 import { generateVoice } from "@/app/actions/generate-voice";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { VoiceSelector } from "@/components/voice-selector";
-import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/elevenlabs-tts";
+import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 
 type Tab = "stimme" | "eigen" | "musik";
 
@@ -145,9 +146,12 @@ function drawWaveform(canvas: HTMLCanvasElement, audioUrl: string) {
 }
 
 export default function VoicePage() {
+  const locale = useLocale();
   const [tab, setTab] = useState<Tab>("stimme");
   const [script, setScript] = useState("");
-  const [voiceId, setVoiceId] = useState<string>(DEFAULT_ELEVENLABS_VOICE_ID);
+  const [voiceId, setVoiceId] = useState<string>(() =>
+    getDefaultVoiceIdForLocale(locale)
+  );
   const [stability, setStability] = useState(75);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);

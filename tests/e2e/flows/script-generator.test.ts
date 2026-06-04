@@ -5,6 +5,7 @@ import {
   getCreditsFromPage,
   setTestCredits,
   waitForCreditsReady,
+  dismissOverlays,
 } from "../helpers/flow";
 
 test.use({ storageState: AUTH_STATE });
@@ -86,6 +87,7 @@ test.describe("Script Generator", () => {
     await setTestCredits(request, 0);
     await page.reload();
     await waitForCreditsReady(page);
+    await dismissOverlays(page);
     await expect
       .poll(async () => getCreditsFromPage(page), { timeout: 10000 })
       .toBe(0);

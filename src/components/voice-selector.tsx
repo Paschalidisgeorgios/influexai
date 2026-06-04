@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getElevenLabsVoices } from "@/app/actions/get-elevenlabs-voices";
+import {
+  getDefaultVoiceIdForLocale,
+  resolveElevenLabsVoiceId,
+} from "@/lib/elevenlabs-tts";
+import { useLocale } from "next-intl";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 
 export type { ElevenLabsVoice };
@@ -60,6 +65,7 @@ export function VoiceSelector({
   selectedVoiceId,
   onVoiceSelect,
 }: VoiceSelectorProps) {
+  const locale = useLocale();
   const [voices, setVoices] = useState<ElevenLabsVoice[]>([]);
   const [filtered, setFiltered] = useState<ElevenLabsVoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,9 +93,16 @@ export function VoiceSelector({
 
   useEffect(() => {
     if (!selectedVoiceId && voices.length > 0) {
-      onVoiceSelect(voices[0]);
+      const localeDefault = getDefaultVoiceIdForLocale(locale);
+      const resolvedDefault = resolveElevenLabsVoiceId(localeDefault);
+      const preferred =
+        voices.find((v) => v.id === resolvedDefault) ??
+        voices.find((v) => v.id === localeDefault) ??
+        voices.find((v) => v.language === locale.split("-")[0]) ??
+        voices[0];
+      onVoiceSelect(preferred);
     }
-  }, [voices, selectedVoiceId, onVoiceSelect]);
+  }, [voices, selectedVoiceId, onVoiceSelect, locale]);
 
   useEffect(() => {
     let result = [...voices];

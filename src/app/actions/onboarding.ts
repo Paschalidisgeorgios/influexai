@@ -86,3 +86,41 @@ export async function completeOnboarding(): Promise<ActionOk | ActionFail> {
 export async function skipOnboarding(): Promise<ActionOk | ActionFail> {
   return completeOnboarding();
 }
+
+export type OnboardingFeatureId =
+  | "script-generator"
+  | "thumbnail-concept"
+  | "live-creator";
+
+export async function finishOnboardingFlow(input: {
+  creatorNiche: string;
+  featureId: OnboardingFeatureId;
+}): Promise<
+  | { success: true; redirectTo: string }
+  | ActionFail
+> {
+  const niche = input.creatorNiche?.trim();
+  if (!niche) {
+    return { success: false, error: "Bitte wähle oder gib eine Nische ein." };
+  }
+
+  const save = await saveCreatorProfile({
+    creatorNiche: niche,
+    subscriberCount: "Ich starte gerade",
+    creatorGoal: "Mehr Views",
+  });
+  if (!save.success) return save;
+
+  const done = await completeOnboarding();
+  if (!done.success) return done;
+
+  const q = encodeURIComponent(niche);
+  const redirectTo =
+    input.featureId === "script-generator"
+      ? `/dashboard/script-generator?topic=${q}`
+      : input.featureId === "thumbnail-concept"
+        ? `/dashboard/thumbnail-concept?topic=${q}`
+        : "/dashboard/live-creator";
+
+  return { success: true, redirectTo };
+}

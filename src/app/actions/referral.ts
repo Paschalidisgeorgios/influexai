@@ -5,12 +5,43 @@ import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import {
   generateReferralCode,
   normalizeReferralCode,
+  SITE_URL,
 } from "@/lib/referral-code";
+import { isReferralUserId } from "@/lib/referral-ref-cookie";
 import {
   awardReferredSignupBonus,
   awardReferrerSignupBonus,
   processReferralPurchase,
+  type ReferralRow,
 } from "@/lib/referral-rewards";
+
+async function resolveReferrerId(
+  supabase: Awaited<ReturnType<typeof getAdminClient>>,
+  refRaw: string
+): Promise<string | null> {
+  const trimmed = refRaw.trim();
+  if (!trimmed) return null;
+
+  if (isReferralUserId(trimmed)) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", trimmed)
+      .maybeSingle();
+    return data?.id ?? null;
+  }
+
+  const code = normalizeReferralCode(trimmed);
+  if (!code) return null;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, referral_code")
+    .eq("referral_code", code)
+    .maybeSingle();
+
+  return data?.id ?? null;
+}
 
 async function getAdminClient() {
   try {
@@ -68,23 +99,27 @@ export async function registerReferralOnSignup(
   const supabase = await getAdminClient();
   await ensureUniqueReferralCode(supabase, userId);
 
-  const referrerCode = referrerCodeRaw
-    ? normalizeReferralCode(referrerCodeRaw)
-    : null;
+  if (!referrerCodeRaw?.trim()) {
+    return { success: true };
+  }
 
-  if (!referrerCode) {
+  const referrerId = await resolveReferrerId(supabase, referrerCodeRaw);
+  if (!referrerId || referrerId === userId) {
     return { success: true };
   }
 
   const { data: referrer } = await supabase
     .from("profiles")
     .select("id, referral_code")
-    .eq("referral_code", referrerCode)
-    .maybeSingle();
+    .eq("id", referrerId)
+    .single();
 
-  if (!referrer || referrer.id === userId) {
+  if (!referrer) {
     return { success: true };
   }
+
+  const referrerCode =
+    referrer.referral_code ?? normalizeReferralCode(referrerCodeRaw);
 
   const { data: existingReferral } = await supabase
     .from("referrals")
@@ -120,7 +155,10 @@ export async function registerReferralOnSignup(
     return { success: false, error: insertError.message };
   }
 
-  void inserted?.id;
+  if (inserted) {
+    await awardReferrerSignupBonus(supabase, inserted as ReferralRow);
+    await invokeProcessReferralEdge(inserted.id, "insert");
+  }
 
   return { success: true };
 }
@@ -173,6 +211,7 @@ async function invokeProcessReferralEdge(
 export type ReferralDashboardData = {
   referralCode: string;
   referralLink: string;
+  signupLink: string;
   stats: {
     signedUp: number;
     purchased: number;
@@ -214,7 +253,7 @@ export async function getReferralDashboard(): Promise<
 
   const history = list.map((r, index) => {
     let earned = 0;
-    if (r.credits_awarded_signup) earned += 10;
+    if (r.credits_awarded_signup) earned += 20;
     if (r.credits_awarded_purchase) {
       earned += 20;
       purchased += 1;
@@ -230,11 +269,10 @@ export async function getReferralDashboard(): Promise<
     };
   });
 
-  const { SITE_URL } = await import("@/lib/referral-code");
-
   return {
     referralCode: code,
-    referralLink: `${SITE_URL}/signup?ref=${code}`,
+    referralLink: `${SITE_URL}?ref=${user.id}`,
+    signupLink: `${SITE_URL}/signup?ref=${code}`,
     stats: {
       signedUp: list.length,
       purchased,

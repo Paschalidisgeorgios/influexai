@@ -5,6 +5,7 @@ import {
   REFERRAL_PURCHASE_BONUS_REFERRER,
   REFERRAL_SIGNUP_BONUS_REFERRED,
   REFERRAL_SIGNUP_BONUS_REFERRER,
+  REFERRAL_TX_LABEL,
 } from "@/lib/referral-code";
 
 export type ReferralRow = {
@@ -25,7 +26,7 @@ export async function awardReferredSignupBonus(
     supabase,
     referredUserId,
     REFERRAL_SIGNUP_BONUS_REFERRED,
-    "Referral-Bonus (Einladung)"
+    `${REFERRAL_TX_LABEL} (Welcome)`
   );
 }
 
@@ -40,7 +41,7 @@ export async function awardReferrerSignupBonus(
     supabase,
     referral.referrer_id,
     REFERRAL_SIGNUP_BONUS_REFERRER,
-    "Referral-Bonus (Freund angemeldet)"
+    `${REFERRAL_TX_LABEL} (Invite signup)`
   );
 
   if (!result.success) return { ok: false };
@@ -79,7 +80,7 @@ export async function awardReferrerPurchaseBonus(
     supabase,
     referral.referrer_id,
     REFERRAL_PURCHASE_BONUS_REFERRER,
-    "Referral-Bonus (Freund hat gekauft)"
+    `${REFERRAL_TX_LABEL} (Invite purchase)`
   );
 
   if (!result.success) return { ok: false };

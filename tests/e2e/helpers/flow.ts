@@ -38,9 +38,10 @@ export async function setTestCredits(
 
 /** Dismiss re-engagement overlay if present. */
 export async function dismissOverlays(page: Page) {
-  const close = page.getByRole("button", { name: /schließen|close/i });
-  if (await close.isVisible().catch(() => false)) {
+  const close = page.getByRole("button", { name: /schließen|close/i }).first();
+  if (await close.isVisible({ timeout: 2000 }).catch(() => false)) {
     await close.click();
+    await page.waitForTimeout(300);
   }
 }
 

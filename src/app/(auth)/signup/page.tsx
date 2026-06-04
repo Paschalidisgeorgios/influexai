@@ -8,7 +8,6 @@ import Link from "next/link";
 import { registerReferralOnSignup } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { trackAbEvent } from "@/lib/ab-tracking";
-import { normalizeReferralCode } from "@/lib/referral-code";
 import { applyBetaOnSignup } from "@/app/actions/beta";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
@@ -65,21 +64,27 @@ function SignupPageInner() {
       }
     }
 
-    const ref = searchParams.get("ref");
+    const refFromUrl = searchParams.get("ref")?.trim();
+    const refFromCookie =
+      typeof document !== "undefined"
+        ? document.cookie
+            .split("; ")
+            .find((c) => c.startsWith("influexai_ref="))
+            ?.split("=")[1]
+        : undefined;
+    const ref = refFromUrl || refFromCookie;
     if (ref) {
-      const code = normalizeReferralCode(ref);
-      if (code) {
-        setReferralCode(code);
-        try {
-          localStorage.setItem(REFERRAL_STORAGE_KEY, code);
-        } catch {
-          /* ignore */
-        }
+      const stored = decodeURIComponent(ref);
+      setReferralCode(stored);
+      try {
+        localStorage.setItem(REFERRAL_STORAGE_KEY, stored);
+      } catch {
+        /* ignore */
       }
     } else {
       try {
         const stored = localStorage.getItem(REFERRAL_STORAGE_KEY);
-        if (stored) setReferralCode(normalizeReferralCode(stored));
+        if (stored) setReferralCode(stored);
       } catch {
         /* ignore */
       }
@@ -117,7 +122,7 @@ function SignupPageInner() {
       options: {
         data: {
           full_name: name,
-          ...(ref ? { referred_by: normalizeReferralCode(ref) } : {}),
+          ...(ref ? { referred_by: ref } : {}),
           ...(beta ? { beta_code: beta.trim().toUpperCase() } : {}),
         },
       },
@@ -130,7 +135,16 @@ function SignupPageInner() {
     }
 
     if (data.user && ref) {
-      await registerReferralOnSignup(data.user.id, normalizeReferralCode(ref));
+      await registerReferralOnSignup(data.user.id, ref);
+      try {
+        await fetch("/api/referral/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ref }),
+        });
+      } catch {
+        /* registerReferralOnSignup already ran */
+      }
       try {
         localStorage.removeItem(REFERRAL_STORAGE_KEY);
       } catch {

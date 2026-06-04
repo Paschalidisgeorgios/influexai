@@ -1,19 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Images } from "lucide-react";
 import { getGallery, deleteGalleryItem } from "@/app/actions/get-gallery";
+import { GALLERY_PAGE_SIZE } from "@/lib/gallery-types";
 import { GalleryCard } from "@/components/gallery/gallery-card";
-import {
-  GALLERY_FILTER_TABS,
-  type GalleryFilter,
-  type GalleryItem,
-} from "@/lib/gallery-types";
-
-const PAGE_SIZE = 12;
+import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
 
 export default function GalleryPage() {
+  const t = useTranslations("gallery");
   const [filter, setFilter] = useState<GalleryFilter>("all");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -24,6 +21,26 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const filterTabs = useMemo(
+    () =>
+      (
+        [
+          "all",
+          "script",
+          "image",
+          "video",
+          "niche",
+          "thumbnail",
+          "outlier",
+          "remix",
+        ] as const
+      ).map((id) => ({
+        id,
+        label: t(`filters.${id}`),
+      })),
+    [t]
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -39,7 +56,7 @@ export default function GalleryPage() {
       const result = await getGallery(
         filter,
         pageIndex,
-        PAGE_SIZE,
+        GALLERY_PAGE_SIZE,
         debouncedSearch
       );
 
@@ -79,7 +96,7 @@ export default function GalleryPage() {
   const handleDelete = async (id: string, type: string) => {
     const result = await deleteGalleryItem(id, type);
     if (!result.success) {
-      setError(result.error ?? "Löschen fehlgeschlagen");
+      setError(result.error ?? t("deleteFailed"));
       return;
     }
     setItems((prev) => prev.filter((i) => i.id !== id));
@@ -101,7 +118,7 @@ export default function GalleryPage() {
             marginBottom: 8,
           }}
         >
-          History
+          {t("eyebrow")}
         </p>
         <div
           style={{
@@ -122,10 +139,10 @@ export default function GalleryPage() {
                 marginBottom: 4,
               }}
             >
-              Meine Gallery
+              {t("title")}
             </h1>
             <p style={{ color: "rgba(240,239,232,0.5)", fontSize: "0.95rem" }}>
-              {total} {total === 1 ? "Creation" : "Creations"}
+              {t("count", { count: total })}
             </p>
           </div>
         </div>
@@ -133,7 +150,7 @@ export default function GalleryPage() {
 
       <input
         type="search"
-        placeholder="Suche in deinen Creations..."
+        placeholder={t("searchPlaceholder")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{
@@ -157,7 +174,7 @@ export default function GalleryPage() {
           marginBottom: 24,
         }}
       >
-        {GALLERY_FILTER_TABS.map((tab) => {
+        {filterTabs.map((tab) => {
           const active = filter === tab.id;
           return (
             <button
@@ -242,7 +259,7 @@ export default function GalleryPage() {
               marginBottom: 8,
             }}
           >
-            Noch keine Creations
+            {t("emptyTitle")}
           </p>
           <p
             style={{
@@ -251,7 +268,7 @@ export default function GalleryPage() {
               marginBottom: 24,
             }}
           >
-            Deine Scripts, Bilder und Analysen erscheinen hier automatisch.
+            {t("emptyDescription")}
           </p>
           <Link
             href="/dashboard"
@@ -265,7 +282,7 @@ export default function GalleryPage() {
               textDecoration: "none",
             }}
           >
-            Erste Creation erstellen →
+            {t("emptyCta")}
           </Link>
         </div>
       ) : (
@@ -295,7 +312,7 @@ export default function GalleryPage() {
               marginTop: 24,
             }}
           >
-            Zeige {shown} von {total} Creations
+            {t("showing", { shown, total })}
           </p>
 
           {hasMore && (
@@ -315,7 +332,7 @@ export default function GalleryPage() {
                   opacity: loadingMore ? 0.6 : 1,
                 }}
               >
-                {loadingMore ? "Lädt..." : "Mehr laden"}
+                {loadingMore ? t("loadingMore") : t("loadMore")}
               </button>
             </div>
           )}

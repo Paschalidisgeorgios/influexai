@@ -615,6 +615,8 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
                 src={item.imageUrl}
                 alt=""
                 fill
+                sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+                loading="lazy"
                 style={{ objectFit: "cover" }}
                 unoptimized
               />
@@ -671,6 +673,9 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
             {item.videoUrl ? (
               <video
                 src={item.videoUrl}
+                preload="none"
+                playsInline
+                muted
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             ) : (

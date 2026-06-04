@@ -10,6 +10,18 @@
     },
     "src/app/api/live-creator/route.ts": {
       "maxDuration": 300
+    },
+    "src/app/api/live-avatar/session/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/faceswap/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/outlier-detector/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/video-remix/route.ts": {
+      "maxDuration": 60
     }
   }
 }

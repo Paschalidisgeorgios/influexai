@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Image, Images, type LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { BarChart2, Image, Images, Video, type LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FeatureNudge } from "@/components/feature-nudge";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
@@ -15,14 +16,23 @@ type NavItem = {
   href: string;
   icon?: string;
   lucideIcon?: LucideIcon;
+  badge?: string;
 };
 
 const NAV_ITEMS: NavItem[] = [
   {
-    id: "live",
-    icon: "🎭",
-    label: "Live Creator",
+    id: "live-creator",
+    lucideIcon: Video,
+    label: "live_creator",
     href: "/dashboard/live-creator",
+    badge: "LIVE",
+  },
+  {
+    id: "live-creator-new",
+    icon: "🎬",
+    label: "Face Swap",
+    href: "/dashboard/live-creator-new",
+    badge: "NEU",
   },
   { id: "ki-ich", icon: "📸", label: "Mein KI-Ich", href: "/dashboard/ki-ich" },
   {
@@ -83,7 +93,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const BOTTOM_NAV = [
   { icon: "🔌", label: "Developer API", href: "/dashboard/api" },
-  { icon: "🎁", label: "Verdiene Credits", href: "/dashboard/referral" },
+  { icon: "🎁", label: "referral", href: "/dashboard/referral" },
   { icon: "⚙️", label: "Einstellungen", href: "/dashboard/settings" },
   { icon: "💳", label: "Credits & Plan", href: "/dashboard/credits" },
 ];
@@ -105,6 +115,7 @@ const AGENCY_NAV = [
 ];
 
 export function DashboardSidebar() {
+  const tNav = useTranslations("nav");
   const [collapsed, setCollapsed] = useState(false);
   const [credits, setCredits] = useState<number | null>(null);
   const [maxCredits, setMaxCredits] = useState(500);
@@ -244,7 +255,13 @@ export function DashboardSidebar() {
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           const isComingSoon =
-            item.id === "live" && LIVE_CREATOR_COMING_SOON;
+            item.id === "live-creator" && LIVE_CREATOR_COMING_SOON;
+          const navLabel =
+            item.label === "live_creator"
+              ? tNav("live_creator")
+              : item.label === "referral"
+                ? tNav("referral")
+                : item.label;
           const navStyle = {
             display: "flex",
             alignItems: "center",
@@ -290,7 +307,22 @@ export function DashboardSidebar() {
               )}
               {!collapsed && (
                 <>
-                  {item.label}
+                  {navLabel}
+                  {item.badge && !isComingSoon && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "0.58rem",
+                        fontWeight: 700,
+                        color: "#060608",
+                        background: "#B4FF00",
+                        padding: "2px 6px",
+                        borderRadius: 999,
+                      }}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
                   {isComingSoon && (
                     <span
                       style={{
@@ -310,7 +342,7 @@ export function DashboardSidebar() {
             return (
               <span
                 key={item.id}
-                title={collapsed ? `${item.label} (bald)` : "Kommt bald"}
+                title={collapsed ? `${navLabel} (bald)` : "Kommt bald"}
                 style={navStyle}
               >
                 {inner}
@@ -321,7 +353,7 @@ export function DashboardSidebar() {
             <Link
               key={item.id}
               href={item.href}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? navLabel : undefined}
               style={navStyle}
             >
               {inner}

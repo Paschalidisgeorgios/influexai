@@ -1,8 +1,10 @@
 import type { NicheIdea } from "@/app/actions/analyze-niche";
-import type { OutlierConcept } from "@/app/actions/detect-outliers";
-import type { RemixConcept } from "@/app/actions/remix-video";
+import type { OutlierConcept } from "@/lib/outlier-analysis";
+import type { RemixConcept } from "@/lib/remix-analysis";
 import type { ThumbnailConcept } from "@/app/actions/generate-thumbnail";
 import type { ScriptSettings } from "@/app/actions/generate-script";
+
+export const GALLERY_PAGE_SIZE = 20;
 
 export type GalleryFilter =
   | "all"

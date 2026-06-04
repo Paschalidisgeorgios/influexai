@@ -6,7 +6,9 @@ export async function POST(request: Request) {
     apiDetectOutliers(userId, {
       niche: String(body.niche ?? ""),
       period: body.period ? String(body.period) : undefined,
+      platform: body.platform ? String(body.platform) : undefined,
       channelSize: body.channelSize ? String(body.channelSize) : undefined,
+      language: body.language ? String(body.language) : undefined,
     })
   );
 }

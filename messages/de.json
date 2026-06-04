@@ -1,5 +1,7 @@
 {
   "nav": {
+    "live_creator": "Live Creator",
+    "referral": "Referral",
     "dashboard": "Dashboard",
     "community": "Community",
     "analytics": "Statistiken",
@@ -66,6 +68,29 @@
       "button": "Werbung erstellen"
     }
   },
+  "gallery": {
+    "eyebrow": "Verlauf",
+    "title": "Meine Gallery",
+    "count": "{count} Creations",
+    "searchPlaceholder": "Suche in deinen Creations…",
+    "filters": {
+      "all": "Alle",
+      "script": "Scripts",
+      "image": "Bilder",
+      "video": "Videos",
+      "niche": "Niches",
+      "thumbnail": "Thumbnails",
+      "outlier": "Outlier",
+      "remix": "Remix"
+    },
+    "emptyTitle": "Noch keine Creations",
+    "emptyDescription": "Deine Scripts, Bilder und Analysen erscheinen hier automatisch.",
+    "emptyCta": "Erste Creation erstellen →",
+    "showing": "Zeige {shown} von {total} Creations",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Lädt…",
+    "deleteFailed": "Löschen fehlgeschlagen"
+  },
   "credits": {
     "title": "Credits",
     "balance": "Dein Guthaben",
@@ -95,6 +120,10 @@
     "fill_fields": "Bitte alle Felder ausfüllen.",
     "bad_credentials": "Falsche E-Mail oder falsches Passwort.",
     "forgot_password": "Vergessen?",
+    "forgot_title": "Passwort zurücksetzen",
+    "forgot_subtitle": "Wir senden dir einen Link per E-Mail (Resend/Supabase Auth).",
+    "forgot_submit": "Link senden",
+    "forgot_sent": "Falls ein Konto existiert, wurde eine E-Mail gesendet. Prüfe auch den Spam-Ordner.",
     "divider": "oder",
     "terms_text": "Durch die Registrierung stimmst du unseren",
     "terms_link": "AGB",
@@ -102,13 +131,6 @@
     "password_weak": "Schwach",
     "password_medium": "Mittel",
     "password_strong": "Stark"
-  },
-  "onboarding": {
-    "welcome": "Willkommen bei InfluexAI, {name}!",
-    "subtitle": "Das KI Studio für Creator, die viral gehen wollen.",
-    "next": "Weiter →",
-    "skip": "Überspringen",
-    "finish": "Zum Dashboard"
   },
   "community": {
     "title": "Community",
@@ -173,6 +195,83 @@
   },
   "language": {
     "label": "Sprache"
+  },
+  "onboarding": {
+    "welcome_title": "Willkommen bei InfluexAI",
+    "welcome_subtitle": "Erstelle KI-Videos für YouTube Shorts in Minuten — ohne Schnittprogramm, ohne leeres Blatt.",
+    "welcome_cta": "Los geht's",
+    "niche_title": "Was ist dein YouTube-Thema?",
+    "niche_hint": "Wähle eine Nische oder tippe dein eigenes Thema.",
+    "niche_placeholder": "z.B. Fitness, Finance, Morning Routine…",
+    "niche_cta": "Weiter",
+    "niche_required": "Bitte wähle oder gib ein Thema ein.",
+    "feature_title": "Womit willst du starten?",
+    "feature_subtitle": "Du kannst später alle Tools im Dashboard nutzen.",
+    "feature_script_title": "Script Generator",
+    "feature_script_desc": "Hook, Story & CTA in 30 Sekunden",
+    "feature_thumbnail_title": "Thumbnail Konzept",
+    "feature_thumbnail_desc": "CTR-starke Thumbnail-Ideen sofort",
+    "feature_avatar_title": "KI-Avatar Video",
+    "feature_avatar_desc": "Foto zum sprechenden Avatar",
+    "start_cta": "Starten",
+    "skip": "Überspringen",
+    "niches": {
+      "fitness": "Fitness",
+      "finance": "Finance",
+      "travel": "Travel",
+      "gaming": "Gaming",
+      "beauty": "Beauty"
+    }
+  },
+  "referral": {
+    "title": "Freunde einladen",
+    "subtitle": "Verdiene Credits für jeden Freund",
+    "loading": "Laden…",
+    "error": "Daten konnten nicht geladen werden",
+    "hero_title": "Teile deinen Link",
+    "hero_body": "Du erhältst {referrerBonus} Credits pro Anmeldung, dein Freund {friendBonus} Welcome-Credits.",
+    "link_label": "Dein persönlicher Referral-Link",
+    "signup_alt": "Alternativ mit Code:",
+    "copy": "Link kopieren",
+    "copied": "Kopiert!",
+    "share_x": "Auf X teilen",
+    "share_email": "Per E-Mail",
+    "share_message": "Ich erstelle YouTube Shorts mit KI — probier InfluexAI ({bonus} Bonus-Credits): {link}",
+    "email_subject": "InfluexAI — KI für YouTube Shorts",
+    "stats_title": "Deine Referrals",
+    "stat_invited": "Eingeladene User",
+    "stat_credits": "Verdiente Credits",
+    "col_date": "Datum",
+    "col_status": "Status",
+    "col_credits": "Credits",
+    "status_signed_up": "Angemeldet",
+    "status_purchased": "Hat gekauft",
+    "empty": "Noch keine Referrals. Teile deinen Link!",
+    "code_label": "Dein Referral-Code:"
+  },
+  "liveCreatorStudio": {
+    "live_creator_label": "Live Creator",
+    "title": "Live Creator Mode",
+    "subtitle": "KI-Avatar mit deiner Mimik in Echtzeit — Webcam optional unten rechts.",
+    "tab_studio": "Live Studio",
+    "tab_talking": "Avatar Video",
+    "live_badge": "LIVE",
+    "pick_avatar": "Streaming-Avatar wählen",
+    "no_avatars": "Keine Avatare gefunden. Lege einen Avatar in Akool an oder setze AKOOL_DEFAULT_AVATAR_ID.",
+    "start_session": "Live-Session starten",
+    "connecting": "Verbinde mit Avatar…",
+    "end_session": "Session beenden",
+    "mic_on": "Mikro an",
+    "mic_off": "Mikro aus",
+    "cam_on": "Kamera an",
+    "cam_off": "Kamera aus",
+    "cam_off_label": "Kamera aus",
+    "low_credits": "Nur noch {count} Credits — Session kann bald enden.",
+    "no_credits_end": "Keine Credits mehr — Live-Session beendet.",
+    "credits_hint": "{cost} Credits pro Minute während der Session",
+    "billing_active": "{credits} Credits · {cost}/Min",
+    "error_load": "Avatare konnten nicht geladen werden",
+    "error_session": "Live-Session konnte nicht gestartet werden"
   },
   "slideshow": {
     "social_proof": "⚡ 500+ Creators · 10.000+ Contents erstellt",

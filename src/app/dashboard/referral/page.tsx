@@ -1,43 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { Gift } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Gift, Mail } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   getReferralDashboard,
   type ReferralDashboardData,
 } from "@/app/actions/referral";
-
-declare global {
-  interface Window {
-    QRCode?: new (
-      el: HTMLElement,
-      options: {
-        text: string;
-        width: number;
-        height: number;
-        colorDark?: string;
-        colorLight?: string;
-      }
-    ) => void;
-  }
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import {
+  REFERRAL_SIGNUP_BONUS_REFERRED,
+  REFERRAL_SIGNUP_BONUS_REFERRER,
+} from "@/lib/referral-code";
 
 export default function ReferralPage() {
+  const t = useTranslations("referral");
+  const locale = useLocale();
   const [data, setData] = useState<ReferralDashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [showQr, setShowQr] = useState(false);
-  const qrRef = useRef<HTMLDivElement>(null);
-  const qrLoaded = useRef(false);
 
   useEffect(() => {
     getReferralDashboard().then((res) => {
@@ -47,37 +28,24 @@ export default function ReferralPage() {
     });
   }, []);
 
-  useEffect(() => {
-    if (!showQr || !data || !qrRef.current) return;
+  const shareMessage = useMemo(() => {
+    if (!data) return "";
+    return t("share_message", {
+      link: data.referralLink,
+      bonus: REFERRAL_SIGNUP_BONUS_REFERRED,
+    });
+  }, [data, t]);
 
-    const renderQr = () => {
-      if (!window.QRCode || !qrRef.current) return;
-      qrRef.current.innerHTML = "";
-      new window.QRCode(qrRef.current, {
-        text: data.referralLink,
-        width: 200,
-        height: 200,
-        colorDark: "#060608",
-        colorLight: "#ffffff",
-      });
+  const shareUrls = useMemo(() => {
+    if (!data) return null;
+    const subject = encodeURIComponent(t("email_subject"));
+    const body = encodeURIComponent(shareMessage);
+    return {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(shareMessage)}`,
+      email: `mailto:?subject=${subject}&body=${body}`,
     };
-
-    if (window.QRCode) {
-      renderQr();
-      return;
-    }
-
-    if (qrLoaded.current) return;
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
-    script.async = true;
-    script.onload = () => {
-      qrLoaded.current = true;
-      renderQr();
-    };
-    document.body.appendChild(script);
-  }, [showQr, data]);
+  }, [data, shareMessage, t]);
 
   const copyLink = async () => {
     if (!data) return;
@@ -86,353 +54,142 @@ export default function ReferralPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareMessage = data
-    ? `Ich erstelle meine YouTube Shorts mit KI 🚀 Probier InfluexAI aus — 5 Bonus-Credits bei Anmeldung: ${data.referralLink}`
-    : "";
-
-  const shareUrls = data
-    ? {
-        twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
-        whatsapp: `https://wa.me/?text=${encodeURIComponent(shareMessage)}`,
-        telegram: `https://t.me/share/url?url=${encodeURIComponent(data.referralLink)}&text=${encodeURIComponent("Probier InfluexAI — 5 Bonus-Credits!")}`,
-      }
-    : null;
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(locale, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
   if (loading) {
     return (
-      <div
-        style={{
-          maxWidth: 800,
-          margin: "0 auto",
-          color: "#505055",
-          padding: 40,
-        }}
-      >
-        Laden…
+      <div className="max-w-[800px] mx-auto py-10 text-white/40 text-sm">
+        {t("loading")}
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div style={{ maxWidth: 800, margin: "0 auto", color: "#ff6b7a" }}>
-        {error ?? "Fehler"}
+      <div className="max-w-[800px] mx-auto text-red-400 text-sm">
+        {error ?? t("error")}
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 28,
-        }}
-      >
-        <Gift size={32} color="#B4FF00" strokeWidth={2} />
+    <div className="max-w-[800px] mx-auto pb-12">
+      <header className="flex items-center gap-3 mb-8">
+        <Gift className="text-[#B4FF00]" size={32} strokeWidth={2} />
         <div>
-          <h1
-            style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              letterSpacing: "0.02em",
-              color: "#F0EFE8",
-              margin: 0,
-              lineHeight: 1,
-            }}
-          >
-            Freunde einladen
+          <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-none">
+            {t("title")}
           </h1>
-          <p
-            style={{ color: "#505055", fontSize: "0.9rem", margin: "6px 0 0" }}
-          >
-            Verdiene Credits für jeden Freund
-          </p>
+          <p className="text-white/45 text-sm mt-1">{t("subtitle")}</p>
         </div>
-      </div>
+      </header>
 
-      {/* Hero */}
-      <div
-        style={{
-          padding: 28,
-          borderRadius: 18,
-          marginBottom: 24,
-          background: "rgba(180,255,0,0.06)",
-          border: "1px solid rgba(180,255,0,0.2)",
-        }}
-      >
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), sans-serif",
-            fontSize: "1.5rem",
-            color: "#F0EFE8",
-            margin: "0 0 8px",
-          }}
-        >
-          Verdiene Credits für jeden Freund
+      <section className="rounded-2xl border border-[#B4FF00]/20 bg-[#B4FF00]/5 p-6 mb-6">
+        <h2 className="font-[family-name:var(--font-bebas)] text-2xl text-[#F0EFE8] mb-2">
+          {t("hero_title")}
         </h2>
-        <p
-          style={{
-            color: "#505055",
-            fontSize: "0.9rem",
-            lineHeight: 1.6,
-            margin: "0 0 20px",
-          }}
-        >
-          Du bekommst <strong style={{ color: "#B4FF00" }}>10 Credits</strong>,
-          wenn sich dein Freund anmeldet, und nochmal{" "}
-          <strong style={{ color: "#B4FF00" }}>20 Credits</strong>, wenn er
-          kauft. Dein Freund erhält{" "}
-          <strong style={{ color: "#B4FF00" }}>5 Bonus-Credits</strong>.
+        <p className="text-white/50 text-sm leading-relaxed mb-5">
+          {t("hero_body", {
+            referrerBonus: REFERRAL_SIGNUP_BONUS_REFERRER,
+            friendBonus: REFERRAL_SIGNUP_BONUS_REFERRED,
+          })}
         </p>
 
-        <div
-          style={{
-            padding: "14px 16px",
-            borderRadius: 10,
-            background: "#18181d",
-            border: "1px solid rgba(255,255,255,0.09)",
-            fontFamily: "monospace",
-            fontSize: "0.85rem",
-            color: "#B4FF00",
-            wordBreak: "break-all",
-            marginBottom: 12,
-          }}
-        >
+        <p className="text-[0.7rem] font-bold uppercase tracking-wider text-white/35 mb-2">
+          {t("link_label")}
+        </p>
+        <div className="rounded-xl border border-white/10 bg-[#0f0f12] px-4 py-3 font-mono text-sm text-[#B4FF00] break-all mb-3">
           {data.referralLink}
         </div>
+        <p className="text-white/35 text-xs mb-4">
+          {t("signup_alt")}{" "}
+          <span className="text-white/55 break-all">{data.signupLink}</span>
+        </p>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          <button
-            type="button"
-            onClick={copyLink}
-            style={{
-              padding: "10px 20px",
-              borderRadius: 9,
-              border: "none",
-              background: "#B4FF00",
-              color: "#060608",
-              fontWeight: 700,
-              fontSize: "0.88rem",
-              cursor: "pointer",
-              fontFamily: "var(--font-dm), sans-serif",
-            }}
-          >
-            {copied ? "Kopiert! ✓" : "Kopieren"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowQr((v) => !v)}
-            style={{
-              padding: "10px 20px",
-              borderRadius: 9,
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: "rgba(255,255,255,0.04)",
-              color: "#F0EFE8",
-              fontWeight: 600,
-              fontSize: "0.88rem",
-              cursor: "pointer",
-              fontFamily: "var(--font-dm), sans-serif",
-            }}
-          >
-            QR-Code
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => void copyLink()}
+          className="w-full sm:w-auto rounded-xl bg-[#B4FF00] px-6 py-3 text-sm font-bold text-[#060608] hover:opacity-90 transition-opacity"
+        >
+          {copied ? t("copied") : t("copy")}
+        </button>
+      </section>
 
-        {showQr && (
-          <div
-            style={{
-              marginTop: 20,
-              padding: 20,
-              borderRadius: 12,
-              background: "#fff",
-              display: "inline-block",
-            }}
-          >
-            <div ref={qrRef} />
-          </div>
-        )}
-      </div>
-
-      {/* Share */}
-      <div
-        style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 28 }}
-      >
+      <div className="flex flex-wrap gap-2 mb-8">
         {shareUrls && (
           <>
-            <a
-              href={shareUrls.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={shareBtnStyle}
-            >
-              𝕏 Teilen
-            </a>
             <a
               href={shareUrls.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              style={shareBtnStyle}
+              className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
             >
               WhatsApp
             </a>
             <a
-              href={shareUrls.telegram}
+              href={shareUrls.twitter}
               target="_blank"
               rel="noopener noreferrer"
-              style={shareBtnStyle}
+              className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
             >
-              Telegram
+              {t("share_x")}
+            </a>
+            <a
+              href={shareUrls.email}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
+            >
+              <Mail size={14} />
+              {t("share_email")}
             </a>
           </>
         )}
-        <button type="button" onClick={copyLink} style={shareBtnStyle}>
-          Link kopieren
-        </button>
       </div>
 
-      {/* Stats */}
-      <h2
-        style={{
-          fontFamily: "var(--font-bebas), sans-serif",
-          fontSize: "1.2rem",
-          color: "#F0EFE8",
-          marginBottom: 12,
-        }}
-      >
-        Deine Referrals
+      <h2 className="font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8] mb-3">
+        {t("stats_title")}
       </h2>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-          gap: 12,
-          marginBottom: 28,
-        }}
-      >
-        {[
-          { label: "Angemeldete Freunde", value: data.stats.signedUp },
-          { label: "Verdiente Credits", value: data.stats.creditsEarned },
-          { label: "Käufe deiner Freunde", value: data.stats.purchased },
-        ].map((s) => (
-          <div
-            key={s.label}
-            style={{
-              padding: 18,
-              borderRadius: 14,
-              background: "#0f0f12",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "1.75rem",
-                fontWeight: 700,
-                color: "#B4FF00",
-                fontFamily: "var(--font-bebas), sans-serif",
-              }}
-            >
-              {s.value}
-            </div>
-            <div
-              style={{ fontSize: "0.78rem", color: "#505055", marginTop: 4 }}
-            >
-              {s.label}
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+        <StatCard label={t("stat_invited")} value={data.stats.signedUp} />
+        <StatCard label={t("stat_credits")} value={data.stats.creditsEarned} />
       </div>
 
-      {/* History */}
-      <div
-        style={{
-          borderRadius: 14,
-          background: "#0f0f12",
-          border: "1px solid rgba(255,255,255,0.07)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: 8,
-            padding: "12px 16px",
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            color: "#505055",
-            textTransform: "uppercase",
-            letterSpacing: "0.06em",
-          }}
-        >
-          <span>Datum</span>
-          <span>Status</span>
-          <span style={{ textAlign: "right" }}>Credits</span>
+      <div className="rounded-2xl border border-white/10 bg-[#0f0f12] overflow-hidden">
+        <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-white/10 text-[0.7rem] font-bold uppercase tracking-wider text-white/35">
+          <span>{t("col_date")}</span>
+          <span>{t("col_status")}</span>
+          <span className="text-right">{t("col_credits")}</span>
         </div>
         {data.history.length === 0 ? (
-          <p
-            style={{
-              padding: 20,
-              color: "#505055",
-              fontSize: "0.88rem",
-              margin: 0,
-            }}
-          >
-            Noch keine Referrals. Teile deinen Link!
-          </p>
+          <p className="px-4 py-6 text-sm text-white/40">{t("empty")}</p>
         ) : (
           data.history.map((row) => (
             <div
               key={row.id}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gap: 8,
-                padding: "12px 16px",
-                borderBottom: "1px solid rgba(255,255,255,0.04)",
-                fontSize: "0.88rem",
-                color: "#F0EFE8",
-              }}
+              className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-white/5 text-sm text-[#F0EFE8] last:border-0"
             >
               <span>
                 {formatDate(row.date)}
-                <span
-                  style={{
-                    display: "block",
-                    fontSize: "0.72rem",
-                    color: "#505055",
-                  }}
-                >
-                  {row.label}
-                </span>
+                <span className="block text-xs text-white/35">{row.label}</span>
               </span>
               <span>
                 <span
-                  style={{
-                    padding: "3px 8px",
-                    borderRadius: 99,
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    background:
-                      row.status === "purchased"
-                        ? "rgba(180,255,0,0.15)"
-                        : "rgba(255,255,255,0.06)",
-                    color: row.status === "purchased" ? "#B4FF00" : "#505055",
-                  }}
+                  className={`inline-block rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${
+                    row.status === "purchased"
+                      ? "bg-[#B4FF00]/15 text-[#B4FF00]"
+                      : "bg-white/5 text-white/45"
+                  }`}
                 >
-                  {row.status === "purchased" ? "Hat gekauft" : "Angemeldet"}
+                  {row.status === "purchased"
+                    ? t("status_purchased")
+                    : t("status_signed_up")}
                 </span>
               </span>
-              <span
-                style={{
-                  textAlign: "right",
-                  color: "#B4FF00",
-                  fontWeight: 700,
-                }}
-              >
+              <span className="text-right font-bold text-[#B4FF00]">
                 +{row.creditsEarned}
               </span>
             </div>
@@ -440,23 +197,22 @@ export default function ReferralPage() {
         )}
       </div>
 
-      <p style={{ marginTop: 16, fontSize: "0.78rem", color: "#505055" }}>
-        Dein Code:{" "}
-        <strong style={{ color: "#B4FF00" }}>{data.referralCode}</strong>
+      <p className="mt-4 text-xs text-white/35">
+        {t("code_label")}{" "}
+        <strong className="text-[#B4FF00]">{data.referralCode}</strong>
       </p>
+
     </div>
   );
 }
 
-const shareBtnStyle: CSSProperties = {
-  padding: "8px 14px",
-  borderRadius: 8,
-  border: "1px solid rgba(255,255,255,0.1)",
-  background: "rgba(255,255,255,0.04)",
-  color: "#F0EFE8",
-  fontSize: "0.82rem",
-  fontWeight: 600,
-  textDecoration: "none",
-  cursor: "pointer",
-  fontFamily: "var(--font-dm), sans-serif",
-};
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-[#0f0f12] p-5">
+      <div className="font-[family-name:var(--font-bebas)] text-4xl text-[#B4FF00] leading-none">
+        {value}
+      </div>
+      <div className="text-xs text-white/40 mt-2">{label}</div>
+    </div>
+  );
+}

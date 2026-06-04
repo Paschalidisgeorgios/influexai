@@ -14,7 +14,11 @@ test.describe("Main Dashboard", () => {
   });
 
   test("shows personalized greeting", async ({ page }) => {
-    await expect(page.getByText(/hey|hallo/i)).toBeVisible();
+    await expect(
+      page.getByText(
+        /guten|good (morning|afternoon|evening|night)|günaydın|buenos|bonjour|καλη/i
+      )
+    ).toBeVisible();
   });
 
   test("shows credits display", async ({ page }) => {

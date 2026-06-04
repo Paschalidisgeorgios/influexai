@@ -1,0 +1,132 @@
+[
+  {
+    "id": "env:NEXT_PUBLIC_SUPABASE_URL",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:SUPABASE_SERVICE_ROLE_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:ANTHROPIC_API_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:STRIPE_SECRET_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:FAL_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:ELEVENLABS_API_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:RESEND_API_KEY",
+    "ok": false,
+    "detail": "fehlt oder ungültig in .env.local"
+  },
+  {
+    "id": "env:AKOOL_CLIENT_ID",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "env:AKOOL_API_KEY",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "db:saved_scripts",
+    "ok": true,
+    "detail": "INSERT OK"
+  },
+  {
+    "id": "db:thumbnail_concepts",
+    "ok": true,
+    "detail": "INSERT OK"
+  },
+  {
+    "id": "db:niche_saves",
+    "ok": true,
+    "detail": "INSERT OK"
+  },
+  {
+    "id": "db:outlier_results",
+    "ok": true,
+    "detail": "INSERT OK"
+  },
+  {
+    "id": "db:remix_results",
+    "ok": true,
+    "detail": "INSERT OK"
+  },
+  {
+    "id": "api:anthropic",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "api:fal",
+    "ok": true,
+    "detail": "request_id returned"
+  },
+  {
+    "id": "api:elevenlabs-voices",
+    "ok": false,
+    "detail": "401"
+  },
+  {
+    "id": "prod:/",
+    "ok": true,
+    "detail": "200"
+  },
+  {
+    "id": "prod:/login",
+    "ok": true,
+    "detail": "200"
+  },
+  {
+    "id": "prod:/signup",
+    "ok": true,
+    "detail": "200"
+  },
+  {
+    "id": "prod:/forgot-password",
+    "ok": true,
+    "detail": "200"
+  },
+  {
+    "id": "prod:/dashboard/gallery",
+    "ok": true,
+    "detail": "307"
+  },
+  {
+    "id": "prod:/de",
+    "ok": true,
+    "detail": "307"
+  },
+  {
+    "id": "prod:/en",
+    "ok": true,
+    "detail": "307"
+  }
+]

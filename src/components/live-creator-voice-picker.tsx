@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getElevenLabsVoices } from "@/app/actions/get-elevenlabs-voices";
+import {
+  getDefaultVoiceIdForLocale,
+  resolveElevenLabsVoiceId,
+} from "@/lib/elevenlabs-tts";
+import { useLocale } from "next-intl";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 
 type LiveCreatorVoicePickerProps = {
@@ -19,6 +24,7 @@ export function LiveCreatorVoicePicker({
   selectedVoiceId,
   onVoiceSelect,
 }: LiveCreatorVoicePickerProps) {
+  const locale = useLocale();
   const [voices, setVoices] = useState<ElevenLabsVoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [voiceSearch, setVoiceSearch] = useState("");
@@ -30,11 +36,20 @@ export function LiveCreatorVoicePicker({
     getElevenLabsVoices().then((result) => {
       if (result.voices.length > 0) {
         setVoices(result.voices);
-        const current = result.voices.find((v) => v.id === selectedVoiceId);
+        const resolvedId = resolveElevenLabsVoiceId(selectedVoiceId);
+        const current =
+          result.voices.find((v) => v.id === resolvedId) ??
+          result.voices.find((v) => v.id === selectedVoiceId);
         if (current) {
           onVoiceSelect(current);
         } else {
-          onVoiceSelect(result.voices[0]);
+          const localeDefault = resolveElevenLabsVoiceId(
+            getDefaultVoiceIdForLocale(locale)
+          );
+          const preferred =
+            result.voices.find((v) => v.id === localeDefault) ??
+            result.voices[0];
+          onVoiceSelect(preferred);
         }
       }
       setLoading(false);

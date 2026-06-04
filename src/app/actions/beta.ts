@@ -126,10 +126,17 @@ export async function joinBeta(input: {
     if (error.code === "23505") {
       const { data: row } = await supabase
         .from("beta_signups")
-        .select("code")
+        .select("code, status")
         .eq("email", email)
         .single();
-      if (row?.code) return { success: true, code: row.code };
+      if (row?.code && row.status === "active") {
+        await sendBetaWelcomeEmail(
+          email,
+          row.code,
+          firstNameOnly(input.name)
+        );
+        return { success: true, code: row.code };
+      }
     }
     console.error("joinBeta:", error.message);
     return {

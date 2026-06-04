@@ -1,6 +1,12 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  buildOutlierUserPrompt,
+  normalizeOutlierLanguage,
+  OUTLIER_SYSTEM_PROMPT,
+  parseOutlierConcepts,
+} from "@/lib/outlier-analysis";
 
 export const API_CREDIT_COSTS = {
   script: 2,
@@ -159,8 +165,14 @@ Format: ${body.format ?? "shorts"}`
 
 export async function apiDetectOutliers(
   userId: string,
-  body: { niche: string; period?: string; channelSize?: string }
-): Promise<ApiGenResult<{ outliers: unknown[] }>> {
+  body: {
+    niche: string;
+    period?: string;
+    platform?: string;
+    channelSize?: string;
+    language?: string;
+  }
+): Promise<ApiGenResult<{ outliers: unknown[]; saved: boolean }>> {
   const niche = body.niche?.trim();
   if (!niche) throw new Error("INVALID_NICHE");
 
@@ -172,17 +184,23 @@ export async function apiDetectOutliers(
     niche,
     async () => {
       const text = await callClaude(
-        "Du bist ein YouTube Viral Content Analyst. Antworte NUR mit validem JSON Array von 6 Outlier-Konzepten.",
-        `Nische: ${niche}
-Zeitraum: ${body.period ?? "month"}
-Kanal-Größe: ${body.channelSize ?? "micro"}`
+        OUTLIER_SYSTEM_PROMPT,
+        buildOutlierUserPrompt({
+          niche,
+          period: body.period ?? "Letzter Monat",
+          platform: body.platform ?? "YouTube Shorts",
+          channelSize: body.channelSize ?? "Alle",
+          language: normalizeOutlierLanguage(body.language),
+        })
       );
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      const outliers = Array.isArray(parsed)
-        ? parsed
-        : (parsed?.outliers ?? []);
-      return { outliers: outliers.slice(0, 6) };
+      const outliers = parseOutlierConcepts(text);
+      const supabase = createServiceSupabaseClient();
+      const { error: saveError } = await supabase.from("outlier_results").insert({
+        user_id: userId,
+        niche,
+        results: outliers,
+      });
+      return { outliers, saved: !saveError };
     }
   );
 }

@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { Repeat2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { remixVideo, type RemixConcept } from "@/app/actions/remix-video";
+import { remixVideo } from "@/app/actions/remix-video";
+import type { RemixConcept } from "@/lib/remix-analysis";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -61,6 +63,7 @@ export default function VideoRemixPage() {
   const [niche, setNiche] = useState(NICHE_OPTIONS[0]);
   const [remixStyle, setRemixStyle] = useState(REMIX_STYLES[0]);
   const [remixes, setRemixes] = useState<RemixConcept[]>([]);
+  const [saveWarning, setSaveWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
   const [progress, setProgress] = useState(0);
@@ -132,9 +135,23 @@ export default function VideoRemixPage() {
       : videoDescription.trim().length > 0;
 
   const runRemix = async () => {
-    if (!canSubmit || remixStarted.current || credits === null) return;
+    if (!canSubmit || remixStarted.current) return;
+    if (credits === null) {
+      setError("Credits werden geladen…");
+      return;
+    }
+    if (credits < CREDIT_COST) {
+      onGenerationActionResult({
+        success: false,
+        error: "Nicht genug Credits.",
+        credits,
+        required: CREDIT_COST,
+      });
+      return;
+    }
     remixStarted.current = true;
     setError(null);
+    setSaveWarning(null);
     setStep("loading");
     setProgress(5);
 
@@ -162,6 +179,7 @@ export default function VideoRemixPage() {
       onGenerationActionResult(result);
       setProgress(100);
       setRemixes(result.remixes);
+      setSaveWarning(result.saveWarning ?? null);
       setStep("results");
     } catch {
       setError("Remix fehlgeschlagen.");
@@ -172,31 +190,14 @@ export default function VideoRemixPage() {
   };
 
   const applyRemixConcept = (item: RemixConcept) => {
-    const structureText = [
-      `Intro: ${item.structure.intro}`,
-      `Middle: ${item.structure.middle}`,
-      `CTA: ${item.structure.cta}`,
-    ].join("\n");
-    const description = [
-      item.description,
-      item.uniqueAngle ? `Twist: ${item.uniqueAngle}` : "",
-      structureText,
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-
-    const params = new URLSearchParams({
-      title: item.remixTitle,
-      hook: item.hook,
-      description,
-    });
-    router.push(`/dashboard/video-ad?${params.toString()}`);
+    router.push(scriptGeneratorTopicUrl(item.remixTitle));
   };
 
   const reset = () => {
     setStep("input");
     setRemixes([]);
     setError(null);
+    setSaveWarning(null);
     setProgress(0);
   };
 
@@ -239,7 +240,8 @@ export default function VideoRemixPage() {
           </h1>
         </div>
         <p style={{ color: "#505055", fontSize: "0.9rem" }}>
-          Virale Videos mit deinem eigenen Twist neu interpretieren
+          KI generiert Remix-Konzepte (Titel, Hook, Struktur) — kein
+          Video-Rendering via fal.ai
         </p>
       </div>
 
@@ -345,7 +347,8 @@ export default function VideoRemixPage() {
                     color: "#505055",
                   }}
                 >
-                  Wir analysieren Titel, Hook und Struktur (kein Download)
+                  Titel & Beschreibung via YouTube API wenn konfiguriert, sonst
+                  KI aus URL
                 </p>
               </div>
               <div>
@@ -421,7 +424,11 @@ export default function VideoRemixPage() {
           <button
             type="button"
             onClick={runRemix}
-            disabled={!canSubmit}
+            disabled={
+              !canSubmit ||
+              credits === null ||
+              (credits !== null && credits < CREDIT_COST)
+            }
             style={{
               width: "100%",
               padding: "14px",
@@ -499,6 +506,20 @@ export default function VideoRemixPage() {
 
       {step === "results" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {saveWarning && (
+            <div
+              style={{
+                padding: "12px 16px",
+                borderRadius: 10,
+                background: "rgba(245,158,11,0.08)",
+                border: "1px solid rgba(245,158,11,0.35)",
+                color: "#f59e0b",
+                fontSize: "0.875rem",
+              }}
+            >
+              {saveWarning} Die Remix-Ideen wurden trotzdem angezeigt.
+            </div>
+          )}
           <div
             style={{
               display: "flex",
@@ -536,11 +557,11 @@ export default function VideoRemixPage() {
             </button>
           </div>
 
-          {remixes.map((item) => {
+          {remixes.map((item, index) => {
             const simColor = similarityColor(item.similarityPercent);
             return (
               <div
-                key={item.remixTitle}
+                key={`${item.remixTitle}-${index}`}
                 style={{
                   padding: 22,
                   borderRadius: 16,
@@ -706,7 +727,7 @@ export default function VideoRemixPage() {
                     fontFamily: "var(--font-dm), sans-serif",
                   }}
                 >
-                  Diesen Remix nutzen →
+                  Script generieren →
                 </button>
               </div>
             );

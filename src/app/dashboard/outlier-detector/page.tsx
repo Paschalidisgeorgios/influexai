@@ -3,13 +3,10 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getSafeSearchParam } from "@/lib/safe-url-param";
+import { getSafeSearchParam, scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { Flame } from "lucide-react";
-import {
-  detectOutliers,
-  type OutlierConcept,
-  type ViralMechanism,
-} from "@/app/actions/detect-outliers";
+import { detectOutliers } from "@/app/actions/detect-outliers";
+import type { OutlierConcept, ViralMechanism } from "@/lib/outlier-analysis";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -34,6 +31,14 @@ const PERIOD_OPTIONS = [
 ];
 
 const PLATFORM_OPTIONS = ["YouTube Shorts", "YouTube Long-form", "Beide"];
+
+const LANGUAGE_OPTIONS = [
+  { code: "de", label: "🇩🇪 Deutsch" },
+  { code: "en", label: "🇬🇧 English" },
+  { code: "es", label: "🇪🇸 Español" },
+  { code: "fr", label: "🇫🇷 Français" },
+  { code: "tr", label: "🇹🇷 Türkçe" },
+];
 
 const CHANNEL_SIZES = [
   { id: "Nano (< 10K)", label: "Nano (< 10K)" },
@@ -83,9 +88,11 @@ function OutlierDetectorPageInner() {
   const [step, setStep] = useState<Step>("input");
   const [niche, setNiche] = useState("");
   const [period, setPeriod] = useState(PERIOD_OPTIONS[1]);
-  const [platform, setPlatform] = useState(PLATFORM_OPTIONS[2]);
+  const [platform, setPlatform] = useState(PLATFORM_OPTIONS[0]);
   const [channelSize, setChannelSize] = useState(CHANNEL_SIZES[3].id);
+  const [language, setLanguage] = useState("de");
   const [outliers, setOutliers] = useState<OutlierConcept[]>([]);
+  const [saveWarning, setSaveWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
   const [progress, setProgress] = useState(0);
@@ -139,15 +146,30 @@ function OutlierDetectorPageInner() {
   }, [step]);
 
   const runDetect = async () => {
-    if (!niche.trim() || analyzeStarted.current || credits === null) return;
+    if (!niche.trim() || analyzeStarted.current) return;
+    if (credits === null) {
+      setError("Credits werden geladen…");
+      return;
+    }
+    if (credits < CREDIT_COST) {
+      onGenerationActionResult({
+        success: false,
+        error: "Nicht genug Credits.",
+        credits,
+        required: CREDIT_COST,
+      });
+      return;
+    }
     analyzeStarted.current = true;
     setError(null);
+    setSaveWarning(null);
     setStep("loading");
     setProgress(5);
 
     try {
       const result = await generate(
-        () => detectOutliers(niche, period, platform, channelSize),
+        () =>
+          detectOutliers(niche, period, platform, channelSize, language),
         CREDIT_COST,
         credits
       );
@@ -155,32 +177,32 @@ function OutlierDetectorPageInner() {
         onGenerationActionResult(result);
         setError(result.error);
         setStep("input");
+        setProgress(0);
         return;
       }
       onGenerationActionResult(result);
       setProgress(100);
       setOutliers(result.outliers);
+      setSaveWarning(result.saveWarning ?? null);
       setStep("results");
     } catch {
       setError("Analyse fehlgeschlagen.");
       setStep("input");
+      setProgress(0);
     } finally {
       analyzeStarted.current = false;
     }
   };
 
   const goToScript = (item: OutlierConcept) => {
-    const params = new URLSearchParams({
-      title: item.title,
-      hook: item.hook,
-    });
-    router.push(`/dashboard/video-ad?${params.toString()}`);
+    router.push(scriptGeneratorTopicUrl(item.title));
   };
 
   const reset = () => {
     setStep("input");
     setOutliers([]);
     setError(null);
+    setSaveWarning(null);
     setProgress(0);
   };
 
@@ -302,6 +324,20 @@ function OutlierDetectorPageInner() {
             </select>
           </div>
           <div>
+            <label style={labelStyle}>Sprache der Ergebnisse</label>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              style={{ ...inputStyle, cursor: "pointer" }}
+            >
+              {LANGUAGE_OPTIONS.map((o) => (
+                <option key={o.code} value={o.code}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
             <label style={labelStyle}>Plattform</label>
             <select
               value={platform}
@@ -345,7 +381,11 @@ function OutlierDetectorPageInner() {
           <button
             type="button"
             onClick={runDetect}
-            disabled={!niche.trim()}
+            disabled={
+              !niche.trim() ||
+              credits === null ||
+              (credits !== null && credits < CREDIT_COST)
+            }
             style={{
               width: "100%",
               padding: "14px",
@@ -423,6 +463,20 @@ function OutlierDetectorPageInner() {
 
       {step === "results" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {saveWarning && (
+            <div
+              style={{
+                padding: "12px 16px",
+                borderRadius: 10,
+                background: "rgba(245,158,11,0.08)",
+                border: "1px solid rgba(245,158,11,0.35)",
+                color: "#f59e0b",
+                fontSize: "0.875rem",
+              }}
+            >
+              {saveWarning} Die Analyse wurde trotzdem angezeigt.
+            </div>
+          )}
           <div
             style={{
               display: "flex",
@@ -460,12 +514,12 @@ function OutlierDetectorPageInner() {
             </button>
           </div>
 
-          {outliers.map((item) => {
+          {outliers.map((item, index) => {
             const meta = MECHANISM_META[item.viralMechanism];
             const sc = scoreColor(item.outlierScore);
             return (
               <div
-                key={item.title}
+                key={`${item.title}-${index}`}
                 style={{
                   padding: 22,
                   borderRadius: 16,

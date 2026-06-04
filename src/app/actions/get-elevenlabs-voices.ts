@@ -1,6 +1,6 @@
 "use server";
 
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
+import { ELEVENLABS_FALLBACK_VOICES } from "@/lib/elevenlabs-config";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 
 type RawVoice = {
@@ -39,17 +39,18 @@ function mapVoice(v: RawVoice, source: string): ElevenLabsVoice {
 }
 
 function fallbackVoices(): ElevenLabsVoice[] {
-  return ELEVENLABS_VOICES.map((v) => ({
+  return ELEVENLABS_FALLBACK_VOICES.map((v) => ({
     id: v.id,
-    name: v.label,
-    category: "premade",
+    name: v.name,
+    category: v.category,
     previewUrl: null,
-    gender: null,
+    gender: v.gender === "neutral" ? null : v.gender,
     accent: null,
     age: null,
     useCase: null,
-    description: null,
-    language: null,
+    description: v.label,
+    language:
+      v.locale === "multilingual" ? "multilingual" : v.locale,
     source: "fallback",
   }));
 }

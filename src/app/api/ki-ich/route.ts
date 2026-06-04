@@ -77,7 +77,10 @@ export async function POST(request: NextRequest) {
       user.id,
       CREDIT_COST,
       "Mein KI-Ich – Bildgenerierung",
-      { generationType: "ki-ich", prompt: scene }
+      {
+        generationType: "ki-ich",
+        prompt: outputUrl.slice(0, 500),
+      }
     );
 
     if (!deduction.success) {

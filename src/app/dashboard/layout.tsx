@@ -6,6 +6,9 @@ import { DashboardLayoutClient } from "./dashboard-layout-client";
 
 export const dynamic = "force-dynamic";
 
+/** Claude flows (Outlier, Niche, Script) can exceed 10s — requires Vercel Pro (60s+) */
+export const maxDuration = 60;
+
 export default async function DashboardLayout({
   children,
 }: {

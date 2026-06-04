@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { icon: "🏠", label: "Home", href: "/dashboard" },
-  { icon: "🎭", label: "Live", href: "/dashboard/live-creator" },
+  { icon: "🎭", label: "Avatar", href: "/dashboard/live-creator" },
   { icon: "📸", label: "KI-Ich", href: "/dashboard/ki-ich" },
   { icon: "🛍️", label: "Werbung", href: "/dashboard/produkt" },
   { icon: "🎵", label: "Stimme", href: "/dashboard/voice" },

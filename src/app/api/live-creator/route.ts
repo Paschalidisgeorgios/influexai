@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         "Live Creator",
         {
           generationType: "live-creator",
-          prompt: `${JOB_PROMPT_PREFIX}${jobId}`,
+          prompt: job.video.slice(0, 500),
         }
       );
       if (!deduction.success) {
