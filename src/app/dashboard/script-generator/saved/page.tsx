@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FileText, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { FeatureEmptyState } from "@/components/feature-empty-state";
 import {
   listSavedScripts,
   deleteSavedScript,
@@ -22,6 +24,7 @@ function formatDate(iso: string) {
 }
 
 export default function SavedScriptsPage() {
+  const t = useTranslations("dashboard");
   const router = useRouter();
   const [scripts, setScripts] = useState<SavedScriptRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,33 +94,13 @@ export default function SavedScriptsPage() {
       )}
 
       {!loading && scripts.length === 0 && (
-        <div
-          style={{
-            padding: 32,
-            borderRadius: 16,
-            background: "#0f0f12",
-            border: "1px solid rgba(255,255,255,0.07)",
-            textAlign: "center",
-          }}
-        >
-          <p style={{ color: "#505055", marginBottom: 16 }}>
-            Noch keine Scripts gespeichert.
-          </p>
-          <Link
-            href="/dashboard/script-generator"
-            style={{
-              padding: "10px 20px",
-              borderRadius: 9,
-              background: "#B4FF00",
-              color: "#060608",
-              fontWeight: 700,
-              textDecoration: "none",
-              fontSize: "0.88rem",
-            }}
-          >
-            Script generieren →
-          </Link>
-        </div>
+        <FeatureEmptyState
+          icon={FileText}
+          title={t("empty_script_title")}
+          description={t("empty_script_desc")}
+          ctaLabel={t("empty_script_cta")}
+          ctaHref="/dashboard/script-generator"
+        />
       )}
 
       {!loading && scripts.length > 0 && (

@@ -114,7 +114,7 @@ export const SEO_STATIC_PATHS = [
   "/",
   "/api-docs",
   "/beta",
-  "/white-label",
+  "/dashboard/white-label",
   "/community",
 ] as const;
 

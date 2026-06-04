@@ -17,22 +17,37 @@ import {
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
   const pathname = request.nextUrl.pathname;
+  const search = request.nextUrl.search;
 
   // Locale is resolved in i18n.ts (no [locale] segment). Do not use
   // next-intl middleware here — it rewrites "/" to "/de" and breaks routes on Vercel.
   for (const locale of locales) {
     if (pathname === `/${locale}`) {
-      return NextResponse.redirect(
-        new URL("/" + request.nextUrl.search, request.url)
-      );
+      return NextResponse.redirect(new URL("/" + search, request.url));
     }
     if (pathname.startsWith(`/${locale}/`)) {
       const stripped = pathname.slice(locale.length + 1) || "/";
-      return NextResponse.redirect(
-        new URL(stripped + request.nextUrl.search, request.url)
-      );
+      return NextResponse.redirect(new URL(stripped + search, request.url));
     }
   }
+
+  // Legacy auth URLs → canonical /auth/sign-in|sign-up
+  if (pathname === "/login") {
+    return NextResponse.redirect(new URL("/auth/sign-in" + search, request.url));
+  }
+  if (pathname === "/signup") {
+    return NextResponse.redirect(new URL("/auth/sign-up" + search, request.url));
+  }
+
+  // Legacy /white-label URLs → dashboard (never serve WL marketing at root)
+  if (pathname === "/white-label" || pathname.startsWith("/white-label/")) {
+    const target =
+      pathname === "/white-label"
+        ? `/dashboard/white-label${search}`
+        : `/dashboard${pathname.slice("/white-label".length)}${search}`;
+    return NextResponse.redirect(new URL(target, request.url));
+  }
+
   const hostname = request.headers.get("host") ?? "";
   let abVariant: "a" | "b" | null = null;
 
@@ -42,13 +57,23 @@ export async function middleware(request: NextRequest) {
   }
   requestHeaders.set("x-tenant-host", hostname);
 
+  // Platform "/" is always the marketing landing (src/app/page.tsx)
+  if (pathname === "/" && isMainHost(hostname)) {
+    requestHeaders.set("x-platform-landing", "1");
+  }
+
   const subdomain = subdomainFromHost(hostname);
   if (subdomain) {
     requestHeaders.set("x-tenant-slug", subdomain);
   } else if (!isMainHost(hostname)) {
     requestHeaders.set("x-tenant-custom-domain", parseHostname(hostname));
   }
-  if (pathname === "/") {
+
+  const isPlatformHost = isMainHost(hostname);
+  const isTenantHost =
+    Boolean(subdomain) || (!isPlatformHost && !subdomain);
+
+  if (pathname === "/" && isPlatformHost) {
     const existing = request.cookies.get("ab_variant")?.value;
     abVariant =
       existing === "a" || existing === "b"
@@ -91,22 +116,34 @@ export async function middleware(request: NextRequest) {
   const isOnboarding =
     pathname === "/onboarding" || pathname.startsWith("/onboarding/");
   const isDashboard = pathname.startsWith("/dashboard");
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/auth" ||
+    pathname === "/auth/sign-in" ||
+    pathname === "/auth/sign-up" ||
+    pathname === "/login" ||
+    pathname === "/signup";
+
+  // Tenant subdomain/custom domain: landing is not the main marketing site
+  if (isTenantHost && pathname === "/" && !user) {
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  }
+
   if (!user && isDashboard) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const redirectParam = encodeURIComponent(pathname + search);
+    return NextResponse.redirect(
+      new URL(`/auth/sign-in?redirect=${redirectParam}`, request.url)
+    );
   }
 
   if (!user && isOnboarding) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
 
-  const isTenantHost =
-    Boolean(subdomain) || (!isMainHost(hostname) && !subdomain);
   if (user && isTenantHost && isDashboard) {
     const tenant = await resolveTenantFromHost(hostname);
     if (!tenant) {
       return NextResponse.redirect(
-        new URL("/white-label?expired=1", request.url)
+        new URL("/dashboard/white-label?expired=1", request.url)
       );
     }
     if (!isTenantAccessible(tenant)) {
@@ -122,7 +159,7 @@ export async function middleware(request: NextRequest) {
           (profile?.tenant_role === "owner" || tenant.owner_id === user.id);
         if (!isOwner && profile?.tenant_id === tenant.id) {
           return NextResponse.redirect(
-            new URL("/login?tenant_expired=1", request.url)
+            new URL("/auth/sign-in?tenant_expired=1", request.url)
           );
         }
       } catch {
@@ -131,14 +168,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (user) {
-    if (isAuthPage || isOnboarding) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
-  if (!user && isDashboard) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (user && (isAuthPage || isOnboarding)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   const refParam = request.nextUrl.searchParams.get("ref")?.trim();
@@ -150,7 +181,7 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  if (pathname === "/" && abVariant) {
+  if (pathname === "/" && abVariant && isPlatformHost) {
     supabaseResponse.cookies.set("ab_variant", abVariant, {
       maxAge: 60 * 60 * 24 * 30,
       httpOnly: true,

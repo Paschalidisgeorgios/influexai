@@ -187,7 +187,7 @@ export function parseOutlierConcepts(raw: string): OutlierConcept[] {
 
 export function outlierResultsSaveErrorMessage(code?: string): string {
   if (code === "42P01" || code === "PGRST205") {
-    return "Tabelle outlier_results fehlt. Bitte Migration 028 in Supabase ausführen.";
+    return "Speichern vorübergehend nicht möglich. Bitte später erneut versuchen.";
   }
   return "Speichern in der Gallery fehlgeschlagen.";
 }

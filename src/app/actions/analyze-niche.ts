@@ -194,7 +194,7 @@ export async function saveNicheChoice(
       return {
         success: false,
         error:
-          "Tabelle niche_saves fehlt. Bitte Migration in Supabase ausführen (supabase/migrations/001_niche_saves.sql).",
+          "Speichern ist gerade nicht möglich. Bitte später erneut versuchen.",
       };
     }
     return { success: false, error: "Speichern fehlgeschlagen." };

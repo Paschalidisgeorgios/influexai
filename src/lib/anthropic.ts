@@ -32,23 +32,23 @@ export function parseClaudeJson<T>(raw: string): T {
 export function getAnthropicConfigError(): string | null {
   const key = process.env.ANTHROPIC_API_KEY?.trim();
   if (!key) {
-    return "KI ist nicht konfiguriert: ANTHROPIC_API_KEY fehlt (Vercel → Production oder .env.local).";
+    return "KI ist gerade nicht verfügbar. Bitte später erneut versuchen.";
   }
   if (!key.startsWith("sk-ant-")) {
-    return "ANTHROPIC_API_KEY ist ungültig (muss mit sk-ant- beginnen).";
+    return "KI ist gerade nicht verfügbar. Bitte später erneut versuchen.";
   }
   return null;
 }
 
 export function anthropicUserErrorFromStatus(status: number): string {
   if (status === 401 || status === 403) {
-    return "Anthropic API-Key ungültig oder abgelaufen. In Vercel unter ANTHROPIC_API_KEY prüfen (sk-ant-…).";
+    return "KI ist gerade nicht verfügbar. Bitte später erneut versuchen.";
   }
   if (status === 429) {
-    return "Anthropic Rate-Limit erreicht. Bitte kurz warten und erneut versuchen.";
+    return "Zu viele Anfragen. Bitte kurz warten und erneut versuchen.";
   }
   if (status >= 500) {
-    return "Anthropic-Server vorübergehend nicht erreichbar. Bitte später erneut versuchen.";
+    return "KI-Server vorübergehend nicht erreichbar. Bitte später erneut versuchen.";
   }
   return "KI-Anfrage fehlgeschlagen. Bitte später erneut versuchen.";
 }

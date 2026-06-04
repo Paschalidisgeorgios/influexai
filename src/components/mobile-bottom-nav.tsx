@@ -3,104 +3,59 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  Home,
-  Video,
-  Images,
-  Sparkles,
-  Settings,
-  type LucideIcon,
-} from "lucide-react";
-
-type NavItem = {
-  href: string;
-  icon: LucideIcon;
-  label: string;
-  isActive: (pathname: string) => boolean;
-};
+import { MOBILE_QUICK_NAV } from "@/lib/dashboard-flows";
 
 export function MobileBottomNav() {
   const t = useTranslations("dashboard");
   const tNav = useTranslations("nav");
   const pathname = usePathname();
 
-  const NAV_ITEMS: NavItem[] = [
-    {
-      href: "/dashboard",
-      icon: Home,
-      label: t("nav_home"),
-      isActive: (p) => p === "/dashboard",
-    },
-    {
-      href: "/dashboard/produkt",
-      icon: Video,
-      label: t("nav_videos"),
-      isActive: (p) =>
-        p.startsWith("/dashboard/produkt") ||
-        p.startsWith("/dashboard/video-ad"),
-    },
-    {
-      href: "/dashboard/ki-ich",
-      icon: Sparkles,
-      label: t("nav_ki_ich"),
-      isActive: (p) => p.startsWith("/dashboard/ki-ich"),
-    },
-    {
-      href: "/dashboard/gallery",
-      icon: Images,
-      label: "Gallery",
-      isActive: (p) => p.startsWith("/dashboard/gallery"),
-    },
-    {
-      href: "/dashboard/settings",
-      icon: Settings,
-      label: t("nav_settings"),
-      isActive: (p) => p.startsWith("/dashboard/settings"),
-    },
-  ];
-
   return (
     <nav
       data-testid="mobile-bottom-nav"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-stretch"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-stretch bg-[#060608]/92 backdrop-blur-xl border-t border-[#B4FF00]/12"
       style={{
-        background: "rgba(6, 6, 8, 0.92)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid rgba(180, 255, 0, 0.12)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         minHeight: "calc(64px + env(safe-area-inset-bottom, 0px))",
       }}
       aria-label="Dashboard navigation"
     >
-      {NAV_ITEMS.map((item) => {
-        const active = item.isActive(pathname);
+      {MOBILE_QUICK_NAV.map((item) => {
+        const active =
+          item.href === "/dashboard"
+            ? pathname === "/dashboard"
+            : pathname.startsWith(item.href);
         const Icon = item.icon;
+        const label =
+          item.labelKey === "quick_agent"
+            ? tNav("agent")
+            : t(item.labelKey);
         return (
           <Link
             key={item.href}
             href={item.href}
-            aria-label={item.label}
+            aria-label={label}
             aria-current={active ? "page" : undefined}
-            className="flex flex-1 flex-col items-center justify-center gap-1 py-2 transition-colors duration-150"
-            style={{ textDecoration: "none" }}
+            className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 min-h-[44px] no-underline transition-colors"
           >
             <span
-              className="flex flex-col items-center gap-1 transition-all duration-150"
-              style={{
-                color: active ? "#B4FF00" : "rgba(255,255,255,0.4)",
-              }}
+              className={`h-0.5 w-6 rounded-full mb-0.5 transition-all ${
+                active ? "bg-[#B4FF00] opacity-100" : "bg-transparent opacity-0"
+              }`}
+              aria-hidden
+            />
+            <Icon
+              size={22}
+              strokeWidth={active ? 2.25 : 1.75}
+              className={active ? "text-[#B4FF00]" : "text-white/40"}
+              aria-hidden
+            />
+            <span
+              className={`text-[0.62rem] font-semibold ${
+                active ? "text-[#B4FF00]" : "text-white/40"
+              }`}
             >
-              <span
-                className="h-1 w-1 rounded-full transition-all duration-150"
-                style={{
-                  background: active ? "#B4FF00" : "transparent",
-                  opacity: active ? 1 : 0,
-                  transform: active ? "scale(1)" : "scale(0)",
-                }}
-                aria-hidden
-              />
-              <Icon size={22} strokeWidth={active ? 2.25 : 1.75} aria-hidden />
+              {label}
             </span>
           </Link>
         );

@@ -76,7 +76,7 @@ export function assertPublicMediaUrl(url: string | null | undefined): string {
   const trimmed = url.trim();
   if (trimmed.startsWith("data:")) {
     throw new Error(
-      "Base64-URLs werden von Akool nicht unterstützt. Bitte erneut hochladen."
+      "Dieses Format wird nicht unterstützt. Bitte erneut hochladen."
     );
   }
   let parsed: URL;

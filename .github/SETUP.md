@@ -55,6 +55,31 @@ In **Vercel → Project → Settings → Environment Variables** (Production):
 - `NEXT_PUBLIC_APP_URL` = `https://influexaicreator.com`
 - `ANTHROPIC_API_KEY` = `sk-ant-api03-…` (must start with `sk-ant-`; redeploy after change)
 - `RESEND_API_KEY`, `FAL_API_KEY` (or `FAL_KEY`)
+
+### Beta signup + nurture emails (Supabase)
+
+1. **SQL:** Run `scripts/apply-beta-nurture-sql-editor.sql` in [SQL Editor](https://supabase.com/dashboard/project/hszjafdelcydnppyolkm/sql/new) (creates `beta_signups`, cron jobs).
+2. **Vault:** `vault.create_secret('<SERVICE_ROLE_KEY>', 'supabase_service_role_key', 'cron auth')` then re-run the cron section if jobs had empty Bearer.
+3. **Edge Function:** `supabase login` → `supabase functions deploy send-nurture-email --project-ref hszjafdelcydnppyolkm` and set secrets: `RESEND_API_KEY`, `NURTURE_UNSUBSCRIBE_SECRET`.
+4. **Test:** `node scripts/test-beta-signup.mjs` (local needs `RESEND_API_KEY` in `.env.local`) or `POST /api/beta/signup` on production after deploy.
+
+### Creator Growth Agent (daily 07:00 UTC)
+
+1. **SQL:** `scripts/apply-growth-agent-sql-editor.sql` in SQL Editor.
+2. **Deploy:** `supabase functions deploy growth-agent --project-ref hszjafdelcydnppyolkm`
+3. **Secrets (Edge):** `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `YOUTUBE_API_KEY` (optional, richer trends), `DAILY_SUGGESTIONS_UNSUBSCRIBE_SECRET` (optional).
+4. **Vercel:** `YOUTUBE_API_KEY` for Video Remix; Growth Agent reads it from **Supabase function secrets**.
+5. **Manual test:** `POST …/functions/v1/growth-agent` with service role + `{ "userId": "<uuid>" }`.
+
+### Churn Prevention (daily 10:00 UTC)
+
+1. **SQL:** `scripts/apply-churn-prevention-sql-editor.sql` (creates `churn_prevention` log + cron).
+2. **Deploy:** `supabase functions deploy churn-prevention --project-ref hszjafdelcydnppyolkm`
+3. **Secrets:** `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `NURTURE_UNSUBSCRIBE_SECRET` (optional).
+4. **Sequence:** day3 = Video-Idee, day7 = 3 Trends, day14 = +10 Bonus Credits.
+5. **Test:** `POST …/functions/v1/churn-prevention` + `{ "userId": "<uuid>" }`.
+
+Note: Migration `015_churn_prevention.sql` adds `profiles.last_active_at`, `dismissed_nudges`, etc. — the email log table is **`035_churn_prevention_log.sql`**.
 - `ELEVENLABS_API_KEY` (optional — Stimme & Musik; hidden until set)
 
 After adding or changing env vars in Vercel, **redeploy Production** (Deployments → Redeploy) or push to `main`.

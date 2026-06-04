@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     payment_method_types: ["card"],
     line_items: lineItems,
     success_url: `${SITE_URL}/dashboard/agency?subscribed=1`,
-    cancel_url: `${SITE_URL}/white-label?canceled=1`,
+    cancel_url: `${SITE_URL}/dashboard/white-label?canceled=1`,
     metadata: {
       checkout_type: "agency_subscription",
       plan: planId,

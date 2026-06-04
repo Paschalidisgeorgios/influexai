@@ -1,28 +1,61 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
-/* ── TICKER ── */
-const TICKER_ITEMS = [
-  "InfluexAI LiveSwap™",
-  "InfluexAI Vision",
-  "InfluexAI Avatar Engine",
-  "InfluexAI Voice",
-  "InfluexAI Music",
-  "InfluexAI Brain",
-  "InfluexAI Video Engine",
-  "InfluexAI Image Engine",
-  "Made in Germany",
-  "DSGVO-konform",
-  "Face Consistency™",
-  "Multi-Platform Export",
+const TICKER_KEYS = [
+  "i0",
+  "i1",
+  "i2",
+  "i3",
+  "i4",
+  "i5",
+  "i6",
+  "i7",
+  "i8",
+  "i9",
+  "i10",
+  "i11",
+] as const;
+
+const BRAND_FEAT_KEYS = ["feat1", "feat2", "feat3"] as const;
+const BRAND_EX_KEYS = ["ex1", "ex2", "ex3"] as const;
+const FEATURE_KEYS = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
+const FEATURE_ICONS = ["✍️", "🤖", "🎭", "▶️", "📡", "📊"] as const;
+/** Prefer .jpg when present; .png / hero fallbacks until assets are replaced */
+const FEATURE_IMAGES: Record<(typeof FEATURE_KEYS)[number], string> = {
+  f1: "/images/landing/feature-1.png",
+  f2: "/images/landing/feature-2.png",
+  f3: "/images/landing/feature-3.png",
+  f4: "/images/landing/hero-2.jpg",
+  f5: "/images/landing/hero.jpg",
+  f6: "/images/landing/hero-3.jpg",
+};
+const STEP_KEYS = ["s1", "s2", "s3"] as const;
+const TESTIMONIAL_KEYS = ["t1", "t2", "t3"] as const;
+const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5"] as const;
+const PLAN_KEYS = ["starter", "creator", "business"] as const;
+
+const BRAND_IMAGES = [
+  "https://images.unsplash.com/photo-1503602642458-232111445657?w=500&q=80&fit=crop",
+  "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=500&q=80&fit=crop",
+  "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=500&q=80&fit=crop",
 ];
 
+const PLAN_PRICES = {
+  starter: { monthly: 4.99, yearly: 4.99, hot: false },
+  creator: { monthly: 39, yearly: 29, hot: true },
+  business: { monthly: 99, yearly: 74, hot: false },
+} as const;
+
 export function TickerStrip() {
-  const doubled = [...TICKER_ITEMS, ...TICKER_ITEMS];
+  const t = useTranslations("landingPage.ticker");
+  const items = TICKER_KEYS.map((k) => t(k));
+  const doubled = [...items, ...items];
+
   return (
     <div className="ticker-wrap py-4">
       <div className="ticker-inner">
@@ -37,47 +70,9 @@ export function TickerStrip() {
   );
 }
 
-/* ── FOR BRANDS ── */
-const BRAND_FEATS = [
-  {
-    n: "01",
-    title: "Konsistente Markenidentität",
-    desc: "Dein KI-Botschafter sieht auf TikTok, Instagram und YouTube identisch aus. Face Consistency über alle Plattformen.",
-  },
-  {
-    n: "02",
-    title: "Produktvideos in 90 Sekunden",
-    desc: "URL oder Produktfoto eingeben → KI erstellt Script, Stimme und Video. A/B-Varianten automatisch.",
-  },
-  {
-    n: "03",
-    title: "Multi-Plattform auf Knopfdruck",
-    desc: "TikTok, Instagram, YouTube, LinkedIn — alle Formate in einem Schritt inklusive KI-Hashtags.",
-  },
-];
-
-const BRAND_EXAMPLES = [
-  {
-    src: "https://images.unsplash.com/photo-1503602642458-232111445657?w=500&q=80&fit=crop",
-    cat: "Beauty Brand",
-    title: "Produkt-Kampagne",
-    sub: "URL → 5 TikTok-Ads · 3 Min.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=500&q=80&fit=crop",
-    cat: "E-Commerce",
-    title: "Produktfoto KI",
-    sub: "InfluexAI Image Engine",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=500&q=80&fit=crop",
-    cat: "Tech Company",
-    title: "KI-Sprecher Video",
-    sub: "InfluexAI Avatar Engine",
-  },
-];
-
 export function ForBrandsSection() {
+  const t = useTranslations("landingPage.brands");
+
   return (
     <section
       id="brands"
@@ -87,7 +82,7 @@ export function ForBrandsSection() {
       <div className="max-w-[1160px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-14">
           <div>
-            <span className="kicker mb-2.5">Für Unternehmen & Marken</span>
+            <span className="kicker mb-2.5">{t("kicker")}</span>
             <span
               className="block"
               style={{
@@ -106,11 +101,11 @@ export function ForBrandsSection() {
                 lineHeight: 0.95,
               }}
             >
-              Dein KI-
+              {t("headline1")}
               <br />
-              Markenbotschafter.
+              {t("headline2")}
               <br />
-              <span style={{ color: "var(--acid)" }}>Immer konsistent.</span>
+              <span style={{ color: "var(--acid)" }}>{t("headline3")}</span>
             </h2>
           </div>
           <div>
@@ -123,13 +118,12 @@ export function ForBrandsSection() {
                 maxWidth: 420,
               }}
             >
-              Schluss mit teuren Shootings. InfluexAI gibt deiner Marke einen
-              unverwechselbaren KI-Sprecher der überall gleich aussieht.
+              {t("intro")}
             </p>
             <div className="flex flex-col gap-3">
-              {BRAND_FEATS.map((f) => (
+              {BRAND_FEAT_KEYS.map((key, i) => (
                 <div
-                  key={f.n}
+                  key={key}
                   className="flex items-start gap-3.5 rounded-[10px]"
                   style={{
                     padding: "14px 16px",
@@ -147,20 +141,20 @@ export function ForBrandsSection() {
                       width: 28,
                     }}
                   >
-                    {f.n}
+                    {String(i + 1).padStart(2, "0")}
                   </div>
                   <div>
                     <div
                       className="font-bold text-sm mb-1"
                       style={{ color: "var(--white)" }}
                     >
-                      {f.title}
+                      {t(`${key}_title`)}
                     </div>
                     <div
                       className="text-[0.8rem] leading-[1.6]"
                       style={{ color: "var(--wd)" }}
                     >
-                      {f.desc}
+                      {t(`${key}_desc`)}
                     </div>
                   </div>
                 </div>
@@ -169,16 +163,16 @@ export function ForBrandsSection() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {BRAND_EXAMPLES.map((ex) => (
+          {BRAND_EX_KEYS.map((key, i) => (
             <div
-              key={ex.cat}
+              key={key}
               className="img-card"
               style={{ aspectRatio: "3/4", borderRadius: 14 }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={ex.src}
-                alt={ex.title}
+                src={BRAND_IMAGES[i]}
+                alt={t(`${key}_title`)}
                 style={{
                   filter: "brightness(0.75) saturate(1.2)",
                   width: "100%",
@@ -199,16 +193,16 @@ export function ForBrandsSection() {
                   className="text-[0.65rem] font-bold uppercase tracking-[0.06em] mb-1"
                   style={{ color: "var(--acid)" }}
                 >
-                  {ex.cat}
+                  {t(`${key}_cat`)}
                 </div>
                 <div
                   className="font-bold text-[0.82rem] leading-[1.3]"
                   style={{ letterSpacing: "-0.02em" }}
                 >
-                  {ex.title}
+                  {t(`${key}_title`)}
                 </div>
                 <div className="text-[0.68rem] text-white/45 mt-0.5">
-                  {ex.sub}
+                  {t(`${key}_sub`)}
                 </div>
               </div>
             </div>
@@ -219,39 +213,9 @@ export function ForBrandsSection() {
   );
 }
 
-/* ── FEATURES ── */
-const FEATURES = [
-  {
-    n: "01",
-    icon: "🎭",
-    title: "Live Creator",
-    desc: "Live streamen ohne dein Gesicht. Echtzeit-Face-Swap auf TikTok, YouTube und Instagram Live.",
-    apis: ["Echtzeit", "Face Consistent", "Multi-Platform"],
-  },
-  {
-    n: "02",
-    icon: "📸",
-    title: "Mein KI-Ich",
-    desc: "InfluexAI Vision setzt dich in jede Szene der Welt. Face Consistency über alle generierten Inhalte.",
-    apis: ["4K Output", "Face Consistent", "Sofort"],
-  },
-  {
-    n: "03",
-    icon: "🛍️",
-    title: "Produkt-Werbung",
-    desc: "URL oder Produktfoto → InfluexAI Brain analysiert → Video-Ad in TikTok, Reel und YouTube. A/B-Varianten automatisch.",
-    apis: ["URL-to-Video", "A/B Varianten", "Multi-Format"],
-  },
-  {
-    n: "04",
-    icon: "🎵",
-    title: "Stimme & Musik",
-    desc: "Stimme klonen in 60 Sekunden. Lizenzfreie Hintergrundmusik und Soundeffekte für jeden Content-Typ.",
-    apis: ["30+ Sprachen", "Lizenzfrei", "60 Sek. Klonung"],
-  },
-];
-
 export function FeaturesSection() {
+  const t = useTranslations("landingPage.features");
+
   return (
     <section
       id="features"
@@ -261,7 +225,7 @@ export function FeaturesSection() {
       <div className="max-w-[1160px] mx-auto">
         <div className="flex items-end justify-between gap-8 mb-12 flex-wrap">
           <div>
-            <span className="kicker mb-2.5">Alle Module</span>
+            <span className="kicker mb-2.5">{t("kicker")}</span>
             <h2
               style={{
                 fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -270,20 +234,20 @@ export function FeaturesSection() {
                 lineHeight: 0.95,
               }}
             >
-              Vier Flows.
+              {t("headline1")}
               <br />
-              Ein Studio.
+              {t("headline2")}
             </h2>
           </div>
           <p
             className="max-w-[280px] text-right text-sm leading-[1.7]"
             style={{ color: "var(--wd)" }}
           >
-            Kein Tool-Chaos. Alles für KI-Content in einer Plattform.
+            {t("sidebar")}
           </p>
         </div>
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px"
           style={{
             background: "var(--border)",
             border: "1px solid var(--border)",
@@ -291,14 +255,37 @@ export function FeaturesSection() {
             overflow: "hidden",
           }}
         >
-          {FEATURES.map((f) => (
+          {FEATURE_KEYS.map((key, i) => (
             <div
-              key={f.n}
-              className="feat-card"
-              style={{ padding: "clamp(20px,3vw,32px) clamp(16px,2.5vw,26px)" }}
+              key={key}
+              className="feat-card flex flex-col"
+              style={{ padding: 0 }}
             >
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0c0c0f]">
+                <Image
+                  src={FEATURE_IMAGES[key]}
+                  alt={t(`${key}_title`)}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  style={{ filter: "brightness(0.85) saturate(1.12)" }}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(6,6,8,0.85) 0%, transparent 55%)",
+                  }}
+                  aria-hidden
+                />
+              </div>
               <div
-                className="mb-6"
+                style={{
+                  padding: "clamp(20px,3vw,28px) clamp(16px,2.5vw,26px)",
+                }}
+              >
+              <div
+                className="mb-4"
                 style={{
                   fontFamily: "var(--font-dm), monospace",
                   fontSize: "0.68rem",
@@ -307,27 +294,28 @@ export function FeaturesSection() {
                   letterSpacing: "0.12em",
                 }}
               >
-                {f.n}
+                {String(i + 1).padStart(2, "0")}
               </div>
-              <span className="text-[1.6rem] block mb-3">{f.icon}</span>
+              <span className="text-[1.4rem] block mb-2">{FEATURE_ICONS[i]}</span>
               <div
                 className="font-bold mb-2"
                 style={{ fontSize: "1.05rem", letterSpacing: "-0.02em" }}
               >
-                {f.title}
+                {t(`${key}_title`)}
               </div>
               <p
                 className="text-sm leading-[1.7]"
                 style={{ color: "var(--wd)" }}
               >
-                {f.desc}
+                {t(`${key}_desc`)}
               </p>
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {f.apis.map((api) => (
-                  <span key={api} className="tag-api">
-                    {api}
+                {[0, 1, 2].map((apiIdx) => (
+                  <span key={apiIdx} className="tag-api">
+                    {t(`${key}_api${apiIdx}`)}
                   </span>
                 ))}
+              </div>
               </div>
             </div>
           ))}
@@ -337,26 +325,9 @@ export function FeaturesSection() {
   );
 }
 
-/* ── HOW IT WORKS ── */
-const STEPS = [
-  {
-    n: "01",
-    title: "Account erstellen",
-    desc: "Account erstellen. Credits ab €4,99 — sofort loslegen.",
-  },
-  {
-    n: "02",
-    title: "Modul wählen",
-    desc: "Live Creator, KI-Ich, Produkt-Werbung oder Stimme & Musik — alles in einem Studio.",
-  },
-  {
-    n: "03",
-    title: "Content generieren",
-    desc: "Upload, URL oder Text eingeben. KI liefert in Sekunden — exportfertig für alle Plattformen.",
-  },
-];
-
 export function HowItWorksSection() {
+  const t = useTranslations("landingPage.how");
+
   return (
     <section
       id="how"
@@ -364,7 +335,7 @@ export function HowItWorksSection() {
       style={{ background: "var(--bg)" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <span className="kicker mb-2.5">So funktioniert&apos;s</span>
+        <span className="kicker mb-2.5">{t("kicker")}</span>
         <h2
           style={{
             fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -374,14 +345,14 @@ export function HowItWorksSection() {
             marginBottom: 40,
           }}
         >
-          In 3 Schritten
+          {t("headline1")}
           <br />
-          <span style={{ color: "var(--acid)" }}>zum Content.</span>
+          <span style={{ color: "var(--acid)" }}>{t("headline2")}</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {STEPS.map((s) => (
+          {STEP_KEYS.map((key, i) => (
             <div
-              key={s.n}
+              key={key}
               className="rounded-[14px] p-7"
               style={{
                 background: "var(--bg-2)",
@@ -397,19 +368,19 @@ export function HowItWorksSection() {
                   marginBottom: 16,
                 }}
               >
-                {s.n}
+                {String(i + 1).padStart(2, "0")}
               </div>
               <div
                 className="font-bold text-lg mb-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                {s.title}
+                {t(`${key}_title`)}
               </div>
               <p
                 className="text-sm leading-[1.7]"
                 style={{ color: "var(--wd)" }}
               >
-                {s.desc}
+                {t(`${key}_desc`)}
               </p>
             </div>
           ))}
@@ -419,36 +390,16 @@ export function HowItWorksSection() {
   );
 }
 
-/* ── TESTIMONIALS ── */
-const TESTIMONIALS = [
-  {
-    quote: "Produkt-Ads in unter 3 Minuten. Unser ROAS ist um 40% gestiegen.",
-    name: "Lisa M.",
-    role: "E-Commerce Creator",
-    stars: 5,
-  },
-  {
-    quote: "Endlich ein Tool wo mein KI-Gesicht überall gleich aussieht.",
-    name: "Tom K.",
-    role: "TikTok Creator · 280k",
-    stars: 5,
-  },
-  {
-    quote: "Wir sparen 15.000€ pro Monat an Agentur-Kosten.",
-    name: "Sarah B.",
-    role: "Marketing Lead, D2C Brand",
-    stars: 5,
-  },
-];
-
 export function TestimonialsSection() {
+  const t = useTranslations("landingPage.testimonials");
+
   return (
     <section
       className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
       style={{ background: "var(--bg-1)" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <span className="kicker mb-2.5">Stimmen</span>
+        <span className="kicker mb-2.5">{t("kicker")}</span>
         <h2
           style={{
             fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -458,14 +409,14 @@ export function TestimonialsSection() {
             marginBottom: 40,
           }}
         >
-          Creator & Marken
+          {t("headline1")}
           <br />
-          <span style={{ color: "var(--acid)" }}>lieben InfluexAI.</span>
+          <span style={{ color: "var(--acid)" }}>{t("headline2")}</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TESTIMONIALS.map((t) => (
+          {TESTIMONIAL_KEYS.map((key) => (
             <div
-              key={t.name}
+              key={key}
               className="rounded-[14px] p-6 flex flex-col"
               style={{
                 background: "var(--bg-2)",
@@ -473,21 +424,21 @@ export function TestimonialsSection() {
               }}
             >
               <div className="mb-3 text-sm" style={{ color: "var(--acid)" }}>
-                {"★".repeat(t.stars)}
+                ★★★★★
               </div>
               <p
                 className="text-[0.9rem] leading-[1.75] flex-1 mb-5"
                 style={{ color: "var(--wd)" }}
               >
-                &ldquo;{t.quote}&rdquo;
+                &ldquo;{t(`${key}_quote`)}&rdquo;
               </p>
               <div>
-                <div className="font-bold text-sm">{t.name}</div>
+                <div className="font-bold text-sm">{t(`${key}_name`)}</div>
                 <div
                   className="text-[0.78rem] mt-0.5"
                   style={{ color: "var(--grey)" }}
                 >
-                  {t.role}
+                  {t(`${key}_role`)}
                 </div>
               </div>
             </div>
@@ -498,32 +449,10 @@ export function TestimonialsSection() {
   );
 }
 
-/* ── FAQ ── */
-const FAQS = [
-  {
-    q: "Was sind Credits?",
-    a: "Credits sind die Währung in InfluexAI. Jedes Modul kostet 2–5 Credits pro Generierung. Credits verfallen nicht.",
-  },
-  {
-    q: "Brauche ich eine Kreditkarte?",
-    a: "Nein. Du kaufst Credits einmalig ab €4,99 — kein Abo, keine versteckten Kosten.",
-  },
-  {
-    q: "Ist InfluexAI DSGVO-konform?",
-    a: "Ja. Server in der EU, keine Weitergabe deiner Daten an Dritte ohne Einwilligung.",
-  },
-  {
-    q: "Kann ich meine eigene Stimme klonen?",
-    a: "Ja — im Modul Stimme & Musik. 30+ Sekunden Audio reichen für eine hochwertige Klonung.",
-  },
-  {
-    q: "Welche Plattformen werden unterstützt?",
-    a: "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — alle gängigen Formate.",
-  },
-];
-
 export function FaqSection() {
+  const t = useTranslations("landingPage.faq");
   const [open, setOpen] = useState<number | null>(0);
+
   return (
     <section
       id="faq"
@@ -531,7 +460,7 @@ export function FaqSection() {
       style={{ background: "var(--bg)" }}
     >
       <div className="max-w-[720px] mx-auto">
-        <span className="kicker mb-2.5 block text-center">FAQ</span>
+        <span className="kicker mb-2.5 block text-center">{t("kicker")}</span>
         <h2
           style={{
             fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -542,12 +471,12 @@ export function FaqSection() {
             marginBottom: 40,
           }}
         >
-          Häufige Fragen
+          {t("headline")}
         </h2>
         <div className="flex flex-col gap-2">
-          {FAQS.map((item, i) => (
+          {FAQ_KEYS.map((key, i) => (
             <div
-              key={i}
+              key={key}
               className="rounded-[12px] overflow-hidden"
               style={{
                 border: "1px solid var(--border)",
@@ -566,7 +495,7 @@ export function FaqSection() {
                   fontSize: "0.9rem",
                 }}
               >
-                {item.q}
+                {t(key)}
                 <span
                   style={{
                     color: "var(--acid)",
@@ -582,7 +511,7 @@ export function FaqSection() {
                   className="px-5 pb-5 text-[0.875rem] leading-[1.75]"
                   style={{ color: "var(--wd)" }}
                 >
-                  {item.a}
+                  {t(`a${key.slice(1)}`)}
                 </div>
               )}
             </div>
@@ -593,57 +522,45 @@ export function FaqSection() {
   );
 }
 
-/* ── PRICING ── */
-const PLANS = [
-  {
-    name: "Starter",
-    monthly: 4.99,
-    yearly: 4.99,
-    credits: "50 Credits",
-    desc: "Einmaliger Einstieg — Credits sofort verfügbar.",
-    cta: "Jetzt starten",
-    hot: false,
-    features: ["Script Generator", "Niche Analyzer", "Outlier Detector"],
-    missing: ["Video Remix", "KI-Ich Pro"],
-  },
-  {
-    name: "Creator",
-    monthly: 39,
-    yearly: 29,
-    credits: "500 Credits/Monat",
-    desc: "Für Creator und Freelancer.",
-    cta: "Creator werden",
-    hot: true,
-    features: [
-      "Live Creator (unlimitiert)",
-      "KI-Ich: 100 Bilder + Videos",
-      "50 Produkt-Ads",
-      "Stimmen-Klonung",
-      "Musik-Studio",
-    ],
-    missing: [],
-  },
-  {
-    name: "Business",
-    monthly: 99,
-    yearly: 74,
-    credits: "2.500 Credits/Monat",
-    desc: "Für Marken, KMUs und Agenturen.",
-    cta: "Business starten",
-    hot: false,
-    features: [
-      "Alles aus Creator",
-      "10 Team-Charaktere",
-      "Brand-Konsistenz-Tools",
-      "White-Label Export",
-      "API + Priority Support",
-    ],
-    missing: [],
-  },
-];
-
 export function PricingSection() {
+  const t = useTranslations("landingPage.pricing");
   const [yearly, setYearly] = useState(false);
+
+  const starterMissing = [t("starter_m1"), t("starter_m2")];
+  const starterFeatures = [t("starter_f1"), t("starter_f2"), t("starter_f3")];
+  const creatorFeatures = [
+    t("creator_f1"),
+    t("creator_f2"),
+    t("creator_f3"),
+    t("creator_f4"),
+    t("creator_f5"),
+  ];
+  const businessFeatures = [
+    t("business_f1"),
+    t("business_f2"),
+    t("business_f3"),
+    t("business_f4"),
+    t("business_f5"),
+  ];
+
+  const plans = PLAN_KEYS.map((key) => ({
+    key,
+    hot: PLAN_PRICES[key].hot,
+    monthly: PLAN_PRICES[key].monthly,
+    yearly: PLAN_PRICES[key].yearly,
+    name: t(`${key}_name`),
+    credits: t(`${key}_credits`),
+    desc: t(`${key}_desc`),
+    cta: t(`${key}_cta`),
+    features:
+      key === "starter"
+        ? starterFeatures
+        : key === "creator"
+          ? creatorFeatures
+          : businessFeatures,
+    missing: key === "starter" ? starterMissing : [],
+  }));
+
   return (
     <section
       id="pricing"
@@ -651,7 +568,7 @@ export function PricingSection() {
       style={{ background: "var(--bg-1)" }}
     >
       <div className="max-w-[960px] mx-auto text-center">
-        <span className="kicker mb-2.5">Preise</span>
+        <span className="kicker mb-2.5">{t("kicker")}</span>
         <h2
           style={{
             fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -660,7 +577,7 @@ export function PricingSection() {
             lineHeight: 0.95,
           }}
         >
-          Transparent. Skalierbar.
+          {t("headline")}
         </h2>
         <div
           className="inline-flex p-1 rounded-[10px] mt-5 mb-9 mx-auto"
@@ -669,12 +586,17 @@ export function PricingSection() {
             border: "1px solid var(--border)",
           }}
         >
-          {(["Monatlich", "Jährlich"] as const).map((label) => {
-            const isY = label === "Jährlich";
+          {(
+            [
+              { id: "monthly", label: t("monthly"), isY: false },
+              { id: "yearly", label: t("yearly"), isY: true },
+            ] as const
+          ).map(({ label, isY }) => {
             const active = yearly === isY;
             return (
               <button
                 key={label}
+                type="button"
                 onClick={() => setYearly(isY)}
                 className="px-5 py-2 rounded-[7px] text-sm font-semibold cursor-pointer border-none transition-all duration-200"
                 style={{
@@ -692,7 +614,7 @@ export function PricingSection() {
                       color: "var(--acid)",
                     }}
                   >
-                    −25%
+                    {t("yearly_discount")}
                   </span>
                 )}
               </button>
@@ -700,9 +622,9 @@ export function PricingSection() {
           })}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
-          {PLANS.map((plan) => (
+          {plans.map((plan) => (
             <div
-              key={plan.name}
+              key={plan.key}
               className={`flex flex-col rounded-[18px] p-[clamp(20px,3vw,28px)] transition-all duration-200 hover:-translate-y-0.5 relative ${plan.hot ? "pc-hot" : ""}`}
               style={{
                 background: "var(--bg-2)",
@@ -718,7 +640,7 @@ export function PricingSection() {
                     fontFamily: "var(--font-dm), sans-serif",
                   }}
                 >
-                  ★ Beliebtester Plan
+                  {t("popular")}
                 </div>
               )}
               <div
@@ -746,7 +668,7 @@ export function PricingSection() {
                       fontWeight: 400,
                     }}
                   >
-                    /Monat
+                    {t("per_month")}
                   </span>
                 )}
               </div>
@@ -763,7 +685,7 @@ export function PricingSection() {
                 {plan.desc}
               </div>
               <a
-                href="/auth"
+                href="/auth/sign-up"
                 className="block text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer"
                 style={
                   plan.hot
@@ -818,19 +740,20 @@ export function PricingSection() {
           ))}
         </div>
         <p className="mt-5 text-[0.83rem]" style={{ color: "var(--grey)" }}>
-          Credits verfallen nicht.{" "}
+          {t("footnote")}{" "}
           <a href="#" style={{ color: "var(--acid)", textDecoration: "none" }}>
-            Extra-Credits
+            {t("extra_credits")}
           </a>{" "}
-          ab 9€/100 Credits.
+          {t("extra_credits_suffix")}
         </p>
       </div>
     </section>
   );
 }
 
-/* ── CTA ── */
 export function CtaSection() {
+  const t = useTranslations("landingPage.cta");
+
   return (
     <section
       id="cta"
@@ -850,7 +773,7 @@ export function CtaSection() {
         }}
       />
       <div className="max-w-[700px] mx-auto relative z-10">
-        <span className="kicker mb-4">Jetzt starten</span>
+        <span className="kicker mb-4">{t("kicker")}</span>
         <h2
           className="mb-4"
           style={{
@@ -860,45 +783,70 @@ export function CtaSection() {
             lineHeight: 0.92,
           }}
         >
-          Kein Gesicht.
+          {t("headline1")}
           <br />
-          Kein Limit.
+          {t("headline2")}
           <br />
-          <span style={{ color: "var(--acid)" }}>Kein Warten.</span>
+          <span style={{ color: "var(--acid)" }}>{t("headline3")}</span>
         </h2>
         <p
           className="mb-8 leading-[1.75]"
           style={{ fontSize: "clamp(0.9rem,2vw,1.05rem)", color: "var(--wd)" }}
         >
-          Für Creator die viral gehen wollen.
+          {t("sub1")}
           <br />
-          Für Marken die skalieren möchten.
+          {t("sub2")}
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center">
-          <a href="/auth" className="btn-acid justify-center">
-            → Jetzt starten — ab €4,99
+          <a href="/auth/sign-up" className="btn-acid justify-center">
+            {t("primary")}
           </a>
           <a href="#brands" className="btn-ghost justify-center">
-            Für Marken →
+            {t("secondary")}
           </a>
         </div>
         <p className="mt-4 text-[0.78rem]" style={{ color: "var(--grey)" }}>
-          Credits ab €4,99 · Kein Abo · DSGVO-konform
+          {t("note")}
         </p>
       </div>
     </section>
   );
 }
 
-/* ── FOOTER ── */
-const FOOTER_LINKS = {
-  Produkt: ["Features", "Preise", "Changelog", "API"],
-  Unternehmen: ["Über uns", "Blog", "Karriere", "Presse"],
-  Rechtliches: ["Impressum", "Datenschutz", "AGB", "Cookies"],
-};
+const FOOTER_COLS = [
+  {
+    col: "product",
+    links: [
+      "product_features",
+      "product_pricing",
+      "product_changelog",
+      "product_api",
+    ],
+  },
+  {
+    col: "company",
+    links: [
+      "company_about",
+      "company_blog",
+      "company_careers",
+      "company_press",
+    ],
+  },
+  {
+    col: "legal",
+    links: [
+      "legal_imprint",
+      "legal_privacy",
+      "legal_terms",
+      "legal_cookies",
+    ],
+  },
+] as const;
 
 export function LandingFooter() {
   const t = useTranslations("footer");
+  const tc = useTranslations("landingPage.footer_cols");
+
   return (
     <footer
       className="px-[clamp(20px,6vw,64px)] pt-[clamp(40px,6vw,56px)] pb-7"
@@ -931,13 +879,13 @@ export function LandingFooter() {
             {t("tagline")}
           </p>
         </div>
-        {Object.entries(FOOTER_LINKS).map(([col, links]) => (
+        {FOOTER_COLS.map(({ col, links }) => (
           <div key={col}>
             <h5
               className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-3.5"
               style={{ color: "rgba(255,255,255,0.25)" }}
             >
-              {col}
+              {tc(col)}
             </h5>
             <div className="flex flex-col gap-2.5">
               {links.map((link) => (
@@ -947,7 +895,7 @@ export function LandingFooter() {
                   className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--white)]"
                   style={{ color: "var(--grey)" }}
                 >
-                  {link}
+                  {tc(link)}
                 </a>
               ))}
             </div>
@@ -958,10 +906,10 @@ export function LandingFooter() {
             className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-3.5"
             style={{ color: "rgba(255,255,255,0.25)" }}
           >
-            Partner
+            {t("partner")}
           </h5>
           <a
-            href="/white-label"
+            href="/dashboard/white-label"
             className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--accent)]"
             style={{ color: "var(--grey)" }}
           >
@@ -978,7 +926,7 @@ export function LandingFooter() {
         style={{ borderTop: "1px solid var(--border)" }}
       >
         <p className="text-[0.78rem]" style={{ color: "var(--grey)" }}>
-          © 2026 InfluexAI GmbH
+          © 2025 InfluexAI
         </p>
         <div className="flex gap-2">
           {["𝕏", "in", "▶"].map((icon) => (

@@ -472,7 +472,7 @@ export async function getAdminBusinessAnalytics(
     funnel,
     cohorts,
     landingNote:
-      "Landing-Besucher geschätzt (8× Signups). Vercel Analytics API optional.",
+      "Landing-Besucher geschätzt (8× Signups).",
   };
 }
 

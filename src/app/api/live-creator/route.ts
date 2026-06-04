@@ -139,13 +139,13 @@ export async function POST(request: NextRequest) {
 
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
     return NextResponse.json(
-      { error: "Akool API ist nicht konfiguriert" },
+      { error: "Avatar-Video ist gerade nicht verfügbar." },
       { status: 503 }
     );
   }
   if (!getFalKey()) {
     return NextResponse.json(
-      { error: "FAL_KEY fehlt für Medien-Upload" },
+      { error: "Medien-Upload ist gerade nicht verfügbar." },
       { status: 503 }
     );
   }
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
     }
     if (!process.env.ELEVENLABS_API_KEY) {
       return NextResponse.json(
-        { error: "ElevenLabs API ist nicht konfiguriert" },
+        { error: "ElevenLabs ist gerade nicht verfügbar." },
         { status: 503 }
       );
     }

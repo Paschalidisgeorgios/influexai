@@ -12,6 +12,7 @@ import {
 import type { Locale } from "@/lib/locale";
 import {
   LandingNav,
+  AdSpotLazy,
   HeroSection,
   TickerStrip,
   ForBrandsSection,
@@ -30,6 +31,8 @@ import { CommunityPreview } from "@/components/community-preview";
 import type { AbVariant } from "@/lib/ab-tracking";
 
 export const dynamic = "force-dynamic";
+
+/** Marketing homepage only — White Label lives at /dashboard/white-label */
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await getLocale()) as Locale;
@@ -81,6 +84,7 @@ export default async function HomePage() {
       <SocialProofPopup />
       <LandingNav />
       <main>
+        <AdSpotLazy />
         <HeroSection variant={variant} />
         <LiveStatsBar />
         <TickerStrip />

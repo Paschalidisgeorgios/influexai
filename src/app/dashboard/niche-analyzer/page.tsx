@@ -12,6 +12,7 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
 import { resolveNicheSlug } from "@/lib/programmatic-seo";
 
@@ -119,7 +120,7 @@ export default function NicheAnalyzerPage() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(result.error);
+        setError(sanitizeUserMessage(result.error));
         setStep("input");
         return;
       }

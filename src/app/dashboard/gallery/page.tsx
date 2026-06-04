@@ -8,6 +8,7 @@ import { getGallery, deleteGalleryItem } from "@/app/actions/get-gallery";
 import { GALLERY_PAGE_SIZE } from "@/lib/gallery-types";
 import { GalleryCard } from "@/components/gallery/gallery-card";
 import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export default function GalleryPage() {
   const t = useTranslations("gallery");
@@ -61,7 +62,7 @@ export default function GalleryPage() {
       );
 
       if (result.error) {
-        setError(result.error);
+        setError(sanitizeUserMessage(result.error));
         if (!append) {
           setItems([]);
           setTotal(0);
@@ -96,7 +97,7 @@ export default function GalleryPage() {
   const handleDelete = async (id: string, type: string) => {
     const result = await deleteGalleryItem(id, type);
     if (!result.success) {
-      setError(result.error ?? t("deleteFailed"));
+      setError(sanitizeUserMessage(result.error ?? t("deleteFailed")));
       return;
     }
     setItems((prev) => prev.filter((i) => i.id !== id));

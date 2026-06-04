@@ -234,7 +234,7 @@ export function ContentEngine() {
           SEO Content Engine
         </h1>
         <p className="mt-1 text-sm text-white/50">
-          Blog-Artikel mit Claude generieren, prüfen und veröffentlichen.
+          Blog-Artikel mit KI generieren, prüfen und veröffentlichen.
         </p>
         <Link
           href="/blog"

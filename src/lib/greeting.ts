@@ -149,11 +149,11 @@ function resolveLocale(locale: string): GreetingLocale {
   return "de";
 }
 
-function timeBucket(hour: number): keyof (typeof greetingSets)["de"] {
-  if (hour >= 0 && hour < 6) return "night";
+/** 6–11 Morgen · 12–17 Tag · 18–21 Abend · 22–5 Nacht */
+function timeBucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
+  if (hour >= 22 || hour < 6) return "night";
   if (hour >= 6 && hour < 12) return "morning";
-  if (hour >= 12 && hour < 14) return "midday";
-  if (hour >= 14 && hour < 18) return "afternoon";
+  if (hour >= 12 && hour < 18) return "afternoon";
   return "evening";
 }
 
@@ -163,11 +163,10 @@ export function getGreeting(locale: string = "de"): string {
 }
 
 export function getGreetingEmoji(): string {
-  const hour = new Date().getHours();
-  if (hour >= 0 && hour < 6) return "🌙";
-  if (hour >= 6 && hour < 12) return "☀️";
-  if (hour >= 12 && hour < 14) return "🌤️";
-  if (hour >= 14 && hour < 18) return "⚡";
+  const bucket = timeBucket(new Date().getHours());
+  if (bucket === "night") return "🌙";
+  if (bucket === "morning") return "☀️";
+  if (bucket === "afternoon") return "⚡";
   return "🌆";
 }
 
@@ -176,7 +175,7 @@ export function getGreetingSubtext(locale: string = "de"): string {
   const bucket = timeBucket(new Date().getHours());
   if (bucket === "night") return set.night;
   if (bucket === "morning") return set.morning;
-  if (bucket === "midday") return set.midday;
   if (bucket === "afternoon") return set.afternoon;
-  return set.evening;
+  if (bucket === "evening") return set.evening;
+  return set.afternoon;
 }

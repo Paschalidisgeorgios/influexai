@@ -212,19 +212,15 @@ export async function generateScript(
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
-    if (
-      msg &&
-      (msg.includes("ANTHROPIC") ||
-        msg.includes("Anthropic") ||
-        msg.includes("KI ist") ||
-        msg.includes("sk-ant"))
-    ) {
-      return { success: false, error: msg };
-    }
     console.error("generateScript:", e);
     return {
       success: false,
-      error: "Antwort konnte nicht gelesen werden. Bitte erneut versuchen.",
+      error:
+        msg && msg.includes("Nicht genug Credits")
+          ? msg
+          : msg && msg.includes("KI ist")
+            ? msg
+            : "Generierung fehlgeschlagen. Bitte erneut versuchen.",
     };
   }
 }
@@ -314,19 +310,15 @@ export async function regenerateScript(
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
-    if (
-      msg &&
-      (msg.includes("ANTHROPIC") ||
-        msg.includes("Anthropic") ||
-        msg.includes("KI ist") ||
-        msg.includes("sk-ant"))
-    ) {
-      return { success: false, error: msg };
-    }
     console.error("regenerateScript:", e);
     return {
       success: false,
-      error: "Antwort konnte nicht gelesen werden. Bitte erneut versuchen.",
+      error:
+        msg && msg.includes("Nicht genug Credits")
+          ? msg
+          : msg && msg.includes("KI ist")
+            ? msg
+            : "Generierung fehlgeschlagen. Bitte erneut versuchen.",
     };
   }
 }

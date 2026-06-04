@@ -1,4 +1,6 @@
-/** User-facing copy when Akool / detect returns no usable face landmarks. */
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+
+/** User-facing copy when face-swap / detect returns no usable face landmarks. */
 export const FACE_SWAP_NO_FACE_TARGET =
   "Kein Gesicht im Zielbild erkannt. Bitte ein Foto mit klar sichtbarem Gesicht verwenden.";
 
@@ -34,14 +36,15 @@ export function mapAkoolErrorMessage(
   }
 
   if (/authentication|token|unauthorized/i.test(msg)) {
-    return "Akool-Anmeldung fehlgeschlagen. Bitte später erneut versuchen.";
+    return "Video-Dienst nicht erreichbar. Bitte später erneut versuchen.";
   }
 
   if (/url|invalid.*link|download|fetch|accessible/i.test(msg)) {
     return "Medien konnten nicht geladen werden. Bitte erneut hochladen.";
   }
 
-  return msg.length > 200 ? `${msg.slice(0, 200)}…` : msg;
+  const trimmed = msg.length > 200 ? `${msg.slice(0, 200)}…` : msg;
+  return sanitizeUserMessage(trimmed);
 }
 
 export class AkoolFaceswapError extends Error {

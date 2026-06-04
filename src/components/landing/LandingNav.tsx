@@ -60,14 +60,14 @@ export function LandingNav() {
         <div className="hidden md:flex items-center gap-2.5">
           <LanguageSwitcher compact />
           <a
-            href="/auth"
+            href="/auth/sign-in"
             className="text-sm font-medium px-3 py-2 transition-colors duration-150"
             style={{ color: "rgba(240,239,232,0.6)" }}
           >
             {t("auth_login")}
           </a>
           <a
-            href="/auth"
+            href="/auth/sign-up"
             className="btn-acid"
             style={{ padding: "9px 18px", fontSize: "0.85rem" }}
           >
@@ -127,14 +127,14 @@ export function LandingNav() {
         </div>
         <div className="flex flex-col gap-3">
           <a
-            href="/auth"
+            href="/auth/sign-in"
             onClick={closeMenu}
             className="btn-ghost justify-center"
           >
             {t("auth_login")}
           </a>
           <a
-            href="/auth"
+            href="/auth/sign-up"
             onClick={closeMenu}
             className="btn-acid justify-center"
           >

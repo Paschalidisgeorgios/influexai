@@ -13,6 +13,7 @@ import {
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
 
 const CREDIT_COST = 1;
@@ -136,7 +137,7 @@ function ThumbnailConceptPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(res.error);
+        setError(sanitizeUserMessage(res.error));
         setStep("input");
         return;
       }
@@ -162,7 +163,7 @@ function ThumbnailConceptPageInner() {
     if (res.success) {
       setSavedIndices((prev) => new Set(prev).add(index));
     } else {
-      setError(res.error);
+      setError(sanitizeUserMessage(res.error));
     }
   };
 

@@ -14,6 +14,7 @@ import {
   LIVE_AVATAR_CREDITS_PER_MINUTE,
   LIVE_AVATAR_LOW_CREDITS_WARNING,
 } from "@/lib/akool-live-avatar";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 type StudioPhase = "setup" | "connecting" | "live" | "ended";
 
@@ -84,7 +85,11 @@ export function LiveCreatorStudioInner() {
         setLowCredits(true);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("error_load"));
+      setError(
+        sanitizeUserMessage(
+          err instanceof Error ? err.message : t("error_load")
+        )
+      );
     }
   }, [t]);
 
@@ -108,7 +113,7 @@ export function LiveCreatorStudioInner() {
     }
     if (data.lowCredits) setLowCredits(true);
     if (data.endSession || !data.success) {
-      setError(data.error ?? t("no_credits_end"));
+      setError(sanitizeUserMessage(data.error ?? t("no_credits_end")));
       await endSession();
     }
   };
@@ -234,7 +239,11 @@ export function LiveCreatorStudioInner() {
     } catch (err) {
       await cleanupAgora();
       setPhase("setup");
-      setError(err instanceof Error ? err.message : t("error_session"));
+      setError(
+        sanitizeUserMessage(
+          err instanceof Error ? err.message : t("error_session")
+        )
+      );
     }
   };
 

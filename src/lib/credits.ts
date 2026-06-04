@@ -12,6 +12,8 @@ export type DeductCreditsResult = {
 export type DeductCreditsMeta = {
   generationType?: string;
   prompt?: string;
+  /** Skip auto generations row when the route manages asset storage itself */
+  skipGenerationLog?: boolean;
 };
 
 function getCrossedThreshold(
@@ -119,11 +121,13 @@ export async function deductCredits(
   const generationType = meta?.generationType ?? action;
   const prompt = meta?.prompt ?? action;
 
-  await logGeneration(supabase, userId, {
-    type: generationType,
-    prompt,
-    creditsUsed: amount,
-  });
+  if (!meta?.skipGenerationLog) {
+    await logGeneration(supabase, userId, {
+      type: generationType,
+      prompt,
+      creditsUsed: amount,
+    });
+  }
   await logCreditTransaction(supabase, userId, {
     amount: -amount,
     description: action,

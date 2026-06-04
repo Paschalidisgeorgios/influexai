@@ -9,10 +9,21 @@ import {
   uploadDataUrlToFal,
   type FalImageMode,
 } from "@/lib/fal-image";
+import {
+  createGenerationRecord,
+  ingestFinalImageFromUrl,
+  ingestPreviewFromUrl,
+  updateGenerationResult,
+  getOwnedGeneration,
+} from "@/lib/generation-assets";
 
 const CREDIT_COST = 2;
 
 configureFalClient();
+
+function protectedImageUrl(generationId: string, variant: "preview" | "final") {
+  return `/api/generated-image/${generationId}?variant=${variant}`;
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -20,10 +31,12 @@ export async function POST(request: NextRequest) {
     imageUrl,
     scene,
     mode: modeRaw,
+    generationId: existingGenerationId,
   } = body as {
     imageUrl?: string;
     scene?: string;
     mode?: FalImageMode;
+    generationId?: string;
   };
 
   const mode: FalImageMode = modeRaw === "preview" ? "preview" : "final";
@@ -61,15 +74,59 @@ export async function POST(request: NextRequest) {
 
   try {
     const uploadedUrl = await uploadDataUrlToFal(imageUrl);
-    const outputUrl = await generateKiIchPortrait(uploadedUrl, scene, mode);
+    const falOutputUrl = await generateKiIchPortrait(uploadedUrl, scene, mode);
 
     if (mode === "preview") {
+      const generationId = await createGenerationRecord(
+        supabase,
+        user.id,
+        "ki-ich",
+        {
+          scene,
+          paid: false,
+          mode: "preview",
+          assetKind: "image",
+        },
+        0,
+        scene.slice(0, 500)
+      );
+
+      const previewPath = await ingestPreviewFromUrl(
+        user.id,
+        generationId,
+        falOutputUrl
+      );
+
+      await updateGenerationResult(supabase, generationId, user.id, {
+        previewPath,
+      });
+
       return NextResponse.json({
         success: true,
-        imageUrl: outputUrl,
+        generationId,
+        imageUrl: protectedImageUrl(generationId, "preview"),
         mode: "preview",
         creditsUsed: 0,
+        locked: true,
       });
+    }
+
+    let generationId = existingGenerationId;
+
+    if (generationId) {
+      const existing = await getOwnedGeneration(supabase, generationId, user.id);
+      if (!existing) {
+        return NextResponse.json({ error: "Generierung nicht gefunden" }, { status: 404 });
+      }
+    } else {
+      generationId = await createGenerationRecord(
+        supabase,
+        user.id,
+        "ki-ich",
+        { scene, paid: false, mode: "preview", assetKind: "image" },
+        0,
+        scene.slice(0, 500)
+      );
     }
 
     const deduction = await deductCredits(
@@ -79,7 +136,8 @@ export async function POST(request: NextRequest) {
       "Mein KI-Ich – Bildgenerierung",
       {
         generationType: "ki-ich",
-        prompt: outputUrl.slice(0, 500),
+        prompt: scene.slice(0, 500),
+        skipGenerationLog: true,
       }
     );
 
@@ -90,12 +148,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const finalPath = await ingestFinalImageFromUrl(
+      user.id,
+      generationId,
+      falOutputUrl
+    );
+
+    await updateGenerationResult(supabase, generationId, user.id, {
+      scene,
+      paid: true,
+      mode: "final",
+      finalPath,
+      assetKind: "image",
+      mimeType: "image/jpeg",
+      credits_used: CREDIT_COST,
+    });
+
     return NextResponse.json({
       success: true,
-      imageUrl: outputUrl,
+      generationId,
+      imageUrl: protectedImageUrl(generationId, "final"),
       mode: "final",
       creditsUsed: CREDIT_COST,
       creditsLeft: deduction.remainingCredits,
+      locked: false,
     });
   } catch (error: unknown) {
     const bodyDetail =

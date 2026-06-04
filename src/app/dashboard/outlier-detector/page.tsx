@@ -11,6 +11,7 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 const CREDIT_COST = 3;
 
@@ -175,7 +176,7 @@ function OutlierDetectorPageInner() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(result.error);
+        setError(sanitizeUserMessage(result.error));
         setStep("input");
         setProgress(0);
         return;

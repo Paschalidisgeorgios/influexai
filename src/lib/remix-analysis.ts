@@ -111,7 +111,7 @@ export function parseRemixConcepts(raw: string): RemixConcept[] {
 
 export function remixResultsSaveErrorMessage(code?: string): string {
   if (code === "42P01" || code === "PGRST205") {
-    return "Tabelle remix_results fehlt. Bitte Migration 028 in Supabase ausführen.";
+    return "Speichern vorübergehend nicht möglich. Bitte später erneut versuchen.";
   }
   return "Speichern in der Gallery fehlgeschlagen.";
 }

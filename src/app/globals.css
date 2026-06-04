@@ -319,6 +319,87 @@
     transform: none;
   }
 }
+
+@keyframes hero-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hero-exit-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+@keyframes hero-enter-down {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hero-exit-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+@keyframes hero-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes hero-exit-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+}
+@keyframes hero-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes hero-exit-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -340,6 +421,55 @@
   }
   .animate-fade-in-up {
     animation: fade-in-up 0.6s ease both;
+  }
+  .hero-rotate {
+    display: block;
+  }
+  .hero-rotate--in.hero-rotate--up {
+    animation: hero-enter-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-rotate--out.hero-rotate--up {
+    animation: hero-exit-up 0.32s cubic-bezier(0.55, 0, 1, 0.45) both;
+  }
+  .hero-rotate--in.hero-rotate--down {
+    animation: hero-enter-down 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-rotate--out.hero-rotate--down {
+    animation: hero-exit-down 0.32s cubic-bezier(0.55, 0, 1, 0.45) both;
+  }
+  .hero-rotate--in.hero-rotate--left {
+    animation: hero-enter-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-rotate--out.hero-rotate--left {
+    animation: hero-exit-left 0.32s cubic-bezier(0.55, 0, 1, 0.45) both;
+  }
+  .hero-rotate--in.hero-rotate--right {
+    animation: hero-enter-right 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-rotate--out.hero-rotate--right {
+    animation: hero-exit-right 0.32s cubic-bezier(0.55, 0, 1, 0.45) both;
+  }
+
+  .generated-image {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .generated-image-wrapper {
+    position: relative;
+  }
+
+  .generated-image-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: auto;
+  }
+
+  .generated-image-wrapper.generated-image-wrapper--unlocked::after {
+    pointer-events: none;
   }
   .animate-spin-custom {
     animation: spin 0.8s linear infinite;

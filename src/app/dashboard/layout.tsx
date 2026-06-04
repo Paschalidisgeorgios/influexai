@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/auth/sign-in");
   return (
     <Suspense fallback={<DashboardSkeleton />}>
       <DashboardLayoutClient>{children}</DashboardLayoutClient>

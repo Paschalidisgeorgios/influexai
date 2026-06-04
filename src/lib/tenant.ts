@@ -46,9 +46,19 @@ export type TenantBranding = {
 export const MAIN_HOSTS = new Set([
   "influexaicreator.com",
   "www.influexaicreator.com",
+  "influexai.vercel.app",
   "localhost",
   "127.0.0.1",
 ]);
+
+/** Vercel preview/production aliases — must not be treated as agency custom domains. */
+function isVercelPlatformHost(host: string): boolean {
+  return (
+    host.endsWith(".vercel.app") ||
+    host === "vercel.app" ||
+    host.endsWith(".vercel.sh")
+  );
+}
 
 export function parseHostname(host: string): string {
   return (host.split(":")[0] ?? host).toLowerCase();
@@ -72,7 +82,8 @@ export function subdomainFromHost(hostname: string): string | null {
 export function isMainHost(hostname: string): boolean {
   const host = parseHostname(hostname);
   if (MAIN_HOSTS.has(host)) return true;
-  if (host === "localhost" || host.startsWith("localhost")) return true;
+  if (host === "localhost" || host.endsWith(".localhost")) return true;
+  if (isVercelPlatformHost(host)) return true;
   return false;
 }
 
@@ -121,6 +132,11 @@ export async function resolveTenantFromHost(
 
 export async function getTenantFromHeaders(): Promise<Tenant | null> {
   const h = await headers();
+  const host = h.get("x-tenant-host") ?? h.get("host") ?? "";
+
+  // Marketing site on platform domains — never apply agency tenant on "/".
+  if (isMainHost(host)) return null;
+
   const slug = h.get("x-tenant-slug");
   if (slug) return getTenantBySlug(slug);
 
@@ -130,7 +146,6 @@ export async function getTenantFromHeaders(): Promise<Tenant | null> {
     if (byDomain) return byDomain;
   }
 
-  const host = h.get("x-tenant-host") ?? h.get("host") ?? "";
   return resolveTenantFromHost(host);
 }
 

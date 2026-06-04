@@ -203,7 +203,7 @@ function SignupPageInner() {
           )}
         </p>
         <Link
-          href="/login"
+          href="/auth/sign-in"
           className="inline-block w-full bg-[#B4FF00] text-black font-semibold py-3 rounded-xl text-sm"
         >
           {t("login_link")}
@@ -337,7 +337,7 @@ function SignupPageInner() {
 
       <p className="text-center text-white/40 text-sm">
         {t("has_account")}{" "}
-        <Link href="/login" className="text-[#B4FF00] hover:underline">
+        <Link href="/auth/sign-in" className="text-[#B4FF00] hover:underline">
           {t("login_link")}
         </Link>
       </p>

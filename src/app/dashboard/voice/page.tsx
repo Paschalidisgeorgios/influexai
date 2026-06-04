@@ -7,6 +7,7 @@ import { generateVoice } from "@/app/actions/generate-voice";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { VoiceSelector } from "@/components/voice-selector";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 type Tab = "stimme" | "eigen" | "musik";
 
@@ -194,7 +195,7 @@ export default function VoicePage() {
     const result = await generateVoice(script, voiceId, stability);
     setGenerating(false);
     if (!result.success) {
-      setError(result.error);
+      setError(sanitizeUserMessage(result.error, { allowElevenLabs: true }));
       return;
     }
     setAudioUrl(result.audioUrl);
@@ -250,6 +251,19 @@ export default function VoicePage() {
         </div>
         <p style={{ color: "#505055", fontSize: "0.9rem" }}>
           KI-Stimme generieren oder lizenzfreie Musik finden
+        </p>
+        <p
+          style={{
+            marginTop: 8,
+            fontSize: "0.75rem",
+            color: "#505055",
+            letterSpacing: "0.04em",
+          }}
+        >
+          Powered by{" "}
+          <span style={{ color: "var(--acid)", fontWeight: 600 }}>
+            ElevenLabs
+          </span>
         </p>
       </div>
 

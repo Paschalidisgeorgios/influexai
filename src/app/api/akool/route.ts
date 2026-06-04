@@ -4,6 +4,7 @@ import {
   getAkoolVideoResult,
   mapAkoolVideoStatus,
 } from "@/lib/akool";
+import { MSG_VIDEO_SERVICE_UNAVAILABLE, sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export const maxDuration = 300;
 
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
       return NextResponse.json(
-        { success: false, error: "Akool authentication failed" },
+        { success: false, error: MSG_VIDEO_SERVICE_UNAVAILABLE },
         { status: 401 }
       );
     }
@@ -46,11 +47,14 @@ export async function POST(request: NextRequest) {
       status: "processing",
     });
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Akool request failed";
-    const status = message.includes("authentication") ? 401 : 500;
+    const raw =
+      error instanceof Error ? error.message : MSG_VIDEO_SERVICE_UNAVAILABLE;
+    const status = raw.includes("authentication") ? 401 : 500;
     return NextResponse.json(
-      { success: false, error: message },
+      {
+        success: false,
+        error: sanitizeUserMessage(raw) || MSG_VIDEO_SERVICE_UNAVAILABLE,
+      },
       { status }
     );
   }

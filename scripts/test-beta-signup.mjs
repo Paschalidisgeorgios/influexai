@@ -93,11 +93,20 @@ async function main() {
   const email = TEST_EMAIL.toLowerCase();
   const code = generateBetaCode();
 
-  const { data: before } = await supabase
+  const { data: before, error: beforeErr } = await supabase
     .from("beta_signups")
     .select("id, email, code, status, created_at")
     .eq("email", email)
     .maybeSingle();
+
+  if (beforeErr?.code === "PGRST205") {
+    log(
+      "db:beta_signups table",
+      false,
+      "missing — run scripts/apply-beta-nurture-sql-editor.sql in Supabase SQL Editor"
+    );
+    process.exit(1);
+  }
 
   if (before) {
     log("db:existing row", true, `${before.code} (${before.status})`);

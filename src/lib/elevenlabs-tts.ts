@@ -36,7 +36,11 @@ export async function synthesizeElevenLabsSpeech(
     const apiKey = process.env.ELEVENLABS_API_KEY?.trim();
 
     if (!apiKey) {
-      return { ok: false, error: "ELEVENLABS_API_KEY fehlt", code: "NO_KEY" };
+      return {
+        ok: false,
+        error: "ElevenLabs ist gerade nicht verfügbar.",
+        code: "NO_KEY",
+      };
     }
 
     const resolvedVoiceId = resolveElevenLabsVoiceId(voiceId);

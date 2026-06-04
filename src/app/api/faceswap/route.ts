@@ -12,6 +12,13 @@ import {
   validateTargetFaceFile,
 } from "@/lib/faceswap-media";
 import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import {
+  createGenerationRecord,
+  getOwnedGeneration,
+  ingestFinalAssetFromUrl,
+  updateGenerationResult,
+} from "@/lib/generation-assets";
 
 export const maxDuration = 300;
 
@@ -20,17 +27,30 @@ const CREDIT_IMAGE = 5;
 
 function faceswapErrorResponse(err: unknown, status = 500) {
   if (err instanceof AkoolFaceswapError) {
-    return NextResponse.json({ error: err.userMessage }, { status: 400 });
+    return NextResponse.json(
+      { error: sanitizeUserMessage(err.userMessage) },
+      { status: 400 }
+    );
   }
-  const message =
-    err instanceof Error ? err.message : "Face Swap fehlgeschlagen";
+  const message = sanitizeUserMessage(
+    err instanceof Error ? err.message : "Face Swap fehlgeschlagen"
+  );
   return NextResponse.json({ error: message }, { status });
+}
+
+function protectedAssetUrl(generationId: string) {
+  return `/api/generated-image/${generationId}?variant=final`;
 }
 
 export async function GET(request: NextRequest) {
   const jobId = request.nextUrl.searchParams.get("jobId");
-  if (!jobId) {
-    return NextResponse.json({ error: "jobId required" }, { status: 400 });
+  const generationId = request.nextUrl.searchParams.get("generationId");
+
+  if (!jobId || !generationId) {
+    return NextResponse.json(
+      { error: "jobId und generationId required" },
+      { status: 400 }
+    );
   }
 
   const supabase = await createServerSupabaseClient();
@@ -41,6 +61,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
+  const owned = await getOwnedGeneration(supabase, generationId, user.id);
+  if (!owned?.asset || owned.asset.jobId !== jobId) {
+    return NextResponse.json({ error: "Generierung nicht gefunden" }, { status: 404 });
+  }
+
+  if (owned.asset.finalPath) {
+    return NextResponse.json({
+      success: true,
+      status: "completed",
+      progress: 100,
+      generationId,
+      resultUrl: protectedAssetUrl(generationId),
+    });
+  }
+
   try {
     const result = await getFaceswapResults(jobId);
     if (!result) {
@@ -48,16 +83,43 @@ export async function GET(request: NextRequest) {
         success: true,
         status: "processing",
         progress: 15,
+        generationId,
         resultUrl: null,
       });
     }
 
     const mapped = mapFaceswapStatus(result.faceswap_status);
+
+    if (mapped.status === "completed" && result.url) {
+      const kind = owned.asset.assetKind ?? "image";
+      const { path, mimeType } = await ingestFinalAssetFromUrl(
+        user.id,
+        generationId,
+        result.url,
+        kind
+      );
+
+      await updateGenerationResult(supabase, generationId, user.id, {
+        finalPath: path,
+        paid: true,
+        mimeType,
+      });
+
+      return NextResponse.json({
+        success: true,
+        status: "completed",
+        progress: 100,
+        generationId,
+        resultUrl: protectedAssetUrl(generationId),
+      });
+    }
+
     return NextResponse.json({
       success: true,
       status: mapped.status,
       progress: mapped.progress,
-      resultUrl: mapped.status === "completed" ? (result.url ?? null) : null,
+      generationId,
+      resultUrl: null,
       error:
         mapped.status === "failed"
           ? "Face Swap fehlgeschlagen. Bitte andere Bilder mit klarem Gesicht verwenden."
@@ -80,7 +142,7 @@ export async function POST(request: NextRequest) {
 
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
     return NextResponse.json(
-      { error: "Akool API ist nicht konfiguriert" },
+      { error: "Face-Swap ist gerade nicht verfügbar." },
       { status: 503 }
     );
   }
@@ -134,6 +196,20 @@ export async function POST(request: NextRequest) {
       targetFaceUrl,
     });
 
+    const generationId = await createGenerationRecord(
+      supabase,
+      user.id,
+      "live-creator-faceswap",
+      {
+        jobId: job._id,
+        paid: true,
+        assetKind: mode === "video" ? "video" : "image",
+        mode: "final",
+      },
+      creditCost,
+      `${mode}:${job._id}`
+    );
+
     const deduction = await deductCredits(
       supabase,
       user.id,
@@ -144,6 +220,7 @@ export async function POST(request: NextRequest) {
       {
         generationType: "live-creator-faceswap",
         prompt: `${mode}:${job._id}`,
+        skipGenerationLog: true,
       }
     );
 
@@ -157,6 +234,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       jobId: job._id,
+      generationId,
       status: "processing",
       creditsLeft: deduction.remainingCredits,
     });

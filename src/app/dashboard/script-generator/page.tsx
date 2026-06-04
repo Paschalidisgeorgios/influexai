@@ -18,6 +18,7 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { ScriptSkeleton } from "@/components/skeletons/script-skeleton";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
 import { createClient } from "@/lib/supabase/client";
 import { resolveNicheSlug } from "@/lib/programmatic-seo";
@@ -282,7 +283,7 @@ function ScriptGeneratorPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(res.error);
+        setError(sanitizeUserMessage(res.error));
         setStep("input");
         return;
       }
@@ -311,7 +312,7 @@ function ScriptGeneratorPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(res.error);
+        setError(sanitizeUserMessage(res.error));
         setStep("results");
         return;
       }
@@ -359,7 +360,7 @@ function ScriptGeneratorPageInner() {
     const res = await saveScript(topic, scriptText, settings);
     setSaving(false);
     if (res.success) setSavedOk(true);
-    else setError(res.error);
+    else setError(sanitizeUserMessage(res.error));
   };
 
   const wordCount = countWords(scriptText);

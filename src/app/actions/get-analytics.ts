@@ -12,6 +12,8 @@ const FLOW_KEYS = [
   "video-remix",
   "produkt",
   "ki-ich",
+  "image-generator",
+  "image",
 ] as const;
 
 const FLOW_LABELS: Record<(typeof FLOW_KEYS)[number], string> = {
@@ -21,6 +23,8 @@ const FLOW_LABELS: Record<(typeof FLOW_KEYS)[number], string> = {
   "video-remix": "Remix",
   produkt: "Video Ad",
   "ki-ich": "KI-Ich",
+  "image-generator": "Image Generator",
+  image: "Image Generator",
 };
 
 const TYPE_LABELS: Record<string, string> = {

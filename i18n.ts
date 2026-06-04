@@ -6,6 +6,10 @@ import {
   resolveLocaleFromRequest,
   type Locale,
 } from "./src/lib/locale";
+import { deepMergeMessages } from "./src/lib/i18n-merge";
+
+import deMessages from "./messages/de.json";
+import enMessages from "./messages/en.json";
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
@@ -21,8 +25,39 @@ export default getRequestConfig(async () => {
 
   const locale: Locale = isValidLocale(detected) ? detected : defaultLocale;
 
+  let messages: Record<string, unknown>;
+
+  if (locale === "de") {
+    messages = deMessages as Record<string, unknown>;
+  } else {
+    const localeModule = (await import(`./messages/${locale}.json`)).default as Record<
+      string,
+      unknown
+    >;
+    // English fallback for missing keys (not German) — better for international users.
+    messages = deepMergeMessages(
+      enMessages as Record<string, unknown>,
+      localeModule
+    );
+  }
+
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default,
+    messages,
+    getMessageFallback({ namespace, key }) {
+      const path = namespace ? `${namespace}.${key}` : key;
+      const enVal = getNestedValue(enMessages as Record<string, unknown>, path);
+      if (typeof enVal === "string") return enVal;
+      return path;
+    },
   };
 });
+
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+  return path.split(".").reduce<unknown>((acc, part) => {
+    if (acc && typeof acc === "object" && part in (acc as Record<string, unknown>)) {
+      return (acc as Record<string, unknown>)[part];
+    }
+    return undefined;
+  }, obj);
+}

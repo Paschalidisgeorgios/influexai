@@ -60,7 +60,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
         </h1>
         <p style={{ color: "#505055" }}>
           {"error" in (data ?? {}) ? data?.error : "Keine Agentur."}{" "}
-          <Link href="/white-label" style={{ color: "var(--accent)" }}>
+          <Link href="/dashboard/white-label" style={{ color: "var(--accent)" }}>
             White-Label Plan wählen →
           </Link>
         </p>

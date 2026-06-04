@@ -55,7 +55,7 @@ async function detectAuthHeaders(): Promise<HeadersInit> {
   if (!token) {
     throw new AkoolFaceswapError(
       "Akool authentication failed",
-      "Akool-Anmeldung fehlgeschlagen."
+      "Video-Dienst nicht erreichbar."
     );
   }
   return {

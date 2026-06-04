@@ -3,14 +3,23 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export async function logGeneration(
   supabase: SupabaseClient,
   userId: string,
-  payload: { type: string; prompt: string; creditsUsed: number }
+  payload: {
+    type: string;
+    prompt: string;
+    creditsUsed: number;
+    result?: Record<string, unknown>;
+  }
 ) {
-  await supabase.from("generations").insert({
+  const row: Record<string, unknown> = {
     user_id: userId,
     type: payload.type,
     prompt: payload.prompt.slice(0, 500),
     credits_used: payload.creditsUsed,
-  });
+  };
+  if (payload.result != null) {
+    row.result = payload.result;
+  }
+  await supabase.from("generations").insert(row);
 }
 
 export async function logCreditTransaction(

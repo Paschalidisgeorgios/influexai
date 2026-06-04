@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
   closeLiveAvatarSession,
@@ -24,7 +25,7 @@ export async function GET() {
 
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
     return NextResponse.json(
-      { error: "Akool API ist nicht konfiguriert" },
+      { error: "Live-Avatar ist gerade nicht verfügbar." },
       { status: 503 }
     );
   }
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
 
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
     return NextResponse.json(
-      { error: "Akool API ist nicht konfiguriert" },
+      { error: "Live-Avatar ist gerade nicht verfügbar." },
       { status: 503 }
     );
   }
@@ -134,10 +135,11 @@ export async function POST(request: NextRequest) {
     console.error("[live-avatar POST]", err);
     return NextResponse.json(
       {
-        error:
+        error: sanitizeUserMessage(
           err instanceof Error
             ? err.message
-            : "Live-Session konnte nicht gestartet werden",
+            : "Live-Session konnte nicht gestartet werden"
+        ),
       },
       { status: 500 }
     );

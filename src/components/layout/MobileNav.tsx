@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { icon: "🏠", label: "Home", href: "/dashboard" },
   { icon: "🎭", label: "Avatar", href: "/dashboard/live-creator" },
   { icon: "📸", label: "KI-Ich", href: "/dashboard/ki-ich" },
+  { icon: "📷", label: "Bild Generator", href: "/dashboard/image-generator" },
   { icon: "🛍️", label: "Werbung", href: "/dashboard/produkt" },
   { icon: "🎵", label: "Stimme", href: "/dashboard/voice" },
 ];

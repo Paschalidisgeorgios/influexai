@@ -51,9 +51,16 @@ export async function sendBetaWelcomeEmail(
     }),
   });
 
+  const body = await res.text();
   if (!res.ok) {
-    console.error("[beta-email]", await res.text());
+    console.error("[beta-email]", res.status, body);
     return false;
+  }
+  try {
+    const parsed = JSON.parse(body) as { id?: string };
+    if (parsed.id) console.log("[beta-email] sent:", parsed.id);
+  } catch {
+    /* ignore */
   }
   return true;
 }

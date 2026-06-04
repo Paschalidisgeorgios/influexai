@@ -371,6 +371,14 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
+# Growth Agent: invoked by pg_cron (see migrations/034). JWT off — uses service role Bearer.
+[functions.growth-agent]
+verify_jwt = false
+
+# Churn Prevention (Tag 3/7/14) — scheduled via pg_cron migration 037, 10:00 UTC
+[functions.churn-prevention]
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.

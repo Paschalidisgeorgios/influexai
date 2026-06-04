@@ -138,7 +138,14 @@ export async function joinBeta(input: {
         return { success: true, code: row.code };
       }
     }
-    console.error("joinBeta:", error.message);
+    console.error("joinBeta:", error.code, error.message);
+    if (error.code === "PGRST205") {
+      return {
+        success: false,
+        error:
+          "Beta-Anmeldung ist vorübergehend nicht verfügbar (Datenbank-Setup). Bitte später erneut versuchen.",
+      };
+    }
     return {
       success: false,
       error: "Anmeldung fehlgeschlagen. Bitte erneut versuchen.",

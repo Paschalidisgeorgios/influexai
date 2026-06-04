@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SettingsPage() {
+  const t = useTranslations("settings");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [dailyIdeasEmail, setDailyIdeasEmail] = useState(true);
+  const [savingDailyEmail, setSavingDailyEmail] = useState(false);
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [saving, setSaving] = useState(false);
@@ -28,12 +32,13 @@ export default function SettingsPage() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, email")
+        .select("full_name, email, daily_suggestions_email")
         .eq("id", user.id)
         .single();
       if (data) {
         setName(data.full_name ?? "");
         setEmail(data.email ?? "");
+        setDailyIdeasEmail(data.daily_suggestions_email !== false);
       }
     };
     load();
@@ -57,6 +62,23 @@ export default function SettingsPage() {
         : { type: "ok", text: "Name gespeichert! ✓" }
     );
     setSaving(false);
+  };
+
+  const saveDailyIdeasEmail = async (enabled: boolean) => {
+    setSavingDailyEmail(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setSavingDailyEmail(false);
+      return;
+    }
+    const { error } = await supabase
+      .from("profiles")
+      .update({ daily_suggestions_email: enabled })
+      .eq("id", user.id);
+    if (!error) setDailyIdeasEmail(enabled);
+    setSavingDailyEmail(false);
   };
 
   const savePw = async () => {
@@ -236,6 +258,49 @@ export default function SettingsPage() {
             >
               {saving ? "Wird gespeichert..." : "Name speichern"}
             </button>
+          </>
+        )}
+
+        {card(
+          <>
+            <h2
+              style={{
+                fontFamily: "var(--font-bebas), sans-serif",
+                fontSize: "1.2rem",
+                letterSpacing: "0.02em",
+                color: "#F0EFE8",
+              }}
+            >
+              {t("growth_agent_title")}
+            </h2>
+            <p style={{ margin: 0, fontSize: "0.88rem", color: "#505055", lineHeight: 1.5 }}>
+              {t("daily_suggestions_email_desc")}
+            </p>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                cursor: savingDailyEmail ? "wait" : "pointer",
+              }}
+            >
+              <span style={{ color: "#F0EFE8", fontSize: "0.92rem", fontWeight: 600 }}>
+                {t("daily_suggestions_email_label")}
+              </span>
+              <input
+                type="checkbox"
+                checked={dailyIdeasEmail}
+                disabled={savingDailyEmail}
+                onChange={(e) => void saveDailyIdeasEmail(e.target.checked)}
+                style={{
+                  width: 44,
+                  height: 24,
+                  accentColor: "#B4FF00",
+                  cursor: savingDailyEmail ? "wait" : "pointer",
+                }}
+              />
+            </label>
           </>
         )}
 

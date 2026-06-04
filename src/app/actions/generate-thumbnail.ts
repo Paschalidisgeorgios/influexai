@@ -277,24 +277,20 @@ export async function generateThumbnailConcepts(input: {
 
     return { success: true, concepts, creditsLeft: deduction.remainingCredits };
   } catch (e) {
-    if (
-      e instanceof Error &&
-      (e.message.includes("Anthropic") ||
-        e.message.includes("KI ist") ||
-        e.message.includes("sk-ant"))
-    ) {
-      return { success: false, error: e.message };
-    }
     if (e instanceof Error && e.message === "API_ERROR") {
       return {
         success: false,
         error: "Generierung fehlgeschlagen. Bitte erneut versuchen.",
       };
     }
+    const msg = e instanceof Error ? e.message : "";
     console.error("generateThumbnailConcepts:", e);
     return {
       success: false,
-      error: "Antwort konnte nicht gelesen werden. Bitte erneut versuchen.",
+      error:
+        msg && msg.includes("KI ist")
+          ? msg
+          : "Generierung fehlgeschlagen. Bitte erneut versuchen.",
     };
   }
 }
@@ -321,7 +317,7 @@ export async function saveThumbnailConcept(input: {
       success: false,
       error:
         error.code === "42P01"
-          ? "Tabelle thumbnail_concepts fehlt. Bitte supabase/migrations/027_ensure_flow_save_tables.sql in Supabase ausführen."
+          ? "Speichern ist gerade nicht möglich. Bitte später erneut versuchen."
           : `Speichern fehlgeschlagen: ${error.message}`,
     };
   }

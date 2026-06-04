@@ -4,99 +4,40 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, Image, Images, Video, type LucideIcon } from "lucide-react";
+import { BarChart2, Images, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { FeatureNudge } from "@/components/feature-nudge";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
+import { NAV_GROUPS } from "@/lib/dashboard-flows";
 
-type NavItem = {
+type ExtraNavItem = {
   id: string;
-  label: string;
   href: string;
-  icon?: string;
-  lucideIcon?: LucideIcon;
-  badge?: string;
+  icon: typeof BarChart2;
+  labelKey: "analytics" | "gallery";
 };
 
-const NAV_ITEMS: NavItem[] = [
-  {
-    id: "live-creator",
-    lucideIcon: Video,
-    label: "live_creator",
-    href: "/dashboard/live-creator",
-    badge: "LIVE",
-  },
-  {
-    id: "live-creator-new",
-    icon: "🎬",
-    label: "Face Swap",
-    href: "/dashboard/live-creator-new",
-    badge: "NEU",
-  },
-  { id: "ki-ich", icon: "📸", label: "Mein KI-Ich", href: "/dashboard/ki-ich" },
-  {
-    id: "produkt",
-    icon: "🛍️",
-    label: "Produkt-Werbung",
-    href: "/dashboard/produkt",
-  },
-  {
-    id: "voice",
-    icon: "🎵",
-    label: "Stimme & Musik",
-    href: "/dashboard/voice",
-  },
-  {
-    id: "niche",
-    icon: "📈",
-    label: "Niche Analyzer",
-    href: "/dashboard/niche-analyzer",
-  },
-  {
-    id: "outlier",
-    icon: "🔥",
-    label: "Outlier Detector",
-    href: "/dashboard/outlier-detector",
-  },
-  {
-    id: "remix",
-    icon: "🔁",
-    label: "Video Remix",
-    href: "/dashboard/video-remix",
-  },
-  {
-    id: "script",
-    icon: "📝",
-    label: "Script Generator",
-    href: "/dashboard/script-generator",
-  },
-  {
-    id: "thumbnail",
-    lucideIcon: Image,
-    label: "Thumbnail Konzept",
-    href: "/dashboard/thumbnail-concept",
-  },
+const EXTRA_NAV: ExtraNavItem[] = [
   {
     id: "analytics",
-    lucideIcon: BarChart2,
-    label: "Meine Stats",
     href: "/dashboard/analytics",
+    labelKey: "analytics",
+    icon: BarChart2,
   },
   {
     id: "gallery",
-    lucideIcon: Images,
-    label: "Meine Gallery",
     href: "/dashboard/gallery",
+    labelKey: "gallery",
+    icon: Images,
   },
 ];
 
 const BOTTOM_NAV = [
-  { icon: "🔌", label: "Developer API", href: "/dashboard/api" },
-  { icon: "🎁", label: "referral", href: "/dashboard/referral" },
-  { icon: "⚙️", label: "Einstellungen", href: "/dashboard/settings" },
-  { icon: "💳", label: "Credits & Plan", href: "/dashboard/credits" },
-];
+  { icon: "🔌", labelKey: "developer_api", href: "/dashboard/api" },
+  { icon: "🎁", labelKey: "referral", href: "/dashboard/referral" },
+  { icon: "⚙️", labelKey: "settings_menu", href: "/dashboard/settings" },
+  { icon: "💳", labelKey: "credits_plan", href: "/dashboard/credits" },
+] as const;
 
 const ADMIN_NAV = [
   {
@@ -114,8 +55,27 @@ const AGENCY_NAV = [
   { icon: "🏢", label: "Agentur", href: "/dashboard/agency" },
 ];
 
+function navItemLabel(
+  item: (typeof NAV_GROUPS)[0]["items"][0],
+  tNav: ReturnType<typeof useTranslations<"nav">>,
+  tFlows: ReturnType<typeof useTranslations<"flows">>
+): string {
+  if (item.label) return item.label;
+  if (item.labelKey === "live_creator") return tNav("live_creator");
+  if (item.labelKey === "script") return tFlows("script.title");
+  if (item.labelKey === "thumbnail") return tFlows("thumbnail.title");
+  if (item.labelKey === "image_generator") return tFlows("image_generator.title");
+  if (item.labelKey === "remix") return tFlows("remix.title");
+  if (item.labelKey === "viral_score") return tNav("viral_score");
+  if (item.labelKey === "competitor") return tNav("competitor");
+  if (item.labelKey === "image_generator") return tNav("image_generator");
+  return item.labelKey ?? item.id;
+}
+
 export function DashboardSidebar() {
+  const tDash = useTranslations("dashboard");
   const tNav = useTranslations("nav");
+  const tFlows = useTranslations("flows");
   const [collapsed, setCollapsed] = useState(false);
   const [credits, setCredits] = useState<number | null>(null);
   const [maxCredits, setMaxCredits] = useState(500);
@@ -169,306 +129,208 @@ export function DashboardSidebar() {
   const creditColor =
     creditPercent > 50 ? "#B4FF00" : creditPercent > 20 ? "#f59e0b" : "#ff6b7a";
 
+  const linkClass = (active: boolean, disabled?: boolean) =>
+    [
+      "flex items-center gap-2.5 rounded-lg text-[0.875rem] font-medium transition-all min-h-[44px]",
+      collapsed ? "justify-center px-3 py-2.5" : "px-3 py-2.5",
+      disabled
+        ? "opacity-45 cursor-not-allowed text-white/25"
+        : active
+          ? "text-[#B4FF00] font-bold bg-[#B4FF00]/8 border-b-2 border-[#B4FF00]"
+          : "text-white/45 hover:text-white/70 border-b-2 border-transparent",
+    ].join(" ");
+
   return (
     <aside
-      style={{
-        width: collapsed ? 64 : 220,
-        minHeight: "100vh",
-        background: "#0f0f12",
-        borderRight: "1px solid rgba(255,255,255,0.07)",
-        display: "flex",
-        flexDirection: "column",
-        transition: "width 0.3s ease",
-        flexShrink: 0,
-      }}
+      className="flex flex-col shrink-0 min-h-screen bg-[#0f0f12] border-r border-white/[0.07] transition-[width] duration-300"
+      style={{ width: collapsed ? 64 : 220 }}
     >
-      {/* Logo */}
       <div
-        style={{
-          height: 56,
-          display: "flex",
-          alignItems: "center",
-          padding: collapsed ? "0 17px" : "0 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          gap: 10,
-          flexShrink: 0,
-        }}
+        className="h-14 flex items-center border-b border-white/[0.07] gap-2.5 shrink-0"
+        style={{ padding: collapsed ? "0 17px" : "0 20px" }}
       >
-        <div
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: "#B4FF00",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "1rem",
-            color: "#060608",
-            flexShrink: 0,
-          }}
-        >
+        <div className="w-[30px] h-[30px] rounded-lg bg-[#B4FF00] flex items-center justify-center text-[#060608] font-bold shrink-0">
           I
         </div>
         {!collapsed && (
-          <span
-            style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "1.1rem",
-              letterSpacing: "0.04em",
-              color: "#F0EFE8",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Influex<span style={{ color: "#B4FF00" }}>AI</span>
+          <span className="text-[1.1rem] tracking-wide text-[#F0EFE8] whitespace-nowrap font-[family-name:var(--font-syne)]">
+            Influex<span className="text-[#B4FF00]">AI</span>
           </span>
         )}
       </div>
 
-      {/* Main Nav */}
-      <nav
-        style={{
-          flex: 1,
-          padding: "10px 8px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          overflowY: "auto",
-        }}
-      >
-        {!collapsed && (
-          <p
-            style={{
-              fontSize: "0.62rem",
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: "#505055",
-              padding: "8px 10px 6px",
-            }}
-          >
-            Module
-          </p>
-        )}
-
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
-          const isComingSoon =
-            item.id === "live-creator" && LIVE_CREATOR_COMING_SOON;
-          const navLabel =
-            item.label === "live_creator"
-              ? tNav("live_creator")
-              : item.label === "referral"
-                ? tNav("referral")
-                : item.label;
-          const navStyle = {
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: collapsed ? "10px 17px" : "10px 12px",
-            borderRadius: 10,
-            textDecoration: "none",
-            color: isComingSoon
-              ? "rgba(240,239,232,0.25)"
-              : isActive
+      <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
+        <Link
+          href="/dashboard/agent"
+          title={collapsed ? tNav("agent") : undefined}
+          className={linkClass(pathname === "/dashboard/agent")}
+        >
+          <Star
+            size={18}
+            strokeWidth={pathname === "/dashboard/agent" ? 2.5 : 2}
+            className="shrink-0"
+            color={
+              pathname === "/dashboard/agent"
                 ? "#B4FF00"
-                : "rgba(240,239,232,0.45)",
-            fontSize: "0.875rem",
-            fontWeight: isActive ? 700 : 500,
-            background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
-            transition: "all 0.15s",
-            justifyContent: collapsed ? "center" : "flex-start",
-            borderLeft: isActive
-              ? "2px solid #B4FF00"
-              : "2px solid transparent",
-            cursor: isComingSoon ? "not-allowed" : "pointer",
-            opacity: isComingSoon ? 0.55 : 1,
-          };
-          const inner = (
+                : "rgba(240,239,232,0.45)"
+            }
+            fill={pathname === "/dashboard/agent" ? "#B4FF00" : "transparent"}
+          />
+          {!collapsed && (
             <>
-              {item.lucideIcon ? (
-                <item.lucideIcon
-                  size={18}
-                  strokeWidth={isActive ? 2.5 : 2}
-                  style={{ flexShrink: 0 }}
-                  color={
-                    isComingSoon
-                      ? "rgba(240,239,232,0.25)"
-                      : isActive
-                        ? "#B4FF00"
-                        : "rgba(240,239,232,0.45)"
-                  }
-                />
-              ) : (
-                <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>
-                  {item.icon}
-                </span>
-              )}
-              {!collapsed && (
+              <span className="truncate">{tNav("agent")}</span>
+              <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
+                NEU
+              </span>
+            </>
+          )}
+        </Link>
+
+        <div className="h-px bg-white/5 my-2 mx-1" />
+
+        {NAV_GROUPS.map((group) => (
+          <div key={group.labelKey} className="mb-2">
+            {!collapsed && (
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#505055] px-2.5 py-2">
+                {tDash(group.labelKey)}
+              </p>
+            )}
+            {group.items.map((item) => {
+              const isActive = pathname === item.href;
+              const isComingSoon =
+                item.id === "live-creator" && LIVE_CREATOR_COMING_SOON;
+              const label = navItemLabel(item, tNav, tFlows);
+              const Icon = item.icon;
+              const inner = (
                 <>
-                  {navLabel}
-                  {item.badge && !isComingSoon && (
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        fontSize: "0.58rem",
-                        fontWeight: 700,
-                        color: "#060608",
-                        background: "#B4FF00",
-                        padding: "2px 6px",
-                        borderRadius: 999,
-                      }}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                  {isComingSoon && (
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        fontSize: "0.58rem",
-                        color: "rgba(240,239,232,0.35)",
-                      }}
-                    >
-                      Bald
-                    </span>
+                  <Icon
+                    size={18}
+                    strokeWidth={isActive ? 2.5 : 2}
+                    className="shrink-0"
+                    color={
+                      isComingSoon
+                        ? "rgba(240,239,232,0.25)"
+                        : isActive
+                          ? "#B4FF00"
+                          : "rgba(240,239,232,0.45)"
+                    }
+                  />
+                  {!collapsed && (
+                    <>
+                      <span className="truncate">{label}</span>
+                      {item.badge && !isComingSoon && (
+                        <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                      {isComingSoon && (
+                        <span className="ml-auto text-[0.58rem] text-white/35">
+                          Bald
+                        </span>
+                      )}
+                    </>
                   )}
                 </>
-              )}
-            </>
-          );
-          if (isComingSoon) {
-            return (
-              <span
-                key={item.id}
-                title={collapsed ? `${navLabel} (bald)` : "Kommt bald"}
-                style={navStyle}
-              >
-                {inner}
-              </span>
-            );
-          }
+              );
+
+              if (isComingSoon) {
+                return (
+                  <span
+                    key={item.id}
+                    title={collapsed ? `${label} (bald)` : "Kommt bald"}
+                    className={linkClass(false, true)}
+                  >
+                    {inner}
+                  </span>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  title={collapsed ? label : undefined}
+                  className={linkClass(isActive)}
+                >
+                  {inner}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
+
+        <div className="h-px bg-white/5 my-2 mx-1" />
+
+        {!collapsed && (
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#505055] px-2.5 py-2">
+            {tNav("more")}
+          </p>
+        )}
+        {EXTRA_NAV.map((item) => {
+          const isActive = pathname === item.href;
+          const label = tNav(item.labelKey);
+          const Icon = item.icon;
           return (
             <Link
               key={item.id}
               href={item.href}
-              title={collapsed ? navLabel : undefined}
-              style={navStyle}
+              title={collapsed ? label : undefined}
+              className={linkClass(isActive)}
             >
-              {inner}
+              <Icon
+                size={18}
+                strokeWidth={isActive ? 2.5 : 2}
+                className="shrink-0"
+                color={isActive ? "#B4FF00" : "rgba(240,239,232,0.45)"}
+              />
+              {!collapsed && label}
             </Link>
           );
         })}
 
-        <div
-          style={{
-            height: 1,
-            background: "rgba(255,255,255,0.05)",
-            margin: "8px 4px",
-          }}
-        />
+        <div className="h-px bg-white/5 my-2 mx-1" />
 
         {BOTTOM_NAV.map((item) => (
           <Link
-            key={item.label}
+            key={item.labelKey}
             href={item.href}
-            title={collapsed ? item.label : undefined}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: collapsed ? "9px 17px" : "9px 12px",
-              borderRadius: 10,
-              textDecoration: "none",
-              color: "rgba(240,239,232,0.3)",
-              fontSize: "0.82rem",
-              fontWeight: 500,
-              transition: "all 0.15s",
-              justifyContent: collapsed ? "center" : "flex-start",
-            }}
+            title={collapsed ? tNav(item.labelKey) : undefined}
+            className={`${linkClass(false)} !text-white/30 !font-normal !border-b-0`}
           >
-            <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
-              {item.icon}
-            </span>
-            {!collapsed && item.label}
+            <span className="text-[0.95rem] shrink-0">{item.icon}</span>
+            {!collapsed && <span>{tNav(item.labelKey)}</span>}
           </Link>
         ))}
 
-        {isAdmin && !collapsed && (
-          <div
-            style={{
-              height: 1,
-              background: "rgba(255,255,255,0.05)",
-              margin: "8px 4px",
-            }}
-          />
-        )}
+        {isAdmin && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
         {isAdmin &&
           ADMIN_NAV.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                padding: collapsed ? "9px 17px" : "9px 12px",
-                borderRadius: 10,
-                textDecoration: "none",
-                color: "rgba(255,71,87,0.7)",
-                fontSize: "0.82rem",
-                fontWeight: 600,
-                transition: "all 0.15s",
-                justifyContent: collapsed ? "center" : "flex-start",
-              }}
+              className={`${linkClass(false)} !text-[#ff6b7a]/70 !border-b-0`}
             >
-              <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
-                {item.icon}
-              </span>
+              <span className="text-[0.95rem] shrink-0">{item.icon}</span>
               {!collapsed && item.label}
             </Link>
           ))}
 
-        {hasAgency && !collapsed && (
-          <div
-            style={{
-              height: 1,
-              background: "rgba(255,255,255,0.05)",
-              margin: "8px 4px",
-            }}
-          />
-        )}
+        {hasAgency && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
         {hasAgency &&
           AGENCY_NAV.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                padding: collapsed ? "9px 17px" : "9px 12px",
-                borderRadius: 10,
-                textDecoration: "none",
-                color: "var(--accent)",
-                fontSize: "0.82rem",
-                fontWeight: 700,
-                transition: "all 0.15s",
-                justifyContent: collapsed ? "center" : "flex-start",
-              }}
+              className={`${linkClass(false)} !text-[var(--accent)] !font-bold !border-b-0`}
             >
-              <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
-                {item.icon}
-              </span>
+              <span className="text-[0.95rem] shrink-0">{item.icon}</span>
               {!collapsed && item.label}
             </Link>
           ))}
       </nav>
 
-      <FeatureNudge collapsed={collapsed} />
       {credits !== null && (
         <LowCreditsSidebar
           credits={credits}
@@ -477,100 +339,43 @@ export function DashboardSidebar() {
         />
       )}
 
-      {/* Credits Panel */}
       {!collapsed && (
-        <div
-          style={{
-            margin: "8px",
-            padding: "14px",
-            borderRadius: 12,
-            background: "rgba(255,255,255,0.025)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 8,
-            }}
-          >
-            <span
-              style={{ fontSize: "0.72rem", color: "#505055", fontWeight: 500 }}
-            >
-              Credits
+        <div className="m-2 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[0.72rem] text-[#505055] font-medium">
+              {tNav("credits")}
             </span>
             <span
-              style={{
-                fontSize: "0.78rem",
-                fontWeight: 700,
-                color: creditColor,
-              }}
+              className="text-[0.78rem] font-bold"
+              style={{ color: creditColor }}
             >
               {credits ?? "..."}
             </span>
           </div>
-          <div
-            style={{
-              height: 4,
-              background: "#222228",
-              borderRadius: 99,
-              overflow: "hidden",
-              marginBottom: 4,
-            }}
-          >
+          <div className="h-1 bg-[#222228] rounded-full overflow-hidden mb-1">
             <div
-              style={{
-                width: `${creditPercent}%`,
-                height: "100%",
-                background: creditColor,
-                borderRadius: 99,
-                transition: "width 0.5s ease",
-              }}
+              className="h-full rounded-full transition-[width] duration-500"
+              style={{ width: `${creditPercent}%`, background: creditColor }}
             />
           </div>
-          <div
-            style={{ fontSize: "0.65rem", color: "#505055", marginBottom: 10 }}
-          >
-            von {maxCredits} Credits
+          <div className="text-[0.65rem] text-[#505055] mb-2.5">
+            {tNav("credits_of", { max: maxCredits })}
           </div>
           <a
             href="/dashboard/credits"
-            style={{
-              display: "block",
-              textAlign: "center",
-              padding: "7px",
-              borderRadius: 8,
-              background: "rgba(180,255,0,0.08)",
-              border: "1px solid rgba(180,255,0,0.18)",
-              color: "#B4FF00",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
+            className="block text-center py-1.5 rounded-lg bg-[#B4FF00]/8 border border-[#B4FF00]/18 text-[#B4FF00] text-[0.72rem] font-bold no-underline"
           >
-            ⚡ Aufladen
+            ⚡ {tNav("top_up")}
           </a>
         </div>
       )}
 
-      {/* Collapse Button */}
       <button
+        type="button"
         onClick={() => setCollapsed(!collapsed)}
-        style={{
-          margin: "0 8px 8px",
-          padding: "9px",
-          borderRadius: 10,
-          background: "transparent",
-          border: "1px solid rgba(255,255,255,0.06)",
-          color: "#505055",
-          cursor: "pointer",
-          fontSize: "0.75rem",
-          fontFamily: "var(--font-dm), sans-serif",
-        }}
+        className="m-2 mb-2 py-2 rounded-lg border border-white/[0.06] text-[#505055] text-xs cursor-pointer"
       >
-        {collapsed ? "→" : "← Einklappen"}
+        {collapsed ? "→" : `← ${tNav("collapse")}`}
       </button>
     </aside>
   );

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
 
 type Mode = "video" | "image";
 type FlowStep = "input" | "generating" | "result";
@@ -41,6 +43,7 @@ export function FaceSwapPanel({
   const [targetFile, setTargetFile] = useState<File | null>(null);
   const [targetPreview, setTargetPreview] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -121,8 +124,10 @@ export function FaceSwapPanel({
     }
   };
 
-  const pollJob = async (jobId: string) => {
-    const res = await fetch(`/api/faceswap?jobId=${encodeURIComponent(jobId)}`);
+  const pollJob = async (jobId: string, genId: string) => {
+    const res = await fetch(
+      `/api/faceswap?jobId=${encodeURIComponent(jobId)}&generationId=${encodeURIComponent(genId)}`
+    );
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Status fehlgeschlagen");
     if (data.progress != null) setProgress(data.progress);
@@ -147,6 +152,7 @@ export function FaceSwapPanel({
     setStep("generating");
     setProgress(8);
     setResultUrl(null);
+    setGenerationId(null);
     stopPolling();
 
     try {
@@ -157,20 +163,27 @@ export function FaceSwapPanel({
 
       const res = await fetch("/api/faceswap", { method: "POST", body: form });
       const data = await res.json();
-      if (!res.ok || !data.jobId) {
+      if (!res.ok || !data.jobId || !data.generationId) {
         throw new Error(data.error || "Face Swap fehlgeschlagen");
       }
 
-      await pollJob(data.jobId);
+      setGenerationId(data.generationId);
+      await pollJob(data.jobId, data.generationId);
       pollRef.current = setInterval(() => {
-        void pollJob(data.jobId).catch((e) => {
-          setError(e instanceof Error ? e.message : "Fehler");
+        void pollJob(data.jobId, data.generationId).catch((e) => {
+          setError(
+            sanitizeUserMessage(e instanceof Error ? e.message : "Fehler")
+          );
           setStep("input");
           stopPolling();
         });
       }, 5000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Face Swap fehlgeschlagen");
+      setError(
+        sanitizeUserMessage(
+          err instanceof Error ? err.message : "Face Swap fehlgeschlagen"
+        )
+      );
       setStep("input");
       stopPolling();
     }
@@ -185,6 +198,7 @@ export function FaceSwapPanel({
     setTargetFile(null);
     setTargetPreview(null);
     setResultUrl(null);
+    setGenerationId(null);
     setProgress(0);
     setError(null);
     closeCamera();
@@ -331,36 +345,51 @@ export function FaceSwapPanel({
     </div>
   );
 
-  if (step === "result" && resultUrl) {
+  if (step === "result" && resultUrl && generationId) {
     return (
       <div className="space-y-4">
         {mode === "video" ? (
-          <video
-            src={resultUrl}
-            controls
-            autoPlay
-            playsInline
-            className="w-full rounded-2xl border border-[#B4FF00]/25"
-          />
-        ) : (
-          <div className="relative aspect-square max-w-md mx-auto rounded-2xl overflow-hidden border border-[#B4FF00]/25">
-            <Image src={resultUrl} alt="Ergebnis" fill className="object-cover" unoptimized />
+          <div className="image-wrapper generated-image-wrapper generated-image-wrapper--unlocked">
+            <video
+              src={resultUrl}
+              controls
+              autoPlay
+              playsInline
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+              className="generated-image w-full rounded-2xl border border-[#B4FF00]/25"
+              style={{ userSelect: "none" }}
+            />
           </div>
+        ) : (
+          <ProtectedGeneratedImage
+            src={resultUrl}
+            alt="Face Swap Ergebnis"
+            locked={false}
+            generationId={generationId}
+            showDownload
+            downloadLabel="Herunterladen"
+            aspectClassName="aspect-square max-w-md mx-auto"
+          />
         )}
         <div className="grid grid-cols-2 gap-3">
-          <a
-            href={resultUrl}
-            download={`influexai-faceswap.${mode === "video" ? "mp4" : "jpg"}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#B4FF00] text-[#060608] font-semibold py-3 rounded-xl text-center text-sm hover:bg-[#c8ff33] transition-all"
-          >
-            ⬇ Herunterladen
-          </a>
+          {mode === "video" && (
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = `/api/download/${generationId}`;
+              }}
+              className="bg-[#B4FF00] text-[#060608] font-semibold py-3 rounded-xl text-center text-sm hover:bg-[#c8ff33] transition-all"
+            >
+              ⬇ Herunterladen
+            </button>
+          )}
           <button
             type="button"
             onClick={reset}
-            className="border border-white/20 text-white py-3 rounded-xl text-sm hover:bg-white/5 transition-all"
+            className={`border border-white/20 text-white py-3 rounded-xl text-sm hover:bg-white/5 transition-all ${
+              mode === "image" ? "col-span-2" : ""
+            }`}
           >
             ↺ Neu erstellen
           </button>

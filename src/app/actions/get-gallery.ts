@@ -15,7 +15,13 @@ import { resolveGenerationMediaUrls } from "@/lib/gallery-media";
 
 function isImageGenerationType(type: string): boolean {
   const t = type.toLowerCase();
-  return t.includes("ki-ich") || t === "ki-ich" || t.includes("produkt");
+  return (
+    t.includes("ki-ich") ||
+    t === "ki-ich" ||
+    t.includes("produkt") ||
+    t.includes("image-generator") ||
+    t === "image"
+  );
 }
 
 function isVideoGenerationType(type: string): boolean {

@@ -9,11 +9,15 @@
 --
 -- If jobs were scheduled with YOUR_SERVICE_ROLE_KEY, they always returned 401.
 
-select cron.unschedule('daily-nurture-emails')
-where exists (select 1 from cron.job where jobname = 'daily-nurture-emails');
-
-select cron.unschedule('daily-churn-winback')
-where exists (select 1 from cron.job where jobname = 'daily-churn-winback');
+do $$
+begin
+  if exists (select 1 from cron.job where jobname = 'daily-nurture-emails') then
+    perform cron.unschedule('daily-nurture-emails');
+  end if;
+  if exists (select 1 from cron.job where jobname = 'daily-churn-winback') then
+    perform cron.unschedule('daily-churn-winback');
+  end if;
+end $$;
 
 select cron.schedule(
   'daily-nurture-emails',

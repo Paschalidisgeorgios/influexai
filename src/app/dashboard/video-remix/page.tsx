@@ -12,6 +12,7 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 const CREDIT_COST = 2;
 
@@ -172,7 +173,7 @@ export default function VideoRemixPage() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(result.error);
+        setError(sanitizeUserMessage(result.error));
         setStep("input");
         return;
       }
@@ -240,8 +241,8 @@ export default function VideoRemixPage() {
           </h1>
         </div>
         <p style={{ color: "#505055", fontSize: "0.9rem" }}>
-          KI generiert Remix-Konzepte (Titel, Hook, Struktur) — kein
-          Video-Rendering via fal.ai
+          KI generiert Remix-Konzepte (Titel, Hook, Struktur) — nur Ideen, kein
+          Video-Rendering.
         </p>
       </div>
 
@@ -347,8 +348,8 @@ export default function VideoRemixPage() {
                     color: "#505055",
                   }}
                 >
-                  Titel & Beschreibung via YouTube API wenn konfiguriert, sonst
-                  KI aus URL
+                  Titel & Beschreibung automatisch aus dem Link, sonst nur KI
+                  aus URL
                 </p>
               </div>
               <div>

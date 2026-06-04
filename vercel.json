@@ -20,8 +20,17 @@
     "src/app/api/outlier-detector/route.ts": {
       "maxDuration": 60
     },
+    "src/app/api/viral-score/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/competitor-analysis/route.ts": {
+      "maxDuration": 60
+    },
     "src/app/api/video-remix/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/agent/route.ts": {
+      "maxDuration": 300
     }
   }
 }

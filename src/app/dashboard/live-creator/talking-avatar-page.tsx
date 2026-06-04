@@ -5,6 +5,7 @@ import Image from "next/image";
 import { LiveCreatorVoicePicker } from "@/components/live-creator-voice-picker";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { useLocale } from "next-intl";
 
 type FlowStep = "input" | "generating" | "result";
@@ -14,9 +15,9 @@ type AudioSource = "elevenlabs" | "own";
 const CREDIT_COST = 10;
 
 const POLLING_TIPS = [
-  "Akool analysiert das Gesichtsfoto…",
+  "Gesicht wird analysiert…",
   "Lippensynchronisation wird berechnet…",
-  "Video wird gerendert…",
+  "Video wird generiert…",
   "Fast fertig…",
 ];
 
@@ -244,7 +245,11 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
       if (statusData.progress != null) setProgress(statusData.progress);
       if (statusData.status === "failed") {
         setVideoStatus("failed");
-        setError(statusData.error || "Video-Generierung fehlgeschlagen");
+        setError(
+          sanitizeUserMessage(
+            statusData.error || "Video-Generierung fehlgeschlagen"
+          )
+        );
         setFlowStep("input");
         stopPolling();
         return;
@@ -298,7 +303,10 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     } catch (err: unknown) {
       setVideoStatus("failed");
       setError(
-        err instanceof Error ? err.message : "Generierung fehlgeschlagen"
+        sanitizeUserMessage(
+          err instanceof Error ? err.message : "Generierung fehlgeschlagen",
+          { allowElevenLabs: audioSource === "elevenlabs" }
+        )
       );
       setFlowStep("input");
       stopPolling();
@@ -335,7 +343,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
             AVATAR VIDEO
           </h1>
           <p className="text-white/50 text-sm">
-            Lade ein Foto hoch und lass es sprechen — Akool Talking Avatar ·{" "}
+            Lade ein Foto hoch und lass es sprechen — InfluexAI Talking Avatar ·{" "}
             {CREDIT_COST} Credits
           </p>
         </header>

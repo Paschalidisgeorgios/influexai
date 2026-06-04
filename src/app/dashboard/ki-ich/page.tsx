@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { ImageGenerationLoading } from "@/components/image-generation-loading";
+import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 type Step = "upload" | "describe" | "loading" | "preview" | "result";
 
@@ -48,8 +50,10 @@ export default function KiIchPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [scene, setScene] = useState("");
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [unlockLoading, setUnlockLoading] = useState(false);
   const [loadingMode, setLoadingMode] = useState<"preview" | "final">(
     "preview"
   );
@@ -79,13 +83,21 @@ export default function KiIchPage() {
     const res = await fetch("/api/ki-ich", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageUrl: photo, scene, mode }),
+      body: JSON.stringify({
+        imageUrl: photo,
+        scene,
+        mode,
+        generationId: mode === "final" ? generationId : undefined,
+      }),
     });
     const data = await res.json();
-    if (!res.ok || !data.imageUrl) {
+    if (!res.ok || !data.imageUrl || !data.generationId) {
       throw new Error(data.error || "Fehler beim Generieren");
     }
-    return data.imageUrl as string;
+    return data as {
+      imageUrl: string;
+      generationId: string;
+    };
   };
 
   const handleGenerate = async () => {
@@ -94,40 +106,50 @@ export default function KiIchPage() {
     setLoadingMode("preview");
     setStep("loading");
     setPreviewUrl(null);
-    setResult(null);
+    setResultUrl(null);
+    setGenerationId(null);
 
     try {
-      const url = await callKiIch("preview");
-      setPreviewUrl(url);
+      const data = await callKiIch("preview");
+      setGenerationId(data.generationId);
+      setPreviewUrl(data.imageUrl);
       setStep("preview");
     } catch (err: unknown) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Fehler beim Generieren. Bitte versuche es erneut."
+        sanitizeUserMessage(
+          err instanceof Error
+            ? err.message
+            : "Fehler beim Generieren. Bitte versuche es erneut."
+        )
       );
       setStep("describe");
     }
   };
 
   const handleGenerateHQ = async () => {
-    if (!photo || !scene) return;
+    if (!photo || !scene || !generationId) return;
     setError(null);
+    setUnlockLoading(true);
     setLoadingMode("final");
     setStep("loading");
 
     try {
-      const url = await callKiIch("final");
-      setResult(url);
+      const data = await callKiIch("final");
+      setGenerationId(data.generationId);
+      setResultUrl(data.imageUrl);
       setStep("result");
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err: unknown) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Hochauflösende Generierung fehlgeschlagen."
+        sanitizeUserMessage(
+          err instanceof Error
+            ? err.message
+            : "Hochauflösende Generierung fehlgeschlagen."
+        )
       );
       setStep("preview");
+    } finally {
+      setUnlockLoading(false);
     }
   };
 
@@ -137,7 +159,8 @@ export default function KiIchPage() {
     setPhotoFile(null);
     setScene("");
     setPreviewUrl(null);
-    setResult(null);
+    setResultUrl(null);
+    setGenerationId(null);
     setError(null);
   };
 
@@ -478,53 +501,28 @@ export default function KiIchPage() {
           }
           subtitle={
             loadingMode === "preview"
-              ? "Flux PuLID — schnellere Vorschau (~15 Sek.)"
-              : "Flux PuLID — finale Qualität (~25–40 Sek.)"
+              ? "KI-Vorschau wird erstellt (~15 Sek.)"
+              : "Finale KI-Qualität (~25–40 Sek.)"
           }
         />
       )}
 
-      {step === "preview" && previewUrl && (
+      {step === "preview" && previewUrl && generationId && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ color: "#505055", fontSize: "0.85rem" }}>
             Vorschau bereit — für beste Qualität ohne Farbartefakte auf der Haut
             jetzt hochauflösend generieren.
           </p>
-          <div
-            style={{
-              borderRadius: 20,
-              overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.12)",
-              position: "relative",
-            }}
-          >
-            <Image
-              src={previewUrl}
-              alt="Vorschau"
-              width={1024}
-              height={1024}
-              unoptimized
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleGenerateHQ}
-            style={{
-              width: "100%",
-              padding: "15px",
-              borderRadius: 12,
-              border: "none",
-              background: "#B4FF00",
-              color: "#060608",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "1.3rem",
-              letterSpacing: "0.04em",
-              cursor: "pointer",
-            }}
-          >
-            HOCHAUFLÖSEND GENERIEREN → (2 Credits)
-          </button>
+          <ProtectedGeneratedImage
+            src={previewUrl}
+            alt="Vorschau"
+            locked
+            generationId={generationId}
+            unlockHint="Hochauflösend freischalten — 2 Credits"
+            unlockLabel="Jetzt freischalten"
+            onUnlock={handleGenerateHQ}
+            unlockLoading={unlockLoading}
+          />
           <button
             type="button"
             onClick={() => setStep("describe")}
@@ -546,7 +544,7 @@ export default function KiIchPage() {
         </div>
       )}
 
-      {step === "result" && result && (
+      {step === "result" && resultUrl && generationId && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <button
             onClick={reset}
@@ -565,64 +563,16 @@ export default function KiIchPage() {
             ← Neues Bild
           </button>
 
-          <div
-            style={{
-              borderRadius: 20,
-              overflow: "hidden",
-              border: "1px solid rgba(180,255,0,0.2)",
-              position: "relative",
-            }}
-          >
-            <Image
-              src={result}
-              alt="KI-generiertes Bild"
-              width={1024}
-              height={1024}
-              unoptimized
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
+          <ProtectedGeneratedImage
+            src={resultUrl}
+            alt="KI-generiertes Bild"
+            locked={false}
+            generationId={generationId}
+            showDownload
+            downloadLabel="Herunterladen"
+            className="generated-image-wrapper--unlocked"
+          />
 
-          <div style={{ display: "flex", gap: 10 }}>
-            <a
-              href={result}
-              download="influexai-bild.jpg"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                flex: 1,
-                padding: "13px",
-                borderRadius: 10,
-                background: "#B4FF00",
-                color: "#060608",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                textDecoration: "none",
-                textAlign: "center",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              ⬇ Herunterladen
-            </a>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(result);
-              }}
-              style={{
-                padding: "13px 20px",
-                borderRadius: 10,
-                background: "transparent",
-                border: "1px solid rgba(255,255,255,0.09)",
-                color: "#F0EFE8",
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                cursor: "pointer",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              🔗 Link kopieren
-            </button>
-          </div>
         </div>
       )}
     </div>

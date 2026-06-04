@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { trackAbEvent, type AbVariant } from "@/lib/ab-tracking";
+import { RotatingHeroHeadline } from "@/components/landing/RotatingHeroHeadline";
+
+const GridReveal = dynamic(
+  () => import("@/components/landing/GridReveal"),
+  { ssr: false }
+);
 
 type Audience = "creator" | "brand";
 
@@ -19,33 +27,6 @@ const HERO_CONTENT: Record<Audience, { headline: string[]; sub: string }> = {
   },
 };
 
-const IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80&fit=crop",
-    tall: true,
-    tag: "live" as const,
-    tagLabel: "LIVE",
-    title: "@diana.influexai",
-    sub: "KI-Charakter aktiv · Face Consistent",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80&fit=crop",
-    tall: false,
-    tag: "brand" as const,
-    tagLabel: "Brand Ad",
-    title: "Beauty Campaign",
-    sub: "URL → Spot · 90 Sek.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&q=80&fit=crop",
-    tall: false,
-    tag: "ai" as const,
-    tagLabel: "KI-Ich",
-    title: "Fashion · Milan",
-    sub: "Nano Banana Pro · 4K",
-  },
-];
-
 export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   const t = useTranslations("hero");
   const [audience, setAudience] = useState<Audience>("creator");
@@ -59,9 +40,13 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         : [t("headline")],
     sub: t("subheadline"),
     cta: t("cta_primary"),
-    ctaHref: "/signup",
+    ctaHref: "/auth/sign-up",
   };
   const content = isVariantB ? variantBContent : HERO_CONTENT[audience];
+  const rawRotating = t.raw("rotating_titles");
+  const rotatingTitles = Array.isArray(rawRotating)
+    ? (rawRotating as string[])
+    : [];
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -69,37 +54,46 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 14;
-      document
-        .querySelectorAll<HTMLElement>("[data-parallax-card]")
-        .forEach((el, i) => {
-          const d = (i % 2 === 0 ? 1 : -1) * (0.4 + i * 0.2);
-          el.style.transform = `translate(${x * d * 0.4}px, ${y * d * 0.4}px)`;
-        });
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
   return (
     <section
       id="landing-hero-sentinel"
-      className="min-h-screen grid lg:grid-cols-2 grid-cols-1 overflow-hidden relative pt-[76px]"
+      className="relative min-h-screen grid lg:grid-cols-2 grid-cols-1 overflow-hidden pt-[76px]"
     >
+      {/* Background: grid base + interactive reveal */}
+      <div className="absolute inset-0 z-0" aria-hidden>
+        <div
+          className="absolute inset-0 z-[1] hidden md:block"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(180,255,0,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(180,255,0,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px",
+          }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 z-[1] md:hidden"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(180,255,0,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(180,255,0,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "40px 40px",
+          }}
+          aria-hidden
+        />
+        <GridReveal />
+      </div>
+
+      {/* Vignette — blends hero image into Acid Noir bg */}
       <div
-        className="absolute pointer-events-none"
+        className="absolute inset-0 z-[4] pointer-events-none hidden lg:block"
         style={{
-          top: "-100px",
-          left: "-100px",
-          width: "600px",
-          height: "600px",
           background:
-            "radial-gradient(circle, rgba(180,255,0,0.04), transparent 70%)",
-          zIndex: 0,
+            "radial-gradient(ellipse 80% 100% at 70% 50%, transparent 30%, #060608 80%)",
         }}
+        aria-hidden
       />
 
       {/* LEFT: Copy */}
@@ -141,29 +135,32 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
           </div>
         )}
 
-        {/* Headline */}
-        <h1
-          className="mb-7"
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(3.2rem, 8vw, 7.5rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.92,
-          }}
-        >
-          {content.headline.map((line, i) => {
-            const accentIndex = isVariantB ? 2 : content.headline.length - 1;
-            return (
-              <span key={i} className="block">
-                {i === accentIndex ? (
-                  <span style={{ color: "#B4FF00" }}>{line}</span>
-                ) : (
-                  line
-                )}
-              </span>
-            );
-          })}
-        </h1>
+        {isVariantB ? (
+          <h1
+            className="mb-7"
+            style={{
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "clamp(3.2rem, 8vw, 7.5rem)",
+              letterSpacing: "0.02em",
+              lineHeight: 0.92,
+            }}
+          >
+            {content.headline.map((line, i) => {
+              const accentIndex = 2;
+              return (
+                <span key={i} className="block">
+                  {i === accentIndex ? (
+                    <span style={{ color: "#B4FF00" }}>{line}</span>
+                  ) : (
+                    line
+                  )}
+                </span>
+              );
+            })}
+          </h1>
+        ) : (
+          <RotatingHeroHeadline titles={rotatingTitles} intervalMs={2000} />
+        )}
 
         <p
           className="mb-8"
@@ -179,7 +176,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 mb-10">
           <a
-            href={isVariantB ? variantBContent.ctaHref : "/signup"}
+            href={isVariantB ? variantBContent.ctaHref : "/auth/sign-up"}
             className="btn-acid justify-center sm:justify-start"
             onClick={() => void trackAbEvent("signup_click", variant)}
           >
@@ -252,79 +249,32 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         </div>
       </div>
 
-      {/* RIGHT: Image grid - hidden on mobile */}
+      {/* RIGHT: Hero image */}
       <div
-        className="hidden lg:grid relative z-10"
+        className="hidden lg:block relative z-[5] min-h-[min(85vh,720px)]"
         style={{
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "1fr 1fr",
-          gap: 10,
           padding: "24px clamp(20px,6vw,64px) 80px 12px",
         }}
       >
-        {IMAGES.map((img, i) => (
+        <div className="relative h-full w-full min-h-[480px] rounded-2xl overflow-hidden border border-white/[0.08]">
+          <Image
+            src="/images/landing/hero.jpg"
+            alt="Creator mit InfluexAI"
+            fill
+            className="object-cover"
+            style={{ filter: "brightness(0.88) saturate(1.1)" }}
+            priority
+            sizes="(min-width: 1024px) 50vw, 0px"
+          />
           <div
-            key={i}
-            data-parallax-card=""
-            className="img-card"
+            className="absolute inset-0 pointer-events-none"
             style={{
-              gridRow: img.tall ? "1 / 3" : "auto",
-              transition: "transform 0.15s ease",
+              background:
+                "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 45%), linear-gradient(to left, rgba(6,6,8,0.4) 0%, transparent 40%)",
             }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={img.src}
-              alt={img.title}
-              style={{
-                filter: "brightness(0.8) saturate(1.15)",
-                minHeight: img.tall ? undefined : 160,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-              }}
-              loading="lazy"
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to top, rgba(6,6,8,0.92) 0%, rgba(6,6,8,0.10) 50%, transparent 80%)",
-              }}
-            />
-            <div className="absolute inset-0 p-3 flex flex-col justify-between pointer-events-none">
-              <div>
-                {img.tag === "live" && (
-                  <span className="tag-live">
-                    <span
-                      className="w-[5px] h-[5px] rounded-full bg-[#ff4757] animate-blink inline-block"
-                      aria-hidden
-                    />
-                    LIVE
-                  </span>
-                )}
-                {img.tag === "brand" && (
-                  <span className="tag-brand">{img.tagLabel}</span>
-                )}
-                {img.tag === "ai" && (
-                  <span className="tag-ai">{img.tagLabel}</span>
-                )}
-              </div>
-              <div>
-                <div
-                  className="font-bold text-[0.82rem] text-white"
-                  style={{ letterSpacing: "-0.02em" }}
-                >
-                  {img.title}
-                </div>
-                <div className="text-[0.68rem] text-white/45 mt-0.5">
-                  {img.sub}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+            aria-hidden
+          />
+        </div>
       </div>
     </section>
   );
