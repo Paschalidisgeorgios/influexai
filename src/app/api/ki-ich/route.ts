@@ -41,12 +41,14 @@ export async function POST(request: NextRequest) {
     const uploadedUrl = await fal.storage.upload(file);
 
     // Bild generieren
-    const result = await fal.subscribe("fal-ai/flux-pro/v1.1-ultra", {
+    const result = await fal.subscribe("fal-ai/pulid", {
       input: {
-        prompt: `professional high quality portrait photo, ${scene}, photorealistic, hyperrealistic, 8k, cinematic lighting, award winning photography`,
+        image_url: uploadedUrl,
+        prompt: `${scene}, professional high quality photo, photorealistic, 8k, sharp focus`,
+        negative_prompt: "bad quality, blurry, distorted face, ugly, cartoon",
+        num_inference_steps: 20,
+        guidance_scale: 4,
         num_images: 1,
-        enable_safety_checker: false,
-        image_size: "portrait_4_3",
       },
     });
 
@@ -54,8 +56,8 @@ export async function POST(request: NextRequest) {
     const outputUrl =
       r?.images?.[0]?.url ||
       r?.data?.images?.[0]?.url ||
-      r?.data?.image?.url ||
-      r?.image?.url;
+      r?.image?.url ||
+      r?.data?.image?.url;
 
     if (!outputUrl) {
       throw new Error(`Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`);
