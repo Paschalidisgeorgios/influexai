@@ -9,6 +9,7 @@ import {
   e2eMockScript,
   isE2eMockGenerationsEnabled,
 } from "@/lib/e2e-mock-generations";
+import { createAnthropicMessage } from "@/lib/anthropic";
 
 const GENERATE_COST = 2;
 const REGENERATE_COST = 1;
@@ -120,28 +121,14 @@ JSON:
   "toneDescription": string
 }`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
-    }),
+  const claude = await createAnthropicMessage({
+    system: systemPrompt,
+    user: userPrompt,
   });
-
-  if (!response.ok) {
-    console.error("generate-script API:", await response.text());
-    throw new Error("API_ERROR");
+  if (!claude.ok) {
+    throw new Error(claude.error);
   }
-
-  const data = await response.json();
-  return data.content?.[0]?.text ?? "";
+  return claude.text;
 }
 
 export async function generateScript(
@@ -218,11 +205,15 @@ export async function generateScript(
 
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
-    if (e instanceof Error && e.message === "API_ERROR") {
-      return {
-        success: false,
-        error: "Script-Generierung fehlgeschlagen. Bitte erneut versuchen.",
-      };
+    const msg = e instanceof Error ? e.message : "";
+    if (
+      msg &&
+      (msg.includes("ANTHROPIC") ||
+        msg.includes("Anthropic") ||
+        msg.includes("KI ist") ||
+        msg.includes("sk-ant"))
+    ) {
+      return { success: false, error: msg };
     }
     console.error("generateScript:", e);
     return {
@@ -316,11 +307,15 @@ export async function regenerateScript(
 
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
-    if (e instanceof Error && e.message === "API_ERROR") {
-      return {
-        success: false,
-        error: "Script-Generierung fehlgeschlagen. Bitte erneut versuchen.",
-      };
+    const msg = e instanceof Error ? e.message : "";
+    if (
+      msg &&
+      (msg.includes("ANTHROPIC") ||
+        msg.includes("Anthropic") ||
+        msg.includes("KI ist") ||
+        msg.includes("sk-ant"))
+    ) {
+      return { success: false, error: msg };
     }
     console.error("regenerateScript:", e);
     return {

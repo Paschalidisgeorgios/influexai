@@ -61,8 +61,11 @@ export async function generateStoreCopy(): Promise<Success | Failure> {
   const admin = await requireAdmin();
   if (!admin.ok) return { success: false, error: admin.error };
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return { success: false, error: "ANTHROPIC_API_KEY fehlt." };
+  const { getAnthropicConfigError, createAnthropicMessage } =
+    await import("@/lib/anthropic");
+  const configError = getAnthropicConfigError();
+  if (configError) {
+    return { success: false, error: configError };
   }
 
   const systemPrompt =
@@ -97,28 +100,15 @@ JSON format exactly:
 }`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 12000,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+    const claude = await createAnthropicMessage({
+      system: systemPrompt,
+      user: userPrompt,
+      maxTokens: 12000,
     });
-
-    if (!response.ok) {
-      console.error("generate-store-copy:", await response.text());
-      return { success: false, error: "Claude API Fehler." };
+    if (!claude.ok) {
+      return { success: false, error: claude.error };
     }
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text ?? "";
+    const text = claude.text;
     if (!text) return { success: false, error: "Leere Antwort." };
 
     const copy = parseBundle(text);

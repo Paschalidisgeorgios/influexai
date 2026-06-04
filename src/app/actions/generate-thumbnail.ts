@@ -3,6 +3,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
+import { createAnthropicMessage } from "@/lib/anthropic";
 
 const CREDIT_COST = 1;
 
@@ -208,28 +209,15 @@ JSON Format:
   }
 }]`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
-    }),
+  const claude = await createAnthropicMessage({
+    system: systemPrompt,
+    user: userPrompt,
+    maxTokens: 8192,
   });
-
-  if (!response.ok) {
-    console.error("generate-thumbnail API:", await response.text());
-    throw new Error("API_ERROR");
+  if (!claude.ok) {
+    throw new Error(claude.error);
   }
-
-  const data = await response.json();
-  return data.content?.[0]?.text ?? "";
+  return claude.text;
 }
 
 export async function generateThumbnailConcepts(input: {
@@ -289,6 +277,14 @@ export async function generateThumbnailConcepts(input: {
 
     return { success: true, concepts, creditsLeft: deduction.remainingCredits };
   } catch (e) {
+    if (
+      e instanceof Error &&
+      (e.message.includes("Anthropic") ||
+        e.message.includes("KI ist") ||
+        e.message.includes("sk-ant"))
+    ) {
+      return { success: false, error: e.message };
+    }
     if (e instanceof Error && e.message === "API_ERROR") {
       return {
         success: false,

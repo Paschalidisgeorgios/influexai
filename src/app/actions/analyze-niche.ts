@@ -7,6 +7,7 @@ import {
   e2eMockNiches,
   isE2eMockGenerationsEnabled,
 } from "@/lib/e2e-mock-generations";
+import { createAnthropicMessage } from "@/lib/anthropic";
 
 const CREDIT_COST = 2;
 
@@ -125,32 +126,14 @@ Gib mir 5 profitable YouTube Nischen als JSON Array:
 }]`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+    const claude = await createAnthropicMessage({
+      system: systemPrompt,
+      user: userPrompt,
     });
-
-    if (!response.ok) {
-      const errBody = await response.text();
-      console.error("Anthropic niche analyze:", errBody);
-      return {
-        success: false,
-        error: "KI-Analyse fehlgeschlagen. Bitte später erneut versuchen.",
-      };
+    if (!claude.ok) {
+      return { success: false, error: claude.error };
     }
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text ?? "";
+    const text = claude.text;
     let niches: NicheIdea[];
     try {
       niches = parseNiches(text);

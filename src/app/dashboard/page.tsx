@@ -27,6 +27,7 @@ type FlowItem = {
   LucideIcon?: LucideIcon;
   badge?: "NEU" | "Bald verfügbar";
   locked?: boolean;
+  coming_soon?: boolean;
 };
 
 const FLOWS: FlowItem[] = [
@@ -67,6 +68,9 @@ const FLOWS: FlowItem[] = [
     tags: ["TTS", "6 Stimmen", "Lizenzfrei"],
     color: "#f59e0b",
     credits: "3 Credits / Generierung",
+    coming_soon: true,
+    badge: "Bald verfügbar",
+    locked: true,
   },
   {
     id: "niche-analyzer",
@@ -347,7 +351,7 @@ export default function DashboardPage() {
       {/* Flow Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5">
         {FLOWS.map((flow) => {
-          const isLocked = flow.locked;
+          const isLocked = flow.locked || flow.coming_soon;
           const creditLocked = noCredits && !isLocked;
           const cardDisabled = isLocked || creditLocked;
           const flowKey = FLOW_I18N[flow.id];

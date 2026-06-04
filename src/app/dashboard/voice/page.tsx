@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Music2 } from "lucide-react";
+import { VOICE_COMING_SOON } from "@/lib/feature-flags";
 import { generateVoice } from "@/app/actions/generate-voice";
 import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
 
@@ -143,6 +145,7 @@ function drawWaveform(canvas: HTMLCanvasElement, audioUrl: string) {
 }
 
 export default function VoicePage() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("stimme");
   const [script, setScript] = useState("");
   const [voiceId, setVoiceId] = useState<string>(ELEVENLABS_VOICES[0].id);
@@ -208,6 +211,16 @@ export default function VoicePage() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [paintWaveform]);
+
+  useEffect(() => {
+    if (VOICE_COMING_SOON) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
+
+  if (VOICE_COMING_SOON) {
+    return null;
+  }
 
   const downloadMp3 = () => {
     if (!audioUrl) return;

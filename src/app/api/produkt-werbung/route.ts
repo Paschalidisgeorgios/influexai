@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { createAnthropicMessage } from "@/lib/anthropic";
 
 const CREDIT_COST = 5;
 
@@ -55,23 +56,16 @@ Antworte mit diesem JSON-Format (auf Deutsch):
 }`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
+    const claude = await createAnthropicMessage({
+      system: systemPrompt,
+      user: userPrompt,
+      maxTokens: 1024,
+      model: "claude-opus-4-5",
     });
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text || "";
+    if (!claude.ok) {
+      return NextResponse.json({ error: claude.error }, { status: 503 });
+    }
+    const text = claude.text;
     const clean = text.replace(/```json|```/g, "").trim();
     const result = JSON.parse(clean);
 

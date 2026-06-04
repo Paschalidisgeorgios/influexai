@@ -1,0 +1,87 @@
+const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
+export const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
+
+export function getAnthropicConfigError(): string | null {
+  const key = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!key) {
+    return "KI ist nicht konfiguriert: ANTHROPIC_API_KEY fehlt (Vercel → Production oder .env.local).";
+  }
+  if (!key.startsWith("sk-ant-")) {
+    return "ANTHROPIC_API_KEY ist ungültig (muss mit sk-ant- beginnen).";
+  }
+  return null;
+}
+
+export function anthropicUserErrorFromStatus(status: number): string {
+  if (status === 401 || status === 403) {
+    return "Anthropic API-Key ungültig oder abgelaufen. In Vercel unter ANTHROPIC_API_KEY prüfen (sk-ant-…).";
+  }
+  if (status === 429) {
+    return "Anthropic Rate-Limit erreicht. Bitte kurz warten und erneut versuchen.";
+  }
+  if (status >= 500) {
+    return "Anthropic-Server vorübergehend nicht erreichbar. Bitte später erneut versuchen.";
+  }
+  return "KI-Anfrage fehlgeschlagen. Bitte später erneut versuchen.";
+}
+
+export type AnthropicMessageParams = {
+  system: string;
+  user: string;
+  maxTokens?: number;
+  model?: string;
+};
+
+export type AnthropicMessageResult =
+  | { ok: true; text: string }
+  | { ok: false; error: string };
+
+export async function createAnthropicMessage(
+  params: AnthropicMessageParams
+): Promise<AnthropicMessageResult> {
+  const configError = getAnthropicConfigError();
+  if (configError) {
+    return { ok: false, error: configError };
+  }
+
+  const key = process.env.ANTHROPIC_API_KEY!.trim();
+
+  try {
+    const response = await fetch(ANTHROPIC_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: params.model ?? ANTHROPIC_MODEL,
+        max_tokens: params.maxTokens ?? 4096,
+        system: params.system,
+        messages: [{ role: "user", content: params.user }],
+      }),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error("Anthropic API:", response.status, errBody.slice(0, 500));
+      return {
+        ok: false,
+        error: anthropicUserErrorFromStatus(response.status),
+      };
+    }
+
+    const data = await response.json();
+    const text = (data.content?.[0]?.text ?? "") as string;
+    if (!text.trim()) {
+      return { ok: false, error: "Leere KI-Antwort erhalten." };
+    }
+    return { ok: true, text };
+  } catch (e) {
+    console.error("Anthropic fetch:", e);
+    return {
+      ok: false,
+      error: "Netzwerkfehler bei der KI-Anfrage. Bitte erneut versuchen.",
+    };
+  }
+}

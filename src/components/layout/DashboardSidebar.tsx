@@ -7,6 +7,7 @@ import { BarChart2, Image, type LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FeatureNudge } from "@/components/feature-nudge";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
+import { VOICE_COMING_SOON } from "@/lib/feature-flags";
 
 type NavItem = {
   id: string;
@@ -231,42 +232,87 @@ export function DashboardSidebar() {
 
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                padding: collapsed ? "10px 17px" : "10px 12px",
-                borderRadius: 10,
-                textDecoration: "none",
-                color: isActive ? "#B4FF00" : "rgba(240,239,232,0.45)",
-                fontSize: "0.875rem",
-                fontWeight: isActive ? 700 : 500,
-                background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
-                transition: "all 0.15s",
-                justifyContent: collapsed ? "center" : "flex-start",
-                borderLeft: isActive
-                  ? "2px solid #B4FF00"
-                  : "2px solid transparent",
-              }}
-            >
+          const isComingSoon = item.id === "voice" && VOICE_COMING_SOON;
+          const navStyle = {
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: collapsed ? "10px 17px" : "10px 12px",
+            borderRadius: 10,
+            textDecoration: "none",
+            color: isComingSoon
+              ? "rgba(240,239,232,0.25)"
+              : isActive
+                ? "#B4FF00"
+                : "rgba(240,239,232,0.45)",
+            fontSize: "0.875rem",
+            fontWeight: isActive ? 700 : 500,
+            background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
+            transition: "all 0.15s",
+            justifyContent: collapsed ? "center" : "flex-start",
+            borderLeft: isActive
+              ? "2px solid #B4FF00"
+              : "2px solid transparent",
+            cursor: isComingSoon ? "not-allowed" : "pointer",
+            opacity: isComingSoon ? 0.55 : 1,
+          };
+          const inner = (
+            <>
               {item.lucideIcon ? (
                 <item.lucideIcon
                   size={18}
                   strokeWidth={isActive ? 2.5 : 2}
                   style={{ flexShrink: 0 }}
-                  color={isActive ? "#B4FF00" : "rgba(240,239,232,0.45)"}
+                  color={
+                    isComingSoon
+                      ? "rgba(240,239,232,0.25)"
+                      : isActive
+                        ? "#B4FF00"
+                        : "rgba(240,239,232,0.45)"
+                  }
                 />
               ) : (
                 <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>
                   {item.icon}
                 </span>
               )}
-              {!collapsed && item.label}
+              {!collapsed && (
+                <>
+                  {item.label}
+                  {isComingSoon && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "0.58rem",
+                        color: "rgba(240,239,232,0.35)",
+                      }}
+                    >
+                      Bald
+                    </span>
+                  )}
+                </>
+              )}
+            </>
+          );
+          if (isComingSoon) {
+            return (
+              <span
+                key={item.id}
+                title={collapsed ? `${item.label} (bald)` : "Kommt bald"}
+                style={navStyle}
+              >
+                {inner}
+              </span>
+            );
+          }
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              style={navStyle}
+            >
+              {inner}
             </Link>
           );
         })}

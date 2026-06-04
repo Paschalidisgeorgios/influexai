@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { VOICE_COMING_SOON } from "@/lib/feature-flags";
 
 const NAV_ITEMS = [
   { icon: "🏠", label: "Home", href: "/dashboard" },
   { icon: "🎭", label: "Live", href: "/dashboard/live" },
   { icon: "📸", label: "KI-Ich", href: "/dashboard/ki-ich" },
   { icon: "🛍️", label: "Werbung", href: "/dashboard/produkt" },
-  { icon: "🎵", label: "Stimme", href: "/dashboard/voice" },
+  ...(VOICE_COMING_SOON
+    ? []
+    : [{ icon: "🎵", label: "Stimme", href: "/dashboard/voice" }]),
 ];
 
 export function MobileNav() {

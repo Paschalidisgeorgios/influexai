@@ -122,8 +122,10 @@ export async function generateBlogPost(
     return { success: false, error: "Bitte Target Keyword eingeben." };
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return { success: false, error: "ANTHROPIC_API_KEY ist nicht konfiguriert." };
+  const { getAnthropicConfigError } = await import("@/lib/anthropic");
+  const configError = getAnthropicConfigError();
+  if (configError) {
+    return { success: false, error: configError };
   }
 
   try {

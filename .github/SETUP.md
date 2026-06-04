@@ -53,7 +53,11 @@ In **Vercel → Project → Settings → Environment Variables** (Production):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 - `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_APP_URL` = `https://influexaicreator.com`
+- `ANTHROPIC_API_KEY` = `sk-ant-api03-…` (must start with `sk-ant-`; redeploy after change)
 - `RESEND_API_KEY`, `FAL_API_KEY` (or `FAL_KEY`)
+- `ELEVENLABS_API_KEY` (optional — Stimme & Musik; hidden until set)
+
+After adding or changing env vars in Vercel, **redeploy Production** (Deployments → Redeploy) or push to `main`.
 
 Production branch in Vercel Git settings must be **`main`**.
 
