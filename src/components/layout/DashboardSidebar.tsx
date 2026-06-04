@@ -7,7 +7,10 @@ import { BarChart2, Image, type LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FeatureNudge } from "@/components/feature-nudge";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
-import { VOICE_COMING_SOON } from "@/lib/feature-flags";
+import {
+  LIVE_CREATOR_COMING_SOON,
+  VOICE_COMING_SOON,
+} from "@/lib/feature-flags";
 
 type NavItem = {
   id: string;
@@ -18,7 +21,12 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "live", icon: "🎭", label: "Live Creator", href: "/dashboard/live" },
+  {
+    id: "live",
+    icon: "🎭",
+    label: "Live Creator",
+    href: "/dashboard/live-creator",
+  },
   { id: "ki-ich", icon: "📸", label: "Mein KI-Ich", href: "/dashboard/ki-ich" },
   {
     id: "produkt",
@@ -232,7 +240,9 @@ export function DashboardSidebar() {
 
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
-          const isComingSoon = item.id === "voice" && VOICE_COMING_SOON;
+          const isComingSoon =
+            (item.id === "voice" && VOICE_COMING_SOON) ||
+            (item.id === "live" && LIVE_CREATOR_COMING_SOON);
           const navStyle = {
             display: "flex",
             alignItems: "center",

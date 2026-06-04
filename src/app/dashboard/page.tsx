@@ -32,15 +32,14 @@ type FlowItem = {
 
 const FLOWS: FlowItem[] = [
   {
-    id: "live",
+    id: "live-creator",
     icon: "🎭",
     title: "Live Creator",
-    desc: "Streame live ohne dein Gesicht. Dein KI-Charakter übernimmt Mimik und Stimme in Echtzeit.",
-    tags: ["Echtzeit", "Face Consistent", "Multi-Platform"],
+    desc: "Talking Avatar aus deinem Foto und Script — KI-Gesicht mit synchronisierter Stimme.",
+    tags: ["Akool", "Talking Avatar", "ElevenLabs"],
     color: "#B4FF00",
-    credits: "10 Credits / Min",
-    badge: "Bald verfügbar",
-    locked: true,
+    credits: "10 Credits / Video",
+    badge: "NEU",
   },
   {
     id: "ki-ich",
@@ -168,7 +167,7 @@ const TYPE_ICONS: Record<string, string> = {
   "video-remix": "🔁",
   "script-generator": "📝",
   "thumbnail-concept": "🖼️",
-  live: "🎭",
+  "live-creator": "🎭",
 };
 
 function firstName(fullName: string | null): string | null {
