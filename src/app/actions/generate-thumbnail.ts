@@ -316,15 +316,14 @@ export async function saveThumbnailConcept(input: {
   });
 
   if (error) {
-    console.error("saveThumbnailConcept:", error.message);
-    if (error.code === "42P01") {
-      return {
-        success: false,
-        error:
-          "Tabelle thumbnail_concepts fehlt. Bitte Migration 013 in Supabase ausführen.",
-      };
-    }
-    return { success: false, error: "Speichern fehlgeschlagen." };
+    console.error("saveThumbnailConcept:", error.message, error.code);
+    return {
+      success: false,
+      error:
+        error.code === "42P01"
+          ? "Tabelle thumbnail_concepts fehlt. Bitte supabase/migrations/027_ensure_flow_save_tables.sql in Supabase ausführen."
+          : `Speichern fehlgeschlagen: ${error.message}`,
+    };
   }
 
   return { success: true };
