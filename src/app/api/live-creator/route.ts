@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
+import {
+  isValidElevenLabsVoiceId,
+  synthesizeElevenLabsSpeech,
+} from "@/lib/elevenlabs-tts";
 import {
   configureFalClient,
   getFalKey,
@@ -14,46 +17,12 @@ import {
 } from "@/lib/akool";
 
 const CREDIT_COST = 10;
-const VALID_VOICE_IDS = new Set<string>(
-  ELEVENLABS_VOICES.map((v) => v.id)
-);
-
 async function uploadAudioDataUrlToFal(audioDataUrl: string): Promise<string> {
   const base64Data = audioDataUrl.replace(/^data:audio\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
   const blob = new Blob([buffer], { type: "audio/mpeg" });
   const file = new File([blob], "speech.mp3", { type: "audio/mpeg" });
   return fal.storage.upload(file);
-}
-
-async function synthesizeSpeech(
-  text: string,
-  voiceId: string
-): Promise<string> {
-  const res = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-    {
-      method: "POST",
-      headers: {
-        "xi-api-key": process.env.ELEVENLABS_API_KEY!,
-        "Content-Type": "application/json",
-        Accept: "audio/mpeg",
-      },
-      body: JSON.stringify({
-        text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-      }),
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Stimmgenerierung fehlgeschlagen");
-  }
-
-  const buffer = await res.arrayBuffer();
-  const base64 = Buffer.from(buffer).toString("base64");
-  return `data:audio/mpeg;base64,${base64}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -81,7 +50,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  if (!voiceId || !VALID_VOICE_IDS.has(voiceId)) {
+  if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {
     return NextResponse.json({ error: "Ungültige Stimme" }, { status: 400 });
   }
 
@@ -122,7 +91,11 @@ export async function POST(request: NextRequest) {
 
   try {
     configureFalClient();
-    const audioDataUrl = await synthesizeSpeech(trimmedScript, voiceId);
+    const tts = await synthesizeElevenLabsSpeech(trimmedScript, voiceId, 50);
+    if (!tts.ok) {
+      return NextResponse.json({ error: tts.error }, { status: 502 });
+    }
+    const audioDataUrl = tts.audioDataUrl;
     const [talkingPhotoUrl, audioUrl] = await Promise.all([
       uploadDataUrlToFal(photoDataUrl),
       uploadAudioDataUrlToFal(audioDataUrl),
