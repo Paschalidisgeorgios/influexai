@@ -64,11 +64,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Flow Grid */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gap: 14,
-      }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
         {FLOWS.map((flow) => (
           <div
             key={flow.id}
