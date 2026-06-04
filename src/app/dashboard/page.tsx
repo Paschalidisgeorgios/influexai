@@ -67,9 +67,7 @@ const FLOWS: FlowItem[] = [
     tags: ["TTS", "6 Stimmen", "Lizenzfrei"],
     color: "#f59e0b",
     credits: "3 Credits / Generierung",
-    coming_soon: true,
-    badge: "Bald verfügbar",
-    locked: true,
+    badge: "NEU",
   },
   {
     id: "niche-analyzer",
