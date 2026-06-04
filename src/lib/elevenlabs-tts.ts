@@ -1,11 +1,11 @@
 import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
 
-const VALID_VOICE_IDS = new Set<string>(ELEVENLABS_VOICES.map((v) => v.id));
-
 export const DEFAULT_ELEVENLABS_VOICE_ID = ELEVENLABS_VOICES[0].id;
 
+/** Any non-empty ElevenLabs voice_id from the voice browser or API. */
 export function isValidElevenLabsVoiceId(voiceId: string): boolean {
-  return VALID_VOICE_IDS.has(voiceId);
+  const id = voiceId?.trim();
+  return typeof id === "string" && id.length >= 8 && id.length <= 64;
 }
 
 export type ElevenLabsTtsResult =

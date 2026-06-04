@@ -2,7 +2,6 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
 import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
@@ -62,8 +61,7 @@ export async function generateVoice(
       return { success: false, error: tts.error };
     }
 
-    const voiceLabel =
-      ELEVENLABS_VOICES.find((v) => v.id === voiceId)?.label ?? voiceId;
+    const voiceLabel = voiceId;
 
     const deduction = await deductCredits(
       supabase,

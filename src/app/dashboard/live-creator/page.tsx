@@ -3,8 +3,9 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { VoiceRecorder } from "@/components/voice-recorder";
+import { VoiceSelector } from "@/components/voice-selector";
 import { ImageGenerationLoading } from "@/components/image-generation-loading";
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
+import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/elevenlabs-tts";
 
 type Step = "input" | "generating" | "result";
 type AudioSource = "elevenlabs" | "own";
@@ -33,7 +34,7 @@ export default function LiveCreatorPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [script, setScript] = useState("");
   const [audioSource, setAudioSource] = useState<AudioSource>("own");
-  const [voiceId, setVoiceId] = useState<string>(ELEVENLABS_VOICES[0].id);
+  const [voiceId, setVoiceId] = useState<string>(DEFAULT_ELEVENLABS_VOICE_ID);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -370,25 +371,10 @@ export default function LiveCreatorPage() {
                 >
                   Stimme (ElevenLabs)
                 </label>
-                <select
-                  value={voiceId}
-                  onChange={(e) => setVoiceId(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: 12,
-                    borderRadius: 12,
-                    background: "#18181d",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#F0EFE8",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  {ELEVENLABS_VOICES.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.label}
-                    </option>
-                  ))}
-                </select>
+                <VoiceSelector
+                  selectedVoiceId={voiceId}
+                  onVoiceSelect={(voice) => setVoiceId(voice.id)}
+                />
               </div>
             </>
           )}

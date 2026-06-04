@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Music2 } from "lucide-react";
 import { generateVoice } from "@/app/actions/generate-voice";
 import { VoiceRecorder } from "@/components/voice-recorder";
-import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
+import { VoiceSelector } from "@/components/voice-selector";
+import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/elevenlabs-tts";
 
 type Tab = "stimme" | "eigen" | "musik";
 
@@ -146,7 +147,7 @@ function drawWaveform(canvas: HTMLCanvasElement, audioUrl: string) {
 export default function VoicePage() {
   const [tab, setTab] = useState<Tab>("stimme");
   const [script, setScript] = useState("");
-  const [voiceId, setVoiceId] = useState<string>(ELEVENLABS_VOICES[0].id);
+  const [voiceId, setVoiceId] = useState<string>(DEFAULT_ELEVENLABS_VOICE_ID);
   const [stability, setStability] = useState(75);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -356,17 +357,10 @@ export default function VoicePage() {
             >
               Stimme
             </label>
-            <select
-              value={voiceId}
-              onChange={(e) => setVoiceId(e.target.value)}
-              style={{ ...inputStyle, cursor: "pointer" }}
-            >
-              {ELEVENLABS_VOICES.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
+            <VoiceSelector
+              selectedVoiceId={voiceId}
+              onVoiceSelect={(voice) => setVoiceId(voice.id)}
+            />
           </div>
 
           <div>
