@@ -17,10 +17,15 @@ const BOTTOM_NAV = [
   { icon: "💳", label: "Credits & Plan", href: "/dashboard/credits" },
 ];
 
+const ADMIN_NAV = [
+  { icon: "⚙️", label: "Admin Panel", href: "/admin" },
+];
+
 export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [credits, setCredits] = useState<number | null>(null);
   const [maxCredits, setMaxCredits] = useState(500);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
 
@@ -30,12 +35,13 @@ export function DashboardSidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("credits, plan")
+        .select("credits, plan, is_admin")
         .eq("id", user.id)
         .single();
       if (data) {
         setCredits(data.credits);
         setMaxCredits(data.plan === "business" ? 2500 : data.plan === "creator" ? 500 : 50);
+        setIsAdmin(data.is_admin ?? false);
       }
     };
     loadCredits();
@@ -158,6 +164,29 @@ export function DashboardSidebar() {
               color: "rgba(240,239,232,0.3)",
               fontSize: "0.82rem",
               fontWeight: 500,
+              transition: "all 0.15s",
+              justifyContent: collapsed ? "center" : "flex-start",
+            }}
+          >
+            <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>{item.icon}</span>
+            {!collapsed && item.label}
+          </Link>
+        ))}
+
+        {isAdmin && !collapsed && (
+          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "8px 4px" }} />
+        )}
+        {isAdmin && ADMIN_NAV.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            title={collapsed ? item.label : undefined}
+            style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: collapsed ? "9px 17px" : "9px 12px",
+              borderRadius: 10, textDecoration: "none",
+              color: "rgba(255,71,87,0.7)",
+              fontSize: "0.82rem", fontWeight: 600,
               transition: "all 0.15s",
               justifyContent: collapsed ? "center" : "flex-start",
             }}
