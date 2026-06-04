@@ -9,7 +9,11 @@ import {
   e2eMockScript,
   isE2eMockGenerationsEnabled,
 } from "@/lib/e2e-mock-generations";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  CLAUDE_JSON_SYSTEM_RULE,
+  createAnthropicMessage,
+  parseClaudeJson,
+} from "@/lib/anthropic";
 
 const GENERATE_COST = 2;
 const REGENERATE_COST = 1;
@@ -58,9 +62,11 @@ function parseScriptResponse(
   raw: string,
   hookVariantsRequested: boolean
 ): GeneratedScript {
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(clean);
-  const data = parsed?.script !== undefined ? parsed : (parsed?.data ?? parsed);
+  const parsed = parseClaudeJson<Record<string, unknown>>(raw);
+  const data =
+    parsed?.script !== undefined
+      ? parsed
+      : ((parsed?.data as Record<string, unknown>) ?? parsed);
 
   const script = String(data.script ?? "");
   if (!script.trim()) throw new Error("Leeres Script");
@@ -100,7 +106,7 @@ async function callClaude(
   locale: Locale
 ): Promise<string> {
   const outputLanguage = localeToPromptLanguage[locale] ?? "German";
-  const systemPrompt = `You are a professional short-form video script writer. You know psychological triggers that keep viewers watching. Write scripts with clear structure: Hook → Value/Story → CTA. Use [HOOK], [MAIN], [CTA] tags. Always respond in ${outputLanguage}. Reply ONLY with valid JSON.`;
+  const systemPrompt = `Du bist ein professioneller Short-Form Video Script Writer. Nutze psychologische Trigger, Struktur: Hook → Value/Story → CTA. Tags: [HOOK], [MAIN], [CTA]. Antworte auf ${outputLanguage}. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
   const userPrompt = `Thema: ${topic}
 Länge: ${duration}

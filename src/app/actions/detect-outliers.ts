@@ -3,7 +3,11 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  CLAUDE_JSON_SYSTEM_RULE,
+  createAnthropicMessage,
+  parseClaudeJson,
+} from "@/lib/anthropic";
 
 const CREDIT_COST = 3;
 
@@ -45,11 +49,17 @@ const MECHANISMS: ViralMechanism[] = [
 ];
 
 function parseOutliers(raw: string): OutlierConcept[] {
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(clean);
-  const list = Array.isArray(parsed)
-    ? parsed
-    : (parsed?.outliers ?? parsed?.results ?? parsed?.data);
+  const parsed = parseClaudeJson<unknown>(raw);
+  const wrapped = parsed as {
+    outliers?: unknown;
+    results?: unknown;
+    data?: unknown;
+  } | unknown[];
+  const list = Array.isArray(wrapped)
+    ? wrapped
+    : ((wrapped as { outliers?: unknown }).outliers ??
+      (wrapped as { results?: unknown }).results ??
+      (wrapped as { data?: unknown }).data);
   if (!Array.isArray(list) || list.length === 0) {
     throw new Error("Ungültiges JSON-Format");
   }
@@ -110,8 +120,7 @@ export async function detectOutliers(
     return insufficientCreditsError(creditCheck.credits, CREDIT_COST);
   }
 
-  const systemPrompt =
-    "Du bist ein YouTube Viral Content Analyst mit tiefem Verständnis von Outlier-Videos. Ein Outlier ist ein Video, das gemessen an der Kanalgröße überproportional viele Views generiert hat (10x-100x der normalen Performance). Antworte NUR mit validem JSON.";
+  const systemPrompt = `Du bist ein YouTube Viral Content Analyst. Outlier = Video mit 10x–100x normaler Kanal-Performance. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
   const userPrompt = `Nische: ${niche.trim()}
 Zeitraum: ${period}

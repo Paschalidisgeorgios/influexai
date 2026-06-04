@@ -7,7 +7,11 @@ import {
   e2eMockNiches,
   isE2eMockGenerationsEnabled,
 } from "@/lib/e2e-mock-generations";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  CLAUDE_JSON_SYSTEM_RULE,
+  createAnthropicMessage,
+  parseClaudeJson,
+} from "@/lib/anthropic";
 
 const CREDIT_COST = 2;
 
@@ -30,11 +34,12 @@ type SaveSuccess = { success: true };
 type SaveFailure = { success: false; error: string };
 
 function parseNiches(raw: string): NicheIdea[] {
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(clean);
-  const list = Array.isArray(parsed)
-    ? parsed
-    : (parsed?.niches ?? parsed?.data);
+  const parsed = parseClaudeJson<unknown>(raw);
+  const wrapped = parsed as { niches?: unknown; data?: unknown } | unknown[];
+  const list = Array.isArray(wrapped)
+    ? wrapped
+    : ((wrapped as { niches?: unknown }).niches ??
+      (wrapped as { data?: unknown }).data);
   if (!Array.isArray(list) || list.length === 0) {
     throw new Error("Ungültiges JSON-Format");
   }
@@ -108,8 +113,7 @@ export async function analyzeNiche(
     };
   }
 
-  const systemPrompt =
-    "Du bist ein YouTube Growth Experte. Analysiere das gegebene Thema und liefere exakt 5 profitable Nischen-Ideen als JSON. Antworte NUR mit validem JSON, kein Markdown, keine Erklärungen.";
+  const systemPrompt = `Du bist ein YouTube Growth Experte. Analysiere das gegebene Thema und liefere exakt 5 profitable Nischen-Ideen als JSON-Array. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
   const userPrompt = `Thema: ${topic.trim()}
 Zielgruppe: ${audience}

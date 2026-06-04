@@ -3,7 +3,11 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  CLAUDE_JSON_SYSTEM_RULE,
+  createAnthropicMessage,
+  parseClaudeJson,
+} from "@/lib/anthropic";
 import { extractYouTubeVideoId } from "@/lib/youtube";
 
 const CREDIT_COST = 2;
@@ -44,11 +48,17 @@ type RemixFailure = {
 };
 
 function parseRemixes(raw: string): RemixConcept[] {
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(clean);
-  const list = Array.isArray(parsed)
-    ? parsed
-    : (parsed?.remixes ?? parsed?.results ?? parsed?.data);
+  const parsed = parseClaudeJson<unknown>(raw);
+  const wrapped = parsed as {
+    remixes?: unknown;
+    results?: unknown;
+    data?: unknown;
+  } | unknown[];
+  const list = Array.isArray(wrapped)
+    ? wrapped
+    : ((wrapped as { remixes?: unknown }).remixes ??
+      (wrapped as { results?: unknown }).results ??
+      (wrapped as { data?: unknown }).data);
   if (!Array.isArray(list) || list.length === 0) {
     throw new Error("Ungültiges JSON-Format");
   }
@@ -136,8 +146,7 @@ export async function remixVideo(
     ? `URL (für Kontext, kein Zugriff auf YouTube): ${originalUrl}\nVideo-ID: ${videoId}\nHinweis: Leite typische Titel-, Hook- und Struktur-Muster aus URL/ID ab — kein echtes Video ansehen.`
     : "URL: nicht angegeben";
 
-  const systemPrompt =
-    "Du bist ein YouTube Content Stratege spezialisiert auf Video-Remixing. Remixing bedeutet: die viralen Mechaniken eines erfolgreichen Videos nehmen und mit eigenem Twist neu interpretieren — KEIN Kopieren. Antworte NUR mit validem JSON.";
+  const systemPrompt = `Du bist ein YouTube Content Stratege für Video-Remixing. Virale Mechaniken neu interpretieren — kein Kopieren. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
   const userPrompt = `Original Video: ${originalLabel}
 ${urlContext}

@@ -1,5 +1,33 @@
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-export const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
+
+/** Same model as Produkt-Werbung (verified working in production). */
+export const ANTHROPIC_MODEL = "claude-opus-4-5";
+
+export const CLAUDE_JSON_SYSTEM_RULE =
+  "Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.";
+
+/** Strip markdown fences and leading prose before JSON (Produkt-Werbung pattern). */
+export function stripClaudeJson(raw: string): string {
+  let text = raw.trim();
+  if (!text) return text;
+
+  text = text
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+  text = text.replace(/```json|```/gi, "").trim();
+
+  const start = text.search(/[[{]/);
+  if (start > 0) {
+    text = text.slice(start);
+  }
+  return text.trim();
+}
+
+export function parseClaudeJson<T>(raw: string): T {
+  return JSON.parse(stripClaudeJson(raw)) as T;
+}
 
 export function getAnthropicConfigError(): string | null {
   const key = process.env.ANTHROPIC_API_KEY?.trim();

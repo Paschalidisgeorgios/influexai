@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  CLAUDE_JSON_SYSTEM_RULE,
+  createAnthropicMessage,
+  parseClaudeJson,
+} from "@/lib/anthropic";
 
 const CREDIT_COST = 5;
 
@@ -38,7 +42,7 @@ export async function POST(request: NextRequest) {
 
   const systemPrompt = `Du bist InfluexAI Brain, ein Experte für virales Social Media Marketing.
 Du erstellst hochkonvertierende Video-Werbescripte für ${platformGuides[platform]}.
-Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.`;
+${CLAUDE_JSON_SYSTEM_RULE}`;
 
   const userPrompt = `Erstelle einen kompletten Werbespot für folgendes Produkt/Dienstleistung:
 
@@ -65,9 +69,13 @@ Antworte mit diesem JSON-Format (auf Deutsch):
     if (!claude.ok) {
       return NextResponse.json({ error: claude.error }, { status: 503 });
     }
-    const text = claude.text;
-    const clean = text.replace(/```json|```/g, "").trim();
-    const result = JSON.parse(clean);
+    const result = parseClaudeJson<{
+      hook: string;
+      script: string;
+      caption: string;
+      hashtags: string[];
+      cta: string;
+    }>(claude.text);
 
     if (!Array.isArray(result.hashtags)) {
       result.hashtags = [];
