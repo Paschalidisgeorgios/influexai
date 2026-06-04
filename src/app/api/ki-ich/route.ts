@@ -41,14 +41,13 @@ export async function POST(request: NextRequest) {
     const uploadedUrl = await fal.storage.upload(file);
 
     // Bild generieren
-    const result = await fal.subscribe("fal-ai/pulid", {
+    const result = await fal.subscribe("fal-ai/ip-adapter-face-id", {
       input: {
-        reference_images: [{ image_url: uploadedUrl }],
-        prompt: `${scene}, professional high quality photo, photorealistic, 8k, sharp focus`,
-        negative_prompt: "bad quality, blurry, distorted face, ugly, cartoon",
-        num_inference_steps: 20,
-        guidance_scale: 4,
-        num_images: 1,
+        face_image_url: uploadedUrl,
+        prompt: `${scene}, professional photography, high quality, photorealistic, 8k, sharp`,
+        negative_prompt: "blurry, bad quality, distorted, ugly, deformed face, cartoon, anime",
+        num_inference_steps: 30,
+        guidance_scale: 7.5,
       },
     });
 
