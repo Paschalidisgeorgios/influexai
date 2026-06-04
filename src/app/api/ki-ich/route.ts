@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { fal } from "@fal-ai/client";
 
-const CREDIT_COST = 4;
+const CREDIT_COST = 2;
 
 fal.config({ credentials: process.env.FAL_API_KEY });
 
@@ -44,10 +44,13 @@ export async function POST(request: NextRequest) {
     const result = await fal.subscribe("fal-ai/ip-adapter-face-id", {
       input: {
         face_image_url: uploadedUrl,
-        prompt: `${scene}, professional photography, high quality, photorealistic, 8k, sharp`,
-        negative_prompt: "blurry, bad quality, distorted, ugly, deformed face, cartoon, anime",
-        num_inference_steps: 30,
-        guidance_scale: 7.5,
+        prompt: `${scene}, professional photography, photorealistic, sharp`,
+        negative_prompt: "blurry, bad quality, distorted, ugly, cartoon",
+        num_inference_steps: 15,
+        guidance_scale: 6,
+        num_samples: 1,
+        width: 1024,
+        height: 1024,
       },
     });
 
