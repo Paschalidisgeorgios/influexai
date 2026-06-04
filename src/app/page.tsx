@@ -29,7 +29,7 @@ import { SocialProofPopup } from "@/components/social-proof-popup";
 import { CommunityPreview } from "@/components/community-preview";
 import type { AbVariant } from "@/lib/ab-tracking";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await getLocale()) as Locale;
