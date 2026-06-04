@@ -53,10 +53,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const outputUrl = (result as any)?.images?.[0]?.url || (result as any)?.image?.url;
+    const r = result as any;
+    console.log("fal.ai Response keys:", Object.keys(r || {}));
+    console.log("fal.ai Response:", JSON.stringify(r).slice(0, 500));
+
+    const outputUrl =
+      r?.image?.url ||
+      r?.images?.[0]?.url ||
+      r?.output?.image?.url ||
+      r?.output?.images?.[0]?.url ||
+      r?.data?.image?.url ||
+      r?.data?.images?.[0]?.url;
 
     if (!outputUrl) {
-      throw new Error("Kein Bild generiert");
+      throw new Error(`Kein Bild im Response. Keys: ${Object.keys(r || {}).join(", ")}`);
     }
 
     // Credits abziehen
