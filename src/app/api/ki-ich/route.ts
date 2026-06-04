@@ -41,25 +41,21 @@ export async function POST(request: NextRequest) {
     const uploadedUrl = await fal.storage.upload(file);
 
     // Bild generieren
-    const result = await fal.subscribe("fal-ai/ip-adapter-face-id", {
+    const result = await fal.subscribe("fal-ai/instantid", {
       input: {
         face_image_url: uploadedUrl,
-        prompt: `${scene}, professional photography, photorealistic, sharp`,
-        negative_prompt: "blurry, bad quality, distorted, ugly, cartoon",
+        prompt: `${scene}, photorealistic, high quality, 8k`,
+        negative_prompt: "blurry, bad quality, cartoon, ugly",
         num_inference_steps: 15,
         guidance_scale: 6,
-        num_samples: 1,
-        width: 1024,
-        height: 1024,
       },
     });
 
     const r = result as any;
     const outputUrl =
+      r?.data?.image?.url ||
       r?.images?.[0]?.url ||
-      r?.data?.images?.[0]?.url ||
-      r?.image?.url ||
-      r?.data?.image?.url;
+      r?.image?.url;
 
     if (!outputUrl) {
       throw new Error(`Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`);
