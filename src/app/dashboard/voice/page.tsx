@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Music2 } from "lucide-react";
 import { generateVoice } from "@/app/actions/generate-voice";
+import { VoiceRecorder } from "@/components/voice-recorder";
 import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-voices";
 
-type Tab = "stimme" | "musik";
+type Tab = "stimme" | "eigen" | "musik";
 
 const MUSIC_MOODS = [
   {
@@ -150,6 +151,8 @@ export default function VoicePage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [ownScript, setOwnScript] = useState("");
+  const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [selectedMood, setSelectedMood] = useState<
     (typeof MUSIC_MOODS)[0] | null
   >(null);
@@ -262,6 +265,13 @@ export default function VoicePage() {
           onClick={() => setTab("stimme")}
         >
           KI Stimme
+        </button>
+        <button
+          type="button"
+          style={tabStyle("eigen")}
+          onClick={() => setTab("eigen")}
+        >
+          Eigene Stimme
         </button>
         <button
           type="button"
@@ -485,6 +495,24 @@ export default function VoicePage() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {tab === "eigen" && (
+        <div
+          style={{
+            padding: 24,
+            borderRadius: 16,
+            background: "#0f0f12",
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          <VoiceRecorder
+            script={ownScript}
+            onScriptChange={setOwnScript}
+            recordedUrl={recordedUrl}
+            onRecordedUrlChange={setRecordedUrl}
+          />
         </div>
       )}
 

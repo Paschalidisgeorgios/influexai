@@ -1,14 +1,12 @@
-/**
- * Voice IDs verified via TTS against this project's ElevenLabs API key.
- * The /v1/voices endpoint requires voices_read (not enabled on this key).
- */
+/** Default ElevenLabs premade voices (available on standard accounts). */
 export const ELEVENLABS_VOICES = [
-  { id: "EXAVITQu4vr4xnSDxMaL", label: "Sarah – Soft Female" },
+  { id: "21m00Tcm4TlvDq8ikWAM", label: "Rachel – Warm Female" },
+  { id: "AZnzlk1XvdvUeBnXmlld", label: "Domi – Strong Female" },
+  { id: "EXAVITQu4vr4xnSDxMaL", label: "Bella – Young Female" },
   { id: "ErXwobaYiN019PkySvjV", label: "Antoni – Deep Male" },
-  { id: "pNInz6obpgDQGcFmaJgB", label: "Adam – Narration Male" },
-  { id: "XrExE9yKIg1WjnnlVkGX", label: "Matilda – Warm Female" },
-  { id: "JBFqnCBsd6RMkjVDRZzb", label: "George – British Male" },
-  { id: "cgSgspJ2msm6clMCkdW9", label: "Jessica – Expressive Female" },
-  { id: "onwK4e9ZLuTAKqWW03F9", label: "Daniel – Calm Male" },
-  { id: "VR6AewLTigWG4xSOukaG", label: "Arnold – Authoritative" },
+  { id: "MF3mGyEYCl7XYWbV9V6O", label: "Elli – Energetic Female" },
+  { id: "TxGEqnHWrfWFTfGW9XjX", label: "Josh – Professional Male" },
+  { id: "VR6AewLTigWG4xSOukaG", label: "Arnold – Authoritative Male" },
+  { id: "pNInz6obpgDQGcFmaJgB", label: "Adam – Deep Male" },
+  { id: "yoZ06aMxZJJ28mfd3POQ", label: "Sam – Raspy Male" },
 ] as const;
