@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "community": "Community",
+    "analytics": "Analytics",
+    "profile": "Profile",
+    "credits": "Credits",
+    "logout": "Sign out"
+  },
+  "hero": {
+    "badge": "AI Creator Studio",
+    "headline": "Your next viral Short — in 60 seconds.",
+    "subheadline": "No editing. No writing. Just AI.",
+    "cta_primary": "Start free — 10 credits included",
+    "cta_secondary": "Watch demo",
+    "social_proof": "{count} creators registered"
+  },
+  "flows": {
+    "script": {
+      "title": "Script Generator",
+      "description": "Full short-form scripts with hook, story & CTA",
+      "button": "Generate script",
+      "cost": "Costs {cost} credits",
+      "step1_title": "Your video topic",
+      "step1_topic": "Topic / Title",
+      "step1_topic_placeholder": "e.g. Morning routine for productivity",
+      "step1_duration": "Video length",
+      "step1_tone": "Tone / Style",
+      "step1_language": "Language",
+      "generating": "Generating script...",
+      "result_copy": "Copy",
+      "result_save": "Save",
+      "result_regenerate": "Regenerate",
+      "result_use": "Use in video flow"
+    },
+    "niche": {
+      "title": "Niche Analyzer",
+      "description": "Find profitable YouTube niche ideas",
+      "button": "Analyze",
+      "step1_topic": "Your topic / interest",
+      "step1_placeholder": "e.g. Fitness, Tech, Cooking...",
+      "step1_audience": "Target audience",
+      "step1_format": "Content format"
+    },
+    "outlier": {
+      "title": "Outlier Detector",
+      "description": "Find viral videos in your niche",
+      "button": "Find outliers"
+    },
+    "thumbnail": {
+      "title": "Thumbnail Concept",
+      "description": "CTR-optimized thumbnail ideas",
+      "button": "Generate concepts"
+    },
+    "remix": {
+      "title": "Video Remix",
+      "description": "Remix viral videos with your twist",
+      "button": "Remix"
+    },
+    "video_ad": {
+      "title": "Product Ad",
+      "description": "Viral product shorts with AI",
+      "button": "Create ad"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "balance": "Your balance",
+    "buy": "Buy credits",
+    "low_warning": "You only have {count} credits left",
+    "empty": "No credits remaining",
+    "packages": {
+      "starter": "Starter",
+      "creator": "Creator",
+      "pro": "Pro"
+    }
+  },
+  "auth": {
+    "login_title": "Welcome back",
+    "signup_title": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Your name",
+    "login_button": "Sign in",
+    "signup_button": "Sign up free",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "signup_link": "Sign up",
+    "login_link": "Sign in",
+    "login_subtitle": "Sign in to continue.",
+    "signup_subtitle": "Start with 10 free credits.",
+    "fill_fields": "Please fill in all fields.",
+    "bad_credentials": "Incorrect email or password."
+  },
+  "onboarding": {
+    "welcome": "Welcome to InfluexAI, {name}!",
+    "subtitle": "The AI studio for creators who want to go viral.",
+    "next": "Next →",
+    "skip": "Skip",
+    "finish": "Go to Dashboard"
+  },
+  "community": {
+    "title": "Community",
+    "new_post": "New post",
+    "win": "Win",
+    "idea": "Idea",
+    "question": "Question",
+    "reply": "Reply",
+    "report": "Report",
+    "challenge_title": "Weekly Challenge",
+    "join_challenge": "I'm in"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "no_credits": "Not enough credits for this action.",
+    "network": "Network error. Please check your connection.",
+    "try_again": "Try again"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "new_badge": "NEW",
+    "coming_soon": "Coming soon",
+    "copied": "Copied! ✓",
+    "share": "Share"
+  },
+  "footer": {
+    "tagline": "The AI studio for viral shorts.",
+    "links": "Links",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "imprint": "Imprint",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "For agencies →"
+  },
+  "landing": {
+    "nav_brands": "For brands",
+    "nav_features": "Features",
+    "nav_pricing": "Pricing",
+    "auth_login": "Sign in",
+    "auth_signup": "Start free"
+  },
+  "notFound": {
+    "headline": "This page doesn't exist (yet)",
+    "body": "Maybe this feature is coming soon. Back to dashboard?",
+    "cta_dashboard": "Go to Dashboard",
+    "cta_home": "Back to home"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "pick_flow": "Pick a flow",
+    "nav_home": "Home",
+    "nav_videos": "Videos",
+    "nav_ki_ich": "AI Me",
+    "nav_settings": "Profile"
+  },
+  "language": {
+    "label": "Language"
+  }
+}

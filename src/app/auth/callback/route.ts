@@ -1,6 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { applyBetaOnSignup } from "@/app/actions/beta";
+import {
+  confirmReferralRewards,
+  registerReferralOnSignup,
+} from "@/app/actions/referral";
+import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -14,7 +20,9 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() { return cookieStore.getAll(); },
+          getAll() {
+            return cookieStore.getAll();
+          },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
@@ -25,6 +33,23 @@ export async function GET(request: NextRequest) {
     );
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const referredBy = user.user_metadata?.referred_by as
+          | string
+          | undefined;
+        if (referredBy) {
+          await registerReferralOnSignup(user.id, referredBy);
+        }
+        await confirmReferralRewards(user.id);
+        const betaCode = user.user_metadata?.beta_code as string | undefined;
+        if (betaCode) {
+          await applyBetaOnSignup(user.id, betaCode);
+        }
+        void invokeWelcomeNurtureEmail(user.id);
+      }
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 const NAV_LINKS = [
-  { label: "Für Marken", href: "#brands" },
-  { label: "Features", href: "#features" },
-  { label: "Preise", href: "#pricing" },
+  { key: "nav_brands" as const, href: "#brands" },
+  { key: "nav_features" as const, href: "#features" },
+  { key: "nav_pricing" as const, href: "#pricing" },
 ];
 
 export function LandingNav() {
+  const t = useTranslations("landing");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,7 +24,9 @@ export function LandingNav() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
 
   const closeMenu = () => setMenuOpen(false);
@@ -47,25 +52,26 @@ export function LandingNav() {
         <div className="hidden md:flex items-center gap-0">
           {NAV_LINKS.map((l) => (
             <a key={l.href} href={l.href} className="nav-item">
-              {l.label}
+              {t(l.key)}
             </a>
           ))}
         </div>
 
         <div className="hidden md:flex items-center gap-2.5">
+          <LanguageSwitcher compact />
           <a
             href="/auth"
             className="text-sm font-medium px-3 py-2 transition-colors duration-150"
             style={{ color: "rgba(240,239,232,0.6)" }}
           >
-            Login
+            {t("auth_login")}
           </a>
           <a
             href="/auth"
             className="btn-acid"
             style={{ padding: "9px 18px", fontSize: "0.85rem" }}
           >
-            Starten
+            {t("auth_signup")}
           </a>
         </div>
 
@@ -76,12 +82,24 @@ export function LandingNav() {
           aria-label="Menü öffnen"
         >
           {menuOpen ? (
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <line x1="4" y1="4" x2="16" y2="16" />
               <line x1="16" y1="4" x2="4" y2="16" />
             </svg>
           ) : (
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <svg
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+            >
               <line x1="3" y1="6" x2="19" y2="6" />
               <line x1="3" y1="12" x2="19" y2="12" />
               <line x1="3" y1="18" x2="19" y2="18" />
@@ -99,17 +117,28 @@ export function LandingNav() {
               onClick={closeMenu}
               className="mobile-nav-link"
             >
-              {l.label}
+              {t(l.key)}
               <span className="text-xl">↗</span>
             </a>
           ))}
         </div>
+        <div className="mb-4">
+          <LanguageSwitcher />
+        </div>
         <div className="flex flex-col gap-3">
-          <a href="/auth" onClick={closeMenu} className="btn-ghost justify-center">
-            Login
+          <a
+            href="/auth"
+            onClick={closeMenu}
+            className="btn-ghost justify-center"
+          >
+            {t("auth_login")}
           </a>
-          <a href="/auth" onClick={closeMenu} className="btn-acid justify-center">
-            Kostenlos starten →
+          <a
+            href="/auth"
+            onClick={closeMenu}
+            className="btn-acid justify-center"
+          >
+            {t("auth_signup")} →
           </a>
         </div>
       </div>

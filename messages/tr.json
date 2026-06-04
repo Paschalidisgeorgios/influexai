@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "Kontrol Paneli",
+    "community": "Topluluk",
+    "analytics": "İstatistikler",
+    "profile": "Profil",
+    "credits": "Kredi",
+    "logout": "Çıkış"
+  },
+  "hero": {
+    "badge": "AI Creator Stüdyosu",
+    "headline": "Bir sonraki viral Short'un — 60 saniyede.",
+    "subheadline": "Kesim yok. Yazım yok. Sadece AI.",
+    "cta_primary": "Ücretsiz başla — 10 kredi hediye",
+    "cta_secondary": "Demoyu izle",
+    "social_proof": "{count} içerik üreticisi kayıtlı"
+  },
+  "flows": {
+    "script": {
+      "title": "Script Oluşturucu",
+      "description": "Hook, hikaye ve CTA ile tam kısa video senaryoları",
+      "button": "Script oluştur",
+      "cost": "{cost} kredi",
+      "step1_title": "Video konun",
+      "step1_topic": "Konu / Başlık",
+      "step1_topic_placeholder": "örn. Verimlilik için sabah rutini",
+      "step1_duration": "Video süresi",
+      "step1_tone": "Ton / Stil",
+      "step1_language": "Dil",
+      "generating": "Script oluşturuluyor...",
+      "result_copy": "Kopyala",
+      "result_save": "Kaydet",
+      "result_regenerate": "Yeniden oluştur",
+      "result_use": "Video akışında kullan"
+    },
+    "niche": {
+      "title": "Niş Analizi",
+      "description": "Karlı YouTube niş fikirleri bul",
+      "button": "Analiz et",
+      "step1_topic": "Konun / ilgi alanın",
+      "step1_placeholder": "örn. Fitness, Teknoloji, Yemek...",
+      "step1_audience": "Hedef kitle",
+      "step1_format": "İçerik formatı"
+    },
+    "outlier": {
+      "title": "Outlier Dedektörü",
+      "description": "Nişinde viral olan videoları bul",
+      "button": "Outlier bul"
+    },
+    "thumbnail": {
+      "title": "Thumbnail Konsepti",
+      "description": "CTR için optimize thumbnail fikirleri",
+      "button": "Konsept oluştur"
+    },
+    "remix": {
+      "title": "Video Remix",
+      "description": "Viral videoları kendi dokunuşunla remixle",
+      "button": "Remixle"
+    },
+    "video_ad": {
+      "title": "Ürün Reklamı",
+      "description": "AI ile viral ürün shortları",
+      "button": "Reklam oluştur"
+    }
+  },
+  "credits": {
+    "title": "Krediler",
+    "balance": "Bakiyen",
+    "buy": "Kredi satın al",
+    "low_warning": "Sadece {count} kredin kaldı",
+    "empty": "Kredi kalmadı",
+    "packages": {
+      "starter": "Başlangıç",
+      "creator": "Creator",
+      "pro": "Pro"
+    }
+  },
+  "auth": {
+    "login_title": "Tekrar hoş geldin",
+    "signup_title": "Hesap oluştur",
+    "email": "E-posta",
+    "password": "Şifre",
+    "name": "Adın",
+    "login_button": "Giriş yap",
+    "signup_button": "Ücretsiz kayıt ol",
+    "no_account": "Hesabın yok mu?",
+    "has_account": "Zaten kayıtlı mısın?",
+    "signup_link": "Kayıt ol",
+    "login_link": "Giriş yap",
+    "login_subtitle": "Devam etmek için giriş yap.",
+    "signup_subtitle": "10 ücretsiz krediyle başla.",
+    "fill_fields": "Lütfen tüm alanları doldur.",
+    "bad_credentials": "Yanlış e-posta veya şifre."
+  },
+  "onboarding": {
+    "welcome": "InfluexAI'ye hoş geldin, {name}!",
+    "subtitle": "Viral olmak isteyen içerik üreticileri için AI stüdyosu.",
+    "next": "İleri →",
+    "skip": "Atla",
+    "finish": "Dashboard'a git"
+  },
+  "community": {
+    "title": "Topluluk",
+    "new_post": "Yeni gönderi",
+    "win": "Başarı",
+    "idea": "Fikir",
+    "question": "Soru",
+    "reply": "Yanıtla",
+    "report": "Bildir",
+    "challenge_title": "Haftanın Challenge'ı",
+    "join_challenge": "Katılıyorum"
+  },
+  "errors": {
+    "generic": "Bir şeyler ters gitti. Lütfen tekrar dene.",
+    "no_credits": "Bu işlem için yeterli kredi yok.",
+    "network": "Ağ hatası. Bağlantını kontrol et.",
+    "try_again": "Tekrar dene"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "new_badge": "YENİ",
+    "coming_soon": "Yakında",
+    "copied": "Kopyalandı! ✓",
+    "share": "Paylaş"
+  },
+  "footer": {
+    "tagline": "Viral shortlar için AI stüdyosu.",
+    "links": "Bağlantılar",
+    "legal": "Yasal",
+    "privacy": "Gizlilik",
+    "terms": "Şartlar",
+    "imprint": "Künye",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "Ajanslar için →"
+  },
+  "landing": {
+    "nav_brands": "Markalar için",
+    "nav_features": "Özellikler",
+    "nav_pricing": "Fiyatlar",
+    "auth_login": "Giriş",
+    "auth_signup": "Ücretsiz başla"
+  },
+  "notFound": {
+    "headline": "Bu sayfa (henüz) yok",
+    "body": "Belki özellik yakında gelir. Dashboard'a dön?",
+    "cta_dashboard": "Dashboard'a git",
+    "cta_home": "Ana sayfa"
+  },
+  "dashboard": {
+    "welcome": "Hoş geldin",
+    "pick_flow": "Bir flow seç",
+    "nav_home": "Ana sayfa",
+    "nav_videos": "Videolar",
+    "nav_ki_ich": "AI Ben",
+    "nav_settings": "Profil"
+  },
+  "language": {
+    "label": "Dil"
+  }
+}

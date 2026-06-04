@@ -1,31 +1,24 @@
-"use client";
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { DashboardSkeleton } from "@/components/skeletons/dashboard-skeleton";
+import { DashboardLayoutClient } from "./dashboard-layout-client";
 
-import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
-import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { MobileNav } from "@/components/layout/MobileNav";
+export const dynamic = "force-dynamic";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
   return (
-    <div className="flex h-screen overflow-hidden bg-[#060608]">
-      {/* Sidebar - nur auf Desktop sichtbar */}
-      <div className="hidden lg:flex">
-        <DashboardSidebar />
-      </div>
-
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <DashboardHeader />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-5 pb-20 lg:pb-5">
-          {children}
-        </main>
-        {/* Mobile Bottom Nav */}
-        <div className="lg:hidden">
-          <MobileNav />
-        </div>
-      </div>
-    </div>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardLayoutClient>{children}</DashboardLayoutClient>
+    </Suspense>
   );
 }

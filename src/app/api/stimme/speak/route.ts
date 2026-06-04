@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 
 const CREDIT_COST = 2;
 
@@ -9,12 +10,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
 
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user)
+    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
 
-  const { data: profile } = await supabase
-    .from("profiles").select("credits").eq("id", user.id).single();
-  if (!profile || profile.credits < CREDIT_COST)
+  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
+  if (!creditCheck.ok)
     return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
 
   try {
@@ -40,13 +43,32 @@ export async function POST(request: NextRequest) {
     const base64 = Buffer.from(buffer).toString("base64");
     const audioUrl = `data:audio/mpeg;base64,${base64}`;
 
-    await supabase.from("profiles")
-      .update({ credits: profile.credits - CREDIT_COST })
-      .eq("id", user.id);
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      CREDIT_COST,
+      "Text zu Sprache",
+      { generationType: "stimme-speak", prompt: text.slice(0, 500) }
+    );
 
-    return NextResponse.json({ audioUrl, creditsUsed: CREDIT_COST });
-  } catch (error: any) {
-    console.error("ElevenLabs TTS Error:", error.message);
-    return NextResponse.json({ error: "Text-zu-Sprache fehlgeschlagen" }, { status: 500 });
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Nicht genug Credits" },
+        { status: 402 }
+      );
+    }
+
+    return NextResponse.json({
+      audioUrl,
+      creditsUsed: CREDIT_COST,
+      creditsLeft: deduction.remainingCredits,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("ElevenLabs TTS Error:", message);
+    return NextResponse.json(
+      { error: "Text-zu-Sprache fehlgeschlagen" },
+      { status: 500 }
+    );
   }
 }

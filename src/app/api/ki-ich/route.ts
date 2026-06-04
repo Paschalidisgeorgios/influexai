@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { fal } from "@fal-ai/client";
 
 const CREDIT_COST = 2;
+
+type FalInstantIdResult = {
+  data?: { image?: { url?: string } };
+  images?: Array<{ url?: string }>;
+  image?: { url?: string };
+};
 
 fal.config({ credentials: process.env.FAL_API_KEY });
 
@@ -14,19 +21,16 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.credits < CREDIT_COST) {
+  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
+  if (!creditCheck.ok) {
     return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
   }
 
@@ -51,32 +55,44 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const r = result as any;
+    const r = result as FalInstantIdResult;
     const outputUrl =
-      r?.data?.image?.url ||
-      r?.images?.[0]?.url ||
-      r?.image?.url;
+      r.data?.image?.url || r.images?.[0]?.url || r.image?.url;
 
     if (!outputUrl) {
-      throw new Error(`Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`);
+      throw new Error(
+        `Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`
+      );
     }
 
-    // Credits abziehen
-    await supabase
-      .from("profiles")
-      .update({ credits: profile.credits - CREDIT_COST })
-      .eq("id", user.id);
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      CREDIT_COST,
+      "Mein KI-Ich – Bildgenerierung",
+      { generationType: "ki-ich", prompt: scene }
+    );
+
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Nicht genug Credits" },
+        { status: 402 }
+      );
+    }
 
     return NextResponse.json({
       imageUrl: outputUrl,
       creditsUsed: CREDIT_COST,
-      creditsLeft: profile.credits - CREDIT_COST,
+      creditsLeft: deduction.remainingCredits,
     });
-  } catch (error: any) {
-    console.error("InfluexAI Vision Error:", JSON.stringify(error?.body || error?.message || error));
-    return NextResponse.json(
-      { error: error?.message || "Bildgenerierung fehlgeschlagen" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Bildgenerierung fehlgeschlagen";
+    const body =
+      error && typeof error === "object" && "body" in error
+        ? (error as { body?: unknown }).body
+        : undefined;
+    console.error("InfluexAI Vision Error:", JSON.stringify(body ?? message));
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

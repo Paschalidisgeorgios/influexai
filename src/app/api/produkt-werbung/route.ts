@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 
 const CREDIT_COST = 5;
 
@@ -12,27 +13,26 @@ export async function POST(request: NextRequest) {
 
   // Nutzer prüfen und Credits kontrollieren
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.credits < CREDIT_COST) {
+  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
+  if (!creditCheck.ok) {
     return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
   }
 
   const platformGuides: Record<string, string> = {
-    tiktok:    "TikTok (9:16, 15-60 Sek., junges Publikum, energetisch, trending)",
-    instagram: "Instagram Reel (9:16, bis 90 Sek., visuell, lifestyle-orientiert)",
-    youtube:   "YouTube Shorts (16:9, bis 60 Sek., informativ, klarer Mehrwert)",
-    linkedin:  "LinkedIn (professionell, B2B-fokussiert, Mehrwert und Expertise)",
+    tiktok: "TikTok (9:16, 15-60 Sek., junges Publikum, energetisch, trending)",
+    instagram:
+      "Instagram Reel (9:16, bis 90 Sek., visuell, lifestyle-orientiert)",
+    youtube: "YouTube Shorts (16:9, bis 60 Sek., informativ, klarer Mehrwert)",
+    linkedin:
+      "LinkedIn (professionell, B2B-fokussiert, Mehrwert und Expertise)",
   };
 
   const systemPrompt = `Du bist InfluexAI Brain, ein Experte für virales Social Media Marketing.
@@ -79,19 +79,31 @@ Antworte mit diesem JSON-Format (auf Deutsch):
       result.hashtags = [];
     }
 
-    // Credits abziehen
-    await supabase
-      .from("profiles")
-      .update({ credits: profile.credits - CREDIT_COST })
-      .eq("id", user.id);
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      CREDIT_COST,
+      `Produkt-Werbung (${platform})`,
+      { generationType: "produkt", prompt: product.slice(0, 500) }
+    );
+
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Nicht genug Credits" },
+        { status: 402 }
+      );
+    }
 
     return NextResponse.json({
       ...result,
       creditsUsed: CREDIT_COST,
-      creditsLeft: profile.credits - CREDIT_COST,
+      creditsLeft: deduction.remainingCredits,
     });
   } catch (error) {
     console.error("InfluexAI Brain Error:", error);
-    return NextResponse.json({ error: "Generierung fehlgeschlagen" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Generierung fehlgeschlagen" },
+      { status: 500 }
+    );
   }
 }

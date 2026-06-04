@@ -2,11 +2,26 @@
   "name": "influexai",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "format:check": "prettier --check .",
+    "i18n:check": "tsx scripts/check-translations.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:unit": "vitest",
+    "test:unit:run": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:unit:ui": "vitest --ui",
+    "test": "vitest run && playwright test"
   },
   "dependencies": {
     "@fal-ai/client": "^1.10.1",
@@ -17,22 +32,36 @@
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
+    "next-intl": "^4.13.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "recharts": "^3.8.1",
     "stripe": "^22.2.0",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.8",
     "autoprefixer": "^10.5.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "jsdom": "^29.1.1",
+    "msw": "^2.14.6",
     "postcss": "^8.5.15",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.19",
-    "typescript": "^5"
+    "tsx": "^4.20.3",
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }

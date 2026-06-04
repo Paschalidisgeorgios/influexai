@@ -1,18 +1,44 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 
 type Step = "upload" | "describe" | "loading" | "result";
 
 const SCENE_PRESETS = [
-  { label: "🏖️ Strand Miami", value: "at a beautiful beach in Miami, golden hour, professional photo" },
-  { label: "☕ Café Paris", value: "sitting in a cozy café in Paris, warm lighting, lifestyle photo" },
-  { label: "🏙️ NYC Skyline", value: "in front of New York City skyline at sunset, cinematic" },
-  { label: "🌿 Natur", value: "in a beautiful green forest, natural light, portrait photography" },
-  { label: "💼 Business", value: "in a modern office, professional business portrait, confident" },
-  { label: "🎬 Studio", value: "in a professional photo studio, dramatic lighting, fashion photography" },
-  { label: "🗼 Tokyo", value: "in Tokyo Japan at night, neon lights, street photography" },
-  { label: "🏔️ Berge", value: "on top of a mountain, epic landscape, adventure photography" },
+  {
+    label: "🏖️ Strand Miami",
+    value: "at a beautiful beach in Miami, golden hour, professional photo",
+  },
+  {
+    label: "☕ Café Paris",
+    value: "sitting in a cozy café in Paris, warm lighting, lifestyle photo",
+  },
+  {
+    label: "🏙️ NYC Skyline",
+    value: "in front of New York City skyline at sunset, cinematic",
+  },
+  {
+    label: "🌿 Natur",
+    value: "in a beautiful green forest, natural light, portrait photography",
+  },
+  {
+    label: "💼 Business",
+    value: "in a modern office, professional business portrait, confident",
+  },
+  {
+    label: "🎬 Studio",
+    value:
+      "in a professional photo studio, dramatic lighting, fashion photography",
+  },
+  {
+    label: "🗼 Tokyo",
+    value: "in Tokyo Japan at night, neon lights, street photography",
+  },
+  {
+    label: "🏔️ Berge",
+    value: "on top of a mountain, epic landscape, adventure photography",
+  },
 ];
 
 export default function KiIchPage() {
@@ -21,7 +47,6 @@ export default function KiIchPage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [scene, setScene] = useState("");
   const [result, setResult] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -45,7 +70,6 @@ export default function KiIchPage() {
 
   const handleGenerate = async () => {
     if (!photo || !scene) return;
-    setLoading(true);
     setStep("loading");
 
     try {
@@ -61,11 +85,14 @@ export default function KiIchPage() {
       } else {
         throw new Error(data.error || "Fehler");
       }
-    } catch (err: any) {
-      alert(err.message || "Fehler beim Generieren. Bitte versuche es erneut.");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Fehler beim Generieren. Bitte versuche es erneut.";
+      alert(message);
       setStep("describe");
     }
-    setLoading(false);
   };
 
   const reset = () => {
@@ -80,12 +107,15 @@ export default function KiIchPage() {
     <div style={{ maxWidth: 760, margin: "0 auto" }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-          fontSize: "clamp(2rem, 4vw, 3rem)",
-          letterSpacing: "0.02em",
-          color: "#F0EFE8", marginBottom: 6,
-        }}>
+        <h1
+          style={{
+            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontSize: "clamp(2rem, 4vw, 3rem)",
+            letterSpacing: "0.02em",
+            color: "#F0EFE8",
+            marginBottom: 6,
+          }}
+        >
           📸 Mein KI-Ich
         </h1>
         <p style={{ color: "#505055", fontSize: "0.9rem" }}>
@@ -95,10 +125,15 @@ export default function KiIchPage() {
 
       {/* Progress */}
       {step !== "upload" && (
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8,
-          marginBottom: 24, flexWrap: "wrap",
-        }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 24,
+            flexWrap: "wrap",
+          }}
+        >
           {[
             { key: "upload", label: "1. Foto" },
             { key: "describe", label: "2. Szene" },
@@ -108,16 +143,31 @@ export default function KiIchPage() {
             const current = steps.indexOf(step);
             const sIndex = steps.indexOf(s.key);
             const done = current > sIndex;
-            const active = current === sIndex || (s.key === "describe" && step === "loading");
+            const active =
+              current === sIndex ||
+              (s.key === "describe" && step === "loading");
             return (
-              <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{
-                  padding: "5px 14px", borderRadius: 99, fontSize: "0.78rem", fontWeight: 700,
-                  background: done ? "rgba(180,255,0,0.15)" : active ? "rgba(180,255,0,0.08)" : "rgba(255,255,255,0.04)",
-                  border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
-                  color: done || active ? "#B4FF00" : "#505055",
-                }}>
-                  {done ? "✓ " : ""}{s.label}
+              <div
+                key={s.key}
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <div
+                  style={{
+                    padding: "5px 14px",
+                    borderRadius: 99,
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    background: done
+                      ? "rgba(180,255,0,0.15)"
+                      : active
+                        ? "rgba(180,255,0,0.08)"
+                        : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
+                    color: done || active ? "#B4FF00" : "#505055",
+                  }}
+                >
+                  {done ? "✓ " : ""}
+                  {s.label}
                 </div>
                 {i < 2 && <span style={{ color: "#333" }}>→</span>}
               </div>
@@ -130,7 +180,10 @@ export default function KiIchPage() {
       {step === "upload" && (
         <div
           onDrop={handleDrop}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
           onDragLeave={() => setDragOver(false)}
           onClick={() => fileRef.current?.click()}
           style={{
@@ -144,22 +197,33 @@ export default function KiIchPage() {
           }}
         >
           <div style={{ fontSize: "3rem", marginBottom: 16 }}>📷</div>
-          <h2 style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "1.6rem", letterSpacing: "0.02em",
-            color: "#F0EFE8", marginBottom: 8,
-          }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "1.6rem",
+              letterSpacing: "0.02em",
+              color: "#F0EFE8",
+              marginBottom: 8,
+            }}
+          >
             Foto hierher ziehen
           </h2>
-          <p style={{ color: "#505055", fontSize: "0.875rem", marginBottom: 20 }}>
+          <p
+            style={{ color: "#505055", fontSize: "0.875rem", marginBottom: 20 }}
+          >
             oder klicken um eine Datei auszuwählen
           </p>
-          <div style={{
-            display: "inline-block",
-            padding: "10px 24px", borderRadius: 10,
-            background: "#B4FF00", color: "#060608",
-            fontWeight: 700, fontSize: "0.88rem",
-          }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "10px 24px",
+              borderRadius: 10,
+              background: "#B4FF00",
+              color: "#060608",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+            }}
+          >
             Foto auswählen →
           </div>
           <p style={{ color: "#505055", fontSize: "0.75rem", marginTop: 16 }}>
@@ -170,7 +234,10 @@ export default function KiIchPage() {
             type="file"
             accept="image/*"
             style={{ display: "none" }}
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleFile(f);
+            }}
           />
         </div>
       )}
@@ -179,19 +246,40 @@ export default function KiIchPage() {
       {step === "describe" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Photo preview + change */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 16,
-            padding: 16, borderRadius: 14,
-            background: "#0f0f12", border: "1px solid rgba(255,255,255,0.07)",
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: 16,
+              borderRadius: 14,
+              background: "#0f0f12",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
             {photo && (
-              <img src={photo} alt="Vorschau" style={{
-                width: 64, height: 64, borderRadius: 10,
-                objectFit: "cover", flexShrink: 0,
-              }} />
+              <Image
+                src={photo}
+                alt="Vorschau"
+                width={64}
+                height={64}
+                unoptimized
+                style={{
+                  borderRadius: 10,
+                  objectFit: "cover",
+                  flexShrink: 0,
+                }}
+              />
             )}
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: "0.875rem", color: "#F0EFE8", marginBottom: 2 }}>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: "0.875rem",
+                  color: "#F0EFE8",
+                  marginBottom: 2,
+                }}
+              >
                 {photoFile?.name ?? "Foto"}
               </div>
               <div style={{ fontSize: "0.75rem", color: "#505055" }}>
@@ -201,9 +289,13 @@ export default function KiIchPage() {
             <button
               onClick={reset}
               style={{
-                padding: "6px 14px", borderRadius: 8,
-                background: "transparent", border: "1px solid rgba(255,255,255,0.09)",
-                color: "#505055", cursor: "pointer", fontSize: "0.78rem",
+                padding: "6px 14px",
+                borderRadius: 8,
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.09)",
+                color: "#505055",
+                cursor: "pointer",
+                fontSize: "0.78rem",
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
@@ -212,26 +304,54 @@ export default function KiIchPage() {
           </div>
 
           {/* Scene presets */}
-          <div style={{
-            padding: 20, borderRadius: 14,
-            background: "#0f0f12", border: "1px solid rgba(255,255,255,0.07)",
-          }}>
-            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#505055", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>
+          <div
+            style={{
+              padding: 20,
+              borderRadius: 14,
+              background: "#0f0f12",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#505055",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 14,
+              }}
+            >
               Schnellauswahl
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 8,
+                marginBottom: 16,
+              }}
+            >
               {SCENE_PRESETS.map((p) => (
                 <button
                   key={p.label}
                   onClick={() => setScene(p.value)}
                   style={{
-                    padding: "8px 10px", borderRadius: 9,
-                    background: scene === p.value ? "rgba(180,255,0,0.1)" : "rgba(255,255,255,0.04)",
+                    padding: "8px 10px",
+                    borderRadius: 9,
+                    background:
+                      scene === p.value
+                        ? "rgba(180,255,0,0.1)"
+                        : "rgba(255,255,255,0.04)",
                     border: `1px solid ${scene === p.value ? "rgba(180,255,0,0.35)" : "rgba(255,255,255,0.07)"}`,
-                    color: scene === p.value ? "#B4FF00" : "rgba(240,239,232,0.5)",
-                    cursor: "pointer", fontSize: "0.78rem", fontWeight: 600,
+                    color:
+                      scene === p.value ? "#B4FF00" : "rgba(240,239,232,0.5)",
+                    cursor: "pointer",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
                     fontFamily: "var(--font-dm), sans-serif",
-                    transition: "all 0.15s", textAlign: "center",
+                    transition: "all 0.15s",
+                    textAlign: "center",
                   }}
                 >
                   {p.label}
@@ -239,7 +359,16 @@ export default function KiIchPage() {
               ))}
             </div>
 
-            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#505055", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#505055",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 10,
+              }}
+            >
               Oder eigene Szene beschreiben
             </div>
             <textarea
@@ -248,14 +377,26 @@ export default function KiIchPage() {
               placeholder="z.B. at a rooftop party in Los Angeles, sunset, cinematic lighting..."
               rows={3}
               style={{
-                width: "100%", padding: "12px 14px", borderRadius: 10,
-                background: "#18181d", border: "1px solid rgba(255,255,255,0.09)",
-                color: "#F0EFE8", fontSize: "0.9rem", outline: "none",
-                resize: "vertical", fontFamily: "var(--font-dm), sans-serif",
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 10,
+                background: "#18181d",
+                border: "1px solid rgba(255,255,255,0.09)",
+                color: "#F0EFE8",
+                fontSize: "0.9rem",
+                outline: "none",
+                resize: "vertical",
+                fontFamily: "var(--font-dm), sans-serif",
                 lineHeight: 1.6,
               }}
-              onFocus={(e) => (e.target as HTMLTextAreaElement).style.borderColor = "rgba(180,255,0,0.4)"}
-              onBlur={(e) => (e.target as HTMLTextAreaElement).style.borderColor = "rgba(255,255,255,0.09)"}
+              onFocus={(e) =>
+                ((e.target as HTMLTextAreaElement).style.borderColor =
+                  "rgba(180,255,0,0.4)")
+              }
+              onBlur={(e) =>
+                ((e.target as HTMLTextAreaElement).style.borderColor =
+                  "rgba(255,255,255,0.09)")
+              }
             />
           </div>
 
@@ -263,12 +404,15 @@ export default function KiIchPage() {
             onClick={handleGenerate}
             disabled={!scene.trim()}
             style={{
-              width: "100%", padding: "15px",
-              borderRadius: 12, border: "none",
+              width: "100%",
+              padding: "15px",
+              borderRadius: 12,
+              border: "none",
               background: scene.trim() ? "#B4FF00" : "#2a2a2a",
               color: scene.trim() ? "#060608" : "#505055",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "1.3rem", letterSpacing: "0.04em",
+              fontSize: "1.3rem",
+              letterSpacing: "0.04em",
               cursor: scene.trim() ? "pointer" : "default",
             }}
           >
@@ -279,23 +423,35 @@ export default function KiIchPage() {
 
       {/* STEP 3: Loading */}
       {step === "loading" && (
-        <div style={{
-          textAlign: "center", padding: "80px 20px",
-          background: "#0f0f12", borderRadius: 20,
-          border: "1px solid rgba(255,255,255,0.07)",
-        }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: "50%",
-            border: "3px solid #B4FF00",
-            borderTopColor: "transparent",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 24px",
-          }} />
-          <h2 style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "1.8rem", letterSpacing: "0.02em",
-            color: "#F0EFE8", marginBottom: 10,
-          }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "80px 20px",
+            background: "#0f0f12",
+            borderRadius: 20,
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              border: "3px solid #B4FF00",
+              borderTopColor: "transparent",
+              animation: "spin 0.8s linear infinite",
+              margin: "0 auto 24px",
+            }}
+          />
+          <h2
+            style={{
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "1.8rem",
+              letterSpacing: "0.02em",
+              color: "#F0EFE8",
+              marginBottom: 10,
+            }}
+          >
             InfluexAI Vision generiert...
           </h2>
           <p style={{ color: "#505055", fontSize: "0.9rem" }}>
@@ -311,25 +467,35 @@ export default function KiIchPage() {
           <button
             onClick={reset}
             style={{
-              alignSelf: "flex-start", padding: "8px 16px",
-              borderRadius: 8, background: "transparent",
+              alignSelf: "flex-start",
+              padding: "8px 16px",
+              borderRadius: 8,
+              background: "transparent",
               border: "1px solid rgba(255,255,255,0.09)",
-              color: "#505055", cursor: "pointer", fontSize: "0.82rem",
+              color: "#505055",
+              cursor: "pointer",
+              fontSize: "0.82rem",
               fontFamily: "var(--font-dm), sans-serif",
             }}
           >
             ← Neues Bild
           </button>
 
-          <div style={{
-            borderRadius: 20, overflow: "hidden",
-            border: "1px solid rgba(180,255,0,0.2)",
-            position: "relative",
-          }}>
-            <img
+          <div
+            style={{
+              borderRadius: 20,
+              overflow: "hidden",
+              border: "1px solid rgba(180,255,0,0.2)",
+              position: "relative",
+            }}
+          >
+            <Image
               src={result}
               alt="KI-generiertes Bild"
-              style={{ width: "100%", display: "block" }}
+              width={1024}
+              height={1024}
+              unoptimized
+              style={{ width: "100%", height: "auto", display: "block" }}
             />
           </div>
 
@@ -340,23 +506,34 @@ export default function KiIchPage() {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                flex: 1, padding: "13px", borderRadius: 10,
-                background: "#B4FF00", color: "#060608",
-                fontWeight: 700, fontSize: "0.9rem",
-                textDecoration: "none", textAlign: "center",
+                flex: 1,
+                padding: "13px",
+                borderRadius: 10,
+                background: "#B4FF00",
+                color: "#060608",
+                fontWeight: 700,
+                fontSize: "0.9rem",
+                textDecoration: "none",
+                textAlign: "center",
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
               ⬇ Herunterladen
             </a>
             <button
-              onClick={() => { navigator.clipboard.writeText(result); }}
+              onClick={() => {
+                navigator.clipboard.writeText(result);
+              }}
               style={{
-                padding: "13px 20px", borderRadius: 10,
+                padding: "13px 20px",
+                borderRadius: 10,
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: "#F0EFE8", fontWeight: 600, fontSize: "0.9rem",
-                cursor: "pointer", fontFamily: "var(--font-dm), sans-serif",
+                color: "#F0EFE8",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                cursor: "pointer",
+                fontFamily: "var(--font-dm), sans-serif",
               }}
             >
               🔗 Link kopieren

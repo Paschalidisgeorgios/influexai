@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "community": "Community",
+    "analytics": "Statistiken",
+    "profile": "Profil",
+    "credits": "Credits",
+    "logout": "Abmelden"
+  },
+  "hero": {
+    "badge": "KI Creator Studio",
+    "headline": "Dein nächster viraler Short — in 60 Sekunden.",
+    "subheadline": "Kein Schneiden. Kein Schreiben. Nur KI.",
+    "cta_primary": "Kostenlos starten — 10 Credits gratis",
+    "cta_secondary": "Demo ansehen",
+    "social_proof": "{count} Creators registriert"
+  },
+  "flows": {
+    "script": {
+      "title": "Script Generator",
+      "description": "Vollständige Short-Scripts mit Hook, Story & CTA",
+      "button": "Script generieren",
+      "cost": "Kostet {cost} Credits",
+      "step1_title": "Dein Video-Thema",
+      "step1_topic": "Thema / Titel",
+      "step1_topic_placeholder": "z.B. Morning Routine für Produktivität",
+      "step1_duration": "Video-Länge",
+      "step1_tone": "Ton / Stil",
+      "step1_language": "Sprache",
+      "generating": "Script wird generiert...",
+      "result_copy": "Kopieren",
+      "result_save": "Speichern",
+      "result_regenerate": "Neu generieren",
+      "result_use": "In Video-Flow nutzen"
+    },
+    "niche": {
+      "title": "Niche Analyzer",
+      "description": "Finde profitable YouTube Niche-Ideen",
+      "button": "Analysieren",
+      "step1_topic": "Dein Thema / Interesse",
+      "step1_placeholder": "z.B. Fitness, Tech, Kochen...",
+      "step1_audience": "Zielgruppe",
+      "step1_format": "Content-Format"
+    },
+    "outlier": {
+      "title": "Outlier Detector",
+      "description": "Finde viral gegangene Videos in deiner Nische",
+      "button": "Outlier finden"
+    },
+    "thumbnail": {
+      "title": "Thumbnail Konzept",
+      "description": "Viral-optimierte Thumbnail-Ideen",
+      "button": "Konzepte generieren"
+    },
+    "remix": {
+      "title": "Video Remix",
+      "description": "Remix virale Videos mit deinem Twist",
+      "button": "Remixen"
+    },
+    "video_ad": {
+      "title": "Produkt-Werbung",
+      "description": "Virale Werbe-Shorts mit KI",
+      "button": "Werbung erstellen"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "balance": "Dein Guthaben",
+    "buy": "Credits kaufen",
+    "low_warning": "Du hast nur noch {count} Credits",
+    "empty": "Keine Credits mehr",
+    "packages": {
+      "starter": "Starter",
+      "creator": "Creator",
+      "pro": "Pro"
+    }
+  },
+  "auth": {
+    "login_title": "Willkommen zurück",
+    "signup_title": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Dein Name",
+    "login_button": "Anmelden",
+    "signup_button": "Kostenlos registrieren",
+    "no_account": "Noch kein Account?",
+    "has_account": "Bereits registriert?",
+    "signup_link": "Jetzt registrieren",
+    "login_link": "Anmelden",
+    "login_subtitle": "Einloggen um fortzufahren.",
+    "signup_subtitle": "Starte mit 10 Gratis-Credits.",
+    "fill_fields": "Bitte alle Felder ausfüllen.",
+    "bad_credentials": "Falsche E-Mail oder falsches Passwort."
+  },
+  "onboarding": {
+    "welcome": "Willkommen bei InfluexAI, {name}!",
+    "subtitle": "Das KI Studio für Creator, die viral gehen wollen.",
+    "next": "Weiter →",
+    "skip": "Überspringen",
+    "finish": "Zum Dashboard"
+  },
+  "community": {
+    "title": "Community",
+    "new_post": "Neuer Post",
+    "win": "Win",
+    "idea": "Idee",
+    "question": "Frage",
+    "reply": "Antworten",
+    "report": "Melden",
+    "challenge_title": "Challenge der Woche",
+    "join_challenge": "Ich mache mit"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "no_credits": "Nicht genug Credits für diese Aktion.",
+    "network": "Netzwerkfehler. Bitte überprüfe deine Verbindung.",
+    "try_again": "Nochmal versuchen"
+  },
+  "common": {
+    "loading": "Laden...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "back": "Zurück",
+    "new_badge": "NEU",
+    "coming_soon": "Bald verfügbar",
+    "copied": "Kopiert! ✓",
+    "share": "Teilen"
+  },
+  "footer": {
+    "tagline": "Das KI Studio für virale Shorts.",
+    "links": "Links",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "imprint": "Impressum",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "Für Agenturen →"
+  },
+  "landing": {
+    "nav_brands": "Für Marken",
+    "nav_features": "Features",
+    "nav_pricing": "Preise",
+    "auth_login": "Anmelden",
+    "auth_signup": "Kostenlos starten"
+  },
+  "notFound": {
+    "headline": "Diese Seite existiert nicht (noch nicht)",
+    "body": "Vielleicht kommt das Feature bald. Zurück zum Dashboard?",
+    "cta_dashboard": "Zum Dashboard",
+    "cta_home": "Zur Startseite"
+  },
+  "dashboard": {
+    "welcome": "Willkommen",
+    "pick_flow": "Wähle einen Flow",
+    "nav_home": "Home",
+    "nav_videos": "Videos",
+    "nav_ki_ich": "KI-Ich",
+    "nav_settings": "Profil"
+  },
+  "language": {
+    "label": "Sprache"
+  }
+}

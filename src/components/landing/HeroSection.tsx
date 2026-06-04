@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { trackAbEvent, type AbVariant } from "@/lib/ab-tracking";
 
 type Audience = "creator" | "brand";
+
+const SOCIAL_AVATARS = ["MK", "JS", "AL", "TR", "PN"];
 
 const HERO_CONTENT: Record<Audience, { headline: string[]; sub: string }> = {
   creator: {
@@ -42,10 +46,22 @@ const IMAGES = [
   },
 ];
 
-export function HeroSection() {
+export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
+  const t = useTranslations("hero");
   const [audience, setAudience] = useState<Audience>("creator");
   const [scrollY, setScrollY] = useState(0);
-  const content = HERO_CONTENT[audience];
+  const isVariantB = variant === "b";
+  const headlineParts = t("headline").split(/\s+—\s+/);
+  const variantBContent = {
+    headline:
+      headlineParts.length >= 2
+        ? [headlineParts[0], headlineParts.slice(1).join(" — ")]
+        : [t("headline")],
+    sub: t("subheadline"),
+    cta: t("cta_primary"),
+    ctaHref: "/signup",
+  };
+  const content = isVariantB ? variantBContent : HERO_CONTENT[audience];
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -57,25 +73,31 @@ export function HeroSection() {
     const onMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 14;
       const y = (e.clientY / window.innerHeight - 0.5) * 14;
-      document.querySelectorAll<HTMLElement>("[data-parallax-card]").forEach(
-        (el, i) => {
+      document
+        .querySelectorAll<HTMLElement>("[data-parallax-card]")
+        .forEach((el, i) => {
           const d = (i % 2 === 0 ? 1 : -1) * (0.4 + i * 0.2);
           el.style.transform = `translate(${x * d * 0.4}px, ${y * d * 0.4}px)`;
-        }
-      );
+        });
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
   return (
-    <section className="min-h-screen grid lg:grid-cols-2 grid-cols-1 overflow-hidden relative pt-[76px]">
+    <section
+      id="landing-hero-sentinel"
+      className="min-h-screen grid lg:grid-cols-2 grid-cols-1 overflow-hidden relative pt-[76px]"
+    >
       <div
         className="absolute pointer-events-none"
         style={{
-          top: "-100px", left: "-100px",
-          width: "600px", height: "600px",
-          background: "radial-gradient(circle, rgba(180,255,0,0.04), transparent 70%)",
+          top: "-100px",
+          left: "-100px",
+          width: "600px",
+          height: "600px",
+          background:
+            "radial-gradient(circle, rgba(180,255,0,0.04), transparent 70%)",
           zIndex: 0,
         }}
       />
@@ -84,34 +106,40 @@ export function HeroSection() {
       <div
         className="flex flex-col justify-center relative z-10"
         style={{
-          padding: "clamp(40px,6vw,72px) clamp(20px,4vw,48px) clamp(60px,8vw,90px) clamp(20px,6vw,64px)",
+          padding:
+            "clamp(40px,6vw,72px) clamp(20px,4vw,48px) clamp(60px,8vw,90px) clamp(20px,6vw,64px)",
           transform: `translateY(${scrollY * 0.06}px)`,
           transition: "transform 0.1s linear",
         }}
       >
         <div className="flex items-center gap-2.5 mb-7">
-          <div className="w-[7px] h-[7px] rounded-full bg-[#B4FF00] animate-blink" aria-hidden />
-          <span className="kicker">KI-Creator & Brand-Studio · 2026</span>
+          <div
+            className="w-[7px] h-[7px] rounded-full bg-[#B4FF00] animate-blink"
+            aria-hidden
+          />
+          <span className="kicker">{t("badge")} · 2026</span>
         </div>
 
-        {/* Audience toggle */}
-        <div className="flex items-center gap-2 mb-7 flex-wrap">
-          {(["creator", "brand"] as Audience[]).map((a) => (
-            <button
-              key={a}
-              onClick={() => setAudience(a)}
-              className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
-              style={{
-                background: audience === a ? "#B4FF00" : "transparent",
-                borderColor: audience === a ? "#B4FF00" : "rgba(255,255,255,0.13)",
-                color: audience === a ? "#060608" : "rgba(240,239,232,0.6)",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              {a === "creator" ? "Für Creator" : "Für Marken"}
-            </button>
-          ))}
-        </div>
+        {!isVariantB && (
+          <div className="flex items-center gap-2 mb-7 flex-wrap">
+            {(["creator", "brand"] as Audience[]).map((a) => (
+              <button
+                key={a}
+                onClick={() => setAudience(a)}
+                className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
+                style={{
+                  background: audience === a ? "#B4FF00" : "transparent",
+                  borderColor:
+                    audience === a ? "#B4FF00" : "rgba(255,255,255,0.13)",
+                  color: audience === a ? "#060608" : "rgba(240,239,232,0.6)",
+                  fontFamily: "var(--font-dm), sans-serif",
+                }}
+              >
+                {a === "creator" ? "Für Creator" : "Für Marken"}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Headline */}
         <h1
@@ -123,15 +151,18 @@ export function HeroSection() {
             lineHeight: 0.92,
           }}
         >
-          {content.headline.map((line, i) => (
-            <span key={i} className="block">
-              {i === content.headline.length - 1 ? (
-                <span style={{ color: "#B4FF00" }}>{line}</span>
-              ) : (
-                line
-              )}
-            </span>
-          ))}
+          {content.headline.map((line, i) => {
+            const accentIndex = isVariantB ? 2 : content.headline.length - 1;
+            return (
+              <span key={i} className="block">
+                {i === accentIndex ? (
+                  <span style={{ color: "#B4FF00" }}>{line}</span>
+                ) : (
+                  line
+                )}
+              </span>
+            );
+          })}
         </h1>
 
         <p
@@ -147,21 +178,77 @@ export function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 mb-10">
-          <a href="/dashboard" className="btn-acid justify-center sm:justify-start">
-            → Kostenlos starten
+          <a
+            href={isVariantB ? variantBContent.ctaHref : "/signup"}
+            className="btn-acid justify-center sm:justify-start"
+            onClick={() => void trackAbEvent("signup_click", variant)}
+          >
+            → {isVariantB ? variantBContent.cta : t("cta_primary")}
           </a>
-          <a href="#features" className="btn-ghost justify-center sm:justify-start">
-            Features ansehen
+          <a
+            href="#features"
+            className="btn-ghost justify-center sm:justify-start"
+          >
+            {t("cta_secondary")}
           </a>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap" style={{ fontSize: "0.82rem", color: "#505055" }}>
-          {["✓ Keine Kreditkarte", "50 gratis Credits", "DSGVO-konform"].map((item, i) => (
-            <span key={item} className="flex items-center gap-3">
-              {i > 0 && <span className="w-[3px] h-[3px] rounded-full inline-block" style={{ background: "#505055" }} />}
-              {item}
+        {isVariantB && (
+          <div
+            className="flex items-center gap-3 mb-8 flex-wrap"
+            style={{ fontSize: "0.82rem" }}
+          >
+            <div className="flex items-center" style={{ marginRight: 4 }}>
+              {SOCIAL_AVATARS.map((initials, i) => (
+                <div
+                  key={initials}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: "rgba(180,255,0,0.15)",
+                    border: "2px solid #060608",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.62rem",
+                    fontWeight: 700,
+                    color: "#B4FF00",
+                    marginLeft: i > 0 ? -10 : 0,
+                    zIndex: SOCIAL_AVATARS.length - i,
+                  }}
+                >
+                  {initials}
+                </div>
+              ))}
+            </div>
+            <span style={{ color: "rgba(240,239,232,0.45)" }}>
+              Bereits von{" "}
+              <strong style={{ color: "#B4FF00", fontWeight: 700 }}>
+                500+
+              </strong>{" "}
+              Creators genutzt
             </span>
-          ))}
+          </div>
+        )}
+
+        <div
+          className="flex items-center gap-3 flex-wrap"
+          style={{ fontSize: "0.82rem", color: "#505055" }}
+        >
+          {["✓ Keine Kreditkarte", "50 gratis Credits", "DSGVO-konform"].map(
+            (item, i) => (
+              <span key={item} className="flex items-center gap-3">
+                {i > 0 && (
+                  <span
+                    className="w-[3px] h-[3px] rounded-full inline-block"
+                    style={{ background: "#505055" }}
+                  />
+                )}
+                {item}
+              </span>
+            )
+          )}
         </div>
       </div>
 
@@ -189,24 +276,51 @@ export function HeroSection() {
             <img
               src={img.src}
               alt={img.title}
-              style={{ filter: "brightness(0.8) saturate(1.15)", minHeight: img.tall ? undefined : 160, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              style={{
+                filter: "brightness(0.8) saturate(1.15)",
+                minHeight: img.tall ? undefined : 160,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
               loading="lazy"
             />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(6,6,8,0.92) 0%, rgba(6,6,8,0.10) 50%, transparent 80%)" }} />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(6,6,8,0.92) 0%, rgba(6,6,8,0.10) 50%, transparent 80%)",
+              }}
+            />
             <div className="absolute inset-0 p-3 flex flex-col justify-between pointer-events-none">
               <div>
                 {img.tag === "live" && (
                   <span className="tag-live">
-                    <span className="w-[5px] h-[5px] rounded-full bg-[#ff4757] animate-blink inline-block" aria-hidden />
+                    <span
+                      className="w-[5px] h-[5px] rounded-full bg-[#ff4757] animate-blink inline-block"
+                      aria-hidden
+                    />
                     LIVE
                   </span>
                 )}
-                {img.tag === "brand" && <span className="tag-brand">{img.tagLabel}</span>}
-                {img.tag === "ai" && <span className="tag-ai">{img.tagLabel}</span>}
+                {img.tag === "brand" && (
+                  <span className="tag-brand">{img.tagLabel}</span>
+                )}
+                {img.tag === "ai" && (
+                  <span className="tag-ai">{img.tagLabel}</span>
+                )}
               </div>
               <div>
-                <div className="font-bold text-[0.82rem] text-white" style={{ letterSpacing: "-0.02em" }}>{img.title}</div>
-                <div className="text-[0.68rem] text-white/45 mt-0.5">{img.sub}</div>
+                <div
+                  className="font-bold text-[0.82rem] text-white"
+                  style={{ letterSpacing: "-0.02em" }}
+                >
+                  {img.title}
+                </div>
+                <div className="text-[0.68rem] text-white/45 mt-0.5">
+                  {img.sub}
+                </div>
               </div>
             </div>
           </div>

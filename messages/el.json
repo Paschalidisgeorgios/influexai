@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "Πίνακας Ελέγχου",
+    "community": "Κοινότητα",
+    "analytics": "Στατιστικά",
+    "profile": "Προφίλ",
+    "credits": "Πόντοι",
+    "logout": "Αποσύνδεση"
+  },
+  "hero": {
+    "badge": "Στούντιο Δημιουργού AI",
+    "headline": "Το επόμενο viral Short σου — σε 60 δευτερόλεπτα.",
+    "subheadline": "Χωρίς μοντάζ. Χωρίς γραφή. Μόνο AI.",
+    "cta_primary": "Ξεκίνα δωρεάν — 10 πόντοι δώρο",
+    "cta_secondary": "Δες demo",
+    "social_proof": "{count} δημιουργοί εγγεγραμμένοι"
+  },
+  "flows": {
+    "script": {
+      "title": "Γεννήτρια Σεναρίου",
+      "description": "Πλήρη σενάρια με hook, ιστορία & CTA",
+      "button": "Δημιουργία σεναρίου",
+      "cost": "Κόστος {cost} πόντοι",
+      "step1_title": "Θέμα βίντεο",
+      "step1_topic": "Θέμα / Τίτλος",
+      "step1_topic_placeholder": "π.χ. Πρωινή ρουτίνα για παραγωγικότητα",
+      "step1_duration": "Διάρκεια βίντεο",
+      "step1_tone": "Τόνος / Στυλ",
+      "step1_language": "Γλώσσα",
+      "generating": "Δημιουργία σεναρίου...",
+      "result_copy": "Αντιγραφή",
+      "result_save": "Αποθήκευση",
+      "result_regenerate": "Εκ νέου δημιουργία",
+      "result_use": "Χρήση στη ροή βίντεο"
+    },
+    "niche": {
+      "title": "Ανάλυση Niche",
+      "description": "Βρες κερδοφόρες ιδέες για YouTube niche",
+      "button": "Ανάλυση",
+      "step1_topic": "Θέμα / Ενδιαφέρον σου",
+      "step1_placeholder": "π.χ. Fitness, Τεχνολογία, Μαγειρική...",
+      "step1_audience": "Κοινό-στόχος",
+      "step1_format": "Μορφή περιεχομένου"
+    },
+    "outlier": {
+      "title": "Ανιχνευτής Outlier",
+      "description": "Βρες viral βίντεο στη niche σου",
+      "button": "Εύρεση outliers"
+    },
+    "thumbnail": {
+      "title": "Ιδέες Thumbnail",
+      "description": "Ιδέες thumbnail βελτιστοποιημένες για CTR",
+      "button": "Δημιουργία ιδεών"
+    },
+    "remix": {
+      "title": "Remix Βίντεο",
+      "description": "Κάνε remix viral βίντεο με τη δική σου οπτική",
+      "button": "Remix"
+    },
+    "video_ad": {
+      "title": "Διαφήμιση Προϊόντος",
+      "description": "Viral διαφημιστικά shorts με AI",
+      "button": "Δημιουργία διαφήμισης"
+    }
+  },
+  "credits": {
+    "title": "Πόντοι",
+    "balance": "Το υπόλοιπό σου",
+    "buy": "Αγορά πόντων",
+    "low_warning": "Έχεις μόνο {count} πόντους",
+    "empty": "Δεν υπάρχουν πόντοι",
+    "packages": {
+      "starter": "Αρχάριος",
+      "creator": "Δημιουργός",
+      "pro": "Επαγγελματίας"
+    }
+  },
+  "auth": {
+    "login_title": "Καλώς ήρθες πίσω",
+    "signup_title": "Δημιουργία λογαριασμού",
+    "email": "Email",
+    "password": "Κωδικός",
+    "name": "Το όνομά σου",
+    "login_button": "Σύνδεση",
+    "signup_button": "Εγγραφή δωρεάν",
+    "no_account": "Δεν έχεις λογαριασμό;",
+    "has_account": "Έχεις ήδη λογαριασμό;",
+    "signup_link": "Εγγραφή",
+    "login_link": "Σύνδεση",
+    "login_subtitle": "Σύνδεση για να συνεχίσεις.",
+    "signup_subtitle": "Ξεκίνα με 10 δωρεάν πόντους.",
+    "fill_fields": "Συμπλήρωσε όλα τα πεδία.",
+    "bad_credentials": "Λάθος email ή κωδικός."
+  },
+  "onboarding": {
+    "welcome": "Καλώς ήρθες στο InfluexAI, {name}!",
+    "subtitle": "Το AI στούντιο για δημιουργούς που θέλουν να γίνουν viral.",
+    "next": "Επόμενο →",
+    "skip": "Παράλειψη",
+    "finish": "Στον Πίνακα Ελέγχου"
+  },
+  "community": {
+    "title": "Κοινότητα",
+    "new_post": "Νέα ανάρτηση",
+    "win": "Επιτυχία",
+    "idea": "Ιδέα",
+    "question": "Ερώτηση",
+    "reply": "Απάντηση",
+    "report": "Αναφορά",
+    "challenge_title": "Εβδομαδιαία Πρόκληση",
+    "join_challenge": "Συμμετέχω"
+  },
+  "errors": {
+    "generic": "Κάτι πήγε στραβά. Παρακαλώ δοκίμασε ξανά.",
+    "no_credits": "Δεν υπάρχουν αρκετοί πόντοι.",
+    "network": "Σφάλμα δικτύου. Έλεγξε τη σύνδεσή σου.",
+    "try_again": "Δοκίμασε ξανά"
+  },
+  "common": {
+    "loading": "Φόρτωση...",
+    "save": "Αποθήκευση",
+    "cancel": "Ακύρωση",
+    "delete": "Διαγραφή",
+    "edit": "Επεξεργασία",
+    "close": "Κλείσιμο",
+    "back": "Πίσω",
+    "new_badge": "ΝΕΟ",
+    "coming_soon": "Σύντομα διαθέσιμο",
+    "copied": "Αντιγράφηκε! ✓",
+    "share": "Κοινοποίηση"
+  },
+  "footer": {
+    "tagline": "Το AI στούντιο για viral shorts.",
+    "links": "Σύνδεσμοι",
+    "legal": "Νομικά",
+    "privacy": "Πολιτική Απορρήτου",
+    "terms": "Όροι Χρήσης",
+    "imprint": "Νομικές Πληροφορίες",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "Για agencies →"
+  },
+  "landing": {
+    "nav_brands": "Για brands",
+    "nav_features": "Features",
+    "nav_pricing": "Τιμές",
+    "auth_login": "Σύνδεση",
+    "auth_signup": "Δωρεάν εκκίνηση"
+  },
+  "notFound": {
+    "headline": "Αυτή η σελίδα δεν υπάρχει (ακόμα)",
+    "body": "Ίσως έρχεται σύντομα. Πίσω στο dashboard;",
+    "cta_dashboard": "Στο Dashboard",
+    "cta_home": "Αρχική"
+  },
+  "dashboard": {
+    "welcome": "Καλώς ήρθες",
+    "pick_flow": "Διάλεξε flow",
+    "nav_home": "Home",
+    "nav_videos": "Videos",
+    "nav_ki_ich": "KI-Ich",
+    "nav_settings": "Προφίλ"
+  },
+  "language": {
+    "label": "Γλώσσα"
+  }
+}

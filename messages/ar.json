@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "community": "المجتمع",
+    "analytics": "الإحصائيات",
+    "profile": "الملف الشخصي",
+    "credits": "الرصيد",
+    "logout": "تسجيل الخروج"
+  },
+  "hero": {
+    "badge": "استوديو المبدع بالذكاء الاصطناعي",
+    "headline": "فيديوك القصير الفيروسي التالي — في 60 ثانية.",
+    "subheadline": "بدون مونتاج. بدون كتابة. فقط الذكاء الاصطناعي.",
+    "cta_primary": "ابدأ مجانًا — 10 رصيد هدية",
+    "cta_secondary": "شاهد العرض",
+    "social_proof": "{count} مبدع مسجل"
+  },
+  "flows": {
+    "script": {
+      "title": "مولّد السكربت",
+      "description": "سكربتات كاملة مع Hook وقصة وCTA",
+      "button": "إنشاء سكربت",
+      "cost": "يكلف {cost} رصيد",
+      "step1_title": "موضوع الفيديو",
+      "step1_topic": "الموضوع / العنوان",
+      "step1_topic_placeholder": "مثال: روتين صباحي للإنتاجية",
+      "step1_duration": "مدة الفيديو",
+      "step1_tone": "النبرة / الأسلوب",
+      "step1_language": "اللغة",
+      "generating": "جاري إنشاء السكربت...",
+      "result_copy": "نسخ",
+      "result_save": "حفظ",
+      "result_regenerate": "إعادة الإنشاء",
+      "result_use": "استخدام في مسار الفيديو"
+    },
+    "niche": {
+      "title": "محلل النيتش",
+      "description": "اعثر على أفكار نيتش مربحة على يوتيوب",
+      "button": "تحليل",
+      "step1_topic": "موضوعك / اهتمامك",
+      "step1_placeholder": "مثال: لياقة، تقنية، طبخ...",
+      "step1_audience": "الجمهور المستهدف",
+      "step1_format": "صيغة المحتوى"
+    },
+    "outlier": {
+      "title": "كاشف الفيديوهات الشاذة",
+      "description": "اعثر على فيديوهات فيروسية في نيتشك",
+      "button": "البحث عن outliers"
+    },
+    "thumbnail": {
+      "title": "مفهوم الصورة المصغرة",
+      "description": "أفكار صور مصغرة محسّنة لـ CTR",
+      "button": "إنشاء أفكار"
+    },
+    "remix": {
+      "title": "ريمكس فيديو",
+      "description": "أعد مزج فيديوهات فيروسية بلمستك",
+      "button": "ريمكس"
+    },
+    "video_ad": {
+      "title": "إعلان منتج",
+      "description": "إعلانات قصيرة فيروسية بالذكاء الاصطناعي",
+      "button": "إنشاء إعلان"
+    }
+  },
+  "credits": {
+    "title": "الرصيد",
+    "balance": "رصيدك",
+    "buy": "شراء رصيد",
+    "low_warning": "تبقى لديك {count} رصيد فقط",
+    "empty": "لا يوجد رصيد",
+    "packages": {
+      "starter": "مبتدئ",
+      "creator": "مبدع",
+      "pro": "محترف"
+    }
+  },
+  "auth": {
+    "login_title": "مرحبًا بعودتك",
+    "signup_title": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "اسمك",
+    "login_button": "تسجيل الدخول",
+    "signup_button": "تسجيل مجاني",
+    "no_account": "ليس لديك حساب؟",
+    "has_account": "لديك حساب بالفعل؟",
+    "signup_link": "التسجيل",
+    "login_link": "تسجيل الدخول",
+    "login_subtitle": "سجّل الدخول للمتابعة.",
+    "signup_subtitle": "ابدأ بـ 10 رصيد مجاني.",
+    "fill_fields": "يرجى ملء جميع الحقول.",
+    "bad_credentials": "بريد أو كلمة مرور غير صحيحة."
+  },
+  "onboarding": {
+    "welcome": "مرحبًا بك في InfluexAI، {name}!",
+    "subtitle": "استوديو الذكاء الاصطناعي للمبدعين الذين يريدون الانتشار.",
+    "next": "التالي →",
+    "skip": "تخطي",
+    "finish": "إلى لوحة التحكم"
+  },
+  "community": {
+    "title": "المجتمع",
+    "new_post": "منشور جديد",
+    "win": "إنجاز",
+    "idea": "فكرة",
+    "question": "سؤال",
+    "reply": "رد",
+    "report": "إبلاغ",
+    "challenge_title": "تحدي الأسبوع",
+    "join_challenge": "أنا معكم"
+  },
+  "errors": {
+    "generic": "حدث خطأ. حاول مرة أخرى.",
+    "no_credits": "رصيد غير كافٍ لهذا الإجراء.",
+    "network": "خطأ في الشبكة. تحقق من اتصالك.",
+    "try_again": "حاول مرة أخرى"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "new_badge": "جديد",
+    "coming_soon": "قريبًا",
+    "copied": "تم النسخ! ✓",
+    "share": "مشاركة"
+  },
+  "footer": {
+    "tagline": "استوديو الذكاء الاصطناعي للفيديوهات القصيرة الفيروسية.",
+    "links": "روابط",
+    "legal": "قانوني",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "imprint": "بيانات قانونية",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "للوكالات →"
+  },
+  "landing": {
+    "nav_brands": "للعلامات",
+    "nav_features": "الميزات",
+    "nav_pricing": "الأسعار",
+    "auth_login": "تسجيل الدخول",
+    "auth_signup": "ابدأ مجانًا"
+  },
+  "notFound": {
+    "headline": "هذه الصفحة غير موجودة (بعد)",
+    "body": "ربما الميزة قادمة قريبًا. العودة للوحة التحكم؟",
+    "cta_dashboard": "لوحة التحكم",
+    "cta_home": "الرئيسية"
+  },
+  "dashboard": {
+    "welcome": "مرحبًا",
+    "pick_flow": "اختر مسارًا",
+    "nav_home": "الرئيسية",
+    "nav_videos": "فيديوهات",
+    "nav_ki_ich": "نسختي AI",
+    "nav_settings": "الملف"
+  },
+  "language": {
+    "label": "اللغة"
+  }
+}

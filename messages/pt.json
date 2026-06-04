@@ -1,0 +1,166 @@
+{
+  "nav": {
+    "dashboard": "Painel",
+    "community": "Comunidade",
+    "analytics": "Estatísticas",
+    "profile": "Perfil",
+    "credits": "Créditos",
+    "logout": "Sair"
+  },
+  "hero": {
+    "badge": "Estúdio de Criador IA",
+    "headline": "Seu próximo Short viral — em 60 segundos.",
+    "subheadline": "Sem edição. Sem escrita. Só IA.",
+    "cta_primary": "Comece grátis — 10 créditos de presente",
+    "cta_secondary": "Ver demo",
+    "social_proof": "{count} criadores registrados"
+  },
+  "flows": {
+    "script": {
+      "title": "Gerador de Roteiro",
+      "description": "Roteiros completos com hook, história e CTA",
+      "button": "Gerar roteiro",
+      "cost": "Custa {cost} créditos",
+      "step1_title": "Tema do seu vídeo",
+      "step1_topic": "Tema / Título",
+      "step1_topic_placeholder": "ex. Rotina matinal para produtividade",
+      "step1_duration": "Duração do vídeo",
+      "step1_tone": "Tom / Estilo",
+      "step1_language": "Idioma",
+      "generating": "Gerando roteiro...",
+      "result_copy": "Copiar",
+      "result_save": "Salvar",
+      "result_regenerate": "Regenerar",
+      "result_use": "Usar no fluxo de vídeo"
+    },
+    "niche": {
+      "title": "Analisador de Nicho",
+      "description": "Encontre ideias de nicho lucrativas no YouTube",
+      "button": "Analisar",
+      "step1_topic": "Seu tema / interesse",
+      "step1_placeholder": "ex. Fitness, Tech, Culinária...",
+      "step1_audience": "Público-alvo",
+      "step1_format": "Formato de conteúdo"
+    },
+    "outlier": {
+      "title": "Detector de Outliers",
+      "description": "Encontre vídeos virais no seu nicho",
+      "button": "Buscar outliers"
+    },
+    "thumbnail": {
+      "title": "Conceito de Thumbnail",
+      "description": "Ideias de thumbnail otimizadas para CTR",
+      "button": "Gerar conceitos"
+    },
+    "remix": {
+      "title": "Remix de Vídeo",
+      "description": "Remixe vídeos virais com seu toque",
+      "button": "Remixar"
+    },
+    "video_ad": {
+      "title": "Anúncio de Produto",
+      "description": "Shorts de produto virais com IA",
+      "button": "Criar anúncio"
+    }
+  },
+  "credits": {
+    "title": "Créditos",
+    "balance": "Seu saldo",
+    "buy": "Comprar créditos",
+    "low_warning": "Você tem apenas {count} créditos",
+    "empty": "Sem créditos",
+    "packages": {
+      "starter": "Starter",
+      "creator": "Creator",
+      "pro": "Pro"
+    }
+  },
+  "auth": {
+    "login_title": "Bem-vindo de volta",
+    "signup_title": "Criar conta",
+    "email": "E-mail",
+    "password": "Senha",
+    "name": "Seu nome",
+    "login_button": "Entrar",
+    "signup_button": "Cadastrar grátis",
+    "no_account": "Não tem conta?",
+    "has_account": "Já tem conta?",
+    "signup_link": "Cadastrar",
+    "login_link": "Entrar",
+    "login_subtitle": "Entre para continuar.",
+    "signup_subtitle": "Comece com 10 créditos grátis.",
+    "fill_fields": "Preencha todos os campos.",
+    "bad_credentials": "E-mail ou senha incorretos."
+  },
+  "onboarding": {
+    "welcome": "Bem-vindo ao InfluexAI, {name}!",
+    "subtitle": "O estúdio IA para criadores que querem viralizar.",
+    "next": "Próximo →",
+    "skip": "Pular",
+    "finish": "Ir ao Dashboard"
+  },
+  "community": {
+    "title": "Comunidade",
+    "new_post": "Nova publicação",
+    "win": "Vitória",
+    "idea": "Ideia",
+    "question": "Pergunta",
+    "reply": "Responder",
+    "report": "Denunciar",
+    "challenge_title": "Desafio da semana",
+    "join_challenge": "Participo"
+  },
+  "errors": {
+    "generic": "Algo deu errado. Tente novamente.",
+    "no_credits": "Créditos insuficientes.",
+    "network": "Erro de rede. Verifique sua conexão.",
+    "try_again": "Tentar novamente"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "new_badge": "NOVO",
+    "coming_soon": "Em breve",
+    "copied": "Copiado! ✓",
+    "share": "Compartilhar"
+  },
+  "footer": {
+    "tagline": "O estúdio IA para shorts virais.",
+    "links": "Links",
+    "legal": "Legal",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "imprint": "Informações legais",
+    "powered_by": "Powered by InfluexAI",
+    "for_agencies": "Para agências →"
+  },
+  "landing": {
+    "nav_brands": "Para marcas",
+    "nav_features": "Recursos",
+    "nav_pricing": "Preços",
+    "auth_login": "Entrar",
+    "auth_signup": "Começar grátis"
+  },
+  "notFound": {
+    "headline": "Esta página não existe (ainda)",
+    "body": "Talvez o recurso chegue em breve. Voltar ao dashboard?",
+    "cta_dashboard": "Ir ao Dashboard",
+    "cta_home": "Início"
+  },
+  "dashboard": {
+    "welcome": "Bem-vindo",
+    "pick_flow": "Escolha um flow",
+    "nav_home": "Início",
+    "nav_videos": "Vídeos",
+    "nav_ki_ich": "Meu IA",
+    "nav_settings": "Perfil"
+  },
+  "language": {
+    "label": "Idioma"
+  }
+}

@@ -3,22 +3,92 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BarChart2, Image, type LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { FeatureNudge } from "@/components/feature-nudge";
+import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
 
-const NAV_ITEMS = [
-  { id: "live",    icon: "🎭", label: "Live Creator",    href: "/dashboard/live" },
-  { id: "ki-ich",  icon: "📸", label: "Mein KI-Ich",     href: "/dashboard/ki-ich" },
-  { id: "produkt", icon: "🛍️", label: "Produkt-Werbung", href: "/dashboard/produkt" },
-  { id: "stimme",  icon: "🎵", label: "Stimme & Musik",  href: "/dashboard/stimme" },
+type NavItem = {
+  id: string;
+  label: string;
+  href: string;
+  icon?: string;
+  lucideIcon?: LucideIcon;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "live", icon: "🎭", label: "Live Creator", href: "/dashboard/live" },
+  { id: "ki-ich", icon: "📸", label: "Mein KI-Ich", href: "/dashboard/ki-ich" },
+  {
+    id: "produkt",
+    icon: "🛍️",
+    label: "Produkt-Werbung",
+    href: "/dashboard/produkt",
+  },
+  {
+    id: "voice",
+    icon: "🎵",
+    label: "Stimme & Musik",
+    href: "/dashboard/voice",
+  },
+  {
+    id: "niche",
+    icon: "📈",
+    label: "Niche Analyzer",
+    href: "/dashboard/niche-analyzer",
+  },
+  {
+    id: "outlier",
+    icon: "🔥",
+    label: "Outlier Detector",
+    href: "/dashboard/outlier-detector",
+  },
+  {
+    id: "remix",
+    icon: "🔁",
+    label: "Video Remix",
+    href: "/dashboard/video-remix",
+  },
+  {
+    id: "script",
+    icon: "📝",
+    label: "Script Generator",
+    href: "/dashboard/script-generator",
+  },
+  {
+    id: "thumbnail",
+    lucideIcon: Image,
+    label: "Thumbnail Konzept",
+    href: "/dashboard/thumbnail-concept",
+  },
+  {
+    id: "analytics",
+    lucideIcon: BarChart2,
+    label: "Meine Stats",
+    href: "/dashboard/analytics",
+  },
 ];
 
 const BOTTOM_NAV = [
+  { icon: "🔌", label: "Developer API", href: "/dashboard/api" },
+  { icon: "🎁", label: "Verdiene Credits", href: "/dashboard/referral" },
   { icon: "⚙️", label: "Einstellungen", href: "/dashboard/settings" },
   { icon: "💳", label: "Credits & Plan", href: "/dashboard/credits" },
 ];
 
 const ADMIN_NAV = [
+  {
+    icon: "📊",
+    label: "Business Analytics",
+    href: "/dashboard/admin/analytics",
+  },
+  { icon: "🚀", label: "Product Hunt", href: "/dashboard/admin/producthunt" },
+  { icon: "📱", label: "App Store Kit", href: "/dashboard/admin/app-store" },
   { icon: "⚙️", label: "Admin Panel", href: "/admin" },
+];
+
+const AGENCY_NAV = [
+  { icon: "🏢", label: "Agentur", href: "/dashboard/agency" },
 ];
 
 export function DashboardSidebar() {
@@ -26,12 +96,15 @@ export function DashboardSidebar() {
   const [credits, setCredits] = useState<number | null>(null);
   const [maxCredits, setMaxCredits] = useState(500);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasAgency, setHasAgency] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
     const loadCredits = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
@@ -40,80 +113,117 @@ export function DashboardSidebar() {
         .single();
       if (data) {
         setCredits(data.credits);
-        setMaxCredits(data.plan === "business" ? 2500 : data.plan === "creator" ? 500 : 50);
+        setMaxCredits(
+          data.plan === "business" ? 2500 : data.plan === "creator" ? 500 : 50
+        );
         setIsAdmin(data.is_admin ?? false);
       }
+      const { data: tenant } = await supabase
+        .from("tenants")
+        .select("id")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+      setHasAgency(!!tenant);
     };
     loadCredits();
-  }, []);
+    const onUpdate = () => loadCredits();
+    const onOptimistic = (e: Event) => {
+      const v = (e as CustomEvent<number | null>).detail;
+      if (typeof v === "number") setCredits(v);
+      else loadCredits();
+    };
+    window.addEventListener("credits-updated", onUpdate);
+    window.addEventListener("optimistic-credits", onOptimistic);
+    return () => {
+      window.removeEventListener("credits-updated", onUpdate);
+      window.removeEventListener("optimistic-credits", onOptimistic);
+    };
+  }, [supabase]);
 
-  const creditPercent = credits !== null ? Math.min((credits / maxCredits) * 100, 100) : 74;
-  const creditColor = creditPercent > 50 ? "#B4FF00" : creditPercent > 20 ? "#f59e0b" : "#ff6b7a";
+  const creditPercent =
+    credits !== null ? Math.min((credits / maxCredits) * 100, 100) : 74;
+  const creditColor =
+    creditPercent > 50 ? "#B4FF00" : creditPercent > 20 ? "#f59e0b" : "#ff6b7a";
 
   return (
-    <aside style={{
-      width: collapsed ? 64 : 220,
-      minHeight: "100vh",
-      background: "#0f0f12",
-      borderRight: "1px solid rgba(255,255,255,0.07)",
-      display: "flex",
-      flexDirection: "column",
-      transition: "width 0.3s ease",
-      flexShrink: 0,
-    }}>
-      {/* Logo */}
-      <div style={{
-        height: 56,
+    <aside
+      style={{
+        width: collapsed ? 64 : 220,
+        minHeight: "100vh",
+        background: "#0f0f12",
+        borderRight: "1px solid rgba(255,255,255,0.07)",
         display: "flex",
-        alignItems: "center",
-        padding: collapsed ? "0 17px" : "0 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-        gap: 10,
+        flexDirection: "column",
+        transition: "width 0.3s ease",
         flexShrink: 0,
-      }}>
-        <div style={{
-          width: 30, height: 30,
-          borderRadius: 8,
-          background: "#B4FF00",
+      }}
+    >
+      {/* Logo */}
+      <div
+        style={{
+          height: 56,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-          fontSize: "1rem",
-          color: "#060608",
+          padding: collapsed ? "0 17px" : "0 20px",
+          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          gap: 10,
           flexShrink: 0,
-        }}>I</div>
-        {!collapsed && (
-          <span style={{
+        }}
+      >
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: "#B4FF00",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "1.1rem",
-            letterSpacing: "0.04em",
-            color: "#F0EFE8",
-            whiteSpace: "nowrap",
-          }}>
+            fontSize: "1rem",
+            color: "#060608",
+            flexShrink: 0,
+          }}
+        >
+          I
+        </div>
+        {!collapsed && (
+          <span
+            style={{
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "1.1rem",
+              letterSpacing: "0.04em",
+              color: "#F0EFE8",
+              whiteSpace: "nowrap",
+            }}
+          >
             Influex<span style={{ color: "#B4FF00" }}>AI</span>
           </span>
         )}
       </div>
 
       {/* Main Nav */}
-      <nav style={{
-        flex: 1,
-        padding: "10px 8px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        overflowY: "auto",
-      }}>
+      <nav
+        style={{
+          flex: 1,
+          padding: "10px 8px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          overflowY: "auto",
+        }}
+      >
         {!collapsed && (
-          <p style={{
-            fontSize: "0.62rem",
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "#505055",
-            padding: "8px 10px 6px",
-          }}>
+          <p
+            style={{
+              fontSize: "0.62rem",
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "#505055",
+              padding: "8px 10px 6px",
+            }}
+          >
             Module
           </p>
         )}
@@ -138,16 +248,35 @@ export function DashboardSidebar() {
                 background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
                 transition: "all 0.15s",
                 justifyContent: collapsed ? "center" : "flex-start",
-                borderLeft: isActive ? "2px solid #B4FF00" : "2px solid transparent",
+                borderLeft: isActive
+                  ? "2px solid #B4FF00"
+                  : "2px solid transparent",
               }}
             >
-              <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>{item.icon}</span>
+              {item.lucideIcon ? (
+                <item.lucideIcon
+                  size={18}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  style={{ flexShrink: 0 }}
+                  color={isActive ? "#B4FF00" : "rgba(240,239,232,0.45)"}
+                />
+              ) : (
+                <span style={{ fontSize: "1.05rem", flexShrink: 0 }}>
+                  {item.icon}
+                </span>
+              )}
               {!collapsed && item.label}
             </Link>
           );
         })}
 
-        <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "8px 4px" }} />
+        <div
+          style={{
+            height: 1,
+            background: "rgba(255,255,255,0.05)",
+            margin: "8px 4px",
+          }}
+        />
 
         {BOTTOM_NAV.map((item) => (
           <Link
@@ -168,85 +297,168 @@ export function DashboardSidebar() {
               justifyContent: collapsed ? "center" : "flex-start",
             }}
           >
-            <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>{item.icon}</span>
+            <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
+              {item.icon}
+            </span>
             {!collapsed && item.label}
           </Link>
         ))}
 
         {isAdmin && !collapsed && (
-          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "8px 4px" }} />
-        )}
-        {isAdmin && ADMIN_NAV.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            title={collapsed ? item.label : undefined}
+          <div
             style={{
-              display: "flex", alignItems: "center", gap: 10,
-              padding: collapsed ? "9px 17px" : "9px 12px",
-              borderRadius: 10, textDecoration: "none",
-              color: "rgba(255,71,87,0.7)",
-              fontSize: "0.82rem", fontWeight: 600,
-              transition: "all 0.15s",
-              justifyContent: collapsed ? "center" : "flex-start",
+              height: 1,
+              background: "rgba(255,255,255,0.05)",
+              margin: "8px 4px",
             }}
-          >
-            <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>{item.icon}</span>
-            {!collapsed && item.label}
-          </Link>
-        ))}
+          />
+        )}
+        {isAdmin &&
+          ADMIN_NAV.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: collapsed ? "9px 17px" : "9px 12px",
+                borderRadius: 10,
+                textDecoration: "none",
+                color: "rgba(255,71,87,0.7)",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                transition: "all 0.15s",
+                justifyContent: collapsed ? "center" : "flex-start",
+              }}
+            >
+              <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
+                {item.icon}
+              </span>
+              {!collapsed && item.label}
+            </Link>
+          ))}
+
+        {hasAgency && !collapsed && (
+          <div
+            style={{
+              height: 1,
+              background: "rgba(255,255,255,0.05)",
+              margin: "8px 4px",
+            }}
+          />
+        )}
+        {hasAgency &&
+          AGENCY_NAV.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: collapsed ? "9px 17px" : "9px 12px",
+                borderRadius: 10,
+                textDecoration: "none",
+                color: "var(--accent)",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                transition: "all 0.15s",
+                justifyContent: collapsed ? "center" : "flex-start",
+              }}
+            >
+              <span style={{ fontSize: "0.95rem", flexShrink: 0 }}>
+                {item.icon}
+              </span>
+              {!collapsed && item.label}
+            </Link>
+          ))}
       </nav>
+
+      <FeatureNudge collapsed={collapsed} />
+      {credits !== null && (
+        <LowCreditsSidebar
+          credits={credits}
+          maxCredits={maxCredits}
+          collapsed={collapsed}
+        />
+      )}
 
       {/* Credits Panel */}
       {!collapsed && (
-        <div style={{
-          margin: "8px",
-          padding: "14px",
-          borderRadius: 12,
-          background: "rgba(255,255,255,0.025)",
-          border: "1px solid rgba(255,255,255,0.06)",
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 8,
-          }}>
-            <span style={{ fontSize: "0.72rem", color: "#505055", fontWeight: 500 }}>Credits</span>
-            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: creditColor }}>
+        <div
+          style={{
+            margin: "8px",
+            padding: "14px",
+            borderRadius: 12,
+            background: "rgba(255,255,255,0.025)",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <span
+              style={{ fontSize: "0.72rem", color: "#505055", fontWeight: 500 }}
+            >
+              Credits
+            </span>
+            <span
+              style={{
+                fontSize: "0.78rem",
+                fontWeight: 700,
+                color: creditColor,
+              }}
+            >
               {credits ?? "..."}
             </span>
           </div>
-          <div style={{
-            height: 4,
-            background: "#222228",
-            borderRadius: 99,
-            overflow: "hidden",
-            marginBottom: 4,
-          }}>
-            <div style={{
-              width: `${creditPercent}%`,
-              height: "100%",
-              background: creditColor,
+          <div
+            style={{
+              height: 4,
+              background: "#222228",
               borderRadius: 99,
-              transition: "width 0.5s ease",
-            }} />
+              overflow: "hidden",
+              marginBottom: 4,
+            }}
+          >
+            <div
+              style={{
+                width: `${creditPercent}%`,
+                height: "100%",
+                background: creditColor,
+                borderRadius: 99,
+                transition: "width 0.5s ease",
+              }}
+            />
           </div>
-          <div style={{ fontSize: "0.65rem", color: "#505055", marginBottom: 10 }}>
+          <div
+            style={{ fontSize: "0.65rem", color: "#505055", marginBottom: 10 }}
+          >
             von {maxCredits} Credits
           </div>
-          <a href="/dashboard/credits" style={{
-            display: "block",
-            textAlign: "center",
-            padding: "7px",
-            borderRadius: 8,
-            background: "rgba(180,255,0,0.08)",
-            border: "1px solid rgba(180,255,0,0.18)",
-            color: "#B4FF00",
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            textDecoration: "none",
-          }}>
+          <a
+            href="/dashboard/credits"
+            style={{
+              display: "block",
+              textAlign: "center",
+              padding: "7px",
+              borderRadius: 8,
+              background: "rgba(180,255,0,0.08)",
+              border: "1px solid rgba(180,255,0,0.18)",
+              color: "#B4FF00",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              textDecoration: "none",
+            }}
+          >
             ⚡ Aufladen
           </a>
         </div>

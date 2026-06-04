@@ -1,6 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, DM_Sans } from "next/font/google";
+import { Bebas_Neue, DM_Sans, Noto_Sans_Arabic } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
+import { getTenantFromHeaders, tenantToBranding } from "@/lib/tenant";
+import { TenantBrandingStyles } from "@/components/tenant-branding-styles";
+import { TenantProvider } from "@/components/tenant-provider";
+import {
+  buildHreflangAlternates,
+  getHomeSeo,
+  openGraphImageUrl,
+  OPEN_GRAPH_LOCALE,
+  parseKeywords,
+  SEO_BASE_URL,
+  localizedUrl,
+} from "@/lib/seo";
+import type { Locale } from "@/lib/locale";
 
 const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
@@ -17,45 +32,58 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
-  "https://influexaicreator.com";
+const notoSansArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-arabic",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "InfluexAI — Dein KI-Charakter. Deine Welt.",
-    template: "%s | InfluexAI",
-  },
-  description:
-    "Erstelle deinen KI-Influencer, streame live ohne Gesicht und generiere Produkt-Ads die konvertieren. Das KI-Creator & Brand-Studio 2026.",
-  keywords: [
-    "KI Influencer",
-    "AI Creator",
-    "Face Swap Live",
-    "KI Charakter",
-    "Produkt Werbung KI",
-    "InfluexAI",
-  ],
-  authors: [{ name: "InfluexAI GmbH" }],
-  manifest: "/manifest.json",
-  robots: { index: true, follow: true },
-  openGraph: {
-    type: "website",
-    locale: "de_DE",
-    url: siteUrl,
-    siteName: "InfluexAI",
-    title: "InfluexAI — Dein KI-Charakter. Deine Welt.",
-    description:
-      "KI-Creator & Brand-Studio: Live Creator, KI-Ich, Produkt-Werbung und Stimme klonen.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "InfluexAI — Dein KI-Charakter. Deine Welt.",
-    description:
-      "KI-Creator & Brand-Studio: Live Creator, KI-Ich, Produkt-Werbung und Stimme klonen.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = (await getLocale()) as Locale;
+  const home = getHomeSeo(locale);
+  const canonical = localizedUrl("/", locale);
+  const ogImage = openGraphImageUrl(locale);
+
+  return {
+    metadataBase: new URL(SEO_BASE_URL),
+    title: home.title,
+    description: home.description,
+    keywords: parseKeywords(home.keywords),
+    authors: [{ name: "InfluexAI GmbH" }],
+    manifest: "/manifest.json",
+    robots: { index: true, follow: true },
+    alternates: buildHreflangAlternates("/"),
+    icons: {
+      icon: [{ url: "/favicon.ico", sizes: "any" }],
+      apple: [
+        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+    },
+    openGraph: {
+      type: "website",
+      locale: OPEN_GRAPH_LOCALE[locale],
+      url: canonical,
+      siteName: "InfluexAI",
+      title: home.title,
+      description: home.description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: home.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: home.title,
+      description: home.description,
+      images: [ogImage],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#060608",
@@ -65,24 +93,46 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const isRTL = locale === "ar";
+  const tenant = await getTenantFromHeaders();
+  const branding = tenantToBranding(tenant);
+  const isTenantRoute = !!tenant;
+
   return (
     <html
-      lang="de"
+      lang={locale}
+      dir={isRTL ? "rtl" : "ltr"}
       suppressHydrationWarning
-      className={`${bebasNeue.variable} ${dmSans.variable} dark`}
+      className={`${bebasNeue.variable} ${dmSans.variable} ${notoSansArabic.variable} dark`}
     >
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="InfluexAI" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <meta name="apple-mobile-web-app-title" content={branding.appName} />
+        <TenantBrandingStyles tenant={tenant} />
       </head>
-      <body className="min-h-screen bg-[#060608] text-[#F0EFE8] antialiased overflow-x-hidden">
-        {children}
+      <body
+        className={`min-h-screen antialiased overflow-x-hidden text-[#F0EFE8] ${isRTL ? "font-[family-name:var(--font-arabic)]" : ""}`}
+        style={{
+          background: "var(--background)",
+          color: "var(--white, #F0EFE8)",
+        }}
+      >
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <TenantProvider branding={branding} isTenantRoute={isTenantRoute}>
+            {children}
+          </TenantProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
