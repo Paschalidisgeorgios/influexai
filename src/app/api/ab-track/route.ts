@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 const VALID_VARIANTS = new Set(["a", "b"]);
 const VALID_EVENTS = new Set(["view", "signup_click", "signup_complete"]);
 
@@ -45,6 +40,11 @@ export async function POST(request: NextRequest) {
   }
 
   const userAgent = request.headers.get("user-agent") ?? "";
+
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   const { error } = await supabaseAdmin.from("ab_events").insert({
     variant,

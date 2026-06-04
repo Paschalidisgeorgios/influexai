@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { logCreditTransaction } from "@/lib/activity-log";
 import { markReferralPurchased } from "@/app/actions/referral";
 import { AGENCY_PLANS, type AgencyPlanId } from "@/lib/agency-plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-async function handleAgencySubscription(session: Stripe.Checkout.Session) {
+async function handleAgencySubscription(
+  supabaseAdmin: SupabaseClient,
+  session: Stripe.Checkout.Session
+) {
   const meta = session.metadata ?? {};
   if (meta.checkout_type !== "agency_subscription") return;
 
@@ -87,7 +85,10 @@ async function handleAgencySubscription(session: Stripe.Checkout.Session) {
     .eq("id", ownerId);
 }
 
-async function handleAgencyCredits(session: Stripe.Checkout.Session) {
+async function handleAgencyCredits(
+  supabaseAdmin: SupabaseClient,
+  session: Stripe.Checkout.Session
+) {
   const meta = session.metadata ?? {};
   if (meta.checkout_type !== "agency_credits") return;
 
@@ -129,11 +130,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ungültige Signatur" }, { status: 400 });
   }
 
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    await handleAgencySubscription(session);
-    await handleAgencyCredits(session);
+    await handleAgencySubscription(supabaseAdmin, session);
+    await handleAgencyCredits(supabaseAdmin, session);
 
     const checkoutType = session.metadata?.checkout_type;
     if (

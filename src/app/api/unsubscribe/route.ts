@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { nurtureUnsubscribeToken } from "@/lib/nurture-unsubscribe";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 function unsubscribedPage(message: string, ok: boolean) {
   const color = ok ? "#B4FF00" : "#ff6b7a";
   const html = `<!DOCTYPE html>
@@ -42,6 +37,11 @@ export async function GET(request: NextRequest) {
   if (token !== expected) {
     return unsubscribedPage("Ungültiger Abmelde-Link.", false);
   }
+
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   const { error } = await supabaseAdmin
     .from("profiles")
