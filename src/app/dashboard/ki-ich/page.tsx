@@ -163,7 +163,7 @@ export default function KiIchPage() {
             Foto auswählen →
           </div>
           <p style={{ color: "#505055", fontSize: "0.75rem", marginTop: 16 }}>
-            JPG, PNG, WEBP · Max. 10MB · Kostet 4 Credits
+            JPG, PNG, WEBP · Max. 10MB · Kostet 2 Credits
           </p>
           <input
             ref={fileRef}
@@ -272,7 +272,7 @@ export default function KiIchPage() {
               cursor: scene.trim() ? "pointer" : "default",
             }}
           >
-            KI-BILD GENERIEREN → (4 Credits)
+            KI-BILD GENERIEREN → (2 Credits)
           </button>
         </div>
       )}
