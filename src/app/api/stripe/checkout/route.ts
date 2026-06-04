@@ -35,11 +35,25 @@ export async function POST(request: NextRequest) {
     .eq("id", user.id)
     .single();
 
+  const { data: purchaseRow } = await supabase
+    .from("credit_transactions")
+    .select("id")
+    .eq("user_id", user.id)
+    .like("description", "Credits gekauft%")
+    .limit(1)
+    .maybeSingle();
+
+  const hasPurchased = !!purchaseRow;
+
   let discounts: { coupon: string }[] | undefined;
   if (profile?.is_beta) {
-    const { getOrCreateBetaLifetimeCouponId } =
-      await import("@/lib/beta-stripe");
-    const couponId = await getOrCreateBetaLifetimeCouponId();
+    const {
+      getOrCreateBetaFirstPurchaseCouponId,
+      getOrCreateBetaLifetimeCouponId,
+    } = await import("@/lib/beta-stripe");
+    const couponId = hasPurchased
+      ? await getOrCreateBetaLifetimeCouponId()
+      : await getOrCreateBetaFirstPurchaseCouponId();
     if (couponId) discounts = [{ coupon: couponId }];
   } else {
     const { getOrCreateFirst20PromotionCodeId } =

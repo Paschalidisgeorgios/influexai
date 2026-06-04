@@ -17,7 +17,7 @@ test.describe("Signup Flow", () => {
 
   test("shows validation error for empty form", async ({ page }) => {
     await page
-      .getByRole("button", { name: /kostenlos starten|registrieren|sign up/i })
+      .getByRole("button", { name: /jetzt registrieren|registrieren|sign up/i })
       .click();
     await expect(
       page.getByText(/bitte alle felder|fill.*field|required/i)
@@ -29,7 +29,7 @@ test.describe("Signup Flow", () => {
     await emailInput(page).fill(`weak+${Date.now()}@influexai.test`);
     await passwordInput(page).fill("123");
     await page
-      .getByRole("button", { name: /kostenlos starten|registrieren|sign up/i })
+      .getByRole("button", { name: /jetzt registrieren|registrieren|sign up/i })
       .click();
     await expect(
       page.getByText("Passwort muss mindestens 6 Zeichen haben.")
@@ -44,7 +44,7 @@ test.describe("Signup Flow", () => {
     await emailInput(page).fill(unique);
     await passwordInput(page).fill("TestPassword123!");
     await page
-      .getByRole("button", { name: /kostenlos starten|registrieren|sign up/i })
+      .getByRole("button", { name: /jetzt registrieren|registrieren|sign up/i })
       .click();
 
     const rateLimited = page.getByText(/rate limit exceeded/i);

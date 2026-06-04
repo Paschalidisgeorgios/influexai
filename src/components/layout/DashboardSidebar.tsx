@@ -84,6 +84,7 @@ const ADMIN_NAV = [
   },
   { icon: "🚀", label: "Product Hunt", href: "/dashboard/admin/producthunt" },
   { icon: "📱", label: "App Store Kit", href: "/dashboard/admin/app-store" },
+  { icon: "✍️", label: "SEO Content", href: "/dashboard/admin/content" },
   { icon: "⚙️", label: "Admin Panel", href: "/admin" },
 ];
 

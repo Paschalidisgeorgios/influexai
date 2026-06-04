@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { DashboardGreeting } from "@/components/dashboard-greeting";
 import {
   FileText,
   Flame,
@@ -13,6 +13,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { CreditPackagePicker } from "@/components/credit-package-picker";
+import type { CreditPackageId } from "@/lib/credit-packages";
 
 type FlowItem = {
   id: string;
@@ -199,9 +201,9 @@ const FLOW_I18N: Record<
 };
 
 export default function DashboardPage() {
+  const locale = useLocale();
   const t = useTranslations("dashboard");
   const tFlows = useTranslations("flows");
-  const tCredits = useTranslations("credits");
   const tCommon = useTranslations("common");
   const router = useRouter();
   const supabase = createClient();
@@ -211,6 +213,8 @@ export default function DashboardPage() {
     { id: string; type: string; prompt: string; created_at: string }[]
   >([]);
   const [hoveredLocked, setHoveredLocked] = useState<string | null>(null);
+  const [purchaseModal, setPurchaseModal] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -247,70 +251,96 @@ export default function DashboardPage() {
   }, [supabase]);
 
   const firstActiveFlowId = FLOWS.find((f) => !f.locked)?.id;
+  const noCredits = credits === 0;
+
+  const handleCheckout = async (packageId: CreditPackageId) => {
+    setCheckoutLoading(packageId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packageId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error ?? "Checkout fehlgeschlagen.");
+    } catch {
+      alert("Fehler beim Checkout.");
+    }
+    setCheckoutLoading(null);
+  };
+
+  const trustChecks = [
+    "Sofort verfügbar",
+    "Keine Abo-Falle",
+    "Credits verfallen nicht",
+  ];
 
   return (
     <div className="max-w-7xl mx-auto w-full">
-      {/* Welcome */}
       <div style={{ marginBottom: 28 }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2rem, 4vw, 3rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 1,
-            color: "#F0EFE8",
-            marginBottom: 8,
-          }}
-        >
-          Hey {displayName ?? "Creator"} 👋
-        </h1>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>{t("pick_flow")}</p>
+        <DashboardGreeting
+          firstName={displayName ?? "Creator"}
+          locale={locale}
+        />
+        <p style={{ color: "#505055", fontSize: "0.9rem", marginTop: 12 }}>
+          {t("pick_flow")}
+        </p>
       </div>
 
-      {/* Zero credits banner */}
-      {credits === 0 && (
+      {noCredits && (
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 14,
-            padding: "16px 20px",
-            marginBottom: 20,
-            borderRadius: 12,
-            background: "rgba(180,255,0,0.08)",
-            borderLeft: "4px solid #B4FF00",
-            border: "1px solid rgba(180,255,0,0.15)",
-            borderLeftWidth: 4,
-            borderLeftColor: "#B4FF00",
+            marginBottom: 28,
+            padding: 32,
+            borderRadius: 16,
+            textAlign: "center",
+            background: "rgba(180,255,0,0.04)",
+            border: "1px solid rgba(180,255,0,0.2)",
           }}
         >
+          <h2
+            style={{
+              fontFamily: "var(--font-bebas), sans-serif",
+              fontSize: "1.75rem",
+              color: "#F0EFE8",
+              marginBottom: 12,
+            }}
+          >
+            ⚡ Du hast noch keine Credits
+          </h2>
           <p
             style={{
-              margin: 0,
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              color: "#F0EFE8",
+              color: "rgba(240,239,232,0.7)",
+              fontSize: "0.95rem",
+              marginBottom: 24,
+              lineHeight: 1.6,
             }}
           >
-            {tCredits("empty")}
+            Kaufe Credits um alle KI-Features freizuschalten.
           </p>
-          <Link
-            href="/dashboard/credits"
+          <CreditPackagePicker
+            onCheckout={handleCheckout}
+            loadingId={checkoutLoading}
+            compact
+          />
+          <div
             style={{
-              padding: "10px 20px",
-              borderRadius: 9,
-              background: "#B4FF00",
-              color: "#060608",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              textDecoration: "none",
-              fontFamily: "var(--font-dm), sans-serif",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 16,
+              marginTop: 24,
+              fontSize: "0.82rem",
+              color: "#505055",
             }}
           >
-            {tCredits("buy")}
-          </Link>
+            {trustChecks.map((line) => (
+              <span key={line} style={{ color: "#B4FF00" }}>
+                ✓ {line}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -318,6 +348,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5">
         {FLOWS.map((flow) => {
           const isLocked = flow.locked;
+          const creditLocked = noCredits && !isLocked;
+          const cardDisabled = isLocked || creditLocked;
           const flowKey = FLOW_I18N[flow.id];
           const flowTitle = flowKey ? tFlows(`${flowKey}.title`) : flow.title;
           const flowDesc = flowKey
@@ -332,15 +364,15 @@ export default function DashboardPage() {
                 borderRadius: 18,
                 background: "#18181d",
                 border: "1px solid rgba(255,255,255,0.07)",
-                cursor: isLocked ? "not-allowed" : "pointer",
+                cursor: cardDisabled ? "not-allowed" : "pointer",
                 transition: "all 0.2s",
                 position: "relative",
                 overflow: "hidden",
-                opacity: isLocked ? 0.5 : 1,
+                opacity: cardDisabled ? (creditLocked ? 0.4 : 0.5) : 1,
                 boxShadow: "none",
               }}
               onMouseEnter={(e) => {
-                if (isLocked) {
+                if (cardDisabled) {
                   setHoveredLocked(flow.id);
                   return;
                 }
@@ -357,10 +389,14 @@ export default function DashboardPage() {
                 el.style.background = "#18181d";
               }}
               onClick={() => {
+                if (creditLocked) {
+                  setPurchaseModal(true);
+                  return;
+                }
                 if (!isLocked) router.push(`/dashboard/${flow.id}`);
               }}
             >
-              {isLocked && hoveredLocked === flow.id && (
+              {cardDisabled && hoveredLocked === flow.id && (
                 <div
                   style={{
                     position: "absolute",
@@ -370,12 +406,12 @@ export default function DashboardPage() {
                     justifyContent: "center",
                     background: "rgba(6,6,8,0.75)",
                     zIndex: 2,
-                    fontSize: "0.8rem",
+                    fontSize: isLocked ? "0.8rem" : "1.5rem",
                     fontWeight: 700,
                     color: "#F0EFE8",
                   }}
                 >
-                  Kommt bald
+                  {isLocked ? "Kommt bald" : "🔒"}
                 </div>
               )}
 
@@ -633,6 +669,79 @@ export default function DashboardPage() {
           </ul>
         )}
       </div>
+
+      {purchaseModal && (
+        <div
+          role="dialog"
+          aria-modal
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 200,
+            background: "rgba(6,6,8,0.92)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+          }}
+          onClick={() => setPurchaseModal(false)}
+        >
+          <div
+            style={{
+              maxWidth: 720,
+              width: "100%",
+              padding: 28,
+              borderRadius: 16,
+              background: "#0f0f12",
+              border: "1px solid rgba(180,255,0,0.25)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2
+              style={{
+                fontFamily: "var(--font-bebas), sans-serif",
+                fontSize: "1.75rem",
+                color: "#F0EFE8",
+                marginBottom: 8,
+                textAlign: "center",
+              }}
+            >
+              Credits kaufen um dieses Feature freizuschalten
+            </h2>
+            <p
+              style={{
+                textAlign: "center",
+                color: "#505055",
+                fontSize: "0.88rem",
+                marginBottom: 24,
+              }}
+            >
+              Wähle ein Paket — Credits sind sofort nach Zahlung verfügbar.
+            </p>
+            <CreditPackagePicker
+              onCheckout={handleCheckout}
+              loadingId={checkoutLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setPurchaseModal(false)}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: 20,
+                background: "transparent",
+                border: "none",
+                color: "#505055",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Schließen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

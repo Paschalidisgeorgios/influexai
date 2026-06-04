@@ -2,8 +2,9 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { ImageGenerationLoading } from "@/components/image-generation-loading";
 
-type Step = "upload" | "describe" | "loading" | "result";
+type Step = "upload" | "describe" | "loading" | "preview" | "result";
 
 const SCENE_PRESETS = [
   {
@@ -33,7 +34,8 @@ const SCENE_PRESETS = [
   },
   {
     label: "🗼 Tokyo",
-    value: "in Tokyo Japan at night, neon lights, street photography",
+    value:
+      "in Tokyo Japan at dusk, soft ambient city lights, street photography, natural skin tones",
   },
   {
     label: "🏔️ Berge",
@@ -46,7 +48,10 @@ export default function KiIchPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [scene, setScene] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  const [loadingMode, setLoadingMode] = useState<"preview" | "final">("preview");
+  const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -68,30 +73,59 @@ export default function KiIchPage() {
     if (file) handleFile(file);
   };
 
+  const callKiIch = async (mode: "preview" | "final") => {
+    const res = await fetch("/api/ki-ich", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageUrl: photo, scene, mode }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.imageUrl) {
+      throw new Error(data.error || "Fehler beim Generieren");
+    }
+    return data.imageUrl as string;
+  };
+
   const handleGenerate = async () => {
     if (!photo || !scene) return;
+    setError(null);
+    setLoadingMode("preview");
+    setStep("loading");
+    setPreviewUrl(null);
+    setResult(null);
+
+    try {
+      const url = await callKiIch("preview");
+      setPreviewUrl(url);
+      setStep("preview");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Fehler beim Generieren. Bitte versuche es erneut."
+      );
+      setStep("describe");
+    }
+  };
+
+  const handleGenerateHQ = async () => {
+    if (!photo || !scene) return;
+    setError(null);
+    setLoadingMode("final");
     setStep("loading");
 
     try {
-      const res = await fetch("/api/ki-ich", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: photo, scene }),
-      });
-      const data = await res.json();
-      if (data.imageUrl) {
-        setResult(data.imageUrl);
-        setStep("result");
-      } else {
-        throw new Error(data.error || "Fehler");
-      }
+      const url = await callKiIch("final");
+      setResult(url);
+      setStep("result");
+      window.dispatchEvent(new Event("credits-updated"));
     } catch (err: unknown) {
-      const message =
+      setError(
         err instanceof Error
           ? err.message
-          : "Fehler beim Generieren. Bitte versuche es erneut.";
-      alert(message);
-      setStep("describe");
+          : "Hochauflösende Generierung fehlgeschlagen."
+      );
+      setStep("preview");
     }
   };
 
@@ -100,7 +134,9 @@ export default function KiIchPage() {
     setPhoto(null);
     setPhotoFile(null);
     setScene("");
+    setPreviewUrl(null);
     setResult(null);
+    setError(null);
   };
 
   return (
@@ -145,7 +181,9 @@ export default function KiIchPage() {
             const done = current > sIndex;
             const active =
               current === sIndex ||
-              (s.key === "describe" && step === "loading");
+              (s.key === "describe" &&
+                (step === "loading" || step === "preview")) ||
+              (s.key === "result" && (step === "result" || step === "preview"));
             return (
               <div
                 key={s.key}
@@ -416,52 +454,96 @@ export default function KiIchPage() {
               cursor: scene.trim() ? "pointer" : "default",
             }}
           >
-            KI-BILD GENERIEREN → (2 Credits)
+            VORSCHAU GENERIEREN → (kostenlos)
           </button>
+          <p style={{ color: "#505055", fontSize: "0.78rem", marginTop: 8 }}>
+            Schnelle Vorschau, danach optional hochauflösend (2 Credits).
+          </p>
+          {error && (
+            <p style={{ color: "#ff6b7a", fontSize: "0.85rem", marginTop: 8 }}>
+              {error}
+            </p>
+          )}
         </div>
       )}
 
-      {/* STEP 3: Loading */}
       {step === "loading" && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "80px 20px",
-            background: "#0f0f12",
-            borderRadius: 20,
-            border: "1px solid rgba(255,255,255,0.07)",
-          }}
-        >
+        <ImageGenerationLoading
+          title={
+            loadingMode === "preview"
+              ? "Vorschau wird erstellt..."
+              : "Hochauflösende Version..."
+          }
+          subtitle={
+            loadingMode === "preview"
+              ? "Flux PuLID — schnellere Vorschau (~15 Sek.)"
+              : "Flux PuLID — finale Qualität (~25–40 Sek.)"
+          }
+        />
+      )}
+
+      {step === "preview" && previewUrl && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ color: "#505055", fontSize: "0.85rem" }}>
+            Vorschau bereit — für beste Qualität ohne Farbartefakte auf der
+            Haut jetzt hochauflösend generieren.
+          </p>
           <div
             style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              border: "3px solid #B4FF00",
-              borderTopColor: "transparent",
-              animation: "spin 0.8s linear infinite",
-              margin: "0 auto 24px",
-            }}
-          />
-          <h2
-            style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "1.8rem",
-              letterSpacing: "0.02em",
-              color: "#F0EFE8",
-              marginBottom: 10,
+              borderRadius: 20,
+              overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.12)",
+              position: "relative",
             }}
           >
-            InfluexAI Vision generiert...
-          </h2>
-          <p style={{ color: "#505055", fontSize: "0.9rem" }}>
-            Dein KI-Bild wird erstellt. Das dauert ~15 Sekunden.
-          </p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <Image
+              src={previewUrl}
+              alt="Vorschau"
+              width={1024}
+              height={1024}
+              unoptimized
+              style={{ width: "100%", height: "auto", display: "block" }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleGenerateHQ}
+            style={{
+              width: "100%",
+              padding: "15px",
+              borderRadius: 12,
+              border: "none",
+              background: "#B4FF00",
+              color: "#060608",
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "1.3rem",
+              letterSpacing: "0.04em",
+              cursor: "pointer",
+            }}
+          >
+            HOCHAUFLÖSEND GENERIEREN → (2 Credits)
+          </button>
+          <button
+            type="button"
+            onClick={() => setStep("describe")}
+            style={{
+              padding: "10px",
+              borderRadius: 10,
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.09)",
+              color: "#505055",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+            }}
+          >
+            Szene anpassen
+          </button>
+          {error && (
+            <p style={{ color: "#ff6b7a", fontSize: "0.85rem" }}>{error}</p>
+          )}
         </div>
       )}
 
-      {/* STEP 4: Result */}
       {step === "result" && result && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <button

@@ -8,6 +8,10 @@ import {
   saveCreatorProfile,
   skipOnboarding,
 } from "@/app/actions/onboarding";
+import { CreditPackagePicker } from "@/components/credit-package-picker";
+import { DashboardGreeting } from "@/components/dashboard-greeting";
+import type { CreditPackageId } from "@/lib/credit-packages";
+import { useLocale } from "next-intl";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -62,66 +66,14 @@ const FEATURES = [
   },
 ] as const;
 
-function ConfettiBurst() {
-  const colors = ["#B4FF00", "#F0EFE8", "#f59e0b", "#06b6d4", "#ff6b7a"];
-  const pieces = Array.from({ length: 48 }, (_, i) => ({
-    id: i,
-    left: `${(i * 17) % 100}%`,
-    delay: `${(i % 8) * 0.05}s`,
-    color: colors[i % colors.length],
-    rotate: `${(i * 37) % 360}deg`,
-  }));
-
-  return (
-    <div
-      aria-hidden
-      style={{
-        position: "fixed",
-        inset: 0,
-        pointerEvents: "none",
-        overflow: "hidden",
-        zIndex: 50,
-      }}
-    >
-      {pieces.map((p) => (
-        <span
-          key={p.id}
-          style={{
-            position: "absolute",
-            top: -12,
-            left: p.left,
-            width: 8,
-            height: 14,
-            background: p.color,
-            borderRadius: 2,
-            animation: `onboarding-confetti 2.2s ease-out ${p.delay} forwards`,
-            transform: `rotate(${p.rotate})`,
-          }}
-        />
-      ))}
-      <style jsx>{`
-        @keyframes onboarding-confetti {
-          0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(110vh) rotate(720deg);
-            opacity: 0;
-          }
-        }
-      `}</style>
-    </div>
-  );
-}
-
 export default function OnboardingPage() {
+  const locale = useLocale();
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [firstName, setFirstName] = useState("Creator");
-  const [credits, setCredits] = useState(10);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   const [channelName, setChannelName] = useState("");
   const [creatorNiche, setCreatorNiche] = useState(NICHES[0]);
@@ -137,7 +89,6 @@ export default function OnboardingPage() {
         return;
       }
       setFirstName(data.firstName);
-      setCredits(data.credits);
       if (data.profile?.channel_name) setChannelName(data.profile.channel_name);
       if (data.profile?.creator_niche)
         setCreatorNiche(data.profile.creator_niche);
@@ -206,16 +157,33 @@ export default function OnboardingPage() {
     if (result.success) setStep(3);
   };
 
-  const handleFinish = async (redirectHref: string) => {
+  const handleFinishLater = async () => {
     setSaving(true);
     const result = await completeOnboarding();
     setSaving(false);
-    if (result.success) router.push(redirectHref);
+    if (result.success) router.push("/dashboard");
   };
 
-  const selectedHref =
-    FEATURES.find((f) => f.id === selectedFeature)?.href ??
-    "/dashboard/produkt";
+  const handleCheckout = async (packageId: CreditPackageId) => {
+    setCheckoutLoading(packageId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packageId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        await completeOnboarding();
+        window.location.href = data.url;
+      } else {
+        alert(data.error ?? "Checkout fehlgeschlagen.");
+      }
+    } catch {
+      alert("Fehler beim Checkout. Bitte erneut versuchen.");
+    }
+    setCheckoutLoading(null);
+  };
 
   if (loading) {
     return (
@@ -245,8 +213,6 @@ export default function OnboardingPage() {
         position: "relative",
       }}
     >
-      {step === 4 && <ConfettiBurst />}
-
       {/* Progress dots */}
       <div
         style={{
@@ -313,28 +279,19 @@ export default function OnboardingPage() {
       <div style={{ flex: 1 }}>
         {step === 1 && (
           <>
-            <h1
-              style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "clamp(2rem, 6vw, 2.75rem)",
-                letterSpacing: "0.02em",
-                lineHeight: 1.1,
-                marginBottom: 12,
-                color: "#F0EFE8",
-              }}
-            >
-              Willkommen bei InfluexAI, {firstName}!
-            </h1>
-            <p
-              style={{
-                color: "#505055",
-                fontSize: "0.95rem",
-                marginBottom: 32,
-                lineHeight: 1.6,
-              }}
-            >
-              Das KI Studio für Creator, die viral gehen wollen.
-            </p>
+            <div style={{ marginBottom: 32 }}>
+              <DashboardGreeting firstName={firstName} locale={locale} />
+              <p
+                style={{
+                  color: "#505055",
+                  fontSize: "0.95rem",
+                  marginTop: 12,
+                  lineHeight: 1.6,
+                }}
+              >
+                Das KI Studio für Creator, die viral gehen wollen.
+              </p>
+            </div>
             <div
               style={{
                 display: "flex",
@@ -571,67 +528,46 @@ export default function OnboardingPage() {
                 fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
                 fontSize: "clamp(2rem, 6vw, 2.75rem)",
                 letterSpacing: "0.02em",
-                marginBottom: 16,
+                marginBottom: 12,
                 textAlign: "center",
               }}
             >
-              Du bist bereit! 🚀
+              Ein letzter Schritt 🚀
             </h1>
             <p
               style={{
                 textAlign: "center",
                 color: "rgba(240,239,232,0.75)",
                 fontSize: "1rem",
-                marginBottom: 36,
+                marginBottom: 28,
                 lineHeight: 1.6,
               }}
             >
-              Du hast{" "}
-              <strong style={{ color: "#B4FF00" }}>
-                {credits} Starter-Credits
-              </strong>
-              . Viel Spaß!
+              Kaufe deine ersten Credits um loszulegen.
             </p>
-            <p
-              style={{
-                textAlign: "center",
-                fontSize: "0.85rem",
-                color: "#505055",
-                marginBottom: 20,
-              }}
-            >
-              Nächster Schritt:{" "}
-              <span style={{ color: "#B4FF00" }}>
-                {FEATURES.find((f) => f.id === selectedFeature)?.title}
-              </span>
-            </p>
+            <CreditPackagePicker
+              onCheckout={handleCheckout}
+              loadingId={checkoutLoading}
+              compact
+            />
             <button
               type="button"
-              style={primaryBtn(saving)}
-              disabled={saving}
-              onClick={() => handleFinish("/dashboard")}
-            >
-              {saving ? "…" : "ZUM DASHBOARD"}
-            </button>
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleFinish(selectedHref)}
+              disabled={saving || checkoutLoading !== null}
+              onClick={handleFinishLater}
               style={{
+                display: "block",
                 width: "100%",
-                marginTop: 14,
-                padding: "12px",
-                borderRadius: 10,
-                background: "rgba(180,255,0,0.1)",
-                border: "1px solid rgba(180,255,0,0.3)",
-                color: "#B4FF00",
-                fontWeight: 700,
+                marginTop: 24,
+                background: "transparent",
+                border: "none",
+                color: "#505055",
                 fontSize: "0.85rem",
-                cursor: saving ? "default" : "pointer",
+                cursor: "pointer",
+                textDecoration: "underline",
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
-              {FEATURES.find((f) => f.id === selectedFeature)?.title} öffnen →
+              Später kaufen →
             </button>
           </>
         )}

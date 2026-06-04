@@ -11,9 +11,12 @@
     "badge": "Estudio de Creador IA",
     "headline": "Tu próximo Short viral — en 60 segundos.",
     "subheadline": "Sin edición. Sin escribir. Solo IA.",
-    "cta_primary": "Empieza gratis — 10 créditos de regalo",
-    "cta_secondary": "Ver demo",
-    "social_proof": "{count} creadores registrados"
+    "cta_primary": "Empieza ya — desde €4,99",
+    "cta_secondary": "Ver funciones",
+    "social_proof": "{count} creadores registrados",
+    "trust_1": "Disponible al instante",
+    "trust_2": "Fácil de empezar",
+    "trust_3": "Cumple GDPR"
   },
   "flows": {
     "script": {
@@ -76,21 +79,29 @@
     }
   },
   "auth": {
-    "login_title": "Bienvenido de nuevo",
-    "signup_title": "Crear cuenta",
+    "login_title": "Welcome back",
+    "signup_title": "Create account",
     "email": "Correo",
     "password": "Contraseña",
     "name": "Tu nombre",
-    "login_button": "Iniciar sesión",
-    "signup_button": "Registrarse gratis",
+    "login_button": "Sign in",
+    "signup_button": "Create account",
     "no_account": "¿No tienes cuenta?",
     "has_account": "¿Ya tienes cuenta?",
-    "signup_link": "Registrarse",
-    "login_link": "Iniciar sesión",
-    "login_subtitle": "Inicia sesión para continuar.",
-    "signup_subtitle": "Empieza con 10 créditos gratis.",
+    "signup_link": "Sign up →",
+    "login_link": "Sign in →",
+    "login_subtitle": "Sign in to continue.",
+    "signup_subtitle": "Start your creator journey with AI.",
     "fill_fields": "Completa todos los campos.",
-    "bad_credentials": "Correo o contraseña incorrectos."
+    "bad_credentials": "Correo o contraseña incorrectos.",
+    "forgot_password": "Forgot?",
+    "divider": "or",
+    "terms_text": "By signing up you agree to our",
+    "terms_link": "Terms",
+    "password_too_short": "Too short",
+    "password_weak": "Weak",
+    "password_medium": "Medium",
+    "password_strong": "Strong"
   },
   "onboarding": {
     "welcome": "¡Bienvenido a InfluexAI, {name}!",
@@ -144,7 +155,7 @@
     "nav_features": "Funciones",
     "nav_pricing": "Precios",
     "auth_login": "Iniciar sesión",
-    "auth_signup": "Empezar gratis"
+    "auth_signup": "Empezar ya"
   },
   "notFound": {
     "headline": "Esta página no existe (aún)",
@@ -162,5 +173,23 @@
   },
   "language": {
     "label": "Idioma"
+  },
+  "slideshow": {
+    "social_proof": "⚡ 500+ Creators · 10,000+ pieces created",
+    "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",
+    "slide1_heading": "Script in 30 seconds",
+    "slide1_description": "Describe your video topic and get a complete script with hook, story and CTA — ready to film.",
+    "slide2_badge": "📈 2 Credits · 5 Ideen auf einmal",
+    "slide2_heading": "Find your profitable niche",
+    "slide2_description": "AI analyzes the market and shows 5 profitable niches with competition scores and video ideas.",
+    "slide3_badge": "🔥 3 Credits · 6 Konzepte",
+    "slide3_heading": "Spot viral patterns",
+    "slide3_description": "Find videos that performed 10× above average — learn why they went viral and remix them.",
+    "slide4_badge": "🎯 1 Credit · 4 Konzepte",
+    "slide4_heading": "Thumbnails that get clicks",
+    "slide4_description": "CTR-optimized thumbnail concepts with layout, colors and text overlays — ready to use.",
+    "slide5_badge": "👥 Für alle User zugänglich",
+    "slide5_heading": "Real results, real creators",
+    "slide5_description": "Learn from other creators, share wins and grow with a community on the same mission."
   }
 }

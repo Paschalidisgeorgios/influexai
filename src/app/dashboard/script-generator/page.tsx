@@ -18,6 +18,9 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { ScriptSkeleton } from "@/components/skeletons/script-skeleton";
+import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
+import { createClient } from "@/lib/supabase/client";
+import { resolveNicheSlug } from "@/lib/programmatic-seo";
 
 const GENERATE_COST = 2;
 const REGENERATE_COST = 1;
@@ -147,8 +150,10 @@ function ScriptGeneratorPageInner() {
   const [savedOk, setSavedOk] = useState(false);
   const [selectedHookIdx, setSelectedHookIdx] = useState<number | null>(null);
   const genStarted = useRef(false);
+  const [creatorNiche, setCreatorNiche] = useState<string | null>(null);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
+  const supabase = createClient();
 
   const inputStyle = {
     width: "100%",
@@ -171,6 +176,22 @@ function ScriptGeneratorPageInner() {
     letterSpacing: "0.04em",
     textTransform: "uppercase" as const,
   };
+
+  useEffect(() => {
+    const loadProfileNiche = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("creator_niche")
+        .eq("id", user.id)
+        .single();
+      if (data?.creator_niche) setCreatorNiche(data.creator_niche);
+    };
+    loadProfileNiche();
+  }, [supabase]);
 
   useEffect(() => {
     const t = searchParams.get("topic");
@@ -599,6 +620,23 @@ function ScriptGeneratorPageInner() {
 
       {step === "results" && result && (
         <div>
+          {(creatorNiche || topic) &&
+            resolveNicheSlug(creatorNiche ?? topic) && (
+              <div
+                style={{
+                  marginBottom: 16,
+                  padding: "12px 16px",
+                  borderRadius: 12,
+                  background: "rgba(180,255,0,0.06)",
+                  border: "1px solid rgba(180,255,0,0.15)",
+                }}
+              >
+                <ProgrammaticToolLink
+                  feature="script-generator"
+                  nicheText={creatorNiche ?? topic}
+                />
+              </div>
+            )}
           {result.toneDescription && (
             <p
               style={{

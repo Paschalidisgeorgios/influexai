@@ -342,7 +342,7 @@ const STEPS = [
   {
     n: "01",
     title: "Account erstellen",
-    desc: "Kostenlos registrieren. 50 Credits geschenkt — keine Kreditkarte.",
+    desc: "Account erstellen. Credits ab €4,99 — sofort loslegen.",
   },
   {
     n: "02",
@@ -506,7 +506,7 @@ const FAQS = [
   },
   {
     q: "Brauche ich eine Kreditkarte?",
-    a: "Nein. Der Free-Plan startet mit 50 gratis Credits — ohne Zahlungsdaten.",
+    a: "Nein. Du kaufst Credits einmalig ab €4,99 — kein Abo, keine versteckten Kosten.",
   },
   {
     q: "Ist InfluexAI DSGVO-konform?",
@@ -596,15 +596,15 @@ export function FaqSection() {
 /* ── PRICING ── */
 const PLANS = [
   {
-    name: "Free",
-    monthly: 0,
-    yearly: 0,
-    credits: "50 Credits/Monat",
-    desc: "Zum Ausprobieren. Keine Kreditkarte.",
-    cta: "Kostenlos starten",
+    name: "Starter",
+    monthly: 4.99,
+    yearly: 4.99,
+    credits: "50 Credits",
+    desc: "Einmaliger Einstieg — Credits sofort verfügbar.",
+    cta: "Jetzt starten",
     hot: false,
-    features: ["Live Creator (5 Min)", "KI-Ich: 10 Bilder", "3 Produkt-Ads"],
-    missing: ["Stimmen-Klonung", "Brand-Tools"],
+    features: ["Script Generator", "Niche Analyzer", "Outlier Detector"],
+    missing: ["Video Remix", "KI-Ich Pro"],
   },
   {
     name: "Creator",
@@ -876,14 +876,14 @@ export function CtaSection() {
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center">
           <a href="/auth" className="btn-acid justify-center">
-            → Kostenlos starten
+            → Jetzt starten — ab €4,99
           </a>
           <a href="#brands" className="btn-ghost justify-center">
             Für Marken →
           </a>
         </div>
         <p className="mt-4 text-[0.78rem]" style={{ color: "var(--grey)" }}>
-          50 gratis Credits · Keine Kreditkarte · DSGVO-konform
+          Credits ab €4,99 · Kein Abo · DSGVO-konform
         </p>
       </div>
     </section>

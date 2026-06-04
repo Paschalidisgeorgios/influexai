@@ -11,9 +11,12 @@
     "badge": "AI Creator Studio",
     "headline": "Your next viral Short — in 60 seconds.",
     "subheadline": "No editing. No writing. Just AI.",
-    "cta_primary": "Start free — 10 credits included",
-    "cta_secondary": "Watch demo",
-    "social_proof": "{count} creators registered"
+    "cta_primary": "Get started — from €4.99",
+    "cta_secondary": "See features",
+    "social_proof": "{count} creators registered",
+    "trust_1": "Available instantly",
+    "trust_2": "Easy to get started",
+    "trust_3": "GDPR compliant"
   },
   "flows": {
     "script": {
@@ -82,15 +85,23 @@
     "password": "Password",
     "name": "Your name",
     "login_button": "Sign in",
-    "signup_button": "Sign up free",
+    "signup_button": "Create account",
     "no_account": "Don't have an account?",
     "has_account": "Already have an account?",
-    "signup_link": "Sign up",
-    "login_link": "Sign in",
+    "signup_link": "Sign up →",
+    "login_link": "Sign in →",
     "login_subtitle": "Sign in to continue.",
-    "signup_subtitle": "Start with 10 free credits.",
+    "signup_subtitle": "Start your creator journey with AI.",
     "fill_fields": "Please fill in all fields.",
-    "bad_credentials": "Incorrect email or password."
+    "bad_credentials": "Incorrect email or password.",
+    "forgot_password": "Forgot?",
+    "divider": "or",
+    "terms_text": "By signing up you agree to our",
+    "terms_link": "Terms",
+    "password_too_short": "Too short",
+    "password_weak": "Weak",
+    "password_medium": "Medium",
+    "password_strong": "Strong"
   },
   "onboarding": {
     "welcome": "Welcome to InfluexAI, {name}!",
@@ -144,7 +155,7 @@
     "nav_features": "Features",
     "nav_pricing": "Pricing",
     "auth_login": "Sign in",
-    "auth_signup": "Start free"
+    "auth_signup": "Get started"
   },
   "notFound": {
     "headline": "This page doesn't exist (yet)",
@@ -162,5 +173,23 @@
   },
   "language": {
     "label": "Language"
+  },
+  "slideshow": {
+    "social_proof": "⚡ 500+ Creators · 10,000+ pieces created",
+    "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",
+    "slide1_heading": "Script in 30 seconds",
+    "slide1_description": "Describe your video topic and get a complete script with hook, story and CTA — ready to film.",
+    "slide2_badge": "📈 2 Credits · 5 Ideen auf einmal",
+    "slide2_heading": "Find your profitable niche",
+    "slide2_description": "AI analyzes the market and shows 5 profitable niches with competition scores and video ideas.",
+    "slide3_badge": "🔥 3 Credits · 6 Konzepte",
+    "slide3_heading": "Spot viral patterns",
+    "slide3_description": "Find videos that performed 10× above average — learn why they went viral and remix them.",
+    "slide4_badge": "🎯 1 Credit · 4 Konzepte",
+    "slide4_heading": "Thumbnails that get clicks",
+    "slide4_description": "CTR-optimized thumbnail concepts with layout, colors and text overlays — ready to use.",
+    "slide5_badge": "👥 Für alle User zugänglich",
+    "slide5_heading": "Real results, real creators",
+    "slide5_description": "Learn from other creators, share wins and grow with a community on the same mission."
   }
 }

@@ -24,9 +24,10 @@ export async function sendBetaWelcomeEmail(
 <p style="margin:0 0 20px;font-size:22px;font-weight:bold;letter-spacing:0.08em;color:#B4FF00;">${code}</p>
 <p style="margin:0 0 16px;">Damit bekommst du:</p>
 <ul style="margin:0 0 20px;padding-left:20px;color:#c8c8c8;">
-<li>50 Gratis-Credits (statt 10)</li>
-<li>Lifetime 30% Rabatt auf Credit-Pakete</li>
-<li>Beta Creator Badge — forever</li>
+<li>50% Rabatt auf dein erstes Credit-Paket</li>
+<li>Lifetime 20% Rabatt auf alle weiteren Käufe</li>
+<li>Beta Creator Badge — forever im Profil</li>
+<li>Direkter Zugang zum Founder & priorisierte Feature-Requests</li>
 </ul>
 <p style="text-align:center;margin:24px 0;">
 <a href="${signupUrl}" style="display:inline-block;padding:14px 28px;background:#B4FF00;color:#060608;font-weight:bold;text-decoration:none;border-radius:8px;">Account erstellen →</a>

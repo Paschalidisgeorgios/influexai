@@ -67,8 +67,8 @@ function WelcomeInner() {
             lineHeight: 1.6,
           }}
         >
-          Dein Beta-Platz ist gesichert. Erstell jetzt deinen Account und hol
-          dir 50 Gratis-Credits + 30% Lifetime-Rabatt.
+          Dein Beta-Platz ist gesichert. Erstell jetzt deinen Account — 50%
+          Rabatt auf den ersten Credit-Kauf und 20% Lifetime-Rabatt.
         </p>
 
         {code && (

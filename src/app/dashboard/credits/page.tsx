@@ -482,21 +482,35 @@ export default function CreditsPage() {
 
       <div
         style={{
-          marginTop: 20,
-          padding: "12px 16px",
-          borderRadius: 10,
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          fontSize: "0.78rem",
-          color: "#505055",
+          marginTop: 24,
           display: "flex",
-          alignItems: "center",
-          gap: 8,
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "8px 20px",
+          fontSize: 13,
+          color: "#505055",
+          textAlign: "center",
         }}
       >
-        <span>🔒</span>
-        Sichere Zahlung via Stripe · Promo-Codes im Checkout · Credits verfallen
-        nicht
+        {[
+          "Credits verfallen nicht — nutze sie wann du willst",
+          "Einmaliger Kauf — kein Abo, keine versteckten Kosten",
+          "Sofort nach Zahlung verfügbar",
+          "Sicher bezahlen mit Stripe",
+          "Server in Frankfurt 🇩🇪",
+        ].map((line, i) => (
+          <span key={line} style={{ display: "inline-flex", alignItems: "center" }}>
+            {i > 0 && (
+              <span style={{ margin: "0 10px", color: "#2a2a2e" }} aria-hidden>
+                ·
+              </span>
+            )}
+            <span>
+              <span style={{ color: "#B4FF00" }}>✓ </span>
+              {line}
+            </span>
+          </span>
+        ))}
       </div>
 
       {showBlock && (

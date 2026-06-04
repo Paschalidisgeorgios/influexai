@@ -87,14 +87,14 @@ export default function ReferralPage() {
   };
 
   const shareMessage = data
-    ? `Ich erstelle meine YouTube Shorts mit KI 🚀 Probier InfluexAI aus und bekomm 5 Gratis-Credits: ${data.referralLink}`
+    ? `Ich erstelle meine YouTube Shorts mit KI 🚀 Probier InfluexAI aus — 5 Bonus-Credits bei Anmeldung: ${data.referralLink}`
     : "";
 
   const shareUrls = data
     ? {
         twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
         whatsapp: `https://wa.me/?text=${encodeURIComponent(shareMessage)}`,
-        telegram: `https://t.me/share/url?url=${encodeURIComponent(data.referralLink)}&text=${encodeURIComponent("Probier InfluexAI — 5 Gratis-Credits!")}`,
+        telegram: `https://t.me/share/url?url=${encodeURIComponent(data.referralLink)}&text=${encodeURIComponent("Probier InfluexAI — 5 Bonus-Credits!")}`,
       }
     : null;
 

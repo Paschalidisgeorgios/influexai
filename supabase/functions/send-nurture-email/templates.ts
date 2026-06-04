@@ -1,4 +1,5 @@
 const SITE = "https://influexaicreator.com";
+const CREDITS_URL = `${SITE}/dashboard/credits`;
 
 function layout(body: string, unsubscribeUrl: string): string {
   return `<!DOCTYPE html>
@@ -32,20 +33,20 @@ function cta(href: string, label: string): string {
 
 export function welcomeEmail(
   firstName: string,
-  credits: number,
+  _credits: number,
   unsubscribeUrl: string
 ): { subject: string; html: string } {
   const body = `
 <p style="margin:0 0 16px;font-size:17px;color:#e8e8e8;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">willkommen bei <strong style="color:#B4FF00;">InfluexAI</strong> — dein KI Creator Studio für virale Shorts.</p>
-<p style="margin:0 0 16px;">Du startest mit <strong style="color:#B4FF00;">${credits} Starter-Credits</strong>. Damit kannst du sofort loslegen.</p>
+<p style="margin:0 0 16px;">Dein Account ist bereit. Kaufe jetzt deine ersten Credits und erstelle deinen ersten viralen Short.</p>
 <p style="margin:0 0 12px;font-weight:bold;color:#B4FF00;">Die 3 besten Features zum Start:</p>
 <ul style="margin:0 0 20px;padding-left:20px;color:#c8c8c8;">
   <li style="margin-bottom:8px;"><strong>Niche Analyzer</strong> — profitable Nischen finden</li>
   <li style="margin-bottom:8px;"><strong>Script Generator</strong> — virale Scripts in Minuten</li>
   <li style="margin-bottom:8px;"><strong>Outlier Detector</strong> — Videos finden, die 10× viral gingen</li>
 </ul>
-${cta(`${SITE}/dashboard`, "Jetzt erste Creation starten →")}
+${cta(CREDITS_URL, "Credits kaufen — ab €4,99 →")}
 <p style="margin:24px 0 0;font-size:13px;color:#888;font-style:italic;">PS: Antwort auf diese Mail — ich lese alles persönlich.</p>`;
   return {
     subject: `🚀 Willkommen bei InfluexAI, ${firstName}!`,
@@ -59,16 +60,11 @@ export function activationEmail(
 ): { subject: string; html: string } {
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
-<p style="margin:0 0 16px;">hast du schon deinen ersten Short erstellt?</p>
-<p style="margin:0 0 16px;color:#c8c8c8;">Du hast noch keine Creation gemacht — hier ist der einfachste Start:</p>
-<ol style="margin:0 0 20px;padding-left:20px;color:#e8e8e8;line-height:1.8;">
-  <li><strong>Niche Analyzer</strong> — Nische wählen (2 Credits)</li>
-  <li><strong>Script Generator</strong> — Script aus der Nische (2 Credits)</li>
-  <li>Fertig — dein erstes virales Script steht</li>
-</ol>
-${cta(`${SITE}/dashboard/niche-analyzer`, "In 3 Minuten zum ersten Script →")}`;
+<p style="margin:0 0 16px;">dein KI Studio wartet — starte jetzt.</p>
+<p style="margin:0 0 16px;color:#c8c8c8;">Du hast noch keine Credits gekauft. Hier geht es direkt zum Shop:</p>
+${cta(CREDITS_URL, "Jetzt starten →")}`;
   return {
-    subject: "Hast du schon deinen ersten Short erstellt? ⚡",
+    subject: "Dein KI Studio wartet — starte jetzt",
     html: layout(body, unsubscribeUrl),
   };
 }
@@ -78,13 +74,22 @@ export function featureDiscoveryEmail(
   remainingCredits: number,
   unsubscribeUrl: string
 ): { subject: string; html: string } {
+  const zeroCreditsPs =
+    remainingCredits <= 0
+      ? `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: Du hast noch keine Credits — ab €4,99 kannst du sofort loslegen.</p>`
+      : "";
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">das wissen die meisten InfluexAI User nicht 👀</p>
 <p style="margin:0 0 16px;"><strong style="color:#B4FF00;">Outlier Detector</strong> ist unser stärkstes Feature — und wird oft übersehen.</p>
 <p style="margin:0 0 16px;color:#c8c8c8;">Finde Videos, die <strong>10× viral</strong> gingen — und baue sie für deine Nische nach. Ein Klick, klare Hooks, direkt ins Video-Ad-Tool.</p>
-<p style="margin:0 0 8px;">Du hast noch <strong style="color:#B4FF00;">${remainingCredits} Credits</strong> — perfekt für einen Outlier-Scan.</p>
-${cta(`${SITE}/dashboard/outlier-detector`, "Outlier Detector ausprobieren →")}`;
+${
+  remainingCredits > 0
+    ? `<p style="margin:0 0 8px;">Du hast noch <strong style="color:#B4FF00;">${remainingCredits} Credits</strong> — perfekt für einen Outlier-Scan.</p>`
+    : ""
+}
+${cta(`${SITE}/dashboard/outlier-detector`, "Outlier Detector ausprobieren →")}
+${zeroCreditsPs}`;
   return {
     subject: "Das wissen die meisten InfluexAI User nicht 👀",
     html: layout(body, unsubscribeUrl),
@@ -100,7 +105,7 @@ export function retentionEmail(
   const createdLine =
     generationCount > 0
       ? `Du hast schon <strong style="color:#B4FF00;">${generationCount} Creation${generationCount === 1 ? "" : "s"}</strong> — stark! Dein Studio wartet auf den nächsten Hit.`
-      : "Dein KI Creator Studio ist bereit — du musst nur noch starten.";
+      : "Dein KI Creator Studio ist bereit — kaufe Credits um loszulegen.";
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">dein KI Creator Studio wartet auf dich.</p>
@@ -124,11 +129,11 @@ export function upgradeEmail(
 <p style="margin:0 0 16px;color:#c8c8c8;">Die erfolgreichsten Creator nutzen InfluexAI jeden Tag — Nischen, Scripts, Outliers, Ads. Konstante Output = konstantes Wachstum.</p>
 <p style="margin:0 0 12px;">Du hast noch <strong>${remainingCredits} Credits</strong>. Mit einem Paket bist du für Wochen versorgt:</p>
 <ul style="margin:0 0 20px;padding-left:20px;color:#c8c8c8;">
-  <li style="margin-bottom:6px;">Starter — für regelmäßige Creator</li>
-  <li style="margin-bottom:6px;">Creator — unser beliebtestes Paket</li>
-  <li style="margin-bottom:6px;">Business — maximale Produktion</li>
+  <li style="margin-bottom:6px;">Starter — €4,99 · 50 Credits</li>
+  <li style="margin-bottom:6px;">Creator — €9,99 · 120 Credits (empfohlen)</li>
+  <li style="margin-bottom:6px;">Pro — €19,99 · 300 Credits</li>
 </ul>
-${cta(`${SITE}/dashboard/credits`, "Credits aufladen und durchstarten →")}`;
+${cta(CREDITS_URL, "Credits kaufen und durchstarten →")}`;
   return {
     subject: "Creator die viral gehen, machen das täglich 🎯",
     html: layout(body, unsubscribeUrl),
@@ -151,7 +156,11 @@ export function winbackHighEmail(
   <li>Script Generator Updates</li>
 </ul>
 ${cta(`${SITE}/dashboard`, "Schau mal rein →")}
-<p style="margin:20px 0 0;font-size:13px;color:#888;font-style:italic;">PS: Du hast noch <strong style="color:#B4FF00;">${credits} Credits</strong> — lass sie nicht verfallen.</p>`;
+${
+  credits > 0
+    ? `<p style="margin:20px 0 0;font-size:13px;color:#888;font-style:italic;">PS: Du hast noch <strong style="color:#B4FF00;">${credits} Credits</strong> — lass sie nicht verfallen.</p>`
+    : `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: Credits ab €4,99 — <a href="${CREDITS_URL}" style="color:#B4FF00;">zum Shop</a>.</p>`
+}`;
   return {
     subject: "Dein InfluexAI Studio wartet auf dich 👀",
     html: layout(body, unsubscribeUrl),
@@ -164,12 +173,12 @@ export function winbackCriticalEmail(
 ): { subject: string; html: string } {
   const body = `
 <p style="margin:0 0 16px;font-size:17px;color:#e8e8e8;">Hey ${firstName},</p>
-<p style="margin:0 0 16px;">wir vermissen dich — deshalb habe ich dir <strong style="color:#B4FF00;">5 Bonus-Credits</strong> auf dein Konto gelegt. Kein Haken, einfach ein kleiner Anstoß damit du wieder reinkommst.</p>
-<p style="margin:0 0 20px;color:#c8c8c8;">Dein Creator-Studio steht bereit. Ein Outlier-Scan oder ein frisches Script dauert nur wenige Minuten.</p>
-${cta(`${SITE}/dashboard`, "Credits abholen und loslegen →")}
+<p style="margin:0 0 16px;">wir vermissen dich — komm zurück und hol dir Credits für dein nächstes virales Video.</p>
+<p style="margin:0 0 20px;color:#c8c8c8;">Ein Outlier-Scan oder ein frisches Script dauert nur wenige Minuten.</p>
+${cta(CREDITS_URL, "Credits kaufen — ab €4,99 →")}
 <p style="margin:24px 0 0;font-size:13px;color:#666;">— Das InfluexAI Team</p>`;
   return {
-    subject: "5 Bonus-Credits — nur für dich 🎁",
+    subject: "Dein KI Studio wartet — Credits ab €4,99",
     html: layout(body, unsubscribeUrl),
   };
 }

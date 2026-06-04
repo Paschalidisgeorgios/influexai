@@ -11,9 +11,12 @@
     "badge": "KI Creator Studio",
     "headline": "Dein nächster viraler Short — in 60 Sekunden.",
     "subheadline": "Kein Schneiden. Kein Schreiben. Nur KI.",
-    "cta_primary": "Kostenlos starten — 10 Credits gratis",
-    "cta_secondary": "Demo ansehen",
-    "social_proof": "{count} Creators registriert"
+    "cta_primary": "Jetzt starten — ab €4,99",
+    "cta_secondary": "Features ansehen",
+    "social_proof": "{count} Creators registriert",
+    "trust_1": "Sofort verfügbar",
+    "trust_2": "Einfacher Einstieg",
+    "trust_3": "DSGVO-konform"
   },
   "flows": {
     "script": {
@@ -81,16 +84,24 @@
     "email": "E-Mail",
     "password": "Passwort",
     "name": "Dein Name",
-    "login_button": "Anmelden",
-    "signup_button": "Kostenlos registrieren",
+    "login_button": "Jetzt anmelden",
+    "signup_button": "Jetzt registrieren",
     "no_account": "Noch kein Account?",
     "has_account": "Bereits registriert?",
-    "signup_link": "Jetzt registrieren",
-    "login_link": "Anmelden",
-    "login_subtitle": "Einloggen um fortzufahren.",
-    "signup_subtitle": "Starte mit 10 Gratis-Credits.",
+    "signup_link": "Jetzt registrieren →",
+    "login_link": "Anmelden →",
+    "login_subtitle": "Melde dich an um weiterzumachen.",
+    "signup_subtitle": "Starte deine Creator-Journey mit KI.",
     "fill_fields": "Bitte alle Felder ausfüllen.",
-    "bad_credentials": "Falsche E-Mail oder falsches Passwort."
+    "bad_credentials": "Falsche E-Mail oder falsches Passwort.",
+    "forgot_password": "Vergessen?",
+    "divider": "oder",
+    "terms_text": "Durch die Registrierung stimmst du unseren",
+    "terms_link": "AGB",
+    "password_too_short": "Zu kurz",
+    "password_weak": "Schwach",
+    "password_medium": "Mittel",
+    "password_strong": "Stark"
   },
   "onboarding": {
     "welcome": "Willkommen bei InfluexAI, {name}!",
@@ -144,7 +155,7 @@
     "nav_features": "Features",
     "nav_pricing": "Preise",
     "auth_login": "Anmelden",
-    "auth_signup": "Kostenlos starten"
+    "auth_signup": "Jetzt starten"
   },
   "notFound": {
     "headline": "Diese Seite existiert nicht (noch nicht)",
@@ -162,5 +173,23 @@
   },
   "language": {
     "label": "Sprache"
+  },
+  "slideshow": {
+    "social_proof": "⚡ 500+ Creators · 10.000+ Contents erstellt",
+    "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",
+    "slide1_heading": "Script in 30 Sekunden",
+    "slide1_description": "Beschreibe dein Video-Thema und erhalte ein fertiges Script mit Hook, Story und CTA — bereit zum Filmen.",
+    "slide2_badge": "📈 2 Credits · 5 Ideen auf einmal",
+    "slide2_heading": "Deine profitable Nische finden",
+    "slide2_description": "KI analysiert den Markt und zeigt dir 5 profitable Nischen mit Wettbewerb-Score und konkreten Video-Ideen.",
+    "slide3_badge": "🔥 3 Credits · 6 Konzepte",
+    "slide3_heading": "Viral-Muster erkennen",
+    "slide3_description": "Finde Videos die 10× über ihrer normalen Performance liegen — analysiere warum sie viral gingen und baue sie nach.",
+    "slide4_badge": "🎯 1 Credit · 4 Konzepte",
+    "slide4_heading": "Thumbnails die geklickt werden",
+    "slide4_description": "CTR-optimierte Thumbnail-Konzepte mit exaktem Layout, Farbpalette und Text-Overlays — ready zum Umsetzen.",
+    "slide5_badge": "👥 Für alle User zugänglich",
+    "slide5_heading": "Echte Ergebnisse, echte Creator",
+    "slide5_description": "Lerne von anderen Creatorn, teile deine Wins und wachse mit einer Community die dieselben Ziele verfolgt."
   }
 }

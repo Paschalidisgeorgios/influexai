@@ -17,7 +17,7 @@ export const seoConfig: Record<Locale, Record<SeoPageKey, SeoPageMeta>> = {
     home: {
       title: "InfluexAI – KI Creator Studio für Virale Shorts",
       description:
-        "Erstelle virale YouTube Shorts mit KI in 60 Sekunden. Script Generator, Niche Analyzer, Outlier Detector & mehr. 10 Credits kostenlos.",
+        "Erstelle virale YouTube Shorts mit KI in 60 Sekunden. Script Generator, Niche Analyzer, Outlier Detector & mehr. Credits ab €4,99.",
       keywords:
         "KI Creator Studio, YouTube Shorts KI, Script Generator, Niche Analyzer, virale Shorts erstellen",
     },
@@ -26,7 +26,7 @@ export const seoConfig: Record<Locale, Record<SeoPageKey, SeoPageMeta>> = {
     home: {
       title: "InfluexAI – AI Creator Studio for Viral Shorts",
       description:
-        "Create viral YouTube Shorts with AI in 60 seconds. Script Generator, Niche Analyzer, Outlier Detector & more. 10 free credits.",
+        "Create viral YouTube Shorts with AI in 60 seconds. Script Generator, Niche Analyzer, Outlier Detector & more. Credits from €4.99.",
       keywords:
         "AI creator studio, YouTube Shorts AI, script generator, niche analyzer, viral shorts creator",
     },
@@ -53,7 +53,7 @@ export const seoConfig: Record<Locale, Record<SeoPageKey, SeoPageMeta>> = {
     home: {
       title: "InfluexAI – Estudio AI para Shorts Virales",
       description:
-        "Crea YouTube Shorts virales con IA en 60 segundos. Generador de Scripts, Analizador de Nicho & más. 10 créditos gratis.",
+        "Crea YouTube Shorts virales con IA en 60 segundos. Generador de Scripts, Analizador de Nicho y más. Créditos desde €4,99.",
       keywords:
         "estudio AI creador, YouTube Shorts IA, generador scripts, analizador nicho, shorts virales",
     },

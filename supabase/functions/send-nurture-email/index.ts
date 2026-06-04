@@ -105,6 +105,7 @@ async function sendResend(
 type UserStats = {
   generationCount: number;
   lastGenerationAt: string | null;
+  credits: number;
 };
 
 async function getUserStats(
@@ -124,9 +125,16 @@ async function getUserStats(
     .limit(1)
     .maybeSingle();
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", userId)
+    .single();
+
   return {
     generationCount: count ?? 0,
     lastGenerationAt: lastGen?.created_at ?? null,
+    credits: profile?.credits ?? 0,
   };
 }
 
@@ -169,7 +177,7 @@ function isEligible(
     case "welcome":
       return true;
     case "activation":
-      return stats.generationCount === 0;
+      return stats.generationCount === 0 && stats.credits <= 0 && !purchased;
     case "feature_discovery":
       return true;
     case "retention": {
@@ -267,7 +275,7 @@ async function processUser(
         profile.id,
         profile.email,
         profile.full_name,
-        profile.credits ?? 10,
+        profile.credits ?? 0,
         profile.created_at,
         type
       );
@@ -434,7 +442,7 @@ Deno.serve(async (req) => {
         profile.id,
         profile.email,
         profile.full_name,
-        profile.credits ?? 10,
+        profile.credits ?? 0,
         profile.created_at,
         type
       );

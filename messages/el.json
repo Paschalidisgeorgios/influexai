@@ -11,9 +11,12 @@
     "badge": "Στούντιο Δημιουργού AI",
     "headline": "Το επόμενο viral Short σου — σε 60 δευτερόλεπτα.",
     "subheadline": "Χωρίς μοντάζ. Χωρίς γραφή. Μόνο AI.",
-    "cta_primary": "Ξεκίνα δωρεάν — 10 πόντοι δώρο",
-    "cta_secondary": "Δες demo",
-    "social_proof": "{count} δημιουργοί εγγεγραμμένοι"
+    "cta_primary": "Ξεκίνα τώρα — από €4,99",
+    "cta_secondary": "Δες τα features",
+    "social_proof": "{count} δημιουργοί εγγεγραμμένοι",
+    "trust_1": "Άμεσα διαθέσιμα",
+    "trust_2": "Εύκολη έναρξη",
+    "trust_3": "Συμμόρφωση GDPR"
   },
   "flows": {
     "script": {
@@ -76,21 +79,29 @@
     }
   },
   "auth": {
-    "login_title": "Καλώς ήρθες πίσω",
+    "login_title": "Καλώς ήρθες πάλι",
     "signup_title": "Δημιουργία λογαριασμού",
     "email": "Email",
     "password": "Κωδικός",
     "name": "Το όνομά σου",
     "login_button": "Σύνδεση",
-    "signup_button": "Εγγραφή δωρεάν",
+    "signup_button": "Εγγραφή",
     "no_account": "Δεν έχεις λογαριασμό;",
     "has_account": "Έχεις ήδη λογαριασμό;",
-    "signup_link": "Εγγραφή",
-    "login_link": "Σύνδεση",
+    "signup_link": "Εγγραφή →",
+    "login_link": "Σύνδεση →",
     "login_subtitle": "Σύνδεση για να συνεχίσεις.",
-    "signup_subtitle": "Ξεκίνα με 10 δωρεάν πόντους.",
+    "signup_subtitle": "Ξεκίνα το creator ταξίδι σου με AI.",
     "fill_fields": "Συμπλήρωσε όλα τα πεδία.",
-    "bad_credentials": "Λάθος email ή κωδικός."
+    "bad_credentials": "Λάθος email ή κωδικός.",
+    "forgot_password": "Ξέχασες;",
+    "divider": "ή",
+    "terms_text": "Με την εγγραφή αποδέχεσαι τους",
+    "terms_link": "Όρους",
+    "password_too_short": "Πολύ σύντομο",
+    "password_weak": "Αδύναμο",
+    "password_medium": "Μέτριο",
+    "password_strong": "Δυνατό"
   },
   "onboarding": {
     "welcome": "Καλώς ήρθες στο InfluexAI, {name}!",
@@ -144,7 +155,7 @@
     "nav_features": "Features",
     "nav_pricing": "Τιμές",
     "auth_login": "Σύνδεση",
-    "auth_signup": "Δωρεάν εκκίνηση"
+    "auth_signup": "Ξεκίνα τώρα"
   },
   "notFound": {
     "headline": "Αυτή η σελίδα δεν υπάρχει (ακόμα)",
@@ -162,5 +173,23 @@
   },
   "language": {
     "label": "Γλώσσα"
+  },
+  "slideshow": {
+    "social_proof": "⚡ 500+ Creators · 10,000+ pieces created",
+    "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",
+    "slide1_heading": "Script in 30 seconds",
+    "slide1_description": "Describe your video topic and get a complete script with hook, story and CTA — ready to film.",
+    "slide2_badge": "📈 2 Credits · 5 Ideen auf einmal",
+    "slide2_heading": "Find your profitable niche",
+    "slide2_description": "AI analyzes the market and shows 5 profitable niches with competition scores and video ideas.",
+    "slide3_badge": "🔥 3 Credits · 6 Konzepte",
+    "slide3_heading": "Spot viral patterns",
+    "slide3_description": "Find videos that performed 10× above average — learn why they went viral and remix them.",
+    "slide4_badge": "🎯 1 Credit · 4 Konzepte",
+    "slide4_heading": "Thumbnails that get clicks",
+    "slide4_description": "CTR-optimized thumbnail concepts with layout, colors and text overlays — ready to use.",
+    "slide5_badge": "👥 Für alle User zugänglich",
+    "slide5_heading": "Real results, real creators",
+    "slide5_description": "Learn from other creators, share wins and grow with a community on the same mission."
   }
 }

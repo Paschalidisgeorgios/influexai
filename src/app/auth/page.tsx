@@ -145,7 +145,7 @@ export default function AuthPage() {
         <p style={{ fontSize: "0.875rem", color: "#505055", marginBottom: 28 }}>
           {mode === "login"
             ? "Melde dich bei deinem InfluexAI Konto an."
-            : "Starte kostenlos mit 50 Credits."}
+            : "Jetzt starten — Credits ab €4,99."}
         </p>
 
         {/* Toggle */}
@@ -377,7 +377,6 @@ export default function AuthPage() {
         </p>
       </div>
 
-      {/* Free credits note */}
       {mode === "signup" && (
         <p
           style={{
@@ -387,7 +386,7 @@ export default function AuthPage() {
             textAlign: "center",
           }}
         >
-          ✓ 50 gratis Credits · ✓ Keine Kreditkarte · ✓ DSGVO-konform
+          ✓ Sofort verfügbar · ✓ Einfacher Einstieg · ✓ DSGVO-konform
         </p>
       )}
     </div>

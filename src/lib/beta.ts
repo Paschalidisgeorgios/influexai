@@ -1,5 +1,4 @@
 export const BETA_MAX_SPOTS = 100;
-export const BETA_STARTER_CREDITS = 50;
 export const SITE_URL = "https://influexaicreator.com";
 
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

@@ -372,7 +372,7 @@ export default async function PublicCreatorPage({ params }: Props) {
             fontFamily: "var(--font-dm), sans-serif",
           }}
         >
-          Kostenlos starten →
+          Jetzt starten →
         </Link>
       </section>
     </div>

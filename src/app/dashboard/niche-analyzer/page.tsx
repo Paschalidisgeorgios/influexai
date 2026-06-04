@@ -12,6 +12,8 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
+import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
+import { resolveNicheSlug } from "@/lib/programmatic-seo";
 
 const CREDIT_COST = 2;
 
@@ -407,6 +409,13 @@ export default function NicheAnalyzerPage() {
             >
               ✓ {niches.length} Nischen-Ideen für „{topic}“
             </p>
+            {resolveNicheSlug(topic) && (
+              <ProgrammaticToolLink
+                feature="niche-analyzer"
+                nicheText={topic}
+                className="text-sm text-[#B4FF00] hover:underline"
+              />
+            )}
             <button
               type="button"
               onClick={reset}
@@ -526,6 +535,14 @@ export default function NicheAnalyzerPage() {
                   </li>
                 ))}
               </ul>
+
+              {resolveNicheSlug(niche.title) && (
+                <ProgrammaticToolLink
+                  feature="niche-analyzer"
+                  nicheText={niche.title}
+                  className="mb-3 block text-xs text-[#B4FF00]/80 hover:underline"
+                />
+              )}
 
               <button
                 type="button"

@@ -1,23 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { fal } from "@fal-ai/client";
+import {
+  configureFalClient,
+  generateKiIchPortrait,
+  getFalKey,
+  parseFalError,
+  uploadDataUrlToFal,
+  type FalImageMode,
+} from "@/lib/fal-image";
 
 const CREDIT_COST = 2;
 
-type FalInstantIdResult = {
-  data?: { image?: { url?: string } };
-  images?: Array<{ url?: string }>;
-  image?: { url?: string };
-};
-
-fal.config({ credentials: process.env.FAL_API_KEY });
+configureFalClient();
 
 export async function POST(request: NextRequest) {
-  const { imageUrl, scene } = await request.json();
+  const body = await request.json();
+  const { imageUrl, scene, mode: modeRaw } = body as {
+    imageUrl?: string;
+    scene?: string;
+    mode?: FalImageMode;
+  };
+
+  const mode: FalImageMode = modeRaw === "preview" ? "preview" : "final";
 
   if (!imageUrl || !scene) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
+  }
+
+  if (!getFalKey()) {
+    console.error("ki-ich: FAL_API_KEY / FAL_KEY not set");
+    return NextResponse.json(
+      { error: "Bildgenerierung ist nicht konfiguriert (API Key fehlt)." },
+      { status: 503 }
+    );
   }
 
   const supabase = await createServerSupabaseClient();
@@ -29,40 +45,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok) {
-    return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
+  if (mode === "final") {
+    const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
+    if (!creditCheck.ok) {
+      return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
+    }
   }
 
   try {
-    // Base64 zu Blob konvertieren und zu fal.ai hochladen
-    const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Data, "base64");
-    const blob = new Blob([buffer], { type: "image/jpeg" });
-    const file = new File([blob], "face.jpg", { type: "image/jpeg" });
+    const uploadedUrl = await uploadDataUrlToFal(imageUrl);
+    const outputUrl = await generateKiIchPortrait(uploadedUrl, scene, mode);
 
-    // Bild zu fal.ai Storage hochladen
-    const uploadedUrl = await fal.storage.upload(file);
-
-    // Bild generieren
-    const result = await fal.subscribe("fal-ai/instantid", {
-      input: {
-        face_image_url: uploadedUrl,
-        prompt: `${scene}, photorealistic, high quality, 8k`,
-        negative_prompt: "blurry, bad quality, cartoon, ugly",
-        num_inference_steps: 15,
-        guidance_scale: 6,
-      },
-    });
-
-    const r = result as FalInstantIdResult;
-    const outputUrl =
-      r.data?.image?.url || r.images?.[0]?.url || r.image?.url;
-
-    if (!outputUrl) {
-      throw new Error(
-        `Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`
-      );
+    if (mode === "preview") {
+      return NextResponse.json({
+        success: true,
+        imageUrl: outputUrl,
+        mode: "preview",
+        creditsUsed: 0,
+      });
     }
 
     const deduction = await deductCredits(
@@ -81,18 +81,22 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      success: true,
       imageUrl: outputUrl,
+      mode: "final",
       creditsUsed: CREDIT_COST,
       creditsLeft: deduction.remainingCredits,
     });
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Bildgenerierung fehlgeschlagen";
-    const body =
+    const bodyDetail =
       error && typeof error === "object" && "body" in error
         ? (error as { body?: unknown }).body
         : undefined;
-    console.error("InfluexAI Vision Error:", JSON.stringify(body ?? message));
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("ki-ich fal error:", JSON.stringify(bodyDetail ?? error));
+
+    return NextResponse.json(
+      { success: false, error: parseFalError(error) },
+      { status: 500 }
+    );
   }
 }

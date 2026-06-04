@@ -11,9 +11,12 @@
     "badge": "AI Creator Stüdyosu",
     "headline": "Bir sonraki viral Short'un — 60 saniyede.",
     "subheadline": "Kesim yok. Yazım yok. Sadece AI.",
-    "cta_primary": "Ücretsiz başla — 10 kredi hediye",
-    "cta_secondary": "Demoyu izle",
-    "social_proof": "{count} içerik üreticisi kayıtlı"
+    "cta_primary": "Hemen başla — €4,99'dan",
+    "cta_secondary": "Özellikleri gör",
+    "social_proof": "{count} içerik üreticisi kayıtlı",
+    "trust_1": "Anında kullanım",
+    "trust_2": "Kolay başlangıç",
+    "trust_3": "GDPR uyumlu"
   },
   "flows": {
     "script": {
@@ -76,21 +79,29 @@
     }
   },
   "auth": {
-    "login_title": "Tekrar hoş geldin",
-    "signup_title": "Hesap oluştur",
+    "login_title": "Welcome back",
+    "signup_title": "Create account",
     "email": "E-posta",
     "password": "Şifre",
     "name": "Adın",
-    "login_button": "Giriş yap",
-    "signup_button": "Ücretsiz kayıt ol",
+    "login_button": "Sign in",
+    "signup_button": "Create account",
     "no_account": "Hesabın yok mu?",
     "has_account": "Zaten kayıtlı mısın?",
-    "signup_link": "Kayıt ol",
-    "login_link": "Giriş yap",
-    "login_subtitle": "Devam etmek için giriş yap.",
-    "signup_subtitle": "10 ücretsiz krediyle başla.",
+    "signup_link": "Sign up →",
+    "login_link": "Sign in →",
+    "login_subtitle": "Sign in to continue.",
+    "signup_subtitle": "Start your creator journey with AI.",
     "fill_fields": "Lütfen tüm alanları doldur.",
-    "bad_credentials": "Yanlış e-posta veya şifre."
+    "bad_credentials": "Yanlış e-posta veya şifre.",
+    "forgot_password": "Forgot?",
+    "divider": "or",
+    "terms_text": "By signing up you agree to our",
+    "terms_link": "Terms",
+    "password_too_short": "Too short",
+    "password_weak": "Weak",
+    "password_medium": "Medium",
+    "password_strong": "Strong"
   },
   "onboarding": {
     "welcome": "InfluexAI'ye hoş geldin, {name}!",
@@ -144,7 +155,7 @@
     "nav_features": "Özellikler",
     "nav_pricing": "Fiyatlar",
     "auth_login": "Giriş",
-    "auth_signup": "Ücretsiz başla"
+    "auth_signup": "Hemen başla"
   },
   "notFound": {
     "headline": "Bu sayfa (henüz) yok",
@@ -162,5 +173,23 @@
   },
   "language": {
     "label": "Dil"
+  },
+  "slideshow": {
+    "social_proof": "⚡ 500+ Creators · 10,000+ pieces created",
+    "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",
+    "slide1_heading": "Script in 30 seconds",
+    "slide1_description": "Describe your video topic and get a complete script with hook, story and CTA — ready to film.",
+    "slide2_badge": "📈 2 Credits · 5 Ideen auf einmal",
+    "slide2_heading": "Find your profitable niche",
+    "slide2_description": "AI analyzes the market and shows 5 profitable niches with competition scores and video ideas.",
+    "slide3_badge": "🔥 3 Credits · 6 Konzepte",
+    "slide3_heading": "Spot viral patterns",
+    "slide3_description": "Find videos that performed 10× above average — learn why they went viral and remix them.",
+    "slide4_badge": "🎯 1 Credit · 4 Konzepte",
+    "slide4_heading": "Thumbnails that get clicks",
+    "slide4_description": "CTR-optimized thumbnail concepts with layout, colors and text overlays — ready to use.",
+    "slide5_badge": "👥 Für alle User zugänglich",
+    "slide5_heading": "Real results, real creators",
+    "slide5_description": "Learn from other creators, share wins and grow with a community on the same mission."
   }
 }

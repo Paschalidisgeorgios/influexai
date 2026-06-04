@@ -12,13 +12,13 @@ Repository: [Paschalidisgeorgios/influexai](https://github.com/Paschalidisgeorgi
 
 ## Production branch
 
-This repository uses **`master`** as the default branch (not `main`). In Vercel:
+This repository uses **`main`** as the default branch. In Vercel:
 
-**Settings → Git → Production Branch** must be `master`.
+**Settings → Git → Production Branch** must be `main`.
 
-## Branch protection (`master`)
+## Branch protection (`main`)
 
-In **Settings → Branches → Add rule** for `master`:
+In **Settings → Branches → Add rule** for `main`:
 
 - Require status checks: **TypeScript**, **ESLint**, **Unit Tests**, **Build**
 - Require branches to be up to date before merging
@@ -53,9 +53,9 @@ In **Vercel → Project → Settings → Environment Variables** (Production):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 - `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_APP_URL` = `https://influexaicreator.com`
-- `RESEND_API_KEY`, `FAL_API_KEY`
+- `RESEND_API_KEY`, `FAL_API_KEY` (or `FAL_KEY`)
 
-Production branch in Vercel Git settings must be **`master`**.
+Production branch in Vercel Git settings must be **`main`**.
 
 ## Local commands (mirror CI)
 

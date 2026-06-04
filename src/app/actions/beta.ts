@@ -4,14 +4,15 @@ import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   BETA_MAX_SPOTS,
-  BETA_STARTER_CREDITS,
   firstNameOnly,
   generateBetaCode,
   relativeTimeDe,
 } from "@/lib/beta";
 import { sendBetaWelcomeEmail } from "@/lib/beta-email";
-import { getOrCreateBetaLifetimeCouponId } from "@/lib/beta-stripe";
-import { logCreditTransaction } from "@/lib/activity-log";
+import {
+  getOrCreateBetaFirstPurchaseCouponId,
+  getOrCreateBetaLifetimeCouponId,
+} from "@/lib/beta-stripe";
 
 export type BetaRecentSignup = {
   displayName: string;
@@ -219,7 +220,6 @@ export async function applyBetaOnSignup(
   const { error: profileErr } = await supabase
     .from("profiles")
     .update({
-      credits: BETA_STARTER_CREDITS,
       is_beta: true,
       beta_code: code,
       ...(beta.name && !profile.full_name ? { full_name: beta.name } : {}),
@@ -239,15 +239,7 @@ export async function applyBetaOnSignup(
     })
     .eq("id", beta.id);
 
-  const previousCredits = profile.credits ?? 10;
-  const bonus = BETA_STARTER_CREDITS - previousCredits;
-  if (bonus > 0) {
-    await logCreditTransaction(supabase, userId, {
-      amount: bonus,
-      description: `Beta-Bonus (+${bonus} Credits)`,
-    });
-  }
-
+  await getOrCreateBetaFirstPurchaseCouponId();
   await getOrCreateBetaLifetimeCouponId();
 
   return { ok: true };

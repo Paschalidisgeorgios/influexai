@@ -118,11 +118,11 @@ export function BetaPageClient({ initialStats }: Props) {
   };
 
   const benefits = [
-    "50 Gratis-Credits (statt 10)",
-    "Lifetime 30% Rabatt auf alle Credit-Pakete",
+    "50% Rabatt auf dein erstes Credit-Paket",
+    "Beta Creator Badge (forever im Profil sichtbar)",
     "Direkter Zugang zum Founder (Feedback-Kanal)",
     "Feature-Requests werden priorisiert",
-    '"Beta Creator" Badge im Profil (forever)',
+    "Lifetime 20% Rabatt auf alle weiteren Käufe",
   ];
 
   const features = [
@@ -146,7 +146,7 @@ export function BetaPageClient({ initialStats }: Props) {
   const faqs = [
     {
       q: "Was kostet InfluexAI nach der Beta?",
-      a: "Beta-User behalten ihren 30% Rabatt forever. Für alle anderen gelten die Standard-Preise.",
+      a: "Beta-User behalten 20% Lifetime-Rabatt auf alle Credit-Pakete. Der erste Kauf ist 50% günstiger.",
     },
     {
       q: "Wann endet die Beta?",
@@ -154,7 +154,7 @@ export function BetaPageClient({ initialStats }: Props) {
     },
     {
       q: "Brauche ich eine Kreditkarte?",
-      a: "Nein. Die ersten 50 Credits sind komplett kostenlos. Keine Kreditkarte nötig.",
+      a: "Nur wenn du Credits kaufst — kein Abo. Credits ab €4,99, einmaliger Kauf via Stripe.",
     },
   ];
 

@@ -1,11 +1,11 @@
 name: Deploy
 
-# Prefer Vercel Git integration (push to master → auto deploy).
+# Prefer Vercel Git integration (push to main → auto deploy).
 # This workflow is a fallback when VERCEL_* secrets are configured.
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches: [main]
 
 concurrency:
   group: deploy-production

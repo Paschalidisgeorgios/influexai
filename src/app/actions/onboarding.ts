@@ -30,7 +30,7 @@ export async function getOnboardingUser() {
 
   return {
     firstName: firstNameFromFullName(profile?.full_name),
-    credits: profile?.credits ?? 10,
+    credits: profile?.credits ?? 0,
     profile: profile ?? null,
   };
 }
