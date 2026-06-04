@@ -9,11 +9,11 @@ import {
   isTenantAccessible,
 } from "@/lib/tenant";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
-import createIntlMiddleware from "next-intl/middleware";
-import { routing } from "@/i18n/routing";
-import { isValidLocale, resolveLocaleFromRequest } from "@/lib/locale";
-
-const handleIntl = createIntlMiddleware(routing);
+import {
+  isValidLocale,
+  locales,
+  resolveLocaleFromRequest,
+} from "@/lib/locale";
 
 async function getOnboardingState(
   supabase: ReturnType<typeof createServerClient>,
@@ -45,20 +45,23 @@ async function getOnboardingState(
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
-
-  const intlResponse = handleIntl(request);
-  if (intlResponse.status >= 300 && intlResponse.status < 400) {
-    if (isValidLocale(langParam)) {
-      intlResponse.cookies.set("locale", langParam, {
-        maxAge: 60 * 60 * 24 * 365,
-        path: "/",
-        sameSite: "lax",
-      });
-    }
-    return intlResponse;
-  }
-
   const pathname = request.nextUrl.pathname;
+
+  // Locale is resolved in i18n.ts (no [locale] segment). Do not use
+  // next-intl middleware here — it rewrites "/" to "/de" and breaks routes on Vercel.
+  for (const locale of locales) {
+    if (pathname === `/${locale}`) {
+      return NextResponse.redirect(
+        new URL("/" + request.nextUrl.search, request.url)
+      );
+    }
+    if (pathname.startsWith(`/${locale}/`)) {
+      const stripped = pathname.slice(locale.length + 1) || "/";
+      return NextResponse.redirect(
+        new URL(stripped + request.nextUrl.search, request.url)
+      );
+    }
+  }
   const hostname = request.headers.get("host") ?? "";
   let abVariant: "a" | "b" | null = null;
 
@@ -216,14 +219,6 @@ export async function middleware(request: NextRequest) {
       sameSite: "lax",
     });
   }
-
-  intlResponse.headers.forEach((value, key) => {
-    if (key.toLowerCase() === "x-middleware-override") return;
-    supabaseResponse.headers.set(key, value);
-  });
-  intlResponse.cookies.getAll().forEach((c) => {
-    supabaseResponse.cookies.set(c.name, c.value);
-  });
 
   return supabaseResponse;
 }
