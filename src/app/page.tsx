@@ -3,11 +3,11 @@ import {
   HeroSection,
   TickerStrip,
   ForBrandsSection,
-  FeaturesSection,
   HowItWorksSection,
+  FeaturesSection,
   TestimonialsSection,
-  FaqSection,
   PricingSection,
+  FaqSection,
   CtaSection,
   LandingFooter,
 } from "@/components/landing";
@@ -19,9 +19,9 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <TickerStrip />
+        <HowItWorksSection />
         <ForBrandsSection />
         <FeaturesSection />
-        <HowItWorksSection />
         <TestimonialsSection />
         <PricingSection />
         <FaqSection />

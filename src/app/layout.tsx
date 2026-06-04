@@ -17,7 +17,12 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
+  "https://influexaicreator.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "InfluexAI — Dein KI-Charakter. Deine Welt.",
     template: "%s | InfluexAI",
@@ -34,7 +39,22 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "InfluexAI GmbH" }],
   manifest: "/manifest.json",
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    locale: "de_DE",
+    url: siteUrl,
+    siteName: "InfluexAI",
+    title: "InfluexAI — Dein KI-Charakter. Deine Welt.",
+    description:
+      "KI-Creator & Brand-Studio: Live Creator, KI-Ich, Produkt-Werbung und Stimme klonen.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "InfluexAI — Dein KI-Charakter. Deine Welt.",
+    description:
+      "KI-Creator & Brand-Studio: Live Creator, KI-Ich, Produkt-Werbung und Stimme klonen.",
+  },
 };
 
 export const viewport: Viewport = {
