@@ -53,20 +53,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const r = result as any;
-    console.log("fal.ai Response keys:", Object.keys(r || {}));
-    console.log("fal.ai Response:", JSON.stringify(r).slice(0, 500));
-
-    const outputUrl =
-      r?.image?.url ||
-      r?.images?.[0]?.url ||
-      r?.output?.image?.url ||
-      r?.output?.images?.[0]?.url ||
-      r?.data?.image?.url ||
-      r?.data?.images?.[0]?.url;
+    const data = (result as { data?: { image?: { url?: string }; images?: { url?: string }[] } }).data;
+    const outputUrl = data?.image?.url || data?.images?.[0]?.url;
 
     if (!outputUrl) {
-      throw new Error(`Kein Bild im Response. Keys: ${Object.keys(r || {}).join(", ")}`);
+      throw new Error(`Kein Bild im Response. Keys: ${Object.keys(result as object).join(", ")}`);
     }
 
     // Credits abziehen
