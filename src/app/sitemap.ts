@@ -102,7 +102,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const post of posts ?? []) {
       entries.push({
         url: `${SEO_BASE_URL}/blog/${post.slug}`,
-        lastModified: new Date(post.updated_at ?? post.published_at ?? Date.now()),
+        lastModified: new Date(
+          post.updated_at ?? post.published_at ?? Date.now()
+        ),
         changeFrequency: "weekly",
         priority: 0.75,
       });

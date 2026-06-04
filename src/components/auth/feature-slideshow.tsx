@@ -70,9 +70,7 @@ function NicheVisual() {
         >
           <span className="text-white text-sm font-medium">{item.name}</span>
           <div className="flex items-center gap-2">
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${item.color}`}
-            >
+            <span className={`text-xs px-2 py-0.5 rounded-full ${item.color}`}>
               {item.competition}
             </span>
             <span className="text-[#B4FF00] text-xs">
@@ -86,7 +84,11 @@ function NicheVisual() {
 }
 
 function OutlierVisual() {
-  const tags = ["Curiosity Gap Hook", "Contrarian Angle", "List Format (viral)"];
+  const tags = [
+    "Curiosity Gap Hook",
+    "Contrarian Angle",
+    "List Format (viral)",
+  ];
   return (
     <div className="bg-white/5 rounded-xl border border-white/10 p-5 max-w-sm">
       <div className="flex justify-between items-start mb-3">
@@ -179,7 +181,9 @@ function CommunityVisual() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-white text-xs font-medium">{item.name}</span>
+              <span className="text-white text-xs font-medium">
+                {item.name}
+              </span>
               <span className="text-white/30 text-xs">{item.niche}</span>
             </div>
             <p className="text-white/60 text-xs mt-0.5">{item.text}</p>

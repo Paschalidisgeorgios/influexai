@@ -16,8 +16,7 @@ export function getBlogFaqs(input: {
     findNicheInText(input.targetKeyword) ??
     findNicheInText(input.content) ??
     ("lifestyle" as NicheKey);
-  const feature =
-    blogCategoryToFeature(input.category) ?? "script-generator";
+  const feature = blogCategoryToFeature(input.category) ?? "script-generator";
 
   const toolFaqs = getToolFaqs(feature, niche);
   return [

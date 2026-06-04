@@ -1,5 +1,8 @@
 import type { CSSProperties } from "react";
-import type { ThumbnailCssElement, ThumbnailCssLayout } from "@/app/actions/generate-thumbnail";
+import type {
+  ThumbnailCssElement,
+  ThumbnailCssLayout,
+} from "@/app/actions/generate-thumbnail";
 
 type Props = {
   layout: ThumbnailCssLayout;

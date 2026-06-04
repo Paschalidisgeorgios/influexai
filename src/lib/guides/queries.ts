@@ -74,9 +74,7 @@ export async function fetchGuideBySlug(slug: string): Promise<Guide | null> {
 }
 
 function normalizeGuideRow(row: Record<string, unknown>): Guide {
-  const faqs = Array.isArray(row.faqs)
-    ? (row.faqs as GuideFaq[])
-    : [];
+  const faqs = Array.isArray(row.faqs) ? (row.faqs as GuideFaq[]) : [];
 
   return {
     id: String(row.id),

@@ -1,15 +1,9 @@
 import Link from "next/link";
-import {
-  categoryCtaLabel,
-  categoryToFeaturePath,
-} from "@/lib/blog/categories";
+import { categoryCtaLabel, categoryToFeaturePath } from "@/lib/blog/categories";
 import { autoInternalLinks } from "@/lib/auto-internal-links";
 import { ContentEmailCaptureInline } from "@/components/content-email-capture";
 import { markdownToHtml } from "@/lib/blog/markdown";
-import {
-  blogCategoryToFeature,
-  findNicheInText,
-} from "@/lib/programmatic-seo";
+import { blogCategoryToFeature, findNicheInText } from "@/lib/programmatic-seo";
 
 function MidArticleCta({ category }: { category: string }) {
   const href = categoryToFeaturePath(category);

@@ -7,7 +7,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
-import { authInputClass, authLabelClass } from "@/components/auth/auth-input-classes";
+import {
+  authInputClass,
+  authLabelClass,
+} from "@/components/auth/auth-input-classes";
 
 export default function LoginPage() {
   const t = useTranslations("auth");

@@ -47,7 +47,8 @@ export function autoInternalLinks(
   options?: { defaultNiche?: NicheKey; defaultFeature?: FeatureKey }
 ): string {
   let content = markdown;
-  const defaultNiche = options?.defaultNiche ?? findNicheInText(content) ?? "lifestyle";
+  const defaultNiche =
+    options?.defaultNiche ?? findNicheInText(content) ?? "lifestyle";
   const defaultFeature = options?.defaultFeature ?? "script-generator";
   const linkedPairs = new Set<string>();
 

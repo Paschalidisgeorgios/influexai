@@ -60,8 +60,7 @@ export function GuideAuthorBox() {
       <p className="font-semibold text-white">InfluexAI Team</p>
       <p className="mt-2 text-sm text-white/60 leading-relaxed">
         Wir helfen YouTube- und Shorts-Creatorn, mit KI schneller bessere
-        Scripts, Nischen und Konzepte zu erstellen — datenbasiert und
-        praxisnah.
+        Scripts, Nischen und Konzepte zu erstellen — datenbasiert und praxisnah.
       </p>
       <Link
         href="/signup"

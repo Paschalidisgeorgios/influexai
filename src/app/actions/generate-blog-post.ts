@@ -3,10 +3,7 @@
 import readingTime from "reading-time";
 import { requireAdmin } from "@/lib/admin";
 import { callClaude, languageLabel } from "@/lib/blog/claude";
-import {
-  categoryCtaLabel,
-  categoryToFeaturePath,
-} from "@/lib/blog/categories";
+import { categoryCtaLabel, categoryToFeaturePath } from "@/lib/blog/categories";
 import { countWords } from "@/lib/blog/markdown";
 import { slugifyTitle } from "@/lib/blog/slug";
 import type { BlogOutlineResult } from "@/lib/blog/types";
@@ -40,7 +37,9 @@ function parseOutlineJson(raw: string): BlogOutlineResult {
   return parsed;
 }
 
-async function generateOutline(input: GenerateBlogInput): Promise<BlogOutlineResult> {
+async function generateOutline(
+  input: GenerateBlogInput
+): Promise<BlogOutlineResult> {
   const secondary = input.secondaryKeywords.trim();
   const lang = languageLabel(input.language);
 
@@ -184,8 +183,7 @@ export async function generateBlogPost(
     console.error("generateBlogPost:", e);
     return {
       success: false,
-      error:
-        e instanceof Error ? e.message : "Generierung fehlgeschlagen.",
+      error: e instanceof Error ? e.message : "Generierung fehlgeschlagen.",
     };
   }
 }

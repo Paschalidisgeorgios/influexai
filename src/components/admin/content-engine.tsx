@@ -230,7 +230,9 @@ export function ContentEngine() {
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-4 py-8">
       <div>
-        <h1 className="text-2xl font-semibold text-white">SEO Content Engine</h1>
+        <h1 className="text-2xl font-semibold text-white">
+          SEO Content Engine
+        </h1>
         <p className="mt-1 text-sm text-white/50">
           Blog-Artikel mit Claude generieren, prüfen und veröffentlichen.
         </p>
@@ -245,7 +247,9 @@ export function ContentEngine() {
 
       {/* Generator */}
       <section className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-        <h2 className="mb-4 text-lg font-medium text-white">Artikel generieren</h2>
+        <h2 className="mb-4 text-lg font-medium text-white">
+          Artikel generieren
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="mb-1 block text-xs text-white/50">
@@ -270,7 +274,9 @@ export function ContentEngine() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">Kategorie</label>
+            <label className="mb-1 block text-xs text-white/50">
+              Kategorie
+            </label>
             <select
               className={inputClass}
               value={category}
@@ -330,9 +336,7 @@ export function ContentEngine() {
           </ul>
         )}
 
-        {genError && (
-          <p className="mt-4 text-sm text-red-400">{genError}</p>
-        )}
+        {genError && <p className="mt-4 text-sm text-red-400">{genError}</p>}
 
         <button
           type="button"
@@ -346,9 +350,7 @@ export function ContentEngine() {
 
       {/* Keyword ideas */}
       <section className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-        <h2 className="mb-4 text-lg font-medium text-white">
-          Keyword-Ideen
-        </h2>
+        <h2 className="mb-4 text-lg font-medium text-white">Keyword-Ideen</h2>
         <div className="flex flex-wrap gap-3">
           <input
             className={`${inputClass} max-w-md flex-1`}
@@ -425,7 +427,9 @@ export function ContentEngine() {
 
       {/* Calendar */}
       <section className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-        <h2 className="mb-4 text-lg font-medium text-white">Content Kalender</h2>
+        <h2 className="mb-4 text-lg font-medium text-white">
+          Content Kalender
+        </h2>
         <div className="mb-4 flex gap-4 text-xs text-white/50">
           <span>
             <span className="inline-block h-2 w-2 rounded-full bg-gray-500 mr-1" />
@@ -509,7 +513,9 @@ export function ContentEngine() {
         {selectedId && selected ? (
           <section className="space-y-6 rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-medium text-white">Vorschau & Bearbeitung</h2>
+              <h2 className="text-lg font-medium text-white">
+                Vorschau & Bearbeitung
+              </h2>
               <div className="flex flex-wrap gap-2">
                 <input
                   type="datetime-local"
@@ -565,7 +571,9 @@ export function ContentEngine() {
 
             <div className="grid gap-4">
               <div>
-                <label className="mb-1 block text-xs text-white/50">Titel</label>
+                <label className="mb-1 block text-xs text-white/50">
+                  Titel
+                </label>
                 <input
                   className={inputClass}
                   value={editTitle}

@@ -17,10 +17,7 @@ export default function BlogLayout({
             InfluexAI
           </Link>
           <nav className="flex items-center gap-4 text-sm">
-            <Link
-              href="/blog"
-              className="text-white/70 hover:text-[#B4FF00]"
-            >
+            <Link href="/blog" className="text-white/70 hover:text-[#B4FF00]">
               Blog
             </Link>
             <Link

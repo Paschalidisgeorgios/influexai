@@ -32,9 +32,7 @@ export async function fetchPublishedPosts(options: {
   return { posts: (data ?? []) as BlogPost[], total: count ?? 0 };
 }
 
-export async function fetchPostBySlug(
-  slug: string
-): Promise<BlogPost | null> {
+export async function fetchPostBySlug(slug: string): Promise<BlogPost | null> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
     .from("blog_posts")

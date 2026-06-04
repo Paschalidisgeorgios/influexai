@@ -35,7 +35,9 @@ function EmailForm({
         compact ? "p-4" : "p-6 my-10"
       }`}
     >
-      <p className={`font-medium text-white ${compact ? "text-sm" : "text-base"}`}>
+      <p
+        className={`font-medium text-white ${compact ? "text-sm" : "text-base"}`}
+      >
         {title}
       </p>
       <p className="mt-1 text-xs text-white/50">{subtitle}</p>

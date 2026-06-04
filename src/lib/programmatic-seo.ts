@@ -538,7 +538,10 @@ export function isNicheKey(value: string): value is NicheKey {
   return value in NICHES;
 }
 
-export function getAllProgrammaticPaths(): { feature: FeatureKey; niche: NicheKey }[] {
+export function getAllProgrammaticPaths(): {
+  feature: FeatureKey;
+  niche: NicheKey;
+}[] {
   const paths: { feature: FeatureKey; niche: NicheKey }[] = [];
   for (const feature of Object.keys(FEATURES) as FeatureKey[]) {
     for (const niche of Object.keys(NICHES) as NicheKey[]) {

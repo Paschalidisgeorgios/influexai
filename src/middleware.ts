@@ -9,11 +9,7 @@ import {
   isTenantAccessible,
 } from "@/lib/tenant";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
-import {
-  isValidLocale,
-  locales,
-  resolveLocaleFromRequest,
-} from "@/lib/locale";
+import { isValidLocale, locales, resolveLocaleFromRequest } from "@/lib/locale";
 
 async function getOnboardingState(
   supabase: ReturnType<typeof createServerClient>,

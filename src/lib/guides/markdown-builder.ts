@@ -12,16 +12,10 @@ export function sectionsToMarkdown(sections: GuideSection[]): string {
     parts.push(`## ${s.h2}`);
     for (const p of s.paragraphs) parts.push("", p);
     if (s.takeaway) {
-      parts.push(
-        "",
-        `> **Key Takeaway:** ${s.takeaway}`
-      );
+      parts.push("", `> **Key Takeaway:** ${s.takeaway}`);
     }
     if (s.cta) {
-      parts.push(
-        "",
-        `**Probier es aus:** [${s.cta.label}](${s.cta.href})`
-      );
+      parts.push("", `**Probier es aus:** [${s.cta.label}](${s.cta.href})`);
     }
     if (s.h3) {
       for (const sub of s.h3) {

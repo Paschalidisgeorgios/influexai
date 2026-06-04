@@ -69,9 +69,5 @@ export async function sendNewsletterWelcomeEmail(to: string): Promise<boolean> {
 </p>
 </td></tr></table></td></tr></table></body></html>`;
 
-  return sendResend(
-    to,
-    "Willkommen + 3 Script-Templates (InfluexAI)",
-    html
-  );
+  return sendResend(to, "Willkommen + 3 Script-Templates (InfluexAI)", html);
 }

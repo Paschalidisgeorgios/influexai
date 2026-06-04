@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 
-export function ArticleShare({
-  title,
-  url,
-}: {
-  title: string;
-  url: string;
-}) {
+export function ArticleShare({ title, url }: { title: string; url: string }) {
   const [copied, setCopied] = useState(false);
   const encoded = encodeURIComponent(url);
   const text = encodeURIComponent(title);

@@ -19,8 +19,7 @@ export function DashboardGreeting({ firstName, locale = "de" }: Props) {
   return (
     <div>
       <h1 className="text-2xl font-medium text-white">
-        {greeting},{" "}
-        <span className="text-[#B4FF00]">{firstName}</span> {emoji}
+        {greeting}, <span className="text-[#B4FF00]">{firstName}</span> {emoji}
       </h1>
       <p className="text-white/50 text-sm mt-1">{subtext}</p>
     </div>

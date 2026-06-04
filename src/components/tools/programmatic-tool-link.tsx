@@ -28,8 +28,7 @@ export function ProgrammaticToolLink({
     <Link
       href={toolPagePath(feature, slug)}
       className={
-        className ||
-        "mt-3 inline-flex text-sm text-[#B4FF00] hover:underline"
+        className || "mt-3 inline-flex text-sm text-[#B4FF00] hover:underline"
       }
     >
       Mehr über {n.nameDe} Creator Tools → {f.nameDe}

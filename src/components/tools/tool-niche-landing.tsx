@@ -113,8 +113,8 @@ export function ToolNicheLanding({ feature, niche }: Props) {
                 1
               </span>
               <span>
-                Thema eingeben — z. B. „{n.examples[0]}“ für deinen{" "}
-                {n.nameDe}-Kanal
+                Thema eingeben — z. B. „{n.examples[0]}“ für deinen {n.nameDe}
+                -Kanal
               </span>
             </li>
             <li className="flex gap-4 rounded-xl border border-white/10 p-4">
@@ -194,11 +194,17 @@ export function ToolNicheLanding({ feature, niche }: Props) {
       </div>
 
       <footer className="border-t border-white/10 py-8 text-center text-xs text-white/30">
-        <Link href={toolPagePath("niche-analyzer", niche)} className="hover:text-white/50">
+        <Link
+          href={toolPagePath("niche-analyzer", niche)}
+          className="hover:text-white/50"
+        >
           Niche Analyzer für {n.nameDe}
         </Link>
         {" · "}
-        <Link href={toolPagePath("script-generator", niche)} className="hover:text-white/50">
+        <Link
+          href={toolPagePath("script-generator", niche)}
+          className="hover:text-white/50"
+        >
           Script Generator für {n.nameDe}
         </Link>
       </footer>

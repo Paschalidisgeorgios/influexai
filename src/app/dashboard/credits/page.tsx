@@ -499,7 +499,10 @@ export default function CreditsPage() {
           "Sicher bezahlen mit Stripe",
           "Server in Frankfurt 🇩🇪",
         ].map((line, i) => (
-          <span key={line} style={{ display: "inline-flex", alignItems: "center" }}>
+          <span
+            key={line}
+            style={{ display: "inline-flex", alignItems: "center" }}
+          >
             {i > 0 && (
               <span style={{ margin: "0 10px", color: "#2a2a2e" }} aria-hidden>
                 ·

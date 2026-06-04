@@ -52,11 +52,7 @@ export function runBlogSeoCheck(input: {
       id: "density",
       label: "Keyword density 1–3%",
       status:
-        density >= 1 && density <= 3
-          ? "pass"
-          : density > 0
-            ? "warn"
-            : "fail",
+        density >= 1 && density <= 3 ? "pass" : density > 0 ? "warn" : "fail",
     },
     {
       id: "internal-links",

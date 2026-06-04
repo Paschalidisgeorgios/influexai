@@ -12,7 +12,10 @@ import { normalizeReferralCode } from "@/lib/referral-code";
 import { applyBetaOnSignup } from "@/app/actions/beta";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
-import { authInputClass, authLabelClass } from "@/components/auth/auth-input-classes";
+import {
+  authInputClass,
+  authLabelClass,
+} from "@/components/auth/auth-input-classes";
 import {
   getPasswordStrength,
   strengthBarColors,
@@ -304,7 +307,10 @@ function SignupPageInner() {
 
       <p className="text-center text-white/30 text-xs mt-4 leading-relaxed">
         {t("terms_text")}{" "}
-        <Link href="/terms" className="text-white/40 underline hover:text-[#B4FF00]">
+        <Link
+          href="/terms"
+          className="text-white/40 underline hover:text-[#B4FF00]"
+        >
           {t("terms_link")}
         </Link>
       </p>
@@ -329,9 +335,7 @@ export default function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full max-w-sm mx-auto text-white/40 text-sm">
-          …
-        </div>
+        <div className="w-full max-w-sm mx-auto text-white/40 text-sm">…</div>
       }
     >
       <SignupPageInner />

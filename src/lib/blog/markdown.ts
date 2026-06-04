@@ -35,11 +35,14 @@ export function extractTocFromMarkdown(markdown: string): TocEntry[] {
 }
 
 export async function markdownToHtml(markdown: string): Promise<string> {
-  const withIds = markdown.replace(/^(#{2,3})\s+(.+)$/gm, (_, hashes, title) => {
-    const level = hashes.length;
-    const id = slugifyHeading(title.trim());
-    return `${"#".repeat(level)} ${title.trim()} {#${id}}`;
-  });
+  const withIds = markdown.replace(
+    /^(#{2,3})\s+(.+)$/gm,
+    (_, hashes, title) => {
+      const level = hashes.length;
+      const id = slugifyHeading(title.trim());
+      return `${"#".repeat(level)} ${title.trim()} {#${id}}`;
+    }
+  );
 
   const renderer = new marked.Renderer();
   renderer.heading = function heading({ text, depth, raw }) {

@@ -6,10 +6,7 @@ import {
 } from "@/lib/programmatic-seo";
 import type { GuideFaq } from "./types";
 
-export function getToolFaqs(
-  feature: FeatureKey,
-  niche: NicheKey
-): GuideFaq[] {
+export function getToolFaqs(feature: FeatureKey, niche: NicheKey): GuideFaq[] {
   const f = FEATURES[feature];
   const n = NICHES[niche];
 

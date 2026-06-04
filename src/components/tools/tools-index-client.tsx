@@ -118,8 +118,8 @@ export function ToolsIndexClient() {
           Deine Nische nicht dabei?
         </h2>
         <p className="mb-4 text-sm text-white/50">
-          Wähle aus {allNicheKeys.length} Nischen und {featureKeys.length}{" "}
-          Tools — über {allNicheKeys.length * featureKeys.length} Landingpages.
+          Wähle aus {allNicheKeys.length} Nischen und {featureKeys.length} Tools
+          — über {allNicheKeys.length * featureKeys.length} Landingpages.
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {allNicheKeys.map((niche) => (

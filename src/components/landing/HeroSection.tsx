@@ -236,11 +236,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
           className="flex items-center gap-3 flex-wrap"
           style={{ fontSize: "0.82rem", color: "#505055" }}
         >
-          {[
-            `✓ ${t("trust_1")}`,
-            `✓ ${t("trust_2")}`,
-            `✓ ${t("trust_3")}`,
-          ].map(
+          {[`✓ ${t("trust_1")}`, `✓ ${t("trust_2")}`, `✓ ${t("trust_3")}`].map(
             (item, i) => (
               <span key={item} className="flex items-center gap-3">
                 {i > 0 && (

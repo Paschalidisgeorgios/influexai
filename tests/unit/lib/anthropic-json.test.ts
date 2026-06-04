@@ -11,7 +11,7 @@ describe("stripClaudeJson", () => {
   });
 
   it("parses wrapped object", () => {
-    const raw = "```json\n{\"niches\":[{\"title\":\"A\"}]}\n```";
+    const raw = '```json\n{"niches":[{"title":"A"}]}\n```';
     const parsed = parseClaudeJson<{ niches: { title: string }[] }>(raw);
     expect(parsed.niches[0].title).toBe("A");
   });

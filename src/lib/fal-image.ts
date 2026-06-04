@@ -100,12 +100,10 @@ export function buildProductNegativePrompt(): string {
 }
 
 function extractImageUrl(result: unknown): string | null {
-  const r = result as FalImagesOutput & { data?: { images?: Array<{ url?: string }> } };
-  return (
-    r.data?.images?.[0]?.url ??
-    r.images?.[0]?.url ??
-    null
-  );
+  const r = result as FalImagesOutput & {
+    data?: { images?: Array<{ url?: string }> };
+  };
+  return r.data?.images?.[0]?.url ?? r.images?.[0]?.url ?? null;
 }
 
 export function parseFalError(error: unknown): string {
@@ -157,9 +155,7 @@ export async function generateKiIchPortrait(
   return url;
 }
 
-export async function uploadDataUrlToFal(
-  imageUrl: string
-): Promise<string> {
+export async function uploadDataUrlToFal(imageUrl: string): Promise<string> {
   const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
   const blob = new Blob([buffer], { type: "image/jpeg" });

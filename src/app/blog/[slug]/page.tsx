@@ -9,10 +9,7 @@ import { getBlogFaqs } from "@/lib/guides/blog-faqs";
 import { ArticleToc } from "@/components/blog/article-toc";
 import { categoryBadgeClass } from "@/lib/blog/categories";
 import { extractTocFromMarkdown } from "@/lib/blog/markdown";
-import {
-  fetchPostBySlug,
-  fetchRelatedPosts,
-} from "@/lib/blog/queries";
+import { fetchPostBySlug, fetchRelatedPosts } from "@/lib/blog/queries";
 import { SEO_BASE_URL } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };

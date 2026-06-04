@@ -59,7 +59,9 @@ export function GuideRightSidebar({
         <ContentEmailCaptureSidebar source={`guide-${guide.slug}`} />
 
         <div className="rounded-xl border border-[#B4FF00]/30 bg-[#B4FF00]/5 p-5">
-          <p className="font-semibold text-white text-sm">InfluexAI ausprobieren</p>
+          <p className="font-semibold text-white text-sm">
+            InfluexAI ausprobieren
+          </p>
           <p className="mt-2 text-xs text-white/55">
             {meta?.ctaFeature ?? "Script Generator"} — direkt im Dashboard.
           </p>

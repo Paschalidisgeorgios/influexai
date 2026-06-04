@@ -14,7 +14,9 @@ export function GuideTocSidebar({ entries }: { entries: TocEntry[] }) {
       const scrollTop = window.scrollY;
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0);
+      setProgress(
+        docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0
+      );
     };
 
     const observer = new IntersectionObserver(

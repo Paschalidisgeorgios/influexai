@@ -59,12 +59,23 @@ function build(p) {
   h2s.forEach((h2, i) => {
     lines.push(`## ${h2}`, "");
     for (let j = 0; j < 4; j++) lines.push(para(p.topic, p.kw, i, j), "");
-    lines.push(`> **Key Takeaway:** In „${h2}“ zählst du Fortschritt in messbaren Wochenzielen, nicht in Vanity-Metriken.`, "");
+    lines.push(
+      `> **Key Takeaway:** In „${h2}“ zählst du Fortschritt in messbaren Wochenzielen, nicht in Vanity-Metriken.`,
+      ""
+    );
     if (i === 3) {
-      lines.push(`**Probier es aus:** [InfluexAI ${p.kw[0]} Tool](${p.cta})`, "");
+      lines.push(
+        `**Probier es aus:** [InfluexAI ${p.kw[0]} Tool](${p.cta})`,
+        ""
+      );
     }
     if (i % 3 === 0) {
-      lines.push(`### Detail: ${p.kw[i % p.kw.length]} vertiefen`, "", para(p.topic, p.kw, i, 0), "");
+      lines.push(
+        `### Detail: ${p.kw[i % p.kw.length]} vertiefen`,
+        "",
+        para(p.topic, p.kw, i, 0),
+        ""
+      );
     }
   });
   return lines.join("\n");

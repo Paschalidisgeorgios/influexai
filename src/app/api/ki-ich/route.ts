@@ -16,7 +16,11 @@ configureFalClient();
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { imageUrl, scene, mode: modeRaw } = body as {
+  const {
+    imageUrl,
+    scene,
+    mode: modeRaw,
+  } = body as {
     imageUrl?: string;
     scene?: string;
     mode?: FalImageMode;
@@ -48,7 +52,10 @@ export async function POST(request: NextRequest) {
   if (mode === "final") {
     const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
     if (!creditCheck.ok) {
-      return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
+      return NextResponse.json(
+        { error: "Nicht genug Credits" },
+        { status: 402 }
+      );
     }
   }
 

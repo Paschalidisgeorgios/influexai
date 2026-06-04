@@ -205,6 +205,7 @@ export async function createDraftFromKeywordIdea(input: {
     .select("id")
     .single();
 
-  if (error || !data) return { ok: false, error: "Entwurf konnte nicht erstellt werden." };
+  if (error || !data)
+    return { ok: false, error: "Entwurf konnte nicht erstellt werden." };
   return { ok: true, postId: data.id };
 }

@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   description: `Alle ${featureCount} InfluexAI Tools für ${nicheCount}+ Creator-Nischen. Script Generator, Niche Analyzer, Outlier Detector und mehr.`,
   openGraph: {
     title: "Alle KI-Tools für jeden Creator-Typ | InfluexAI",
-    description: "Programmatische Tool-Landingpages für jede Nische und jedes Feature.",
+    description:
+      "Programmatische Tool-Landingpages für jede Nische und jedes Feature.",
     url: `${SEO_BASE_URL}/tools`,
   },
 };

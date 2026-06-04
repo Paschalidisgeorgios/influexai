@@ -53,7 +53,8 @@ export async function subscribeNewsletter(
 
   return {
     ok: true,
-    message: "Bitte bestätige deine E-Mail — wir haben dir einen Link geschickt.",
+    message:
+      "Bitte bestätige deine E-Mail — wir haben dir einen Link geschickt.",
   };
 }
 

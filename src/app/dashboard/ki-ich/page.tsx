@@ -50,7 +50,9 @@ export default function KiIchPage() {
   const [scene, setScene] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
-  const [loadingMode, setLoadingMode] = useState<"preview" | "final">("preview");
+  const [loadingMode, setLoadingMode] = useState<"preview" | "final">(
+    "preview"
+  );
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -485,8 +487,8 @@ export default function KiIchPage() {
       {step === "preview" && previewUrl && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ color: "#505055", fontSize: "0.85rem" }}>
-            Vorschau bereit — für beste Qualität ohne Farbartefakte auf der
-            Haut jetzt hochauflösend generieren.
+            Vorschau bereit — für beste Qualität ohne Farbartefakte auf der Haut
+            jetzt hochauflösend generieren.
           </p>
           <div
             style={{

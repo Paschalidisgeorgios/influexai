@@ -49,11 +49,13 @@ type RemixFailure = {
 
 function parseRemixes(raw: string): RemixConcept[] {
   const parsed = parseClaudeJson<unknown>(raw);
-  const wrapped = parsed as {
-    remixes?: unknown;
-    results?: unknown;
-    data?: unknown;
-  } | unknown[];
+  const wrapped = parsed as
+    | {
+        remixes?: unknown;
+        results?: unknown;
+        data?: unknown;
+      }
+    | unknown[];
   const list = Array.isArray(wrapped)
     ? wrapped
     : ((wrapped as { remixes?: unknown }).remixes ??

@@ -92,11 +92,7 @@ export default async function GuidePage({ params }: Props) {
             <span>ca. {guide.reading_time_minutes} Min</span>
           </div>
           <div className="mt-6">
-            <GuideHeaderActions
-              title={guide.title}
-              url={url}
-              pdfSlug={slug}
-            />
+            <GuideHeaderActions title={guide.title} url={url} pdfSlug={slug} />
           </div>
         </header>
 

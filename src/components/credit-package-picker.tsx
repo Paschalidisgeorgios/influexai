@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  CREDIT_PACKAGES,
-  type CreditPackageId,
-} from "@/lib/credit-packages";
+import { CREDIT_PACKAGES, type CreditPackageId } from "@/lib/credit-packages";
 
 type Props = {
   onCheckout: (packageId: CreditPackageId) => void;
@@ -46,9 +43,7 @@ export function CreditPackagePicker({
               border: isPopular
                 ? "2px solid #B4FF00"
                 : "1px solid rgba(255,255,255,0.1)",
-              background: isPopular
-                ? "rgba(180,255,0,0.04)"
-                : "#0f0f12",
+              background: isPopular ? "rgba(180,255,0,0.04)" : "#0f0f12",
               display: "flex",
               flexDirection: "column",
               position: "relative",
@@ -151,9 +146,7 @@ export function CreditPackagePicker({
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
-              {loadingId === pkg.id
-                ? "…"
-                : `${pkg.label} wählen`}
+              {loadingId === pkg.id ? "…" : `${pkg.label} wählen`}
             </button>
           </div>
         );

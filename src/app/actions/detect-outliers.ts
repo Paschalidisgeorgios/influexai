@@ -50,11 +50,13 @@ const MECHANISMS: ViralMechanism[] = [
 
 function parseOutliers(raw: string): OutlierConcept[] {
   const parsed = parseClaudeJson<unknown>(raw);
-  const wrapped = parsed as {
-    outliers?: unknown;
-    results?: unknown;
-    data?: unknown;
-  } | unknown[];
+  const wrapped = parsed as
+    | {
+        outliers?: unknown;
+        results?: unknown;
+        data?: unknown;
+      }
+    | unknown[];
   const list = Array.isArray(wrapped)
     ? wrapped
     : ((wrapped as { outliers?: unknown }).outliers ??
