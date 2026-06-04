@@ -17,6 +17,10 @@ import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
 
 const CREDIT_COST = 1;
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
+import {
+  getSafeSearchParam,
+  scriptGeneratorTopicUrl,
+} from "@/lib/safe-url-param";
 
 type Step = "input" | "loading" | "results";
 
@@ -94,8 +98,8 @@ function ThumbnailConceptPageInner() {
   };
 
   useEffect(() => {
-    const t = searchParams.get("topic");
-    if (t) setTopic(decodeURIComponent(t));
+    const topicParam = getSafeSearchParam(searchParams, "topic");
+    if (topicParam) setTopic(topicParam);
   }, [searchParams]);
 
   useEffect(() => {
@@ -594,7 +598,9 @@ function ThumbnailConceptPageInner() {
                       type="button"
                       onClick={() =>
                         router.push(
-                          `/dashboard/script-generator?topic=${encodeURIComponent(topic)}`
+                          scriptGeneratorTopicUrl(
+                            topic.trim() || concept.conceptTitle
+                          )
                         )
                       }
                       style={{

@@ -21,6 +21,7 @@ import { ScriptSkeleton } from "@/components/skeletons/script-skeleton";
 import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
 import { createClient } from "@/lib/supabase/client";
 import { resolveNicheSlug } from "@/lib/programmatic-seo";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 
 const GENERATE_COST = 2;
 const REGENERATE_COST = 1;
@@ -194,8 +195,8 @@ function ScriptGeneratorPageInner() {
   }, [supabase]);
 
   useEffect(() => {
-    const t = searchParams.get("topic");
-    if (t) setTopic(decodeURIComponent(t));
+    const topicParam = getSafeSearchParam(searchParams, "topic");
+    if (topicParam) setTopic(topicParam);
 
     const savedId = searchParams.get("saved");
     if (savedId) {
