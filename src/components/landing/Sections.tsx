@@ -136,6 +136,110 @@ export function FeaturesSection() {
   );
 }
 
+/* ── HOW IT WORKS ── */
+const STEPS = [
+  { n: "01", title: "Account erstellen", desc: "Kostenlos registrieren. 50 Credits geschenkt — keine Kreditkarte." },
+  { n: "02", title: "Modul wählen", desc: "Live Creator, KI-Ich, Produkt-Werbung oder Stimme & Musik — alles in einem Studio." },
+  { n: "03", title: "Content generieren", desc: "Upload, URL oder Text eingeben. KI liefert in Sekunden — exportfertig für alle Plattformen." },
+];
+
+export function HowItWorksSection() {
+  return (
+    <section id="how" className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]" style={{ background: "var(--bg)" }}>
+      <div className="max-w-[1160px] mx-auto">
+        <span className="kicker mb-2.5">So funktioniert&apos;s</span>
+        <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem,5vw,4rem)", letterSpacing: "0.02em", lineHeight: 0.95, marginBottom: 40 }}>
+          In 3 Schritten<br /><span style={{ color: "var(--acid)" }}>zum Content.</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {STEPS.map((s) => (
+            <div key={s.n} className="rounded-[14px] p-7" style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}>
+              <div style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "2.5rem", color: "var(--acid)", lineHeight: 1, marginBottom: 16 }}>{s.n}</div>
+              <div className="font-bold text-lg mb-2" style={{ letterSpacing: "-0.02em" }}>{s.title}</div>
+              <p className="text-sm leading-[1.7]" style={{ color: "var(--wd)" }}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── TESTIMONIALS ── */
+const TESTIMONIALS = [
+  { quote: "Produkt-Ads in unter 3 Minuten. Unser ROAS ist um 40% gestiegen.", name: "Lisa M.", role: "E-Commerce Creator", stars: 5 },
+  { quote: "Endlich ein Tool wo mein KI-Gesicht überall gleich aussieht.", name: "Tom K.", role: "TikTok Creator · 280k", stars: 5 },
+  { quote: "Wir sparen 15.000€ pro Monat an Agentur-Kosten.", name: "Sarah B.", role: "Marketing Lead, D2C Brand", stars: 5 },
+];
+
+export function TestimonialsSection() {
+  return (
+    <section className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]" style={{ background: "var(--bg-1)" }}>
+      <div className="max-w-[1160px] mx-auto">
+        <span className="kicker mb-2.5">Stimmen</span>
+        <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem,5vw,4rem)", letterSpacing: "0.02em", lineHeight: 0.95, marginBottom: 40 }}>
+          Creator & Marken<br /><span style={{ color: "var(--acid)" }}>lieben InfluexAI.</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="rounded-[14px] p-6 flex flex-col" style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}>
+              <div className="mb-3 text-sm" style={{ color: "var(--acid)" }}>{"★".repeat(t.stars)}</div>
+              <p className="text-[0.9rem] leading-[1.75] flex-1 mb-5" style={{ color: "var(--wd)" }}>&ldquo;{t.quote}&rdquo;</p>
+              <div>
+                <div className="font-bold text-sm">{t.name}</div>
+                <div className="text-[0.78rem] mt-0.5" style={{ color: "var(--grey)" }}>{t.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── FAQ ── */
+const FAQS = [
+  { q: "Was sind Credits?", a: "Credits sind die Währung in InfluexAI. Jedes Modul kostet 2–5 Credits pro Generierung. Credits verfallen nicht." },
+  { q: "Brauche ich eine Kreditkarte?", a: "Nein. Der Free-Plan startet mit 50 gratis Credits — ohne Zahlungsdaten." },
+  { q: "Ist InfluexAI DSGVO-konform?", a: "Ja. Server in der EU, keine Weitergabe deiner Daten an Dritte ohne Einwilligung." },
+  { q: "Kann ich meine eigene Stimme klonen?", a: "Ja — im Modul Stimme & Musik. 30+ Sekunden Audio reichen für eine hochwertige Klonung." },
+  { q: "Welche Plattformen werden unterstützt?", a: "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — alle gängigen Formate." },
+];
+
+export function FaqSection() {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section id="faq" className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]" style={{ background: "var(--bg)" }}>
+      <div className="max-w-[720px] mx-auto">
+        <span className="kicker mb-2.5 block text-center">FAQ</span>
+        <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem,5vw,4rem)", letterSpacing: "0.02em", lineHeight: 0.95, textAlign: "center", marginBottom: 40 }}>
+          Häufige Fragen
+        </h2>
+        <div className="flex flex-col gap-2">
+          {FAQS.map((item, i) => (
+            <div key={i} className="rounded-[12px] overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--bg-2)" }}>
+              <button
+                type="button"
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between gap-4 p-5 text-left cursor-pointer border-none"
+                style={{ background: "transparent", color: "var(--white)", fontFamily: "var(--font-dm), sans-serif", fontWeight: 600, fontSize: "0.9rem" }}
+              >
+                {item.q}
+                <span style={{ color: "var(--acid)", fontSize: "1.2rem", flexShrink: 0 }}>{open === i ? "−" : "+"}</span>
+              </button>
+              {open === i && (
+                <div className="px-5 pb-5 text-[0.875rem] leading-[1.75]" style={{ color: "var(--wd)" }}>
+                  {item.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ── PRICING ── */
 const PLANS = [
   {

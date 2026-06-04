@@ -4,6 +4,9 @@ import {
   TickerStrip,
   ForBrandsSection,
   FeaturesSection,
+  HowItWorksSection,
+  TestimonialsSection,
+  FaqSection,
   PricingSection,
   CtaSection,
   LandingFooter,
@@ -18,7 +21,10 @@ export default function HomePage() {
         <TickerStrip />
         <ForBrandsSection />
         <FeaturesSection />
+        <HowItWorksSection />
+        <TestimonialsSection />
         <PricingSection />
+        <FaqSection />
         <CtaSection />
       </main>
       <LandingFooter />
