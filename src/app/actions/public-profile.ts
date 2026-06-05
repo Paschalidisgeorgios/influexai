@@ -25,6 +25,7 @@ export type GenerationRow = {
   prompt: string;
   created_at: string;
   is_pinned: boolean;
+  is_public: boolean;
 };
 
 export async function getPublicProfileSettings(): Promise<
@@ -158,7 +159,7 @@ export async function listMyGenerationsForShowcase(): Promise<GenerationRow[]> {
 
   const { data } = await supabase
     .from("generations")
-    .select("id, type, prompt, created_at, is_pinned")
+    .select("id, type, prompt, created_at, is_pinned, is_public")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(10);

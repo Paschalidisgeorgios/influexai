@@ -61,13 +61,13 @@ export function ChallengeBanner({
       <p
         style={{
           margin: "0 0 12px",
-          color: "rgba(240,239,232,0.6)",
+          color: "rgba(255,255,255,0.85)",
           fontSize: "0.9rem",
         }}
       >
         {challenge.description || "Teile dein Ergebnis bis zum Deadline."}
       </p>
-      <p style={{ margin: "0 0 16px", fontSize: "0.82rem", color: "#505055" }}>
+      <p style={{ margin: "0 0 16px", fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
         Noch{" "}
         <strong style={{ color: "#B4FF00" }}>
           {daysLeft} Tag{daysLeft === 1 ? "" : "e"}
@@ -92,7 +92,7 @@ export function ChallengeBanner({
                 background: challenge.userJoined
                   ? "rgba(255,255,255,0.08)"
                   : "#B4FF00",
-                color: challenge.userJoined ? "#505055" : "#060608",
+                color: challenge.userJoined ? "rgba(255,255,255,0.65)" : "#060608",
                 fontWeight: 700,
                 fontSize: "0.85rem",
                 cursor: challenge.userJoined ? "default" : "pointer",

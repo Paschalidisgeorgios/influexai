@@ -50,7 +50,7 @@ export const APP_STORE_CHECKLIST: ChecklistSection[] = [
       { id: "play-privacy", label: "Privacy Policy URL live" },
       {
         id: "play-console",
-        label: "Google Play Console Account ($25 one-time)",
+        label: "Play Store Console Account ($25 one-time)",
       },
       { id: "play-package", label: "Package name: com.influexai.app" },
     ],
@@ -122,7 +122,7 @@ export const LAUNCH_TIMELINE = [
     id: "w-2",
     phase: "Week -2",
     title: "Submit for review",
-    detail: "Apple: 1–3 days · Google Play: 1–7 days",
+    detail: "Apple: 1–3 days · Play Store: 1–7 days",
     status: "upcoming" as const,
   },
   {
@@ -206,5 +206,5 @@ eas build --platform android --profile preview
 # Submit to App Store (after build)
 eas submit --platform ios
 
-# Submit to Google Play
+# Submit to Play Store
 eas submit --platform android`;

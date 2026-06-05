@@ -112,7 +112,10 @@ export const OPEN_GRAPH_LOCALE: Record<Locale, string> = {
 /** Public marketing pages included in the multilingual sitemap */
 export const SEO_STATIC_PATHS = [
   "/",
+  "/blog",
+  "/guides",
   "/api-docs",
+  "/docs",
   "/beta",
   "/dashboard/white-label",
   "/community",

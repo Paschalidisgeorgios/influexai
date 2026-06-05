@@ -1,5 +1,14 @@
+/** Primary blog categories (SEO + filters) */
 export const BLOG_CATEGORIES = [
   "Alle",
+  "Tutorial",
+  "News",
+  "Tips",
+  "Updates",
+] as const;
+
+/** Legacy categories still supported for existing posts */
+export const LEGACY_BLOG_CATEGORIES = [
   "Niche-Analyse",
   "Script Writing",
   "Thumbnail",
@@ -12,6 +21,10 @@ export const BLOG_CATEGORIES = [
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 
 export const CATEGORY_BADGE_CLASS: Record<string, string> = {
+  Tutorial: "bg-[#B4FF00]/20 text-[#B4FF00]",
+  News: "bg-blue-500/20 text-blue-400",
+  Tips: "bg-emerald-500/20 text-emerald-400",
+  Updates: "bg-violet-500/20 text-violet-400",
   "Niche-Analyse": "bg-emerald-500/20 text-emerald-400",
   "Script Writing": "bg-[#B4FF00]/20 text-[#B4FF00]",
   Thumbnail: "bg-violet-500/20 text-violet-400",
@@ -22,11 +35,15 @@ export const CATEGORY_BADGE_CLASS: Record<string, string> = {
 };
 
 export function categoryBadgeClass(category: string): string {
-  return CATEGORY_BADGE_CLASS[category] ?? "bg-white/10 text-white/60";
+  return CATEGORY_BADGE_CLASS[category] ?? "bg-white/10 text-white/80";
 }
 
 export function categoryToFeaturePath(category: string): string {
   const map: Record<string, string> = {
+    Tutorial: "/dashboard",
+    News: "/dashboard",
+    Tips: "/dashboard/script-generator",
+    Updates: "/dashboard",
     "Niche-Analyse": "/dashboard/niche-analyzer",
     "Script Writing": "/dashboard/script-generator",
     Thumbnail: "/dashboard/thumbnail-concept",
@@ -40,6 +57,10 @@ export function categoryToFeaturePath(category: string): string {
 
 export function categoryCtaLabel(category: string): string {
   const map: Record<string, string> = {
+    Tutorial: "InfluexAI Dashboard",
+    News: "InfluexAI Dashboard",
+    Tips: "Script Generator",
+    Updates: "InfluexAI Dashboard",
     "Niche-Analyse": "Niche Analyzer",
     "Script Writing": "Script Generator",
     Thumbnail: "Thumbnail Concept",

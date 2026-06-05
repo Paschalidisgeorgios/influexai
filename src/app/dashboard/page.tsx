@@ -18,10 +18,10 @@ import {
   type DashboardUserStats,
 } from "@/lib/dashboard-user-stats";
 import { createClient } from "@/lib/supabase/client";
+import { firstNameFromFullName } from "@/lib/onboarding";
 import { resolveDashboardDisplayName } from "@/lib/resolve-display-name";
-import { CreditPackagePicker } from "@/components/credit-package-picker";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
-import type { CreditPackageId } from "@/lib/credit-packages";
+import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
 
 function relativeTime(iso: string, locale: string): string {
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
@@ -47,8 +47,10 @@ const FLOW_I18N_KEYS = new Set([
   "thumbnail",
   "remix",
   "video_ad",
+  "loraTraining",
   "viral_score",
   "competitor",
+  "image_generator",
 ]);
 
 export default function DashboardPage() {
@@ -64,9 +66,9 @@ export default function DashboardPage() {
   const [allGensForRank, setAllGensForRank] = useState<{ type: string }[]>([]);
   const [stats, setStats] = useState<DashboardUserStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [purchaseModal, setPurchaseModal] = useState(false);
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const { open: openBuyCredits } = useBuyCredits();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingName, setOnboardingName] = useState("Creator");
   const [locale, setLocale] = useState("de");
 
   useEffect(() => {
@@ -95,6 +97,11 @@ export default function DashboardPage() {
       if (profile) {
         setCredits(profile.credits);
         setShowOnboarding(!(profile.onboarding_completed ?? false));
+        setOnboardingName(
+          firstNameFromFullName(profile.full_name) ||
+            profile.username ||
+            "Creator"
+        );
       }
 
       const { data: gens } = await supabase
@@ -148,29 +155,6 @@ export default function DashboardPage() {
     return flow.tagline;
   };
 
-  const handleCheckout = async (packageId: CreditPackageId) => {
-    setCheckoutLoading(packageId);
-    try {
-      const res = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else alert(data.error ?? "Checkout fehlgeschlagen.");
-    } catch {
-      alert("Fehler beim Checkout.");
-    }
-    setCheckoutLoading(null);
-  };
-
-  const trustChecks = [
-    t("trust_instant"),
-    t("trust_no_sub"),
-    t("trust_no_expire"),
-  ];
-
   const typeToHref = (type: string) => {
     const flow = DASHBOARD_FLOWS.find((f) => f.genTypes.includes(type));
     return flow?.href ?? "/dashboard";
@@ -181,6 +165,7 @@ export default function DashboardPage() {
       <OnboardingModal
         open={showOnboarding}
         onClose={() => setShowOnboarding(false)}
+        userName={onboardingName}
       />
 
       <DashboardHero
@@ -188,7 +173,7 @@ export default function DashboardPage() {
         credits={credits}
         topFlows={topFlows}
         noCredits={noCredits}
-        onBuyCredits={() => setPurchaseModal(true)}
+        onBuyCredits={openBuyCredits}
       />
 
       <DailySuggestions />
@@ -205,24 +190,19 @@ export default function DashboardPage() {
           <p className="text-sm text-white/70 mb-6 leading-relaxed max-w-md mx-auto">
             {t("no_credits_body")}
           </p>
-          <CreditPackagePicker
-            onCheckout={handleCheckout}
-            loadingId={checkoutLoading}
-            compact
-          />
-          <div className="flex flex-wrap justify-center gap-4 mt-6 text-xs text-[#505055]">
-            {trustChecks.map((line) => (
-              <span key={line} className="text-[#B4FF00]">
-                ✓ {line}
-              </span>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={openBuyCredits}
+            className="px-8 py-3 rounded-xl bg-[#B4FF00] text-[#060608] font-bold text-sm"
+          >
+            {t("buy_credits")}
+          </button>
         </div>
       )}
 
       <FeatureSections
         noCredits={noCredits}
-        onNeedCredits={() => setPurchaseModal(true)}
+        onNeedCredits={openBuyCredits}
         resolveTitle={resolveTitle}
         resolveTagline={resolveTagline}
       />
@@ -232,7 +212,7 @@ export default function DashboardPage() {
           {t("recent_activity")}
         </h2>
         {generations.length === 0 ? (
-          <p className="text-center text-sm text-[#505055] py-4">
+          <p className="text-center text-sm text-[rgba(255,255,255,0.65)] py-4">
             {t("no_activity")}
           </p>
         ) : (
@@ -248,7 +228,7 @@ export default function DashboardPage() {
                   <p className="flex-1 text-sm text-[#F0EFE8] leading-snug min-w-0">
                     {truncate(g.prompt || g.type, 60)}
                   </p>
-                  <span className="text-xs text-[#505055] shrink-0 whitespace-nowrap">
+                  <span className="text-xs text-[rgba(255,255,255,0.65)] shrink-0 whitespace-nowrap">
                     {relativeTime(g.created_at, locale)}
                   </span>
                 </button>
@@ -258,37 +238,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {purchaseModal && (
-        <div
-          role="dialog"
-          aria-modal
-          className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#060608]/92"
-          onClick={() => setPurchaseModal(false)}
-        >
-          <div
-            className="max-w-2xl w-full p-7 rounded-2xl bg-[#0f0f12] border border-[#B4FF00]/25"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-2xl font-bold text-[#F0EFE8] mb-2 text-center">
-              {t("purchase_modal_title")}
-            </h2>
-            <p className="text-center text-sm text-[#505055] mb-6">
-              {t("purchase_modal_body")}
-            </p>
-            <CreditPackagePicker
-              onCheckout={handleCheckout}
-              loadingId={checkoutLoading}
-            />
-            <button
-              type="button"
-              onClick={() => setPurchaseModal(false)}
-              className="block w-full mt-5 text-sm text-[#505055] underline min-h-[44px]"
-            >
-              {t("close")}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

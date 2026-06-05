@@ -48,7 +48,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
       >
         <span aria-hidden>{current.flag}</span>
         {!compact && <span>{current.name}</span>}
-        <span className="text-white/40 text-[10px]">▾</span>
+        <span className="text-white/70 text-[10px]">▾</span>
       </button>
 
       {open && (

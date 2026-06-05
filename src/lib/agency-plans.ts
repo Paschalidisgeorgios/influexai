@@ -1,48 +1,103 @@
 export type AgencyPlanId = "starter" | "pro" | "enterprise";
 
+export type BillingInterval = "monthly" | "yearly";
+
 export type AgencyPlan = {
   id: AgencyPlanId;
   name: string;
-  priceEur: number;
-  priceCents: number;
+  monthlyPriceEur: number;
+  yearlyPricePerMonthEur: number;
   maxSeats: number;
+  creditsPool: number;
   customDomain: boolean;
   hidePoweredBy: boolean;
-  stripePriceEnv: string;
+  prioritySupport: boolean;
+  apiAccess: boolean;
+  popular?: boolean;
+  stripeMonthlyEnv: string;
+  stripeYearlyEnv: string;
 };
+
+export const AGENCY_PLAN_ORDER: AgencyPlanId[] = [
+  "starter",
+  "pro",
+  "enterprise",
+];
 
 export const AGENCY_PLANS: Record<AgencyPlanId, AgencyPlan> = {
   starter: {
     id: "starter",
     name: "Starter Agency",
-    priceEur: 49,
-    priceCents: 4900,
+    monthlyPriceEur: 49,
+    yearlyPricePerMonthEur: 39,
     maxSeats: 10,
+    creditsPool: 500,
     customDomain: false,
     hidePoweredBy: false,
-    stripePriceEnv: "STRIPE_PRICE_AGENCY_STARTER",
+    prioritySupport: false,
+    apiAccess: false,
+    stripeMonthlyEnv: "STRIPE_AGENCY_STARTER_MONTHLY",
+    stripeYearlyEnv: "STRIPE_AGENCY_STARTER_YEARLY",
   },
   pro: {
     id: "pro",
     name: "Pro Agency",
-    priceEur: 149,
-    priceCents: 14900,
+    monthlyPriceEur: 149,
+    yearlyPricePerMonthEur: 119,
     maxSeats: 50,
+    creditsPool: 2000,
     customDomain: false,
-    hidePoweredBy: false,
-    stripePriceEnv: "STRIPE_PRICE_AGENCY_PRO",
+    hidePoweredBy: true,
+    prioritySupport: true,
+    apiAccess: false,
+    popular: true,
+    stripeMonthlyEnv: "STRIPE_AGENCY_PRO_MONTHLY",
+    stripeYearlyEnv: "STRIPE_AGENCY_PRO_YEARLY",
   },
   enterprise: {
     id: "enterprise",
     name: "Enterprise",
-    priceEur: 499,
-    priceCents: 49900,
+    monthlyPriceEur: 499,
+    yearlyPricePerMonthEur: 399,
     maxSeats: 9999,
+    creditsPool: 10000,
     customDomain: true,
     hidePoweredBy: true,
-    stripePriceEnv: "STRIPE_PRICE_AGENCY_ENTERPRISE",
+    prioritySupport: true,
+    apiAccess: true,
+    stripeMonthlyEnv: "STRIPE_AGENCY_ENTERPRISE_MONTHLY",
+    stripeYearlyEnv: "STRIPE_AGENCY_ENTERPRISE_YEARLY",
   },
 };
+
+/** @deprecated use monthlyPriceEur */
+export function agencyPlanLegacyPrice(plan: AgencyPlan): {
+  priceEur: number;
+  priceCents: number;
+} {
+  return {
+    priceEur: plan.monthlyPriceEur,
+    priceCents: Math.round(plan.monthlyPriceEur * 100),
+  };
+}
+
+export function getAgencyStripePriceId(
+  planId: AgencyPlanId,
+  interval: BillingInterval
+): string | undefined {
+  const plan = AGENCY_PLANS[planId];
+  const key =
+    interval === "yearly" ? plan.stripeYearlyEnv : plan.stripeMonthlyEnv;
+  return process.env[key];
+}
+
+export function planFromStripePriceId(priceId: string): AgencyPlanId | null {
+  for (const plan of Object.values(AGENCY_PLANS)) {
+    if (process.env[plan.stripeMonthlyEnv] === priceId) return plan.id;
+    if (process.env[plan.stripeYearlyEnv] === priceId) return plan.id;
+  }
+  return null;
+}
 
 export const AGENCY_CREDITS_PACKAGES = [
   {
@@ -58,12 +113,3 @@ export const AGENCY_CREDITS_PACKAGES = [
     label: "2000 Credits Pool",
   },
 ] as const;
-
-export function planFromStripePriceId(priceId: string): AgencyPlanId | null {
-  const map: Record<string, AgencyPlanId> = {};
-  for (const p of Object.values(AGENCY_PLANS)) {
-    const envId = process.env[p.stripePriceEnv];
-    if (envId) map[envId] = p.id;
-  }
-  return map[priceId] ?? null;
-}

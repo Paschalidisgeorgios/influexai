@@ -140,7 +140,7 @@ function drawWaveform(canvas: HTMLCanvasElement, audioUrl: string) {
     })
     .catch(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#505055";
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
       ctx.font = "12px sans-serif";
       ctx.fillText("Waveform nicht verfügbar", 12, canvas.height / 2);
     });
@@ -173,7 +173,7 @@ export default function VoicePage() {
     fontWeight: 700,
     fontSize: "0.875rem",
     background: tab === t ? "#B4FF00" : "transparent",
-    color: tab === t ? "#060608" : "#505055",
+    color: tab === t ? "#060608" : "rgba(255,255,255,0.65)",
   });
 
   const inputStyle = {
@@ -249,14 +249,14 @@ export default function VoicePage() {
             Stimme & Musik
           </h1>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           KI-Stimme generieren oder lizenzfreie Musik finden
         </p>
         <p
           style={{
             marginTop: 8,
             fontSize: "0.75rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             letterSpacing: "0.04em",
           }}
         >
@@ -333,7 +333,7 @@ export default function VoicePage() {
               style={{
                 fontSize: "0.78rem",
                 fontWeight: 700,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 display: "block",
                 marginBottom: 6,
                 textTransform: "uppercase",
@@ -352,7 +352,7 @@ export default function VoicePage() {
             <div
               style={{
                 fontSize: "0.72rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 marginTop: 6,
                 textAlign: "right",
               }}
@@ -366,7 +366,7 @@ export default function VoicePage() {
               style={{
                 fontSize: "0.78rem",
                 fontWeight: 700,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 display: "block",
                 marginBottom: 6,
                 textTransform: "uppercase",
@@ -393,7 +393,7 @@ export default function VoicePage() {
                 style={{
                   fontSize: "0.78rem",
                   fontWeight: 700,
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   textTransform: "uppercase",
                   letterSpacing: "0.04em",
                 }}
@@ -430,7 +430,7 @@ export default function VoicePage() {
               borderRadius: 11,
               border: "none",
               background: script.trim() && !generating ? "#B4FF00" : "#2a2a2a",
-              color: script.trim() && !generating ? "#060608" : "#505055",
+              color: script.trim() && !generating ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
@@ -443,7 +443,7 @@ export default function VoicePage() {
             style={{
               textAlign: "center",
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               margin: 0,
             }}
           >
@@ -562,7 +562,7 @@ export default function VoicePage() {
                 >
                   {mood.name}
                 </div>
-                <div style={{ fontSize: "0.78rem", color: "#505055" }}>
+                <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
                   {mood.bpm} BPM · Best for: {mood.bestFor}
                 </div>
               </button>
@@ -582,7 +582,7 @@ export default function VoicePage() {
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: 700,
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
                   marginBottom: 12,

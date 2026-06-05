@@ -1,13 +1,21 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { hashApiKey, isValidApiKeyFormat } from "@/lib/api-keys";
 import { apiError } from "@/lib/api-v1/errors";
+import {
+  canUsePublicApi,
+  getDailyRateLimitForPlan,
+  startOfUtcDay,
+  API_RATE_LIMIT_BUSINESS_PER_DAY,
+  API_RATE_LIMIT_PRO_PER_DAY,
+} from "@/lib/api-v1/rate-limits";
 
-export const API_RATE_LIMIT = 60;
-export const API_RATE_WINDOW_SEC = 60;
+export { API_RATE_LIMIT_PRO_PER_DAY, API_RATE_LIMIT_BUSINESS_PER_DAY };
 
 export type ApiAuthContext = {
   userId: string;
   apiKeyId: string;
+  plan: string;
+  rateLimitPerDay: number;
 };
 
 export async function authenticateApiRequest(
@@ -48,18 +56,40 @@ export async function authenticateApiRequest(
     };
   }
 
-  const since = new Date(Date.now() - API_RATE_WINDOW_SEC * 1000).toISOString();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", keyRow.user_id)
+    .single();
+
+  const plan = profile?.plan ?? "free";
+  if (!canUsePublicApi(plan)) {
+    return {
+      ok: false,
+      response: apiError(
+        403,
+        "Public API requires Business plan",
+        "PLAN_REQUIRED",
+        { required_plan: "business" }
+      ),
+    };
+  }
+
+  const rateLimitPerDay = getDailyRateLimitForPlan(plan);
+  const sinceDay = startOfUtcDay();
+
   const { count } = await supabase
     .from("api_logs")
     .select("id", { count: "exact", head: true })
     .eq("api_key_id", keyRow.id)
-    .gte("created_at", since);
+    .gte("created_at", sinceDay);
 
-  if ((count ?? 0) >= API_RATE_LIMIT) {
+  if ((count ?? 0) >= rateLimitPerDay) {
     return {
       ok: false,
       response: apiError(429, "Rate limit exceeded", "RATE_LIMITED", {
-        retry_after: API_RATE_WINDOW_SEC,
+        limit_per_day: rateLimitPerDay,
+        retry_after: secondsUntilUtcMidnight(),
       }),
     };
   }
@@ -80,8 +110,20 @@ export async function authenticateApiRequest(
 
   return {
     ok: true,
-    ctx: { userId: keyRow.user_id, apiKeyId: keyRow.id },
+    ctx: {
+      userId: keyRow.user_id,
+      apiKeyId: keyRow.id,
+      plan,
+      rateLimitPerDay,
+    },
   };
+}
+
+function secondsUntilUtcMidnight(): number {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setUTCHours(24, 0, 0, 0);
+  return Math.max(60, Math.ceil((midnight.getTime() - now.getTime()) / 1000));
 }
 
 export async function logApiRequest(params: {

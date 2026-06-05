@@ -47,6 +47,8 @@ export const MAIN_HOSTS = new Set([
   "influexaicreator.com",
   "www.influexaicreator.com",
   "influexai.vercel.app",
+  "influexai.com",
+  "www.influexai.com",
   "localhost",
   "127.0.0.1",
 ]);
@@ -132,9 +134,12 @@ export async function resolveTenantFromHost(
 
 export async function getTenantFromHeaders(): Promise<Tenant | null> {
   const h = await headers();
+
+  // Marketing homepage on platform domains — never apply agency tenant branding
+  if (h.get("x-platform-landing") === "1") return null;
+
   const host = h.get("x-tenant-host") ?? h.get("host") ?? "";
 
-  // Marketing site on platform domains — never apply agency tenant on "/".
   if (isMainHost(host)) return null;
 
   const slug = h.get("x-tenant-slug");

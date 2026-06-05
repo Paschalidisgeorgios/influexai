@@ -27,7 +27,7 @@ export async function CommunityPreview() {
         >
           Was unsere Creator erreichen
         </h2>
-        <p style={{ color: "#505055", fontSize: "1rem", margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "1rem", margin: 0 }}>
           Echte Ergebnisse, echte Creator
         </p>
       </div>
@@ -49,7 +49,7 @@ export async function CommunityPreview() {
               background: "#0f0f12",
               border: "1px solid rgba(255,255,255,0.07)",
               textAlign: "center",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
             }}
           >
             Die Community startet bald — sei unter den Ersten!
@@ -93,7 +93,7 @@ export async function CommunityPreview() {
                   >
                     {post.author.name}
                   </div>
-                  <div style={{ fontSize: "0.72rem", color: "#505055" }}>
+                  <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>
                     {POST_TYPE_META.win.badge} ·{" "}
                     {formatRelativeTime(post.createdAt)}
                   </div>
@@ -131,7 +131,7 @@ export async function CommunityPreview() {
 
       <div style={{ textAlign: "center" }}>
         <Link
-          href="/community"
+          href="/community#showcase"
           style={{
             display: "inline-block",
             padding: "14px 28px",

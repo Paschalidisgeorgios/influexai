@@ -74,7 +74,7 @@ function StepIndicator({
                       ? "bg-[#B4FF00] text-[#060608]"
                       : active
                         ? "border-2 border-[#B4FF00] text-[#B4FF00] bg-[#B4FF00]/10"
-                        : "border border-white/20 text-white/30 bg-white/5"
+                        : "border border-white/20 text-white/65 bg-white/5"
                   }`}
                 >
                   {complete ? "✓" : s.n}
@@ -91,7 +91,7 @@ function StepIndicator({
               </div>
               <span
                 className={`text-xs font-semibold tracking-wide truncate ${
-                  active || complete ? "text-[#B4FF00]" : "text-white/30"
+                  active || complete ? "text-[#B4FF00]" : "text-white/65"
                 }`}
               >
                 {s.label}
@@ -342,7 +342,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
           <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
             AVATAR VIDEO
           </h1>
-          <p className="text-white/50 text-sm">
+          <p className="text-white/80 text-sm">
             Lade ein Foto hoch und lass es sprechen — InfluexAI Talking Avatar ·{" "}
             {CREDIT_COST} Credits
           </p>
@@ -391,7 +391,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                 <p className="text-white font-semibold text-lg">
                   Dein Avatar wird erstellt…
                 </p>
-                <p className="text-white/40 text-sm mt-1">
+                <p className="text-white/70 text-sm mt-1">
                   Das dauert 1–3 Minuten
                 </p>
               </div>
@@ -404,7 +404,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
               <p className="text-[#B4FF00] text-sm font-medium">
                 {Math.round(progress)}%
               </p>
-              <p className="text-white/30 text-xs min-h-[1rem]">
+              <p className="text-white/65 text-xs min-h-[1rem]">
                 {POLLING_TIPS[tipIndex]}
               </p>
             </div>
@@ -427,7 +427,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
               </div>
             </div>
             {creditsLeft !== null && (
-              <p className="text-white/40 text-sm text-center">
+              <p className="text-white/70 text-sm text-center">
                 Verbleibende Credits: {creditsLeft}
               </p>
             )}
@@ -457,7 +457,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
           <div className="p-5 md:p-6 space-y-8">
             {/* STEP 1: Photo */}
             <section>
-              <h2 className="text-white/60 text-xs uppercase tracking-wider mb-3 font-bold">
+              <h2 className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
                 Schritt 1 · Foto
               </h2>
               <div
@@ -497,7 +497,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                     <p className="text-white font-semibold text-lg mb-1">
                       Gesichtsfoto hochladen
                     </p>
-                    <p className="text-white/40 text-sm">
+                    <p className="text-white/70 text-sm">
                       JPG oder PNG · Klares Gesicht · Frontalaufnahme empfohlen
                     </p>
                     <div className="mt-4 inline-block bg-[#B4FF00] text-[#060608] font-semibold px-6 py-2 rounded-xl text-sm">
@@ -526,10 +526,10 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
             {/* STEP 2: Audio */}
             <section className="space-y-4">
-              <h2 className="text-white/60 text-xs uppercase tracking-wider font-bold">
+              <h2 className="text-white/80 text-xs uppercase tracking-wider font-bold">
                 Schritt 2 · Audio
               </h2>
-              <p className="text-white/60 text-sm uppercase tracking-wider">
+              <p className="text-white/80 text-sm uppercase tracking-wider">
                 Audio-Quelle wählen
               </p>
 
@@ -551,7 +551,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                   >
                     Eigene Stimme
                   </p>
-                  <p className="text-white/40 text-xs mt-1">
+                  <p className="text-white/70 text-xs mt-1">
                     Authentischer & persönlicher
                   </p>
                 </button>
@@ -574,14 +574,14 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                   >
                     KI-Stimme
                   </p>
-                  <p className="text-white/40 text-xs mt-1">
+                  <p className="text-white/70 text-xs mt-1">
                     ElevenLabs · Professionell
                   </p>
                 </button>
               </div>
 
               <div>
-                <label className="text-white/60 text-xs uppercase tracking-wider mb-2 block font-bold">
+                <label className="text-white/80 text-xs uppercase tracking-wider mb-2 block font-bold">
                   Dein Script
                 </label>
                 <textarea
@@ -597,7 +597,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                   <span className="text-white/20 text-xs">
                     Tipp: 50–200 Wörter für beste Ergebnisse
                   </span>
-                  <span className="text-white/30 text-xs">
+                  <span className="text-white/65 text-xs">
                     {script.length}/500
                   </span>
                 </div>
@@ -605,7 +605,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
               {audioSource === "own" && (
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-xs uppercase tracking-wider mb-3 font-bold">
+                  <p className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
                     Stimme aufnehmen
                   </p>
                   {!recordedBlob ? (
@@ -623,7 +623,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                       >
                         {isRecording ? "⏹" : "🎤"}
                       </button>
-                      <p className="text-white/40 text-sm">
+                      <p className="text-white/70 text-sm">
                         {isRecording
                           ? "● Aufnahme läuft…"
                           : "Zum Aufnehmen klicken"}
@@ -655,7 +655,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                       <button
                         type="button"
                         onClick={clearRecording}
-                        className="text-white/40 text-xs hover:text-white transition-colors"
+                        className="text-white/70 text-xs hover:text-white transition-colors"
                       >
                         ↺ Neu aufnehmen
                       </button>
@@ -666,7 +666,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
               {audioSource === "elevenlabs" && (
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-xs uppercase tracking-wider mb-3 font-bold">
+                  <p className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
                     Stimme wählen
                   </p>
                   <LiveCreatorVoicePicker
@@ -679,7 +679,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
             {/* STEP 3: Generate */}
             <section className="space-y-4 pt-2 border-t border-white/[0.06]">
-              <h2 className="text-white/60 text-xs uppercase tracking-wider font-bold">
+              <h2 className="text-white/80 text-xs uppercase tracking-wider font-bold">
                 Schritt 3 · Generieren
               </h2>
               <button
@@ -689,7 +689,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                 className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
                   canGenerate
                     ? "bg-[#B4FF00] text-[#060608] hover:bg-[#c8ff33] active:scale-[0.98] shadow-lg shadow-[#B4FF00]/15"
-                    : "bg-white/10 text-white/30 cursor-not-allowed"
+                    : "bg-white/10 text-white/65 cursor-not-allowed"
                 }`}
               >
                 {isGenerating

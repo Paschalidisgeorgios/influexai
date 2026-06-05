@@ -11,7 +11,7 @@ import type { ChurnRiskLevel } from "@/lib/churn-score";
 type Filter = ChurnRiskLevel | "all";
 
 const RISK_COLORS: Record<ChurnRiskLevel, string> = {
-  low: "#505055",
+  low: "rgba(255,255,255,0.65)",
   medium: "#f59e0b",
   high: "#ff6b7a",
   critical: "#ff4757",
@@ -83,7 +83,7 @@ export function AdminChurnTab() {
 
   if (loading) {
     return (
-      <p style={{ color: "#505055", padding: 40, textAlign: "center" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", padding: 40, textAlign: "center" }}>
         Lade Churn-Daten…
       </p>
     );
@@ -154,7 +154,7 @@ export function AdminChurnTab() {
             >
               {m.value}
             </div>
-            <div style={{ fontSize: "0.72rem", color: "#505055" }}>
+            <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>
               {m.label}
             </div>
           </div>
@@ -194,7 +194,7 @@ export function AdminChurnTab() {
                 fontFamily: "inherit",
                 background:
                   filter === f.id ? "#B4FF00" : "rgba(255,255,255,0.04)",
-                color: filter === f.id ? "#060608" : "rgba(240,239,232,0.45)",
+                color: filter === f.id ? "#060608" : "rgba(255,255,255,0.75)",
               }}
             >
               {f.label}
@@ -234,7 +234,7 @@ export function AdminChurnTab() {
             borderBottom: "1px solid rgba(255,255,255,0.05)",
             fontSize: "0.65rem",
             fontWeight: 700,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
           }}
@@ -248,7 +248,7 @@ export function AdminChurnTab() {
         </div>
 
         {users.length === 0 ? (
-          <div style={{ padding: 32, textAlign: "center", color: "#505055" }}>
+          <div style={{ padding: 32, textAlign: "center", color: "rgba(255,255,255,0.65)" }}>
             Keine at-risk Nutzer in diesem Filter.
           </div>
         ) : (
@@ -270,10 +270,10 @@ export function AdminChurnTab() {
               <div style={{ color: "#F0EFE8", wordBreak: "break-all" }}>
                 {u.email}
               </div>
-              <div style={{ color: "#505055" }}>
+              <div style={{ color: "rgba(255,255,255,0.65)" }}>
                 {formatDate(u.lastActiveAt)}
               </div>
-              <div style={{ color: "#505055" }}>
+              <div style={{ color: "rgba(255,255,255,0.65)" }}>
                 {formatDate(u.lastGenerationAt)}
               </div>
               <div style={{ fontWeight: 700, color: RISK_COLORS[u.risk] }}>
@@ -324,7 +324,7 @@ export function AdminChurnTab() {
                   }}
                   style={{
                     ...actionBtnStyle,
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                     borderColor: "rgba(255,255,255,0.08)",
                   }}
                 >

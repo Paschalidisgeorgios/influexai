@@ -5,6 +5,7 @@ export type ApiErrorCode =
   | "RATE_LIMITED"
   | "INSUFFICIENT_CREDITS"
   | "INVALID_REQUEST"
+  | "PLAN_REQUIRED"
   | "SERVER_ERROR";
 
 export function apiError(

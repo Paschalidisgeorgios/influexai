@@ -3,7 +3,12 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateApiKey, hashApiKey, maskApiKey } from "@/lib/api-keys";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
-import { API_RATE_LIMIT } from "@/app/api/v1/middleware";
+import {
+  API_RATE_LIMIT_BUSINESS_PER_DAY,
+  API_RATE_LIMIT_PRO_PER_DAY,
+  canUsePublicApi,
+} from "@/lib/api-v1/rate-limits";
+import { normalizePlan } from "@/lib/subscription-plans";
 
 const MAX_KEYS = 3;
 
@@ -20,7 +25,12 @@ export type ApiKeyRow = {
 export type ApiUsageStats = {
   requestsThisMonth: number;
   creditsConsumedThisMonth: number;
-  rateLimitPerMinute: number;
+  requestsToday: number;
+  rateLimitPerDay: number;
+  rateLimitProPerDay: number;
+  rateLimitBusinessPerDay: number;
+  plan: string;
+  apiAccess: boolean;
 };
 
 export async function listApiKeys(): Promise<
@@ -31,6 +41,15 @@ export async function listApiKeys(): Promise<
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Nicht eingeloggt." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  const plan = normalizePlan(profile?.plan);
+  const apiAccess = canUsePublicApi(plan);
 
   const { data: keys } = await supabase
     .from("api_keys")
@@ -57,6 +76,20 @@ export async function listApiKeys(): Promise<
     0
   );
 
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const { data: logsToday } = await supabase
+    .from("api_logs")
+    .select("id")
+    .eq("user_id", user.id)
+    .gte("created_at", startOfDay.toISOString());
+
+  const requestsToday = logsToday?.length ?? 0;
+  const rateLimitPerDay = apiAccess
+    ? API_RATE_LIMIT_BUSINESS_PER_DAY
+    : API_RATE_LIMIT_PRO_PER_DAY;
+
   return {
     keys: (keys ?? []).map((k) => ({
       id: k.id,
@@ -70,7 +103,12 @@ export async function listApiKeys(): Promise<
     usage: {
       requestsThisMonth,
       creditsConsumedThisMonth,
-      rateLimitPerMinute: API_RATE_LIMIT,
+      requestsToday,
+      rateLimitPerDay,
+      rateLimitProPerDay: API_RATE_LIMIT_PRO_PER_DAY,
+      rateLimitBusinessPerDay: API_RATE_LIMIT_BUSINESS_PER_DAY,
+      plan,
+      apiAccess,
     },
   };
 }
@@ -85,6 +123,19 @@ export async function createApiKey(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Nicht eingeloggt." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  if (!canUsePublicApi(profile?.plan)) {
+    return {
+      success: false,
+      error: "Die Public API ist nur im Business-Plan verfügbar.",
+    };
+  }
 
   const service = createServiceSupabaseClient();
   const { count } = await service

@@ -4,6 +4,7 @@
  */
 import fs from "fs";
 import path from "path";
+import { alignToMaster } from "./i18n-utils.mjs";
 
 const messagesDir = path.join(process.cwd(), "messages");
 const locales = ["en", "el", "tr", "es", "fr", "pt", "ar"];
@@ -240,25 +241,6 @@ function flatten(obj, prefix = "") {
   return out;
 }
 
-function deepMerge(base, override) {
-  const out = { ...base };
-  for (const [key, value] of Object.entries(override)) {
-    if (
-      value &&
-      typeof value === "object" &&
-      !Array.isArray(value) &&
-      typeof out[key] === "object" &&
-      out[key] !== null &&
-      !Array.isArray(out[key])
-    ) {
-      out[key] = deepMerge(out[key], value);
-    } else {
-      out[key] = value;
-    }
-  }
-  return out;
-}
-
 const deTree = JSON.parse(fs.readFileSync(path.join(messagesDir, "de.json"), "utf-8"));
 const enTree = JSON.parse(fs.readFileSync(path.join(messagesDir, "en.json"), "utf-8"));
 
@@ -266,8 +248,8 @@ for (const locale of locales) {
   const filePath = path.join(messagesDir, `${locale}.json`);
   let messages = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
-  // Ensure full key tree: de structure → English fallback → locale overrides
-  messages = deepMerge(deTree, deepMerge(enTree, messages));
+  // de.json structure; missing values → English fallback → locale overrides
+  messages = alignToMaster(deTree, enTree, messages);
 
   const patch = PATCHES[locale] ?? {};
   let count = 0;

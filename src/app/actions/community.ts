@@ -577,11 +577,12 @@ export async function adminCreateChallenge(input: {
 
   const service = createServiceSupabaseClient();
   const { data: subscribers } = await service
-    .from("profiles")
-    .select("id")
-    .not("push_token", "is", null);
+    .from("push_notifications")
+    .select("user_id");
 
-  const userIds = (subscribers ?? []).map((p) => p.id);
+  const userIds = [
+    ...new Set((subscribers ?? []).map((p) => p.user_id as string)),
+  ];
   if (userIds.length > 0) {
     void invokePushToMany(userIds, "WEEKLY_CHALLENGE", {
       challengeTitle: input.title.trim(),

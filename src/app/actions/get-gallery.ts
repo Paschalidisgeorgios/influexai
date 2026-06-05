@@ -31,6 +31,7 @@ function isVideoGenerationType(type: string): boolean {
     t.includes("video-remix") ||
     t.includes("voice") ||
     t.includes("stimme") ||
+    t === "product_ad" ||
     (t.includes("video") && !t.includes("remix"))
   );
 }
@@ -155,14 +156,18 @@ function normalizeGeneration(row: {
     };
   }
   if (isVideoGenerationType(type)) {
+    const videoUrl =
+      type === "product_ad"
+        ? `/api/generated-video/${row.id}`
+        : media.videoUrl;
     return {
       id: row.id,
       _type: "video",
       created_at: row.created_at,
-      title: displayTitle,
+      title: prompt.slice(0, 80) || "Product Ad",
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
-      videoUrl: media.videoUrl,
+      videoUrl,
     };
   }
   return null;

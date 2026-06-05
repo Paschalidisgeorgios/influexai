@@ -179,7 +179,7 @@ export default function KiIchPage() {
         >
           📸 Mein KI-Ich
         </h1>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           Foto hochladen → Szene wählen → InfluexAI Vision setzt dich hinein
         </p>
       </div>
@@ -226,7 +226,7 @@ export default function KiIchPage() {
                         ? "rgba(180,255,0,0.08)"
                         : "rgba(255,255,255,0.04)",
                     border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
-                    color: done || active ? "#B4FF00" : "#505055",
+                    color: done || active ? "#B4FF00" : "rgba(255,255,255,0.65)",
                   }}
                 >
                   {done ? "✓ " : ""}
@@ -272,7 +272,7 @@ export default function KiIchPage() {
             Foto hierher ziehen
           </h2>
           <p
-            style={{ color: "#505055", fontSize: "0.875rem", marginBottom: 20 }}
+            style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.875rem", marginBottom: 20 }}
           >
             oder klicken um eine Datei auszuwählen
           </p>
@@ -289,7 +289,7 @@ export default function KiIchPage() {
           >
             Foto auswählen →
           </div>
-          <p style={{ color: "#505055", fontSize: "0.75rem", marginTop: 16 }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.75rem", marginTop: 16 }}>
             JPG, PNG, WEBP · Max. 10MB · Kostet 2 Credits
           </p>
           <input
@@ -345,7 +345,7 @@ export default function KiIchPage() {
               >
                 {photoFile?.name ?? "Foto"}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#505055" }}>
+              <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
                 Bereit zur Verarbeitung
               </div>
             </div>
@@ -356,7 +356,7 @@ export default function KiIchPage() {
                 borderRadius: 8,
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 cursor: "pointer",
                 fontSize: "0.78rem",
                 fontFamily: "var(--font-dm), sans-serif",
@@ -379,7 +379,7 @@ export default function KiIchPage() {
               style={{
                 fontSize: "0.75rem",
                 fontWeight: 700,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
                 marginBottom: 14,
@@ -408,7 +408,7 @@ export default function KiIchPage() {
                         : "rgba(255,255,255,0.04)",
                     border: `1px solid ${scene === p.value ? "rgba(180,255,0,0.35)" : "rgba(255,255,255,0.07)"}`,
                     color:
-                      scene === p.value ? "#B4FF00" : "rgba(240,239,232,0.5)",
+                      scene === p.value ? "#B4FF00" : "rgba(255,255,255,0.8)",
                     cursor: "pointer",
                     fontSize: "0.78rem",
                     fontWeight: 600,
@@ -426,7 +426,7 @@ export default function KiIchPage() {
               style={{
                 fontSize: "0.75rem",
                 fontWeight: 700,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
                 marginBottom: 10,
@@ -472,7 +472,7 @@ export default function KiIchPage() {
               borderRadius: 12,
               border: "none",
               background: scene.trim() ? "#B4FF00" : "#2a2a2a",
-              color: scene.trim() ? "#060608" : "#505055",
+              color: scene.trim() ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
@@ -481,7 +481,7 @@ export default function KiIchPage() {
           >
             VORSCHAU GENERIEREN → (kostenlos)
           </button>
-          <p style={{ color: "#505055", fontSize: "0.78rem", marginTop: 8 }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.78rem", marginTop: 8 }}>
             Schnelle Vorschau, danach optional hochauflösend (2 Credits).
           </p>
           {error && (
@@ -509,7 +509,7 @@ export default function KiIchPage() {
 
       {step === "preview" && previewUrl && generationId && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <p style={{ color: "#505055", fontSize: "0.85rem" }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem" }}>
             Vorschau bereit — für beste Qualität ohne Farbartefakte auf der Haut
             jetzt hochauflösend generieren.
           </p>
@@ -531,7 +531,7 @@ export default function KiIchPage() {
               borderRadius: 10,
               background: "transparent",
               border: "1px solid rgba(255,255,255,0.09)",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               cursor: "pointer",
               fontSize: "0.85rem",
             }}
@@ -554,7 +554,7 @@ export default function KiIchPage() {
               borderRadius: 8,
               background: "transparent",
               border: "1px solid rgba(255,255,255,0.09)",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               cursor: "pointer",
               fontSize: "0.82rem",
               fontFamily: "var(--font-dm), sans-serif",

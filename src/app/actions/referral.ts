@@ -216,6 +216,13 @@ export type ReferralDashboardData = {
     signedUp: number;
     purchased: number;
     creditsEarned: number;
+    activeReferrals: number;
+  };
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
   };
   history: {
     id: string;
@@ -226,57 +233,90 @@ export type ReferralDashboardData = {
   }[];
 };
 
-export async function getReferralDashboard(): Promise<
-  ReferralDashboardData | { error: string }
-> {
+const REFERRAL_PAGE_SIZE = 10;
+
+export async function getReferralDashboard(
+  page = 1
+): Promise<ReferralDashboardData | { error: string }> {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Nicht eingeloggt." };
 
+  const safePage = Math.max(1, Math.floor(page));
+  const from = (safePage - 1) * REFERRAL_PAGE_SIZE;
+  const to = from + REFERRAL_PAGE_SIZE - 1;
+
   const admin = await getAdminClient();
   const code = await ensureUniqueReferralCode(admin, user.id);
 
-  const { data: referrals } = await supabase
+  const { data: referrals, count } = await supabase
     .from("referrals")
     .select(
-      "id, status, credits_awarded_signup, credits_awarded_purchase, created_at, updated_at"
+      "id, status, credits_awarded_signup, credits_awarded_purchase, created_at, updated_at",
+      { count: "exact" }
     )
     .eq("referrer_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(10);
+    .range(from, to);
 
   const list = referrals ?? [];
-  let creditsEarned = 0;
-  let purchased = 0;
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / REFERRAL_PAGE_SIZE));
+
+  const { count: activeCount } = await supabase
+    .from("referrals")
+    .select("id", { count: "exact", head: true })
+    .eq("referrer_id", user.id)
+    .eq("status", "signed_up");
 
   const history = list.map((r, index) => {
     let earned = 0;
     if (r.credits_awarded_signup) earned += 20;
     if (r.credits_awarded_purchase) {
       earned += 20;
-      purchased += 1;
     }
-    creditsEarned += earned;
     const status = r.status === "purchased" ? "purchased" : "signed_up";
     return {
       id: r.id,
       date: r.created_at,
       status: status as "signed_up" | "purchased",
       creditsEarned: earned,
-      label: `Freund #${index + 1}`,
+      label: `Freund #${from + index + 1}`,
     };
   });
+
+  const { data: allForCredits } = await supabase
+    .from("referrals")
+    .select("credits_awarded_signup, credits_awarded_purchase, status")
+    .eq("referrer_id", user.id);
+
+  let totalCreditsEarned = 0;
+  let totalPurchased = 0;
+  for (const r of allForCredits ?? []) {
+    if (r.credits_awarded_signup) totalCreditsEarned += 20;
+    if (r.credits_awarded_purchase) {
+      totalCreditsEarned += 20;
+      totalPurchased += 1;
+    }
+  }
 
   return {
     referralCode: code,
     referralLink: `${SITE_URL}?ref=${user.id}`,
     signupLink: `${SITE_URL}/signup?ref=${code}`,
     stats: {
-      signedUp: list.length,
-      purchased,
-      creditsEarned,
+      signedUp: total,
+      purchased: totalPurchased,
+      creditsEarned: totalCreditsEarned,
+      activeReferrals: activeCount ?? 0,
+    },
+    pagination: {
+      page: safePage,
+      pageSize: REFERRAL_PAGE_SIZE,
+      total,
+      totalPages,
     },
     history,
   };

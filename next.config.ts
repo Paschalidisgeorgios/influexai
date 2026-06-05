@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n.ts");
@@ -36,4 +37,16 @@ const nextConfig: NextConfig = {
   compress: true,
 };
 
-export default withNextIntl(nextConfig);
+const configWithIntl = withNextIntl(nextConfig);
+
+export default withSentryConfig(configWithIntl, {
+  org: "influexai",
+  project: "javascript-nextjs",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  widenClientFileUpload: true,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+  disableLogger: true,
+});

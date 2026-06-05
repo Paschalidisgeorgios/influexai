@@ -69,7 +69,7 @@ function SuccessContent() {
       {balance !== null && (
         <p
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.95rem",
             marginBottom: 8,
           }}
@@ -80,7 +80,7 @@ function SuccessContent() {
           </strong>
         </p>
       )}
-      <p style={{ color: "#505055", fontSize: "0.82rem", marginBottom: 28 }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.82rem", marginBottom: 28 }}>
         Weiterleitung zum Dashboard in 5 Sekunden…
       </p>
       <Link
@@ -107,7 +107,7 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <p style={{ color: "#505055", textAlign: "center", padding: 80 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 80 }}>
           Lade…
         </p>
       }

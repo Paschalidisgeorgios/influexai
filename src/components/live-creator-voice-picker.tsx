@@ -95,7 +95,7 @@ export function LiveCreatorVoicePicker({
 
   if (loading) {
     return (
-      <p className="text-white/40 text-sm py-4 text-center">
+      <p className="text-white/70 text-sm py-4 text-center">
         Stimmen werden geladen…
       </p>
     );
@@ -120,7 +120,7 @@ export function LiveCreatorVoicePicker({
             className={`px-3 py-1 rounded-full text-xs transition-all ${
               voiceGender === g.filter
                 ? "bg-[#B4FF00] text-black font-medium"
-                : "bg-white/5 text-white/50 hover:bg-white/10"
+                : "bg-white/5 text-white/80 hover:bg-white/10"
             }`}
           >
             {g.label}
@@ -130,7 +130,7 @@ export function LiveCreatorVoicePicker({
 
       <div className="space-y-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
         {filteredVoices.length === 0 ? (
-          <p className="text-white/30 text-sm text-center py-4">
+          <p className="text-white/65 text-sm text-center py-4">
             Keine Stimmen gefunden
           </p>
         ) : (
@@ -166,7 +166,7 @@ export function LiveCreatorVoicePicker({
                   >
                     {voice.name}
                   </p>
-                  <p className="text-white/30 text-xs truncate">
+                  <p className="text-white/65 text-xs truncate">
                     {voice.accent ?? voice.category}
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export function LiveCreatorVoicePicker({
                     className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs flex-shrink-0 transition-all ${
                       playingId === voice.id
                         ? "border-[#B4FF00] bg-[#B4FF00] text-black"
-                        : "border-white/20 text-white/50 hover:border-[#B4FF00]"
+                        : "border-white/20 text-white/80 hover:border-[#B4FF00]"
                     }`}
                     aria-label="Vorschau"
                   >

@@ -18,8 +18,8 @@ test.describe("Credits Page", () => {
     expect(value).toBeGreaterThan(0);
   });
 
-  test("shows 3 pricing tiers", async ({ page }) => {
-    await expect(page.getByTestId("pricing-card")).toHaveCount(3);
+  test("shows 4 pricing tiers", async ({ page }) => {
+    await expect(page.getByTestId("pricing-card")).toHaveCount(4);
   });
 
   test("marks Creator plan as most popular", async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe("Credits Page", () => {
     const [response] = await Promise.all([
       page.waitForResponse(
         (resp) =>
-          resp.url().includes("/api/stripe/checkout") &&
+          resp.url().includes("/api/credits/checkout") &&
           resp.request().method() === "POST",
         { timeout: 15000 }
       ),

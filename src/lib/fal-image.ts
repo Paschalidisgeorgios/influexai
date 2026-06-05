@@ -177,16 +177,19 @@ export async function generateTextToImage(options: {
     ? IMAGE_GEN_DEFAULTS.final.num_inference_steps
     : IMAGE_GEN_DEFAULTS.textToImage.num_inference_steps;
 
+  const t2iInput = {
+    prompt: fullPrompt,
+    negative_prompt: buildNegativePrompt(feature),
+    image_size: imageSize,
+    num_inference_steps: steps,
+    guidance_scale: IMAGE_GEN_DEFAULTS.textToImage.guidance_scale,
+    num_images: 1,
+    output_format: "jpeg" as const,
+    safety_tolerance: "2" as const,
+  };
+
   const result = (await fal.subscribe(FAL_IMAGE_MODELS.FLUX_PRO_T2I, {
-    input: {
-      prompt: fullPrompt,
-      image_size: imageSize,
-      num_inference_steps: steps,
-      guidance_scale: IMAGE_GEN_DEFAULTS.textToImage.guidance_scale,
-      num_images: 1,
-      output_format: "jpeg",
-      safety_tolerance: "2",
-    },
+    input: t2iInput as typeof t2iInput & { prompt: string },
     logs: false,
   })) as FalImagesOutput;
 
@@ -214,17 +217,20 @@ export async function generateFluxProImage(options: {
   imageSize?: "landscape_16_9" | "portrait_16_9" | "square_hd";
 }): Promise<string> {
   const feature = options.feature ?? "generic";
+  const proInput = {
+    prompt: buildPositivePrompt(options.prompt, feature),
+    negative_prompt: options.negativePrompt ?? buildNegativePrompt(feature),
+    ...(options.imageSize
+      ? { image_size: options.imageSize }
+      : { aspect_ratio: options.aspectRatio ?? "16:9" }),
+    num_images: 1,
+    output_format: "jpeg" as const,
+    safety_tolerance: "2" as const,
+    enhance_prompt: true,
+  };
+
   const result = (await fal.subscribe(FAL_IMAGE_MODELS.FLUX_PRO, {
-    input: {
-      prompt: buildPositivePrompt(options.prompt, feature),
-      ...(options.imageSize
-        ? { image_size: options.imageSize }
-        : { aspect_ratio: options.aspectRatio ?? "16:9" }),
-      num_images: 1,
-      output_format: "jpeg",
-      safety_tolerance: "2",
-      enhance_prompt: true,
-    },
+    input: proInput as typeof proInput & { prompt: string },
     logs: false,
   })) as FalImagesOutput;
 
@@ -243,17 +249,20 @@ export async function generateFluxDevImage(options: {
   steps?: number;
 }): Promise<string> {
   const feature = options.feature ?? "generic";
+  const devInput = {
+    prompt: buildPositivePrompt(options.prompt, feature),
+    negative_prompt: buildNegativePrompt(feature),
+    image_size: options.imageSize ?? "landscape_16_9",
+    num_inference_steps:
+      options.steps ?? IMAGE_GEN_DEFAULTS.fluxDev.num_inference_steps,
+    guidance_scale: IMAGE_GEN_DEFAULTS.fluxDev.guidance_scale,
+    num_images: 1,
+    enable_safety_checker: true,
+    output_format: "jpeg" as const,
+  };
+
   const result = (await fal.subscribe(FAL_IMAGE_MODELS.FLUX_DEV, {
-    input: {
-      prompt: buildPositivePrompt(options.prompt, feature),
-      image_size: options.imageSize ?? "landscape_16_9",
-      num_inference_steps:
-        options.steps ?? IMAGE_GEN_DEFAULTS.fluxDev.num_inference_steps,
-      guidance_scale: IMAGE_GEN_DEFAULTS.fluxDev.guidance_scale,
-      num_images: 1,
-      enable_safety_checker: true,
-      output_format: "jpeg",
-    },
+    input: devInput as typeof devInput & { prompt: string },
     logs: false,
   })) as FalImagesOutput;
 

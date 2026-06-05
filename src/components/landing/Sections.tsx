@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { SpringReveal } from "@/components/ui/SpringReveal";
+import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { LANDING_TOOL_EXAMPLES } from "@/lib/landing-tool-examples";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { PricingPlans } from "@/components/pricing/PricingPlans";
 
 const TICKER_KEYS = [
   "i0",
@@ -23,33 +28,15 @@ const TICKER_KEYS = [
 
 const BRAND_FEAT_KEYS = ["feat1", "feat2", "feat3"] as const;
 const BRAND_EX_KEYS = ["ex1", "ex2", "ex3"] as const;
-const FEATURE_KEYS = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
-const FEATURE_ICONS = ["✍️", "🤖", "🎭", "▶️", "📡", "📊"] as const;
-/** Prefer .jpg when present; .png / hero fallbacks until assets are replaced */
-const FEATURE_IMAGES: Record<(typeof FEATURE_KEYS)[number], string> = {
-  f1: "/images/landing/feature-1.png",
-  f2: "/images/landing/feature-2.png",
-  f3: "/images/landing/feature-3.png",
-  f4: "/images/landing/hero-2.jpg",
-  f5: "/images/landing/hero.jpg",
-  f6: "/images/landing/hero-3.jpg",
-};
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
 const TESTIMONIAL_KEYS = ["t1", "t2", "t3"] as const;
 const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5"] as const;
-const PLAN_KEYS = ["starter", "creator", "business"] as const;
 
 const BRAND_IMAGES = [
   "https://images.unsplash.com/photo-1503602642458-232111445657?w=500&q=80&fit=crop",
   "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=500&q=80&fit=crop",
   "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=500&q=80&fit=crop",
 ];
-
-const PLAN_PRICES = {
-  starter: { monthly: 4.99, yearly: 4.99, hot: false },
-  creator: { monthly: 39, yearly: 29, hot: true },
-  business: { monthly: 99, yearly: 74, hot: false },
-} as const;
 
 export function TickerStrip() {
   const t = useTranslations("landingPage.ticker");
@@ -196,12 +183,12 @@ export function ForBrandsSection() {
                   {t(`${key}_cat`)}
                 </div>
                 <div
-                  className="font-bold text-[0.82rem] leading-[1.3]"
-                  style={{ letterSpacing: "-0.02em" }}
+                  className="feat-card-title text-[0.82rem] leading-[1.3]"
+                  style={{ letterSpacing: "0.08em" }}
                 >
                   {t(`${key}_title`)}
                 </div>
-                <div className="text-[0.68rem] text-white/45 mt-0.5">
+                <div className="feat-card-desc text-[0.68rem] mt-0.5">
                   {t(`${key}_sub`)}
                 </div>
               </div>
@@ -214,110 +201,110 @@ export function ForBrandsSection() {
 }
 
 export function FeaturesSection() {
-  const t = useTranslations("landingPage.features");
+  const t = useTranslations("landingPage.toolExamples");
 
   return (
     <section
       id="features"
       className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
-      style={{ background: "var(--bg)" }}
+      style={{ background: "#060608" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <div className="flex items-end justify-between gap-8 mb-12 flex-wrap">
+        <SpringReveal>
+          <div className="flex items-end justify-between gap-8 mb-10 flex-wrap">
           <div>
             <span className="kicker mb-2.5">{t("kicker")}</span>
-            <h2
-              style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "clamp(2.5rem,5vw,5rem)",
-                letterSpacing: "0.02em",
-                lineHeight: 0.95,
-              }}
-            >
+            <h2 className="landing-heading text-[clamp(2.5rem,5vw,5rem)]">
               {t("headline1")}
               <br />
-              {t("headline2")}
+              <span className="acid-highlight" style={{ color: "#B4FF00" }}>{t("headline2")}</span>
             </h2>
           </div>
           <p
-            className="max-w-[280px] text-right text-sm leading-[1.7]"
+            className="max-w-[300px] text-right text-sm leading-[1.7] hidden sm:block"
             style={{ color: "var(--wd)" }}
           >
             {t("sidebar")}
           </p>
         </div>
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px"
-          style={{
-            background: "var(--border)",
-            border: "1px solid var(--border)",
-            borderRadius: 16,
-            overflow: "hidden",
-          }}
-        >
-          {FEATURE_KEYS.map((key, i) => (
-            <div
-              key={key}
-              className="feat-card flex flex-col"
-              style={{ padding: 0 }}
+        </SpringReveal>
+
+        {/* Mobile / tablet: horizontal scroll */}
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-[clamp(20px,6vw,64px)] px-[clamp(20px,6vw,64px)] lg:hidden [scrollbar-width:thin] [scrollbar-color:#B4FF0033_transparent]">
+          {LANDING_TOOL_EXAMPLES.map((tool, i) => (
+            <SpringReveal key={tool.id} delay={(i % 4) * 0.1}>
+            <Link
+              href={tool.href}
+              className="glass-card group flex-shrink-0 w-[min(78vw,280px)] snap-start flex flex-col overflow-hidden transition-all duration-300 hover:brightness-110"
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0c0c0f]">
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <Image
-                  src={FEATURE_IMAGES[key]}
-                  alt={t(`${key}_title`)}
+                  src={tool.image}
+                  alt={t(`${tool.id}_title`)}
                   fill
-                  className="object-cover"
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  style={{ filter: "brightness(0.85) saturate(1.12)" }}
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  sizes="280px"
+                  loading="lazy"
                 />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(to top, rgba(6,6,8,0.85) 0%, transparent 55%)",
-                  }}
-                  aria-hidden
+                <div className="absolute inset-0 tool-card-overlay" aria-hidden />
+                <span
+                  className="absolute top-3 left-3 text-[0.65rem] font-bold tracking-[0.12em] text-white/65"
+                  style={{ fontFamily: "var(--font-dm), monospace" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <div className="p-4 flex flex-col gap-1.5 flex-1">
+                <h3 className="tool-card-name group-hover:text-[#caffb0] transition-colors">
+                  {t(`${tool.id}_title`)}
+                </h3>
+                <p className="tool-card-desc">
+                  {t(`${tool.id}_desc`)}
+                </p>
+              </div>
+            </Link>
+            </SpringReveal>
+          ))}
+        </div>
+
+        {/* Desktop: masonry columns */}
+        <div
+          className="hidden lg:block columns-3 gap-4"
+          style={{ columnFill: "balance" }}
+        >
+          {LANDING_TOOL_EXAMPLES.map((tool, i) => (
+            <SpringReveal key={tool.id} delay={(i % 4) * 0.1}>
+            <Link
+              href={tool.href}
+              className="glass-card group mb-4 break-inside-avoid flex flex-col overflow-hidden transition-all duration-300 hover:brightness-110"
+            >
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
+                <Image
+                  src={tool.image}
+                  alt={t(`${tool.id}_title`)}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  sizes="(min-width: 1024px) 33vw"
+                  loading="lazy"
                 />
+                <div className="absolute inset-0 tool-card-overlay" aria-hidden />
+                <span
+                  className="absolute top-3 left-3 text-[0.65rem] font-bold tracking-[0.12em] text-white/65"
+                  style={{ fontFamily: "var(--font-dm), monospace" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
               </div>
-              <div
-                style={{
-                  padding: "clamp(20px,3vw,28px) clamp(16px,2.5vw,26px)",
-                }}
-              >
-              <div
-                className="mb-4"
-                style={{
-                  fontFamily: "var(--font-dm), monospace",
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.12)",
-                  letterSpacing: "0.12em",
-                }}
-              >
-                {String(i + 1).padStart(2, "0")}
+              <div className="p-5 flex flex-col gap-2">
+                <h3 className="tool-card-name group-hover:text-[#caffb0] transition-colors">
+                  {t(`${tool.id}_title`)}
+                </h3>
+                <p className="tool-card-desc">
+                  {t(`${tool.id}_desc`)}
+                </p>
               </div>
-              <span className="text-[1.4rem] block mb-2">{FEATURE_ICONS[i]}</span>
-              <div
-                className="font-bold mb-2"
-                style={{ fontSize: "1.05rem", letterSpacing: "-0.02em" }}
-              >
-                {t(`${key}_title`)}
-              </div>
-              <p
-                className="text-sm leading-[1.7]"
-                style={{ color: "var(--wd)" }}
-              >
-                {t(`${key}_desc`)}
-              </p>
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {[0, 1, 2].map((apiIdx) => (
-                  <span key={apiIdx} className="tag-api">
-                    {t(`${key}_api${apiIdx}`)}
-                  </span>
-                ))}
-              </div>
-              </div>
-            </div>
+            </Link>
+            </SpringReveal>
           ))}
         </div>
       </div>
@@ -335,30 +322,19 @@ export function HowItWorksSection() {
       style={{ background: "var(--bg)" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <span className="kicker mb-2.5">{t("kicker")}</span>
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2.5rem,5vw,4rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.95,
-            marginBottom: 40,
-          }}
-        >
-          {t("headline1")}
-          <br />
-          <span style={{ color: "var(--acid)" }}>{t("headline2")}</span>
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <SpringReveal>
+          <span className="kicker mb-2.5">{t("kicker")}</span>
+          <h2 className="landing-heading text-[clamp(2.5rem,5vw,4rem)] mb-10">
+            {t("headline1")}
+            <br />
+            <span className="acid-highlight" style={{ color: "var(--acid)" }}>{t("headline2")}</span>
+          </h2>
+        </SpringReveal>
+        <div className="flex flex-col md:flex-row md:items-stretch gap-4">
           {STEP_KEYS.map((key, i) => (
-            <div
-              key={key}
-              className="rounded-[14px] p-7"
-              style={{
-                background: "var(--bg-2)",
-                border: "1px solid var(--border)",
-              }}
-            >
+            <Fragment key={key}>
+              <SpringReveal delay={i * 0.1} className="flex-1 min-w-0">
+              <div className="glass-card p-7 h-full">
               <div
                 style={{
                   fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
@@ -382,7 +358,19 @@ export function HowItWorksSection() {
               >
                 {t(`${key}_desc`)}
               </p>
-            </div>
+              </div>
+              </SpringReveal>
+              {i < STEP_KEYS.length - 1 && (
+                <>
+                  <div className="hidden md:flex items-center self-center px-1 w-10 shrink-0">
+                    <div className="laser-line" aria-hidden />
+                  </div>
+                  <div className="flex md:hidden items-center justify-center py-1">
+                    <div className="laser-line--vertical" aria-hidden />
+                  </div>
+                </>
+              )}
+            </Fragment>
           ))}
         </div>
       </div>
@@ -399,30 +387,18 @@ export function TestimonialsSection() {
       style={{ background: "var(--bg-1)" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <span className="kicker mb-2.5">{t("kicker")}</span>
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2.5rem,5vw,4rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.95,
-            marginBottom: 40,
-          }}
-        >
-          {t("headline1")}
-          <br />
-          <span style={{ color: "var(--acid)" }}>{t("headline2")}</span>
-        </h2>
+        <SpringReveal>
+          <span className="kicker mb-2.5">{t("kicker")}</span>
+          <h2 className="landing-heading text-[clamp(2.5rem,5vw,4rem)] mb-10">
+            {t("headline1")}
+            <br />
+            <span className="acid-highlight" style={{ color: "var(--acid)" }}>{t("headline2")}</span>
+          </h2>
+        </SpringReveal>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TESTIMONIAL_KEYS.map((key) => (
-            <div
-              key={key}
-              className="rounded-[14px] p-6 flex flex-col"
-              style={{
-                background: "var(--bg-2)",
-                border: "1px solid var(--border)",
-              }}
-            >
+          {TESTIMONIAL_KEYS.map((key, i) => (
+            <SpringReveal key={key} delay={i * 0.1}>
+            <div className="glass-card p-6 flex flex-col h-full">
               <div className="mb-3 text-sm" style={{ color: "var(--acid)" }}>
                 ★★★★★
               </div>
@@ -442,6 +418,7 @@ export function TestimonialsSection() {
                 </div>
               </div>
             </div>
+            </SpringReveal>
           ))}
         </div>
       </div>
@@ -522,44 +499,37 @@ export function FaqSection() {
   );
 }
 
+export function AgencyTeaserSection() {
+  const t = useTranslations("landingPage.agencyTeaser");
+
+  return (
+    <section
+      id="agency-teaser"
+      className="py-14 px-[clamp(20px,6vw,64px)]"
+      style={{ background: "var(--bg-1)" }}
+    >
+      <SpringReveal>
+        <div className="glass-card max-w-[960px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10 border-[#B4FF00]/20">
+          <div>
+            <p className="text-[#B4FF00] text-xs font-bold uppercase tracking-[0.14em] mb-2">
+              White Label
+            </p>
+            <h2 className="landing-heading text-2xl md:text-3xl mb-2 text-[#F0EFE8]">
+              {t("headline")}
+            </h2>
+            <p className="text-white/80 text-sm md:text-base">{t("subline")}</p>
+          </div>
+          <AcidMotionButton href="/agency" className="btn-acid shrink-0 justify-center">
+            {t("cta")}
+          </AcidMotionButton>
+        </div>
+      </SpringReveal>
+    </section>
+  );
+}
+
 export function PricingSection() {
   const t = useTranslations("landingPage.pricing");
-  const [yearly, setYearly] = useState(false);
-
-  const starterMissing = [t("starter_m1"), t("starter_m2")];
-  const starterFeatures = [t("starter_f1"), t("starter_f2"), t("starter_f3")];
-  const creatorFeatures = [
-    t("creator_f1"),
-    t("creator_f2"),
-    t("creator_f3"),
-    t("creator_f4"),
-    t("creator_f5"),
-  ];
-  const businessFeatures = [
-    t("business_f1"),
-    t("business_f2"),
-    t("business_f3"),
-    t("business_f4"),
-    t("business_f5"),
-  ];
-
-  const plans = PLAN_KEYS.map((key) => ({
-    key,
-    hot: PLAN_PRICES[key].hot,
-    monthly: PLAN_PRICES[key].monthly,
-    yearly: PLAN_PRICES[key].yearly,
-    name: t(`${key}_name`),
-    credits: t(`${key}_credits`),
-    desc: t(`${key}_desc`),
-    cta: t(`${key}_cta`),
-    features:
-      key === "starter"
-        ? starterFeatures
-        : key === "creator"
-          ? creatorFeatures
-          : businessFeatures,
-    missing: key === "starter" ? starterMissing : [],
-  }));
 
   return (
     <section
@@ -567,185 +537,14 @@ export function PricingSection() {
       className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
       style={{ background: "var(--bg-1)" }}
     >
-      <div className="max-w-[960px] mx-auto text-center">
-        <span className="kicker mb-2.5">{t("kicker")}</span>
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2.5rem,5vw,4.5rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.95,
-          }}
-        >
-          {t("headline")}
-        </h2>
-        <div
-          className="inline-flex p-1 rounded-[10px] mt-5 mb-9 mx-auto"
-          style={{
-            background: "var(--bg-2)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          {(
-            [
-              { id: "monthly", label: t("monthly"), isY: false },
-              { id: "yearly", label: t("yearly"), isY: true },
-            ] as const
-          ).map(({ label, isY }) => {
-            const active = yearly === isY;
-            return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => setYearly(isY)}
-                className="px-5 py-2 rounded-[7px] text-sm font-semibold cursor-pointer border-none transition-all duration-200"
-                style={{
-                  background: active ? "var(--white)" : "transparent",
-                  color: active ? "var(--bg)" : "var(--grey)",
-                  fontFamily: "var(--font-dm), sans-serif",
-                }}
-              >
-                {label}
-                {isY && (
-                  <span
-                    className="ml-1.5 text-[0.65rem] font-bold px-1.5 py-0.5 rounded"
-                    style={{
-                      background: "var(--acid-d)",
-                      color: "var(--acid)",
-                    }}
-                  >
-                    {t("yearly_discount")}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
-          {plans.map((plan) => (
-            <div
-              key={plan.key}
-              className={`flex flex-col rounded-[18px] p-[clamp(20px,3vw,28px)] transition-all duration-200 hover:-translate-y-0.5 relative ${plan.hot ? "pc-hot" : ""}`}
-              style={{
-                background: "var(--bg-2)",
-                border: "1px solid var(--border)",
-                marginTop: plan.hot ? "14px" : 0,
-              }}
-            >
-              {plan.hot && (
-                <div
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[#060608] font-bold text-[0.7rem] px-4 py-1 rounded-full whitespace-nowrap"
-                  style={{
-                    background: "var(--acid)",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  {t("popular")}
-                </div>
-              )}
-              <div
-                className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-2.5"
-                style={{ color: "var(--grey)" }}
-              >
-                {plan.name}
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                  fontSize: "3rem",
-                  letterSpacing: "0.02em",
-                  lineHeight: 1,
-                }}
-              >
-                <sup className="text-[1.2rem] align-top mt-[0.3rem]">€</sup>
-                {yearly ? plan.yearly : plan.monthly}
-                {plan.monthly > 0 && (
-                  <span
-                    className="text-[0.85rem] ml-0.5"
-                    style={{
-                      color: "var(--grey)",
-                      fontFamily: "var(--font-dm), sans-serif",
-                      fontWeight: 400,
-                    }}
-                  >
-                    {t("per_month")}
-                  </span>
-                )}
-              </div>
-              <div
-                className="text-[0.75rem] mt-1.5 mb-1"
-                style={{ color: "var(--wd)" }}
-              >
-                {plan.credits}
-              </div>
-              <div
-                className="text-[0.82rem] mb-4 leading-[1.55]"
-                style={{ color: "var(--grey)" }}
-              >
-                {plan.desc}
-              </div>
-              <a
-                href="/auth/sign-up"
-                className="block text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer"
-                style={
-                  plan.hot
-                    ? {
-                        background: "var(--acid)",
-                        color: "#060608",
-                        fontFamily: "var(--font-dm), sans-serif",
-                      }
-                    : {
-                        background: "transparent",
-                        border: "1px solid rgba(255,255,255,0.10)",
-                        color: "rgba(240,239,232,0.6)",
-                        fontFamily: "var(--font-dm), sans-serif",
-                      }
-                }
-              >
-                {plan.cta}
-              </a>
-              <ul className="list-none flex flex-col gap-2.5">
-                {plan.features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2.5 text-[0.84rem]"
-                    style={{ color: "var(--wd)" }}
-                  >
-                    <span
-                      className="font-bold flex-shrink-0"
-                      style={{ color: "var(--acid)" }}
-                    >
-                      ✓
-                    </span>
-                    {f}
-                  </li>
-                ))}
-                {plan.missing.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2.5 text-[0.84rem]"
-                    style={{ color: "var(--grey)" }}
-                  >
-                    <span
-                      className="flex-shrink-0"
-                      style={{ color: "var(--grey)" }}
-                    >
-                      —
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <p className="mt-5 text-[0.83rem]" style={{ color: "var(--grey)" }}>
-          {t("footnote")}{" "}
-          <a href="#" style={{ color: "var(--acid)", textDecoration: "none" }}>
-            {t("extra_credits")}
-          </a>{" "}
-          {t("extra_credits_suffix")}
-        </p>
+      <div className="max-w-[1200px] mx-auto text-center">
+        <SpringReveal>
+          <span className="kicker mb-2.5">{t("kicker")}</span>
+          <h2 className="landing-heading text-[clamp(2.5rem,5vw,4.5rem)]">
+            {t("headline")}
+          </h2>
+        </SpringReveal>
+        <PricingPlans className="max-w-[1200px] mx-auto" />
       </div>
     </section>
   );
@@ -798,9 +597,9 @@ export function CtaSection() {
           {t("sub2")}
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center">
-          <a href="/auth/sign-up" className="btn-acid justify-center">
+          <AcidMotionButton href="/auth/sign-up" className="btn-acid justify-center">
             {t("primary")}
-          </a>
+          </AcidMotionButton>
           <a href="#brands" className="btn-ghost justify-center">
             {t("secondary")}
           </a>
@@ -828,6 +627,7 @@ const FOOTER_COLS = [
     links: [
       "company_about",
       "company_blog",
+      "company_guides",
       "company_careers",
       "company_press",
     ],
@@ -842,6 +642,14 @@ const FOOTER_COLS = [
     ],
   },
 ] as const;
+
+const FOOTER_LINK_HREF: Partial<Record<(typeof FOOTER_COLS)[number]["links"][number], string>> = {
+  company_blog: "/blog",
+  company_guides: "/guides",
+  legal_imprint: "/impressum",
+  legal_privacy: "/datenschutz",
+  legal_terms: "/agb",
+};
 
 export function LandingFooter() {
   const t = useTranslations("footer");
@@ -891,7 +699,7 @@ export function LandingFooter() {
               {links.map((link) => (
                 <a
                   key={link}
-                  href="#"
+                  href={FOOTER_LINK_HREF[link] ?? "#"}
                   className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--white)]"
                   style={{ color: "var(--grey)" }}
                 >
@@ -909,7 +717,7 @@ export function LandingFooter() {
             {t("partner")}
           </h5>
           <a
-            href="/dashboard/white-label"
+            href="/agency"
             className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--accent)]"
             style={{ color: "var(--grey)" }}
           >

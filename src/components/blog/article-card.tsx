@@ -22,10 +22,10 @@ export function ArticleCard({ post }: { post: BlogPost }) {
       <h2 className="mb-2 line-clamp-2 text-lg font-semibold text-white group-hover:text-[#B4FF00]">
         <Link href={`/blog/${post.slug}`}>{post.title}</Link>
       </h2>
-      <p className="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-white/50">
+      <p className="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-white/80">
         {post.excerpt}
       </p>
-      <div className="flex items-center justify-between text-xs text-white/40">
+      <div className="flex items-center justify-between text-xs text-white/70">
         <span>
           {post.reading_time_minutes} Min · {formatDate(post.published_at)}
         </span>

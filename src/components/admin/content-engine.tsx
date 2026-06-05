@@ -58,7 +58,7 @@ export function ContentEngine() {
 
   const [keyword, setKeyword] = useState("");
   const [secondary, setSecondary] = useState("");
-  const [category, setCategory] = useState("Script Writing");
+  const [category, setCategory] = useState("Tutorial");
   const [language, setLanguage] = useState("de");
   const [wordCount, setWordCount] = useState(1200);
   const [generating, setGenerating] = useState(false);
@@ -223,7 +223,7 @@ export function ContentEngine() {
 
   if (loading) {
     return (
-      <p className="text-white/40 py-20 text-center">Lade Content Engine…</p>
+      <p className="text-white/70 py-20 text-center">Lade Content Engine…</p>
     );
   }
 
@@ -233,7 +233,7 @@ export function ContentEngine() {
         <h1 className="text-2xl font-semibold text-white">
           SEO Content Engine
         </h1>
-        <p className="mt-1 text-sm text-white/50">
+        <p className="mt-1 text-sm text-white/80">
           Blog-Artikel mit KI generieren, prüfen und veröffentlichen.
         </p>
         <Link
@@ -252,7 +252,7 @@ export function ContentEngine() {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs text-white/50">
+            <label className="mb-1 block text-xs text-white/80">
               Target Keyword
             </label>
             <input
@@ -263,7 +263,7 @@ export function ContentEngine() {
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs text-white/50">
+            <label className="mb-1 block text-xs text-white/80">
               Secondary Keywords (kommagetrennt)
             </label>
             <input
@@ -274,7 +274,7 @@ export function ContentEngine() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">
+            <label className="mb-1 block text-xs text-white/80">
               Kategorie
             </label>
             <select
@@ -290,7 +290,7 @@ export function ContentEngine() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">Sprache</label>
+            <label className="mb-1 block text-xs text-white/80">Sprache</label>
             <select
               className={inputClass}
               value={language}
@@ -304,7 +304,7 @@ export function ContentEngine() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">
+            <label className="mb-1 block text-xs text-white/80">
               Ziel-Wortanzahl
             </label>
             <select
@@ -327,7 +327,7 @@ export function ContentEngine() {
               <li
                 key={label}
                 className={`text-sm ${
-                  i <= genStep ? "text-[#B4FF00]" : "text-white/30"
+                  i <= genStep ? "text-[#B4FF00]" : "text-white/65"
                 }`}
               >
                 {i < genStep ? "✓" : i === genStep ? "…" : "○"} {label}
@@ -371,7 +371,7 @@ export function ContentEngine() {
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="text-white/40 border-b border-white/10">
+                <tr className="text-white/70 border-b border-white/10">
                   <th className="py-2 pr-4">Keyword</th>
                   <th className="py-2 pr-4">Intent</th>
                   <th className="py-2 pr-4">Difficulty</th>
@@ -430,7 +430,7 @@ export function ContentEngine() {
         <h2 className="mb-4 text-lg font-medium text-white">
           Content Kalender
         </h2>
-        <div className="mb-4 flex gap-4 text-xs text-white/50">
+        <div className="mb-4 flex gap-4 text-xs text-white/80">
           <span>
             <span className="inline-block h-2 w-2 rounded-full bg-gray-500 mr-1" />
             Entwurf
@@ -453,7 +453,7 @@ export function ContentEngine() {
                 key={key}
                 className="min-h-[88px] rounded-lg border border-white/10 bg-white/[0.02] p-2"
               >
-                <p className="text-[10px] text-white/40">
+                <p className="text-[10px] text-white/70">
                   {day.toLocaleDateString("de-DE", {
                     day: "numeric",
                     month: "short",
@@ -483,7 +483,7 @@ export function ContentEngine() {
       {/* Draft list + editor */}
       <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
         <aside className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-4">
-          <h3 className="mb-3 text-sm font-medium text-white/60">Artikel</h3>
+          <h3 className="mb-3 text-sm font-medium text-white/80">Artikel</h3>
           <ul className="max-h-[480px] space-y-1 overflow-y-auto">
             {posts.map((p) => (
               <li key={p.id}>
@@ -493,7 +493,7 @@ export function ContentEngine() {
                   className={`w-full rounded-lg px-2 py-2 text-left text-xs transition-colors ${
                     selectedId === p.id
                       ? "bg-[#B4FF00]/15 text-[#B4FF00]"
-                      : "text-white/60 hover:bg-white/5"
+                      : "text-white/80 hover:bg-white/5"
                   }`}
                 >
                   <span
@@ -502,7 +502,7 @@ export function ContentEngine() {
                   />
                   {p.title || p.slug}
                   {!p.published && (
-                    <span className="ml-1 text-white/30">(Entwurf)</span>
+                    <span className="ml-1 text-white/65">(Entwurf)</span>
                   )}
                 </button>
               </li>
@@ -571,7 +571,7 @@ export function ContentEngine() {
 
             <div className="grid gap-4">
               <div>
-                <label className="mb-1 block text-xs text-white/50">
+                <label className="mb-1 block text-xs text-white/80">
                   Titel
                 </label>
                 <input
@@ -581,7 +581,7 @@ export function ContentEngine() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-white/50">
+                <label className="mb-1 block text-xs text-white/80">
                   Meta Description ({editMeta.length}/160)
                 </label>
                 <input
@@ -591,7 +591,7 @@ export function ContentEngine() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-white/50">
+                <label className="mb-1 block text-xs text-white/80">
                   Inhalt (Markdown)
                 </label>
                 <textarea
@@ -623,7 +623,7 @@ export function ContentEngine() {
             )}
           </section>
         ) : (
-          <p className="text-white/40 py-12 text-center rounded-2xl border border-dashed border-white/10">
+          <p className="text-white/70 py-12 text-center rounded-2xl border border-dashed border-white/10">
             Wähle einen Artikel oder generiere einen neuen.
           </p>
         )}

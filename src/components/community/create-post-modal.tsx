@@ -127,7 +127,7 @@ export function CreatePostModal({
                 textAlign: "center",
                 fontSize: "0.82rem",
                 fontWeight: type === t ? 700 : 500,
-                color: type === t ? "#B4FF00" : "#505055",
+                color: type === t ? "#B4FF00" : "rgba(255,255,255,0.65)",
               }}
             >
               <input
@@ -163,7 +163,7 @@ export function CreatePostModal({
         <div
           style={{
             fontSize: "0.72rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             marginBottom: 14,
             textAlign: "right",
           }}
@@ -242,7 +242,7 @@ export function CreatePostModal({
               borderRadius: 10,
               border: "1px solid rgba(255,255,255,0.1)",
               background: "transparent",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               cursor: "pointer",
               fontFamily: "inherit",
             }}

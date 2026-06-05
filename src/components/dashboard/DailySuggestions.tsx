@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -22,8 +22,7 @@ function formatTodayDate(locale: string): string {
 
 export function DailySuggestions() {
   const t = useTranslations("dashboard.growth_agent");
-  const locale =
-    typeof navigator !== "undefined" ? navigator.language.slice(0, 2) : "de";
+  const locale = useLocale();
   const [loading, setLoading] = useState(true);
   const [ideas, setIdeas] = useState<DailyVideoIdea[]>([]);
   const [niche, setNiche] = useState<string | null>(null);
@@ -72,7 +71,7 @@ export function DailySuggestions() {
           border: "1px solid rgba(255,255,255,0.07)",
         }}
       >
-        <p style={{ color: "#505055", margin: 0, fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", margin: 0, fontSize: "0.9rem" }}>
           {t("loading")}
         </p>
       </div>
@@ -105,7 +104,7 @@ export function DailySuggestions() {
             >
               {t("title")}
             </h2>
-            <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "#505055" }}>
+            <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
               {formatTodayDate(locale)}
               {niche ? ` · ${niche}` : ""}
             </p>
@@ -187,7 +186,7 @@ export function DailySuggestions() {
                 style={{
                   margin: 0,
                   fontSize: "0.88rem",
-                  color: "rgba(240,239,232,0.75)",
+                  color: "rgba(255,255,255,0.85)",
                   lineHeight: 1.5,
                 }}
               >
@@ -199,7 +198,7 @@ export function DailySuggestions() {
                   style={{
                     margin: 0,
                     fontSize: "0.78rem",
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                     fontStyle: "italic",
                     lineHeight: 1.45,
                   }}

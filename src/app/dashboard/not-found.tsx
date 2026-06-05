@@ -6,7 +6,7 @@ export default function DashboardNotFound() {
       <h1 className="text-2xl font-bold text-[#F0EFE8]">
         Seite nicht gefunden
       </h1>
-      <p className="text-white/50 text-sm">
+      <p className="text-white/80 text-sm">
         Dieses Dashboard-Modul existiert nicht.
       </p>
       <Link

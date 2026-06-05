@@ -10,7 +10,7 @@ function ScriptVisual() {
         <span className="text-xs bg-[#B4FF00]/20 text-[#B4FF00] px-2 py-1 rounded-full font-medium">
           HOOK
         </span>
-        <span className="text-white/40 text-xs">Morning Routine Script</span>
+        <span className="text-white/70 text-xs">Morning Routine Script</span>
       </div>
       <div className="space-y-2 mb-4">
         <div className="h-2 bg-[#B4FF00]/40 rounded-full w-3/4" />
@@ -18,7 +18,7 @@ function ScriptVisual() {
         <div className="h-2 bg-white/10 rounded-full w-5/6" />
       </div>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs bg-white/10 text-white/50 px-2 py-1 rounded-full">
+        <span className="text-xs bg-white/10 text-white/80 px-2 py-1 rounded-full">
           MAIN
         </span>
       </div>
@@ -96,18 +96,18 @@ function OutlierVisual() {
           <p className="text-white font-medium text-sm">
             &quot;5 Fehler die 99% machen&quot;
           </p>
-          <p className="text-white/40 text-xs mt-1">Fitness · Micro Channel</p>
+          <p className="text-white/70 text-xs mt-1">Fitness · Micro Channel</p>
         </div>
         <div className="text-right">
           <p className="text-3xl font-bold text-[#B4FF00]">9.2</p>
-          <p className="text-white/40 text-xs">/ 10</p>
+          <p className="text-white/70 text-xs">/ 10</p>
         </div>
       </div>
       <div className="space-y-2 mt-4">
         {tags.map((tag) => (
           <div key={tag} className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-[#B4FF00] flex-shrink-0" />
-            <span className="text-white/60 text-xs">{tag}</span>
+            <span className="text-white/80 text-xs">{tag}</span>
           </div>
         ))}
       </div>
@@ -139,7 +139,7 @@ function ThumbnailVisual() {
         <div className="h-4 w-6 rounded bg-[#B4FF00]" />
         <div className="h-4 w-6 rounded bg-blue-500" />
         <div className="h-4 w-6 rounded bg-white" />
-        <span className="text-white/40 text-xs ml-1">Farbpalette</span>
+        <span className="text-white/70 text-xs ml-1">Farbpalette</span>
       </div>
     </div>
   );
@@ -184,9 +184,9 @@ function CommunityVisual() {
               <span className="text-white text-xs font-medium">
                 {item.name}
               </span>
-              <span className="text-white/30 text-xs">{item.niche}</span>
+              <span className="text-white/65 text-xs">{item.niche}</span>
             </div>
-            <p className="text-white/60 text-xs mt-0.5">{item.text}</p>
+            <p className="text-white/80 text-xs mt-0.5">{item.text}</p>
           </div>
           <span className="text-[#B4FF00] text-xs font-medium flex-shrink-0">
             {item.metric}
@@ -250,13 +250,13 @@ export function FeatureSlideshow() {
           fading ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
         }`}
       >
-        <p className="text-white/40 text-sm mb-2 uppercase tracking-widest">
+        <p className="text-white/70 text-sm mb-2 uppercase tracking-widest">
           {slide.badge}
         </p>
         <h2 className="text-white text-3xl font-semibold mb-3 leading-tight">
           {slide.heading}
         </h2>
-        <p className="text-white/50 text-base mb-8 leading-relaxed max-w-md">
+        <p className="text-white/80 text-base mb-8 leading-relaxed max-w-md">
           {slide.description}
         </p>
         <Visual />

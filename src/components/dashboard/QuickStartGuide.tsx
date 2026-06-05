@@ -37,7 +37,7 @@ export function QuickStartGuide({ show }: Props) {
   return (
     <section className="mb-6 rounded-2xl border border-[#B4FF00]/25 bg-[#B4FF00]/[0.06] p-5">
       <h2 className="text-lg font-bold text-[#F0EFE8] mb-1">{t("quickstart_title")}</h2>
-      <p className="text-sm text-white/55 mb-4">{t("quickstart_subtitle")}</p>
+      <p className="text-sm text-white/80 mb-4">{t("quickstart_subtitle")}</p>
       <ol className="grid gap-3 md:grid-cols-3">
         {STEPS.map((step, i) => {
           const Icon = step.icon;
@@ -55,7 +55,7 @@ export function QuickStartGuide({ show }: Props) {
                     <Icon size={16} className="text-[#B4FF00]" />
                     {t(step.titleKey)}
                   </span>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/80 leading-relaxed">
                     {t(step.descKey)}
                   </p>
                 </div>

@@ -63,7 +63,7 @@ export default async function GuidePage({ params }: Props) {
     <>
       <GuideSchema guide={guide} />
       <div className="mx-auto max-w-7xl px-6 py-10">
-        <nav className="mb-6 text-sm text-white/40">
+        <nav className="mb-6 text-sm text-white/70">
           <Link href="/guides" className="hover:text-[#B4FF00]">
             Guides
           </Link>
@@ -78,8 +78,8 @@ export default async function GuidePage({ params }: Props) {
           <h1 className="mt-4 text-3xl font-semibold leading-tight md:text-4xl lg:text-5xl">
             {guide.title}
           </h1>
-          <p className="mt-4 text-lg text-white/55">{guide.excerpt}</p>
-          <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/40">
+          <p className="mt-4 text-lg text-white/80">{guide.excerpt}</p>
+          <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/70">
             <span>
               Zuletzt aktualisiert:{" "}
               <strong className="text-white/70">

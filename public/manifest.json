@@ -1,9 +1,31 @@
 {
   "name": "InfluexAI",
   "short_name": "InfluexAI",
-  "description": "Das KI Creator Studio für virale YouTube Shorts",
-  "start_url": "/dashboard",
+  "description": "Dein KI-Stratege",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#060608",
-  "theme_color": "#B4FF00"
+  "theme_color": "#B4FF00",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }

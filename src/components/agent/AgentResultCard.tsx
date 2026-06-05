@@ -76,7 +76,7 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
           type="button"
           onClick={onSave}
           disabled={saving || saved}
-          className="w-full min-h-[44px] rounded-xl bg-[#B4FF00] text-[#060608] font-bold text-sm disabled:opacity-50"
+          className="w-full min-h-[44px] rounded-xl bg-[#B4FF00] text-[#060608] font-bold text-sm disabled:opacity-80"
         >
           {saved ? "Gespeichert ✓" : saving ? "Speichern…" : "Alles in einem Klick speichern"}
         </button>

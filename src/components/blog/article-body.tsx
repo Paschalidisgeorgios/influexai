@@ -2,6 +2,7 @@ import Link from "next/link";
 import { categoryCtaLabel, categoryToFeaturePath } from "@/lib/blog/categories";
 import { autoInternalLinks } from "@/lib/auto-internal-links";
 import { ContentEmailCaptureInline } from "@/components/content-email-capture";
+import { ArticleMdx } from "@/components/blog/article-mdx";
 import { markdownToHtml } from "@/lib/blog/markdown";
 import { blogCategoryToFeature, findNicheInText } from "@/lib/programmatic-seo";
 
@@ -14,7 +15,7 @@ function MidArticleCta({ category }: { category: string }) {
       <p className="mb-3 text-lg font-semibold text-white">
         Probier es selbst aus →
       </p>
-      <p className="mb-4 text-sm text-white/60">
+      <p className="mb-4 text-sm text-white/80">
         Nutze {label} in InfluexAI und setze die Tipps aus diesem Artikel direkt
         um.
       </p>
@@ -49,6 +50,19 @@ export async function ArticleBody({
     defaultNiche: nicheFromKeyword ?? findNicheInText(markdown) ?? "lifestyle",
     defaultFeature: blogCategoryToFeature(category) ?? "script-generator",
   });
+
+  const useMdx = !linkedMarkdown.includes("<script");
+
+  if (useMdx) {
+    return (
+      <div className="blog-prose max-w-none">
+        <ArticleMdx source={linkedMarkdown} />
+        <MidArticleCta category={category} />
+        <ContentEmailCaptureInline source={`blog-${category}`} />
+      </div>
+    );
+  }
+
   const rawHtml = await markdownToHtml(linkedMarkdown);
   const withMarkers = injectMidBlocks(rawHtml);
   const chunks = withMarkers.split("<!--MID_CTA-->");

@@ -62,7 +62,7 @@ export function ToolsIndexClient() {
       )}
 
       {filteredNiches && filteredNiches.length === 0 && query && (
-        <p className="mb-8 text-sm text-white/40">Keine Nische gefunden.</p>
+        <p className="mb-8 text-sm text-white/70">Keine Nische gefunden.</p>
       )}
 
       <section className="mb-14 overflow-x-auto">
@@ -72,13 +72,13 @@ export function ToolsIndexClient() {
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr>
-              <th className="border border-white/10 bg-white/5 p-3 text-left text-white/50">
+              <th className="border border-white/10 bg-white/5 p-3 text-left text-white/80">
                 Tool
               </th>
               {TOP_NICHES.map((niche) => (
                 <th
                   key={niche}
-                  className="border border-white/10 bg-white/5 p-2 text-center text-xs font-normal text-white/60"
+                  className="border border-white/10 bg-white/5 p-2 text-center text-xs font-normal text-white/80"
                 >
                   {NICHES[niche].emoji}
                   <br />
@@ -117,7 +117,7 @@ export function ToolsIndexClient() {
         <h2 className="mb-4 text-lg font-medium text-white">
           Deine Nische nicht dabei?
         </h2>
-        <p className="mb-4 text-sm text-white/50">
+        <p className="mb-4 text-sm text-white/80">
           Wähle aus {allNicheKeys.length} Nischen und {featureKeys.length} Tools
           — über {allNicheKeys.length * featureKeys.length} Landingpages.
         </p>
@@ -126,7 +126,7 @@ export function ToolsIndexClient() {
             <Link
               key={niche}
               href={toolPagePath("script-generator", niche)}
-              className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition-colors hover:border-[#B4FF00]/30 hover:text-[#B4FF00]"
+              className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/80 transition-colors hover:border-[#B4FF00]/30 hover:text-[#B4FF00]"
             >
               {NICHES[niche].emoji} {NICHES[niche].nameDe}
             </Link>

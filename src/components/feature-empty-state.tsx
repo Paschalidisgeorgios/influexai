@@ -24,7 +24,7 @@ export function FeatureEmptyState({
         <Icon size={32} className="text-[#B4FF00]" strokeWidth={1.75} />
       </span>
       <h3 className="text-lg font-bold text-[#F0EFE8] mb-2">{title}</h3>
-      <p className="text-sm text-white/55 max-w-md mb-6 leading-relaxed">{description}</p>
+      <p className="text-sm text-white/80 max-w-md mb-6 leading-relaxed">{description}</p>
       <Link
         href={ctaHref}
         className="inline-flex items-center justify-center min-h-[44px] min-w-[200px] px-6 py-3 rounded-xl bg-[#B4FF00] text-[#060608] font-bold text-sm"

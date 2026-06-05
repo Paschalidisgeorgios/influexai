@@ -53,7 +53,7 @@ export function GuideTocSidebar({ entries }: { entries: TocEntry[] }) {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/40">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/70">
           Inhalt
         </p>
         <ul className="max-h-[50vh] space-y-2 overflow-y-auto text-sm">
@@ -64,7 +64,7 @@ export function GuideTocSidebar({ entries }: { entries: TocEntry[] }) {
                 className={`block transition-colors ${
                   activeId === e.id
                     ? "text-[#B4FF00]"
-                    : "text-white/50 hover:text-white"
+                    : "text-white/80 hover:text-white"
                 }`}
               >
                 {e.title}
@@ -75,7 +75,7 @@ export function GuideTocSidebar({ entries }: { entries: TocEntry[] }) {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="mt-4 w-full rounded-lg border border-white/10 py-2 text-xs text-white/50 hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
+          className="mt-4 w-full rounded-lg border border-white/10 py-2 text-xs text-white/80 hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
         >
           Zurück nach oben
         </button>

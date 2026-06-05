@@ -40,6 +40,7 @@ export function resolveGenerationMediaUrls(
   if (
     t.includes("live-creator") ||
     t.includes("video") ||
+    t === "product_ad" ||
     VIDEO_URL_HINT.test(trimmed) ||
     lower.includes("akool")
   ) {

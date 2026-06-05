@@ -40,7 +40,7 @@ function EmailForm({
       >
         {title}
       </p>
-      <p className="mt-1 text-xs text-white/50">{subtitle}</p>
+      <p className="mt-1 text-xs text-white/80">{subtitle}</p>
       <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row">
         <input
           type="email"
@@ -54,7 +54,7 @@ function EmailForm({
         <button
           type="submit"
           disabled={status === "loading" || status === "done"}
-          className="rounded-xl bg-[#B4FF00] px-5 py-2.5 text-sm font-semibold text-black hover:bg-[#c8ff33] disabled:opacity-50"
+          className="rounded-xl bg-[#B4FF00] px-5 py-2.5 text-sm font-semibold text-black hover:bg-[#c8ff33] disabled:opacity-80"
         >
           {status === "loading" ? "…" : "Abonnieren"}
         </button>
@@ -120,7 +120,7 @@ export function ContentEmailExitIntent({ source }: { source: string }) {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="absolute right-3 top-3 text-white/40 hover:text-white"
+          className="absolute right-3 top-3 text-white/70 hover:text-white"
           aria-label="Schließen"
         >
           ✕

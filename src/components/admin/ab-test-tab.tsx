@@ -55,7 +55,7 @@ export function AdminAbTestTab() {
 
   if (loading) {
     return (
-      <p style={{ color: "#505055", padding: 40, textAlign: "center" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", padding: 40, textAlign: "center" }}>
         Lade A/B-Daten…
       </p>
     );
@@ -154,7 +154,7 @@ export function AdminAbTestTab() {
           gap: 12,
         }}
       >
-        <p style={{ color: "#505055", fontSize: "0.85rem", margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem", margin: 0 }}>
           Landing Page: Variante A (Control) vs. B (Headline + Social Proof)
         </p>
         <button
@@ -200,7 +200,7 @@ export function AdminAbTestTab() {
                   style={{
                     textAlign: "left",
                     padding: "12px 16px",
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                     fontWeight: 700,
                     fontSize: "0.68rem",
                     textTransform: "uppercase",
@@ -229,7 +229,7 @@ export function AdminAbTestTab() {
                 </td>
                 <td style={cellStyle(row.winner === "a")}>{row.aVal}</td>
                 <td style={cellStyle(row.winner === "b")}>{row.bVal}</td>
-                <td style={{ padding: "14px 16px", color: "#505055" }}>
+                <td style={{ padding: "14px 16px", color: "rgba(255,255,255,0.65)" }}>
                   {row.winner && row.showCheck ? (
                     <span style={{ color: "#B4FF00" }}>
                       ✓ {row.winner.toUpperCase()}
@@ -244,7 +244,7 @@ export function AdminAbTestTab() {
         </table>
       </div>
 
-      <p style={{ marginTop: 16, fontSize: "0.75rem", color: "#505055" }}>
+      <p style={{ marginTop: 16, fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
         ✓ Winner bei Click Rate & Conversion nur wenn Differenz &gt; 5%.
       </p>
     </div>

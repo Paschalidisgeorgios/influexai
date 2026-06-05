@@ -101,7 +101,7 @@ export function VoiceRecorder({
       >
         <p
           style={{
-            color: "rgba(240,239,232,0.5)",
+            color: "rgba(255,255,255,0.8)",
             fontSize: "0.7rem",
             marginBottom: 8,
             textTransform: "uppercase",
@@ -123,7 +123,7 @@ export function VoiceRecorder({
           style={{
             textAlign: "right",
             fontSize: "0.72rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             marginTop: 6,
           }}
         >
@@ -187,7 +187,7 @@ export function VoiceRecorder({
           </button>
         )}
 
-        <p style={{ color: "rgba(240,239,232,0.5)", fontSize: "0.875rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.875rem" }}>
           {isRecording
             ? "🔴 Aufnahme läuft… Klick zum Stoppen"
             : recordedUrl
@@ -209,7 +209,7 @@ export function VoiceRecorder({
                 borderRadius: 12,
                 border: "1px solid rgba(255,255,255,0.2)",
                 background: "transparent",
-                color: "rgba(240,239,232,0.6)",
+                color: "rgba(255,255,255,0.85)",
                 fontSize: "0.875rem",
                 cursor: "pointer",
               }}

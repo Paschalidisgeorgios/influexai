@@ -77,7 +77,7 @@ export default function NicheAnalyzerPage() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -192,7 +192,7 @@ export default function NicheAnalyzerPage() {
             NEU
           </span>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           {t("description")}
         </p>
       </div>
@@ -225,7 +225,7 @@ export default function NicheAnalyzerPage() {
                     ? "rgba(180,255,0,0.08)"
                     : "rgba(255,255,255,0.04)",
                 border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
-                color: done || active ? "#B4FF00" : "#505055",
+                color: done || active ? "#B4FF00" : "rgba(255,255,255,0.65)",
               }}
             >
               {done ? "✓ " : ""}
@@ -315,7 +315,7 @@ export default function NicheAnalyzerPage() {
               borderRadius: 11,
               border: "none",
               background: topic.trim() ? "#B4FF00" : "#2a2a2a",
-              color: topic.trim() ? "#060608" : "#505055",
+              color: topic.trim() ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
@@ -328,7 +328,7 @@ export default function NicheAnalyzerPage() {
             style={{
               textAlign: "center",
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               margin: 0,
             }}
           >
@@ -425,7 +425,7 @@ export default function NicheAnalyzerPage() {
                 borderRadius: 8,
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.82rem",
                 cursor: "pointer",
                 fontFamily: "var(--font-dm), sans-serif",
@@ -521,7 +521,7 @@ export default function NicheAnalyzerPage() {
                 style={{
                   margin: "0 0 16px",
                   paddingLeft: 18,
-                  color: "rgba(240,239,232,0.75)",
+                  color: "rgba(255,255,255,0.85)",
                   fontSize: "0.85rem",
                   lineHeight: 1.65,
                 }}

@@ -1,7 +1,7 @@
 import {
   FileText,
   Flame,
-  Gauge,
+  ChartBar,
   Image,
   Mic2,
   Repeat2,
@@ -9,12 +9,20 @@ import {
   ShoppingBag,
   Sparkles,
   Star,
-  Target,
   TrendingUp,
   Video,
   Images,
+  Brain,
+  Home,
+  PlusCircle,
+  User,
   type LucideIcon,
 } from "lucide-react";
+import { TablerPhoto } from "@/components/icons/TablerPhoto";
+import { TablerSpy } from "@/components/icons/TablerSpy";
+
+const CompetitorSpyIcon = TablerSpy as unknown as LucideIcon;
+const ImageGeneratorPhotoIcon = TablerPhoto as unknown as LucideIcon;
 
 export type FlowCategory = "create" | "analyze" | "live";
 
@@ -83,7 +91,7 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     tagline: "Werbespots für TikTok, Reels & YouTube aus einer URL",
     creditCost: 5,
     creditLabel: "5 Credits",
-    genTypes: ["produkt", "video-ad"],
+    genTypes: ["produkt", "product_ad", "video-ad"],
   },
   {
     id: "ki-ich",
@@ -97,13 +105,26 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     genTypes: ["ki-ich"],
   },
   {
+    id: "lora-training",
+    href: "/dashboard/lora-training",
+    category: "create",
+    icon: Brain,
+    i18nKey: "loraTraining",
+    title: "LoRA Training",
+    tagline: "Trainiere dein eigenes KI-Modell",
+    creditCost: 40,
+    creditLabel: "ab 40 Credits",
+    badge: "NEU",
+    genTypes: ["lora_training", "lora_generation"],
+  },
+  {
     id: "image-generator",
     href: "/dashboard/image-generator",
     category: "create",
-    icon: Image,
+    icon: ImageGeneratorPhotoIcon,
     i18nKey: "image_generator",
     title: "Bild Generator",
-    tagline: "10 Kategorien · FLUX Dev & Pro · Upscaler",
+    tagline: "10 Kategorien · Standard & High-Res · Upscaler",
     creditCost: 1,
     creditLabel: "ab 1 Credit",
     badge: "NEU",
@@ -139,7 +160,7 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     id: "competitor",
     href: "/dashboard/competitor",
     category: "analyze",
-    icon: Target,
+    icon: CompetitorSpyIcon,
     i18nKey: "competitor",
     title: "Konkurrenz-Analyse",
     tagline: "Analysiere Konkurrenz-Kanäle — Lücken & Chancen",
@@ -152,7 +173,7 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     id: "viral-score",
     href: "/dashboard/viral-score",
     category: "analyze",
-    icon: Gauge,
+    icon: ChartBar,
     i18nKey: "viral_score",
     title: "Viral Score",
     tagline: "Score 0–100 für Script, Thumbnail & Nische",
@@ -235,7 +256,7 @@ export const NAV_GROUPS: {
         id: "image-generator",
         href: "/dashboard/image-generator",
         labelKey: "image_generator",
-        icon: Image,
+        icon: ImageGeneratorPhotoIcon,
         badge: "NEU",
       },
     ],
@@ -245,8 +266,8 @@ export const NAV_GROUPS: {
     items: [
       { id: "niche", href: "/dashboard/niche-analyzer", label: "Niche Analyzer", icon: TrendingUp },
       { id: "outlier", href: "/dashboard/outlier-detector", label: "Outlier Detector", icon: Flame },
-      { id: "competitor", href: "/dashboard/competitor", labelKey: "competitor", icon: Target, badge: "NEU" },
-      { id: "viral-score", href: "/dashboard/viral-score", labelKey: "viral_score", icon: Gauge, badge: "NEU" },
+      { id: "competitor", href: "/dashboard/competitor", labelKey: "competitor", icon: CompetitorSpyIcon, badge: "NEU" },
+      { id: "viral-score", href: "/dashboard/viral-score", labelKey: "viral_score", icon: ChartBar, badge: "NEU" },
       { id: "remix", href: "/dashboard/video-remix", labelKey: "remix", icon: Repeat2 },
     ],
   },
@@ -261,11 +282,15 @@ export const NAV_GROUPS: {
 ];
 
 export const MOBILE_QUICK_NAV = [
-  { href: "/dashboard", icon: Video, labelKey: "nav_home" as const },
+  { href: "/dashboard", icon: Home, labelKey: "nav_home" as const },
+  {
+    href: "/dashboard/script-generator",
+    icon: PlusCircle,
+    labelKey: "quick_create" as const,
+  },
   { href: "/dashboard/agent", icon: Star, labelKey: "quick_agent" as const },
-  { href: "/dashboard/script-generator", icon: FileText, labelKey: "quick_script" as const },
-  { href: "/dashboard/niche-analyzer", icon: TrendingUp, labelKey: "quick_niche" as const },
-  { href: "/dashboard/niche-analyzer", icon: TrendingUp, labelKey: "quick_niche" as const },
+  { href: "/dashboard/gallery", icon: Images, labelKey: "quick_gallery" as const },
+  { href: "/dashboard/settings", icon: User, labelKey: "nav_settings" as const },
 ];
 
 export function flowsByCategory(): Record<FlowCategory, DashboardFlow[]> {

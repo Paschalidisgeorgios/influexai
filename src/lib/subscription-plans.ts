@@ -1,0 +1,161 @@
+export type SubscriptionPlanId =
+  | "free"
+  | "starter"
+  | "creator"
+  | "pro"
+  | "business";
+
+export type BillingInterval = "monthly" | "yearly";
+
+export type SubscriptionPlan = {
+  id: Exclude<SubscriptionPlanId, "free">;
+  monthlyCredits: number;
+  monthlyPriceEur: number;
+  yearlyPricePerMonthEur: number;
+  stripeMonthlyEnv: string;
+  stripeYearlyEnv: string;
+  popular?: boolean;
+};
+
+export const YEARLY_DISCOUNT_PERCENT = 20;
+
+export const SUBSCRIPTION_PLANS: Record<
+  Exclude<SubscriptionPlanId, "free">,
+  SubscriptionPlan
+> = {
+  starter: {
+    id: "starter",
+    monthlyCredits: 50,
+    monthlyPriceEur: 9.99,
+    yearlyPricePerMonthEur: 7.99,
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_STARTER_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_STARTER_YEARLY",
+  },
+  creator: {
+    id: "creator",
+    monthlyCredits: 300,
+    monthlyPriceEur: 49,
+    yearlyPricePerMonthEur: 39,
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_CREATOR_YEARLY",
+    popular: true,
+  },
+  pro: {
+    id: "pro",
+    monthlyCredits: 800,
+    monthlyPriceEur: 99,
+    yearlyPricePerMonthEur: 79,
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_PRO_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_PRO_YEARLY",
+  },
+  business: {
+    id: "business",
+    monthlyCredits: 2500,
+    monthlyPriceEur: 199,
+    yearlyPricePerMonthEur: 159,
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY",
+  },
+};
+
+export const SUBSCRIPTION_PLAN_ORDER: Exclude<SubscriptionPlanId, "free">[] = [
+  "starter",
+  "creator",
+  "pro",
+  "business",
+];
+
+const PLAN_RANK: Record<SubscriptionPlanId, number> = {
+  free: 0,
+  starter: 1,
+  creator: 2,
+  pro: 3,
+  business: 4,
+};
+
+/** Client-safe price ID map (NEXT_PUBLIC_* inlined at build) */
+export const CLIENT_STRIPE_PRICE_IDS: Record<
+  Exclude<SubscriptionPlanId, "free">,
+  Record<BillingInterval, string | undefined>
+> = {
+  starter: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY,
+  },
+  creator: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_YEARLY,
+  },
+  pro: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY,
+  },
+  business: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY,
+  },
+};
+
+export function normalizePlan(plan: string | null | undefined): SubscriptionPlanId {
+  if (
+    plan === "starter" ||
+    plan === "creator" ||
+    plan === "pro" ||
+    plan === "business"
+  ) {
+    return plan;
+  }
+  return "free";
+}
+
+export function planMeetsRequirement(
+  userPlan: string | null | undefined,
+  requiredPlan: SubscriptionPlanId
+): boolean {
+  if (requiredPlan === "free") return true;
+  return PLAN_RANK[normalizePlan(userPlan)] >= PLAN_RANK[requiredPlan];
+}
+
+export function getPlanMonthlyCredits(plan: string | null | undefined): number {
+  const id = normalizePlan(plan);
+  if (id === "free") return 50;
+  return SUBSCRIPTION_PLANS[id].monthlyCredits;
+}
+
+export function getStripePriceId(
+  plan: Exclude<SubscriptionPlanId, "free">,
+  interval: BillingInterval
+): string | undefined {
+  const fromClient = CLIENT_STRIPE_PRICE_IDS[plan][interval];
+  if (fromClient) return fromClient;
+
+  const config = SUBSCRIPTION_PLANS[plan];
+  const legacyKey =
+    interval === "yearly"
+      ? config.stripeYearlyEnv.replace("NEXT_PUBLIC_STRIPE_", "STRIPE_PRICE_")
+      : config.stripeMonthlyEnv.replace("NEXT_PUBLIC_STRIPE_", "STRIPE_PRICE_");
+  return process.env[legacyKey];
+}
+
+export function getClientStripePriceId(
+  plan: Exclude<SubscriptionPlanId, "free">,
+  interval: BillingInterval
+): string | undefined {
+  return CLIENT_STRIPE_PRICE_IDS[plan][interval];
+}
+
+export function displayPrice(
+  plan: Exclude<SubscriptionPlanId, "free">,
+  interval: BillingInterval
+): number {
+  const config = SUBSCRIPTION_PLANS[plan];
+  return interval === "yearly"
+    ? config.yearlyPricePerMonthEur
+    : config.monthlyPriceEur;
+}
+
+export const EXTRA_CREDIT_UNIT_EUR = 12;
+export const EXTRA_CREDIT_UNIT_CENTS = 1200;
+export const EXTRA_CREDITS_PER_UNIT = 100;
+/** @deprecated Use STRIPE_CREDITS_* env vars in credit-packages.ts */
+export const STRIPE_EXTRA_CREDITS_ENV = "STRIPE_CREDITS_100";

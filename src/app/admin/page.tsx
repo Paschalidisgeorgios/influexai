@@ -50,7 +50,7 @@ export default function AdminPage() {
   );
 
   const planColor: Record<string, string> = {
-    free: "#505055",
+    free: "rgba(255,255,255,0.65)",
     creator: "#B4FF00",
     business: "#06b6d4",
   };
@@ -69,7 +69,7 @@ export default function AdminPage() {
             margin: "0 auto 16px",
           }}
         />
-        <p style={{ color: "#505055" }}>Lade Admin-Daten...</p>
+        <p style={{ color: "rgba(255,255,255,0.65)" }}>Lade Admin-Daten...</p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -89,7 +89,7 @@ export default function AdminPage() {
         >
           ⚙️ Admin Panel
         </h1>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           Nutzer & Plattform-Übersicht
         </p>
         <div
@@ -164,7 +164,7 @@ export default function AdminPage() {
               fontWeight: tab === t.id ? 700 : 500,
               fontFamily: "inherit",
               background: tab === t.id ? "#B4FF00" : "transparent",
-              color: tab === t.id ? "#060608" : "rgba(240,239,232,0.45)",
+              color: tab === t.id ? "#060608" : "rgba(255,255,255,0.75)",
             }}
           >
             {t.label}
@@ -201,7 +201,7 @@ export default function AdminPage() {
               {
                 label: "Free Plan",
                 value: stats?.freeUsers ?? 0,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 icon: "🆓",
               },
               {
@@ -250,7 +250,7 @@ export default function AdminPage() {
                 <div
                   style={{
                     fontSize: "0.75rem",
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                     fontWeight: 500,
                   }}
                 >
@@ -279,7 +279,7 @@ export default function AdminPage() {
               <div
                 style={{
                   fontSize: "0.75rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   fontWeight: 600,
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
@@ -303,7 +303,7 @@ export default function AdminPage() {
                 ).toLocaleString()}
               </div>
             </div>
-            <div style={{ fontSize: "0.82rem", color: "#505055" }}>
+            <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
               {stats?.creatorUsers} × €39 Creator + {stats?.businessUsers} × €99
               Business
             </div>
@@ -367,7 +367,7 @@ export default function AdminPage() {
                 borderBottom: "1px solid rgba(255,255,255,0.05)",
                 fontSize: "0.68rem",
                 fontWeight: 700,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 textTransform: "uppercase",
                 letterSpacing: "0.1em",
               }}
@@ -385,7 +385,7 @@ export default function AdminPage() {
                 style={{
                   padding: "32px 20px",
                   textAlign: "center",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                 }}
               >
                 Keine Nutzer gefunden.
@@ -466,7 +466,7 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: "0.82rem", color: "#505055" }}>
+                  <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
                     {user.email}
                   </div>
                   <div>
@@ -476,9 +476,9 @@ export default function AdminPage() {
                         fontWeight: 700,
                         padding: "3px 10px",
                         borderRadius: 99,
-                        background: `${planColor[user.plan] ?? "#505055"}18`,
-                        border: `1px solid ${planColor[user.plan] ?? "#505055"}44`,
-                        color: planColor[user.plan] ?? "#505055",
+                        background: `${planColor[user.plan] ?? "rgba(255,255,255,0.65)"}18`,
+                        border: `1px solid ${planColor[user.plan] ?? "rgba(255,255,255,0.65)"}44`,
+                        color: planColor[user.plan] ?? "rgba(255,255,255,0.65)",
                         textTransform: "capitalize",
                       }}
                     >
@@ -499,7 +499,7 @@ export default function AdminPage() {
                   >
                     ⚡ {user.credits}
                   </div>
-                  <div style={{ fontSize: "0.78rem", color: "#505055" }}>
+                  <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
                     {new Date(user.created_at).toLocaleDateString("de-DE")}
                   </div>
                 </div>

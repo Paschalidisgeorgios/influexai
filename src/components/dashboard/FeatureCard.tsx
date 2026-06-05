@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -28,15 +29,24 @@ export function FeatureCard({
   const tCommon = useTranslations("common");
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       disabled={disabled && !lockedLabel}
+      whileHover={
+        disabled
+          ? undefined
+          : {
+              scale: 1.02,
+              borderColor: "rgba(180,255,0,0.4)",
+            }
+      }
+      whileTap={disabled ? undefined : { scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={`
-        group relative w-full min-h-[180px] text-left rounded-2xl border p-5 transition-all
+        glass-card group relative w-full min-h-[180px] text-left p-5
         min-w-[260px] snap-start shrink-0 md:min-w-0 md:shrink
-        ${disabled ? "opacity-45 cursor-not-allowed border-white/5" : "cursor-pointer border-white/10 hover:border-[#B4FF00]/35 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(180,255,0,0.25)]"}
-        bg-[#18181d]
+        ${disabled ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:shadow-[0_0_0_1px_rgba(180,255,0,0.25)]"}
       `}
     >
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#B4FF00] opacity-40 group-hover:opacity-80 rounded-t-2xl" />
@@ -51,16 +61,16 @@ export function FeatureCard({
           </span>
         )}
         {badge === "SOON" && (
-          <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-white/5 text-white/40">
+          <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-white/5 text-white/75">
             {tCommon("coming_soon")}
           </span>
         )}
       </div>
 
-      <h3 className="text-lg font-bold text-[#F0EFE8] mb-2 leading-tight font-[family-name:var(--font-syne)]">
+      <h3 className="text-lg font-semibold text-white mb-2 leading-tight font-[family-name:var(--font-syne)]">
         {title}
       </h3>
-      <p className="text-sm text-white/55 leading-relaxed mb-4 line-clamp-2">
+      <p className="text-sm text-white/75 leading-relaxed mb-4 line-clamp-2">
         {tagline}
       </p>
 
@@ -72,9 +82,9 @@ export function FeatureCard({
           </span>
         )}
         {lockedLabel && (
-          <span className="text-xs text-white/40">{lockedLabel}</span>
+          <span className="text-xs text-white/75">{lockedLabel}</span>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }

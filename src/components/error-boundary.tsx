@@ -9,10 +9,10 @@ export default function ErrorBoundary({
 }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px] gap-4 px-6">
-      <p className="text-white/50 text-sm text-center">
+      <p className="text-white/80 text-sm text-center">
         Etwas ist schiefgelaufen.
         {error?.message ? (
-          <span className="block mt-2 text-white/30 text-xs">
+          <span className="block mt-2 text-white/65 text-xs">
             {error.message}
           </span>
         ) : null}

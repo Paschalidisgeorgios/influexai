@@ -108,7 +108,7 @@ function CopyBlock({
         >
           {label}
           {maxHint ? (
-            <span style={{ color: "#505055", fontWeight: 500 }}>
+            <span style={{ color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>
               {" "}
               ({maxHint})
             </span>
@@ -187,7 +187,7 @@ function LocaleCopyPanel({
       />
       <CopyBlock
         id={`${prefix}-short`}
-        label="Short Description (Google Play)"
+        label="Short Description (Play Store)"
         text={data.shortDescription}
         copiedId={copiedId}
         onCopy={onCopy}
@@ -279,7 +279,7 @@ export function AppStoreLaunchKit() {
       ? "1px solid rgba(180,255,0,0.45)"
       : "1px solid rgba(255,255,255,0.08)",
     background: active ? "rgba(180,255,0,0.12)" : "transparent",
-    color: active ? "#B4FF00" : "#505055",
+    color: active ? "#B4FF00" : "rgba(255,255,255,0.65)",
     fontWeight: 700,
     fontSize: "0.82rem",
     cursor: "pointer",
@@ -288,7 +288,7 @@ export function AppStoreLaunchKit() {
 
   if (!hydrated) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "#505055" }}>
+      <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.65)" }}>
         Lade App Store Kit…
       </div>
     );
@@ -317,8 +317,8 @@ export function AppStoreLaunchKit() {
             App Store Launch Kit
           </h1>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.88rem", margin: 0 }}>
-          iOS & Google Play — Checkliste, ASO-Copy, Screenshots, EAS &
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem", margin: 0 }}>
+          iOS & Play Store — Checkliste, ASO-Copy, Screenshots, EAS &
           Launch-Timeline
         </p>
         <Link
@@ -326,7 +326,7 @@ export function AppStoreLaunchKit() {
           style={{
             display: "inline-block",
             marginTop: 12,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.82rem",
             textDecoration: "none",
           }}
@@ -344,7 +344,7 @@ export function AppStoreLaunchKit() {
               display: "flex",
               justifyContent: "space-between",
               fontSize: "0.82rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               marginBottom: 8,
             }}
           >
@@ -400,7 +400,7 @@ export function AppStoreLaunchKit() {
                         gap: 10,
                         cursor: "pointer",
                         fontSize: "0.88rem",
-                        color: done ? "#505055" : "#F0EFE8",
+                        color: done ? "rgba(255,255,255,0.65)" : "#F0EFE8",
                         textDecoration: done ? "line-through" : "none",
                       }}
                     >
@@ -425,7 +425,7 @@ export function AppStoreLaunchKit() {
         <h2 style={sectionTitle}>Store Copy Generator</h2>
         <p
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",
             marginTop: 0,
             marginBottom: 16,
@@ -496,7 +496,7 @@ export function AppStoreLaunchKit() {
         <h2 style={sectionTitle}>Screenshot Guide</h2>
         <p
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",
             marginTop: 0,
             marginBottom: 16,
@@ -665,7 +665,7 @@ export function AppStoreLaunchKit() {
                 </p>
                 <p
                   style={{
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                     fontSize: "0.8rem",
                     margin: "0 0 8px",
                   }}
@@ -673,7 +673,7 @@ export function AppStoreLaunchKit() {
                   <strong style={{ color: "#F0EFE8" }}>Headline:</strong>{" "}
                   {concept.headline}
                 </p>
-                <p style={{ color: "#505055", fontSize: "0.8rem", margin: 0 }}>
+                <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem", margin: 0 }}>
                   <strong style={{ color: "#F0EFE8" }}>Frame:</strong>{" "}
                   <span
                     style={{
@@ -700,7 +700,7 @@ export function AppStoreLaunchKit() {
         <h2 style={sectionTitle}>Expo Build Commands</h2>
         <p
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",
             marginTop: 0,
             marginBottom: 12,
@@ -764,7 +764,7 @@ export function AppStoreLaunchKit() {
                   ? "#B4FF00"
                   : step.status === "active"
                     ? "#06b6d4"
-                    : "#505055";
+                    : "rgba(255,255,255,0.65)";
               const glow =
                 step.status === "launch"
                   ? "0 0 12px rgba(180,255,0,0.5)"
@@ -821,7 +821,7 @@ export function AppStoreLaunchKit() {
                   <p
                     style={{
                       fontSize: "0.72rem",
-                      color: "#505055",
+                      color: "rgba(255,255,255,0.65)",
                       margin: 0,
                       lineHeight: 1.45,
                     }}

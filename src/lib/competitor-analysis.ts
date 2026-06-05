@@ -6,10 +6,8 @@ import type { YouTubeChannelBundle } from "@/lib/youtube-channel";
 
 export const COMPETITOR_ANALYSIS_CREDIT_COST = 5;
 
-export const COMPETITOR_ANALYSIS_SYSTEM_PROMPT = `Du bist ein YouTube Stratege. Analysiere diese Kanal-Daten
-und identifiziere: Top-Themen, Content-Gaps, beste Posting-Zeiten,
-durchschnittliche Views, was funktioniert und was nicht.
-Antworte NUR als JSON:
+export const COMPETITOR_ANALYSIS_SYSTEM_PROMPT = `Analysiere diese YouTube Kanal-Daten.
+Antworte als JSON:
 {
   "summary": "string",
   "avg_views": number,

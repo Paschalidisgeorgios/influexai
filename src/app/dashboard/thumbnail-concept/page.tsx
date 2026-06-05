@@ -50,7 +50,7 @@ const COLOR_ENERGIES = [
 function ctrStyle(level: ThumbnailConcept["ctrPrediction"]) {
   if (level === "high") return { color: "#B4FF00", label: "Hoch" };
   if (level === "medium") return { color: "#f59e0b", label: "Mittel" };
-  return { color: "#505055", label: "Niedrig" };
+  return { color: "rgba(255,255,255,0.65)", label: "Niedrig" };
 }
 
 function ThumbnailConceptPageInner() {
@@ -86,7 +86,7 @@ function ThumbnailConceptPageInner() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -208,7 +208,7 @@ function ThumbnailConceptPageInner() {
             <p
               style={{
                 margin: "6px 0 0",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.88rem",
               }}
             >
@@ -230,7 +230,7 @@ function ThumbnailConceptPageInner() {
             NEU
           </span>
         </div>
-        <p style={{ color: "rgba(240,239,232,0.45)", fontSize: "0.82rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.82rem" }}>
           ⚡ 1 Credit pro Generierung · 4 Konzepte · CSS-Vorschau (keine
           Bild-Generierung)
         </p>
@@ -376,7 +376,7 @@ function ThumbnailConceptPageInner() {
               gap: 12,
             }}
           >
-            <p style={{ color: "#505055", fontSize: "0.85rem", margin: 0 }}>
+            <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem", margin: 0 }}>
               Thema: <strong style={{ color: "#F0EFE8" }}>{topic}</strong>
             </p>
             <button
@@ -441,7 +441,7 @@ function ThumbnailConceptPageInner() {
 
                   <p
                     style={{
-                      color: "rgba(240,239,232,0.55)",
+                      color: "rgba(255,255,255,0.8)",
                       fontSize: "0.88rem",
                       lineHeight: 1.65,
                       marginBottom: 16,
@@ -508,7 +508,7 @@ function ThumbnailConceptPageInner() {
                             border: "1px solid rgba(255,255,255,0.15)",
                           }}
                         />
-                        <span style={{ fontSize: "0.75rem", color: "#505055" }}>
+                        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
                           {label}:{" "}
                           <code style={{ color: "#B4FF00" }}>{hex}</code>
                         </span>
@@ -524,7 +524,7 @@ function ThumbnailConceptPageInner() {
                         marginBottom: 8,
                       }}
                     >
-                      <strong style={{ color: "#505055" }}>Emotion:</strong>{" "}
+                      <strong style={{ color: "rgba(255,255,255,0.65)" }}>Emotion:</strong>{" "}
                       {concept.emotion}
                     </p>
                   )}
@@ -537,7 +537,7 @@ function ThumbnailConceptPageInner() {
                         marginBottom: 12,
                       }}
                     >
-                      <strong style={{ color: "#505055" }}>Props:</strong>{" "}
+                      <strong style={{ color: "rgba(255,255,255,0.65)" }}>Props:</strong>{" "}
                       {concept.props.join(" · ")}
                     </p>
                   )}
@@ -553,7 +553,7 @@ function ThumbnailConceptPageInner() {
                     <span
                       style={{
                         fontSize: "0.78rem",
-                        color: "#505055",
+                        color: "rgba(255,255,255,0.65)",
                         fontWeight: 700,
                       }}
                     >
@@ -562,7 +562,7 @@ function ThumbnailConceptPageInner() {
                     <span style={{ color: ctr.color, fontWeight: 800 }}>
                       {ctr.label}
                     </span>
-                    <span style={{ color: "#505055", fontSize: "0.82rem" }}>
+                    <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.82rem" }}>
                       {" "}
                       — {concept.ctrReasoning}
                     </span>
@@ -630,7 +630,7 @@ function ThumbnailConceptPageInner() {
         <Link
           href="/dashboard"
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.82rem",
             textDecoration: "none",
           }}
@@ -646,7 +646,7 @@ export default function ThumbnailConceptPage() {
   return (
     <Suspense
       fallback={
-        <div style={{ padding: 40, textAlign: "center", color: "#505055" }}>
+        <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.65)" }}>
           Laden…
         </div>
       }

@@ -39,7 +39,7 @@ export default function ToolsIndexPage() {
         <h1 className="text-3xl font-semibold md:text-4xl">
           Alle KI-Tools für jeden Creator-Typ
         </h1>
-        <p className="mt-3 max-w-2xl text-white/50">
+        <p className="mt-3 max-w-2xl text-white/80">
           {featureCount} Tools × {nicheCount} Nischen ={" "}
           {featureCount * nicheCount} spezialisierte Landingpages für
           Long-Tail-SEO.

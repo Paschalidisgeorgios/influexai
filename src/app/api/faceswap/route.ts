@@ -13,6 +13,7 @@ import {
 } from "@/lib/faceswap-media";
 import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
   createGenerationRecord,
   getOwnedGeneration,
@@ -104,6 +105,14 @@ export async function GET(request: NextRequest) {
         paid: true,
         mimeType,
       });
+
+      const label =
+        kind === "video" ? "Face Swap Video" : "Face Swap Bild";
+      notifyGenerationCompletePush(
+        user.id,
+        label,
+        `/dashboard/faceswap?generation=${generationId}`
+      );
 
       return NextResponse.json({
         success: true,

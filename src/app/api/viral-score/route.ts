@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { logGeneration } from "@/lib/activity-log";
-import { invalidateUserGenerations } from "@/lib/cache";
 import {
   buildViralScoreUserPrompt,
   parseViralScoreResult,
@@ -116,47 +114,29 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data: profile, error: profileErr } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", user.id)
-    .single();
+  const promptSummary = `${niche} · ${script.slice(0, 120)}`;
 
-  if (profileErr || !profile) {
-    return NextResponse.json(
-      { success: false, error: "Profil nicht gefunden." },
-      { status: 500 }
-    );
-  }
+  const deducted = await deductCredits(
+    supabase,
+    user.id,
+    VIRAL_SCORE_CREDIT_COST,
+    "viral_score",
+    { skipGenerationLog: true, prompt: promptSummary }
+  );
 
-  const previousCredits = profile.credits ?? 0;
-  if (previousCredits < VIRAL_SCORE_CREDIT_COST) {
+  if (!deducted.success) {
+    const status =
+      deducted.error === "Nicht genug Credits." ? 402 : 500;
     return NextResponse.json(
       {
         success: false,
-        error: "Nicht genug Credits.",
-        credits: previousCredits,
+        error: deducted.error ?? "Credits konnten nicht abgezogen werden.",
+        credits: deducted.remainingCredits,
         required: VIRAL_SCORE_CREDIT_COST,
       },
-      { status: 402 }
+      { status }
     );
   }
-
-  const remainingCredits = previousCredits - VIRAL_SCORE_CREDIT_COST;
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ credits: remainingCredits })
-    .eq("id", user.id);
-
-  if (updateError) {
-    console.error("[viral-score] credits update:", updateError.message);
-    return NextResponse.json(
-      { success: false, error: "Credits konnten nicht abgezogen werden." },
-      { status: 500 }
-    );
-  }
-
-  const promptSummary = `${niche} · ${script.slice(0, 120)}`;
 
   const { error: genErr } = await supabase.from("generations").insert({
     user_id: user.id,
@@ -168,24 +148,11 @@ export async function POST(request: Request) {
 
   if (genErr) {
     console.error("[viral-score] generations insert:", genErr.message);
-    await logGeneration(supabase, user.id, {
-      type: "viral_score",
-      prompt: promptSummary,
-      creditsUsed: VIRAL_SCORE_CREDIT_COST,
-    });
   }
-
-  await supabase.from("credit_transactions").insert({
-    user_id: user.id,
-    amount: -VIRAL_SCORE_CREDIT_COST,
-    description: "viral_score",
-  });
-
-  invalidateUserGenerations(user.id);
 
   return NextResponse.json({
     success: true,
     score,
-    creditsLeft: remainingCredits,
+    creditsLeft: deducted.remainingCredits,
   });
 }

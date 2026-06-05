@@ -5,12 +5,11 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   getPackageById,
 } from "@/lib/credit-packages";
+import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
-
+/** Legacy path — delegates to pay-as-you-go credit checkout. */
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const packageId = body.packageId ?? body.package ?? DEFAULT_CHECKOUT_PACKAGE;
@@ -29,71 +28,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_beta")
-    .eq("id", user.id)
-    .single();
-
-  const { data: purchaseRow } = await supabase
-    .from("credit_transactions")
-    .select("id")
-    .eq("user_id", user.id)
-    .like("description", "Credits gekauft%")
-    .limit(1)
-    .maybeSingle();
-
-  const hasPurchased = !!purchaseRow;
-
-  let discounts: { coupon: string }[] | undefined;
-  if (profile?.is_beta) {
-    const {
-      getOrCreateBetaFirstPurchaseCouponId,
-      getOrCreateBetaLifetimeCouponId,
-    } = await import("@/lib/beta-stripe");
-    const couponId = hasPurchased
-      ? await getOrCreateBetaLifetimeCouponId()
-      : await getOrCreateBetaFirstPurchaseCouponId();
-    if (couponId) discounts = [{ coupon: couponId }];
-  } else {
-    const { getOrCreateFirst20PromotionCodeId } =
-      await import("@/lib/first-purchase-stripe");
-    await getOrCreateFirst20PromotionCodeId();
+  try {
+    const session = await createCreditsCheckoutSession(
+      stripe,
+      supabase,
+      user.id,
+      pkg
+    );
+    return NextResponse.json({ url: session.url });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Checkout fehlgeschlagen";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    allow_promotion_codes: true,
-    ...(discounts ? { discounts } : {}),
-    line_items: [
-      {
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: `${pkg.credits} InfluexAI Credits — ${pkg.label}`,
-            description: pkg.equivalence,
-          },
-          unit_amount: pkg.priceCents,
-        },
-        quantity: 1,
-      },
-    ],
-    mode: "payment",
-    custom_text: {
-      submit: {
-        message: "Sicher bezahlen — Credits sofort verfügbar",
-      },
-    },
-    success_url: `${SITE_URL}/dashboard/credits/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${SITE_URL}/dashboard/credits?canceled=true`,
-    metadata: {
-      user_id: user.id,
-      userId: user.id,
-      plan: pkg.plan,
-      credits_amount: pkg.credits.toString(),
-      credits: pkg.credits.toString(),
-    },
-  });
-
-  return NextResponse.json({ url: session.url });
 }

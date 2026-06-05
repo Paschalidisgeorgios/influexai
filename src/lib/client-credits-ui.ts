@@ -7,10 +7,26 @@ export type UpgradePromptDetail = {
 
 const UPGRADE_EVENT = "influex-upgrade-prompt";
 const GENERATION_EVENT = "influex-generation-complete";
+const BUY_CREDITS_EVENT = "open-buy-credits";
 
 export function showUpgradePrompt(detail: UpgradePromptDetail) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(UPGRADE_EVENT, { detail }));
+}
+
+export function openBuyCreditsModal() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(BUY_CREDITS_EVENT));
+}
+
+export function onBuyCreditsRequest(handler: () => void): () => void {
+  window.addEventListener(BUY_CREDITS_EVENT, handler);
+  return () => window.removeEventListener(BUY_CREDITS_EVENT, handler);
+}
+
+/** Call when an API returns 402 / insufficient credits. */
+export function handleApiInsufficientCredits(): void {
+  openBuyCreditsModal();
 }
 
 /** Call after successful generation with remaining credits. */
@@ -49,6 +65,7 @@ export function handleInsufficientCredits(
   required: number
 ): boolean {
   if (remaining >= required) return false;
+  openBuyCreditsModal();
   if (remaining < 3) {
     showUpgradePrompt({ cost: required, remaining });
   }

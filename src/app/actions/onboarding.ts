@@ -23,7 +23,7 @@ export async function getOnboardingUser() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "full_name, channel_name, creator_niche, subscriber_count, creator_goal, onboarding_completed, credits"
+      "full_name, channel_name, creator_niche, niche, subscriber_count, creator_goal, onboarding_completed, credits"
     )
     .eq("id", user.id)
     .single();
@@ -44,11 +44,14 @@ export async function saveCreatorProfile(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Nicht eingeloggt." };
 
+  const niche = input.creatorNiche.trim();
+
   const { error } = await supabase
     .from("profiles")
     .update({
       channel_name: input.channelName?.trim() || null,
-      creator_niche: input.creatorNiche,
+      creator_niche: niche,
+      niche,
       subscriber_count: input.subscriberCount,
       creator_goal: input.creatorGoal,
     })
@@ -89,8 +92,22 @@ export async function skipOnboarding(): Promise<ActionOk | ActionFail> {
 
 export type OnboardingFeatureId =
   | "script-generator"
-  | "thumbnail-concept"
-  | "live-creator";
+  | "avatar"
+  | "niche-analyzer";
+
+function redirectForFeature(featureId: OnboardingFeatureId, niche: string): string {
+  const q = encodeURIComponent(niche);
+  switch (featureId) {
+    case "script-generator":
+      return `/dashboard/script-generator?topic=${q}`;
+    case "avatar":
+      return `/dashboard/avatar?topic=${q}`;
+    case "niche-analyzer":
+      return `/dashboard/niche-analyzer?topic=${q}`;
+    default:
+      return "/dashboard";
+  }
+}
 
 export async function finishOnboardingFlow(input: {
   creatorNiche: string;
@@ -114,13 +131,8 @@ export async function finishOnboardingFlow(input: {
   const done = await completeOnboarding();
   if (!done.success) return done;
 
-  const q = encodeURIComponent(niche);
-  const redirectTo =
-    input.featureId === "script-generator"
-      ? `/dashboard/script-generator?topic=${q}`
-      : input.featureId === "thumbnail-concept"
-        ? `/dashboard/thumbnail-concept?topic=${q}`
-        : "/dashboard/live-creator";
-
-  return { success: true, redirectTo };
+  return {
+    success: true,
+    redirectTo: redirectForFeature(input.featureId, niche),
+  };
 }

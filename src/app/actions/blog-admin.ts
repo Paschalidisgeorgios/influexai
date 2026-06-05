@@ -209,3 +209,78 @@ export async function createDraftFromKeywordIdea(input: {
     return { ok: false, error: "Entwurf konnte nicht erstellt werden." };
   return { ok: true, postId: data.id };
 }
+
+export type UpsertBlogPostInput = {
+  id?: string;
+  title: string;
+  slug: string;
+  meta_description: string;
+  content: string;
+  excerpt?: string;
+  category: string;
+  og_image_url?: string | null;
+  published: boolean;
+  language?: string;
+};
+
+export async function upsertBlogPost(
+  input: UpsertBlogPostInput
+): Promise<{ ok: boolean; postId?: string; error?: string }> {
+  const ctx = await adminDb();
+  if (!ctx.ok) return { ok: false, error: ctx.error };
+
+  const slug = input.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-");
+  if (!slug) return { ok: false, error: "Ungültiger Slug." };
+
+  const words = countWords(input.content);
+  const stats = readingTime(input.content);
+  const minutes = Math.max(1, Math.ceil(stats.minutes));
+
+  const row = {
+    title: input.title.trim(),
+    slug,
+    meta_description: input.meta_description.slice(0, 160),
+    content: input.content,
+    excerpt: (input.excerpt ?? input.meta_description).slice(0, 300),
+    category: input.category,
+    og_image_url: input.og_image_url?.trim() || null,
+    word_count: words,
+    reading_time_minutes: minutes,
+    published: input.published,
+    published_at: input.published ? new Date().toISOString() : null,
+    language: input.language ?? "de",
+  };
+
+  if (input.id) {
+    const { error } = await ctx.supabase
+      .from("blog_posts")
+      .update(row)
+      .eq("id", input.id);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, postId: input.id };
+  }
+
+  const { data, error } = await ctx.supabase
+    .from("blog_posts")
+    .insert(row)
+    .select("id")
+    .single();
+
+  if (error || !data) return { ok: false, error: error?.message ?? "Speichern fehlgeschlagen." };
+  return { ok: true, postId: data.id };
+}
+
+export async function unpublishBlogPost(
+  id: string
+): Promise<{ ok: boolean; error?: string }> {
+  const ctx = await adminDb();
+  if (!ctx.ok) return { ok: false, error: ctx.error };
+
+  const { error } = await ctx.supabase
+    .from("blog_posts")
+    .update({ published: false, published_at: null })
+    .eq("id", id);
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}

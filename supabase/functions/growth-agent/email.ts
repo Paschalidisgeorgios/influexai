@@ -30,7 +30,8 @@ export function buildDailySuggestionsEmailHtml(
   firstName: string,
   niche: string,
   ideas: DailyVideoIdea[],
-  unsubscribeUrl: string
+  unsubscribeUrl: string,
+  credits = 0
 ): string {
   const cards = ideas.map((idea, i) => ideaCard(idea, i)).join("");
   const dashboardUrl = `${SITE}/dashboard`;
@@ -47,7 +48,10 @@ ${cards}
 <p style="text-align:center;margin:24px 0;">
 <a href="${dashboardUrl}" style="display:inline-block;padding:14px 28px;background:#B4FF00;color:#060608;font-weight:bold;text-decoration:none;border-radius:8px;">Dashboard öffnen →</a>
 </p>
-<p style="margin:0;font-size:12px;color:#505055;text-align:center;">
+<p style="margin:16px 0 0;font-size:13px;color:#888;text-align:center;">
+Dein Credit-Guthaben: <strong style="color:#B4FF00;">${credits}</strong> Credits
+</p>
+<p style="margin:12px 0 0;font-size:12px;color:#505055;text-align:center;">
 <a href="${unsubscribeUrl}" style="color:#666;text-decoration:underline;">Tägliche Ideen-Emails abbestellen</a>
 </p>
 </td></tr></table>

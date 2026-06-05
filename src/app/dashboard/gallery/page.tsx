@@ -7,8 +7,10 @@ import { Images } from "lucide-react";
 import { getGallery, deleteGalleryItem } from "@/app/actions/get-gallery";
 import { GALLERY_PAGE_SIZE } from "@/lib/gallery-types";
 import { GalleryCard } from "@/components/gallery/gallery-card";
+import { Skeleton } from "@/components/ui/Skeleton";
 import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 
 export default function GalleryPage() {
   const t = useTranslations("gallery");
@@ -106,8 +108,25 @@ export default function GalleryPage() {
 
   const shown = items.length;
 
+  const refreshGallery = useCallback(async () => {
+    setPage(0);
+    await load(0, false);
+  }, [load]);
+
+  const { pulling, refreshing } = usePullToRefresh(refreshGallery);
+
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 48 }}>
+      {(pulling || refreshing) && (
+        <div
+          className="fixed top-14 left-0 right-0 z-40 flex justify-center pointer-events-none md:hidden"
+          aria-live="polite"
+        >
+          <span className="px-3 py-1 rounded-full bg-[#0f0f12] border border-[#B4FF00]/30 text-[#B4FF00] text-xs font-semibold">
+            {refreshing ? t("refreshing") : t("pull_refresh")}
+          </span>
+        </div>
+      )}
       <div style={{ marginBottom: 28 }}>
         <p
           style={{
@@ -142,7 +161,7 @@ export default function GalleryPage() {
             >
               {t("title")}
             </h1>
-            <p style={{ color: "rgba(240,239,232,0.5)", fontSize: "0.95rem" }}>
+            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.95rem" }}>
               {t("count", { count: total })}
             </p>
           </div>
@@ -189,7 +208,7 @@ export default function GalleryPage() {
                 fontWeight: 600,
                 border: `1px solid ${active ? "rgba(180,255,0,0.4)" : "rgba(255,255,255,0.08)"}`,
                 background: active ? "rgba(180,255,0,0.1)" : "transparent",
-                color: active ? "#B4FF00" : "rgba(240,239,232,0.45)",
+                color: active ? "#B4FF00" : "rgba(255,255,255,0.75)",
                 cursor: "pointer",
               }}
             >
@@ -224,16 +243,7 @@ export default function GalleryPage() {
           }}
         >
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                height: 220,
-                borderRadius: 14,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                animation: "pulse 1.5s ease-in-out infinite",
-              }}
-            />
+            <Skeleton key={i} className="h-[220px] rounded-[14px]" />
           ))}
         </div>
       ) : items.length === 0 ? (
@@ -264,7 +274,7 @@ export default function GalleryPage() {
           </p>
           <p
             style={{
-              color: "rgba(240,239,232,0.45)",
+              color: "rgba(255,255,255,0.75)",
               fontSize: "0.9rem",
               marginBottom: 24,
             }}
@@ -308,7 +318,7 @@ export default function GalleryPage() {
           <p
             style={{
               textAlign: "center",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               fontSize: "0.85rem",
               marginTop: 24,
             }}

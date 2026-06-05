@@ -2,8 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
+import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
+import {
+  creditsBadgeStyle,
+  creditsDisplayColor,
+} from "@/lib/credits-display-color";
 
 interface Profile {
   full_name: string | null;
@@ -12,19 +19,15 @@ interface Profile {
   plan: string;
 }
 
-interface CreditTx {
-  id: string;
-  amount: number;
-  description: string;
-  created_at: string;
-}
+type DashboardHeaderProps = {
+  credits?: number | null;
+};
 
-export function DashboardHeader() {
+export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) {
+  const t = useTranslations("buyCredits");
+  const { open: openBuyCredits } = useBuyCredits();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [showCredits, setShowCredits] = useState(false);
-  const [creditHistory, setCreditHistory] = useState<CreditTx[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
   const supabase = createClient();
 
   const loadProfile = useCallback(async () => {
@@ -46,33 +49,20 @@ export function DashboardHeader() {
     loadProfile();
     const onCreditsUpdated = () => loadProfile();
     window.addEventListener("credits-updated", onCreditsUpdated);
-    return () =>
+    const onOptimistic = (e: Event) => {
+      const v = (e as CustomEvent<number | null>).detail;
+      if (typeof v === "number") {
+        setProfile((p) => (p ? { ...p, credits: v } : p));
+      } else {
+        loadProfile();
+      }
+    };
+    window.addEventListener("optimistic-credits", onOptimistic);
+    return () => {
       window.removeEventListener("credits-updated", onCreditsUpdated);
+      window.removeEventListener("optimistic-credits", onOptimistic);
+    };
   }, [loadProfile]);
-
-  const loadCreditHistory = async () => {
-    setHistoryLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
-        .from("credit_transactions")
-        .select("id, amount, description, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(8);
-      setCreditHistory(data ?? []);
-    }
-    setHistoryLoading(false);
-  };
-
-  const openCreditsMenu = () => {
-    const next = !showCredits;
-    setShowCredits(next);
-    setShowMenu(false);
-    if (next) loadCreditHistory();
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -90,19 +80,22 @@ export function DashboardHeader() {
 
   const planLabel: Record<string, string> = {
     free: "Free",
+    starter: "Starter",
     creator: "Creator",
+    pro: "Pro",
     business: "Business",
   };
 
-  const formatTxDate = (iso: string) => {
-    const d = new Date(iso);
-    const diff = Date.now() - d.getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `vor ${Math.max(1, mins)} Min.`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `vor ${hrs} Std.`;
-    return d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
-  };
+  const displayCredits =
+    creditsProp ?? profile?.credits ?? null;
+  const creditColor =
+    displayCredits !== null
+      ? creditsDisplayColor(displayCredits)
+      : "#B4FF00";
+  const badgeStyle =
+    displayCredits !== null
+      ? creditsBadgeStyle(displayCredits)
+      : creditsBadgeStyle(100);
 
   return (
     <header
@@ -129,206 +122,40 @@ export function DashboardHeader() {
           fontSize: "0.875rem",
         }}
       >
-        <span style={{ color: "#505055", fontWeight: 500 }}>Studio</span>
+        <span style={{ color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>Studio</span>
         <span style={{ color: "#2a2a2a" }}>›</span>
         <span style={{ color: "#F0EFE8", fontWeight: 600 }}>Dashboard</span>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <LanguageSwitcher compact />
-        {/* Credits */}
-        <div style={{ position: "relative" }}>
-          <button
-            type="button"
-            onClick={openCreditsMenu}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 14px",
-              borderRadius: 9,
-              background: "rgba(180,255,0,0.1)",
-              border: "1px solid rgba(180,255,0,0.28)",
-              cursor: "pointer",
-              fontFamily: "var(--font-dm), sans-serif",
-            }}
+        <button
+          type="button"
+          onClick={openBuyCredits}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "6px 14px",
+            borderRadius: 9,
+            background: badgeStyle.background,
+            border: badgeStyle.border,
+            cursor: "pointer",
+            fontFamily: "var(--font-dm), sans-serif",
+          }}
+        >
+          <span
+            data-testid="credits-display"
+            style={{ fontSize: "0.95rem", fontWeight: 800, color: creditColor }}
           >
-            <span
-              data-testid="credits-display"
-              style={{ fontSize: "0.95rem", fontWeight: 800, color: "#B4FF00" }}
-            >
-              ⚡ {profile?.credits ?? "..."} Credits
-            </span>
-          </button>
-
-          {showCredits && (
-            <>
-              <div
-                style={{ position: "fixed", inset: 0, zIndex: 40 }}
-                onClick={() => setShowCredits(false)}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: "calc(100% + 8px)",
-                  right: 0,
-                  width: 280,
-                  borderRadius: 14,
-                  background: "#0f0f12",
-                  border: "1px solid rgba(255,255,255,0.09)",
-                  zIndex: 50,
-                  overflow: "hidden",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "14px 16px",
-                    borderBottom: "1px solid rgba(255,255,255,0.07)",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "0.72rem",
-                      color: "#505055",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      marginBottom: 4,
-                    }}
-                  >
-                    Guthaben
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "1.5rem",
-                      fontWeight: 800,
-                      color: "#B4FF00",
-                      fontFamily: "var(--font-bebas), sans-serif",
-                    }}
-                  >
-                    ⚡ {profile?.credits ?? 0} Credits
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: "10px 16px",
-                    maxHeight: 200,
-                    overflowY: "auto",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "0.68rem",
-                      color: "#505055",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Verlauf
-                  </div>
-                  {historyLoading ? (
-                    <p
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "#505055",
-                        margin: 0,
-                      }}
-                    >
-                      Lädt...
-                    </p>
-                  ) : creditHistory.length === 0 ? (
-                    <p
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "#505055",
-                        margin: 0,
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      Noch keine Transaktionen.
-                    </p>
-                  ) : (
-                    creditHistory.map((tx) => (
-                      <div
-                        key={tx.id}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: 8,
-                          padding: "8px 0",
-                          borderBottom: "1px solid rgba(255,255,255,0.04)",
-                        }}
-                      >
-                        <div style={{ minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontSize: "0.78rem",
-                              color: "#F0EFE8",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {tx.description}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: "0.68rem",
-                              color: "#505055",
-                              marginTop: 2,
-                            }}
-                          >
-                            {formatTxDate(tx.created_at)}
-                          </div>
-                        </div>
-                        <span
-                          style={{
-                            fontSize: "0.78rem",
-                            fontWeight: 700,
-                            color: tx.amount > 0 ? "#B4FF00" : "#ff6b7a",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {tx.amount > 0 ? "+" : ""}
-                          {tx.amount}
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    padding: "12px 16px",
-                    borderTop: "1px solid rgba(255,255,255,0.07)",
-                  }}
-                >
-                  <Link
-                    href="/dashboard/credits"
-                    onClick={() => setShowCredits(false)}
-                    style={{
-                      display: "block",
-                      textAlign: "center",
-                      padding: "10px",
-                      borderRadius: 9,
-                      background: "#B4FF00",
-                      color: "#060608",
-                      fontWeight: 700,
-                      fontSize: "0.85rem",
-                      textDecoration: "none",
-                      fontFamily: "var(--font-dm), sans-serif",
-                    }}
-                  >
-                    Credits kaufen
-                  </Link>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+            ⚡{" "}
+            <AnimatedCredits
+              value={displayCredits}
+              style={{ color: creditColor }}
+            />{" "}
+            {t("credits_label")}
+          </span>
+        </button>
 
         {profile?.plan && profile.plan !== "free" && (
           <div
@@ -339,7 +166,7 @@ export function DashboardHeader() {
               border: "1px solid rgba(255,255,255,0.09)",
               fontSize: "0.68rem",
               fontWeight: 700,
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               textTransform: "uppercase",
               letterSpacing: "0.08em",
             }}
@@ -351,10 +178,7 @@ export function DashboardHeader() {
         <div style={{ position: "relative" }}>
           <div
             data-testid="user-menu-trigger"
-            onClick={() => {
-              setShowMenu(!showMenu);
-              setShowCredits(false);
-            }}
+            onClick={() => setShowMenu(!showMenu)}
             style={{
               width: 32,
               height: 32,
@@ -411,7 +235,7 @@ export function DashboardHeader() {
                   >
                     {profile?.full_name ?? "Nutzer"}
                   </div>
-                  <div style={{ fontSize: "0.75rem", color: "#505055" }}>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
                     {profile?.email}
                   </div>
                 </div>
@@ -419,7 +243,7 @@ export function DashboardHeader() {
                 {[
                   {
                     icon: "⚡",
-                    label: "Credits aufladen",
+                    label: t("menu_top_up"),
                     href: "/dashboard/credits",
                   },
                   {
@@ -437,7 +261,7 @@ export function DashboardHeader() {
                       alignItems: "center",
                       gap: 10,
                       padding: "11px 16px",
-                      color: "rgba(240,239,232,0.6)",
+                      color: "rgba(255,255,255,0.85)",
                       fontSize: "0.875rem",
                       textDecoration: "none",
                       transition: "all 0.15s",
@@ -452,7 +276,7 @@ export function DashboardHeader() {
                       (e.currentTarget as HTMLAnchorElement).style.background =
                         "transparent";
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        "rgba(240,239,232,0.6)";
+                        "rgba(255,255,255,0.85)";
                     }}
                   >
                     <span>{item.icon}</span>

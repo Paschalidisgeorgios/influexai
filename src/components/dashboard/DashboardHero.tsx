@@ -35,18 +35,18 @@ export function DashboardHero({
               👋
             </span>
           </h1>
-          <p className="mt-1 text-sm text-[#505055]">{t("hero_subtitle")}</p>
+          <p className="mt-1 text-sm text-[rgba(255,255,255,0.65)]">{t("hero_subtitle")}</p>
         </div>
 
         <div className="flex flex-col items-start lg:items-end gap-1 shrink-0">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#505055]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[rgba(255,255,255,0.65)]">
             {t("credits_available")}
           </span>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl md:text-5xl font-extrabold text-[#B4FF00] tabular-nums">
               {credits ?? "—"}
             </span>
-            <span className="text-sm text-[#505055] font-medium">Credits</span>
+            <span className="text-sm text-[rgba(255,255,255,0.65)] font-medium">Credits</span>
           </div>
           {noCredits && (
             <button
@@ -70,7 +70,7 @@ export function DashboardHero({
 
       {topFlows.length > 0 && (
         <div className="mt-5 pt-5 border-t border-white/10">
-          <p className="text-xs font-bold uppercase tracking-wider text-[#505055] mb-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-[rgba(255,255,255,0.65)] mb-3">
             {t("quick_actions")}
           </p>
           <div className="flex flex-wrap gap-2">

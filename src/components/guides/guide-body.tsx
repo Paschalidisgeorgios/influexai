@@ -54,11 +54,11 @@ export async function GuideBody({
 export function GuideAuthorBox() {
   return (
     <div className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-      <p className="text-xs uppercase tracking-widest text-white/40 mb-2">
+      <p className="text-xs uppercase tracking-widest text-white/70 mb-2">
         Autor
       </p>
       <p className="font-semibold text-white">InfluexAI Team</p>
-      <p className="mt-2 text-sm text-white/60 leading-relaxed">
+      <p className="mt-2 text-sm text-white/80 leading-relaxed">
         Wir helfen YouTube- und Shorts-Creatorn, mit KI schneller bessere
         Scripts, Nischen und Konzepte zu erstellen — datenbasiert und praxisnah.
       </p>

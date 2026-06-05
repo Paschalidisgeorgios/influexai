@@ -1,19 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   DEFAULT_CHECKOUT_PACKAGE,
   getPackageById,
 } from "@/lib/credit-packages";
 import {
   onUpgradePrompt,
+  openBuyCreditsModal,
   type UpgradePromptDetail,
 } from "@/lib/client-credits-ui";
-
-function checkoutUrl(packageId: string) {
-  return `/dashboard/credits?package=${packageId}`;
-}
 
 export function UpgradePromptListener() {
   const [open, setOpen] = useState(false);
@@ -29,7 +25,7 @@ export function UpgradePromptListener() {
   if (!open || !detail) return null;
 
   const pkg = getPackageById(DEFAULT_CHECKOUT_PACKAGE);
-  const price = pkg?.priceEur ?? 9.99;
+  const price = pkg?.priceEur ?? 12;
 
   return (
     <div
@@ -70,7 +66,7 @@ export function UpgradePromptListener() {
           Du brauchst {detail.cost} Credits für diese Aktion
         </p>
         <p
-          style={{ margin: "0 0 20px", fontSize: "0.88rem", color: "#505055" }}
+          style={{ margin: "0 0 20px", fontSize: "0.88rem", color: "rgba(255,255,255,0.65)" }}
         >
           Du hast nur noch{" "}
           <strong style={{ color: "#ff6b7a" }}>
@@ -89,13 +85,16 @@ export function UpgradePromptListener() {
             color: "rgba(240,239,232,0.7)",
           }}
         >
-          Empfohlen: <strong style={{ color: "#B4FF00" }}>Creator</strong> —{" "}
-          {pkg?.credits ?? 120} Credits für €{price}
+          Empfohlen: <strong style={{ color: "#B4FF00" }}>Extra Credits</strong> —{" "}
+          {pkg?.credits ?? 300} Credits für €{price}
         </p>
         <div style={{ display: "flex", gap: 10 }}>
-          <Link
-            href={checkoutUrl(DEFAULT_CHECKOUT_PACKAGE)}
-            onClick={() => setOpen(false)}
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              openBuyCreditsModal();
+            }}
             style={{
               flex: 1,
               textAlign: "center",
@@ -105,11 +104,13 @@ export function UpgradePromptListener() {
               color: "#060608",
               fontWeight: 700,
               fontSize: "0.88rem",
-              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "inherit",
             }}
           >
             Credits kaufen
-          </Link>
+          </button>
           <button
             type="button"
             onClick={() => setOpen(false)}
@@ -118,7 +119,7 @@ export function UpgradePromptListener() {
               borderRadius: 10,
               border: "1px solid rgba(255,255,255,0.1)",
               background: "transparent",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               fontWeight: 600,
               fontSize: "0.88rem",
               cursor: "pointer",

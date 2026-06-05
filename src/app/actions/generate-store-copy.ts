@@ -71,7 +71,7 @@ export async function generateStoreCopy(): Promise<Success | Failure> {
   const systemPrompt =
     "You are an expert App Store Optimization (ASO) copywriter for mobile apps. Write compelling, policy-safe store listings. Return ONLY valid JSON, no markdown.";
 
-  const userPrompt = `Generate complete iOS App Store and Google Play store copy for InfluexAI — an AI Creator Studio for viral YouTube Shorts.
+  const userPrompt = `Generate complete iOS App Store and Play Store store copy for InfluexAI — an AI Creator Studio for viral YouTube Shorts.
 
 Features: Script Generator, Niche Analyzer, Outlier Detector, Thumbnail Concepts, Video Remix, Community, credit-based pricing (no forced subscription).
 
@@ -80,7 +80,7 @@ Generate copy for THREE languages: German (de), English (en), Greek (el).
 For EACH language object, include:
 - appName: max 30 chars (iOS App Store name)
 - subtitle: max 30 chars (iOS subtitle only)
-- shortDescription: max 80 chars (Google Play short description)
+- shortDescription: max 80 chars (Play Store short description)
 - fullDescription: max 4000 chars, store-optimized structure:
   * Hook: first 2 lines (most important — shown before "more")
   * Feature list with emojis (5-8 bullets)

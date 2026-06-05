@@ -124,7 +124,7 @@ export function PostCard({
                   padding: "2px 8px",
                   borderRadius: 99,
                   background: "rgba(255,255,255,0.05)",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                 }}
               >
                 {local.niche}
@@ -145,7 +145,7 @@ export function PostCard({
             <span
               style={{
                 fontSize: "0.72rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 marginLeft: "auto",
               }}
             >
@@ -209,7 +209,7 @@ export function PostCard({
                   ? "1px solid rgba(180,255,0,0.4)"
                   : "1px solid rgba(255,255,255,0.08)",
                 background: active ? "rgba(180,255,0,0.1)" : "transparent",
-                color: active ? "#B4FF00" : "rgba(240,239,232,0.55)",
+                color: active ? "#B4FF00" : "rgba(255,255,255,0.8)",
                 fontSize: "0.78rem",
                 cursor: isLoggedIn ? "pointer" : "default",
                 fontFamily: "inherit",
@@ -245,7 +245,7 @@ export function PostCard({
             style={{
               background: "none",
               border: "none",
-              color: reported ? "#505055" : "#505055",
+              color: reported ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.65)",
               cursor: "pointer",
               fontFamily: "inherit",
               padding: 0,
@@ -269,7 +269,7 @@ export function PostCard({
               <div
                 style={{
                   fontSize: "0.72rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   marginBottom: 4,
                 }}
               >
@@ -291,7 +291,7 @@ export function PostCard({
             <p
               style={{
                 fontSize: "0.72rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 margin: "0 0 10px",
               }}
             >
@@ -336,7 +336,7 @@ export function PostCard({
               </button>
             </div>
           ) : (
-            <p style={{ fontSize: "0.78rem", color: "#505055" }}>
+            <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
               <a href="/login" style={{ color: "#B4FF00" }}>
                 Melde dich an
               </a>{" "}

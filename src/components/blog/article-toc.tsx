@@ -34,7 +34,7 @@ export function ArticleToc({ entries }: { entries: TocEntry[] }) {
   return (
     <aside className="hidden xl:block">
       <div className="sticky top-24 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/40">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/70">
           Inhalt
         </p>
         <ul className="space-y-2 text-sm">
@@ -45,7 +45,7 @@ export function ArticleToc({ entries }: { entries: TocEntry[] }) {
                 className={`block transition-colors ${
                   activeId === e.id
                     ? "text-[#B4FF00]"
-                    : "text-white/50 hover:text-white"
+                    : "text-white/80 hover:text-white"
                 }`}
               >
                 {e.title}

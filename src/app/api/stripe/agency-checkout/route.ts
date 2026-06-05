@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { AGENCY_PLANS, type AgencyPlanId } from "@/lib/agency-plans";
+import { AGENCY_PLANS, getAgencyStripePriceId, type AgencyPlanId } from "@/lib/agency-plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const priceId = process.env[plan.stripePriceEnv];
+  const interval = (body.interval ?? "monthly") as "monthly" | "yearly";
+  const priceId = getAgencyStripePriceId(planId, interval);
   const lineItems = priceId
     ? [{ price: priceId, quantity: 1 }]
     : [
@@ -48,9 +49,9 @@ export async function POST(request: NextRequest) {
             currency: "eur",
             product_data: {
               name: `InfluexAI White-Label — ${plan.name}`,
-              description: `Bis zu ${plan.maxSeats} Client Seats`,
+              description: `Bis zu ${plan.maxSeats} Client Seats · ${plan.creditsPool} Credits Pool`,
             },
-            unit_amount: plan.priceCents,
+            unit_amount: Math.round(plan.monthlyPriceEur * 100),
             recurring: { interval: "month" as const },
           },
           quantity: 1,
@@ -61,8 +62,8 @@ export async function POST(request: NextRequest) {
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: lineItems,
-    success_url: `${SITE_URL}/dashboard/agency?subscribed=1`,
-    cancel_url: `${SITE_URL}/dashboard/white-label?canceled=1`,
+    success_url: `${SITE_URL}/dashboard/agency?success=true`,
+    cancel_url: `${SITE_URL}/agency?canceled=1`,
     metadata: {
       checkout_type: "agency_subscription",
       plan: planId,

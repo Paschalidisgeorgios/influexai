@@ -273,7 +273,7 @@ export function FaceSwapPanel({
     readyBadge?: string
   ) => (
     <div>
-      <p className="text-white/60 text-xs uppercase tracking-wider font-bold mb-2">
+      <p className="text-white/80 text-xs uppercase tracking-wider font-bold mb-2">
         {label}
       </p>
       <div
@@ -311,7 +311,7 @@ export function FaceSwapPanel({
             <p className="text-white font-semibold mb-1">
               {isVideo ? "Video hochladen" : "Foto hochladen"}
             </p>
-            <p className="text-white/40 text-xs">{tip}</p>
+            <p className="text-white/70 text-xs">{tip}</p>
           </div>
         ) : (
           <div className="relative aspect-video max-h-64 overflow-hidden rounded-xl m-2">
@@ -412,7 +412,7 @@ export function FaceSwapPanel({
             />
           </div>
           <p className="text-[#B4FF00] text-sm">{Math.round(progress)}%</p>
-          <p className="text-white/30 text-xs mt-2">{TIPS[tipIndex]}</p>
+          <p className="text-white/65 text-xs mt-2">{TIPS[tipIndex]}</p>
         </div>
       )}
 
@@ -468,7 +468,7 @@ export function FaceSwapPanel({
               <button
                 type="button"
                 onClick={closeCamera}
-                className="text-white/40 text-xs hover:text-white w-full text-center"
+                className="text-white/70 text-xs hover:text-white w-full text-center"
               >
                 Abbrechen
               </button>
@@ -499,7 +499,7 @@ export function FaceSwapPanel({
         className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
           canGenerate
             ? "bg-[#B4FF00] text-[#060608] hover:bg-[#c8ff33] active:scale-[0.98]"
-            : "bg-white/10 text-white/30 cursor-not-allowed"
+            : "bg-white/10 text-white/65 cursor-not-allowed"
         }`}
       >
         Face Swap erstellen · {credits} Credits

@@ -13,6 +13,7 @@ import {
   REFERRAL_REF_COOKIE,
   REFERRAL_REF_MAX_AGE,
 } from "@/lib/referral-ref-cookie";
+import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
@@ -38,15 +39,20 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/signup") {
     return NextResponse.redirect(new URL("/auth/sign-up" + search, request.url));
   }
-
-  // Legacy /white-label URLs → dashboard (never serve WL marketing at root)
-  if (pathname === "/white-label" || pathname.startsWith("/white-label/")) {
-    const target =
-      pathname === "/white-label"
-        ? `/dashboard/white-label${search}`
-        : `/dashboard${pathname.slice("/white-label".length)}${search}`;
-    return NextResponse.redirect(new URL(target, request.url));
+  if (pathname === "/auth" && search === "") {
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
+
+  // Legacy /white-label → public agency landing (logged-in users → dashboard WL)
+  if (pathname === "/white-label" || pathname.startsWith("/white-label/")) {
+    if (pathname !== "/white-label") {
+      const target = `/dashboard${pathname.slice("/white-label".length)}${search}`;
+      return NextResponse.redirect(new URL(target, request.url));
+    }
+    // /white-label alone: resolved after auth check below (see whiteLabelRedirect)
+  }
+
+  const whiteLabelLegacyPath = pathname === "/white-label";
 
   const hostname = request.headers.get("host") ?? "";
   let abVariant: "a" | "b" | null = null;
@@ -170,6 +176,26 @@ export async function middleware(request: NextRequest) {
 
   if (user && (isAuthPage || isOnboarding)) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Legacy /white-label → agency marketing (guests) or dashboard (logged in)
+  if (whiteLabelLegacyPath) {
+    const target = user ? `/dashboard/white-label${search}` : `/agency${search}`;
+    return NextResponse.redirect(new URL(target, request.url));
+  }
+
+  if (user && isDashboard) {
+    const gate = getRouteGate(pathname);
+    if (gate) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();
+      if (!isRouteAllowed(pathname, profile?.plan)) {
+        requestHeaders.set("x-plan-upgrade-required", gate.minPlan);
+      }
+    }
   }
 
   const refParam = request.nextUrl.searchParams.get("ref")?.trim();

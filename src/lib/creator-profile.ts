@@ -39,7 +39,7 @@ export function badgeColor(
     case "Video":
       return "#8b5cf6";
     default:
-      return "#505055";
+      return "rgba(255,255,255,0.65)";
   }
 }
 

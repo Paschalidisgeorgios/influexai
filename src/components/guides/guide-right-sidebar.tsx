@@ -20,7 +20,7 @@ export function GuideRightSidebar({
       <div className="sticky top-24 space-y-6">
         {toc.length > 0 && (
           <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/40">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/70">
               In diesem Guide
             </p>
             <ul className="space-y-2 text-xs">
@@ -28,7 +28,7 @@ export function GuideRightSidebar({
                 <li key={e.id}>
                   <a
                     href={`#${e.id}`}
-                    className="text-white/55 hover:text-[#B4FF00] line-clamp-2"
+                    className="text-white/80 hover:text-[#B4FF00] line-clamp-2"
                   >
                     {e.title}
                   </a>
@@ -39,7 +39,7 @@ export function GuideRightSidebar({
         )}
 
         <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/40">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/70">
             Verwandte Guides
           </p>
           <ul className="space-y-2 text-sm">
@@ -62,7 +62,7 @@ export function GuideRightSidebar({
           <p className="font-semibold text-white text-sm">
             InfluexAI ausprobieren
           </p>
-          <p className="mt-2 text-xs text-white/55">
+          <p className="mt-2 text-xs text-white/80">
             {meta?.ctaFeature ?? "Script Generator"} — direkt im Dashboard.
           </p>
           <Link

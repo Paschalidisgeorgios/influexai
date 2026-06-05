@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
@@ -86,6 +87,11 @@ export async function GET(request: NextRequest) {
         );
       }
       creditsLeft = deduction.remainingCredits;
+      notifyGenerationCompletePush(
+        user.id,
+        "Talking Avatar Video",
+        "/dashboard/live-creator"
+      );
     } else {
       const { data: profile } = await supabase
         .from("profiles")

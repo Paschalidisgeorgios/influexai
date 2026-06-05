@@ -61,7 +61,7 @@ function WelcomeInner() {
         </h1>
         <p
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.9rem",
             marginBottom: 28,
             lineHeight: 1.6,
@@ -84,7 +84,7 @@ function WelcomeInner() {
             <p
               style={{
                 fontSize: "0.72rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 margin: "0 0 8px",
               }}
             >
@@ -106,7 +106,7 @@ function WelcomeInner() {
 
         <p
           style={{
-            color: "rgba(240,239,232,0.5)",
+            color: "rgba(255,255,255,0.8)",
             fontSize: "0.85rem",
             marginBottom: 12,
           }}
@@ -140,7 +140,7 @@ function WelcomeInner() {
             borderRadius: 8,
             border: "1px solid rgba(255,255,255,0.1)",
             background: "transparent",
-            color: copied ? "#B4FF00" : "#505055",
+            color: copied ? "#B4FF00" : "rgba(255,255,255,0.65)",
             cursor: "pointer",
             fontFamily: "inherit",
             fontSize: "0.82rem",
@@ -153,7 +153,7 @@ function WelcomeInner() {
         <p
           style={{
             fontSize: "0.75rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             marginBottom: 12,
             fontWeight: 700,
             textTransform: "uppercase",
@@ -162,7 +162,7 @@ function WelcomeInner() {
         >
           Teile die Beta mit Freunden
         </p>
-        <p style={{ fontSize: "0.78rem", color: "#505055", marginBottom: 16 }}>
+        <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", marginBottom: 16 }}>
           Nur 100 Plätze — beeil dich, bevor sie weg sind.
         </p>
 
@@ -211,7 +211,7 @@ function WelcomeInner() {
           style={{
             display: "inline-block",
             marginTop: 28,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.82rem",
             textDecoration: "none",
           }}
@@ -234,7 +234,7 @@ export default function BetaWelcomePage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
           }}
         >
           Laden…

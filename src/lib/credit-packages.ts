@@ -1,80 +1,71 @@
 export type CreditPackageId =
-  | "credits_starter"
-  | "credits_creator"
-  | "credits_pro";
+  | "extra_100"
+  | "extra_300"
+  | "extra_700"
+  | "extra_1500";
 
 export type CreditPackage = {
   id: CreditPackageId;
-  plan: "starter" | "creator" | "pro";
   label: string;
   priceEur: number;
   priceCents: number;
   credits: number;
-  equivalence: string;
-  savingsBadge?: string;
-  bestFor: string;
+  pricePerCredit: number;
+  stripePriceEnv: string;
   popular?: boolean;
-  features: string[];
 };
 
+/** Pay-as-you-go credit top-ups */
 export const CREDIT_PACKAGES: CreditPackage[] = [
   {
-    id: "credits_starter",
-    plan: "starter",
-    label: "Starter",
-    priceEur: 4.99,
-    priceCents: 499,
-    credits: 50,
-    equivalence: "= 25 Scripts oder 16 Niche-Analysen",
-    bestFor: "Gelegentliche Creator",
-    features: [
-      "Script Generator",
-      "Niche Analyzer",
-      "Outlier Detector",
-      "Thumbnail Konzept",
-    ],
+    id: "extra_100",
+    label: "100 Credits",
+    priceEur: 5,
+    priceCents: 500,
+    credits: 100,
+    pricePerCredit: 0.05,
+    stripePriceEnv: "STRIPE_CREDITS_100",
   },
   {
-    id: "credits_creator",
-    plan: "creator",
-    label: "Creator",
-    priceEur: 9.99,
-    priceCents: 999,
-    credits: 120,
-    equivalence: "= 60 Scripts oder 40 Niche-Analysen",
-    savingsBadge: "Du sparst €2 vs. Starter",
-    bestFor: "Aktive Creator",
-    popular: true,
-    features: [
-      "Alle Starter-Flows",
-      "Video Remix",
-      "Produkt-Werbung",
-      "Priority-Generierung",
-    ],
-  },
-  {
-    id: "credits_pro",
-    plan: "pro",
-    label: "Pro",
-    priceEur: 19.99,
-    priceCents: 1999,
+    id: "extra_300",
+    label: "300 Credits",
+    priceEur: 12,
+    priceCents: 1200,
     credits: 300,
-    equivalence: "= 150 Scripts oder 100 Niche-Analysen",
-    savingsBadge: "Du sparst €10 vs. Starter",
-    bestFor: "Daily Creator",
-    features: [
-      "Alle Creator-Flows",
-      "KI-Ich & Voice",
-      "Live Creator",
-      "Maximale Produktion",
-    ],
+    pricePerCredit: 0.04,
+    stripePriceEnv: "STRIPE_CREDITS_300",
+    popular: true,
+  },
+  {
+    id: "extra_700",
+    label: "700 Credits",
+    priceEur: 25,
+    priceCents: 2500,
+    credits: 700,
+    pricePerCredit: 0.036,
+    stripePriceEnv: "STRIPE_CREDITS_700",
+  },
+  {
+    id: "extra_1500",
+    label: "1500 Credits",
+    priceEur: 45,
+    priceCents: 4500,
+    credits: 1500,
+    pricePerCredit: 0.03,
+    stripePriceEnv: "STRIPE_CREDITS_1500",
   },
 ];
 
-export const DEFAULT_CHECKOUT_PACKAGE: CreditPackageId = "credits_creator";
+export const DEFAULT_CHECKOUT_PACKAGE: CreditPackageId = "extra_300";
 
 export function getPackageById(id: string): CreditPackage | undefined {
   return CREDIT_PACKAGES.find((p) => p.id === id);
 }
 
-export const CREDIT_CALCULATOR_TIERS = [50, 120, 300] as const;
+export function getStripePriceIdForPackage(pkg: CreditPackage): string | undefined {
+  return process.env[pkg.stripePriceEnv]?.trim() || undefined;
+}
+
+export const CREDIT_CALCULATOR_TIERS = [100, 300, 700, 1500] as const;
+
+export const EXTRA_CREDIT_RATE_LABEL = "€0.04 / Credit";

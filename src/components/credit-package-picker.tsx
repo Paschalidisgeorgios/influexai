@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CREDIT_PACKAGES, type CreditPackageId } from "@/lib/credit-packages";
 
 type Props = {
@@ -8,30 +9,30 @@ type Props = {
   compact?: boolean;
 };
 
+function formatEur(amount: number): string {
+  return amount.toFixed(amount < 1 ? 3 : 2).replace(".", ",");
+}
+
 export function CreditPackagePicker({
   onCheckout,
   loadingId = null,
   compact = false,
 }: Props) {
+  const t = useTranslations("buyCredits");
+
   return (
     <div
       style={{
         display: "grid",
         gridTemplateColumns: compact
           ? "1fr"
-          : "repeat(auto-fit, minmax(200px, 1fr))",
+          : "repeat(auto-fit, minmax(180px, 1fr))",
         gap: compact ? 12 : 16,
         alignItems: "stretch",
       }}
     >
       {CREDIT_PACKAGES.map((pkg) => {
-        const isPopular = pkg.plan === "creator";
-        const bonusLabel =
-          pkg.plan === "creator"
-            ? "+20% Bonus"
-            : pkg.plan === "pro"
-              ? "+50% Bonus"
-              : null;
+        const isPopular = pkg.popular ?? false;
 
         return (
           <div
@@ -65,58 +66,54 @@ export function CreditPackagePicker({
                   whiteSpace: "nowrap",
                 }}
               >
-                Empfohlen
+                {t("popular_badge")}
               </div>
             )}
 
+            <div
+              style={{
+                fontFamily: "var(--font-bebas), sans-serif",
+                fontSize: "2rem",
+                color: "#B4FF00",
+                lineHeight: 1,
+                marginTop: isPopular ? 8 : 0,
+              }}
+            >
+              {pkg.credits}
+            </div>
             <div
               style={{
                 fontSize: "0.72rem",
                 fontWeight: 700,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
-                color: "#505055",
-                marginBottom: 6,
-                marginTop: isPopular ? 8 : 0,
+                color: "rgba(255,255,255,0.65)",
+                marginBottom: 8,
               }}
             >
-              {pkg.label}
+              Credits
             </div>
 
             <div
               style={{
                 fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "1.75rem",
+                fontSize: "1.5rem",
                 color: "#F0EFE8",
                 lineHeight: 1,
               }}
             >
-              €{pkg.priceEur.toFixed(2).replace(".", ",")}
+              €{formatEur(pkg.priceEur)}
             </div>
 
             <div
               style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "1.35rem",
-                color: "#B4FF00",
-                marginBottom: bonusLabel ? 4 : 14,
-                lineHeight: 1.1,
+                fontSize: "0.78rem",
+                color: "rgba(255,255,255,0.65)",
+                marginBottom: 14,
               }}
             >
-              {pkg.credits} Credits
+              {t("per_credit", { price: `€${formatEur(pkg.pricePerCredit)}` })}
             </div>
-
-            {bonusLabel && (
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "#B4FF00",
-                  marginBottom: 14,
-                }}
-              >
-                {bonusLabel}
-              </div>
-            )}
 
             <button
               type="button"
@@ -136,7 +133,7 @@ export function CreditPackagePicker({
                       : "rgba(180,255,0,0.12)",
                 color:
                   loadingId === pkg.id
-                    ? "#505055"
+                    ? "rgba(255,255,255,0.65)"
                     : isPopular
                       ? "#060608"
                       : "#B4FF00",
@@ -146,7 +143,7 @@ export function CreditPackagePicker({
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
-              {loadingId === pkg.id ? "…" : `${pkg.label} wählen`}
+              {loadingId === pkg.id ? "…" : t("buy_button")}
             </button>
           </div>
         );

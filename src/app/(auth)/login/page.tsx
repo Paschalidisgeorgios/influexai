@@ -57,7 +57,7 @@ export default function LoginPage() {
       <h1 className="text-white text-2xl font-semibold mb-2">
         {t("login_title")}
       </h1>
-      <p className="text-white/40 text-sm mb-8">{t("login_subtitle")}</p>
+      <p className="text-white/70 text-sm mb-8">{t("login_subtitle")}</p>
 
       {error && (
         <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
@@ -84,7 +84,7 @@ export default function LoginPage() {
             <label className={authLabelClass}>{t("password")}</label>
             <Link
               href="/forgot-password"
-              className="text-white/30 text-xs hover:text-[#B4FF00] transition-colors"
+              className="text-white/65 text-xs hover:text-[#B4FF00] transition-colors"
             >
               {t("forgot_password")}
             </Link>
@@ -116,7 +116,7 @@ export default function LoginPage() {
         <div className="flex-1 h-px bg-white/10" />
       </div>
 
-      <p className="text-center text-white/40 text-sm">
+      <p className="text-center text-white/70 text-sm">
         {t("no_account")}{" "}
         <Link href="/auth/sign-up" className="text-[#B4FF00] hover:underline">
           {t("signup_link")}

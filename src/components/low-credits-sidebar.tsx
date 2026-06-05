@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { openBuyCreditsModal } from "@/lib/client-credits-ui";
 
 type Props = {
   credits: number;
@@ -10,13 +11,15 @@ type Props = {
 
 export function LowCreditsSidebar({
   credits,
-  maxCredits = 120,
+  maxCredits = 300,
   collapsed,
 }: Props) {
-  if (collapsed || credits >= 15) return null;
+  const t = useTranslations("buyCredits");
+
+  if (collapsed || credits >= 20) return null;
 
   const pct = Math.min(100, Math.round((credits / maxCredits) * 100));
-  const barColor = credits < 10 ? "#ff6b7a" : "#f59e0b";
+  const barColor = credits < 5 ? "#ff6b7a" : "#f59e0b";
 
   return (
     <div
@@ -25,8 +28,8 @@ export function LowCreditsSidebar({
         padding: "12px",
         borderRadius: 10,
         background:
-          credits < 10 ? "rgba(255,107,122,0.08)" : "rgba(251,191,36,0.06)",
-        border: `1px solid ${credits < 10 ? "rgba(255,107,122,0.25)" : "rgba(251,191,36,0.2)"}`,
+          credits < 5 ? "rgba(255,107,122,0.08)" : "rgba(251,191,36,0.06)",
+        border: `1px solid ${credits < 5 ? "rgba(255,107,122,0.25)" : "rgba(251,191,36,0.2)"}`,
       }}
     >
       <div
@@ -40,7 +43,7 @@ export function LowCreditsSidebar({
         <span
           style={{ fontSize: "0.72rem", fontWeight: 700, color: "#F0EFE8" }}
         >
-          ⚡ {credits} Credits übrig
+          ⚡ {t("low_banner", { count: credits })}
         </span>
       </div>
       <div
@@ -61,10 +64,12 @@ export function LowCreditsSidebar({
           }}
         />
       </div>
-      <Link
-        href="/dashboard/credits"
+      <button
+        type="button"
+        onClick={openBuyCreditsModal}
         style={{
           display: "block",
+          width: "100%",
           textAlign: "center",
           padding: "7px",
           borderRadius: 7,
@@ -73,11 +78,12 @@ export function LowCreditsSidebar({
           color: "#B4FF00",
           fontSize: "0.68rem",
           fontWeight: 700,
-          textDecoration: "none",
+          cursor: "pointer",
+          fontFamily: "inherit",
         }}
       >
-        Jetzt aufladen
-      </Link>
+        {t("top_up")}
+      </button>
     </div>
   );
 }

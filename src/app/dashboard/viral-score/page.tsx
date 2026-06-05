@@ -2,9 +2,12 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Gauge } from "lucide-react";
 import type { ViralScoreResult } from "@/lib/viral-score";
-import { VIRAL_SCORE_CREDIT_COST } from "@/lib/viral-score";
+import {
+  VIRAL_SCORE_CREDIT_COST,
+  VIRAL_SCORE_LANGUAGE_OPTIONS,
+} from "@/lib/viral-score";
+import { TablerChartBar } from "@/components/icons/TablerChartBar";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -21,17 +24,6 @@ type HistoryRow = {
   created_at: string;
   result: ViralScoreResult | null;
 };
-
-const LANGUAGE_OPTIONS = [
-  { code: "de", label: "🇩🇪 Deutsch" },
-  { code: "en", label: "🇬🇧 English" },
-  { code: "es", label: "🇪🇸 Español" },
-  { code: "fr", label: "🇫🇷 Français" },
-  { code: "pt", label: "🇵🇹 Português" },
-  { code: "tr", label: "🇹🇷 Türkçe" },
-  { code: "ar", label: "🇸🇦 العربية" },
-  { code: "el", label: "🇬🇷 Ελληνικά" },
-];
 
 const SUB_SCORES: {
   key: keyof Pick<
@@ -74,18 +66,16 @@ function useAnimatedScore(target: number, active: boolean) {
 }
 
 function ScoreRing({
-  score,
   displayScore,
   size = 200,
 }: {
-  score: number;
   displayScore: number;
   size?: number;
 }) {
   const stroke = 12;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
+  const offset = c - (displayScore / 100) * c;
 
   return (
     <div style={{ position: "relative", width: size, height: size }}>
@@ -137,7 +127,7 @@ function ScoreRing({
         >
           {displayScore}
         </span>
-        <span style={{ fontSize: "0.75rem", color: "#505055", marginTop: 4 }}>
+        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: 4 }}>
           / 100
         </span>
       </div>
@@ -254,7 +244,7 @@ function ViralScorePageInner() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -329,7 +319,7 @@ function ViralScorePageInner() {
   return (
     <div style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 100px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-        <Gauge size={28} color="#B4FF00" strokeWidth={2.2} />
+        <TablerChartBar size={28} color="#B4FF00" strokeWidth={2.2} />
         <h1
           style={{
             margin: 0,
@@ -342,7 +332,7 @@ function ViralScorePageInner() {
           {t("title")}
         </h1>
       </div>
-      <p style={{ color: "#505055", margin: "0 0 28px", fontSize: "0.95rem" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", margin: "0 0 28px", fontSize: "0.95rem" }}>
         {t("description")}
       </p>
 
@@ -389,7 +379,7 @@ function ViralScorePageInner() {
                 onChange={(e) => setLanguage(e.target.value)}
                 style={{ ...inputStyle, cursor: "pointer" }}
               >
-                {LANGUAGE_OPTIONS.map((o) => (
+                {VIRAL_SCORE_LANGUAGE_OPTIONS.map((o) => (
                   <option key={o.code} value={o.code}>
                     {o.label}
                   </option>
@@ -453,6 +443,7 @@ function ViralScorePageInner() {
       {step === "results" && score && (
         <div>
           <div
+            className="viral-score-results-top"
             style={{
               display: "grid",
               gridTemplateColumns: "auto 1fr",
@@ -465,7 +456,7 @@ function ViralScorePageInner() {
               marginBottom: 20,
             }}
           >
-            <ScoreRing score={score.total_score} displayScore={animatedTotal} />
+            <ScoreRing displayScore={animatedTotal} />
             <div>
               {SUB_SCORES.map((s) => (
                 <SubScoreBar
@@ -491,6 +482,7 @@ function ViralScorePageInner() {
           </p>
 
           <div
+            className="viral-score-strengths-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
@@ -589,7 +581,7 @@ function ViralScorePageInner() {
           <h2
             style={{
               fontSize: "1rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               textTransform: "uppercase",
               letterSpacing: "0.08em",
               marginBottom: 14,
@@ -628,7 +620,18 @@ function ViralScorePageInner() {
         </section>
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 640px) {
+          .viral-score-results-top {
+            grid-template-columns: 1fr !important;
+            justify-items: center;
+          }
+          .viral-score-strengths-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -55,9 +55,11 @@ async function unsubscribeUrl(userId: string): Promise<string> {
 export async function resolveUserNiche(
   supabase: SupabaseClient,
   userId: string,
-  profileNiche: string | null
+  niche: string | null,
+  creatorNiche?: string | null
 ): Promise<string | null> {
-  if (profileNiche?.trim()) return profileNiche.trim();
+  if (niche?.trim()) return niche.trim();
+  if (creatorNiche?.trim()) return creatorNiche.trim();
 
   const { data: saves } = await supabase
     .from("niche_saves")
@@ -230,6 +232,7 @@ export async function processUser(
   const niche = await resolveUserNiche(
     supabase,
     profile.id,
+    profile.niche,
     profile.creator_niche
   );
   if (!niche) {
@@ -276,7 +279,8 @@ export async function processUser(
       firstName(profile.full_name),
       niche,
       ideas,
-      unsub
+      unsub,
+      profile.credits ?? 0
     );
     emailSent = await sendDailySuggestionsEmail(
       profile.email,
@@ -285,17 +289,94 @@ export async function processUser(
     );
   }
 
+  const firstIdea = ideas[0];
+  if (firstIdea?.title) {
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const topic = encodeURIComponent(firstIdea.title);
+    try {
+      await fetch(`${SITE}/api/push/send`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${serviceKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: profile.id,
+          title: "💡 Deine Video-Idee für heute",
+          body: firstIdea.title,
+          url: `/dashboard/script-generator?topic=${topic}`,
+        }),
+      });
+    } catch (e) {
+      console.error("[growth-agent] push:", profile.id, e);
+    }
+  }
+
   return { userId: profile.id, ok: true, emailSent };
 }
+
+/** Users with sign-in or generation activity in the last 30 days. */
+export async function fetchActiveUserIds(
+  supabase: SupabaseClient
+): Promise<Set<string>> {
+  const sinceMs = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const sinceIso = new Date(sinceMs).toISOString();
+  const ids = new Set<string>();
+
+  let offset = 0;
+  const pageSize = 500;
+  while (true) {
+    const { data } = await supabase
+      .from("generations")
+      .select("user_id")
+      .gte("created_at", sinceIso)
+      .range(offset, offset + pageSize - 1);
+    if (!data?.length) break;
+    for (const row of data) {
+      if (row.user_id) ids.add(row.user_id as string);
+    }
+    if (data.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  let page = 1;
+  const perPage = 200;
+  while (true) {
+    const { data: authData, error: authErr } = await supabase.auth.admin.listUsers({
+      page,
+      perPage,
+    });
+    if (authErr) {
+      console.error("[growth-agent] listUsers:", authErr.message);
+      break;
+    }
+    const users = authData?.users ?? [];
+    if (!users.length) break;
+    for (const u of users) {
+      const last = u.last_sign_in_at
+        ? new Date(u.last_sign_in_at).getTime()
+        : 0;
+      const created = u.created_at ? new Date(u.created_at).getTime() : 0;
+      if (last >= sinceMs || created >= sinceMs) ids.add(u.id);
+    }
+    if (users.length < perPage) break;
+    page += 1;
+  }
+
+  return ids;
+}
+
+const PROFILE_SELECT =
+  "id, email, full_name, creator_niche, niche, daily_suggestions_email, onboarding_completed, credits";
 
 export async function runGrowthAgentCron(
   supabase: SupabaseClient
 ): Promise<ProcessUserResult[]> {
+  const activeIds = await fetchActiveUserIds(supabase);
+
   const { data: profiles, error } = await supabase
     .from("profiles")
-    .select(
-      "id, email, full_name, creator_niche, daily_suggestions_email, onboarding_completed"
-    )
+    .select(PROFILE_SELECT)
     .eq("onboarding_completed", true)
     .not("email", "is", null);
 
@@ -306,6 +387,14 @@ export async function runGrowthAgentCron(
   const results: ProcessUserResult[] = [];
   for (const row of profiles ?? []) {
     if (!row.onboarding_completed) continue;
+    if (!activeIds.has(row.id)) {
+      results.push({
+        userId: row.id,
+        ok: false,
+        skipped: "inactive_30d",
+      });
+      continue;
+    }
     results.push(await processUser(supabase, row as ProfileRow));
   }
   return results;

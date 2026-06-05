@@ -6,6 +6,10 @@ import {
   adminDeleteCommunityPost,
   getAdminCommunityData,
 } from "@/app/actions/community";
+import {
+  adminGetCreationReports,
+  adminHidePublicCreation,
+} from "@/app/actions/community-creations";
 import { PostCard } from "@/components/community/post-card";
 
 export function AdminCommunityTab() {
@@ -18,13 +22,19 @@ export function AdminCommunityTab() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [creating, setCreating] = useState(false);
+  const [creationReports, setCreationReports] = useState<
+    Awaited<ReturnType<typeof adminGetCreationReports>> | null
+  >(null);
 
   const load = useCallback(() => {
     setLoading(true);
-    getAdminCommunityData().then((res) => {
-      setData(res);
-      setLoading(false);
-    });
+    Promise.all([getAdminCommunityData(), adminGetCreationReports()]).then(
+      ([res, reports]) => {
+        setData(res);
+        setCreationReports(reports);
+        setLoading(false);
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -60,7 +70,7 @@ export function AdminCommunityTab() {
 
   if (loading) {
     return (
-      <p style={{ color: "#505055", padding: 40, textAlign: "center" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", padding: 40, textAlign: "center" }}>
         Lade…
       </p>
     );
@@ -102,7 +112,7 @@ export function AdminCommunityTab() {
             }}
           >
             <div
-              style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 6 }}
+              style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}
             >
               {s.label}
             </div>
@@ -183,10 +193,60 @@ export function AdminCommunityTab() {
         </form>
       </div>
 
+      {creationReports &&
+        !("error" in creationReports) &&
+        creationReports.reports.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <h3 style={{ color: "#ff6b7a", marginBottom: 12 }}>
+              Creation Reports ({creationReports.reports.length})
+            </h3>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {creationReports.reports.map((r) => (
+                <li
+                  key={r.id}
+                  style={{
+                    padding: 12,
+                    marginBottom: 8,
+                    borderRadius: 10,
+                    background: "#18181d",
+                    border: "1px solid rgba(255,107,122,0.2)",
+                  }}
+                >
+                  <p style={{ color: "#F0EFE8", fontSize: "0.82rem", margin: 0 }}>
+                    {r.creation?.prompt?.slice(0, 80) ?? r.generation_id}
+                  </p>
+                  <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.72rem" }}>
+                    {r.reason}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await adminHidePublicCreation(r.generation_id);
+                      load();
+                    }}
+                    style={{
+                      marginTop: 8,
+                      padding: "6px 12px",
+                      borderRadius: 6,
+                      border: "none",
+                      background: "#ff6b7a",
+                      color: "#fff",
+                      fontSize: "0.72rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Aus Community entfernen
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
       {data.reports.length > 0 && (
         <div style={{ marginBottom: 28 }}>
           <h3 style={{ color: "#ff6b7a", marginBottom: 12 }}>
-            Reports ({data.reports.length})
+            Post Reports ({data.reports.length})
           </h3>
           {data.reports.map((r) => (
             <div
@@ -203,7 +263,7 @@ export function AdminCommunityTab() {
                 style={{
                   margin: "0 0 8px",
                   fontSize: "0.82rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                 }}
               >
                 {r.reason} · {new Date(r.created_at).toLocaleString("de-DE")}

@@ -5,7 +5,9 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { trackAbEvent, type AbVariant } from "@/lib/ab-tracking";
-import { RotatingHeroHeadline } from "@/components/landing/RotatingHeroHeadline";
+import { HeroTitle } from "@/components/landing/HeroTitle";
+import { SpringReveal } from "@/components/ui/SpringReveal";
+import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
 const GridReveal = dynamic(
   () => import("@/components/landing/GridReveal"),
@@ -14,35 +16,17 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
-const SOCIAL_AVATARS = ["MK", "JS", "AL", "TR", "PN"];
-
-const HERO_CONTENT: Record<Audience, { headline: string[]; sub: string }> = {
-  creator: {
-    headline: ["Dein", "Gesicht.", "Deine Regeln."],
-    sub: "Erstelle deinen KI-Influencer, streame live ohne Gesicht und generiere Produkt-Ads die konvertieren — in Minuten.",
-  },
-  brand: {
-    headline: ["Dein KI-", "Marken-", "Botschafter."],
-    sub: "Konsistente Markenkommunikation ohne teure Shootings. Produktvideos in 90 Sekunden. Skalierbar für KMUs und Agenturen.",
-  },
+const HERO_SUB: Record<Audience, string> = {
+  creator:
+    "Erstelle deinen KI-Influencer, streame live ohne Gesicht und generiere Produkt-Ads die konvertieren — in Minuten.",
+  brand:
+    "Konsistente Markenkommunikation ohne teure Shootings. Produktvideos in 90 Sekunden. Skalierbar für KMUs und Agenturen.",
 };
 
 export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   const t = useTranslations("hero");
   const [audience, setAudience] = useState<Audience>("creator");
   const [scrollY, setScrollY] = useState(0);
-  const isVariantB = variant === "b";
-  const headlineParts = t("headline").split(/\s+—\s+/);
-  const variantBContent = {
-    headline:
-      headlineParts.length >= 2
-        ? [headlineParts[0], headlineParts.slice(1).join(" — ")]
-        : [t("headline")],
-    sub: t("subheadline"),
-    cta: t("cta_primary"),
-    ctaHref: "/auth/sign-up",
-  };
-  const content = isVariantB ? variantBContent : HERO_CONTENT[audience];
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
     ? (rawRotating as string[])
@@ -106,82 +90,57 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
           transition: "transform 0.1s linear",
         }}
       >
-        <div className="flex items-center gap-2.5 mb-7">
+        <SpringReveal>
+          <div className="flex items-center gap-2.5 mb-7">
           <div
             className="w-[7px] h-[7px] rounded-full bg-[#B4FF00] animate-blink"
             aria-hidden
           />
           <span className="kicker">{t("badge")} · 2026</span>
         </div>
+        </SpringReveal>
 
-        {!isVariantB && (
-          <div className="flex items-center gap-2 mb-7 flex-wrap">
-            {(["creator", "brand"] as Audience[]).map((a) => (
-              <button
-                key={a}
-                onClick={() => setAudience(a)}
-                className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
-                style={{
-                  background: audience === a ? "#B4FF00" : "transparent",
-                  borderColor:
-                    audience === a ? "#B4FF00" : "rgba(255,255,255,0.13)",
-                  color: audience === a ? "#060608" : "rgba(240,239,232,0.6)",
-                  fontFamily: "var(--font-dm), sans-serif",
-                }}
-              >
-                {a === "creator" ? "Für Creator" : "Für Marken"}
-              </button>
-            ))}
-          </div>
-        )}
+        <SpringReveal delay={0.08}>
+        <div className="flex items-center gap-2 mb-7 flex-wrap">
+          {(["creator", "brand"] as Audience[]).map((a) => (
+            <button
+              key={a}
+              type="button"
+              onClick={() => setAudience(a)}
+              className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
+              style={{
+                background: audience === a ? "#B4FF00" : "transparent",
+                borderColor:
+                  audience === a ? "#B4FF00" : "rgba(255,255,255,0.13)",
+                color: audience === a ? "#060608" : "rgba(255,255,255,0.85)",
+                fontFamily: "var(--font-dm), sans-serif",
+              }}
+            >
+              {a === "creator" ? "Für Creator" : "Für Marken"}
+            </button>
+          ))}
+        </div>
+        </SpringReveal>
 
-        {isVariantB ? (
-          <h1
-            className="mb-7"
-            style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "clamp(3.2rem, 8vw, 7.5rem)",
-              letterSpacing: "0.02em",
-              lineHeight: 0.92,
-            }}
-          >
-            {content.headline.map((line, i) => {
-              const accentIndex = 2;
-              return (
-                <span key={i} className="block">
-                  {i === accentIndex ? (
-                    <span style={{ color: "#B4FF00" }}>{line}</span>
-                  ) : (
-                    line
-                  )}
-                </span>
-              );
-            })}
-          </h1>
-        ) : (
-          <RotatingHeroHeadline titles={rotatingTitles} intervalMs={2000} />
-        )}
+        <SpringReveal delay={0.12}>
+        <HeroTitle titles={rotatingTitles} />
+        </SpringReveal>
 
-        <p
-          className="mb-8"
-          style={{
-            fontSize: "clamp(1rem, 1.8vw, 1.1rem)",
-            color: "rgba(240,239,232,0.6)",
-            lineHeight: 1.75,
-            maxWidth: 440,
-          }}
-        >
-          {content.sub}
+        <SpringReveal delay={0.16}>
+        <p className="hero-subtitle mb-8 max-w-[440px]">
+          {HERO_SUB[audience]}
         </p>
+        </SpringReveal>
 
+        <SpringReveal delay={0.4}>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 mb-10">
-          <a
-            href={isVariantB ? variantBContent.ctaHref : "/auth/sign-up"}
+          <AcidMotionButton
+            href="/auth/sign-up"
             className="btn-acid justify-center sm:justify-start"
             onClick={() => void trackAbEvent("signup_click", variant)}
           >
-            → {isVariantB ? variantBContent.cta : t("cta_primary")}
-          </a>
+            → {t("cta_primary")}
+          </AcidMotionButton>
           <a
             href="#features"
             className="btn-ghost justify-center sm:justify-start"
@@ -189,49 +148,12 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
             {t("cta_secondary")}
           </a>
         </div>
+        </SpringReveal>
 
-        {isVariantB && (
-          <div
-            className="flex items-center gap-3 mb-8 flex-wrap"
-            style={{ fontSize: "0.82rem" }}
-          >
-            <div className="flex items-center" style={{ marginRight: 4 }}>
-              {SOCIAL_AVATARS.map((initials, i) => (
-                <div
-                  key={initials}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "rgba(180,255,0,0.15)",
-                    border: "2px solid #060608",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.62rem",
-                    fontWeight: 700,
-                    color: "#B4FF00",
-                    marginLeft: i > 0 ? -10 : 0,
-                    zIndex: SOCIAL_AVATARS.length - i,
-                  }}
-                >
-                  {initials}
-                </div>
-              ))}
-            </div>
-            <span style={{ color: "rgba(240,239,232,0.45)" }}>
-              Bereits von{" "}
-              <strong style={{ color: "#B4FF00", fontWeight: 700 }}>
-                500+
-              </strong>{" "}
-              Creators genutzt
-            </span>
-          </div>
-        )}
-
+        <SpringReveal delay={0.24}>
         <div
           className="flex items-center gap-3 flex-wrap"
-          style={{ fontSize: "0.82rem", color: "#505055" }}
+          style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}
         >
           {[`✓ ${t("trust_1")}`, `✓ ${t("trust_2")}`, `✓ ${t("trust_3")}`].map(
             (item, i) => (
@@ -239,7 +161,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
                 {i > 0 && (
                   <span
                     className="w-[3px] h-[3px] rounded-full inline-block"
-                    style={{ background: "#505055" }}
+                    style={{ background: "rgba(255,255,255,0.65)" }}
                   />
                 )}
                 {item}
@@ -247,6 +169,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
             )
           )}
         </div>
+        </SpringReveal>
       </div>
 
       {/* RIGHT: Hero image */}

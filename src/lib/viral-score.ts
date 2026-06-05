@@ -14,17 +14,28 @@ Analysiere den gegebenen Content und bewerte ihn nach:
 
 Antworte NUR als JSON:
 {
-  "total_score": number (0-100),
-  "hook_score": number (0-25),
-  "retention_score": number (0-25),
-  "ctr_score": number (0-25),
-  "trend_score": number (0-25),
-  "strengths": string[] (3 konkrete Stärken),
-  "improvements": string[] (3 konkrete Verbesserungen),
-  "improved_hook": string (verbesserter Hook-Vorschlag),
-  "verdict": string (1 Satz Fazit)
+  "total_score": number,
+  "hook_score": number,
+  "retention_score": number,
+  "ctr_score": number,
+  "trend_score": number,
+  "strengths": string[],
+  "improvements": string[],
+  "improved_hook": string,
+  "verdict": string
 }
 ${CLAUDE_JSON_SYSTEM_RULE}`;
+
+export const VIRAL_SCORE_LANGUAGE_OPTIONS = [
+  { code: "de", label: "🇩🇪 Deutsch" },
+  { code: "en", label: "🇬🇧 English" },
+  { code: "es", label: "🇪🇸 Español" },
+  { code: "fr", label: "🇫🇷 Français" },
+  { code: "pt", label: "🇵🇹 Português" },
+  { code: "tr", label: "🇹🇷 Türkçe" },
+  { code: "ar", label: "🇸🇦 العربية" },
+  { code: "el", label: "🇬🇷 Ελληνικά" },
+] as const;
 
 export type ViralScoreResult = {
   total_score: number;

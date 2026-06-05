@@ -10,6 +10,7 @@ import {
   checkUsernameAvailable,
   type GenerationRow,
 } from "@/app/actions/public-profile";
+import { setGenerationPublic } from "@/app/actions/community-creations";
 import {
   SITE_URL,
   generationTypeBadge,
@@ -63,7 +64,7 @@ export default function PublicProfileSettingsPage() {
   const pinnedCount = generations.filter((g) => g.is_pinned).length;
   const profileUrl =
     username.trim() && isValidUsername(normalizeUsername(username))
-      ? `${SITE_URL}/creator/${normalizeUsername(username)}`
+      ? `${SITE_URL}/profile/${normalizeUsername(username)}`
       : null;
 
   const handleUsernameBlur = async () => {
@@ -101,6 +102,16 @@ export default function PublicProfileSettingsPage() {
     await load();
   };
 
+  const togglePublic = async (id: string, currentlyPublic: boolean) => {
+    setError(null);
+    const res = await setGenerationPublic(id, !currentlyPublic);
+    if (!res.success) {
+      setError(res.error ?? "Fehler");
+      return;
+    }
+    await load();
+  };
+
   const togglePin = async (id: string, currentlyPinned: boolean) => {
     setError(null);
     const res = await setGenerationPinned(id, !currentlyPinned);
@@ -133,7 +144,7 @@ export default function PublicProfileSettingsPage() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -146,7 +157,7 @@ export default function PublicProfileSettingsPage() {
         style={{
           maxWidth: 640,
           margin: "0 auto",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           padding: 40,
         }}
       >
@@ -161,7 +172,7 @@ export default function PublicProfileSettingsPage() {
         href="/dashboard/settings"
         style={{
           fontSize: "0.82rem",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           textDecoration: "none",
           fontFamily: "var(--font-dm), sans-serif",
         }}
@@ -179,7 +190,7 @@ export default function PublicProfileSettingsPage() {
       >
         Öffentliches Profil
       </h1>
-      <p style={{ color: "#505055", fontSize: "0.9rem", marginBottom: 28 }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", marginBottom: 28 }}>
         Teile dein Creator-Profil unter influexaicreator.com/creator/dein-name
       </p>
 
@@ -249,7 +260,7 @@ export default function PublicProfileSettingsPage() {
         <div>
           <label style={labelStyle}>Username</label>
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <span style={{ color: "#505055", fontSize: "0.95rem" }}>@</span>
+            <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.95rem" }}>@</span>
             <input
               type="text"
               value={username}
@@ -287,7 +298,7 @@ export default function PublicProfileSettingsPage() {
             style={{
               margin: "6px 0 0",
               fontSize: "0.75rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               textAlign: "right",
             }}
           >
@@ -336,7 +347,7 @@ export default function PublicProfileSettingsPage() {
               borderRadius: 9,
               border: "1px solid rgba(255,255,255,0.1)",
               background: "rgba(255,255,255,0.04)",
-              color: profileUrl && isPublic ? "#F0EFE8" : "#505055",
+              color: profileUrl && isPublic ? "#F0EFE8" : "rgba(255,255,255,0.65)",
               fontSize: "0.85rem",
               cursor: profileUrl && isPublic ? "pointer" : "default",
               fontFamily: "var(--font-dm), sans-serif",
@@ -404,12 +415,12 @@ export default function PublicProfileSettingsPage() {
         >
           Showcase Content
         </h2>
-        <p style={{ fontSize: "0.82rem", color: "#505055", marginBottom: 16 }}>
+        <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)", marginBottom: 16 }}>
           Pinne bis zu 3 Einträge ({pinnedCount}/3)
         </p>
 
         {generations.length === 0 ? (
-          <p style={{ color: "#505055", fontSize: "0.88rem" }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem" }}>
             Noch keine Generierungen. Erstelle Content, um dein Profil zu
             füllen.
           </p>
@@ -470,30 +481,50 @@ export default function PublicProfileSettingsPage() {
                         : g.prompt}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => togglePin(g.id, g.is_pinned)}
-                    disabled={!g.is_pinned && pinnedCount >= 3}
-                    style={{
-                      flexShrink: 0,
-                      padding: "6px 12px",
-                      borderRadius: 8,
-                      border: "none",
-                      background: g.is_pinned
-                        ? "#B4FF00"
-                        : "rgba(255,255,255,0.08)",
-                      color: g.is_pinned ? "#060608" : "#505055",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      cursor:
-                        !g.is_pinned && pinnedCount >= 3
-                          ? "default"
-                          : "pointer",
-                      fontFamily: "var(--font-dm), sans-serif",
-                    }}
-                  >
-                    {g.is_pinned ? "Gepinnt" : "Pinnen"}
-                  </button>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => togglePublic(g.id, g.is_public)}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: g.is_public
+                          ? "rgba(180,255,0,0.2)"
+                          : "rgba(255,255,255,0.08)",
+                        color: g.is_public ? "#B4FF00" : "rgba(255,255,255,0.65)",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        fontFamily: "var(--font-dm), sans-serif",
+                      }}
+                    >
+                      {g.is_public ? "Öffentlich" : "Teilen"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => togglePin(g.id, g.is_pinned)}
+                      disabled={!g.is_pinned && pinnedCount >= 3}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: g.is_pinned
+                          ? "#B4FF00"
+                          : "rgba(255,255,255,0.08)",
+                        color: g.is_pinned ? "#060608" : "rgba(255,255,255,0.65)",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        cursor:
+                          !g.is_pinned && pinnedCount >= 3
+                            ? "default"
+                            : "pointer",
+                        fontFamily: "var(--font-dm), sans-serif",
+                      }}
+                    >
+                      {g.is_pinned ? "Gepinnt" : "Pinnen"}
+                    </button>
+                  </div>
                 </li>
               );
             })}

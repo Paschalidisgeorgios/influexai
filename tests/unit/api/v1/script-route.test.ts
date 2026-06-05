@@ -33,7 +33,12 @@ describe("POST /api/v1/script", () => {
 
     vi.mocked(authenticateApiRequest).mockResolvedValue({
       ok: true,
-      ctx: { userId: "user-123", apiKeyId: "key-1" },
+      ctx: {
+        userId: "user-123",
+        apiKeyId: "key-1",
+        plan: "business",
+        rateLimitPerDay: 1000,
+      },
     });
 
     vi.mocked(apiGenerateScript).mockResolvedValue({
@@ -70,7 +75,12 @@ describe("POST /api/v1/script", () => {
 
     vi.mocked(authenticateApiRequest).mockResolvedValue({
       ok: true,
-      ctx: { userId: "user-123", apiKeyId: "key-1" },
+      ctx: {
+        userId: "user-123",
+        apiKeyId: "key-1",
+        plan: "business",
+        rateLimitPerDay: 1000,
+      },
     });
 
     vi.mocked(apiGenerateScript).mockResolvedValue({

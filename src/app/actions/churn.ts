@@ -217,36 +217,33 @@ export async function adminChurnAction(
   }
 
   if (action === "send_email") {
-    const risk = await calculateChurnRisk(userId);
-    const emailType =
-      risk.risk === "critical" ? "winback_critical" : "winback_high";
-
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) {
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !serviceKey) {
       return { success: false, error: "Service-Konfiguration fehlt." };
     }
 
-    const res = await fetch(`${url}/functions/v1/send-nurture-email`, {
+    const res = await fetch(`${url}/functions/v1/churn-prevention`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${serviceKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        userId,
-        emailType,
-        forceWinback: true,
-      }),
+      body: JSON.stringify({ userId }),
     });
 
     if (!res.ok) {
       return { success: false, error: await res.text() };
     }
-    const data = await res.json();
-    return data.sent
-      ? { success: true }
-      : { success: false, error: data.reason ?? "E-Mail nicht gesendet" };
+    const data = (await res.json()) as {
+      result?: { sent?: string; skipped?: string };
+    };
+    const r = data.result;
+    if (r?.sent) return { success: true };
+    return {
+      success: false,
+      error: r?.skipped ?? "E-Mail nicht gesendet",
+    };
   }
 
   return { success: false, error: "Unbekannte Aktion" };

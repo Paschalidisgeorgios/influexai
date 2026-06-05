@@ -182,7 +182,7 @@ function SignupPageInner() {
       <div className="w-full max-w-sm mx-auto text-center">
         <div className="text-5xl mb-4">✅</div>
         <h2 className="text-white text-2xl font-semibold mb-3">Fast fertig!</h2>
-        <p className="text-white/50 text-sm leading-relaxed mb-6">
+        <p className="text-white/80 text-sm leading-relaxed mb-6">
           Wir haben dir eine Bestätigungs-E-Mail an{" "}
           <strong className="text-white">{email}</strong> geschickt.
           {betaCode && (
@@ -227,14 +227,14 @@ function SignupPageInner() {
       <h1 className="text-white text-2xl font-semibold mb-2">
         {t("signup_title")}
       </h1>
-      <p className="text-white/40 text-sm mb-6">{t("signup_subtitle")}</p>
+      <p className="text-white/70 text-sm mb-6">{t("signup_subtitle")}</p>
 
       {betaCode && (
         <div className="mb-4 p-3 rounded-xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 text-sm">
           <p className="text-[#B4FF00] font-semibold">
             🔥 Beta — 50% Erstkauf + 20% Lifetime
           </p>
-          <p className="text-white/40 text-xs mt-1">Code: {betaCode}</p>
+          <p className="text-white/70 text-xs mt-1">Code: {betaCode}</p>
         </div>
       )}
 
@@ -243,7 +243,7 @@ function SignupPageInner() {
           <p className="text-[#B4FF00] font-semibold">
             🎁 5 Bonus-Credits — Einladung
           </p>
-          <p className="text-white/40 text-xs mt-1">Code: {referralCode}</p>
+          <p className="text-white/70 text-xs mt-1">Code: {referralCode}</p>
         </div>
       )}
 
@@ -304,7 +304,7 @@ function SignupPageInner() {
             ))}
           </div>
           {password.length > 0 && strength > 0 && (
-            <p className="text-xs mt-1 text-white/30">
+            <p className="text-xs mt-1 text-white/65">
               {t(strengthLabelKeys[Math.min(strength - 1, 3)])}
             </p>
           )}
@@ -319,11 +319,11 @@ function SignupPageInner() {
         </button>
       </form>
 
-      <p className="text-center text-white/30 text-xs mt-4 leading-relaxed">
+      <p className="text-center text-white/65 text-xs mt-4 leading-relaxed">
         {t("terms_text")}{" "}
         <Link
           href="/terms"
-          className="text-white/40 underline hover:text-[#B4FF00]"
+          className="text-white/70 underline hover:text-[#B4FF00]"
         >
           {t("terms_link")}
         </Link>
@@ -335,7 +335,7 @@ function SignupPageInner() {
         <div className="flex-1 h-px bg-white/10" />
       </div>
 
-      <p className="text-center text-white/40 text-sm">
+      <p className="text-center text-white/70 text-sm">
         {t("has_account")}{" "}
         <Link href="/auth/sign-in" className="text-[#B4FF00] hover:underline">
           {t("login_link")}
@@ -349,7 +349,7 @@ export default function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full max-w-sm mx-auto text-white/40 text-sm">…</div>
+        <div className="w-full max-w-sm mx-auto text-white/70 text-sm">…</div>
       }
     >
       <SignupPageInner />

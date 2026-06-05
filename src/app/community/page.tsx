@@ -1,12 +1,14 @@
 import { getCommunityInitial } from "@/app/actions/community";
-import { CommunityHub } from "@/components/community/community-hub";
+import { getCommunityPageData } from "@/app/actions/community-creations";
+import { CommunityPageHub } from "@/components/community/community-page-hub";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const revalidate = 60;
 
 export const metadata = {
   title: "Community — InfluexAI",
-  description: "Creator teilen Wins, Ideen und Feedback.",
+  description:
+    "Creator Showcase, Inspiration Feed und Leaderboard — teile deine besten KI-Creations.",
 };
 
 export default async function CommunityPage() {
@@ -15,13 +17,19 @@ export default async function CommunityPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const initial = await getCommunityInitial(user?.id ?? null);
+  const userId = user?.id ?? null;
+
+  const [creationData, socialInitial] = await Promise.all([
+    getCommunityPageData(userId),
+    getCommunityInitial(userId),
+  ]);
 
   return (
-    <CommunityHub
+    <CommunityPageHub
       isLoggedIn={!!user}
-      userId={user?.id ?? null}
-      initial={initial}
+      userId={userId}
+      creationData={creationData}
+      socialInitial={socialInitial}
     />
   );
 }

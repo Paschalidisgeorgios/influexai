@@ -51,8 +51,24 @@ export async function handleApiPost<T>(
       credits_remaining: result.creditsRemaining,
     });
   } catch (e) {
-    statusCode =
-      e instanceof Error && e.message.startsWith("INVALID") ? 400 : 500;
+    const msg = e instanceof Error ? e.message : "";
+    if (msg === "FAL_NOT_CONFIGURED") {
+      statusCode = 503;
+      await logApiRequest({
+        apiKeyId: auth.ctx.apiKeyId,
+        userId: auth.ctx.userId,
+        endpoint,
+        creditsUsed: 0,
+        responseTimeMs: Date.now() - start,
+        statusCode,
+      });
+      return apiError(
+        503,
+        "Image generation is not configured",
+        "SERVER_ERROR"
+      );
+    }
+    statusCode = msg.startsWith("INVALID") ? 400 : 500;
     await logApiRequest({
       apiKeyId: auth.ctx.apiKeyId,
       userId: auth.ctx.userId,

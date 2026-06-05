@@ -4,14 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
 const NAV_LINKS = [
   { key: "nav_brands" as const, href: "#brands" },
   { key: "nav_features" as const, href: "#features" },
+  { key: "nav_blog" as const, href: "/blog", external: true },
+  { key: "nav_guides" as const, href: "/guides", external: true },
+  { key: "nav_community" as const, href: "/community", external: true },
   { key: "nav_pricing" as const, href: "#pricing" },
+  { key: "nav_agency" as const, href: "/agency", external: true },
 ];
 
-export function LandingNav() {
+export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const t = useTranslations("landing");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,11 +55,28 @@ export function LandingNav() {
         </Link>
 
         <div className="hidden md:flex items-center gap-0">
-          {NAV_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="nav-item">
-              {t(l.key)}
-            </a>
-          ))}
+          {agencyMode ? (
+            <>
+              <Link href="/" className="nav-item">
+                {t("nav_home")}
+              </Link>
+              <a href="#agency-pricing" className="nav-item">
+                {t("nav_pricing")}
+              </a>
+            </>
+          ) : (
+            NAV_LINKS.map((l) =>
+              l.external ? (
+                <Link key={l.href} href={l.href} className="nav-item">
+                  {t(l.key)}
+                </Link>
+              ) : (
+                <a key={l.href} href={l.href} className="nav-item">
+                  {t(l.key)}
+                </a>
+              )
+            )
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-2.5">
@@ -62,23 +84,23 @@ export function LandingNav() {
           <a
             href="/auth/sign-in"
             className="text-sm font-medium px-3 py-2 transition-colors duration-150"
-            style={{ color: "rgba(240,239,232,0.6)" }}
+            style={{ color: "rgba(255,255,255,0.85)" }}
           >
             {t("auth_login")}
           </a>
-          <a
+          <AcidMotionButton
             href="/auth/sign-up"
             className="btn-acid"
             style={{ padding: "9px 18px", fontSize: "0.85rem" }}
           >
             {t("auth_signup")}
-          </a>
+          </AcidMotionButton>
         </div>
 
         <button
           onClick={() => setMenuOpen((v) => !v)}
           className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/[0.05] transition-all"
-          style={{ color: "rgba(240,239,232,0.6)" }}
+          style={{ color: "rgba(255,255,255,0.85)" }}
           aria-label="Menü öffnen"
         >
           {menuOpen ? (
@@ -110,17 +132,42 @@ export function LandingNav() {
 
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
         <div className="flex flex-col gap-0 mb-8">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              onClick={closeMenu}
-              className="mobile-nav-link"
-            >
-              {t(l.key)}
-              <span className="text-xl">↗</span>
-            </a>
-          ))}
+          {agencyMode ? (
+            <>
+              <Link href="/" onClick={closeMenu} className="mobile-nav-link">
+                {t("nav_home")}
+                <span className="text-xl">↗</span>
+              </Link>
+              <a href="#agency-pricing" onClick={closeMenu} className="mobile-nav-link">
+                {t("nav_pricing")}
+                <span className="text-xl">↗</span>
+              </a>
+            </>
+          ) : (
+            NAV_LINKS.map((l) =>
+              l.external ? (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={closeMenu}
+                  className="mobile-nav-link"
+                >
+                  {t(l.key)}
+                  <span className="text-xl">↗</span>
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={closeMenu}
+                  className="mobile-nav-link"
+                >
+                  {t(l.key)}
+                  <span className="text-xl">↗</span>
+                </a>
+              )
+            )
+          )}
         </div>
         <div className="mb-4">
           <LanguageSwitcher />
@@ -133,13 +180,13 @@ export function LandingNav() {
           >
             {t("auth_login")}
           </a>
-          <a
+          <AcidMotionButton
             href="/auth/sign-up"
             onClick={closeMenu}
             className="btn-acid justify-center"
           >
             {t("auth_signup")} →
-          </a>
+          </AcidMotionButton>
         </div>
       </div>
     </>

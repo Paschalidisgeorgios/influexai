@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { CreditsWarningBanner } from "@/components/credits-warning-banner";
 import { ReengagementBanner } from "@/components/reengagement-banner";
@@ -55,18 +56,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-      <DashboardHeader />
-      <PlatformBanners isAdmin={isAdmin} />
-      {credits !== null && <CreditsWarningBanner credits={credits} />}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-5 pb-20 md:pb-0">
-        <ReengagementBanner />
-        {children}
-      </main>
-      <PoweredByFooter />
-      <MobileBottomNav />
-      <UpgradePromptListener />
-      <PostGenerationUpsell />
-    </div>
+    <BuyCreditsProvider>
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <DashboardHeader credits={credits} />
+        <PlatformBanners isAdmin={isAdmin} />
+        {credits !== null && <CreditsWarningBanner credits={credits} />}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-5 pb-20 md:pb-0">
+          <ReengagementBanner />
+          {children}
+        </main>
+        <PoweredByFooter />
+        <MobileBottomNav />
+        <UpgradePromptListener />
+        <PostGenerationUpsell />
+      </div>
+    </BuyCreditsProvider>
   );
 }

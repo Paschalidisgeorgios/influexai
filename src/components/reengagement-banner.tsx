@@ -64,7 +64,7 @@ export function ReengagementBanner() {
           right: 12,
           background: "transparent",
           border: "none",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           cursor: "pointer",
           fontSize: "1.1rem",
           lineHeight: 1,
@@ -86,7 +86,7 @@ export function ReengagementBanner() {
         style={{
           margin: "0 0 8px",
           fontSize: "0.8rem",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           fontWeight: 600,
         }}
       >

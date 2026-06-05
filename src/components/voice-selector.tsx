@@ -42,7 +42,7 @@ function getCategoryColor(category: string): string {
     case "generated":
       return "bg-orange-500/20 text-orange-400";
     default:
-      return "bg-white/10 text-white/50";
+      return "bg-white/10 text-white/80";
   }
 }
 
@@ -166,7 +166,7 @@ export function VoiceSelector({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-white/40 text-sm py-4">
+      <div className="flex items-center gap-2 text-white/70 text-sm py-4">
         <div
           className="w-4 h-4 border border-[#B4FF00]/50 border-t-[#B4FF00] rounded-full animate-spin"
           aria-hidden
@@ -215,7 +215,7 @@ export function VoiceSelector({
               className={`px-3 py-1 rounded-full text-xs transition-all ${
                 genderFilter === g
                   ? "bg-[#B4FF00] text-black font-medium"
-                  : "bg-white/5 text-white/50 hover:bg-white/10"
+                  : "bg-white/5 text-white/80 hover:bg-white/10"
               }`}
             >
               {g === "Alle"
@@ -236,7 +236,7 @@ export function VoiceSelector({
               className={`px-3 py-1 rounded-full text-xs transition-all ${
                 categoryFilter === c
                   ? "bg-[#B4FF00] text-black font-medium"
-                  : "bg-white/5 text-white/50 hover:bg-white/10"
+                  : "bg-white/5 text-white/80 hover:bg-white/10"
               }`}
             >
               {c === "Alle" ? "Alle" : getCategoryLabel(c)}
@@ -251,7 +251,7 @@ export function VoiceSelector({
             className={`px-3 py-1 rounded-full text-xs transition-all ${
               languageFilter === "Alle"
                 ? "bg-[#B4FF00] text-black font-medium"
-                : "bg-white/5 text-white/50 hover:bg-white/10"
+                : "bg-white/5 text-white/80 hover:bg-white/10"
             }`}
           >
             Alle Sprachen
@@ -264,7 +264,7 @@ export function VoiceSelector({
               className={`px-3 py-1 rounded-full text-xs transition-all ${
                 languageFilter === l
                   ? "bg-[#B4FF00] text-black font-medium"
-                  : "bg-white/5 text-white/50 hover:bg-white/10"
+                  : "bg-white/5 text-white/80 hover:bg-white/10"
               }`}
             >
               {LANGUAGE_LABELS[l] ?? l}
@@ -273,11 +273,11 @@ export function VoiceSelector({
         </div>
       </div>
 
-      <p className="text-white/30 text-xs">{filtered.length} Stimmen gefunden</p>
+      <p className="text-white/65 text-xs">{filtered.length} Stimmen gefunden</p>
 
       <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
         {filtered.length === 0 ? (
-          <p className="text-white/30 text-sm text-center py-4">
+          <p className="text-white/65 text-sm text-center py-4">
             Keine Stimmen gefunden
           </p>
         ) : (
@@ -329,18 +329,18 @@ export function VoiceSelector({
                 </div>
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                   {voice.accent && (
-                    <span className="text-white/40 text-xs">{voice.accent}</span>
+                    <span className="text-white/70 text-xs">{voice.accent}</span>
                   )}
                   {voice.age && (
-                    <span className="text-white/40 text-xs">· {voice.age}</span>
+                    <span className="text-white/70 text-xs">· {voice.age}</span>
                   )}
                   {voice.useCase && (
-                    <span className="text-white/40 text-xs">
+                    <span className="text-white/70 text-xs">
                       · {voice.useCase}
                     </span>
                   )}
                   {voice.language && LANGUAGE_LABELS[voice.language] && (
-                    <span className="text-white/40 text-xs">
+                    <span className="text-white/70 text-xs">
                       · {LANGUAGE_LABELS[voice.language]}
                     </span>
                   )}
@@ -354,7 +354,7 @@ export function VoiceSelector({
                   className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all text-xs ${
                     playingId === voice.id
                       ? "border-[#B4FF00] bg-[#B4FF00] text-black"
-                      : "border-white/20 text-white/60 hover:border-[#B4FF00] hover:text-[#B4FF00]"
+                      : "border-white/20 text-white/80 hover:border-[#B4FF00] hover:text-[#B4FF00]"
                   }`}
                   title="Vorschau abspielen"
                 >

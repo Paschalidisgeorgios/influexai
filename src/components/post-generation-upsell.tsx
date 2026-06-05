@@ -89,7 +89,7 @@ export function PostGenerationUpsell() {
         style={{
           background: "transparent",
           border: "none",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           cursor: "pointer",
           fontSize: "1rem",
         }}

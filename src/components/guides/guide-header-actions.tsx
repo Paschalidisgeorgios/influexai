@@ -37,7 +37,7 @@ export function GuideHeaderActions({
         type="button"
         onClick={downloadPdf}
         disabled={downloading}
-        className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:border-[#B4FF00]/40 hover:text-[#B4FF00] disabled:opacity-50"
+        className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:border-[#B4FF00]/40 hover:text-[#B4FF00] disabled:opacity-80"
       >
         {downloading ? "PDF wird erstellt…" : "Guide als PDF herunterladen"}
       </button>

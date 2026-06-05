@@ -121,7 +121,7 @@ function OutlierDetectorPageInner() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -230,7 +230,7 @@ function OutlierDetectorPageInner() {
             {t("title")}
           </h1>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           {t("description")}
         </p>
       </div>
@@ -262,7 +262,7 @@ function OutlierDetectorPageInner() {
                     ? "rgba(180,255,0,0.08)"
                     : "rgba(255,255,255,0.04)",
                 border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
-                color: done || active ? "#B4FF00" : "#505055",
+                color: done || active ? "#B4FF00" : "rgba(255,255,255,0.65)",
               }}
             >
               {done ? "✓ " : ""}
@@ -364,7 +364,7 @@ function OutlierDetectorPageInner() {
                     gap: 10,
                     cursor: "pointer",
                     fontSize: "0.88rem",
-                    color: channelSize === cs.id ? "#B4FF00" : "#505055",
+                    color: channelSize === cs.id ? "#B4FF00" : "rgba(255,255,255,0.65)",
                   }}
                 >
                   <input
@@ -393,7 +393,7 @@ function OutlierDetectorPageInner() {
               borderRadius: 11,
               border: "none",
               background: niche.trim() ? "#B4FF00" : "#2a2a2a",
-              color: niche.trim() ? "#060608" : "#505055",
+              color: niche.trim() ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
@@ -406,7 +406,7 @@ function OutlierDetectorPageInner() {
             style={{
               textAlign: "center",
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               margin: 0,
             }}
           >
@@ -505,7 +505,7 @@ function OutlierDetectorPageInner() {
                 borderRadius: 8,
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.82rem",
                 cursor: "pointer",
                 fontFamily: "var(--font-dm), sans-serif",
@@ -573,7 +573,7 @@ function OutlierDetectorPageInner() {
                       style={{
                         fontSize: "0.65rem",
                         fontWeight: 700,
-                        color: "#505055",
+                        color: "rgba(255,255,255,0.65)",
                         textTransform: "uppercase",
                         letterSpacing: "0.1em",
                         marginBottom: 4,
@@ -611,7 +611,7 @@ function OutlierDetectorPageInner() {
                     style={{
                       fontSize: "0.72rem",
                       fontWeight: 700,
-                      color: "#505055",
+                      color: "rgba(255,255,255,0.65)",
                       textTransform: "uppercase",
                       letterSpacing: "0.08em",
                       marginBottom: 8,
@@ -623,7 +623,7 @@ function OutlierDetectorPageInner() {
                     style={{
                       margin: 0,
                       paddingLeft: 18,
-                      color: "rgba(240,239,232,0.75)",
+                      color: "rgba(255,255,255,0.85)",
                       fontSize: "0.85rem",
                       lineHeight: 1.65,
                     }}

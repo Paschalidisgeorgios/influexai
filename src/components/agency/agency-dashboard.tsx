@@ -48,7 +48,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
 
   if (loading) {
     return (
-      <p style={{ color: "#505055", padding: 40 }}>Agentur-Dashboard laden…</p>
+      <p style={{ color: "rgba(255,255,255,0.65)", padding: 40 }}>Agentur-Dashboard laden…</p>
     );
   }
 
@@ -58,7 +58,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
         <h1 style={{ color: "#F0EFE8", fontFamily: "var(--font-bebas)" }}>
           Agentur Dashboard
         </h1>
-        <p style={{ color: "#505055" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)" }}>
           {"error" in (data ?? {}) ? data?.error : "Keine Agentur."}{" "}
           <Link href="/dashboard/white-label" style={{ color: "var(--accent)" }}>
             White-Label Plan wählen →
@@ -145,7 +145,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
           </span>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: "0.75rem", color: "#505055" }}>
+          <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
             Credits Pool
           </div>
           <div
@@ -235,7 +235,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
             }}
           />
         </div>
-        <p style={{ marginTop: 10, fontSize: "0.8rem", color: "#505055" }}>
+        <p style={{ marginTop: 10, fontSize: "0.8rem", color: "rgba(255,255,255,0.65)" }}>
           Subdomain:{" "}
           <strong style={{ color: "var(--accent)" }}>
             {tenant.slug}.influexaicreator.com
@@ -256,7 +256,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
             }}
           >
             <thead>
-              <tr style={{ color: "#505055", textAlign: "left" }}>
+              <tr style={{ color: "rgba(255,255,255,0.65)", textAlign: "left" }}>
                 {[
                   "Name",
                   "Email",
@@ -291,7 +291,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
       >
         <h2 style={{ color: "#F0EFE8", marginBottom: 16 }}>Branding</h2>
         <div style={{ display: "grid", gap: 12, maxWidth: 480 }}>
-          <label style={{ color: "#505055", fontSize: "0.8rem" }}>
+          <label style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
             App-Name
             <input
               value={name}
@@ -299,7 +299,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
               style={inputStyle}
             />
           </label>
-          <label style={{ color: "#505055", fontSize: "0.8rem" }}>
+          <label style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
             Logo URL
             <input
               value={logoUrl}
@@ -308,7 +308,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
               style={inputStyle}
             />
           </label>
-          <label style={{ color: "#505055", fontSize: "0.8rem" }}>
+          <label style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
             Primärfarbe
             <input
               type="color"
@@ -317,7 +317,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
               style={{ width: "100%", height: 40 }}
             />
           </label>
-          <label style={{ color: "#505055", fontSize: "0.8rem" }}>
+          <label style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
             Hintergrund
             <input
               type="color"
@@ -326,7 +326,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
               style={{ width: "100%", height: 40 }}
             />
           </label>
-          <label style={{ color: "#505055", fontSize: "0.8rem" }}>
+          <label style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
             Custom Domain (Enterprise)
             <input
               value={customDomain}
@@ -335,7 +335,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
               style={inputStyle}
             />
           </label>
-          <p style={{ fontSize: "0.75rem", color: "#505055", lineHeight: 1.5 }}>
+          <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>
             CNAME: <code>{tenant.slug}.influexaicreator.com</code> →
             influexaicreator.com
           </p>
@@ -467,10 +467,10 @@ function MemberRow({
         {member.full_name ?? "—"}
       </td>
       <td style={{ padding: 10 }}>{member.email}</td>
-      <td style={{ padding: 10, color: "#505055" }}>
+      <td style={{ padding: 10, color: "rgba(255,255,255,0.65)" }}>
         {new Date(member.created_at).toLocaleDateString("de-DE")}
       </td>
-      <td style={{ padding: 10, color: "#505055" }}>
+      <td style={{ padding: 10, color: "rgba(255,255,255,0.65)" }}>
         {member.last_activity
           ? new Date(member.last_activity).toLocaleDateString("de-DE")
           : "—"}

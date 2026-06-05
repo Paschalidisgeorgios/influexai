@@ -193,7 +193,7 @@ export function BetaPageClient({ initialStats }: Props) {
         <a
           href="/login"
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",
             textDecoration: "none",
           }}
@@ -227,7 +227,7 @@ export function BetaPageClient({ initialStats }: Props) {
             <span style={{ color: "#B4FF00" }}>100 InfluexAI Creators</span>
           </h1>
 
-          <p style={{ color: "rgba(240,239,232,0.55)", marginBottom: 20 }}>
+          <p style={{ color: "rgba(255,255,255,0.8)", marginBottom: 20 }}>
             Beta-User bekommen:
           </p>
 
@@ -248,7 +248,7 @@ export function BetaPageClient({ initialStats }: Props) {
                 style={{
                   marginBottom: 10,
                   fontSize: "0.9rem",
-                  color: "rgba(240,239,232,0.75)",
+                  color: "rgba(255,255,255,0.85)",
                 }}
               >
                 <span style={{ color: "#B4FF00", marginRight: 8 }}>✓</span>
@@ -341,7 +341,7 @@ export function BetaPageClient({ initialStats }: Props) {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   cursor: "pointer",
                   fontFamily: "inherit",
                 }}
@@ -419,7 +419,7 @@ export function BetaPageClient({ initialStats }: Props) {
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 marginBottom: 12,
               }}
             >
@@ -432,7 +432,7 @@ export function BetaPageClient({ initialStats }: Props) {
                   style={{
                     margin: 0,
                     fontSize: "0.88rem",
-                    color: "rgba(240,239,232,0.5)",
+                    color: "rgba(255,255,255,0.8)",
                   }}
                 >
                   <span style={{ color: "#F0EFE8" }}>{r.displayName}</span>
@@ -483,7 +483,7 @@ export function BetaPageClient({ initialStats }: Props) {
                 style={{
                   margin: "8px 0 0",
                   fontSize: "0.88rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                 }}
               >
                 {f.desc}
@@ -512,7 +512,7 @@ export function BetaPageClient({ initialStats }: Props) {
               style={{
                 margin: 0,
                 fontSize: "0.9rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 lineHeight: 1.6,
               }}
             >

@@ -22,7 +22,7 @@ export default function LiveCreatorNewPage() {
         <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
           Live Creator
         </h1>
-        <p className="text-white/50 text-sm">
+        <p className="text-white/80 text-sm">
           Face Swap + Video — werde zu jedem Creator
         </p>
       </header>
@@ -34,7 +34,7 @@ export default function LiveCreatorNewPage() {
           className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             tab === "video"
               ? "bg-[#B4FF00] text-[#060608]"
-              : "text-white/50 hover:text-white"
+              : "text-white/80 hover:text-white"
           }`}
         >
           Face Swap Video
@@ -45,7 +45,7 @@ export default function LiveCreatorNewPage() {
           className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             tab === "photo"
               ? "bg-[#B4FF00] text-[#060608]"
-              : "text-white/50 hover:text-white"
+              : "text-white/80 hover:text-white"
           }`}
         >
           Face Swap Foto

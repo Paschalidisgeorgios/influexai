@@ -6,6 +6,8 @@ import "./globals.css";
 import { getTenantFromHeaders, tenantToBranding } from "@/lib/tenant";
 import { TenantBrandingStyles } from "@/components/tenant-branding-styles";
 import { TenantProvider } from "@/components/tenant-provider";
+import { ObsidianShell } from "@/components/ui/ObsidianShell";
+import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import {
   buildHreflangAlternates,
   getHomeSeo,
@@ -55,9 +57,14 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: { index: true, follow: true },
     alternates: buildHreflangAlternates("/"),
     icons: {
-      icon: [{ url: "/favicon.ico", sizes: "any" }],
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
       apple: [
         { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       ],
     },
     openGraph: {
@@ -94,11 +101,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#060608",
+  themeColor: "#B4FF00",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
@@ -121,6 +129,13 @@ export default async function RootLayout({
       className={`${bebasNeue.variable} ${dmSans.variable} ${notoSansArabic.variable} dark`}
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#B4FF00" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <TenantBrandingStyles tenant={tenant} />
       </head>
       <body
@@ -132,6 +147,8 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <TenantProvider branding={branding} isTenantRoute={isTenantRoute}>
+            <ObsidianShell />
+            <PwaBootstrap />
             {children}
           </TenantProvider>
         </NextIntlClientProvider>

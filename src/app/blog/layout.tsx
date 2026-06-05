@@ -1,13 +1,17 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ContentEmailExitIntent } from "@/components/content-email-capture";
 
-export default function BlogLayout({
+export default async function BlogLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("blog");
+  const nav = await getTranslations("landing");
+
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="landing-root min-h-screen bg-[#060608] text-white">
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link
@@ -17,14 +21,17 @@ export default function BlogLayout({
             InfluexAI
           </Link>
           <nav className="flex items-center gap-4 text-sm">
-            <Link href="/blog" className="text-white/70 hover:text-[#B4FF00]">
-              Blog
+            <Link href="/blog" className="text-[#B4FF00]">
+              {t("breadcrumb_blog")}
+            </Link>
+            <Link href="/guides" className="text-white/70 hover:text-[#B4FF00]">
+              {nav("nav_guides")}
             </Link>
             <Link
-              href="/login"
+              href="/auth/sign-in"
               className="rounded-lg bg-[#B4FF00] px-4 py-2 font-semibold text-black hover:bg-[#c8ff33]"
             >
-              Anmelden
+              {nav("auth_login")}
             </Link>
           </nav>
         </div>

@@ -19,7 +19,7 @@ function StatCard({
 }) {
   return (
     <div className="min-h-[88px] rounded-xl border border-white/10 bg-[#0f0f12] p-4 flex flex-col justify-center">
-      <p className="text-[0.7rem] font-bold uppercase tracking-wider text-[#505055] mb-1">
+      <p className="text-[0.7rem] font-bold uppercase tracking-wider text-[rgba(255,255,255,0.65)] mb-1">
         {label}
       </p>
       <p
@@ -54,7 +54,7 @@ export function DashboardWeeklyStats({ stats, loading }: Props) {
 
   return (
     <section className="mb-6">
-      <h2 className="text-sm font-bold uppercase tracking-wider text-[#505055] mb-3">
+      <h2 className="text-sm font-bold uppercase tracking-wider text-[rgba(255,255,255,0.65)] mb-3">
         {t("stats_title")}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

@@ -50,7 +50,7 @@ export function AdminApiTab() {
   }, []);
 
   if (loading) {
-    return <p style={{ color: "#505055", padding: 24 }}>API-Daten laden…</p>;
+    return <p style={{ color: "rgba(255,255,255,0.65)", padding: 24 }}>API-Daten laden…</p>;
   }
 
   return (
@@ -83,7 +83,7 @@ export function AdminApiTab() {
               border: "1px solid rgba(255,255,255,0.06)",
             }}
           >
-            <div style={{ fontSize: "0.72rem", color: "#505055" }}>
+            <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>
               {c.label}
             </div>
             <div
@@ -104,7 +104,7 @@ export function AdminApiTab() {
       </h3>
       <div style={{ marginBottom: 28, fontSize: "0.82rem" }}>
         {topUsers.length === 0 ? (
-          <p style={{ color: "#505055" }}>Noch keine API-Nutzung.</p>
+          <p style={{ color: "rgba(255,255,255,0.65)" }}>Noch keine API-Nutzung.</p>
         ) : (
           topUsers.map((u) => (
             <div
@@ -135,7 +135,7 @@ export function AdminApiTab() {
           }}
         >
           <thead>
-            <tr style={{ color: "#505055", textAlign: "left" }}>
+            <tr style={{ color: "rgba(255,255,255,0.65)", textAlign: "left" }}>
               {["Zeit", "User", "Endpoint", "Status", "ms", "Credits"].map(
                 (h) => (
                   <th key={h} style={{ padding: 8 }}>
@@ -151,7 +151,7 @@ export function AdminApiTab() {
                 key={l.id}
                 style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <td style={{ padding: 8, color: "#505055" }}>
+                <td style={{ padding: 8, color: "rgba(255,255,255,0.65)" }}>
                   {new Date(l.at).toLocaleString("de-DE")}
                 </td>
                 <td style={{ padding: 8, color: "#F0EFE8" }}>{l.user}</td>

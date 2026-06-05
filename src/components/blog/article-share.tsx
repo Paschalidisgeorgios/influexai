@@ -15,7 +15,7 @@ export function ArticleShare({ title, url }: { title: string; url: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm text-white/40">Teilen</span>
+      <span className="text-sm text-white/70">Teilen</span>
       <a
         href={`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`}
         target="_blank"

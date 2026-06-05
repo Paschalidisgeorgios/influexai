@@ -123,7 +123,7 @@ export function BusinessAnalyticsDashboard() {
 
   if (loading && !data) {
     return (
-      <p style={{ color: "#505055", padding: 40, textAlign: "center" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", padding: 40, textAlign: "center" }}>
         Business Analytics laden…
       </p>
     );
@@ -144,7 +144,7 @@ export function BusinessAnalyticsDashboard() {
           href="/dashboard/admin/producthunt"
           style={{
             fontSize: "0.78rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textDecoration: "none",
           }}
         >
@@ -160,7 +160,7 @@ export function BusinessAnalyticsDashboard() {
         >
           Business Command Center
         </h1>
-        <p style={{ color: "#505055", fontSize: "0.88rem", margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem", margin: 0 }}>
           Umsatz, Wachstum, Funnel & Live-Aktivität
         </p>
       </div>
@@ -218,7 +218,7 @@ export function BusinessAnalyticsDashboard() {
             }}
           >
             <div
-              style={{ fontSize: "0.68rem", color: "#505055", marginBottom: 6 }}
+              style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}
             >
               {c.title}
             </div>
@@ -234,7 +234,7 @@ export function BusinessAnalyticsDashboard() {
             <div
               style={{
                 fontSize: "0.72rem",
-                color: c.subColor ?? "#505055",
+                color: c.subColor ?? "rgba(255,255,255,0.65)",
                 marginTop: 4,
               }}
             >
@@ -305,10 +305,10 @@ export function BusinessAnalyticsDashboard() {
               <CartesianGrid stroke="rgba(255,255,255,0.06)" />
               <XAxis
                 dataKey="label"
-                tick={{ fill: "#505055", fontSize: 10 }}
+                tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                 interval="preserveStartEnd"
               />
-              <YAxis tick={{ fill: "#505055", fontSize: 10 }} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }} />
               <Tooltip
                 contentStyle={{
                   background: "#0f0f12",
@@ -336,14 +336,14 @@ export function BusinessAnalyticsDashboard() {
               <CartesianGrid stroke="rgba(255,255,255,0.06)" />
               <XAxis
                 dataKey="label"
-                tick={{ fill: "#505055", fontSize: 10 }}
+                tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                 interval="preserveStartEnd"
               />
-              <YAxis yAxisId="left" tick={{ fill: "#505055", fontSize: 10 }} />
+              <YAxis yAxisId="left" tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }} />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                tick={{ fill: "#505055", fontSize: 10 }}
+                tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
               />
               <Tooltip
                 contentStyle={{
@@ -383,7 +383,7 @@ export function BusinessAnalyticsDashboard() {
                 stroke="rgba(255,255,255,0.06)"
                 horizontal={false}
               />
-              <XAxis type="number" tick={{ fill: "#505055", fontSize: 10 }} />
+              <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }} />
               <YAxis
                 type="category"
                 dataKey="label"
@@ -407,7 +407,7 @@ export function BusinessAnalyticsDashboard() {
             </BarChart>
           </ResponsiveContainer>
         </ChartBox>
-        <p style={{ fontSize: "0.75rem", color: "#505055", marginTop: 8 }}>
+        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: 8 }}>
           {featureUsage.map((f) => `${f.label}: ${f.pct}%`).join(" · ")}
         </p>
 
@@ -445,7 +445,7 @@ export function BusinessAnalyticsDashboard() {
                 ].map((h) => (
                   <th
                     key={h}
-                    style={{ padding: 10, textAlign: "left", color: "#505055" }}
+                    style={{ padding: 10, textAlign: "left", color: "rgba(255,255,255,0.65)" }}
                   >
                     {h}
                   </th>
@@ -461,7 +461,7 @@ export function BusinessAnalyticsDashboard() {
                   <td style={{ padding: 10, color: "#F0EFE8" }}>{u.email}</td>
                   <td style={{ padding: 10 }}>{u.generations}</td>
                   <td style={{ padding: 10 }}>{u.creditsSpent}</td>
-                  <td style={{ padding: 10, color: "#505055" }}>
+                  <td style={{ padding: 10, color: "rgba(255,255,255,0.65)" }}>
                     {new Date(u.memberSince).toLocaleDateString("de-DE")}
                   </td>
                   <td style={{ padding: 10 }}>
@@ -489,7 +489,7 @@ export function BusinessAnalyticsDashboard() {
 
       {/* Funnel */}
       <Section title="Conversion Funnel">
-        <p style={{ fontSize: "0.78rem", color: "#505055", marginBottom: 16 }}>
+        <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", marginBottom: 16 }}>
           {data.landingNote}
         </p>
         <div
@@ -547,7 +547,7 @@ export function BusinessAnalyticsDashboard() {
                   <div
                     style={{
                       textAlign: "center",
-                      color: "#505055",
+                      color: "rgba(255,255,255,0.65)",
                       margin: "4px 0",
                     }}
                   >
@@ -607,7 +607,7 @@ export function BusinessAnalyticsDashboard() {
 
       {/* Live feed */}
       <Section title="Live Activity">
-        <p style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 12 }}>
+        <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 12 }}>
           Aktualisiert alle 30 Sekunden
         </p>
         <div
@@ -633,7 +633,7 @@ export function BusinessAnalyticsDashboard() {
                   flexWrap: "wrap",
                 }}
               >
-                <span style={{ color: "#505055", minWidth: 72 }}>
+                <span style={{ color: "rgba(255,255,255,0.65)", minWidth: 72 }}>
                   {formatRelativeTime(ev.at)}
                 </span>
                 <span
@@ -653,7 +653,7 @@ export function BusinessAnalyticsDashboard() {
                   {badge.label}
                 </span>
                 <span style={{ color: "#F0EFE8" }}>{ev.userLabel}</span>
-                <span style={{ color: "#505055" }}>{ev.detail}</span>
+                <span style={{ color: "rgba(255,255,255,0.65)" }}>{ev.detail}</span>
               </div>
             );
           })}
@@ -728,7 +728,7 @@ export function BusinessAnalyticsDashboard() {
               }}
             >
               <div style={{ color: "#F0EFE8", fontWeight: 700 }}>{u.email}</div>
-              <div style={{ color: "#505055" }}>
+              <div style={{ color: "rgba(255,255,255,0.65)" }}>
                 {u.full_name} · {u.credits} Credits · {u.generationCount} gens ·{" "}
                 {u.plan}
               </div>
@@ -815,7 +815,7 @@ function tabStyle(active: boolean): React.CSSProperties {
     borderRadius: 8,
     border: "none",
     background: active ? ACCENT : "rgba(255,255,255,0.06)",
-    color: active ? BG : "#505055",
+    color: active ? BG : "rgba(255,255,255,0.65)",
     fontWeight: 600,
     fontSize: "0.75rem",
     cursor: "pointer",
@@ -903,7 +903,7 @@ const smallBtn: React.CSSProperties = {
 const thStyle: React.CSSProperties = {
   padding: 10,
   textAlign: "left",
-  color: "#505055",
+  color: "rgba(255,255,255,0.65)",
   borderBottom: "1px solid rgba(255,255,255,0.07)",
 };
 

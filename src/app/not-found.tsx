@@ -35,7 +35,7 @@ export default async function NotFound() {
 
       <p
         className="mb-10 max-w-md text-[0.95rem] leading-relaxed"
-        style={{ color: "#505055" }}
+        style={{ color: "rgba(255,255,255,0.65)" }}
       >
         {t("body")}
       </p>

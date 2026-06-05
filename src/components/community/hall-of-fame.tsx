@@ -78,7 +78,7 @@ export function HallOfFame({
                 border: "none",
                 background:
                   period === t.id ? "#B4FF00" : "rgba(255,255,255,0.06)",
-                color: period === t.id ? "#060608" : "#505055",
+                color: period === t.id ? "#060608" : "rgba(255,255,255,0.65)",
                 fontWeight: 600,
                 fontSize: "0.78rem",
                 cursor: "pointer",
@@ -92,11 +92,11 @@ export function HallOfFame({
       </div>
 
       {loading ? (
-        <p style={{ color: "#505055", textAlign: "center", padding: 40 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 40 }}>
           Lade…
         </p>
       ) : posts.length === 0 ? (
-        <p style={{ color: "#505055", textAlign: "center", padding: 40 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 40 }}>
           Noch keine Wins — sei der Erste!
         </p>
       ) : (

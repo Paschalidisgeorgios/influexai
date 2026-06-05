@@ -19,6 +19,14 @@ export type GenerationAssetResult = {
   seed?: number;
   highRes?: boolean;
   parentGenerationId?: string;
+  /** Product ad script payload */
+  script?: Record<string, unknown>;
+  scriptText?: string;
+  platform?: string;
+  style?: string;
+  variationFocus?: string;
+  batchId?: string;
+  upscaled?: boolean;
 };
 
 export function parseGenerationAssetResult(
@@ -49,5 +57,16 @@ export function parseGenerationAssetResult(
     highRes: r.highRes === true,
     parentGenerationId:
       typeof r.parentGenerationId === "string" ? r.parentGenerationId : undefined,
+    script:
+      r.script && typeof r.script === "object"
+        ? (r.script as Record<string, unknown>)
+        : undefined,
+    scriptText: typeof r.scriptText === "string" ? r.scriptText : undefined,
+    platform: typeof r.platform === "string" ? r.platform : undefined,
+    style: typeof r.style === "string" ? r.style : undefined,
+    variationFocus:
+      typeof r.variationFocus === "string" ? r.variationFocus : undefined,
+    batchId: typeof r.batchId === "string" ? r.batchId : undefined,
+    upscaled: r.upscaled === true,
   };
 }

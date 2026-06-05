@@ -70,11 +70,11 @@ export default function DeveloperApiPage() {
         >
           InfluexAI Developer API
         </h1>
-        <p style={{ color: "#505055", fontSize: "0.9rem", margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", margin: 0 }}>
           Integriere KI-Content-Generierung in deine eigene App
         </p>
         <Link
-          href="/api-docs"
+          href="/docs"
           style={{
             display: "inline-block",
             marginTop: 12,
@@ -137,11 +137,31 @@ export default function DeveloperApiPage() {
               ...btnStyle,
               marginLeft: 8,
               background: "transparent",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
             }}
           >
             Schließen
           </button>
+        </div>
+      )}
+
+      {usage && !usage.apiAccess && (
+        <div
+          style={{
+            marginBottom: 20,
+            padding: 16,
+            borderRadius: 12,
+            background: "rgba(255,107,122,0.08)",
+            border: "1px solid rgba(255,107,122,0.3)",
+          }}
+        >
+          <p style={{ color: "#F0EFE8", margin: "0 0 8px", fontWeight: 700 }}>
+            Business-Plan erforderlich
+          </p>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem", margin: 0 }}>
+            Die Public API ist nur im Business-Plan verfügbar. Upgrade über
+            Pricing — das Upgrade-Modal erscheint automatisch auf dieser Seite.
+          </p>
         </div>
       )}
 
@@ -156,8 +176,12 @@ export default function DeveloperApiPage() {
         >
           {[
             { label: "Requests (Monat)", value: usage.requestsThisMonth },
+            { label: "Heute (UTC)", value: `${usage.requestsToday}/${usage.rateLimitPerDay}` },
             { label: "Credits via API", value: usage.creditsConsumedThisMonth },
-            { label: "Rate Limit", value: `${usage.rateLimitPerMinute}/min` },
+            {
+              label: "Rate Limit / Tag",
+              value: `Pro ${usage.rateLimitProPerDay} · Business ${usage.rateLimitBusinessPerDay}`,
+            },
           ].map((s) => (
             <div
               key={s.label}
@@ -168,7 +192,7 @@ export default function DeveloperApiPage() {
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
             >
-              <div style={{ fontSize: "0.68rem", color: "#505055" }}>
+              <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.65)" }}>
                 {s.label}
               </div>
               <div
@@ -197,9 +221,10 @@ export default function DeveloperApiPage() {
         <h2 style={{ color: "#F0EFE8", fontSize: "1rem", marginTop: 0 }}>
           API Keys
         </h2>
-        <p style={{ color: "#505055", fontSize: "0.8rem", marginBottom: 16 }}>
-          Maximal 3 aktive Keys. Credits werden mit deinem Dashboard-Guthaben
-          geteilt.
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem", marginBottom: 16 }}>
+          Maximal 3 aktive Keys (Business). Keys werden gehasht gespeichert —
+          einmalig sichtbar nach Erstellung. Credits teilen sich mit dem
+          Dashboard-Guthaben.
         </p>
         <div
           style={{
@@ -218,7 +243,9 @@ export default function DeveloperApiPage() {
           <button
             type="button"
             onClick={handleCreate}
-            disabled={creating || keys.length >= 3}
+            disabled={
+              creating || keys.length >= 3 || (usage !== null && !usage.apiAccess)
+            }
             style={btnStyle}
           >
             {creating ? "…" : "API Key generieren"}
@@ -226,11 +253,11 @@ export default function DeveloperApiPage() {
         </div>
 
         {loading ? (
-          <p style={{ color: "#505055" }}>Laden…</p>
+          <p style={{ color: "rgba(255,255,255,0.65)" }}>Laden…</p>
         ) : error ? (
           <p style={{ color: "#ff6b7a" }}>{error}</p>
         ) : keys.length === 0 ? (
-          <p style={{ color: "#505055" }}>Noch keine API-Keys.</p>
+          <p style={{ color: "rgba(255,255,255,0.65)" }}>Noch keine API-Keys.</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table
@@ -241,7 +268,7 @@ export default function DeveloperApiPage() {
               }}
             >
               <thead>
-                <tr style={{ color: "#505055", textAlign: "left" }}>
+                <tr style={{ color: "rgba(255,255,255,0.65)", textAlign: "left" }}>
                   {[
                     "Name",
                     "Key",
@@ -273,10 +300,10 @@ export default function DeveloperApiPage() {
                     >
                       {k.masked}
                     </td>
-                    <td style={{ padding: 10, color: "#505055" }}>
+                    <td style={{ padding: 10, color: "rgba(255,255,255,0.65)" }}>
                       {new Date(k.created_at).toLocaleDateString("de-DE")}
                     </td>
-                    <td style={{ padding: 10, color: "#505055" }}>
+                    <td style={{ padding: 10, color: "rgba(255,255,255,0.65)" }}>
                       {k.last_used_at
                         ? new Date(k.last_used_at).toLocaleDateString("de-DE")
                         : "—"}
@@ -309,7 +336,7 @@ export default function DeveloperApiPage() {
         )}
       </section>
 
-      <section style={{ color: "#505055", fontSize: "0.82rem" }}>
+      <section style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.82rem" }}>
         <strong style={{ color: "#F0EFE8" }}>Base URL:</strong>{" "}
         <code style={{ color: ACCENT }}>
           https://influexaicreator.com/api/v1/

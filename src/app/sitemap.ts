@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const usernames = await listPublicProfileUsernames();
     for (const username of usernames) {
       entries.push({
-        url: `${SEO_BASE_URL}/creator/${username}`,
+        url: `${SEO_BASE_URL}/profile/${username}`,
         lastModified,
         changeFrequency: "weekly",
         priority: 0.6,

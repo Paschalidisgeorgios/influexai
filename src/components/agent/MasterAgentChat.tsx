@@ -332,7 +332,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
               className={`pb-3 text-sm font-semibold transition-colors relative ${
                 activeTab === tab
                   ? "text-[#F0EFE8]"
-                  : "text-white/40 hover:text-white/60"
+                  : "text-white/70 hover:text-white/80"
               }`}
             >
               {t(tab === "chat" ? "tab_chat" : "tab_workflow")}
@@ -351,7 +351,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
               void handleSubmit();
             }}
           >
-            <p className="text-sm text-[#505055] mb-1">
+            <p className="text-sm text-[rgba(255,255,255,0.65)] mb-1">
               {t("greeting_hey", { name: username || "…" })}
             </p>
             <h2
@@ -394,14 +394,14 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
             </div>
 
             {creditHint && (
-              <p className="mt-2 text-right text-xs text-[#505055]">
+              <p className="mt-2 text-right text-xs text-[rgba(255,255,255,0.65)]">
                 {creditHint}
               </p>
             )}
           </form>
         ) : (
           <div className="p-5 space-y-3">
-            <p className="text-sm text-white/50">{t("workflow_desc")}</p>
+            <p className="text-sm text-white/80">{t("workflow_desc")}</p>
             <ol className="space-y-2 text-sm text-white/70">
               {(
                 [

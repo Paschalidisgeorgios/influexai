@@ -8,7 +8,7 @@ const LiveCreatorStudioInner = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="mx-auto flex h-[70vh] max-w-[420px] items-center justify-center rounded-2xl border border-white/10 bg-[#0f0f12] text-white/40 text-sm">
+      <div className="mx-auto flex h-[70vh] max-w-2xl items-center justify-center rounded-2xl border border-white/10 bg-[#060608] text-white/70 text-sm">
         Live Studio wird geladen…
       </div>
     ),

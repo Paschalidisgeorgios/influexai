@@ -17,5 +17,8 @@ export type ProfileRow = {
   email: string | null;
   full_name: string | null;
   creator_niche: string | null;
+  niche: string | null;
   daily_suggestions_email: boolean;
+  onboarding_completed?: boolean;
+  credits?: number | null;
 };

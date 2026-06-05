@@ -7,6 +7,7 @@ import {
   registerReferralOnSignup,
 } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
+import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -40,8 +41,10 @@ export async function GET(request: NextRequest) {
         const referredBy = user.user_metadata?.referred_by as
           | string
           | undefined;
-        if (referredBy) {
-          await registerReferralOnSignup(user.id, String(referredBy));
+        const refFromCookie = cookieStore.get(REFERRAL_REF_COOKIE)?.value?.trim();
+        const ref = referredBy?.trim() || refFromCookie;
+        if (ref) {
+          await registerReferralOnSignup(user.id, ref);
         }
         await confirmReferralRewards(user.id);
         const betaCode = user.user_metadata?.beta_code as string | undefined;

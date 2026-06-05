@@ -98,7 +98,7 @@ function CardHeader({
         <p
           style={{
             fontSize: "0.72rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             marginTop: 4,
           }}
         >
@@ -116,7 +116,7 @@ function CardHeader({
             borderRadius: 8,
             border: "1px solid rgba(255,255,255,0.1)",
             background: "transparent",
-            color: "rgba(240,239,232,0.5)",
+            color: "rgba(255,255,255,0.8)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -292,7 +292,7 @@ function ActionBtn({
     fontWeight: 600,
     border: primary ? "none" : "1px solid rgba(255,255,255,0.12)",
     background: primary ? "rgba(180,255,0,0.12)" : "transparent",
-    color: primary ? "#B4FF00" : "rgba(240,239,232,0.75)",
+    color: primary ? "#B4FF00" : "rgba(255,255,255,0.85)",
     cursor: "pointer",
     textDecoration: "none",
   } as const;
@@ -369,7 +369,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           </h3>
           <p
             style={{
-              color: "rgba(240,239,232,0.45)",
+              color: "rgba(255,255,255,0.75)",
               fontSize: "0.82rem",
               lineHeight: 1.5,
               display: "-webkit-box",
@@ -383,7 +383,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           <p
             style={{
               fontSize: "0.75rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               marginTop: 10,
             }}
           >
@@ -480,7 +480,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           <h3 style={{ color: "#F0EFE8", fontSize: "0.95rem", fontWeight: 700 }}>
             {n.title}
           </h3>
-          <p style={{ fontSize: "0.8rem", color: "#505055", marginTop: 6 }}>
+          <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", marginTop: 6 }}>
             Wettbewerb: {competitionLabel(n.competition)} · Potenzial:{" "}
             {"★".repeat(n.potential)}
           </p>
@@ -489,7 +489,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
               marginTop: 10,
               paddingLeft: 16,
               fontSize: "0.8rem",
-              color: "rgba(240,239,232,0.55)",
+              color: "rgba(255,255,255,0.8)",
               lineHeight: 1.45,
             }}
           >
@@ -534,7 +534,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           <p
             style={{
               fontSize: "0.85rem",
-              color: "rgba(240,239,232,0.55)",
+              color: "rgba(255,255,255,0.8)",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -627,7 +627,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           <p
             style={{
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               marginTop: 8,
             }}
           >
@@ -705,7 +705,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
           <p
             style={{
               fontSize: "0.85rem",
-              color: "rgba(240,239,232,0.55)",
+              color: "rgba(255,255,255,0.8)",
               marginTop: 8,
               overflow: "hidden",
               textOverflow: "ellipsis",

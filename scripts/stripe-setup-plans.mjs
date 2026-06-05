@@ -1,0 +1,144 @@
+/**
+ * Creates Stripe products & prices for InfluexAI subscription plans.
+ * Run: node --env-file=.env.local scripts/stripe-setup-plans.mjs
+ *
+ * Append printed env vars to .env.local
+ */
+
+const PLANS = [
+  {
+    id: "starter",
+    name: "InfluexAI Starter",
+    monthlyEur: 9.99,
+    yearlyPerMonthEur: 7.99,
+    monthlyEnv: "STRIPE_PRICE_STARTER_MONTHLY",
+    yearlyEnv: "STRIPE_PRICE_STARTER_YEARLY",
+  },
+  {
+    id: "creator",
+    name: "InfluexAI Creator",
+    monthlyEur: 49,
+    yearlyPerMonthEur: 39,
+    monthlyEnv: "STRIPE_PRICE_CREATOR_MONTHLY",
+    yearlyEnv: "STRIPE_PRICE_CREATOR_YEARLY",
+  },
+  {
+    id: "pro",
+    name: "InfluexAI Pro",
+    monthlyEur: 99,
+    yearlyPerMonthEur: 79,
+    monthlyEnv: "STRIPE_PRICE_PRO_MONTHLY",
+    yearlyEnv: "STRIPE_PRICE_PRO_YEARLY",
+  },
+  {
+    id: "business",
+    name: "InfluexAI Business",
+    monthlyEur: 199,
+    yearlyPerMonthEur: 159,
+    monthlyEnv: "STRIPE_PRICE_BUSINESS_MONTHLY",
+    yearlyEnv: "STRIPE_PRICE_BUSINESS_YEARLY",
+  },
+];
+
+const EXTRA_CREDITS = {
+  name: "InfluexAI Extra Credits (100)",
+  eur: 12,
+  env: "STRIPE_PRICE_EXTRA_CREDITS_100",
+};
+
+function eurToCents(eur) {
+  return Math.round(eur * 100);
+}
+
+async function stripePost(path, params) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY fehlt in .env.local");
+
+  const body = new URLSearchParams(params);
+  const res = await fetch(`https://api.stripe.com/v1/${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error?.message ?? `Stripe ${path} failed`);
+  }
+  return data;
+}
+
+async function findProductByName(name) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  const res = await fetch(
+    `https://api.stripe.com/v1/products?active=true&limit=100`,
+    { headers: { Authorization: `Bearer ${key}` } }
+  );
+  const data = await res.json();
+  return data.data?.find((p) => p.name === name) ?? null;
+}
+
+async function ensureProduct(name) {
+  const existing = await findProductByName(name);
+  if (existing) return existing.id;
+  const product = await stripePost("products", {
+    name,
+    "metadata[platform]": "influexai",
+  });
+  return product.id;
+}
+
+async function createPrice(productId, unitAmount, interval) {
+  const params = {
+    product: productId,
+    currency: "eur",
+    unit_amount: String(unitAmount),
+  };
+  if (interval) {
+    params["recurring[interval]"] = interval;
+    params["recurring[interval_count]"] = "1";
+  }
+  const price = await stripePost("prices", params);
+  return price.id;
+}
+
+async function main() {
+  const envLines = [];
+
+  for (const plan of PLANS) {
+    const productId = await ensureProduct(plan.name);
+    const monthlyId = await createPrice(
+      productId,
+      eurToCents(plan.monthlyEur),
+      "month"
+    );
+    const yearlyId = await createPrice(
+      productId,
+      eurToCents(plan.yearlyPerMonthEur * 12),
+      "year"
+    );
+    envLines.push(`${plan.monthlyEnv}=${monthlyId}`);
+    envLines.push(`${plan.yearlyEnv}=${yearlyId}`);
+    console.log(`✓ ${plan.name}: monthly ${monthlyId}, yearly ${yearlyId}`);
+  }
+
+  const extraProductId = await ensureProduct(EXTRA_CREDITS.name);
+  const extraId = await createPrice(
+    extraProductId,
+    eurToCents(EXTRA_CREDITS.eur),
+    null
+  );
+  envLines.push(`${EXTRA_CREDITS.env}=${extraId}`);
+  console.log(`✓ Extra Credits 100: ${extraId}`);
+
+  console.log("\n# Add to .env.local:\n");
+  console.log(envLines.join("\n"));
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

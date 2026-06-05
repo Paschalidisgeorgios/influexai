@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#B4FF00" />
+    <title>InfluexAI — Offline</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: #060608;
+        color: #f0efe8;
+        font-family: system-ui, sans-serif;
+        text-align: center;
+      }
+      .logo {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #b4ff00;
+        margin-bottom: 16px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+      }
+      p {
+        color: #505055;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 320px;
+        margin-bottom: 24px;
+      }
+      button {
+        min-height: 44px;
+        min-width: 160px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        background: #b4ff00;
+        color: #060608;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          text-shadow: 0 0 0 transparent;
+        }
+        50% {
+          opacity: 0.85;
+          text-shadow: 0 0 24px rgba(180, 255, 0, 0.45);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">INFLUEXAI</div>
+    <h1>Du bist offline</h1>
+    <p>
+      Landing und Dashboard-Shell sind gecacht. Sobald du wieder online bist,
+      synchronisieren wir offene Generierungen.
+    </p>
+    <button type="button" onclick="location.reload()">Erneut versuchen</button>
+  </body>
+</html>

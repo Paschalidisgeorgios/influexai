@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-06-04T23:09:05.603Z",
+  "model": "fal-ai/flux-pro",
+  "images": [
+    {
+      "id": "script",
+      "tool": "Script Generator",
+      "path": "/images/examples/script.jpg",
+      "file": "script.jpg",
+      "prompt": "Young content creator at dark desk writing on laptop, neon green accent light, professional setup, cinematic dark mood, viral youtube shorts aesthetic",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d008e/YZ2anmB3XeMjHmDyLGMUu_5cda7d5ef8c54227b49d4b35214054e0.jpg",
+      "bytes": 122391
+    },
+    {
+      "id": "avatar",
+      "tool": "KI Avatar",
+      "path": "/images/examples/avatar.jpg",
+      "file": "avatar.jpg",
+      "prompt": "Hyperrealistic AI digital avatar, perfect symmetrical face, professional headshot, studio lighting, photorealistic skin, dark background with subtle green glow, 8K portrait",
+      "negativeExtra": "cartoon, anime, CGI obvious",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d008f/9K5tNWa-a845z2aAG9ryW_a185548e1275474b8a2fc91326b380b8.jpg",
+      "bytes": 97715
+    },
+    {
+      "id": "thumbnail",
+      "tool": "Thumbnail Konzept",
+      "path": "/images/examples/thumbnail.jpg",
+      "file": "thumbnail.jpg",
+      "prompt": "Eye-catching YouTube thumbnail, high contrast, bold neon colors, dramatic expression person holding phone, viral clickbait aesthetic but professional, dark background, bright green and yellow accents",
+      "negativeExtra": "boring, low contrast, flat",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0090/3nhUmI60uGycZIzYXfngg_a5761e9ce5a4480c979415fe83adcce5.jpg",
+      "bytes": 117005
+    },
+    {
+      "id": "faceswap",
+      "tool": "Face Swap",
+      "path": "/images/examples/faceswap.jpg",
+      "file": "faceswap.jpg",
+      "prompt": "Split screen showing two faces morphing together, digital transformation effect, dark cinematic background, neon green light accents, futuristic tech aesthetic",
+      "negativeExtra": "uncanny valley, distorted",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0091/rrblcYGnSZhDoe-yND4E5_0277b3ff403249aeaedc067bd4eeca16.jpg",
+      "bytes": 111061
+    },
+    {
+      "id": "niche",
+      "tool": "Niche Analyzer",
+      "path": "/images/examples/niche.jpg",
+      "file": "niche.jpg",
+      "prompt": "Analytics dashboard on dark screen showing viral metrics, youtube growth charts, neon green numbers, person analyzing data on multiple monitors, dark office setup, cinematic lighting",
+      "negativeExtra": "boring, corporate, white background",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0091/I8v_vYqBF9NJhj-ubS7hD_81a2372d50cb4b498f3cc65dfdb290f2.jpg",
+      "bytes": 147216
+    },
+    {
+      "id": "outlier",
+      "tool": "Outlier Detector",
+      "path": "/images/examples/outlier.jpg",
+      "file": "outlier.jpg",
+      "prompt": "YouTube viral video metrics exploding upward, millions of views counter, dark UI dashboard, neon green glow on screen, dramatic data visualization, cinematic tech aesthetic",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0092/2eFsZmUJlhXKBeX7H_lob_3cb4f48442f54f97a1b60d43344eea0d.jpg",
+      "bytes": 220900
+    },
+    {
+      "id": "remix",
+      "tool": "Video Remix",
+      "path": "/images/examples/remix.jpg",
+      "file": "remix.jpg",
+      "prompt": "Video editing timeline on dark screen, split screen showing before and after transformation, neon green and purple light effects, cinematic, professional video production aesthetic",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0097/ARUxJ57s2dpwrcevpkM6e_9b64aecdb4664976be99474cb3f6de9a.jpg",
+      "bytes": 136134
+    },
+    {
+      "id": "live",
+      "tool": "Live Creator",
+      "path": "/images/examples/live.jpg",
+      "file": "live.jpg",
+      "prompt": "Person live streaming with AI avatar overlay, split screen webcam bottom right and AI character top, dark studio setup, red LIVE badge, neon green accents, futuristic streaming aesthetic",
+      "negativeExtra": "boring, low energy",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0093/Vup9ZXJSV6kHYjuT753XI_8fd6f9dafd77483fae6b4b5d1aeabf75.jpg",
+      "bytes": 134346
+    },
+    {
+      "id": "voice",
+      "tool": "Stimme und Musik",
+      "path": "/images/examples/voice.jpg",
+      "file": "voice.jpg",
+      "prompt": "Audio waveform visualization on dark background, neon green sound waves, professional microphone setup, music production aesthetic, cinematic dark mood, studio recording environment",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0094/pUYsejf0DQZyPRAXOksSQ_1a5505f9bb4a433b9fdb72de8ac97fb1.jpg",
+      "bytes": 107488
+    },
+    {
+      "id": "product",
+      "tool": "Produkt Werbung",
+      "path": "/images/examples/product.jpg",
+      "file": "product.jpg",
+      "prompt": "Luxury product on dark background with dramatic lighting, commercial photography style, neon green accent light, professional product advertisement, 8K studio shot, cosmetics or tech product floating in dark space",
+      "negativeExtra": "fake product, distorted",
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0095/1dnjw31vbLX9MjQKjiq38_b4a0690c1d554e20a0cd1d099377689b.jpg",
+      "bytes": 133825
+    },
+    {
+      "id": "viralscore",
+      "tool": "Viral Score",
+      "path": "/images/examples/viralscore.jpg",
+      "file": "viralscore.jpg",
+      "prompt": "Large 91 score displayed on dark screen, circular progress indicator in neon green, person celebrating viral success, confetti, dark background with glowing metrics",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0095/kfEQiDzmbI3Cyov-lrklE_82c531990e8841e8a792a9dd93707442.jpg",
+      "bytes": 194307
+    },
+    {
+      "id": "agent",
+      "tool": "KI Agent",
+      "path": "/images/examples/agent.jpg",
+      "file": "agent.jpg",
+      "prompt": "Futuristic AI brain network visualization, dark background with neon green neural connections, digital intelligence aesthetic, sci-fi tech art, abstract AI consciousness visualization",
+      "negativeExtra": null,
+      "falUrl": "https://v3b.fal.media/files/b/0a9d0096/oiE4gZGMrpF3snvUo_6-L_a8ede576942841a2a769af3cbbace1ac.jpg",
+      "bytes": 172899
+    }
+  ]
+}

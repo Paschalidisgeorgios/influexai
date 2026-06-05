@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BarChart2, Images, Star } from "lucide-react";
@@ -9,6 +8,10 @@ import { createClient } from "@/lib/supabase/client";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS } from "@/lib/dashboard-flows";
+import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
+import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
+import { TablerGift } from "@/components/icons/TablerGift";
+import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 
 type ExtraNavItem = {
   id: string;
@@ -33,10 +36,16 @@ const EXTRA_NAV: ExtraNavItem[] = [
 ];
 
 const BOTTOM_NAV = [
-  { icon: "🔌", labelKey: "developer_api", href: "/dashboard/api" },
-  { icon: "🎁", labelKey: "referral", href: "/dashboard/referral" },
-  { icon: "⚙️", labelKey: "settings_menu", href: "/dashboard/settings" },
-  { icon: "💳", labelKey: "credits_plan", href: "/dashboard/credits" },
+  { id: "community", emoji: "🌐", labelKey: "community" as const, href: "/community" },
+  { id: "api", emoji: "🔌", labelKey: "developer_api" as const, href: "/dashboard/api" },
+  {
+    id: "referral",
+    labelKey: "referral" as const,
+    href: "/dashboard/referral",
+    useGiftIcon: true,
+  },
+  { id: "settings", emoji: "⚙️", labelKey: "settings_menu" as const, href: "/dashboard/settings" },
+  { id: "credits", emoji: "💳", labelKey: "credits_plan" as const, href: "/dashboard/credits" },
 ] as const;
 
 const ADMIN_NAV = [
@@ -97,9 +106,7 @@ export function DashboardSidebar() {
         .single();
       if (data) {
         setCredits(data.credits);
-        setMaxCredits(
-          data.plan === "business" ? 2500 : data.plan === "creator" ? 500 : 50
-        );
+        setMaxCredits(getPlanMonthlyCredits(data.plan));
         setIsAdmin(data.is_admin ?? false);
       }
       const { data: tenant } = await supabase
@@ -137,7 +144,7 @@ export function DashboardSidebar() {
         ? "opacity-45 cursor-not-allowed text-white/25"
         : active
           ? "text-[#B4FF00] font-bold bg-[#B4FF00]/8 border-b-2 border-[#B4FF00]"
-          : "text-white/45 hover:text-white/70 border-b-2 border-transparent",
+          : "text-white/75 hover:text-white/70 border-b-2 border-transparent",
     ].join(" ");
 
   return (
@@ -160,8 +167,10 @@ export function DashboardSidebar() {
       </div>
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
-        <Link
+        <SidebarNavLink
           href="/dashboard/agent"
+          active={pathname === "/dashboard/agent"}
+          collapsed={collapsed}
           title={collapsed ? tNav("agent") : undefined}
           className={linkClass(pathname === "/dashboard/agent")}
         >
@@ -172,7 +181,7 @@ export function DashboardSidebar() {
             color={
               pathname === "/dashboard/agent"
                 ? "#B4FF00"
-                : "rgba(240,239,232,0.45)"
+                : "rgba(255,255,255,0.75)"
             }
             fill={pathname === "/dashboard/agent" ? "#B4FF00" : "transparent"}
           />
@@ -184,14 +193,14 @@ export function DashboardSidebar() {
               </span>
             </>
           )}
-        </Link>
+        </SidebarNavLink>
 
         <div className="h-px bg-white/5 my-2 mx-1" />
 
         {NAV_GROUPS.map((group) => (
           <div key={group.labelKey} className="mb-2">
             {!collapsed && (
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#505055] px-2.5 py-2">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
                 {tDash(group.labelKey)}
               </p>
             )}
@@ -212,7 +221,7 @@ export function DashboardSidebar() {
                         ? "rgba(240,239,232,0.25)"
                         : isActive
                           ? "#B4FF00"
-                          : "rgba(240,239,232,0.45)"
+                          : "rgba(255,255,255,0.75)"
                     }
                   />
                   {!collapsed && (
@@ -224,7 +233,7 @@ export function DashboardSidebar() {
                         </span>
                       )}
                       {isComingSoon && (
-                        <span className="ml-auto text-[0.58rem] text-white/35">
+                        <span className="ml-auto text-[0.58rem] text-white/65">
                           Bald
                         </span>
                       )}
@@ -246,14 +255,16 @@ export function DashboardSidebar() {
               }
 
               return (
-                <Link
+                <SidebarNavLink
                   key={item.id}
                   href={item.href}
+                  active={isActive}
+                  collapsed={collapsed}
                   title={collapsed ? label : undefined}
                   className={linkClass(isActive)}
                 >
                   {inner}
-                </Link>
+                </SidebarNavLink>
               );
             })}
           </div>
@@ -262,7 +273,7 @@ export function DashboardSidebar() {
         <div className="h-px bg-white/5 my-2 mx-1" />
 
         {!collapsed && (
-          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#505055] px-2.5 py-2">
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
             {tNav("more")}
           </p>
         )}
@@ -271,9 +282,11 @@ export function DashboardSidebar() {
           const label = tNav(item.labelKey);
           const Icon = item.icon;
           return (
-            <Link
+            <SidebarNavLink
               key={item.id}
               href={item.href}
+              active={isActive}
+              collapsed={collapsed}
               title={collapsed ? label : undefined}
               className={linkClass(isActive)}
             >
@@ -281,54 +294,80 @@ export function DashboardSidebar() {
                 size={18}
                 strokeWidth={isActive ? 2.5 : 2}
                 className="shrink-0"
-                color={isActive ? "#B4FF00" : "rgba(240,239,232,0.45)"}
+                color={isActive ? "#B4FF00" : "rgba(255,255,255,0.75)"}
               />
               {!collapsed && label}
-            </Link>
+            </SidebarNavLink>
           );
         })}
 
         <div className="h-px bg-white/5 my-2 mx-1" />
 
-        {BOTTOM_NAV.map((item) => (
-          <Link
-            key={item.labelKey}
-            href={item.href}
-            title={collapsed ? tNav(item.labelKey) : undefined}
-            className={`${linkClass(false)} !text-white/30 !font-normal !border-b-0`}
-          >
-            <span className="text-[0.95rem] shrink-0">{item.icon}</span>
-            {!collapsed && <span>{tNav(item.labelKey)}</span>}
-          </Link>
-        ))}
+        {BOTTOM_NAV.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <SidebarNavLink
+              key={item.id}
+              href={item.href}
+              active={isActive}
+              collapsed={collapsed}
+              title={collapsed ? tNav(item.labelKey) : undefined}
+              className={`${linkClass(isActive)} !text-white/65 !font-normal !border-b-0`}
+            >
+              {"useGiftIcon" in item && item.useGiftIcon ? (
+                <TablerGift
+                  size={18}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  color={isActive ? "#B4FF00" : "rgba(255,255,255,0.75)"}
+                  className="shrink-0"
+                />
+              ) : (
+                <span className="shrink-0 text-[0.95rem]">
+                  {"emoji" in item ? item.emoji : "💳"}
+                </span>
+              )}
+              {!collapsed && <span>{tNav(item.labelKey)}</span>}
+            </SidebarNavLink>
+          );
+        })}
 
         {isAdmin && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
         {isAdmin &&
-          ADMIN_NAV.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              className={`${linkClass(false)} !text-[#ff6b7a]/70 !border-b-0`}
-            >
-              <span className="text-[0.95rem] shrink-0">{item.icon}</span>
-              {!collapsed && item.label}
-            </Link>
-          ))}
+          ADMIN_NAV.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <SidebarNavLink
+                key={item.label}
+                href={item.href}
+                active={isActive}
+                collapsed={collapsed}
+                title={collapsed ? item.label : undefined}
+                className={`${linkClass(isActive)} !text-[#ff6b7a]/70 !border-b-0`}
+              >
+                <span className="text-[0.95rem] shrink-0">{item.icon}</span>
+                {!collapsed && item.label}
+              </SidebarNavLink>
+            );
+          })}
 
         {hasAgency && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
         {hasAgency &&
-          AGENCY_NAV.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              className={`${linkClass(false)} !text-[var(--accent)] !font-bold !border-b-0`}
-            >
-              <span className="text-[0.95rem] shrink-0">{item.icon}</span>
-              {!collapsed && item.label}
-            </Link>
-          ))}
+          AGENCY_NAV.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <SidebarNavLink
+                key={item.label}
+                href={item.href}
+                active={isActive}
+                collapsed={collapsed}
+                title={collapsed ? item.label : undefined}
+                className={`${linkClass(isActive)} !text-[var(--accent)] !font-bold !border-b-0`}
+              >
+                <span className="text-[0.95rem] shrink-0">{item.icon}</span>
+                {!collapsed && item.label}
+              </SidebarNavLink>
+            );
+          })}
       </nav>
 
       {credits !== null && (
@@ -342,15 +381,14 @@ export function DashboardSidebar() {
       {!collapsed && (
         <div className="m-2 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06]">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[0.72rem] text-[#505055] font-medium">
+            <span className="text-[0.72rem] text-[rgba(255,255,255,0.65)] font-medium">
               {tNav("credits")}
             </span>
-            <span
+            <AnimatedCredits
+              value={credits}
               className="text-[0.78rem] font-bold"
               style={{ color: creditColor }}
-            >
-              {credits ?? "..."}
-            </span>
+            />
           </div>
           <div className="h-1 bg-[#222228] rounded-full overflow-hidden mb-1">
             <div
@@ -358,7 +396,7 @@ export function DashboardSidebar() {
               style={{ width: `${creditPercent}%`, background: creditColor }}
             />
           </div>
-          <div className="text-[0.65rem] text-[#505055] mb-2.5">
+          <div className="text-[0.65rem] text-[rgba(255,255,255,0.65)] mb-2.5">
             {tNav("credits_of", { max: maxCredits })}
           </div>
           <a
@@ -373,7 +411,7 @@ export function DashboardSidebar() {
       <button
         type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="m-2 mb-2 py-2 rounded-lg border border-white/[0.06] text-[#505055] text-xs cursor-pointer"
+        className="m-2 mb-2 py-2 rounded-lg border border-white/[0.06] text-[rgba(255,255,255,0.65)] text-xs cursor-pointer"
       >
         {collapsed ? "→" : `← ${tNav("collapse")}`}
       </button>

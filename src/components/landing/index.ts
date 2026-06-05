@@ -1,5 +1,4 @@
 export { LandingNav } from "./LandingNav";
-export { AdSpotLazy } from "./AdSpotLazy";
 export { HeroSection } from "./HeroSection";
 export {
   TickerStrip,
@@ -8,6 +7,7 @@ export {
   HowItWorksSection,
   TestimonialsSection,
   FaqSection,
+  AgencyTeaserSection,
   PricingSection,
   CtaSection,
   LandingFooter,

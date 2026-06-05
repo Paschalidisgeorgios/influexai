@@ -6,6 +6,12 @@
 import fs from "fs";
 import path from "path";
 import { config } from "dotenv";
+import {
+  alignToMaster,
+  flatten,
+  setByPath,
+  sortKeys,
+} from "./i18n-utils.mjs";
 
 config({ path: path.join(process.cwd(), ".env.local") });
 
@@ -41,59 +47,6 @@ function shouldSkipTranslation(value) {
   // Very short technical tags
   if (value.length <= 2) return true;
   return false;
-}
-
-function deepMerge(base, override) {
-  const out = { ...base };
-  for (const [key, value] of Object.entries(override)) {
-    if (
-      value &&
-      typeof value === "object" &&
-      !Array.isArray(value) &&
-      typeof out[key] === "object" &&
-      out[key] !== null &&
-      !Array.isArray(out[key])
-    ) {
-      out[key] = deepMerge(out[key], value);
-    } else {
-      out[key] = value;
-    }
-  }
-  return out;
-}
-
-function flatten(obj, prefix = "") {
-  const out = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const pathKey = prefix ? `${prefix}.${key}` : key;
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      Object.assign(out, flatten(value, pathKey));
-    } else if (typeof value === "string") {
-      out[pathKey] = value;
-    }
-  }
-  return out;
-}
-
-function setByPath(obj, pathKey, value) {
-  const parts = pathKey.split(".");
-  let cur = obj;
-  for (let i = 0; i < parts.length - 1; i++) {
-    const p = parts[i];
-    if (!cur[p] || typeof cur[p] !== "object") cur[p] = {};
-    cur = cur[p];
-  }
-  cur[parts[parts.length - 1]] = value;
-}
-
-function sortKeys(obj) {
-  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return obj;
-  return Object.keys(obj)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = sortKeys(obj[key]);
-      return acc;
-    }, {});
 }
 
 function needsTranslation(locale, pathKey, deVal, enVal, locVal) {
@@ -164,15 +117,16 @@ function saveJson(file, obj) {
 }
 
 const de = loadJson(path.join(messagesDir, "de.json"));
-const enFlat = flatten(loadJson(path.join(messagesDir, "en.json")));
+const en = loadJson(path.join(messagesDir, "en.json"));
+const enFlat = flatten(en);
 const deFlat = flatten(de);
 
 for (const locale of locales) {
   const filePath = path.join(messagesDir, `${locale}.json`);
   let messages = loadJson(filePath);
 
-  // Ensure structure matches de.json (missing keys only)
-  messages = deepMerge(de, messages);
+  // de.json structure; missing values → English (not German); drop orphan keys
+  messages = alignToMaster(de, en, messages);
 
   const localeFlat = flatten(messages);
   const toTranslate = {};

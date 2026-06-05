@@ -23,7 +23,7 @@ export function RotatingTips({ tips, intervalMs = 4000 }: RotatingTipsProps) {
   return (
     <p
       style={{
-        color: "rgba(240,239,232,0.45)",
+        color: "rgba(255,255,255,0.75)",
         fontSize: "0.85rem",
         minHeight: "1.25rem",
         transition: "opacity 0.3s",

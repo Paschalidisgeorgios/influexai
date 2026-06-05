@@ -1,21 +1,29 @@
 "use client";
 
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Target } from "lucide-react";
 import type {
   CompetitorAnalysisResponse,
   CompetitorAnalysisResult,
 } from "@/lib/competitor-analysis";
 import { COMPETITOR_ANALYSIS_CREDIT_COST } from "@/lib/competitor-analysis";
+import { TablerSpy } from "@/components/icons/TablerSpy";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
+import { createClient } from "@/lib/supabase/client";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 const CREDIT_COST = COMPETITOR_ANALYSIS_CREDIT_COST;
 
 type Step = "input" | "loading" | "results";
+
+type HistoryRow = {
+  id: string;
+  prompt: string;
+  created_at: string;
+  result: CompetitorAnalysisResponse | null;
+};
 
 function formatNum(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -61,10 +69,40 @@ function CompetitorPageInner() {
   const [step, setStep] = useState<Step>("input");
   const [channelUrl, setChannelUrl] = useState("");
   const [data, setData] = useState<CompetitorAnalysisResponse | null>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const started = useRef(false);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
+
+  const loadHistory = useCallback(async () => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: rows } = await supabase
+      .from("generations")
+      .select("id, prompt, created_at, result")
+      .eq("user_id", user.id)
+      .eq("type", "competitor_analysis")
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    setHistory(
+      (rows ?? []).map((row) => ({
+        id: row.id,
+        prompt: row.prompt,
+        created_at: row.created_at,
+        result: (row.result as CompetitorAnalysisResponse | null) ?? null,
+      }))
+    );
+  }, []);
+
+  useEffect(() => {
+    void loadHistory();
+  }, [loadHistory]);
 
   const inputStyle = {
     width: "100%",
@@ -87,10 +125,10 @@ function CompetitorPageInner() {
     try {
       const res = await generate(
         async () => {
-          const r = await fetch("/api/competitor-analysis", {
+          const r = await fetch("/api/competitor", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ channel_url: channelUrl }),
+            body: JSON.stringify({ channelUrl }),
           });
           const json = await r.json();
           if (!r.ok || !json.success) {
@@ -131,6 +169,7 @@ function CompetitorPageInner() {
         analysis: res.analysis,
       });
       setStep("results");
+      void loadHistory();
     } catch {
       setError(t("error_generic"));
       setStep("input");
@@ -139,12 +178,17 @@ function CompetitorPageInner() {
     }
   };
 
+  const showResults = (payload: CompetitorAnalysisResponse) => {
+    setData(payload);
+    setStep("results");
+  };
+
   const analysis: CompetitorAnalysisResult | null = data?.analysis ?? null;
 
   return (
     <div style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 100px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-        <Target size={28} color="#B4FF00" strokeWidth={2.2} />
+        <TablerSpy size={28} color="#B4FF00" strokeWidth={2.2} />
         <h1
           style={{
             margin: 0,
@@ -157,7 +201,7 @@ function CompetitorPageInner() {
           {t("title")}
         </h1>
       </div>
-      <p style={{ color: "#505055", margin: "0 0 28px", fontSize: "0.95rem" }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", margin: "0 0 28px", fontSize: "0.95rem" }}>
         {t("description")}
       </p>
 
@@ -174,7 +218,7 @@ function CompetitorPageInner() {
             style={{
               fontSize: "0.78rem",
               fontWeight: 700,
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               display: "block",
               marginBottom: 6,
               letterSpacing: "0.04em",
@@ -301,7 +345,7 @@ function CompetitorPageInner() {
                   border: "1px solid rgba(255,255,255,0.07)",
                 }}
               >
-                <p style={{ margin: "0 0 6px", fontSize: "0.72rem", color: "#505055" }}>
+                <p style={{ margin: "0 0 6px", fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>
                   {s.label}
                 </p>
                 <p
@@ -335,9 +379,9 @@ function CompetitorPageInner() {
             </h3>
             <TagList
               items={analysis.top_topics}
-              color="#F0EFE8"
-              borderColor="rgba(255,255,255,0.15)"
-              bg="rgba(255,255,255,0.05)"
+              color="#060608"
+              borderColor="rgba(180,255,0,0.45)"
+              bg="#B4FF00"
             />
           </section>
 
@@ -369,12 +413,35 @@ function CompetitorPageInner() {
             <h3 style={{ color: "#B4FF00", fontSize: "0.9rem", marginBottom: 10 }}>
               {t("opportunities")}
             </h3>
-            <TagList
-              items={analysis.opportunities}
-              color="#B4FF00"
-              borderColor="rgba(180,255,0,0.35)"
-              bg="rgba(180,255,0,0.08)"
-            />
+            <div
+              style={{
+                padding: 22,
+                borderRadius: 14,
+                background: "rgba(180,255,0,0.1)",
+                border: "2px solid rgba(180,255,0,0.45)",
+              }}
+            >
+              {analysis.opportunities.length > 0 ? (
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: 20,
+                    color: "#F0EFE8",
+                    lineHeight: 1.65,
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  {analysis.opportunities.map((item) => (
+                    <li key={item} style={{ marginBottom: 10 }}>
+                      <span style={{ color: "#B4FF00", fontWeight: 700 }}>→ </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ margin: 0, color: "rgba(255,255,255,0.65)" }}>—</p>
+              )}
+            </div>
           </section>
 
           {analysis.best_performing_format && (
@@ -382,7 +449,7 @@ function CompetitorPageInner() {
               style={{
                 marginBottom: 24,
                 fontSize: "0.88rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
               }}
             >
               <strong style={{ color: "#F0EFE8" }}>{t("best_format")}:</strong>{" "}
@@ -433,7 +500,7 @@ function CompetitorPageInner() {
                   >
                     {v.title}
                   </p>
-                  <p style={{ margin: "6px 0 0", color: "#505055", fontSize: "0.8rem" }}>
+                  <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.65)", fontSize: "0.8rem" }}>
                     {formatNum(v.viewCount)} Views
                   </p>
                 </div>
@@ -461,6 +528,47 @@ function CompetitorPageInner() {
             {t("analyze_again")}
           </button>
         </div>
+      )}
+
+      {history.length > 0 && (
+        <section style={{ marginTop: 40 }}>
+          <h2
+            style={{
+              fontSize: "1rem",
+              color: "rgba(255,255,255,0.65)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              marginBottom: 14,
+            }}
+          >
+            {t("history_title")}
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {history.map((h) => (
+              <button
+                key={h.id}
+                type="button"
+                onClick={() => {
+                  if (h.result) showResults(h.result);
+                }}
+                style={{
+                  textAlign: "left",
+                  padding: "12px 16px",
+                  borderRadius: 10,
+                  background: "#0f0f12",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  color: "#F0EFE8",
+                  cursor: h.result ? "pointer" : "default",
+                }}
+              >
+                <span style={{ color: "#B4FF00", fontWeight: 800, marginRight: 10 }}>
+                  {h.result?.channel.title ?? "—"}
+                </span>
+                {h.prompt}
+              </button>
+            ))}
+          </div>
+        </section>
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

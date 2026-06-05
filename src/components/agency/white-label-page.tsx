@@ -17,7 +17,7 @@ export function WhiteLabelPageContent() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      window.location.href = `/login?redirect=/dashboard/white-label`;
+      window.location.href = `/auth/sign-in?redirect=${encodeURIComponent("/dashboard/white-label")}`;
       return;
     }
 
@@ -47,7 +47,7 @@ export function WhiteLabelPageContent() {
           >
             White Label / Agentur
           </h1>
-          <p className="text-[#505055] text-sm mt-2 max-w-xl">
+          <p className="text-[rgba(255,255,255,0.65)] text-sm mt-2 max-w-xl">
             Verkaufe KI-Content-Tools unter deiner eigenen Marke — Subdomain, Logo
             und Farben.
           </p>
@@ -64,7 +64,7 @@ export function WhiteLabelPageContent() {
         <div
           className="max-w-md mx-auto text-left p-5 rounded-xl border border-white/10 bg-[#0f0f12]"
         >
-          <label className="block mb-3 text-sm text-[#505055]">
+          <label className="block mb-3 text-sm text-[rgba(255,255,255,0.65)]">
             Agentur-Name
             <input
               value={agencyName}
@@ -73,7 +73,7 @@ export function WhiteLabelPageContent() {
               className="mt-2 w-full px-3 py-2.5 rounded-lg border border-white/10 bg-[#18181d] text-[#F0EFE8]"
             />
           </label>
-          <label className="block text-sm text-[#505055]">
+          <label className="block text-sm text-[rgba(255,255,255,0.65)]">
             Subdomain (z.B. neon → neon.influexaicreator.com)
             <input
               value={slug}
@@ -101,13 +101,13 @@ export function WhiteLabelPageContent() {
                 plan.id === "pro" ? "rgba(180,255,0,0.04)" : "#0f0f12",
             }}
           >
-            <div className="text-xs text-[#505055] font-bold">
+            <div className="text-xs text-[rgba(255,255,255,0.65)] font-bold">
               {plan.name.toUpperCase()}
             </div>
             <div className="font-[family-name:var(--font-bebas)] text-4xl text-[var(--accent)] my-2">
-              €{plan.priceEur}/mo
+              €{plan.monthlyPriceEur}/mo
             </div>
-            <p className="text-[#505055] text-sm mb-5">
+            <p className="text-[rgba(255,255,255,0.65)] text-sm mb-5">
               Bis zu {plan.maxSeats === 9999 ? "∞" : plan.maxSeats} Client Seats
               {plan.hidePoweredBy ? " · Kein Powered-by" : " · Powered by InfluexAI"}
               {plan.customDomain ? " · Custom Domain" : ""}
@@ -128,7 +128,7 @@ export function WhiteLabelPageContent() {
         <h2 className="font-[family-name:var(--font-bebas)] text-3xl mb-6">
           So funktioniert&apos;s
         </h2>
-        <ol className="text-left text-[#505055] leading-8 pl-6">
+        <ol className="text-left text-[rgba(255,255,255,0.65)] leading-8 pl-6">
           <li>Kaufe einen Plan</li>
           <li>Konfiguriere Branding im Agentur-Dashboard</li>
           <li>Lade Kunden per E-Mail ein</li>

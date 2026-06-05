@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       >
         {headline}
       </div>
-      <div style={{ color: "#505055", fontSize: 22, marginTop: 8 }}>
+      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 22, marginTop: 8 }}>
         {SEO_BASE_URL.replace("https://", "")}
       </div>
     </div>,

@@ -32,7 +32,7 @@ export default function CreditsPage() {
   const handleCheckout = async (packageId: string) => {
     setLoading(packageId);
     try {
-      const res = await fetch("/api/stripe/checkout", {
+      const res = await fetch("/api/credits/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ packageId }),
@@ -102,7 +102,7 @@ export default function CreditsPage() {
           style={{
             fontSize: "0.72rem",
             fontWeight: 700,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             marginBottom: 8,
@@ -125,7 +125,7 @@ export default function CreditsPage() {
           <span
             style={{
               fontSize: "1.25rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               marginLeft: 10,
               fontFamily: "var(--font-dm), sans-serif",
               fontWeight: 500,
@@ -135,7 +135,7 @@ export default function CreditsPage() {
           </span>
         </div>
         <p
-          style={{ margin: "0 0 16px", fontSize: "0.88rem", color: "#505055" }}
+          style={{ margin: "0 0 16px", fontSize: "0.88rem", color: "rgba(255,255,255,0.65)" }}
         >
           Du hast diesen Monat{" "}
           <strong style={{ color: "#F0EFE8" }}>
@@ -149,7 +149,7 @@ export default function CreditsPage() {
             display: "flex",
             justifyContent: "space-between",
             fontSize: "0.72rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
           }}
         >
           <span>Verbleibend</span>
@@ -195,7 +195,7 @@ export default function CreditsPage() {
           style={{
             fontSize: "0.72rem",
             fontWeight: 700,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             marginBottom: 8,
@@ -216,7 +216,7 @@ export default function CreditsPage() {
         <p
           style={{
             fontSize: "0.88rem",
-            color: "rgba(240,239,232,0.6)",
+            color: "rgba(255,255,255,0.85)",
             margin: "0 0 12px",
             lineHeight: 1.5,
           }}
@@ -228,7 +228,7 @@ export default function CreditsPage() {
           style={{
             margin: "0 0 16px",
             paddingLeft: 18,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.82rem",
             lineHeight: 1.7,
           }}
@@ -253,7 +253,7 @@ export default function CreditsPage() {
             API Keys verwalten
           </a>
           <a
-            href="/api-docs"
+            href="/docs"
             style={{
               padding: "10px 18px",
               borderRadius: 10,
@@ -273,7 +273,7 @@ export default function CreditsPage() {
         style={{
           fontSize: "0.75rem",
           fontWeight: 700,
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           textTransform: "uppercase",
           letterSpacing: "0.08em",
           marginBottom: 14,
@@ -340,7 +340,7 @@ export default function CreditsPage() {
                   fontWeight: 700,
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   marginBottom: 8,
                 }}
               >
@@ -369,28 +369,16 @@ export default function CreditsPage() {
                 }}
               >
                 {pkg.credits} Credits
-                {pkg.plan === "creator" && (
+                {pkg.popular && (
                   <span
                     style={{
                       fontSize: "0.7rem",
-                      color: "#06b6d4",
+                      color: "#B4FF00",
                       marginLeft: 8,
                       fontFamily: "var(--font-dm), sans-serif",
                     }}
                   >
-                    +20% Bonus
-                  </span>
-                )}
-                {pkg.plan === "pro" && (
-                  <span
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "#06b6d4",
-                      marginLeft: 8,
-                      fontFamily: "var(--font-dm), sans-serif",
-                    }}
-                  >
-                    +50% Bonus
+                    Beliebt
                   </span>
                 )}
               </div>
@@ -398,58 +386,14 @@ export default function CreditsPage() {
               <p
                 style={{
                   fontSize: "0.8rem",
-                  color: "rgba(240,239,232,0.55)",
-                  marginBottom: 10,
+                  color: "rgba(255,255,255,0.65)",
+                  marginBottom: 20,
                   lineHeight: 1.4,
-                }}
-              >
-                {pkg.equivalence}
-              </p>
-
-              {pkg.savingsBadge && (
-                <span
-                  style={{
-                    display: "inline-block",
-                    alignSelf: "flex-start",
-                    marginBottom: 12,
-                    padding: "4px 10px",
-                    borderRadius: 6,
-                    background: "rgba(180,255,0,0.1)",
-                    border: "1px solid rgba(180,255,0,0.2)",
-                    fontSize: "0.68rem",
-                    fontWeight: 700,
-                    color: "#B4FF00",
-                  }}
-                >
-                  {pkg.savingsBadge}
-                </span>
-              )}
-
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  color: "#505055",
-                  marginBottom: 14,
-                  fontStyle: "italic",
-                }}
-              >
-                Best for: {pkg.bestFor}
-              </p>
-
-              <ul
-                style={{
-                  margin: "0 0 20px",
-                  paddingLeft: 18,
-                  fontSize: "0.78rem",
-                  color: "rgba(240,239,232,0.5)",
-                  lineHeight: 1.6,
                   flex: 1,
                 }}
               >
-                {pkg.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
+                €{pkg.pricePerCredit.toFixed(3).replace(".", ",")} / Credit
+              </p>
 
               <button
                 type="button"
@@ -488,7 +432,7 @@ export default function CreditsPage() {
           justifyContent: "center",
           gap: "8px 20px",
           fontSize: 13,
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           textAlign: "center",
         }}
       >
@@ -551,7 +495,7 @@ export default function CreditsPage() {
               Keine Credits mehr
             </h2>
             <p
-              style={{ color: "#505055", marginBottom: 24, fontSize: "0.9rem" }}
+              style={{ color: "rgba(255,255,255,0.65)", marginBottom: 24, fontSize: "0.9rem" }}
             >
               Alle Features sind pausiert. Wähle ein Paket, um weiterzumachen.
             </p>

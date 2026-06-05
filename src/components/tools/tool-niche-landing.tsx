@@ -33,7 +33,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
             InfluexAI
           </Link>
           <div className="flex gap-4 text-sm">
-            <Link href="/tools" className="text-white/60 hover:text-[#B4FF00]">
+            <Link href="/tools" className="text-white/80 hover:text-[#B4FF00]">
               Alle Tools
             </Link>
             <Link
@@ -54,8 +54,8 @@ export function ToolNicheLanding({ feature, niche }: Props) {
           <h1 className="text-3xl font-semibold leading-tight md:text-4xl lg:text-5xl">
             {meta.h1}
           </h1>
-          <p className="mt-4 text-lg text-white/60">{meta.heroText}</p>
-          <p className="mt-3 text-sm text-white/40">{meta.description}</p>
+          <p className="mt-4 text-lg text-white/80">{meta.heroText}</p>
+          <p className="mt-3 text-sm text-white/70">{meta.description}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <Link
               href={signupHref}
@@ -95,7 +95,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
                 className="rounded-xl border border-white/10 bg-white/[0.03] p-5"
               >
                 <strong className="text-[#B4FF00]">{example}</strong>
-                <p className="mt-2 text-sm text-white/60">
+                <p className="mt-2 text-sm text-white/80">
                   Mit dem {f.nameDe} erstellst du in Sekunden ein fertiges
                   Konzept für „{example}“ — inklusive Hook, Struktur und CTA,
                   angepasst an {n.nameDe}-Zielgruppen.
@@ -152,7 +152,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
           <h2 className="text-xl font-semibold">
             Jetzt {f.nameDe} für {n.nameDe} ausprobieren
           </h2>
-          <p className="mt-3 text-white/60">
+          <p className="mt-3 text-white/80">
             Credits ab €4,99. Kein Abo-Zwang. Sofort im Dashboard nutzen.
           </p>
           <Link
@@ -175,13 +175,13 @@ export function ToolNicheLanding({ feature, niche }: Props) {
                 className="rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-[#B4FF00]/40"
               >
                 <p className="font-medium text-white">{r.label}</p>
-                <p className="mt-1 text-xs text-white/40">
+                <p className="mt-1 text-xs text-white/70">
                   {NICHES[niche].emoji} {n.nameDe}
                 </p>
               </Link>
             ))}
           </div>
-          <p className="mt-6 text-center text-sm text-white/40">
+          <p className="mt-6 text-center text-sm text-white/70">
             <Link href="/tools" className="text-[#B4FF00] hover:underline">
               Alle Tool × Nische Kombinationen →
             </Link>
@@ -193,17 +193,17 @@ export function ToolNicheLanding({ feature, niche }: Props) {
         <FAQSection faqs={getToolFaqs(feature, niche)} />
       </div>
 
-      <footer className="border-t border-white/10 py-8 text-center text-xs text-white/30">
+      <footer className="border-t border-white/10 py-8 text-center text-xs text-white/65">
         <Link
           href={toolPagePath("niche-analyzer", niche)}
-          className="hover:text-white/50"
+          className="hover:text-white/80"
         >
           Niche Analyzer für {n.nameDe}
         </Link>
         {" · "}
         <Link
           href={toolPagePath("script-generator", niche)}
-          className="hover:text-white/50"
+          className="hover:text-white/80"
         >
           Script Generator für {n.nameDe}
         </Link>

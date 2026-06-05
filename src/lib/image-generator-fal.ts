@@ -2,6 +2,8 @@ import { fal } from "@fal-ai/client";
 import {
   buildCategoryNegativePrompt,
   buildCategoryPrompt,
+  buildNegativePrompt,
+  buildPositivePrompt,
   FAL_IMAGE_MODELS,
   IMAGE_GEN_DEFAULTS,
   type FalImageSize,
@@ -99,14 +101,14 @@ export async function generateCategoryImage(options: {
 }
 
 export async function upscaleGeneratorImage(imageUrl: string): Promise<string> {
-  const { NEGATIVE_PROMPT } = await import("@/lib/generation-config");
   const result = (await fal.subscribe(FAL_IMAGE_MODELS.CLARITY_UPSCALER, {
     input: {
       image_url: imageUrl,
+      prompt: buildPositivePrompt("sharp detail, preserve identity", "generic"),
+      negative_prompt: buildNegativePrompt("generic"),
       upscale_factor: IMAGE_GEN_DEFAULTS.upscale.upscale_factor,
       creativity: IMAGE_GEN_DEFAULTS.upscale.creativity,
       resemblance: IMAGE_GEN_DEFAULTS.upscale.resemblance,
-      negative_prompt: NEGATIVE_PROMPT,
       enable_safety_checker: true,
     },
     logs: false,

@@ -60,7 +60,7 @@ export function AgentToolTimeline({ steps }: Props) {
                         ? "bg-[#B4FF00] text-[#060608] animate-pulse"
                         : status === "error"
                           ? "bg-red-500/20 text-red-400"
-                          : "border border-white/20 text-white/30"
+                          : "border border-white/20 text-white/65"
                   }`}
                 >
                   {status === "done" ? "✓" : status === "running" ? "●" : "○"}
@@ -92,7 +92,7 @@ export function AgentToolTimeline({ steps }: Props) {
                       ? "text-[#B4FF00] animate-pulse"
                       : status === "error"
                         ? "text-red-400"
-                        : "text-white/30"
+                        : "text-white/65"
                 }`}
               >
                 {t(TIMELINE_LABEL_KEYS[tool] as "timeline_niche")}

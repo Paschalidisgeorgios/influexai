@@ -302,7 +302,7 @@ export default function ProductHuntLaunchKitPage() {
 
   if (!hydrated) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "#505055" }}>
+      <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.65)" }}>
         Lade Launch Kit…
       </div>
     );
@@ -331,7 +331,7 @@ export default function ProductHuntLaunchKitPage() {
             ProductHunt Launch Kit
           </h1>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.88rem", margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem", margin: 0 }}>
           Internes Tool — Copy, Checkliste, Promo-Code & Launch-Tracker
         </p>
         <Link
@@ -339,7 +339,7 @@ export default function ProductHuntLaunchKitPage() {
           style={{
             display: "inline-block",
             marginTop: 12,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.82rem",
             textDecoration: "none",
           }}
@@ -357,7 +357,7 @@ export default function ProductHuntLaunchKitPage() {
               display: "flex",
               justifyContent: "space-between",
               fontSize: "0.82rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               marginBottom: 8,
             }}
           >
@@ -413,7 +413,7 @@ export default function ProductHuntLaunchKitPage() {
                         gap: 10,
                         cursor: "pointer",
                         fontSize: "0.88rem",
-                        color: done ? "#505055" : "#F0EFE8",
+                        color: done ? "rgba(255,255,255,0.65)" : "#F0EFE8",
                         textDecoration: done ? "line-through" : "none",
                       }}
                     >
@@ -547,7 +547,7 @@ export default function ProductHuntLaunchKitPage() {
             </p>
             <p
               style={{
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.82rem",
                 margin: "0 0 4px",
               }}
@@ -556,7 +556,7 @@ export default function ProductHuntLaunchKitPage() {
             </p>
             <p
               style={{
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.82rem",
                 margin: "0 0 12px",
               }}
@@ -578,7 +578,7 @@ export default function ProductHuntLaunchKitPage() {
       {/* Section 4: Outreach */}
       <section style={card}>
         <h2 style={sectionTitle}>Supporter Outreach</h2>
-        <p style={{ color: "#505055", fontSize: "0.82rem", marginBottom: 12 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.82rem", marginBottom: 12 }}>
           PH-Link wird aus dem Tracker übernommen (oder Platzhalter).
         </p>
         <CopyBlock
@@ -599,7 +599,7 @@ export default function ProductHuntLaunchKitPage() {
             display: "block",
             fontSize: "0.75rem",
             fontWeight: 700,
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             marginBottom: 6,
           }}
         >
@@ -648,7 +648,7 @@ export default function ProductHuntLaunchKitPage() {
                 style={{
                   display: "block",
                   fontSize: "0.72rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   marginBottom: 6,
                 }}
               >
@@ -683,12 +683,12 @@ export default function ProductHuntLaunchKitPage() {
           Aktualisieren
         </button>
 
-        <p style={{ fontSize: "0.75rem", color: "#505055", marginBottom: 12 }}>
+        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginBottom: 12 }}>
           Auto-Refresh alle 5 Min · Ziele: 50 (good), 100 (great), 200 (top 5)
         </p>
 
         {chartData.length === 0 ? (
-          <p style={{ color: "#505055", textAlign: "center", padding: 24 }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 24 }}>
             Noch keine Daten — Werte eingeben und „Aktualisieren“ klicken.
           </p>
         ) : (
@@ -698,9 +698,9 @@ export default function ProductHuntLaunchKitPage() {
               margin={{ top: 8, right: 12, left: -8, bottom: 0 }}
             >
               <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fill: "#505055", fontSize: 10 }} />
+              <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }} />
               <YAxis
-                tick={{ fill: "#505055", fontSize: 10 }}
+                tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                 allowDecimals={false}
               />
               <Tooltip
@@ -712,9 +712,9 @@ export default function ProductHuntLaunchKitPage() {
               />
               <ReferenceLine
                 y={50}
-                stroke="#505055"
+                stroke="rgba(255,255,255,0.65)"
                 strokeDasharray="4 4"
-                label={{ value: "Good 50", fill: "#505055", fontSize: 10 }}
+                label={{ value: "Good 50", fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
               />
               <ReferenceLine
                 y={100}
@@ -741,7 +741,7 @@ export default function ProductHuntLaunchKitPage() {
         )}
 
         {snapshots.length > 0 && (
-          <div style={{ marginTop: 16, fontSize: "0.78rem", color: "#505055" }}>
+          <div style={{ marginTop: 16, fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
             {snapshots.length} Einträge · Letzter:{" "}
             {new Date(snapshots[snapshots.length - 1].time).toLocaleString(
               "de-DE"

@@ -51,7 +51,7 @@ function JoinContent() {
 
   if (loading) {
     return (
-      <p style={{ color: "#505055", textAlign: "center", padding: 80 }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 80 }}>
         Laden…
       </p>
     );
@@ -91,7 +91,7 @@ function JoinContent() {
         >
           {agencyName} lädt dich ein
         </h1>
-        <p style={{ color: "#505055", marginBottom: 24, lineHeight: 1.6 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 24, lineHeight: 1.6 }}>
           Du wurdest als Team-Mitglied eingeladen
           {invite?.email ? ` (${invite.email})` : ""}. Melde dich an, um dem
           Workspace beizutreten.

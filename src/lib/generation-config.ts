@@ -1,5 +1,7 @@
 /**
  * Central prompts and defaults for fal.ai image generation.
+ * Bild Generator: QUALITY_PROMPT_PREFIX + CATEGORY_PROMPTS[category] + user prompt,
+ * NEGATIVE_PROMPT, flux/dev (1 credit) vs flux-pro (3 credits), clarity-upscaler (2 credits).
  */
 
 export const NEGATIVE_PROMPT = `
@@ -362,6 +364,19 @@ export function buildNegativePrompt(
     FEATURE_NEGATIVE_EXTRAS[feature],
     extra ?? "",
   ]);
+}
+
+/** Extra negatives for Kling product video ads (image-to-video). */
+export const PRODUCT_VIDEO_NEGATIVE_EXTRA = `
+blurry product, distorted product, wrong colors,
+floating objects, bad product placement,
+text errors, watermark, low quality packaging
+`
+  .trim()
+  .replace(/\n/g, ", ");
+
+export function buildProductVideoNegativePrompt(): string {
+  return buildNegativePrompt("product", PRODUCT_VIDEO_NEGATIVE_EXTRA);
 }
 
 export function buildPositivePrompt(

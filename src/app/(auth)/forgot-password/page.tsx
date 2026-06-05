@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
       <h1 className="text-white text-2xl font-semibold mb-2">
         {t("forgot_title")}
       </h1>
-      <p className="text-white/40 text-sm mb-8">{t("forgot_subtitle")}</p>
+      <p className="text-white/70 text-sm mb-8">{t("forgot_subtitle")}</p>
 
       {sent ? (
         <div className="p-4 rounded-xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 text-[#B4FF00] text-sm mb-6">
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
         </>
       )}
 
-      <p className="text-center text-white/40 text-sm mt-8">
+      <p className="text-center text-white/70 text-sm mt-8">
         <Link href="/login" className="text-[#B4FF00] hover:underline">
           {t("login_link")}
         </Link>

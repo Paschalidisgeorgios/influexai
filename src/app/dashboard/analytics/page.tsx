@@ -136,7 +136,7 @@ export default function AnalyticsPage() {
         </h1>
         <p
           style={{
-            color: "rgba(240,239,232,0.5)",
+            color: "rgba(255,255,255,0.8)",
             marginBottom: 28,
             lineHeight: 1.6,
           }}
@@ -217,7 +217,7 @@ export default function AnalyticsPage() {
                   fontWeight: active ? 700 : 500,
                   fontFamily: "inherit",
                   background: active ? ACCENT : "transparent",
-                  color: active ? BG : "rgba(240,239,232,0.45)",
+                  color: active ? BG : "rgba(255,255,255,0.75)",
                   transition: "all 0.15s",
                 }}
               >
@@ -238,7 +238,7 @@ export default function AnalyticsPage() {
         }}
       >
         <div style={cardStyle}>
-          <p style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 6 }}>
+          <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>
             Gesamt Creations
           </p>
           <p
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 6 }}>
+          <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>
             Credits verbraucht
           </p>
           <p
@@ -286,7 +286,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 6 }}>
+          <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>
             Aktivste Funktion
           </p>
           <p
@@ -310,7 +310,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: "0.72rem", color: "#505055", marginBottom: 6 }}>
+          <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>
             Streak
           </p>
           <p
@@ -368,14 +368,14 @@ export default function AnalyticsPage() {
                 />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "#505055", fontSize: 10 }}
+                  tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   interval="preserveStartEnd"
                 />
                 <YAxis
                   allowDecimals={false}
-                  tick={{ fill: "#505055", fontSize: 10 }}
+                  tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   width={28}
@@ -479,7 +479,7 @@ export default function AnalyticsPage() {
                 }}
               >
                 <span>{f.label}</span>
-                <span style={{ color: f.count > 0 ? ACCENT : "#505055" }}>
+                <span style={{ color: f.count > 0 ? ACCENT : "rgba(255,255,255,0.65)" }}>
                   {f.count}
                 </span>
               </div>
@@ -516,13 +516,13 @@ export default function AnalyticsPage() {
                 />
                 <XAxis
                   dataKey="shortLabel"
-                  tick={{ fill: "#505055", fontSize: 9 }}
+                  tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 9 }}
                   axisLine={false}
                   tickLine={false}
                   interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fill: "#505055", fontSize: 10 }}
+                  tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   width={36}
@@ -607,7 +607,7 @@ export default function AnalyticsPage() {
                       style={{
                         textAlign: "left",
                         padding: "10px 12px",
-                        color: "#505055",
+                        color: "rgba(255,255,255,0.65)",
                         fontWeight: 600,
                       }}
                     >
@@ -626,7 +626,7 @@ export default function AnalyticsPage() {
                   <td
                     style={{
                       padding: "10px 12px",
-                      color: "rgba(240,239,232,0.5)",
+                      color: "rgba(255,255,255,0.8)",
                     }}
                   >
                     {formatDateTime(t.date)}
@@ -686,7 +686,7 @@ export default function AnalyticsPage() {
               <p
                 style={{
                   fontSize: "0.72rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   marginBottom: 6,
                 }}
               >
@@ -747,7 +747,7 @@ export default function AnalyticsPage() {
                         ? "Nische"
                         : "Outlier"}
                   </span>
-                  <span style={{ fontSize: "0.68rem", color: "#505055" }}>
+                  <span style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.65)" }}>
                     {formatDate(item.createdAt)}
                   </span>
                 </div>

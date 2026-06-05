@@ -2,6 +2,8 @@
 
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { DashboardShell } from "@/components/dashboard-shell";
+import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
+import { PushPermission } from "@/components/ui/PushPermission";
 
 export function DashboardLayoutClient({
   children,
@@ -13,7 +15,10 @@ export function DashboardLayoutClient({
       <div className="hidden lg:flex">
         <DashboardSidebar />
       </div>
-      <DashboardShell>{children}</DashboardShell>
+      <DashboardShell>
+        <PlanGateProvider>{children}</PlanGateProvider>
+        <PushPermission />
+      </DashboardShell>
     </div>
   );
 }

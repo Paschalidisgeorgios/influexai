@@ -186,7 +186,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
                 fontWeight: view === t.id ? 700 : 500,
                 fontFamily: "inherit",
                 background: view === t.id ? "#B4FF00" : "transparent",
-                color: view === t.id ? "#060608" : "rgba(240,239,232,0.45)",
+                color: view === t.id ? "#060608" : "rgba(255,255,255,0.75)",
               }}
             >
               {t.label}
@@ -226,7 +226,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
                     fontFamily: "inherit",
                     background:
                       filter === tab.id ? "#B4FF00" : "rgba(255,255,255,0.05)",
-                    color: filter === tab.id ? "#060608" : "#505055",
+                    color: filter === tab.id ? "#060608" : "rgba(255,255,255,0.65)",
                   }}
                 >
                   {tab.label}
@@ -242,7 +242,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
                   borderRadius: 10,
                   background: "rgba(255,255,255,0.03)",
                   fontSize: "0.88rem",
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                 }}
               >
                 <Link
@@ -256,7 +256,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
             )}
 
             {posts.length === 0 ? (
-              <p style={{ color: "#505055", textAlign: "center", padding: 48 }}>
+              <p style={{ color: "rgba(255,255,255,0.65)", textAlign: "center", padding: 48 }}>
                 Noch keine Posts. Starte die Community!
               </p>
             ) : (

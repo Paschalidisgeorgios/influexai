@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       const { data: profile, error } = await supabase
         .from("profiles")
         .select(
-          "id, email, full_name, creator_niche, daily_suggestions_email, onboarding_completed"
+          "id, email, full_name, creator_niche, niche, daily_suggestions_email, onboarding_completed, credits"
         )
         .eq("id", body.userId)
         .single();

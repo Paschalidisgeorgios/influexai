@@ -73,7 +73,7 @@ export function ImageGenerationLoading({
         {IMAGE_LOADING_MESSAGES[msgIndex]}
       </p>
       {subtitle && (
-        <p style={{ color: "#505055", fontSize: "0.85rem", marginBottom: 16 }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem", marginBottom: 16 }}>
           {subtitle}
         </p>
       )}
@@ -97,7 +97,7 @@ export function ImageGenerationLoading({
           }}
         />
       </div>
-      <p style={{ color: "#505055", fontSize: "0.75rem", marginTop: 12 }}>
+      <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.75rem", marginTop: 12 }}>
         Geschätzte Dauer: 20–40 Sekunden
       </p>
     </div>

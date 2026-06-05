@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Gift, Mail } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Mail } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   getReferralDashboard,
   type ReferralDashboardData,
 } from "@/app/actions/referral";
+import { TablerGift } from "@/components/icons/TablerGift";
 import {
   REFERRAL_SIGNUP_BONUS_REFERRED,
   REFERRAL_SIGNUP_BONUS_REFERRER,
 } from "@/lib/referral-code";
+
+const HOW_IT_WORKS_KEYS = ["step1", "step2", "step3", "step4"] as const;
 
 export default function ReferralPage() {
   const t = useTranslations("referral");
@@ -19,14 +22,22 @@ export default function ReferralPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const load = useCallback(async (p: number) => {
+    setLoading(true);
+    const res = await getReferralDashboard(p);
+    if ("error" in res) setError(res.error);
+    else {
+      setData(res);
+      setError(null);
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    getReferralDashboard().then((res) => {
-      if ("error" in res) setError(res.error);
-      else setData(res);
-      setLoading(false);
-    });
-  }, []);
+    void load(page);
+  }, [load, page]);
 
   const shareMessage = useMemo(() => {
     if (!data) return "";
@@ -61,9 +72,9 @@ export default function ReferralPage() {
       year: "numeric",
     });
 
-  if (loading) {
+  if (loading && !data) {
     return (
-      <div className="max-w-[800px] mx-auto py-10 text-white/40 text-sm">
+      <div className="mx-auto max-w-[800px] py-10 text-sm text-white/70">
         {t("loading")}
       </div>
     );
@@ -71,117 +82,140 @@ export default function ReferralPage() {
 
   if (error || !data) {
     return (
-      <div className="max-w-[800px] mx-auto text-red-400 text-sm">
+      <div className="mx-auto max-w-[800px] text-sm text-red-400">
         {error ?? t("error")}
       </div>
     );
   }
 
+  const { pagination } = data;
+
   return (
-    <div className="max-w-[800px] mx-auto pb-12">
-      <header className="flex items-center gap-3 mb-8">
-        <Gift className="text-[#B4FF00]" size={32} strokeWidth={2} />
+    <div className="mx-auto max-w-[800px] pb-12">
+      <header className="mb-8 flex items-center gap-3">
+        <TablerGift size={32} color="#B4FF00" strokeWidth={2.2} />
         <div>
-          <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-none">
+          <h1 className="font-[family-name:var(--font-bebas)] text-4xl leading-none text-[#F0EFE8]">
             {t("title")}
           </h1>
-          <p className="text-white/45 text-sm mt-1">{t("subtitle")}</p>
+          <p className="mt-1 text-sm text-white/75">{t("subtitle")}</p>
         </div>
       </header>
 
-      <section className="rounded-2xl border border-[#B4FF00]/20 bg-[#B4FF00]/5 p-6 mb-6">
-        <h2 className="font-[family-name:var(--font-bebas)] text-2xl text-[#F0EFE8] mb-2">
-          {t("hero_title")}
-        </h2>
-        <p className="text-white/50 text-sm leading-relaxed mb-5">
-          {t("hero_body", {
-            referrerBonus: REFERRAL_SIGNUP_BONUS_REFERRER,
-            friendBonus: REFERRAL_SIGNUP_BONUS_REFERRED,
-          })}
-        </p>
-
-        <p className="text-[0.7rem] font-bold uppercase tracking-wider text-white/35 mb-2">
+      {/* A) Referral link */}
+      <section className="mb-6 rounded-2xl border border-[#B4FF00]/20 bg-[#B4FF00]/5 p-6">
+        <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
           {t("link_label")}
         </p>
-        <div className="rounded-xl border border-white/10 bg-[#0f0f12] px-4 py-3 font-mono text-sm text-[#B4FF00] break-all mb-3">
+        <div className="mb-4 break-all rounded-xl border border-white/10 bg-[#0f0f12] px-4 py-3.5 font-mono text-sm text-[#B4FF00]">
           {data.referralLink}
         </div>
-        <p className="text-white/35 text-xs mb-4">
-          {t("signup_alt")}{" "}
-          <span className="text-white/55 break-all">{data.signupLink}</span>
-        </p>
-
         <button
           type="button"
           onClick={() => void copyLink()}
-          className="w-full sm:w-auto rounded-xl bg-[#B4FF00] px-6 py-3 text-sm font-bold text-[#060608] hover:opacity-90 transition-opacity"
+          className="mb-4 w-full rounded-xl bg-[#B4FF00] py-4 text-base font-bold text-[#060608] transition-opacity hover:opacity-90 sm:max-w-xs"
         >
           {copied ? t("copied") : t("copy")}
         </button>
+        <p className="mb-4 text-xs text-white/65">
+          {t("signup_alt")}{" "}
+          <span className="break-all text-white/80">{data.signupLink}</span>
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {shareUrls && (
+            <>
+              <a
+                href={shareUrls.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline transition-colors hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
+              >
+                WhatsApp
+              </a>
+              <a
+                href={shareUrls.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline transition-colors hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
+              >
+                {t("share_x")}
+              </a>
+              <a
+                href={shareUrls.email}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline transition-colors hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
+              >
+                <Mail size={14} />
+                {t("share_email")}
+              </a>
+            </>
+          )}
+        </div>
       </section>
 
-      <div className="flex flex-wrap gap-2 mb-8">
-        {shareUrls && (
-          <>
-            <a
-              href={shareUrls.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
-            >
-              WhatsApp
-            </a>
-            <a
-              href={shareUrls.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
-            >
-              {t("share_x")}
-            </a>
-            <a
-              href={shareUrls.email}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/40 hover:text-[#B4FF00] transition-colors"
-            >
-              <Mail size={14} />
-              {t("share_email")}
-            </a>
-          </>
-        )}
-      </div>
-
-      <h2 className="font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8] mb-3">
+      {/* B) Stats */}
+      <h2 className="mb-3 font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8]">
         {t("stats_title")}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatCard label={t("stat_invited")} value={data.stats.signedUp} />
         <StatCard label={t("stat_credits")} value={data.stats.creditsEarned} />
+        <StatCard
+          label={t("stat_active")}
+          value={data.stats.activeReferrals}
+        />
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-[#0f0f12] overflow-hidden">
-        <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-white/10 text-[0.7rem] font-bold uppercase tracking-wider text-white/35">
+      {/* C) How it works */}
+      <section className="mb-8 rounded-2xl border border-white/10 bg-[#0f0f12] p-6">
+        <h2 className="mb-4 font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8]">
+          {t("how_title")}
+        </h2>
+        <ol className="space-y-4">
+          {HOW_IT_WORKS_KEYS.map((key, i) => (
+            <li key={key} className="flex gap-4">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#B4FF00]/40 bg-[#B4FF00]/10 text-sm font-bold text-[#B4FF00]">
+                {i + 1}
+              </span>
+              <p className="pt-1 text-sm leading-relaxed text-white/65">
+                {t(`how_${key}`, {
+                  referrerBonus: REFERRAL_SIGNUP_BONUS_REFERRER,
+                  friendBonus: REFERRAL_SIGNUP_BONUS_REFERRED,
+                })}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* D) Table */}
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f0f12]">
+        <div className="grid grid-cols-3 gap-2 border-b border-white/10 px-4 py-3 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
           <span>{t("col_date")}</span>
           <span>{t("col_status")}</span>
           <span className="text-right">{t("col_credits")}</span>
         </div>
-        {data.history.length === 0 ? (
-          <p className="px-4 py-6 text-sm text-white/40">{t("empty")}</p>
+        {loading ? (
+          <p className="px-4 py-6 text-sm text-white/70">{t("loading")}</p>
+        ) : data.history.length === 0 ? (
+          <p className="px-4 py-6 text-sm text-white/70">{t("empty")}</p>
         ) : (
           data.history.map((row) => (
             <div
               key={row.id}
-              className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-white/5 text-sm text-[#F0EFE8] last:border-0"
+              className="grid grid-cols-3 gap-2 border-b border-white/5 px-4 py-3 text-sm text-[#F0EFE8] last:border-0"
             >
               <span>
                 {formatDate(row.date)}
-                <span className="block text-xs text-white/35">{row.label}</span>
+                <span className="mt-0.5 block text-xs text-white/65">
+                  {row.label}
+                </span>
               </span>
               <span>
                 <span
                   className={`inline-block rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${
                     row.status === "purchased"
                       ? "bg-[#B4FF00]/15 text-[#B4FF00]"
-                      : "bg-white/5 text-white/45"
+                      : "bg-white/5 text-white/75"
                   }`}
                 >
                   {row.status === "purchased"
@@ -197,11 +231,37 @@ export default function ReferralPage() {
         )}
       </div>
 
-      <p className="mt-4 text-xs text-white/35">
+      {pagination.totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            disabled={page <= 1 || loading}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
+          >
+            {t("page_prev")}
+          </button>
+          <span className="text-xs text-white/70">
+            {t("page_info", {
+              page: pagination.page,
+              total: pagination.totalPages,
+            })}
+          </span>
+          <button
+            type="button"
+            disabled={page >= pagination.totalPages || loading}
+            onClick={() => setPage((p) => p + 1)}
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
+          >
+            {t("page_next")}
+          </button>
+        </div>
+      )}
+
+      <p className="mt-4 text-xs text-white/65">
         {t("code_label")}{" "}
         <strong className="text-[#B4FF00]">{data.referralCode}</strong>
       </p>
-
     </div>
   );
 }
@@ -209,10 +269,10 @@ export default function ReferralPage() {
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl border border-white/10 bg-[#0f0f12] p-5">
-      <div className="font-[family-name:var(--font-bebas)] text-4xl text-[#B4FF00] leading-none">
+      <div className="font-[family-name:var(--font-bebas)] text-4xl leading-none text-[#B4FF00]">
         {value}
       </div>
-      <div className="text-xs text-white/40 mt-2">{label}</div>
+      <div className="mt-2 text-xs text-white/70">{label}</div>
     </div>
   );
 }

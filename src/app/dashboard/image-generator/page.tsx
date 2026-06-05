@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Image as ImageIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { ImageCompareSlider } from "@/components/image-generator/ImageCompareSlider";
+import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
+import { TablerPhoto } from "@/components/icons/TablerPhoto";
+import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import {
   CATEGORY_PROMPTS,
@@ -44,6 +47,9 @@ type GenerationMeta = {
 
 export default function ImageGeneratorPage() {
   const t = useTranslations("imageGenerator");
+  const searchParams = useSearchParams();
+  const loraId = searchParams.get("loraId");
+  const loraTrigger = searchParams.get("trigger");
   const [prompt, setPrompt] = useState("");
   const [category, setCategory] = useState<ImageCategoryKey>("creator");
   const [format, setFormat] = useState<UiFormat>("16:9");
@@ -60,7 +66,12 @@ export default function ImageGeneratorPage() {
     upscaledUrl: string;
   } | null>(null);
   const [history, setHistory] = useState<
-    { id: string; prompt: string; created_at: string }[]
+    {
+      id: string;
+      prompt: string;
+      created_at: string;
+      result: ReturnType<typeof parseGenerationAssetResult>;
+    }[]
   >([]);
 
   const aspectRatio: FalImageSize = uiFormatToImageSize(format);
@@ -73,12 +84,21 @@ export default function ImageGeneratorPage() {
     if (!user) return;
     const { data } = await supabase
       .from("generations")
-      .select("id, prompt, created_at")
+      .select("id, prompt, created_at, result")
       .eq("user_id", user.id)
       .eq("type", "image")
       .order("created_at", { ascending: false })
       .limit(8);
-    if (data) setHistory(data);
+    if (data) {
+      setHistory(
+        data.map((row) => ({
+          id: row.id,
+          prompt: row.prompt,
+          created_at: row.created_at,
+          result: parseGenerationAssetResult(row.result),
+        }))
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -97,15 +117,24 @@ export default function ImageGeneratorPage() {
     setVariation(null);
 
     try {
-      const res = await fetch("/api/generate-image", {
+      const endpoint = loraId ? "/api/lora/generate" : "/api/generate-image";
+      const body = loraId
+        ? {
+            loraId,
+            prompt: loraTrigger ? `${prompt}, ${loraTrigger}` : prompt,
+            imageSize: aspectRatio,
+          }
+        : {
+            prompt,
+            category,
+            aspectRatio,
+            highRes,
+          };
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          category,
-          aspectRatio,
-          highRes,
-        }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok || !data.imageUrl) {
@@ -181,7 +210,7 @@ export default function ImageGeneratorPage() {
     setUpscaleLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/upscale-image", {
+      const res = await fetch("/api/upscale", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ generationId: result.generationId }),
@@ -256,21 +285,45 @@ export default function ImageGeneratorPage() {
     { id: "4:3", labelKey: "format_4_3" },
   ];
 
+  const restoreFromHistory = (entry: (typeof history)[number]) => {
+    if (!entry.result?.previewPath) return;
+    setCompare(null);
+    setVariation(null);
+    const paid = entry.result.downloadPaid === true;
+    setResult({
+      generationId: entry.id,
+      imageUrl: `/api/generated-image/${entry.id}?variant=${paid ? "final" : "preview"}`,
+      downloadPaid: paid,
+      width: entry.result.width,
+      height: entry.result.height,
+      upscaledUrl: entry.result.upscaledPath
+        ? `/api/generated-image/${entry.id}?variant=upscaled`
+        : undefined,
+    });
+    if (entry.result.upscaledPath) {
+      setCompare({
+        originalUrl: `/api/generated-image/${entry.id}?variant=source`,
+        upscaledUrl: `/api/generated-image/${entry.id}?variant=upscaled`,
+      });
+    }
+  };
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <div className="mb-8">
-        <h1
-          className="mb-2 font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]"
-        >
-          {t("title")}
-        </h1>
-        <p className="text-[0.95rem] leading-relaxed text-[#505055]">
+        <div className="mb-2 flex items-center gap-3">
+          <TablerPhoto size={32} color="#B4FF00" strokeWidth={2.2} />
+          <h1 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+            {t("title")}
+          </h1>
+        </div>
+        <p className="text-[0.95rem] leading-relaxed text-[rgba(255,255,255,0.65)]">
           {t("subtitle")}
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
-        {/* Left column */}
+      <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10">
+        {/* Left column — 40% */}
         <div className="flex flex-col gap-5">
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">
@@ -289,7 +342,7 @@ export default function ImageGeneratorPage() {
             <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">
               {t("category_label")}
             </p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2">
               {IMAGE_CATEGORY_KEYS.map((key) => {
                 const active = category === key;
                 return (
@@ -342,7 +395,7 @@ export default function ImageGeneratorPage() {
               type="button"
               disabled={isBusy}
               onClick={() => runGenerate(false)}
-              className="flex-1 rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-50"
+              className="flex-1 rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
             >
               {loading ? t("loading_standard") : t("generate_standard")}
             </button>
@@ -350,7 +403,7 @@ export default function ImageGeneratorPage() {
               type="button"
               disabled={isBusy}
               onClick={() => runGenerate(true)}
-              className="flex-1 rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00] disabled:opacity-50"
+              className="flex-1 rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00] disabled:opacity-80"
             >
               {loadingHighRes ? t("loading_highres") : t("generate_highres")}
             </button>
@@ -362,13 +415,20 @@ export default function ImageGeneratorPage() {
 
           {history.length > 0 && (
             <div className="mt-2 border-t border-white/8 pt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#505055]">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[rgba(255,255,255,0.65)]">
                 {t("history_title")}
               </p>
-              <ul className="max-h-32 space-y-1 overflow-y-auto text-xs text-[#505055]">
+              <ul className="max-h-36 space-y-1 overflow-y-auto text-xs">
                 {history.map((h) => (
-                  <li key={h.id} className="truncate">
-                    {h.prompt || "—"}
+                  <li key={h.id}>
+                    <button
+                      type="button"
+                      onClick={() => restoreFromHistory(h)}
+                      disabled={!h.result?.previewPath}
+                      className="w-full truncate rounded-lg border border-transparent px-2 py-1.5 text-left text-[rgba(255,255,255,0.65)] hover:border-white/10 hover:bg-white/[0.03] hover:text-[#F0EFE8] disabled:opacity-40"
+                    >
+                      {h.prompt || "—"}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -376,19 +436,19 @@ export default function ImageGeneratorPage() {
           )}
         </div>
 
-        {/* Right column */}
-        <div className="flex min-h-[420px] flex-col gap-4 rounded-2xl border border-white/8 bg-[#060608] p-4">
+        {/* Right column — 60% */}
+        <div className="flex min-h-[420px] select-none flex-col gap-4 rounded-2xl border border-white/8 bg-[#060608] p-4">
           {!result && !loading && !loadingHighRes && (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-              <ImageIcon className="h-12 w-12 text-[#505055]" strokeWidth={1.2} />
-              <p className="text-sm text-[#505055]">{t("preview_empty")}</p>
+              <TablerPhoto size={48} color="rgba(255,255,255,0.65)" strokeWidth={1.5} />
+              <p className="text-sm text-[rgba(255,255,255,0.65)]">{t("preview_empty")}</p>
             </div>
           )}
 
           {(loading || loadingHighRes) && (
             <div className="flex flex-1 flex-col gap-3 p-4">
               <div className="h-full min-h-[320px] animate-pulse rounded-xl bg-white/5" />
-              <p className="text-center text-sm text-[#505055]">
+              <p className="text-center text-sm text-[rgba(255,255,255,0.65)]">
                 {loadingHighRes ? t("loading_highres") : t("loading_standard")}
               </p>
             </div>
@@ -404,26 +464,13 @@ export default function ImageGeneratorPage() {
                   afterAlt={t("compare_after")}
                 />
               ) : (
-                <div className="relative aspect-square max-h-[520px] w-full overflow-hidden rounded-xl border border-white/12 sm:aspect-auto sm:min-h-[360px]">
-                  <Image
-                    src={result.imageUrl}
-                    alt={t("result_alt")}
-                    fill
-                    unoptimized
-                    draggable={false}
-                    onContextMenu={(e) => e.preventDefault()}
-                    className={`object-contain ${
-                      !result.downloadPaid ? "blur-[1px]" : ""
-                    }`}
-                  />
-                  {!result.downloadPaid && (
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
-                      <span className="rotate-[-24deg] text-4xl font-bold text-white/15">
-                        InfluexAI
-                      </span>
-                    </div>
-                  )}
-                </div>
+                <ProtectedGeneratedImage
+                  src={result.imageUrl}
+                  alt={t("result_alt")}
+                  locked={!result.downloadPaid}
+                  unlockHint={t("watermark_hint")}
+                  aspectClassName="min-h-[360px] max-h-[520px] w-full"
+                />
               )}
 
               {variation && (
@@ -451,7 +498,7 @@ export default function ImageGeneratorPage() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 text-xs text-[#505055]">
+              <div className="flex flex-wrap gap-2 text-xs text-[rgba(255,255,255,0.65)]">
                 {result.width && result.height && (
                   <span>
                     {t("info_resolution", {
@@ -459,9 +506,6 @@ export default function ImageGeneratorPage() {
                       h: result.height,
                     })}
                   </span>
-                )}
-                {result.model && (
-                  <span>· {t("info_model", { model: result.model })}</span>
                 )}
                 {result.generationTimeMs != null && (
                   <span>
@@ -476,7 +520,7 @@ export default function ImageGeneratorPage() {
                     type="button"
                     disabled={isBusy}
                     onClick={runUpscale}
-                    className="rounded-lg border border-white/12 px-3 py-2 text-sm font-semibold text-[#F0EFE8] hover:border-[#B4FF00]/40 disabled:opacity-50"
+                    className="rounded-lg border border-white/12 px-3 py-2 text-sm font-semibold text-[#F0EFE8] hover:border-[#B4FF00]/40 disabled:opacity-80"
                   >
                     {upscaleLoading ? t("loading_upscale") : t("upscale_button")}
                   </button>
@@ -485,7 +529,7 @@ export default function ImageGeneratorPage() {
                   type="button"
                   disabled={isBusy || result.downloadPaid}
                   onClick={runDownloadPurchase}
-                  className="rounded-lg border border-[#B4FF00]/40 bg-[#B4FF00]/10 px-3 py-2 text-sm font-semibold text-[#B4FF00] disabled:opacity-50"
+                  className="rounded-lg border border-[#B4FF00]/40 bg-[#B4FF00]/10 px-3 py-2 text-sm font-semibold text-[#B4FF00] disabled:opacity-80"
                 >
                   {downloadLoading
                     ? t("loading_download")
@@ -509,7 +553,7 @@ export default function ImageGeneratorPage() {
                     setVariation(null);
                     setCompare(null);
                   }}
-                  className="rounded-lg border border-white/12 px-3 py-2 text-sm text-[#505055]"
+                  className="rounded-lg border border-white/12 px-3 py-2 text-sm text-[rgba(255,255,255,0.65)]"
                 >
                   {t("regenerate")}
                 </button>
@@ -517,7 +561,7 @@ export default function ImageGeneratorPage() {
                   type="button"
                   disabled={isBusy}
                   onClick={runVariation}
-                  className="rounded-lg border border-white/12 px-3 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-50"
+                  className="rounded-lg border border-white/12 px-3 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-80"
                 >
                   {variationLoading ? t("loading_variation") : t("variation_button")}
                 </button>

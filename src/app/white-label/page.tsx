@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Legacy public URL — White Label is dashboard-only. */
+/** Legacy public URL — agency landing (auth users handled in middleware). */
 export default function WhiteLabelRootRedirect() {
-  redirect("/dashboard/white-label");
+  redirect("/agency");
 }

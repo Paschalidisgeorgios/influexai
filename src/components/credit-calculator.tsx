@@ -8,7 +8,7 @@ const USE_CASES = [
   { key: "niche", icon: "📈", label: "Niche Analysen", divisor: 2 },
   { key: "outlier", icon: "🔥", label: "Outlier Detektionen", divisor: 3 },
   { key: "thumbnails", icon: "🖼️", label: "Thumbnails", divisor: 1 },
-  { key: "ads", icon: "🛍️", label: "Video Ads", divisor: 5 },
+  { key: "ads", icon: "🛍️", label: "Video Ads", divisor: 3 },
 ] as const;
 
 const HIGHLIGHT_BY_TYPE: Record<string, string> = {
@@ -63,7 +63,7 @@ export function CreditCalculator({ topFeatureType }: Props) {
       >
         Was kannst du mit {credits} Credits machen?
       </h2>
-      <p style={{ fontSize: "0.8rem", color: "#505055", marginBottom: 18 }}>
+      <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", marginBottom: 18 }}>
         Ziehe den Slider — sieh live, wie viele Creationen möglich sind.
       </p>
 
@@ -87,7 +87,7 @@ export function CreditCalculator({ topFeatureType }: Props) {
           display: "flex",
           justifyContent: "space-between",
           fontSize: "0.72rem",
-          color: "#505055",
+          color: "rgba(255,255,255,0.65)",
           marginTop: -12,
           marginBottom: 16,
         }}
@@ -97,7 +97,7 @@ export function CreditCalculator({ topFeatureType }: Props) {
             key={n}
             style={{
               fontWeight: credits === n ? 700 : 400,
-              color: credits === n ? "#B4FF00" : "#505055",
+              color: credits === n ? "#B4FF00" : "rgba(255,255,255,0.65)",
             }}
           >
             {n}

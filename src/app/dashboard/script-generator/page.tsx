@@ -99,7 +99,7 @@ function ScriptDisplay({ script }: { script: string }) {
                     ? "#B4FF00"
                     : block.tag === "cta"
                       ? "#a78bfa"
-                      : "#505055",
+                      : "rgba(255,255,255,0.65)",
                 marginBottom: 8,
               }}
             >
@@ -116,7 +116,7 @@ function ScriptDisplay({ script }: { script: string }) {
               style={{
                 margin: "0 0 6px",
                 fontStyle: isBRollLine(line) ? "italic" : "normal",
-                color: isBRollLine(line) ? "#505055" : "#F0EFE8",
+                color: isBRollLine(line) ? "rgba(255,255,255,0.65)" : "#F0EFE8",
                 whiteSpace: "pre-wrap",
               }}
             >
@@ -172,7 +172,7 @@ function ScriptGeneratorPageInner() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -395,7 +395,7 @@ function ScriptGeneratorPageInner() {
               </h1>
               <p
                 style={{
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   fontSize: "0.9rem",
                   margin: "6px 0 0",
                 }}
@@ -410,7 +410,7 @@ function ScriptGeneratorPageInner() {
               padding: "8px 14px",
               borderRadius: 8,
               border: "1px solid rgba(255,255,255,0.1)",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               fontSize: "0.82rem",
               textDecoration: "none",
               fontFamily: "var(--font-dm), sans-serif",
@@ -560,7 +560,7 @@ function ScriptGeneratorPageInner() {
               borderRadius: 11,
               border: "none",
               background: topic.trim() ? "#B4FF00" : "#2a2a2a",
-              color: topic.trim() ? "#060608" : "#505055",
+              color: topic.trim() ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
@@ -573,7 +573,7 @@ function ScriptGeneratorPageInner() {
             style={{
               textAlign: "center",
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               margin: 0,
             }}
           >
@@ -652,7 +652,7 @@ function ScriptGeneratorPageInner() {
             <p
               style={{
                 fontSize: "0.85rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 marginBottom: 16,
                 fontStyle: "italic",
               }}
@@ -708,7 +708,7 @@ function ScriptGeneratorPageInner() {
                 gap: 10,
               }}
             >
-              <div style={{ fontSize: "0.78rem", color: "#505055" }}>
+              <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
                 <div style={{ marginBottom: 4 }}>
                   <strong style={{ color: "#F0EFE8" }}>{wordCount}</strong>{" "}
                   Wörter
@@ -892,7 +892,7 @@ function ScriptGeneratorPageInner() {
                 borderRadius: 9,
                 border: "none",
                 background: "transparent",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.85rem",
                 cursor: "pointer",
                 fontFamily: "var(--font-dm), sans-serif",

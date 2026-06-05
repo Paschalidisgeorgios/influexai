@@ -123,7 +123,7 @@ export default function SettingsPage() {
       style={{
         fontSize: "0.78rem",
         fontWeight: 600,
-        color: "#505055",
+        color: "rgba(255,255,255,0.65)",
         display: "block",
         marginBottom: 6,
         letterSpacing: "0.04em",
@@ -163,7 +163,7 @@ export default function SettingsPage() {
         >
           ⚙️ Einstellungen
         </h1>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           Profil und Sicherheit verwalten
         </p>
       </div>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
                 borderRadius: 10,
                 border: "none",
                 background: saving ? "#2a2a2a" : "#B4FF00",
-                color: saving ? "#505055" : "#060608",
+                color: saving ? "rgba(255,255,255,0.65)" : "#060608",
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 cursor: saving ? "default" : "pointer",
@@ -273,7 +273,7 @@ export default function SettingsPage() {
             >
               {t("growth_agent_title")}
             </h2>
-            <p style={{ margin: 0, fontSize: "0.88rem", color: "#505055", lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: "0.88rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>
               {t("daily_suggestions_email_desc")}
             </p>
             <label
@@ -378,7 +378,7 @@ export default function SettingsPage() {
                 borderRadius: 10,
                 background: savingPw ? "#2a2a2a" : "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: savingPw ? "#505055" : "#F0EFE8",
+                color: savingPw ? "rgba(255,255,255,0.65)" : "#F0EFE8",
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 cursor: savingPw ? "default" : "pointer",
@@ -406,7 +406,7 @@ export default function SettingsPage() {
             <p
               style={{
                 fontSize: "0.875rem",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 lineHeight: 1.65,
               }}
             >

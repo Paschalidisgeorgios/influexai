@@ -87,7 +87,7 @@ export default function VideoRemixPage() {
   const labelStyle = {
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#505055",
+    color: "rgba(255,255,255,0.65)",
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
@@ -210,7 +210,7 @@ export default function VideoRemixPage() {
       ? "1px solid rgba(180,255,0,0.4)"
       : "1px solid rgba(255,255,255,0.07)",
     background: active ? "rgba(180,255,0,0.1)" : "#18181d",
-    color: active ? "#B4FF00" : "#505055",
+    color: active ? "#B4FF00" : "rgba(255,255,255,0.65)",
     fontWeight: 700,
     fontSize: "0.85rem",
     cursor: "pointer",
@@ -240,7 +240,7 @@ export default function VideoRemixPage() {
             {t("title")}
           </h1>
         </div>
-        <p style={{ color: "#505055", fontSize: "0.9rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
           KI generiert Remix-Konzepte (Titel, Hook, Struktur) — nur Ideen, kein
           Video-Rendering.
         </p>
@@ -273,7 +273,7 @@ export default function VideoRemixPage() {
                     ? "rgba(180,255,0,0.08)"
                     : "rgba(255,255,255,0.04)",
                 border: `1px solid ${done ? "rgba(180,255,0,0.4)" : active ? "rgba(180,255,0,0.25)" : "rgba(255,255,255,0.07)"}`,
-                color: done || active ? "#B4FF00" : "#505055",
+                color: done || active ? "#B4FF00" : "rgba(255,255,255,0.65)",
               }}
             >
               {done ? "✓ " : ""}
@@ -345,7 +345,7 @@ export default function VideoRemixPage() {
                   style={{
                     margin: "8px 0 0",
                     fontSize: "0.78rem",
-                    color: "#505055",
+                    color: "rgba(255,255,255,0.65)",
                   }}
                 >
                   Titel & Beschreibung automatisch aus dem Link, sonst nur KI
@@ -436,7 +436,7 @@ export default function VideoRemixPage() {
               borderRadius: 11,
               border: "none",
               background: canSubmit ? "#B4FF00" : "#2a2a2a",
-              color: canSubmit ? "#060608" : "#505055",
+              color: canSubmit ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
@@ -449,7 +449,7 @@ export default function VideoRemixPage() {
             style={{
               textAlign: "center",
               fontSize: "0.78rem",
-              color: "#505055",
+              color: "rgba(255,255,255,0.65)",
               margin: 0,
             }}
           >
@@ -548,7 +548,7 @@ export default function VideoRemixPage() {
                 borderRadius: 8,
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.09)",
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 fontSize: "0.82rem",
                 cursor: "pointer",
                 fontFamily: "var(--font-dm), sans-serif",
@@ -690,7 +690,7 @@ export default function VideoRemixPage() {
                         style={{
                           fontSize: "0.65rem",
                           fontWeight: 800,
-                          color: "#505055",
+                          color: "rgba(255,255,255,0.65)",
                           textTransform: "uppercase",
                           letterSpacing: "0.1em",
                           marginBottom: 6,

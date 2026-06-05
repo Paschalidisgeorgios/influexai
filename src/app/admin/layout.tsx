@@ -82,9 +82,21 @@ export default async function AdminLayout({
           </span>
         </div>
         <a
+          href="/admin/blog"
+          style={{
+            color: "rgba(255,255,255,0.65)",
+            fontSize: "0.85rem",
+            textDecoration: "none",
+            fontWeight: 500,
+            marginRight: 16,
+          }}
+        >
+          Blog
+        </a>
+        <a
           href="/dashboard"
           style={{
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",
             textDecoration: "none",
             fontWeight: 500,

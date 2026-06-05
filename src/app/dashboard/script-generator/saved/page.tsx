@@ -55,7 +55,7 @@ export default function SavedScriptsPage() {
           href="/dashboard/script-generator"
           style={{
             fontSize: "0.82rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textDecoration: "none",
             fontFamily: "var(--font-dm), sans-serif",
           }}
@@ -140,7 +140,7 @@ export default function SavedScriptsPage() {
                 >
                   {row.topic}
                 </div>
-                <div style={{ fontSize: "0.78rem", color: "#505055" }}>
+                <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
                   {formatDate(row.created_at)} · {countWords(row.script)} Wörter
                 </div>
               </div>

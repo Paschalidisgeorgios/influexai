@@ -215,15 +215,49 @@ async function grantBonusCredits(
 
 export function pickChurnEmailType(
   daysInactive: number,
-  _hasDay3: boolean,
+  hasDay3: boolean,
   hasDay7: boolean,
   hasDay14: boolean,
   churnEmailInLast7Days: boolean
 ): ChurnEmailType | null {
-  if (daysInactive >= 14 && !hasDay14) return "day14";
-  if (daysInactive >= 7 && !hasDay7 && !churnEmailInLast7Days) return "day7";
-  if (daysInactive >= 3 && !churnEmailInLast7Days) return "day3";
+  if (churnEmailInLast7Days) return null;
+  // Sequenz: Tag 3 → Tag 7 → Tag 14 (jeweils einmalig)
+  if (daysInactive >= 3 && !hasDay3) return "day3";
+  if (daysInactive >= 7 && hasDay3 && !hasDay7) return "day7";
+  if (daysInactive >= 14 && hasDay7 && !hasDay14) return "day14";
   return null;
+}
+
+/** User mit letzter Generation >3 Tage, ohne Generation in den letzten 3 Tagen */
+export async function fetchInactiveUserIds(
+  supabase: Supabase
+): Promise<string[]> {
+  const cutoff = new Date(Date.now() - 3 * 86400000).toISOString();
+
+  const { data: recent, error: recentErr } = await supabase
+    .from("generations")
+    .select("user_id")
+    .gte("created_at", cutoff);
+
+  if (recentErr) throw new Error(recentErr.message);
+
+  const activeSet = new Set(
+    (recent ?? []).map((r) => r.user_id as string).filter(Boolean)
+  );
+
+  const { data: older, error: olderErr } = await supabase
+    .from("generations")
+    .select("user_id")
+    .lt("created_at", cutoff);
+
+  if (olderErr) throw new Error(olderErr.message);
+
+  const inactive = new Set<string>();
+  for (const row of older ?? []) {
+    const uid = row.user_id as string;
+    if (uid && !activeSet.has(uid)) inactive.add(uid);
+  }
+  return [...inactive];
 }
 
 export type ProcessResult = {
@@ -311,20 +345,31 @@ export async function processChurnUser(
 }
 
 export async function runChurnPreventionCron(supabase: Supabase) {
-  const { data: profiles, error } = await supabase
-    .from("profiles")
-    .select(
-      "id, email, full_name, credits, nurture_unsubscribed, is_churned, last_active_at, created_at"
-    )
-    .eq("is_churned", false)
-    .eq("onboarding_completed", true)
-    .not("email", "is", null);
-
-  if (error) throw new Error(error.message);
+  const inactiveIds = await fetchInactiveUserIds(supabase);
+  if (inactiveIds.length === 0) return [];
 
   const results: ProcessResult[] = [];
-  for (const p of profiles ?? []) {
-    results.push(await processChurnUser(supabase, p as ChurnProfile));
+  const batchSize = 100;
+
+  for (let i = 0; i < inactiveIds.length; i += batchSize) {
+    const batch = inactiveIds.slice(i, i + batchSize);
+    const { data: profiles, error } = await supabase
+      .from("profiles")
+      .select(
+        "id, email, full_name, credits, nurture_unsubscribed, is_churned, last_active_at, created_at"
+      )
+      .in("id", batch)
+      .eq("is_churned", false)
+      .eq("onboarding_completed", true)
+      .eq("nurture_unsubscribed", false)
+      .not("email", "is", null);
+
+    if (error) throw new Error(error.message);
+
+    for (const p of profiles ?? []) {
+      results.push(await processChurnUser(supabase, p as ChurnProfile));
+    }
   }
+
   return results;
 }

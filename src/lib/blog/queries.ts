@@ -6,6 +6,7 @@ const PAGE_SIZE = 12;
 export async function fetchPublishedPosts(options: {
   page?: number;
   category?: string | null;
+  search?: string | null;
 }): Promise<{ posts: BlogPost[]; total: number }> {
   const page = Math.max(1, options.page ?? 1);
   const from = (page - 1) * PAGE_SIZE;
@@ -20,6 +21,14 @@ export async function fetchPublishedPosts(options: {
 
   if (options.category && options.category !== "Alle") {
     query = query.eq("category", options.category);
+  }
+
+  const q = options.search?.trim();
+  if (q) {
+    const pattern = `%${q.replace(/[%_]/g, "")}%`;
+    query = query.or(
+      `title.ilike.${pattern},excerpt.ilike.${pattern},content.ilike.${pattern}`
+    );
   }
 
   const { data, count, error } = await query.range(from, to);
@@ -83,6 +92,17 @@ export async function fetchRelatedPosts(
     if (unique.length >= limit) break;
   }
   return unique;
+}
+
+export async function fetchAllPublishedSlugs(): Promise<
+  { slug: string; updated_at: string | null; published_at: string | null }[]
+> {
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase
+    .from("blog_posts")
+    .select("slug, updated_at, published_at")
+    .eq("published", true);
+  return data ?? [];
 }
 
 export { PAGE_SIZE };

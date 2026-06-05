@@ -142,7 +142,7 @@ export default function AuthPage() {
         >
           {mode === "login" ? "Willkommen zurück" : "Konto erstellen"}
         </h1>
-        <p style={{ fontSize: "0.875rem", color: "#505055", marginBottom: 28 }}>
+        <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.65)", marginBottom: 28 }}>
           {mode === "login"
             ? "Melde dich bei deinem InfluexAI Konto an."
             : "Jetzt starten — Credits ab €4,99."}
@@ -179,7 +179,7 @@ export default function AuthPage() {
                 fontSize: "0.875rem",
                 transition: "all 0.2s",
                 background: mode === m ? "#F0EFE8" : "transparent",
-                color: mode === m ? "#060608" : "#505055",
+                color: mode === m ? "#060608" : "rgba(255,255,255,0.65)",
               }}
             >
               {m === "login" ? "Einloggen" : "Registrieren"}
@@ -195,7 +195,7 @@ export default function AuthPage() {
                 style={{
                   fontSize: "0.78rem",
                   fontWeight: 600,
-                  color: "#505055",
+                  color: "rgba(255,255,255,0.65)",
                   display: "block",
                   marginBottom: 6,
                 }}
@@ -233,7 +233,7 @@ export default function AuthPage() {
               style={{
                 fontSize: "0.78rem",
                 fontWeight: 600,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 display: "block",
                 marginBottom: 6,
               }}
@@ -270,7 +270,7 @@ export default function AuthPage() {
               style={{
                 fontSize: "0.78rem",
                 fontWeight: 600,
-                color: "#505055",
+                color: "rgba(255,255,255,0.65)",
                 display: "block",
                 marginBottom: 6,
               }}
@@ -368,10 +368,10 @@ export default function AuthPage() {
             textAlign: "center",
             marginTop: 20,
             fontSize: "0.82rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
           }}
         >
-          <a href="/" style={{ color: "#505055", textDecoration: "none" }}>
+          <a href="/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none" }}>
             ← Zurück zur Startseite
           </a>
         </p>
@@ -382,7 +382,7 @@ export default function AuthPage() {
           style={{
             marginTop: 16,
             fontSize: "0.78rem",
-            color: "#505055",
+            color: "rgba(255,255,255,0.65)",
             textAlign: "center",
           }}
         >

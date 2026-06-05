@@ -59,7 +59,7 @@ export function MobileNav() {
               style={{
                 fontSize: "0.6rem",
                 fontWeight: isActive ? 700 : 500,
-                color: isActive ? "#B4FF00" : "#505055",
+                color: isActive ? "#B4FF00" : "rgba(255,255,255,0.65)",
                 fontFamily: "var(--font-dm), sans-serif",
                 letterSpacing: "0.02em",
               }}

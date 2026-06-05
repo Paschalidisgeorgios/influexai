@@ -18,7 +18,9 @@ const config: Config = {
       colors: {
         acid: "#B4FF00",
         black: { DEFAULT: "#060608", 1: "#0f0f12", 2: "#18181d", 3: "#222228" },
-        grey: "#505055",
+        grey: "rgba(255,255,255,0.65)",
+        readable: "rgba(255,255,255,0.85)",
+        "readable-muted": "rgba(255,255,255,0.65)",
       },
       boxShadow: {
         "glow-acid": "0 0 32px rgba(180,255,0,0.18)",
