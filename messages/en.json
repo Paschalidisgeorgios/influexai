@@ -936,6 +936,7 @@
     "referral": "Invite friends",
     "settings_menu": "Settings",
     "top_up": "Top Up",
+    "view_website": "View website",
     "viral_score": "Viral Score"
   },
   "pwa": {
@@ -1046,6 +1047,9 @@
     "slide5_badge": "👥 Accessible to all users",
     "slide5_description": "Connect with like-minded creators, share progress and grow together — community launching soon.",
     "slide5_heading": "Creator community",
+    "community_benefit_1": "Connect with other creators",
+    "community_benefit_2": "Share your wins",
+    "community_benefit_3": "Weekly video ideas",
     "social_proof": "Fresh start in 2026 — be one of the first creators"
   },
   "blog": {

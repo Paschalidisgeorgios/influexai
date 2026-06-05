@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, Images, Star } from "lucide-react";
+import { BarChart2, Home, Images, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
@@ -152,9 +153,11 @@ export function DashboardSidebar() {
       className="flex flex-col shrink-0 min-h-screen bg-[#0f0f12] border-r border-white/[0.07] transition-[width] duration-300"
       style={{ width: collapsed ? 64 : 220 }}
     >
-      <div
-        className="h-14 flex items-center border-b border-white/[0.07] gap-2.5 shrink-0"
+      <Link
+        href="/dashboard"
+        className="h-14 flex items-center border-b border-white/[0.07] gap-2.5 shrink-0 no-underline hover:opacity-90 transition-opacity"
         style={{ padding: collapsed ? "0 17px" : "0 20px" }}
+        aria-label={tNav("dashboard")}
       >
         <div className="w-[30px] h-[30px] rounded-lg bg-[#B4FF00] flex items-center justify-center text-[#060608] font-bold shrink-0">
           I
@@ -164,7 +167,7 @@ export function DashboardSidebar() {
             Influex<span className="text-[#B4FF00]">AI</span>
           </span>
         )}
-      </div>
+      </Link>
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
         <SidebarNavLink
@@ -407,6 +410,22 @@ export function DashboardSidebar() {
           </a>
         </div>
       )}
+
+      <SidebarNavLink
+        href="/"
+        active={false}
+        collapsed={collapsed}
+        title={collapsed ? tNav("view_website") : undefined}
+        className={`${linkClass(false)} !text-white/50 !font-normal !border-b-0 mb-1`}
+      >
+        <Home
+          size={18}
+          strokeWidth={2}
+          className="shrink-0"
+          color="rgba(255,255,255,0.5)"
+        />
+        {!collapsed && <span>{tNav("view_website")}</span>}
+      </SidebarNavLink>
 
       <button
         type="button"

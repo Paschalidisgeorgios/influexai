@@ -853,6 +853,7 @@
     "referral": "Freunde einladen",
     "settings_menu": "Einstellungen",
     "top_up": "Aufladen",
+    "view_website": "Zur Website",
     "viral_score": "Viral Score",
     "image_generator": "Bild Generator",
     "ugc_video": "UGC Video"
@@ -958,6 +959,9 @@
     "slide5_badge": "👥 Für alle User zugänglich",
     "slide5_description": "Tausche dich aus, teile Fortschritte und wachse mit Gleichgesinnten — die Community startet bald.",
     "slide5_heading": "Creator-Community",
+    "community_benefit_1": "Tausche dich aus mit anderen Creatorn",
+    "community_benefit_2": "Teile deine Erfolge",
+    "community_benefit_3": "Wöchentliche Video-Ideen",
     "social_proof": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "imageGenerator": {

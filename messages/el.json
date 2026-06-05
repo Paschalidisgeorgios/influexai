@@ -904,6 +904,7 @@
     "referral": "Πρόσκλησε φίλους",
     "settings_menu": "Ρυθμίσεις",
     "top_up": "Ανανέωση",
+    "view_website": "Δείτε τον ιστότοπο",
     "viral_score": "Viral Score"
   },
   "notFound": {
@@ -1005,6 +1006,9 @@
     "slide5_badge": "👥 Προσβάσιμο σε όλους τους χρήστες",
     "slide5_description": "Συνδέσου, μοιράσου πρόοδο και αναπτύξου με ανθρώπους με τους ίδιους στόχους — η κοινότητα έρχεται σύντομα.",
     "slide5_heading": "Κοινότητα creators",
+    "community_benefit_1": "Συνδέσου με άλλους creators",
+    "community_benefit_2": "Μοιράσου τις επιτυχίες σου",
+    "community_benefit_3": "Εβδομαδιαίες ιδέες βίντεο",
     "social_proof": "Νέα εκκίνηση 2026 — γίνε ένας από τους πρώτους creators"
   },
   "blog": {

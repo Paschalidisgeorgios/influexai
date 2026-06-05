@@ -904,6 +904,7 @@
     "referral": "ادعُ أصدقاءك",
     "settings_menu": "الإعدادات",
     "top_up": "إعادة الشحن",
+    "view_website": "عرض الموقع",
     "viral_score": "Viral Score"
   },
   "notFound": {
@@ -1005,6 +1006,9 @@
     "slide5_badge": "👥 متاح لجميع المستخدمين",
     "slide5_description": "تواصل، شارك تقدمك وانمُ مع أشخاص يشاركونك الأهداف — المجتمع قريباً.",
     "slide5_heading": "مجتمع creators",
+    "community_benefit_1": "تواصل مع صناع محتوى آخرين",
+    "community_benefit_2": "شارك إنجازاتك",
+    "community_benefit_3": "أفكار فيديو أسبوعية",
     "social_proof": "انطلاق جديد 2026 — كن من أوائل صنّاع المحتوى"
   },
   "blog": {

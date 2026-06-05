@@ -904,6 +904,7 @@
     "referral": "Arkadaş davet et",
     "settings_menu": "Ayarlar",
     "top_up": "Yükle",
+    "view_website": "Web sitesine git",
     "viral_score": "Viral Score"
   },
   "notFound": {
@@ -1005,6 +1006,9 @@
     "slide5_badge": "👥 Tüm kullanıcılara açık",
     "slide5_description": "Bağlan, ilerlemeni paylaş ve aynı hedefe sahip kişilerle büyü — topluluk yakında.",
     "slide5_heading": "Creator topluluğu",
+    "community_benefit_1": "Diğer creatorlarla iletişim kur",
+    "community_benefit_2": "Başarılarını paylaş",
+    "community_benefit_3": "Haftalık video fikirleri",
     "social_proof": "2026'da yeni başlangıç — ilk creator'lardan biri ol"
   },
   "blog": {

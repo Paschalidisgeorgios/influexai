@@ -904,6 +904,7 @@
     "referral": "Invitar amigos",
     "settings_menu": "Configuración",
     "top_up": "Recargar",
+    "view_website": "Ver sitio web",
     "viral_score": "Viral Score"
   },
   "notFound": {
@@ -1005,6 +1006,9 @@
     "slide5_badge": "👥 Accesible para todos los usuarios",
     "slide5_description": "Conecta, comparte progreso y crece con personas con los mismos objetivos — la comunidad llega pronto.",
     "slide5_heading": "Comunidad de creators",
+    "community_benefit_1": "Intercambia con otros creators",
+    "community_benefit_2": "Comparte tus logros",
+    "community_benefit_3": "Ideas de video semanales",
     "social_proof": "Recién lanzado en 2026 — sé uno de los primeros creators"
   },
   "blog": {

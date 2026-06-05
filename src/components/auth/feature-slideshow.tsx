@@ -146,53 +146,22 @@ function ThumbnailVisual() {
 }
 
 function CommunityVisual() {
-  const items = [
-    {
-      initials: "MT",
-      name: "Markus T.",
-      niche: "Fitness",
-      text: "Erstes KI-Script → 47K Views 🏆",
-      metric: "47K Views",
-    },
-    {
-      initials: "SK",
-      name: "Sarah K.",
-      niche: "Finance",
-      text: "Niche Analyzer hat alles verändert",
-      metric: "3× mehr Views",
-    },
-    {
-      initials: "JM",
-      name: "Jonas M.",
-      niche: "Tech",
-      text: "Jeden Montag 5 neue Video-Ideen",
-      metric: "5 Ideen/Woche",
-    },
+  const t = useTranslations("slideshow");
+  const benefits = [
+    t("community_benefit_1"),
+    t("community_benefit_2"),
+    t("community_benefit_3"),
   ];
   return (
-    <div className="space-y-3 max-w-sm">
-      {items.map((item) => (
-        <div
-          key={item.name}
-          className="flex items-start gap-3 bg-white/5 rounded-xl p-3 border border-white/10"
-        >
-          <div className="w-8 h-8 rounded-full bg-[#B4FF00] flex items-center justify-center text-black text-xs font-bold flex-shrink-0">
-            {item.initials}
+    <div className="bg-white/5 rounded-xl border border-white/10 p-5 max-w-sm">
+      <div className="space-y-3">
+        {benefits.map((text) => (
+          <div key={text} className="flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#B4FF00] flex-shrink-0" />
+            <span className="text-white/80 text-sm">{text}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-white text-xs font-medium">
-                {item.name}
-              </span>
-              <span className="text-white/65 text-xs">{item.niche}</span>
-            </div>
-            <p className="text-white/80 text-xs mt-0.5">{item.text}</p>
-          </div>
-          <span className="text-[#B4FF00] text-xs font-medium flex-shrink-0">
-            {item.metric}
-          </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
