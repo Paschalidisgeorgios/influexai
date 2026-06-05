@@ -7,6 +7,7 @@ import {
   API_RATE_LIMIT_BUSINESS_PER_DAY,
   API_RATE_LIMIT_PRO_PER_DAY,
   canUsePublicApi,
+  getDailyRateLimitForPlan,
 } from "@/lib/api-v1/rate-limits";
 import { normalizePlan } from "@/lib/subscription-plans";
 
@@ -44,12 +45,13 @@ export async function listApiKeys(): Promise<
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan")
+    .select("plan, role, is_admin")
     .eq("id", user.id)
     .single();
 
-  const plan = normalizePlan(profile?.plan);
-  const apiAccess = canUsePublicApi(plan);
+  const accessUser = profile ?? { plan: "free", role: "user" };
+  const plan = normalizePlan(accessUser.plan);
+  const apiAccess = canUsePublicApi(accessUser);
 
   const { data: keys } = await supabase
     .from("api_keys")
@@ -86,9 +88,7 @@ export async function listApiKeys(): Promise<
     .gte("created_at", startOfDay.toISOString());
 
   const requestsToday = logsToday?.length ?? 0;
-  const rateLimitPerDay = apiAccess
-    ? API_RATE_LIMIT_BUSINESS_PER_DAY
-    : API_RATE_LIMIT_PRO_PER_DAY;
+  const rateLimitPerDay = getDailyRateLimitForPlan(accessUser);
 
   return {
     keys: (keys ?? []).map((k) => ({
@@ -126,11 +126,11 @@ export async function createApiKey(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan")
+    .select("plan, role, is_admin")
     .eq("id", user.id)
     .single();
 
-  if (!canUsePublicApi(profile?.plan)) {
+  if (!canUsePublicApi(profile ?? { plan: "free" })) {
     return {
       success: false,
       error: "Die Public API ist nur im Business-Plan verfügbar.",

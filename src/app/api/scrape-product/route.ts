@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 30;
 
@@ -143,6 +144,9 @@ function extractPriceFromHtml(html: string): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("produkt-ads");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

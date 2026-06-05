@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
 import { FAL_LIVE_PORTRAIT_FALLBACK } from "@/lib/live-creator-config";
 import { fal } from "@fal-ai/client";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 60;
 
@@ -32,6 +33,9 @@ function extractFrameUrl(result: unknown): string | null {
 
 /** Fallback: poll live-portrait with webcam clip (2–5 fps). */
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

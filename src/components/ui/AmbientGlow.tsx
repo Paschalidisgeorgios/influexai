@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
-/** Fixed ambient acid glow with scroll parallax */
+/** Fixed ambient acid glow with scroll parallax (disabled on landing — uses LightSystem). */
 export function AmbientGlow() {
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname === "/") return;
+
     const el = ref.current;
     if (!el) return;
 
@@ -18,7 +22,9 @@ export function AmbientGlow() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname]);
+
+  if (pathname === "/") return null;
 
   return (
     <div

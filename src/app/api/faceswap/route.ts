@@ -14,6 +14,7 @@ import {
 import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
+import { assertGatedFeature } from "@/lib/access";
 import {
   createGenerationRecord,
   getOwnedGeneration,
@@ -141,6 +142,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("face-swap");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

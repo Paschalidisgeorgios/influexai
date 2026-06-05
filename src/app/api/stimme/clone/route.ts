@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { assertGatedFeature } from "@/lib/access";
 
 const CREDIT_COST = 2;
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("voice-clone");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

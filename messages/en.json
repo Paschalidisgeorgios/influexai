@@ -700,6 +700,11 @@
       "intro": "No more expensive shoots. InfluexAI gives your brand a distinctive AI spokesperson that looks the same everywhere.",
       "kicker": "For Businesses & Brands"
     },
+    "worldTransition": {
+      "brand": "For Brands",
+      "creator": "For Creators",
+      "tagline": "One Studio. Two Worlds."
+    },
     "cta": {
       "headline1": "No Face.",
       "headline2": "No Limit.",
@@ -854,6 +859,111 @@
       "i7": "InfluexAI Image Engine",
       "i8": "Made in Germany",
       "i9": "GDPR compliant"
+    },
+    "toolDemos": {
+      "section_kicker": "Live demo",
+      "section_headline": "From problem to result",
+      "script": {
+        "benefit_number": "30 seconds",
+        "benefit_prefix": "Complete script in",
+        "benefit_suffix": " — saves ~2h of writing per video.",
+        "cta": "Follow for part 2 — tomorrow at 7am.",
+        "hook": "Most people start their day wrong — you too?",
+        "main": "Habit 1: No phone for 60 min. Habit 2: Daylight in the first 30 min. Habit 3: …",
+        "problem": "Staring at a blank page for hours?",
+        "topic": "5 morning habits for more focus"
+      },
+      "niche": {
+        "benefit_number": "5 niches",
+        "benefit_prefix": "Data-backed",
+        "benefit_suffix": " at once — instead of guessing for weeks.",
+        "problem": "Which niche is actually profitable?",
+        "row1_comp": "Low",
+        "row1_name": "Fitness Biohacking",
+        "row1_stars": "★★★★★",
+        "row2_comp": "Medium",
+        "row2_name": "Budget Meal Prep",
+        "row2_stars": "★★★★☆",
+        "row3_comp": "Low",
+        "row3_name": "AI Productivity",
+        "row3_stars": "★★★★★"
+      },
+      "upscaler": {
+        "after_label": "4K",
+        "before_label": "720p",
+        "benefit": "2× upscale in seconds — from 720p to 4K without losing detail in post.",
+        "problem": "Pixelated and soft in the timeline?",
+        "title": "HD Upscaler"
+      },
+      "thumbnail": {
+        "benefit_number": "+34%",
+        "benefit_prefix": "CTR potential up to",
+        "benefit_suffix": " — layout, text and color in one step.",
+        "ctr": "+34%",
+        "palette": "Palette",
+        "problem": "Thumbnails nobody clicks?",
+        "swatch_1": "#B4FF00",
+        "swatch_2": "#2563eb",
+        "swatch_3": "#ffffff"
+      },
+      "outlier": {
+        "benefit_number": "10×",
+        "benefit_prefix": "Videos with",
+        "benefit_suffix": " performance — spot patterns and remix them.",
+        "channel": "Fitness · Micro Channel",
+        "problem": "Why do some videos go viral — and others don't?",
+        "score": "9.2",
+        "tag1": "Curiosity Gap Hook",
+        "tag2": "Contrarian Angle",
+        "tag3": "List Format (viral)",
+        "title": "\"5 mistakes 99% make\""
+      },
+      "viralscore": {
+        "benefit_number": "87/100",
+        "benefit_prefix": "Pre-upload score:",
+        "benefit_suffix": " — fix weak spots before you publish.",
+        "niche_label": "Niche",
+        "niche_pct": "82%",
+        "niche_value": "82",
+        "problem": "Upload and hope?",
+        "script_label": "Script",
+        "script_pct": "91%",
+        "script_value": "91",
+        "thumbnail_label": "Thumbnail",
+        "thumbnail_pct": "88%",
+        "thumbnail_value": "88",
+        "total": "87"
+      },
+      "avatar": {
+        "after_caption": "Face consistency active",
+        "after_label": "After",
+        "before_caption": "Selfie / reference",
+        "before_label": "Before",
+        "benefit_number": "1 avatar",
+        "benefit_prefix": "",
+        "benefit_suffix": " — identical on TikTok, YouTube & LinkedIn.",
+        "match": "98% match",
+        "name": "Your AI avatar",
+        "problem": "Every video looks different?",
+        "status": "Generating avatar…",
+        "subtitle": "Consistent on every platform"
+      },
+      "agent": {
+        "problem": "Jumping between 12 tools?",
+        "task": "Plan my next Short — script, thumbnail and hashtags for productivity.",
+        "step1_tool": "Script Generator",
+        "step1_status": "Writing hook, story and CTA…",
+        "step2_tool": "Thumbnail Concept",
+        "step2_status": "Generating CTR layouts and palette…",
+        "step3_tool": "Hashtag Optimizer",
+        "step3_status": "Finding trend tags and reach clusters…",
+        "result_script_label": "Script",
+        "result_script_body": "Hook: \"Most people start their day wrong.\"\nMain: 3 habits for focus.\nCTA: Follow for part 2.",
+        "result_thumbnail_label": "Thumbnail",
+        "result_thumbnail_body": "Acid layout · contrast text\n\"5 mistakes 99% make\"\nCTR potential +34%",
+        "result_hashtags_label": "Hashtags",
+        "result_hashtags_body": "#productivity #morningroutine\n#focus #shorts #ai"
+      }
     },
     "toolExamples": {
       "agent_desc": "Your AI strategist: plans script, thumbnail and content — in one chat.",

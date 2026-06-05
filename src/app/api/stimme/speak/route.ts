@@ -5,10 +5,14 @@ import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
+import { assertGatedFeature } from "@/lib/access";
 
 const CREDIT_COST = 2;
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("voice-clone");
+  if (denied) return denied;
+
   const { text, voiceId } = await request.json();
   if (!text || !voiceId)
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });

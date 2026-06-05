@@ -10,11 +10,15 @@ import {
   LIVE_AVATAR_LOW_CREDITS_WARNING,
 } from "@/lib/akool-live-avatar";
 import { resolvePreferredLiveAvatarId } from "@/lib/preferred-live-avatar";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 60;
 
 /** GET — list streaming avatars for picker */
 export async function GET() {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -67,6 +71,9 @@ export async function GET() {
 
 /** POST — create Akool live session + return Agora credentials */
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

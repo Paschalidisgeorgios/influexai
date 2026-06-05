@@ -9,6 +9,7 @@ import {
   ingestImageGeneratorAssets,
   updateGenerationResult,
 } from "@/lib/generation-assets";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 120;
 
@@ -19,6 +20,9 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("lora-training");
+  if (denied) return denied;
+
   let body: {
     loraId?: string;
     prompt?: string;

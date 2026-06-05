@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getFalKey } from "@/lib/fal-image";
+import { assertGatedFeature } from "@/lib/access";
 
 const TOKEN_EXPIRATION_SECONDS = 120;
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

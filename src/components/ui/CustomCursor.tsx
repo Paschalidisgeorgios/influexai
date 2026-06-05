@@ -101,8 +101,9 @@ export function CustomCursor() {
     borderRadius: "50%",
     pointerEvents: "none",
     zIndex: 99999,
-    border: "1px solid #B4FF00",
+    border: "1px solid var(--accent, #B4FF00)",
     willChange: "transform",
+    transition: "border-color 0.6s ease, background-color 0.6s ease",
   };
 
   return (
@@ -114,7 +115,7 @@ export function CustomCursor() {
           ...baseStyle,
           width: 8,
           height: 8,
-          background: "#B4FF00",
+          background: "var(--accent, #B4FF00)",
           opacity: 0.9,
         }}
       />

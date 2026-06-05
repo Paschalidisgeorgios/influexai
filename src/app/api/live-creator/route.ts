@@ -13,6 +13,7 @@ import {
   getAkoolVideoResult,
   mapAkoolVideoStatus,
 } from "@/lib/akool";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 300;
 
@@ -124,6 +125,9 @@ export async function GET(request: NextRequest) {
 
 /** POST — upload media, start Akool job, return jobId immediately (no blocking wait) */
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const body = await request.json();
   const {
     photoDataUrl,

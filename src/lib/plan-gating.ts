@@ -1,8 +1,5 @@
-import {
-  normalizePlan,
-  planMeetsRequirement,
-  type SubscriptionPlanId,
-} from "@/lib/subscription-plans";
+import { normalizePlan, type SubscriptionPlanId } from "@/lib/subscription-plans";
+import { canUseFeature, type AccessUser } from "@/lib/access";
 
 export type GatedFeature =
   | "video-remix"
@@ -61,11 +58,15 @@ export function getRouteGate(
 
 export function isRouteAllowed(
   pathname: string,
-  userPlan: string | null | undefined
+  user: AccessUser | string | null | undefined
 ): boolean {
   const gate = getRouteGate(pathname);
   if (!gate) return true;
-  return planMeetsRequirement(userPlan, gate.minPlan);
+  const accessUser: AccessUser =
+    typeof user === "string" || user === null || user === undefined
+      ? { plan: user ?? "free" }
+      : user;
+  return canUseFeature(accessUser, gate.minPlan);
 }
 
 export function planDisplayName(plan: SubscriptionPlanId): string {

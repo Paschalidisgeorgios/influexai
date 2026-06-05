@@ -189,10 +189,10 @@ export async function middleware(request: NextRequest) {
     if (gate) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, role, is_admin")
         .eq("id", user.id)
         .single();
-      if (!isRouteAllowed(pathname, profile?.plan)) {
+      if (!isRouteAllowed(pathname, profile ?? { plan: "free" })) {
         requestHeaders.set("x-plan-upgrade-required", gate.minPlan);
       }
     }

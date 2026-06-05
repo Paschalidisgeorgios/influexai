@@ -1,6 +1,8 @@
 import {
-  normalizePlan,
-  planMeetsRequirement,
+  canUseFeature,
+  type AccessUser,
+} from "@/lib/access";
+import {
   type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
 
@@ -9,20 +11,23 @@ export const API_RATE_LIMIT_PRO_PER_DAY = 100;
 export const API_RATE_LIMIT_BUSINESS_PER_DAY = 1000;
 
 export function getDailyRateLimitForPlan(
-  plan: string | null | undefined
+  user: AccessUser | string | null | undefined
 ): number {
-  const normalized = normalizePlan(plan);
-  if (planMeetsRequirement(normalized, "business")) {
+  const accessUser: AccessUser =
+    typeof user === "string" || user == null ? { plan: user ?? "free" } : user;
+  if (canUseFeature(accessUser, "business")) {
     return API_RATE_LIMIT_BUSINESS_PER_DAY;
   }
-  if (planMeetsRequirement(normalized, "pro")) {
+  if (canUseFeature(accessUser, "pro")) {
     return API_RATE_LIMIT_PRO_PER_DAY;
   }
   return 0;
 }
 
-export function canUsePublicApi(plan: string | null | undefined): boolean {
-  return planMeetsRequirement(normalizePlan(plan), "business");
+export function canUsePublicApi(user: AccessUser | string | null | undefined): boolean {
+  const accessUser: AccessUser =
+    typeof user === "string" || user == null ? { plan: user ?? "free" } : user;
+  return canUseFeature(accessUser, "business");
 }
 
 export function startOfUtcDay(): string {

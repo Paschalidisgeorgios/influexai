@@ -7,19 +7,21 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { MotionModal } from "@/components/ui/MotionModal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { canUseFeature, type AccessUser } from "@/lib/access";
 import {
   getRouteGate,
   planDisplayName,
 } from "@/lib/plan-gating";
-import {
-  planMeetsRequirement,
-  type SubscriptionPlanId,
-} from "@/lib/subscription-plans";
+import type { SubscriptionPlanId } from "@/lib/subscription-plans";
 
 export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const t = useTranslations("planGate");
-  const [userPlan, setUserPlan] = useState<string>("free");
+  const [accessUser, setAccessUser] = useState<AccessUser>({
+    plan: "free",
+    role: "user",
+    is_admin: false,
+  });
   const [blocked, setBlocked] = useState(false);
   const [requiredPlan, setRequiredPlan] = useState<SubscriptionPlanId>("creator");
 
@@ -32,10 +34,16 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("plan")
+        .select("plan, role, is_admin")
         .eq("id", user.id)
         .single();
-      if (data?.plan) setUserPlan(data.plan);
+      if (data) {
+        setAccessUser({
+          plan: data.plan ?? "free",
+          role: data.role ?? "user",
+          is_admin: data.is_admin ?? false,
+        });
+      }
     };
     load();
     window.addEventListener("credits-updated", load);
@@ -48,10 +56,10 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
       setBlocked(false);
       return;
     }
-    const allowed = planMeetsRequirement(userPlan, gate.minPlan);
+    const allowed = canUseFeature(accessUser, gate.minPlan);
     setBlocked(!allowed);
     setRequiredPlan(gate.minPlan);
-  }, [pathname, userPlan]);
+  }, [pathname, accessUser]);
 
   return (
     <>

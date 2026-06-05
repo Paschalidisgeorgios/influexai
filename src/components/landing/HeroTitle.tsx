@@ -82,7 +82,7 @@ export function HeroTitle({ titles }: Props) {
               lineHeight: 0.9,
               letterSpacing: "-0.04em",
               textTransform: "uppercase",
-              color: i === accentIndex ? "#B4FF00" : "#ffffff",
+              color: i === accentIndex ? "var(--accent, #B4FF00)" : "#ffffff",
               textShadow: "none",
               WebkitTextStroke: "0",
               opacity: visible ? 1 : 0,

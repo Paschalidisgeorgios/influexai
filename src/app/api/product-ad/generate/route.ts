@@ -23,6 +23,7 @@ import {
   getFalKey,
   uploadDataUrlToFal,
 } from "@/lib/fal-image";
+import { assertGatedFeature } from "@/lib/access";
 import {
   createGenerationRecord,
   ingestFinalAssetFromUrl,
@@ -192,6 +193,9 @@ async function runSingleGeneration(
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("produkt-ads");
+  if (denied) return denied;
+
   let body: GenerateBody;
   try {
     body = (await request.json()) as GenerateBody;

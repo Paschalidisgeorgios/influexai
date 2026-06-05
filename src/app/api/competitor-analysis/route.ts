@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { runCompetitorAnalysis } from "@/lib/competitor-run";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 60;
 
 /** @deprecated Prefer POST /api/competitor with { channelUrl } */
 export async function POST(request: Request) {
+  const denied = await assertGatedFeature("competitor");
+  if (denied) return denied;
+
   let body: { channel_url?: string; channelUrl?: string };
   try {
     body = (await request.json()) as { channel_url?: string; channelUrl?: string };

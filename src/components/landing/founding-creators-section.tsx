@@ -23,7 +23,7 @@ export function FoundingCreatorsSection() {
             className="mb-5 text-center font-bold uppercase"
             style={{
               fontSize: 11,
-              color: "#B4FF00",
+              color: "var(--accent, #B4FF00)",
               letterSpacing: "0.22em",
               fontFamily: "var(--font-dm), sans-serif",
             }}
@@ -62,7 +62,7 @@ export function FoundingCreatorsSection() {
                       border: "1px solid rgba(180,255,0,0.2)",
                     }}
                   >
-                    <Icon size={22} color="#B4FF00" strokeWidth={1.75} aria-hidden />
+                    <Icon size={22} color="var(--accent, #B4FF00)" strokeWidth={1.75} aria-hidden />
                   </div>
                   <div>
                     <h3

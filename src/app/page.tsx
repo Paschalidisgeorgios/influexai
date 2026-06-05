@@ -11,7 +11,6 @@ import {
 } from "@/lib/seo";
 import type { Locale } from "@/lib/locale";
 import {
-  LandingNav,
   HeroSection,
   TickerStrip,
   ForBrandsSection,
@@ -24,6 +23,9 @@ import {
   CtaSection,
   LandingFooter,
 } from "@/components/landing";
+import { SiteHeader } from "@/components/SiteHeader";
+import { LightSystem } from "@/components/LightSystem";
+import { ToolDemosSection } from "@/components/demos/ToolDemosSection";
 import { ABTracker } from "@/components/ab-tracker";
 import { LiveStatsBar } from "@/components/live-stats-bar";
 import { CommunityPreview } from "@/components/community-preview";
@@ -80,22 +82,25 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <LandingNav />
-      <main className="landing-root">
-        <HeroSection variant={variant} />
-        <LiveStatsBar />
-        <TickerStrip />
-        <HowItWorksSection />
-        <ForBrandsSection />
-        <FoundingCreatorsSection />
-        <CommunityPreview />
-        <FeaturesSection />
-        <AgencyTeaserSection />
-        <PricingSection />
-        <FaqSection />
-        <CtaSection />
-      </main>
-      <LandingFooter />
+      <LightSystem>
+        <SiteHeader />
+        <main className="landing-root">
+          <HeroSection variant={variant} />
+          <LiveStatsBar />
+          <TickerStrip />
+          <HowItWorksSection />
+          <ToolDemosSection />
+          <ForBrandsSection />
+          <FoundingCreatorsSection />
+          <CommunityPreview />
+          <FeaturesSection />
+          <AgencyTeaserSection />
+          <PricingSection />
+          <FaqSection />
+          <CtaSection />
+        </main>
+        <LandingFooter />
+      </LightSystem>
     </>
   );
 }

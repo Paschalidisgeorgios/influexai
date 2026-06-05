@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { runCompetitorAnalysis } from "@/lib/competitor-run";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 60;
 
@@ -10,6 +11,9 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
+  const denied = await assertGatedFeature("competitor");
+  if (denied) return denied;
+
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;

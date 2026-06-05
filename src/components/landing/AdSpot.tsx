@@ -277,7 +277,7 @@ export function AdSpot() {
           <span
             ref={aiRef}
             className="block opacity-0 transition-all duration-700 ease-out"
-            style={{ color: "#B4FF00" }}
+            style={{ color: "var(--accent, #B4FF00)" }}
           >
             AI
           </span>
@@ -301,7 +301,7 @@ export function AdSpot() {
           className="opacity-0 transition-all duration-700 ease-out mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 list-none p-0 m-0"
           style={{
             fontSize: "clamp(0.78rem, 2vw, 0.9rem)",
-            color: "#B4FF00",
+            color: "var(--accent, #B4FF00)",
           }}
         >
           {featureLines.map((line) => (
@@ -312,7 +312,7 @@ export function AdSpot() {
         <a
           ref={ctaRef}
           href="/auth/sign-up"
-          className="opacity-0 transition-all duration-700 ease-out inline-flex items-center justify-center mt-10 min-h-[48px] px-8 py-3 rounded-xl font-bold text-[#060608] bg-[#B4FF00] hover:brightness-110 no-underline"
+          className="opacity-0 transition-all duration-700 ease-out inline-flex items-center justify-center mt-10 min-h-[48px] px-8 py-3 rounded-xl font-bold text-[#060608] bg-[var(--accent,#B4FF00)] hover:brightness-110 no-underline"
           style={{
             fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
             boxShadow: "0 0 40px rgba(180,255,0,0.25)",
@@ -330,7 +330,7 @@ export function AdSpot() {
         <span>Scroll</span>
         <span
           className="block w-px h-8 animate-pulse"
-          style={{ background: "linear-gradient(#B4FF00, transparent)" }}
+          style={{ background: "linear-gradient(var(--accent, #B4FF00), transparent)" }}
         />
       </div>
     </section>

@@ -11,6 +11,7 @@ import {
   type LoraModelType,
 } from "@/lib/lora-config";
 import { submitLoraTraining } from "@/lib/lora-fal";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 30;
 
@@ -19,6 +20,9 @@ function isValidType(t: string): t is LoraModelType {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("lora-training");
+  if (denied) return denied;
+
   let body: {
     name?: string;
     triggerWord?: string;

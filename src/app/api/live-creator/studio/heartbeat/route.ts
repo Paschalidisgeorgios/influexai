@@ -5,8 +5,12 @@ import {
   LIVE_CREATOR_CREDITS_PER_MINUTE,
   LIVE_CREATOR_LOW_CREDITS_WARNING,
 } from "@/lib/live-creator-config";
+import { assertGatedFeature } from "@/lib/access";
 
 export async function POST() {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

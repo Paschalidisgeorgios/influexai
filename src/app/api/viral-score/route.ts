@@ -9,6 +9,7 @@ import {
   VIRAL_SCORE_SYSTEM_PROMPT,
   type ViralScoreResult,
 } from "@/lib/viral-score";
+import { assertGatedFeature } from "@/lib/access";
 
 export const maxDuration = 60;
 
@@ -20,6 +21,9 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
+  const denied = await assertGatedFeature("viral-score");
+  if (denied) return denied;
+
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;

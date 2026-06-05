@@ -8,6 +8,7 @@ import {
 } from "@/lib/live-creator-config";
 import { resolveUserKiIchCharacter } from "@/lib/live-creator-ki-ich";
 import { getFalKey } from "@/lib/fal-image";
+import { assertGatedFeature } from "@/lib/access";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
@@ -53,6 +54,9 @@ export async function GET() {
 }
 
 export async function POST() {
+  const denied = await assertGatedFeature("live-creator");
+  if (denied) return denied;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

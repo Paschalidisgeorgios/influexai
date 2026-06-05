@@ -3,13 +3,14 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { LANDING_TOOL_EXAMPLES } from "@/lib/landing-tool-examples";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { LightFrame } from "@/components/LightFrame";
 
 const TICKER_KEYS = [
   "i0",
@@ -58,6 +59,7 @@ export function TickerStrip() {
 
 export function ForBrandsSection() {
   const t = useTranslations("landingPage.brands");
+  const locale = useLocale();
 
   return (
     <section
@@ -66,20 +68,23 @@ export function ForBrandsSection() {
       style={{ background: "var(--bg-1)" }}
     >
       <div className="max-w-[1160px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-14">
-          <div>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-start mb-14">
+          <div className="min-w-0">
             <span className="kicker mb-2.5">{t("kicker")}</span>
             <span
               className="block"
               style={{
                 width: 32,
                 height: 2,
-                background: "var(--acid)",
+                background: "var(--accent, var(--acid))",
                 borderRadius: 2,
                 margin: "14px 0 20px",
               }}
             />
-            <h2 className="landing-heading text-[clamp(2.5rem,5vw,5rem)] leading-[0.95]">
+            <h2
+              lang={locale}
+              className="landing-heading brand-section-headline break-words hyphens-auto text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.08] max-w-full"
+            >
               {t("headline1")}
               <br />
               {t("headline2")}
@@ -87,7 +92,7 @@ export function ForBrandsSection() {
               <span className="acid-highlight">{t("headline3")}</span>
             </h2>
           </div>
-          <div>
+          <div className="min-w-0">
             <p
               className="mb-6"
               style={{
@@ -143,10 +148,9 @@ export function ForBrandsSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {BRAND_EX_KEYS.map((key, i) => (
-            <div
+            <LightFrame
               key={key}
-              className="img-card"
-              style={{ aspectRatio: "3/4", borderRadius: 14 }}
+              className="img-card aspect-[3/4] rounded-[14px]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -170,7 +174,7 @@ export function ForBrandsSection() {
               <div className="absolute bottom-0 left-0 right-0 p-3.5">
                 <div
                   className="text-[0.65rem] font-bold uppercase tracking-[0.06em] mb-1"
-                  style={{ color: "var(--acid)" }}
+                  style={{ color: "var(--accent, var(--acid))" }}
                 >
                   {t(`${key}_cat`)}
                 </div>
@@ -184,7 +188,7 @@ export function ForBrandsSection() {
                   {t(`${key}_sub`)}
                 </div>
               </div>
-            </div>
+            </LightFrame>
           ))}
         </div>
       </div>
@@ -222,7 +226,7 @@ export function FeaturesSection() {
         </SpringReveal>
 
         {/* Mobile / tablet: horizontal scroll */}
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-[clamp(20px,6vw,64px)] px-[clamp(20px,6vw,64px)] lg:hidden [scrollbar-width:thin] [scrollbar-color:#B4FF0033_transparent]">
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-[clamp(20px,6vw,64px)] px-[clamp(20px,6vw,64px)] lg:hidden [scrollbar-width:thin] [scrollbar-color:color-mix(in_srgb,var(--accent,#B4FF00)_20%,transparent)_transparent]">
           {LANDING_TOOL_EXAMPLES.map((tool, i) => (
             <SpringReveal key={tool.id} delay={(i % 4) * 0.1}>
             <Link
@@ -444,9 +448,9 @@ export function AgencyTeaserSection() {
       style={{ background: "var(--bg-1)" }}
     >
       <SpringReveal>
-        <div className="glass-card max-w-[960px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10 border-[#B4FF00]/20">
+        <div className="glass-card max-w-[960px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10 border-[color-mix(in_srgb,var(--accent,#B4FF00)_20%,transparent)]">
           <div>
-            <p className="text-[#B4FF00] text-xs font-bold uppercase tracking-[0.14em] mb-2">
+            <p className="text-[var(--accent,#B4FF00)] text-xs font-bold uppercase tracking-[0.14em] mb-2">
               White Label
             </p>
             <h2 className="landing-heading text-2xl md:text-3xl mb-2">
@@ -593,7 +597,7 @@ export function LandingFooter() {
       <div className="max-w-[1160px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-9 mb-10">
         <div>
           <a href="/" className="flex items-center gap-2 no-underline mb-2.5">
-            <div className="w-7 h-7 rounded-[7px] bg-[#B4FF00] flex items-center justify-center text-[#060608] font-[family-name:var(--font-bebas)] text-sm leading-none">
+            <div className="w-7 h-7 rounded-[7px] bg-[var(--accent,#B4FF00)] flex items-center justify-center text-[#060608] font-[family-name:var(--font-bebas)] text-sm leading-none">
               I
             </div>
             <span

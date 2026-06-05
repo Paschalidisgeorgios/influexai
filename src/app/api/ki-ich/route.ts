@@ -9,6 +9,7 @@ import {
   uploadDataUrlToFal,
   type FalImageMode,
 } from "@/lib/fal-image";
+import { assertGatedFeature } from "@/lib/access";
 import {
   createGenerationRecord,
   ingestFinalImageFromUrl,
@@ -26,6 +27,9 @@ function protectedImageUrl(generationId: string, variant: "preview" | "final") {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("ki-ich");
+  if (denied) return denied;
+
   const body = await request.json();
   const {
     imageUrl,

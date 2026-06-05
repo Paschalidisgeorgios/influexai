@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertGatedFeature } from "@/lib/access";
 import {
   estimateAgentCredits,
   fullPipelineCreditSum,
@@ -19,6 +20,9 @@ function sseLine(event: AgentStreamEvent | Record<string, unknown>): string {
 }
 
 export async function GET(request: Request) {
+  const denied = await assertGatedFeature("master-agent");
+  if (denied) return denied;
+
   const { searchParams } = new URL(request.url);
   const message = searchParams.get("message") ?? "";
 
@@ -54,6 +58,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = await assertGatedFeature("master-agent");
+  if (denied) return denied;
+
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;

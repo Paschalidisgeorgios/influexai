@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -8,6 +8,7 @@ import { trackAbEvent, type AbVariant } from "@/lib/ab-tracking";
 import { HeroTitle } from "@/components/landing/HeroTitle";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { useParallax } from "@/components/use-parallax";
 
 const GridReveal = dynamic(
   () => import("@/components/landing/GridReveal"),
@@ -15,6 +16,35 @@ const GridReveal = dynamic(
 );
 
 type Audience = "creator" | "brand";
+
+function HeroImage() {
+  const ref = useRef<HTMLDivElement>(null);
+  useParallax(ref);
+
+  return (
+    <div className="overflow-hidden aspect-[3/4] rounded-2xl border border-white/[0.08]">
+      <div ref={ref} className="relative w-full h-full min-h-[480px]">
+        <Image
+          src="/images/landing/feature-1.png"
+          alt="Creator mit InfluexAI"
+          fill
+          className="object-cover"
+          style={{ filter: "brightness(0.88) saturate(1.1)" }}
+          priority
+          sizes="(min-width: 1024px) 50vw, 0px"
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 45%), linear-gradient(to left, rgba(6,6,8,0.4) 0%, transparent 40%)",
+          }}
+          aria-hidden
+        />
+      </div>
+    </div>
+  );
+}
 
 export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   const t = useTranslations("hero");
@@ -86,7 +116,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         <SpringReveal>
           <div className="flex items-center gap-2.5 mb-7">
           <div
-            className="w-[7px] h-[7px] rounded-full bg-[#B4FF00] animate-blink"
+            className="w-[7px] h-[7px] rounded-full bg-[var(--accent,#B4FF00)] animate-blink"
             aria-hidden
           />
           <span className="kicker">{t("badge")} · 2026</span>
@@ -102,9 +132,9 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
               onClick={() => setAudience(a)}
               className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
               style={{
-                background: audience === a ? "#B4FF00" : "transparent",
+                background: audience === a ? "var(--accent, #B4FF00)" : "transparent",
                 borderColor:
-                  audience === a ? "#B4FF00" : "rgba(255,255,255,0.13)",
+                  audience === a ? "var(--accent, #B4FF00)" : "rgba(255,255,255,0.13)",
                 color: audience === a ? "#060608" : "rgba(255,255,255,0.85)",
                 fontFamily: "var(--font-dm), sans-serif",
               }}
@@ -167,30 +197,12 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
       {/* RIGHT: Hero image */}
       <div
-        className="hidden lg:block relative z-[5] min-h-[min(85vh,720px)]"
+        className="hidden lg:flex relative z-[5] items-center min-h-[min(85vh,720px)]"
         style={{
           padding: "24px clamp(20px,6vw,64px) 80px 12px",
         }}
       >
-        <div className="relative h-full w-full min-h-[480px] rounded-2xl overflow-hidden border border-white/[0.08]">
-          <Image
-            src="/images/landing/hero.jpg"
-            alt="Creator mit InfluexAI"
-            fill
-            className="object-cover"
-            style={{ filter: "brightness(0.88) saturate(1.1)" }}
-            priority
-            sizes="(min-width: 1024px) 50vw, 0px"
-          />
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 45%), linear-gradient(to left, rgba(6,6,8,0.4) 0%, transparent 40%)",
-            }}
-            aria-hidden
-          />
-        </div>
+        <HeroImage />
       </div>
     </section>
   );

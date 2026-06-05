@@ -603,6 +603,11 @@
       "intro": "Schluss mit teuren Shootings. InfluexAI gibt deiner Marke einen unverwechselbaren KI-Sprecher, der überall gleich aussieht.",
       "kicker": "Für Unternehmen & Marken"
     },
+    "worldTransition": {
+      "brand": "Für Marken",
+      "creator": "Für Creator",
+      "tagline": "Ein Studio. Zwei Welten."
+    },
     "cta": {
       "headline1": "Kein Gesicht.",
       "headline2": "Kein Limit.",
@@ -663,6 +668,111 @@
       "headline2": "Ein Studio.",
       "kicker": "Alle Module",
       "sidebar": "Kein Tool-Chaos. Alles für KI-Content in einer Plattform."
+    },
+    "toolDemos": {
+      "section_kicker": "Live-Demo",
+      "section_headline": "Vom Problem zum Ergebnis",
+      "script": {
+        "benefit_number": "30 Sekunden",
+        "benefit_prefix": "Fertiges Script in",
+        "benefit_suffix": " — spart ~2h Schreibarbeit pro Video.",
+        "cta": "Folge für Teil 2 — morgen um 7 Uhr.",
+        "hook": "Die meisten starten falsch in den Tag — du auch?",
+        "main": "Habit 1: Kein Handy für 60 Min. Habit 2: Tageslicht in den ersten 30 Min. Habit 3: …",
+        "problem": "Stundenlang vor dem leeren Blatt?",
+        "topic": "5 Morgen-Gewohnheiten für mehr Fokus"
+      },
+      "niche": {
+        "benefit_number": "5 Nischen",
+        "benefit_prefix": "Datenbasierte",
+        "benefit_suffix": " auf einmal — statt wochenlang raten.",
+        "problem": "Welche Nische ist wirklich profitabel?",
+        "row1_comp": "Niedrig",
+        "row1_name": "Fitness Biohacking",
+        "row1_stars": "★★★★★",
+        "row2_comp": "Mittel",
+        "row2_name": "Budget Meal Prep",
+        "row2_stars": "★★★★☆",
+        "row3_comp": "Niedrig",
+        "row3_name": "AI Productivity",
+        "row3_stars": "★★★★★"
+      },
+      "upscaler": {
+        "after_label": "4K",
+        "before_label": "720p",
+        "benefit": "2× Upscale in Sekunden — von 720p auf 4K, ohne Qualitätsverlust in der Nachbearbeitung.",
+        "problem": "Pixelig und unscharf in der Timeline?",
+        "title": "HD Upscaler"
+      },
+      "thumbnail": {
+        "benefit_number": "+34%",
+        "benefit_prefix": "CTR-Potenzial bis",
+        "benefit_suffix": " — Layout, Text und Farbe in einem Schritt.",
+        "ctr": "+34%",
+        "palette": "Palette",
+        "problem": "Thumbnails die niemand anklickt?",
+        "swatch_1": "#B4FF00",
+        "swatch_2": "#2563eb",
+        "swatch_3": "#ffffff"
+      },
+      "outlier": {
+        "benefit_number": "10×",
+        "benefit_prefix": "Videos mit",
+        "benefit_suffix": " Performance — Muster erkennen und nachbauen.",
+        "channel": "Fitness · Micro Channel",
+        "problem": "Warum gehen manche Videos viral — andere nicht?",
+        "score": "9.2",
+        "tag1": "Curiosity Gap Hook",
+        "tag2": "Contrarian Angle",
+        "tag3": "List Format (viral)",
+        "title": "„5 Fehler die 99% machen“"
+      },
+      "viralscore": {
+        "benefit_number": "87/100",
+        "benefit_prefix": "Score vor dem Upload:",
+        "benefit_suffix": " — Schwachstellen fixen, bevor du publishst.",
+        "niche_label": "Nische",
+        "niche_pct": "82%",
+        "niche_value": "82",
+        "problem": "Uploaden und hoffen?",
+        "script_label": "Script",
+        "script_pct": "91%",
+        "script_value": "91",
+        "thumbnail_label": "Thumbnail",
+        "thumbnail_pct": "88%",
+        "thumbnail_value": "88",
+        "total": "87"
+      },
+      "avatar": {
+        "after_caption": "Face Consistency aktiv",
+        "after_label": "Nachher",
+        "before_caption": "Selfie / Referenz",
+        "before_label": "Vorher",
+        "benefit_number": "1 Avatar",
+        "benefit_prefix": "",
+        "benefit_suffix": " — überall gleich auf TikTok, YouTube & LinkedIn.",
+        "match": "98% Match",
+        "name": "Dein KI-Avatar",
+        "problem": "Jedes Video sieht anders aus?",
+        "status": "Avatar wird generiert…",
+        "subtitle": "Konsistent auf allen Plattformen"
+      },
+      "agent": {
+        "problem": "Zwischen 12 Tools hin und her springen?",
+        "task": "Plane mein nächstes Short — Script, Thumbnail und Hashtags für Produktivität.",
+        "step1_tool": "Script Generator",
+        "step1_status": "Hook, Story und CTA werden geschrieben…",
+        "step2_tool": "Thumbnail Konzept",
+        "step2_status": "CTR-Layouts und Farbpalette werden generiert…",
+        "step3_tool": "Hashtag Optimizer",
+        "step3_status": "Trend-Tags und Reichweiten-Cluster werden ermittelt…",
+        "result_script_label": "Script",
+        "result_script_body": "Hook: Die meisten starten falsch in den Tag.\nMain: 3 Gewohnheiten für Fokus.\nCTA: Folge für Teil 2.",
+        "result_thumbnail_label": "Thumbnail",
+        "result_thumbnail_body": "Acid-Layout · Kontrast-Text\n5 Fehler die 99% machen\nCTR-Potenzial +34%",
+        "result_hashtags_label": "Hashtags",
+        "result_hashtags_body": "#produktivität #morningroutine\n#fokus #shorts #ki"
+      }
     },
     "toolExamples": {
       "agent_desc": "Dein KI-Stratege: plant Script, Thumbnail und Content — in einem Chat.",

@@ -8,6 +8,7 @@ import {
   API_RATE_LIMIT_BUSINESS_PER_DAY,
   API_RATE_LIMIT_PRO_PER_DAY,
 } from "@/lib/api-v1/rate-limits";
+import type { AccessUser } from "@/lib/access";
 
 export { API_RATE_LIMIT_PRO_PER_DAY, API_RATE_LIMIT_BUSINESS_PER_DAY };
 
@@ -58,12 +59,12 @@ export async function authenticateApiRequest(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan")
+    .select("plan, role, is_admin")
     .eq("id", keyRow.user_id)
     .single();
 
-  const plan = profile?.plan ?? "free";
-  if (!canUsePublicApi(plan)) {
+  const accessUser: AccessUser = profile ?? { plan: "free", role: "user" };
+  if (!canUsePublicApi(accessUser)) {
     return {
       ok: false,
       response: apiError(
@@ -75,7 +76,7 @@ export async function authenticateApiRequest(
     };
   }
 
-  const rateLimitPerDay = getDailyRateLimitForPlan(plan);
+  const rateLimitPerDay = getDailyRateLimitForPlan(accessUser);
   const sinceDay = startOfUtcDay();
 
   const { count } = await supabase
@@ -113,7 +114,7 @@ export async function authenticateApiRequest(
     ctx: {
       userId: keyRow.user_id,
       apiKeyId: keyRow.id,
-      plan,
+      plan: accessUser.plan ?? "free",
       rateLimitPerDay,
     },
   };

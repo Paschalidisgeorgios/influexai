@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, DM_Sans, Noto_Sans_Arabic } from "next/font/google";
+import { Bebas_Neue, DM_Sans, Fraunces, Noto_Sans_Arabic } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -37,6 +37,13 @@ const dmSans = DM_Sans({
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
   variable: "--font-arabic",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
@@ -126,7 +133,7 @@ export default async function RootLayout({
       lang={locale}
       dir={isRTL ? "rtl" : "ltr"}
       suppressHydrationWarning
-      className={`${bebasNeue.variable} ${dmSans.variable} ${notoSansArabic.variable} dark`}
+      className={`${bebasNeue.variable} ${dmSans.variable} ${fraunces.variable} ${notoSansArabic.variable} dark`}
     >
       <head>
         <link rel="manifest" href="/manifest.json" />
