@@ -29,7 +29,6 @@ const TICKER_KEYS = [
 const BRAND_FEAT_KEYS = ["feat1", "feat2", "feat3"] as const;
 const BRAND_EX_KEYS = ["ex1", "ex2", "ex3"] as const;
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
-const TESTIMONIAL_KEYS = ["t1", "t2", "t3"] as const;
 const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5"] as const;
 
 const BRAND_IMAGES = [
@@ -80,19 +79,12 @@ export function ForBrandsSection() {
                 margin: "14px 0 20px",
               }}
             />
-            <h2
-              style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "clamp(2.5rem,5vw,5rem)",
-                letterSpacing: "0.02em",
-                lineHeight: 0.95,
-              }}
-            >
+            <h2 className="landing-heading text-[clamp(2.5rem,5vw,5rem)] leading-[0.95]">
               {t("headline1")}
               <br />
               {t("headline2")}
               <br />
-              <span style={{ color: "var(--acid)" }}>{t("headline3")}</span>
+              <span className="acid-highlight">{t("headline3")}</span>
             </h2>
           </div>
           <div>
@@ -217,7 +209,7 @@ export function FeaturesSection() {
             <h2 className="landing-heading text-[clamp(2.5rem,5vw,5rem)]">
               {t("headline1")}
               <br />
-              <span className="acid-highlight" style={{ color: "#B4FF00" }}>{t("headline2")}</span>
+              <span className="acid-highlight">{t("headline2")}</span>
             </h2>
           </div>
           <p
@@ -327,7 +319,7 @@ export function HowItWorksSection() {
           <h2 className="landing-heading text-[clamp(2.5rem,5vw,4rem)] mb-10">
             {t("headline1")}
             <br />
-            <span className="acid-highlight" style={{ color: "var(--acid)" }}>{t("headline2")}</span>
+            <span className="acid-highlight">{t("headline2")}</span>
           </h2>
         </SpringReveal>
         <div className="flex flex-col md:flex-row md:items-stretch gap-4">
@@ -378,54 +370,6 @@ export function HowItWorksSection() {
   );
 }
 
-export function TestimonialsSection() {
-  const t = useTranslations("landingPage.testimonials");
-
-  return (
-    <section
-      className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
-      style={{ background: "var(--bg-1)" }}
-    >
-      <div className="max-w-[1160px] mx-auto">
-        <SpringReveal>
-          <span className="kicker mb-2.5">{t("kicker")}</span>
-          <h2 className="landing-heading text-[clamp(2.5rem,5vw,4rem)] mb-10">
-            {t("headline1")}
-            <br />
-            <span className="acid-highlight" style={{ color: "var(--acid)" }}>{t("headline2")}</span>
-          </h2>
-        </SpringReveal>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TESTIMONIAL_KEYS.map((key, i) => (
-            <SpringReveal key={key} delay={i * 0.1}>
-            <div className="glass-card p-6 flex flex-col h-full">
-              <div className="mb-3 text-sm" style={{ color: "var(--acid)" }}>
-                ★★★★★
-              </div>
-              <p
-                className="text-[0.9rem] leading-[1.75] flex-1 mb-5"
-                style={{ color: "var(--wd)" }}
-              >
-                &ldquo;{t(`${key}_quote`)}&rdquo;
-              </p>
-              <div>
-                <div className="font-bold text-sm">{t(`${key}_name`)}</div>
-                <div
-                  className="text-[0.78rem] mt-0.5"
-                  style={{ color: "var(--grey)" }}
-                >
-                  {t(`${key}_role`)}
-                </div>
-              </div>
-            </div>
-            </SpringReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function FaqSection() {
   const t = useTranslations("landingPage.faq");
   const [open, setOpen] = useState<number | null>(0);
@@ -438,16 +382,7 @@ export function FaqSection() {
     >
       <div className="max-w-[720px] mx-auto">
         <span className="kicker mb-2.5 block text-center">{t("kicker")}</span>
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2.5rem,5vw,4rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.95,
-            textAlign: "center",
-            marginBottom: 40,
-          }}
-        >
+        <h2 className="landing-heading text-[clamp(2.5rem,5vw,4rem)] leading-[0.95] text-center mb-10">
           {t("headline")}
         </h2>
         <div className="flex flex-col gap-2">
@@ -514,7 +449,7 @@ export function AgencyTeaserSection() {
             <p className="text-[#B4FF00] text-xs font-bold uppercase tracking-[0.14em] mb-2">
               White Label
             </p>
-            <h2 className="landing-heading text-2xl md:text-3xl mb-2 text-[#F0EFE8]">
+            <h2 className="landing-heading text-2xl md:text-3xl mb-2">
               {t("headline")}
             </h2>
             <p className="text-white/80 text-sm md:text-base">{t("subline")}</p>
@@ -573,20 +508,12 @@ export function CtaSection() {
       />
       <div className="max-w-[700px] mx-auto relative z-10">
         <span className="kicker mb-4">{t("kicker")}</span>
-        <h2
-          className="mb-4"
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(3rem,7vw,6rem)",
-            letterSpacing: "0.02em",
-            lineHeight: 0.92,
-          }}
-        >
+        <h2 className="landing-heading text-[clamp(3rem,7vw,6rem)] leading-[0.92] mb-4">
           {t("headline1")}
           <br />
           {t("headline2")}
           <br />
-          <span style={{ color: "var(--acid)" }}>{t("headline3")}</span>
+          <span className="acid-highlight">{t("headline3")}</span>
         </h2>
         <p
           className="mb-8 leading-[1.75]"

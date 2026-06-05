@@ -853,19 +853,6 @@
       "p2_text": "Το πρόσωπό σου σε κάθε σκηνή — TikTok, Reels και YouTube.",
       "p3_title": "Διαφημίσεις προϊόντων για brands",
       "p3_text": "URL ή φωτογραφία → βίντεο με φωνή και script σε λιγότερο από 90 δευτερόλεπτα."
-    },
-    "foundingCreators": {
-      "kicker": "ΠΡΩΙΜΗ ΠΡΟΣΒΑΣΗ · 2026",
-      "headline1": "ΕΙΣΑΙ ΝΩΡΙΣ.",
-      "headline2": "ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΠΛΕΟΝΕΚΤΗΜΑ ΣΟΥ.",
-      "subtext": "Το InfluexAI μόλις ξεκίνησε. Οι πρώτοι creators διαμορφώνουν την πλατφόρμα \\u2014 και κερδίζουν πλεονεκτήματα που κανείς δεν θα έχει αργότερα.",
-      "c1_title": "Ιδρυτικό Μέλος",
-      "c1_text": "Γίνε ένας από τους πρώτους creators της πλατφόρμας. Το feedback σου διαμορφώνει κάθε νέο feature.",
-      "c2_title": "Credits χωρίς συνδρομή",
-      "c2_text": "Αγόρασε μία φορά, χρησιμοποίησε όποτε θέλεις \\u2014 χωρίς μηνιαία κόστη, τα credits δεν λήγουν.",
-      "c3_title": "Άμεση επαφή",
-      "c3_text": "Σύντομοι δρόμοι, χωρίς ουρά. Ζήτα features και μίλησε απευθείας με την ομάδα.",
-      "cta": "Γίνε Founding Creator"
     }
   },
   "language": {
@@ -1083,5 +1070,18 @@
     "menu_top_up": "Φόρτωση credits",
     "pricing_title": "Ή αγόρασε μόνο credits — χωρίς συνδρομή",
     "pricing_subtitle": "Pay-as-you-go: αγόρασε μόνο όσα credits χρειάζεσαι."
+  },
+  "founding": {
+    "kicker": "EARLY ACCESS · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Ιδρυτικό Μέλος",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

@@ -884,19 +884,6 @@
       "viralscore_title": "Viral Score",
       "voice_desc": "Clone your AI voice and royalty-free music for your videos.",
       "voice_title": "Voice & Music"
-    },
-    "foundingCreators": {
-      "kicker": "EARLY ACCESS · 2026",
-      "headline1": "YOU\\u2019RE EARLY.",
-      "headline2": "THAT\\u2019S YOUR EDGE.",
-      "subtext": "InfluexAI just launched. The first creators help shape the platform \\u2014 and lock in advantages no one else will get later.",
-      "c1_title": "Founding Member Status",
-      "c1_text": "Be among the first creators on the platform. Your feedback shapes every new feature.",
-      "c2_title": "Credits, no subscription",
-      "c2_text": "Buy once, use anytime \\u2014 no monthly fees, credits never expire.",
-      "c3_title": "Direct line to the team",
-      "c3_text": "Short paths, no queue. Request features and talk directly with the team.",
-      "cta": "Become a Founding Creator"
     }
   },
   "language": {
@@ -1124,5 +1111,18 @@
     "menu_top_up": "Top up credits",
     "pricing_title": "Or buy credits only — no subscription needed",
     "pricing_subtitle": "Pay-as-you-go: buy only the credits you need."
+  },
+  "founding": {
+    "kicker": "EARLY ACCESS · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Founding Member",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

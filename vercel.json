@@ -17,6 +17,9 @@
     "src/app/api/faceswap/route.ts": {
       "maxDuration": 300
     },
+    "src/app/api/ugc-video/route.ts": {
+      "maxDuration": 300
+    },
     "src/app/api/outlier-detector/route.ts": {
       "maxDuration": 60
     },

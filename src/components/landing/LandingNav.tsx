@@ -49,7 +49,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           <div className="w-8 h-8 rounded-lg bg-[#B4FF00] flex items-center justify-center font-[family-name:var(--font-bebas)] text-lg text-[#060608] leading-none">
             I
           </div>
-          <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#F0EFE8]">
+          <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-white">
             Influex<span className="text-[#B4FF00]">AI</span>
           </span>
         </Link>

@@ -853,19 +853,6 @@
       "p2_text": "Votre visage dans chaque scène — TikTok, Reels et YouTube.",
       "p3_title": "Publicités produit pour marques",
       "p3_text": "URL ou photo → vidéo avec voix et script en moins de 90 secondes."
-    },
-    "foundingCreators": {
-      "kicker": "ACCÈS ANTICIPÉ · 2026",
-      "headline1": "TU ES EN AVANCE.",
-      "headline2": "C\\u2019EST TON AVANTAGE.",
-      "subtext": "InfluexAI vient de démarrer. Les premiers créateurs façonnent la plateforme \\u2014 et obtiennent des avantages que personne n\\u2019aura plus tard.",
-      "c1_title": "Statut Founding Member",
-      "c1_text": "Fais partie des premiers créateurs de la plateforme. Ton feedback façonne chaque nouvelle fonctionnalité.",
-      "c2_title": "Credits sans abonnement",
-      "c2_text": "Achète une fois, utilise quand tu veux \\u2014 pas de frais mensuels, les credits n\\u2019expirent pas.",
-      "c3_title": "Ligne directe",
-      "c3_text": "Chemins courts, pas de file d\\u2019attente. Demande des features et parle directement avec l\\u2019équipe.",
-      "cta": "Devenir Founding Creator"
     }
   },
   "language": {
@@ -881,7 +868,7 @@
     "error_load": "Impossible de charger les avatars",
     "error_session": "Impossible de démarrer la session live",
     "fallback_mode": "Fallback : KI-Technologie (Polling ~2,5 fps)",
-    "live_badge": "LIVE",
+    "live_badge": "EN DIRECT",
     "live_creator_label": "Live Creator",
     "low_credits": "Plus que {count} Credits — la session peut bientôt se terminer.",
     "no_avatars": "Aucun avatar trouvé. Crée d'abord un avatar dans « Mon KI-Moi ».",
@@ -1056,7 +1043,7 @@
       "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
       "product_ad_title": "Create product ads with AI",
       "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Talking Avatar & Live Creator",
+      "live_creator_title": "Avatar Parlant & Live Creator",
       "live_creator_desc": "Create avatar videos with voice and script.",
       "thumbnail_title": "Thumbnail concepts",
       "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
@@ -1083,5 +1070,18 @@
     "menu_top_up": "Recharger",
     "pricing_title": "Ou achète des crédits — sans abonnement",
     "pricing_subtitle": "Pay-as-you-go : achète uniquement les crédits dont tu as besoin."
+  },
+  "founding": {
+    "kicker": "ACCÈS ANTICIPÉ · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Membre Fondateur",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

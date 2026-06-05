@@ -16,13 +16,6 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
-const HERO_SUB: Record<Audience, string> = {
-  creator:
-    "Erstelle deinen KI-Influencer, streame live ohne Gesicht und generiere Produkt-Ads die konvertieren — in Minuten.",
-  brand:
-    "Konsistente Markenkommunikation ohne teure Shootings. Produktvideos in 90 Sekunden. Skalierbar für KMUs und Agenturen.",
-};
-
 export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   const t = useTranslations("hero");
   const [audience, setAudience] = useState<Audience>("creator");
@@ -128,7 +121,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
         <SpringReveal delay={0.16}>
         <p className="hero-subtitle mb-8 max-w-[440px]">
-          {HERO_SUB[audience]}
+          {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
         </p>
         </SpringReveal>
 

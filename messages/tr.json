@@ -157,7 +157,7 @@
   },
   "community": {
     "badge_lora_master": "LoRA Master",
-    "badge_power_user": "Power User",
+    "badge_power_user": "Güçlü Kullanıcı",
     "badge_viral_creator": "Viral Creator",
     "back_community": "Back to Community",
     "challenge_title": "Weekly Challenge",
@@ -853,19 +853,6 @@
       "p2_text": "Her sahnede senin yüzün — TikTok, Reels ve YouTube.",
       "p3_title": "Markalar için ürün reklamları",
       "p3_text": "URL veya fotoğraf → ses ve script ile video, 90 saniyeden kısa."
-    },
-    "foundingCreators": {
-      "kicker": "ERKEN ERİŞİM · 2026",
-      "headline1": "ERKEN GELDİN.",
-      "headline2": "BU SENİN AVANTAJIN.",
-      "subtext": "InfluexAI yeni başladı. İlk creator\\u2019lar platformu şekillendiriyor \\u2014 ve sonradan kimseye verilmeyecek avantajları kazanıyor.",
-      "c1_title": "Founding Member Statüsü",
-      "c1_text": "Platformun ilk creator\\u2019larından biri ol. Geri bildirimin her yeni özelliği şekillendirir.",
-      "c2_title": "Abosuz Credits",
-      "c2_text": "Bir kez al, istediğin zaman kullan \\u2014 aylık ücret yok, credits süresiz.",
-      "c3_title": "Doğrudan iletişim",
-      "c3_text": "Kısa yollar, bekleme yok. Özellik iste ve ekiple doğrudan konuş.",
-      "cta": "Founding Creator ol"
     }
   },
   "language": {
@@ -1056,7 +1043,7 @@
       "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
       "product_ad_title": "Create product ads with AI",
       "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Talking Avatar & Live Creator",
+      "live_creator_title": "Konuşan Avatar & Live Creator",
       "live_creator_desc": "Create avatar videos with voice and script.",
       "thumbnail_title": "Thumbnail concepts",
       "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
@@ -1083,5 +1070,18 @@
     "menu_top_up": "Kredi yükle",
     "pricing_title": "Ya da sadece kredi al — abonelik yok",
     "pricing_subtitle": "Kullandığın kadar öde: sadece ihtiyacın kadar kredi al."
+  },
+  "founding": {
+    "kicker": "ERKEN ERİŞİM · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Kurucu Üye",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

@@ -853,19 +853,6 @@
       "p2_text": "Tu rostro en cada escena — TikTok, Reels y YouTube.",
       "p3_title": "Anuncios de producto para marcas",
       "p3_text": "URL o foto → video con voz y script en menos de 90 segundos."
-    },
-    "foundingCreators": {
-      "kicker": "ACCESO ANTICIPADO · 2026",
-      "headline1": "LLEGASTE PRONTO.",
-      "headline2": "ESO ES TU VENTAJA.",
-      "subtext": "InfluexAI acaba de lanzarse. Los primeros creators dan forma a la plataforma \\u2014 y obtienen ventajas que nadie más tendrá después.",
-      "c1_title": "Estado Founding Member",
-      "c1_text": "Forma parte de los primeros creators de la plataforma. Tu feedback define cada nueva función.",
-      "c2_title": "Credits sin suscripción",
-      "c2_text": "Compra una vez, usa cuando quieras \\u2014 sin cuotas mensuales, los credits no caducan.",
-      "c3_title": "Línea directa",
-      "c3_text": "Caminos cortos, sin cola. Pide features y habla directamente con el equipo.",
-      "cta": "Ser Founding Creator"
     }
   },
   "language": {
@@ -1021,7 +1008,7 @@
     "social_proof": "Recién lanzado en 2026 — sé uno de los primeros creators"
   },
   "blog": {
-    "title": "InfluexAI Blog",
+    "title": "Blog de InfluexAI",
     "subtitle": "Everything you need to go viral",
     "search_placeholder": "Search articles…",
     "search_button": "Search",
@@ -1083,5 +1070,18 @@
     "menu_top_up": "Recargar créditos",
     "pricing_title": "O compra solo créditos — sin suscripción",
     "pricing_subtitle": "Pay-as-you-go: compra solo los créditos que necesitas."
+  },
+  "founding": {
+    "kicker": "ACCESO ANTICIPADO · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Miembro Fundador",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

@@ -204,10 +204,10 @@
     "type_all": "All",
     "type_image": "Images",
     "type_remix": "ريمكس",
-    "type_script": "Scripts",
+    "type_script": "السكريبتات",
     "type_video": "فيديوهات",
     "type_viral_score": "Viral Score",
-    "viral_score_short": "Viral",
+    "viral_score_short": "فيروسي",
     "win": "فوز"
   },
   "credits": {
@@ -853,19 +853,6 @@
       "p2_text": "وجهك في كل مشهد — TikTok وReels وYouTube.",
       "p3_title": "إعلانات منتجات للعلامات",
       "p3_text": "URL أو صورة → فيديو بصوت وscript في أقل من 90 ثانية."
-    },
-    "foundingCreators": {
-      "kicker": "EARLY ACCESS · 2026",
-      "headline1": "أنت مبكر.",
-      "headline2": "هذه ميزتك.",
-      "subtext": "InfluexAI انطلق للتو. أوائل صنّاع المحتوى يشكّلون المنصة \\u2014 ويحصلون على مزايا لن يحصل عليها أحد لاحقاً.",
-      "c1_title": "حالة Founding Member",
-      "c1_text": "كن من أوائل صنّاع المحتوى على المنصة. ملاحظاتك تشكّل كل ميزة جديدة.",
-      "c2_title": "Credits بدون اشتراك",
-      "c2_text": "اشترِ مرة واحدة واستخدم في أي وقت \\u2014 بدون رسوم شهرية، الـ Credits لا تنتهي.",
-      "c3_title": "تواصل مباشر",
-      "c3_text": "طرق قصيرة بلا انتظار. اطلب ميزات وتحدث مباشرة مع الفريق.",
-      "cta": "كن Founding Creator"
     }
   },
   "language": {
@@ -1083,5 +1070,18 @@
     "menu_top_up": "شحن الرصيد",
     "pricing_title": "أو اشترِ رصيدًا فقط — بدون اشتراك",
     "pricing_subtitle": "ادفع حسب الاستخدام: اشترِ الرصيد الذي تحتاجه فقط."
+  },
+  "founding": {
+    "kicker": "EARLY ACCESS · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "عضو مؤسس",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

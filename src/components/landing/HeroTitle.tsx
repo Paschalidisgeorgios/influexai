@@ -78,11 +78,13 @@ export function HeroTitle({ titles }: Props) {
             style={{
               display: "block",
               fontSize: "clamp(52px, 12vw, 120px)",
-              fontWeight: 800,
+              fontWeight: 400,
               lineHeight: 0.9,
               letterSpacing: "-0.04em",
               textTransform: "uppercase",
               color: i === accentIndex ? "#B4FF00" : "#ffffff",
+              textShadow: "none",
+              WebkitTextStroke: "0",
               opacity: visible ? 1 : 0,
               transform: visible ? "translateY(0px)" : "translateY(16px)",
               transition: visible

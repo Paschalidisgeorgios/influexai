@@ -29,7 +29,7 @@ const bebasNeue = Bebas_Neue({
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm",
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
   display: "swap",
 });

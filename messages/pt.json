@@ -580,7 +580,7 @@
     "cat_thumbnail": "Miniatura",
     "cat_viral": "Conteúdo Viral",
     "category_label": "Categoria",
-    "compare_after": "Upscaled 2x",
+    "compare_after": "Ampliado 2x",
     "compare_before": "Original",
     "download_button": "Baixar — 1 Crédito",
     "download_file": "Salvar arquivo",
@@ -853,19 +853,6 @@
       "p2_text": "Seu rosto em cada cena — TikTok, Reels e YouTube.",
       "p3_title": "Anúncios de produto para marcas",
       "p3_text": "URL ou foto → vídeo com voz e script em menos de 90 segundos."
-    },
-    "foundingCreators": {
-      "kicker": "ACESSO ANTECIPADO · 2026",
-      "headline1": "VOCÊ CHEGOU CEDO.",
-      "headline2": "ISSO É SUA VANTAGEM.",
-      "subtext": "InfluexAI acabou de lançar. Os primeiros creators moldam a plataforma \\u2014 e garantem vantagens que ninguém mais terá depois.",
-      "c1_title": "Status Founding Member",
-      "c1_text": "Faça parte dos primeiros creators da plataforma. Seu feedback molda cada novo recurso.",
-      "c2_title": "Credits sem assinatura",
-      "c2_text": "Compre uma vez, use quando quiser \\u2014 sem mensalidade, credits não expiram.",
-      "c3_title": "Linha direta",
-      "c3_text": "Caminhos curtos, sem fila. Peça features e fale diretamente com a equipe.",
-      "cta": "Tornar-se Founding Creator"
     }
   },
   "language": {
@@ -1056,7 +1043,7 @@
       "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
       "product_ad_title": "Create product ads with AI",
       "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Talking Avatar & Live Creator",
+      "live_creator_title": "Avatar Falante & Live Creator",
       "live_creator_desc": "Create avatar videos with voice and script.",
       "thumbnail_title": "Thumbnail concepts",
       "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
@@ -1083,5 +1070,18 @@
     "menu_top_up": "Carregar créditos",
     "pricing_title": "Ou compra só créditos — sem subscrição",
     "pricing_subtitle": "Pay-as-you-go: compra apenas os créditos de que precisas."
+  },
+  "founding": {
+    "kicker": "ACESSO ANTECIPADO · 2026",
+    "headline1": "YOU'RE EARLY.",
+    "headline2": "THAT'S YOUR EDGE.",
+    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
+    "c1_title": "Membro Fundador",
+    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
+    "c2_title": "Direct line",
+    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
+    "c3_title": "From the start",
+    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
+    "cta": "Become a Founding Creator"
   }
 }

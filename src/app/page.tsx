@@ -18,7 +18,7 @@ import {
   HowItWorksSection,
   FeaturesSection,
   AgencyTeaserSection,
-  TestimonialsSection,
+  FoundingCreatorsSection,
   PricingSection,
   FaqSection,
   CtaSection,
@@ -26,7 +26,6 @@ import {
 } from "@/components/landing";
 import { ABTracker } from "@/components/ab-tracker";
 import { LiveStatsBar } from "@/components/live-stats-bar";
-import { SocialProofPopup } from "@/components/social-proof-popup";
 import { CommunityPreview } from "@/components/community-preview";
 import type { AbVariant } from "@/lib/ab-tracking";
 
@@ -81,7 +80,6 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <SocialProofPopup />
       <LandingNav />
       <main className="landing-root">
         <HeroSection variant={variant} />
@@ -89,7 +87,7 @@ export default async function HomePage() {
         <TickerStrip />
         <HowItWorksSection />
         <ForBrandsSection />
-        <TestimonialsSection />
+        <FoundingCreatorsSection />
         <CommunityPreview />
         <FeaturesSection />
         <AgencyTeaserSection />

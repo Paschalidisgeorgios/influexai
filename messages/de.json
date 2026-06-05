@@ -461,6 +461,19 @@
     "blog": "Blog",
     "guides": "Guides"
   },
+  "founding": {
+    "kicker": "EARLY ACCESS · 2026",
+    "headline1": "DU BIST FRÜH DRAN.",
+    "headline2": "DAS IST DEIN VORTEIL.",
+    "subtext": "InfluexAI ist frisch gestartet. Die ersten Creator gestalten die Plattform mit — und sichern sich Vorteile, die später niemand mehr bekommt.",
+    "c1_title": "Founding Member",
+    "c1_text": "Gehöre zu den ersten Creatorn. Dein Feedback formt jedes neue Feature.",
+    "c2_title": "Direkter Draht",
+    "c2_text": "Kurze Wege statt Warteschlange. Wünsch dir Features und rede direkt mit dem Team.",
+    "c3_title": "Von Anfang an dabei",
+    "c3_text": "Sei Teil der Plattform, während sie wächst — und gestalte mit, wohin sie sich entwickelt.",
+    "cta": "Jetzt Founding Creator werden"
+  },
   "blog": {
     "title": "InfluexAI Blog",
     "subtitle": "Alles was du brauchst um viral zu gehen",
@@ -760,19 +773,6 @@
       "pro_f4": "KI-Ich: 50 Bilder + Videos",
       "pro_f5": "Viral Score Engine",
       "pro_f6": "Master Agent"
-    },
-    "foundingCreators": {
-      "kicker": "EARLY ACCESS · 2026",
-      "headline1": "DU BIST FRÜH DRAN.",
-      "headline2": "DAS IST DEIN VORTEIL.",
-      "subtext": "InfluexAI ist frisch gestartet. Die ersten Creator gestalten die Plattform mit — und sichern sich Vorteile, die später niemand mehr bekommt.",
-      "c1_title": "Founding Member Status",
-      "c1_text": "Gehöre zu den ersten Creatorn der Plattform. Dein Feedback formt jedes neue Feature.",
-      "c2_title": "Credits ohne Abo",
-      "c2_text": "Einmal kaufen, jederzeit nutzen — keine monatlichen Kosten, Credits verfallen nicht.",
-      "c3_title": "Direkter Draht",
-      "c3_text": "Kurze Wege statt Warteschlange. Wünsch dir Features und rede direkt mit dem Team.",
-      "cta": "Jetzt Founding Creator werden"
     },
     "ticker": {
       "i0": "InfluexAI LiveSwap",
