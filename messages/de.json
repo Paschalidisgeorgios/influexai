@@ -273,6 +273,35 @@
       "description": "Virale Werbe-Shorts mit KI",
       "title": "Produkt-Werbung"
     },
+    "ugcVideo": {
+      "title": "UGC Video",
+      "description": "Authentische Creator-Videos mit KI-Avatar — Script, Stimme & 9:16 UGC-Look in Minuten.",
+      "script_label": "Script",
+      "script_placeholder": "Was soll der Creator sagen? Max. 500 Zeichen…",
+      "language_label": "Sprache",
+      "voice_label": "Stimme",
+      "voice_akool": "Akool Stimmen",
+      "voice_elevenlabs": "ElevenLabs",
+      "avatar_label": "UGC Avatar wählen",
+      "hooks_button": "Hook Generator — 3 Varianten",
+      "hooks_loading": "Hooks werden generiert…",
+      "hooks_title": "Hook-Varianten (tippen zum Übernehmen)",
+      "hook_default_topic": "UGC Produktvideo für Social Media",
+      "create_button": "UGC Video erstellen — {cost} Credits",
+      "generating": "Video wird erstellt…",
+      "result_title": "Dein UGC-Video",
+      "download": "Video herunterladen",
+      "new_video": "Neues Video",
+      "credits_left": "{count} Credits übrig",
+      "no_avatars": "Keine Avatare verfügbar.",
+      "error_load": "Avatare konnten nicht geladen werden.",
+      "error_generic": "Video-Generierung fehlgeschlagen.",
+      "error_failed": "Video-Generierung fehlgeschlagen. Bitte erneut versuchen.",
+      "error_hooks": "Hook-Generierung fehlgeschlagen.",
+      "error_no_avatar": "Bitte einen Avatar wählen.",
+      "error_no_script": "Bitte ein Script eingeben.",
+      "error_credits": "Nicht genug Credits ({cost} benötigt)."
+    },
     "productAd": {
       "title": "🛍️ Produkt-Werbung",
       "description": "Produktbild + Details → KI-Script → Video-Werbung im 9:16-Format",
@@ -504,7 +533,7 @@
     "cta_primary": "Jetzt starten — ab €9,99",
     "cta_secondary": "Features ansehen",
     "headline": "Dein nächster viraler Short — in 60 Sekunden.",
-    "social_proof": "{count} Creators registriert",
+    "social_proof": "Frisch gestartet 2026 — sei einer der ersten Creator",
     "subheadline": "Kein Schneiden. Kein Schreiben. Nur KI.",
     "trust_1": "Sofort verfügbar",
     "trust_2": "Einfacher Einstieg",
@@ -513,16 +542,18 @@
       "DEIN NÄCHSTER\nVIRALER SHORT\nIN 60 SEK.",
       "DEIN SCRIPT.\nIN 10\nSEKUNDEN.",
       "DEIN KI-AVATAR.\nLEBENDIG\nWIE NIE.",
-      "DEIN THUMBNAIL.\nKLICKS\nGARANTIERT.",
+      "DEIN THUMBNAIL.\nGEBAUT\nFÜR KLICKS.",
       "DEINE NISCHE.\nANALYSIERT\nVON KI.",
-      "DEIN CONTENT.\nAUTOMATISCH\nVIRAL.",
-      "DEIN GESICHT.\nJEDER\nCHARACTER.",
+      "DEIN CONTENT.\nAUF\nAUTOPILOT.",
+      "DEIN GESICHT.\nJEDER\nCHARAKTER.",
       "DEINE STIMME.\nJEDE\nSPRACHE.",
       "MEHR VIEWS.\nWENIGER\nAUFWAND.",
-      "VON 0\nAUF VIRAL.\nIN MINUTEN.",
+      "VON DER IDEE\nZUM VIDEO.\nIN MINUTEN.",
       "DEIN KI-ICH.\nDEIN BRAND.\nDEINE REGELN.",
       "DIE ZUKUNFT\nDES CONTENTS.\nIST JETZT."
-    ]
+    ],
+    "creator_subtitle": "Vom Script bis zum fertigen Video: dein komplettes Creator-Studio mit KI. Ohne Kamera, ohne Team, ohne Vorkenntnisse.",
+    "brand_subtitle": "Konsistente Markenkommunikation ohne teure Shootings. Produktvideos in 90 Sekunden. Skalierbar für KMUs und Agenturen."
   },
   "landing": {
     "auth_login": "Anmelden",
@@ -556,7 +587,7 @@
       "headline1": "Dein KI-",
       "headline2": "Markenbotschafter.",
       "headline3": "Immer konsistent.",
-      "intro": "Schluss mit teuren Shootings. InfluexAI gibt deiner Marke einen unverwechselbaren KI-Sprecher der überall gleich aussieht.",
+      "intro": "Schluss mit teuren Shootings. InfluexAI gibt deiner Marke einen unverwechselbaren KI-Sprecher, der überall gleich aussieht.",
       "kicker": "Für Unternehmen & Marken"
     },
     "cta": {
@@ -621,18 +652,18 @@
       "sidebar": "Kein Tool-Chaos. Alles für KI-Content in einer Plattform."
     },
     "toolExamples": {
-      "agent_desc": "Master Agent plant deinen Content — Script, Thumbnail und Strategie in einem Chat.",
+      "agent_desc": "Dein KI-Stratege: plant Script, Thumbnail und Content — in einem Chat.",
       "agent_title": "KI Agent",
-      "avatar_desc": "Dein KI-Avatar in jeder Szene — konsistentes Gesicht über alle Bilder und Videos.",
+      "avatar_desc": "Ein Gesicht, das überall gleich aussieht — auf jeder Plattform.",
       "avatar_title": "KI Avatar",
       "faceswap_desc": "Face Swap in Videos — dein Gesicht, jede Szene, ohne teure Shootings.",
       "faceswap_title": "Face Swap",
       "headline1": "Zwölf Tools.",
       "headline2": "Ein Studio.",
       "kicker": "Alle Module",
-      "live_desc": "Live streamen mit KI-Avatar — Echtzeit-Mimik via Webcam, Acid Noir Studio.",
+      "live_desc": "Live streamen mit KI-Avatar — Echtzeit-Mimik über deine Webcam.",
       "live_title": "Live Creator",
-      "niche_desc": "Finde profitable YouTube-Nischen mit datenbasierten KI-Empfehlungen.",
+      "niche_desc": "Finde profitable Nischen, bevor sie alle kennen — datenbasiert.",
       "niche_title": "Niche Analyzer",
       "outlier_desc": "Entdecke virale Videos und verstehe, warum sie funktionieren.",
       "outlier_title": "Outlier Detector",
@@ -643,7 +674,7 @@
       "script_desc": "Virale Short-Scripts in Sekunden — Hook, Story, CTA und Hashtags.",
       "script_title": "Script Generator",
       "sidebar": "Klick auf ein Modul — direkt ins Dashboard. Alle Tools, eine Plattform.",
-      "thumbnail_desc": "CTR-starke Thumbnail-Konzepte mit Layout, Text und Farbpalette.",
+      "thumbnail_desc": "Thumbnails, die geklickt werden — Layout, Text und Farbe von der KI.",
       "thumbnail_title": "Thumbnail Konzept",
       "viralscore_desc": "Score 0–100 für Script, Thumbnail und Nische — vor dem Upload optimieren.",
       "viralscore_title": "Viral Score",
@@ -730,24 +761,23 @@
       "pro_f5": "Viral Score Engine",
       "pro_f6": "Master Agent"
     },
-    "testimonials": {
-      "headline1": "Creator & Marken",
-      "headline2": "lieben InfluexAI.",
-      "kicker": "Stimmen",
-      "t1_name": "Lisa M.",
-      "t1_quote": "Produkt-Ads in unter 3 Minuten. Unser ROAS ist um 40% gestiegen.",
-      "t1_role": "E-Commerce Creator",
-      "t2_name": "Tom K.",
-      "t2_quote": "Endlich ein Tool wo mein KI-Gesicht überall gleich aussieht.",
-      "t2_role": "TikTok Creator · 280k",
-      "t3_name": "Sarah B.",
-      "t3_quote": "Wir sparen 15.000€ pro Monat an Agentur-Kosten.",
-      "t3_role": "Marketing Lead, D2C Brand"
+    "foundingCreators": {
+      "kicker": "EARLY ACCESS · 2026",
+      "headline1": "DU BIST FRÜH DRAN.",
+      "headline2": "DAS IST DEIN VORTEIL.",
+      "subtext": "InfluexAI ist frisch gestartet. Die ersten Creator gestalten die Plattform mit — und sichern sich Vorteile, die später niemand mehr bekommt.",
+      "c1_title": "Founding Member Status",
+      "c1_text": "Gehöre zu den ersten Creatorn der Plattform. Dein Feedback formt jedes neue Feature.",
+      "c2_title": "Credits ohne Abo",
+      "c2_text": "Einmal kaufen, jederzeit nutzen — keine monatlichen Kosten, Credits verfallen nicht.",
+      "c3_title": "Direkter Draht",
+      "c3_text": "Kurze Wege statt Warteschlange. Wünsch dir Features und rede direkt mit dem Team.",
+      "cta": "Jetzt Founding Creator werden"
     },
     "ticker": {
-      "i0": "InfluexAI LiveSwap™",
+      "i0": "InfluexAI LiveSwap",
       "i1": "InfluexAI Vision",
-      "i10": "Face Consistency™",
+      "i10": "Face Consistency",
       "i11": "Multi-Platform Export",
       "i2": "InfluexAI Avatar Engine",
       "i3": "InfluexAI Voice",
@@ -762,7 +792,18 @@
       "headline": "Bist du eine Agentur oder Freelancer?",
       "subline": "Verkaufe KI-Tools unter deiner Marke →",
       "cta": "Mehr erfahren"
-    }
+    },
+    "achieve": {
+      "headline": "Was du mit InfluexAI erreichen kannst",
+      "subline": "Möglichkeiten statt Versprechen — das ist, wofür die Tools da sind.",
+      "p1_title": "Virale Shorts in Minuten",
+      "p1_text": "Script, Hook und CTA — ohne stundenlang schreiben.",
+      "p2_title": "Konsistenter KI-Avatar",
+      "p2_text": "Dein Gesicht in jeder Szene — über TikTok, Reels und YouTube.",
+      "p3_title": "Produkt-Ads für Marken",
+      "p3_text": "URL oder Foto → Video mit Stimme und Script in unter 90 Sekunden."
+    },
+    "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "language": {
     "label": "Sprache"
@@ -813,7 +854,8 @@
     "settings_menu": "Einstellungen",
     "top_up": "Aufladen",
     "viral_score": "Viral Score",
-    "image_generator": "Bild Generator"
+    "image_generator": "Bild Generator",
+    "ugc_video": "UGC Video"
   },
   "pwa": {
     "install_kicker": "PWA",
@@ -914,9 +956,9 @@
     "slide4_description": "CTR-optimierte Thumbnail-Konzepte mit exaktem Layout, Farbpalette und Text-Overlays — ready zum Umsetzen.",
     "slide4_heading": "Thumbnails die geklickt werden",
     "slide5_badge": "👥 Für alle User zugänglich",
-    "slide5_description": "Lerne von anderen Creatorn, teile deine Wins und wachse mit einer Community die dieselben Ziele verfolgt.",
-    "slide5_heading": "Echte Ergebnisse, echte Creator",
-    "social_proof": "⚡ 500+ Creators · 10.000+ Contents erstellt"
+    "slide5_description": "Tausche dich aus, teile Fortschritte und wachse mit Gleichgesinnten — die Community startet bald.",
+    "slide5_heading": "Creator-Community",
+    "social_proof": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "imageGenerator": {
     "title": "Bild Generator",
