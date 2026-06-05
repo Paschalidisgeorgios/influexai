@@ -108,7 +108,7 @@ export function UpscalerDemo({ src, videoSrc }: UpscalerDemoProps) {
   const showBeam = !reducedMotion && progress > 0 && progress < 1;
 
   return (
-    <div ref={ref} className="tool-demo-beat">
+    <div ref={ref} className={["tool-demo-beat", visible ? "is-visible" : ""].filter(Boolean).join(" ")}>
       <div className="upscaler-grid">
         <div className="upscaler-grid__copy">
           <h3 className="landing-heading text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] mb-3">

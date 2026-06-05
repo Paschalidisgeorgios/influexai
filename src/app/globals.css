@@ -1295,3 +1295,57 @@ body { padding-top: 64px; }
   .site-nav { display: none; }
   .site-header__inner { grid-template-columns: 1fr auto; }
 }
+
+/* === LightFrame (demo media glow) === */
+.ix-frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.ix-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 90% 65% at 50% 0%,
+    color-mix(in srgb, var(--accent, #b4ff00) 28%, transparent) 0%,
+    transparent 68%
+  );
+}
+
+.ix-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.35),
+    inset 0 -24px 48px rgba(0, 0, 0, 0.25);
+}
+
+.ix-frame > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reinforce dark header: transparent in hero, blur only when scrolled */
+.site-header:not(.site-header--scrolled) {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+}
+
+header.site-header.site-header--scrolled {
+  background: rgba(6, 6, 8, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}

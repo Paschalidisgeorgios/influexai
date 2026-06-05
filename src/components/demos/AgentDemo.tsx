@@ -79,7 +79,7 @@ export function AgentDemo() {
   const typing = visible && typedChars < task.length;
 
   return (
-    <div ref={ref} className="tool-demo-beat">
+    <div ref={ref} className={["tool-demo-beat", visible ? "is-visible" : ""].filter(Boolean).join(" ")}>
       <p className="tool-demo-beat__problem">{t("problem")}</p>
       <LightFrame className="tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#0f0f12]">
         <div className="tool-demo-panel agent-demo p-5 md:p-6 space-y-4">

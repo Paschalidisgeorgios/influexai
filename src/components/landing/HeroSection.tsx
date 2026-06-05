@@ -22,7 +22,7 @@ function HeroImage() {
   useParallax(ref);
 
   return (
-    <div className="overflow-hidden aspect-[3/4] rounded-2xl border border-white/[0.08]">
+    <div className="overflow-hidden aspect-[3/4] rounded-2xl border border-white/[0.08] w-full">
       <div ref={ref} className="relative w-full h-full min-h-[480px]">
         <Image
           src="/images/landing/feature-1.png"
@@ -197,7 +197,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
       {/* RIGHT: Hero image */}
       <div
-        className="hidden lg:flex relative z-[5] items-center min-h-[min(85vh,720px)]"
+        className="hidden lg:flex relative z-[5] items-center w-full min-h-[min(85vh,720px)]"
         style={{
           padding: "24px clamp(20px,6vw,64px) 80px 12px",
         }}
