@@ -8,7 +8,7 @@ import {
 } from "@/lib/live-creator-config";
 import { resolveUserKiIchCharacter } from "@/lib/live-creator-ki-ich";
 import { getFalKey } from "@/lib/fal-image";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();

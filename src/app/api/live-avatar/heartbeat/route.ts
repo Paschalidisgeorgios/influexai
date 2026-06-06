@@ -5,7 +5,7 @@ import {
   LIVE_AVATAR_CREDITS_PER_MINUTE,
   LIVE_AVATAR_LOW_CREDITS_WARNING,
 } from "@/lib/akool-live-avatar";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export async function POST() {
   const denied = await assertGatedFeature("live-creator");

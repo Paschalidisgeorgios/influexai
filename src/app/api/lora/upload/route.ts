@@ -10,7 +10,7 @@ import {
 } from "@/lib/lora-config";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { buildImagesZip } from "@/lib/lora-zip";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 60;
 

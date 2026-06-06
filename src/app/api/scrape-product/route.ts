@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 30;
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getFalKey } from "@/lib/fal-image";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 const TOKEN_EXPIRATION_SECONDS = 120;
 

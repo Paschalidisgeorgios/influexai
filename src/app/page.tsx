@@ -22,8 +22,8 @@ import {
   FaqSection,
   CtaSection,
   LandingFooter,
+  LandingNav,
 } from "@/components/landing";
-import { SiteHeader } from "@/components/SiteHeader";
 import { LightSystem } from "@/components/LightSystem";
 import ToolDemosSection from "@/components/demos/ToolDemosSection";
 import { ABTracker } from "@/components/ab-tracker";
@@ -83,7 +83,7 @@ export default async function HomePage() {
     <>
       <ABTracker variant={variant} />
       <LightSystem>
-        <SiteHeader />
+        <LandingNav />
         <main className="landing-root">
           <HeroSection variant={variant} />
           <LiveStatsBar />

@@ -9,7 +9,7 @@ import {
   VIRAL_SCORE_SYSTEM_PROMPT,
   type ViralScoreResult,
 } from "@/lib/viral-score";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 60;
 

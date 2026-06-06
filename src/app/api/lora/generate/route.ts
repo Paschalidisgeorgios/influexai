@@ -9,7 +9,7 @@ import {
   ingestImageGeneratorAssets,
   updateGenerationResult,
 } from "@/lib/generation-assets";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 120;
 

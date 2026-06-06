@@ -11,7 +11,7 @@ import {
   type LoraModelType,
 } from "@/lib/lora-config";
 import { submitLoraTraining } from "@/lib/lora-fal";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 30;
 

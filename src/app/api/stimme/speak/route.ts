@@ -5,7 +5,7 @@ import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 const CREDIT_COST = 2;
 

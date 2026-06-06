@@ -23,7 +23,7 @@ import {
   getFalKey,
   uploadDataUrlToFal,
 } from "@/lib/fal-image";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 import {
   createGenerationRecord,
   ingestFinalAssetFromUrl,

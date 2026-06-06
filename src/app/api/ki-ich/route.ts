@@ -9,7 +9,7 @@ import {
   uploadDataUrlToFal,
   type FalImageMode,
 } from "@/lib/fal-image";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 import {
   createGenerationRecord,
   ingestFinalImageFromUrl,

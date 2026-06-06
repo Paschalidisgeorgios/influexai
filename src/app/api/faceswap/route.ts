@@ -14,7 +14,7 @@ import {
 import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 import {
   createGenerationRecord,
   getOwnedGeneration,

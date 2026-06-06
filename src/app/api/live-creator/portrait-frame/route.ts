@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
 import { FAL_LIVE_PORTRAIT_FALLBACK } from "@/lib/live-creator-config";
 import { fal } from "@fal-ai/client";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 60;
 

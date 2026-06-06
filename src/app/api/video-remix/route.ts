@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { remixVideo } from "@/app/actions/remix-video";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 60;
 

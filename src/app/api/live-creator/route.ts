@@ -13,7 +13,7 @@ import {
   getAkoolVideoResult,
   mapAkoolVideoStatus,
 } from "@/lib/akool";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 300;
 

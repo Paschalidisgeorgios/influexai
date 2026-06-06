@@ -10,7 +10,7 @@ import {
   LIVE_AVATAR_LOW_CREDITS_WARNING,
 } from "@/lib/akool-live-avatar";
 import { resolvePreferredLiveAvatarId } from "@/lib/preferred-live-avatar";
-import { assertGatedFeature } from "@/lib/access";
+import { assertGatedFeature } from "@/lib/access.server";
 
 export const maxDuration = 60;
 
