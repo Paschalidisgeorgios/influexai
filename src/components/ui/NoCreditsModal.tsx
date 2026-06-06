@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Zap } from "lucide-react";
+import { ArrowLeft, Loader2, Zap } from "lucide-react";
 import { MotionModal } from "@/components/ui/MotionModal";
 import {
   CREDIT_PACKAGES,
@@ -41,6 +41,35 @@ function formatCentPerCredit(pricePerCredit: number): string {
   return String(Math.round(pricePerCredit * 100));
 }
 
+function CheckoutErrorBanner({
+  onRetry,
+  retryDisabled,
+}: {
+  onRetry: () => void;
+  retryDisabled: boolean;
+}) {
+  const t = useTranslations("noCredits");
+
+  return (
+    <div
+      role="alert"
+      className="mb-4 rounded-xl border border-[#ff6b7a]/35 bg-[#ff6b7a]/10 px-4 py-3"
+    >
+      <p className="text-sm text-[#ff6b7a] leading-relaxed">
+        {t("checkout_error_banner")}
+      </p>
+      <button
+        type="button"
+        onClick={onRetry}
+        disabled={retryDisabled}
+        className="mt-2.5 text-sm font-bold text-[#F0EFE8] underline underline-offset-2 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-50"
+      >
+        {t("checkout_retry")}
+      </button>
+    </div>
+  );
+}
+
 export function NoCreditsModal({
   open,
   onClose,
@@ -53,7 +82,8 @@ export function NoCreditsModal({
   const t = useTranslations("noCredits");
   const [view, setView] = useState<"prompt" | "packages">("prompt");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [checkoutFailed, setCheckoutFailed] = useState(false);
+  const [lastFailedPriceId, setLastFailedPriceId] = useState<string | undefined>();
 
   const canClose = !forceOpen && onClose;
   const resolvedRemaining =
@@ -76,7 +106,9 @@ export function NoCreditsModal({
 
   useEffect(() => {
     if (!open) return;
-    setError(null);
+    setCheckoutFailed(false);
+    setLastFailedPriceId(undefined);
+    setLoadingPriceId(null);
     setView(
       initialView ??
         (typeof required === "number" ? "prompt" : "packages")
@@ -84,12 +116,16 @@ export function NoCreditsModal({
   }, [open, initialView, required]);
 
   const handleCheckout = async (priceId: string | undefined) => {
+    if (loadingPriceId) return;
+
     if (!priceId) {
-      setError(t("checkout_error"));
+      setCheckoutFailed(true);
+      setLastFailedPriceId(undefined);
       return;
     }
+
     setLoadingPriceId(priceId);
-    setError(null);
+    setCheckoutFailed(false);
     try {
       const res = await fetch("/api/stripe/credits-checkout", {
         method: "POST",
@@ -101,13 +137,28 @@ export function NoCreditsModal({
         window.location.href = data.url;
         return;
       }
-      setError(data.error ?? t("checkout_error"));
+      setLastFailedPriceId(priceId);
+      setCheckoutFailed(true);
     } catch {
-      setError(t("checkout_error"));
+      setLastFailedPriceId(priceId);
+      setCheckoutFailed(true);
     } finally {
       setLoadingPriceId(null);
     }
   };
+
+  const retryCheckout = () => {
+    if (lastFailedPriceId) {
+      void handleCheckout(lastFailedPriceId);
+      return;
+    }
+    const fallback = getStripePriceIdForPackage(
+      getPackageById(recommendedId) ?? CREDIT_PACKAGES[0]!
+    );
+    void handleCheckout(fallback);
+  };
+
+  const checkoutBusy = loadingPriceId !== null;
 
   const planFooter = planInfo ? (
     <div className="mt-5 space-y-1 text-center text-xs text-white/40">
@@ -243,6 +294,13 @@ export function NoCreditsModal({
             </button>
           )}
 
+          {checkoutFailed && (
+            <CheckoutErrorBanner
+              onRetry={retryCheckout}
+              retryDisabled={checkoutBusy}
+            />
+          )}
+
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center gap-2 mb-3">
               <span
@@ -297,13 +355,13 @@ export function NoCreditsModal({
                 >
                   {isRecommended && (
                     <span
-                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap"
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap max-w-[calc(100%-1rem)] truncate"
                       style={{
                         background: "var(--accent, #B4FF00)",
                         color: "#060608",
                       }}
                     >
-                      {t("recommended_badge")}
+                      {t("recommended_for_action")}
                     </span>
                   )}
                   {isPopular && (
@@ -346,9 +404,9 @@ export function NoCreditsModal({
 
                   <button
                     type="button"
-                    disabled={loadingPriceId !== null}
+                    disabled={checkoutBusy}
                     onClick={() => void handleCheckout(priceId)}
-                    className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                    className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background:
                         isRecommended || isPopular
@@ -360,16 +418,19 @@ export function NoCreditsModal({
                           : "var(--accent, #B4FF00)",
                     }}
                   >
-                    {isLoading ? "…" : t("buy_button")}
+                    {isLoading ? (
+                      <span className="inline-flex items-center justify-center gap-2">
+                        <Loader2 size={16} className="animate-spin" aria-hidden />
+                        {t("checkout_loading")}
+                      </span>
+                    ) : (
+                      t("buy_button")
+                    )}
                   </button>
                 </div>
               );
             })}
           </div>
-
-          {error && (
-            <p className="mt-4 text-center text-sm text-[#ff6b7a]">{error}</p>
-          )}
 
           <p className="mt-6 text-center text-xs text-white/45">
             {t("upgrade_hint")}{" "}

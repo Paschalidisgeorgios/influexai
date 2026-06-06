@@ -1263,6 +1263,7 @@
     "upgrade_plan_hint": "Save up to {percent}% with a monthly subscription",
     "recommended_pack": "Recommended: {credits} credits for €{price}",
     "recommended_badge": "Recommended",
+    "recommended_for_action": "Recommended for this action",
     "plan_footer": "Your plan: {plan} · {monthly} credits/month",
     "renewal_days": "Next credits: in {days} days",
     "renewal_monthly": "Next credits: renew monthly with your subscription",
@@ -1276,7 +1277,10 @@
     "upgrade_hint": "Or upgrade your plan for more monthly credits —",
     "upgrade_link": "View plans",
     "close": "Close",
-    "checkout_error": "Checkout failed. Please try again."
+    "checkout_error": "Checkout failed. Please try again.",
+    "checkout_error_banner": "Payment could not be started. Check your internet connection or try a different pack.",
+    "checkout_retry": "Try again",
+    "checkout_loading": "Loading..."
   },
   "buyCredits": {
     "title": "Top up credits!",

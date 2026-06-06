@@ -1271,6 +1271,7 @@
     "upgrade_plan_hint": "Spare bis zu {percent}% mit einem Monats-Abo",
     "recommended_pack": "Empfohlen: {credits} Credits für €{price}",
     "recommended_badge": "Empfohlen",
+    "recommended_for_action": "Empfohlen für diese Aktion",
     "plan_footer": "Dein aktueller Plan: {plan} · {monthly} Credits/Monat",
     "renewal_days": "Nächste Credits: in {days} Tagen",
     "renewal_monthly": "Nächste Credits: monatlich mit deinem Abo",
@@ -1284,7 +1285,10 @@
     "upgrade_hint": "Oder upgrade deinen Plan für mehr monatliche Credits —",
     "upgrade_link": "Pläne ansehen",
     "close": "Schließen",
-    "checkout_error": "Checkout fehlgeschlagen. Bitte erneut versuchen."
+    "checkout_error": "Checkout fehlgeschlagen. Bitte erneut versuchen.",
+    "checkout_error_banner": "Zahlung konnte nicht gestartet werden. Prüfe deine Internetverbindung oder versuche ein anderes Paket.",
+    "checkout_retry": "Nochmal versuchen",
+    "checkout_loading": "Wird geladen..."
   },
   "buyCredits": {
     "title": "Credits aufladen!",
