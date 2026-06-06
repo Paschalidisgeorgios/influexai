@@ -21,11 +21,21 @@ function scrollProgress(): number {
   return Math.min(1, Math.max(0, window.scrollY / max));
 }
 
+function accentFromScroll(progress: number, reducedMotion: boolean): string {
+  if (reducedMotion) {
+    return progress >= 0.55 ? BRAND : CREATOR;
+  }
+
+  const step = Math.round(progress * 4) / 4;
+  return lerpHex(step);
+}
+
 function accentFromTransition(
   el: HTMLElement | null,
+  scrollProg: number,
   reducedMotion: boolean
 ): string {
-  if (!el) return CREATOR;
+  if (!el) return accentFromScroll(scrollProg, reducedMotion);
 
   const rect = el.getBoundingClientRect();
   const vh = window.innerHeight;
@@ -93,7 +103,11 @@ export function LightSystem({ children }: { children: ReactNode }) {
       const progress = scrollProgress();
       const transitionEl = document.getElementById("world-transition");
       const glow = glowFromScroll(progress, reducedMotion);
-      const accent = accentFromTransition(transitionEl, reducedMotion);
+      const accent = accentFromTransition(
+        transitionEl,
+        progress,
+        reducedMotion
+      );
       const key = `${accent}|${glow.x}|${glow.y}|${glow.strength}`;
 
       if (key !== lastKey) {
