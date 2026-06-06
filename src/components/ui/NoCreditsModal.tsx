@@ -160,6 +160,10 @@ export function NoCreditsModal({
 
   const checkoutBusy = loadingPriceId !== null;
 
+  if (!open) {
+    return null;
+  }
+
   const planFooter = planInfo ? (
     <div className="mt-5 space-y-1 text-center text-xs text-white/40">
       <p>
@@ -183,7 +187,7 @@ export function NoCreditsModal({
     <MotionModal
       open={open}
       onClose={canClose ? onClose : undefined}
-      overlayClassName="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 bg-[rgba(0,0,0,0.7)] backdrop-blur-[8px]"
+      overlayClassName="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 bg-[rgba(0,0,0,0.7)] backdrop-blur-[8px] pointer-events-auto"
       panelTransition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
       className="w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-2xl bg-[#0f0f12] border border-[#B4FF00]/25 shadow-[0_24px_64px_rgba(0,0,0,0.6)]"
     >

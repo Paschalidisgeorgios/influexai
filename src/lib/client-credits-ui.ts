@@ -1,5 +1,7 @@
 "use client";
 
+import { isCreditExemptEmail } from "@/lib/access";
+
 export type NoCreditsModalDetail = {
   required?: number;
   remaining?: number;
@@ -19,6 +21,21 @@ const BUY_CREDITS_EVENT = "open-buy-credits";
 const CREDIT_ERROR_RE =
   /nicht genug credit|not enough credit|insufficient credit/i;
 
+let clientCreditExempt = false;
+
+/** Set from authenticated session email (BuyCreditsProvider) — UI only; server enforces separately. */
+export function setClientCreditExempt(exempt: boolean): void {
+  clientCreditExempt = exempt;
+}
+
+export function isClientCreditExempt(): boolean {
+  return clientCreditExempt;
+}
+
+export function syncClientCreditExemptFromEmail(email?: string | null): void {
+  setClientCreditExempt(isCreditExemptEmail(email));
+}
+
 export function isInsufficientCreditsMessage(message: string | undefined): boolean {
   if (!message) return false;
   return CREDIT_ERROR_RE.test(message);
@@ -32,6 +49,7 @@ export function parseRequiredCreditsFromError(error: string): number | undefined
 
 export function openNoCreditsModal(detail?: NoCreditsModalDetail): void {
   if (typeof window === "undefined") return;
+  if (clientCreditExempt) return;
   window.dispatchEvent(
     new CustomEvent<NoCreditsModalDetail>(BUY_CREDITS_EVENT, { detail })
   );
@@ -66,6 +84,8 @@ export function handleApiInsufficientCredits(
   data?: { error?: string; credits?: number; required?: number },
   fallbackRequired?: number
 ): boolean {
+  if (clientCreditExempt) return false;
+
   const message = data?.error;
   if (status !== 402 && !isInsufficientCreditsMessage(message)) {
     return false;
@@ -128,7 +148,7 @@ export function handleInsufficientCredits(
   remaining: number,
   required: number
 ): boolean {
-  if (remaining >= required) return false;
+  if (clientCreditExempt || remaining >= required) return false;
   openNoCreditsModal({ required, remaining });
   return true;
 }
@@ -139,6 +159,7 @@ export function isCreditShortfallResult(res: {
   credits?: number;
   required?: number;
 }): boolean {
+  if (clientCreditExempt) return false;
   if (
     typeof res.credits === "number" &&
     typeof res.required === "number" &&
@@ -155,6 +176,7 @@ export function handleGenerationCreditError(res: {
   credits?: number;
   required?: number;
 }): boolean {
+  if (clientCreditExempt) return false;
   if (
     typeof res.credits === "number" &&
     typeof res.required === "number" &&

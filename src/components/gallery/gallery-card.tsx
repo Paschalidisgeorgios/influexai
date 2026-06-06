@@ -311,6 +311,66 @@ function ActionBtn({
   );
 }
 
+function GalleryImagePreview({ src }: { src: string | null | undefined }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <>📸</>;
+  }
+
+  return (
+    <Image
+      src={src}
+      alt=""
+      fill
+      sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+      loading="lazy"
+      style={{ objectFit: "cover" }}
+      unoptimized
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function GalleryVideoPreview({ src }: { src: string | null | undefined }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <span style={{ fontSize: "2rem" }}>▶</span>;
+  }
+
+  return (
+    <>
+      <video
+        src={src}
+        preload="none"
+        playsInline
+        muted
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        onError={() => setFailed(true)}
+      />
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "rgba(6,6,8,0.35)",
+          color: "#B4FF00",
+          fontSize: "2rem",
+          textDecoration: "none",
+        }}
+      >
+        ▶
+      </a>
+    </>
+  );
+}
+
 export function GalleryCard({ item, onDelete }: GalleryCardProps) {
   const router = useRouter();
   const canDelete = !["image", "video"].includes(item._type);
@@ -611,15 +671,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
             }}
           >
             {item.imageUrl ? (
-              <Image
-                src={item.imageUrl}
-                alt=""
-                fill
-                sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-                loading="lazy"
-                style={{ objectFit: "cover" }}
-                unoptimized
-              />
+              <GalleryImagePreview src={item.imageUrl} />
             ) : (
               "📸"
             )}
@@ -670,37 +722,7 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
               position: "relative",
             }}
           >
-            {item.videoUrl ? (
-              <video
-                src={item.videoUrl}
-                preload="none"
-                playsInline
-                muted
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
-              <span style={{ fontSize: "2rem" }}>▶</span>
-            )}
-            {item.videoUrl && (
-              <a
-                href={item.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(6,6,8,0.35)",
-                  color: "#B4FF00",
-                  fontSize: "2rem",
-                  textDecoration: "none",
-                }}
-              >
-                ▶
-              </a>
-            )}
+            <GalleryVideoPreview src={item.videoUrl} />
           </div>
           <p
             style={{

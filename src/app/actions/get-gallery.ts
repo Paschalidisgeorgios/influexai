@@ -13,6 +13,9 @@ import {
 } from "@/lib/gallery-types";
 import { resolveGenerationMediaUrls } from "@/lib/gallery-media";
 
+/** Max rows fetched per table — avoids loading entire tables (504 on Vercel). */
+const GALLERY_DB_FETCH_LIMIT = 50;
+
 function isImageGenerationType(type: string): boolean {
   const t = type.toLowerCase();
   return (
@@ -131,15 +134,25 @@ function normalizeRemix(row: {
   };
 }
 
-function normalizeGeneration(row: {
-  id: string;
-  type: string;
-  prompt: string;
-  created_at: string;
-}): GalleryItem | null {
+function normalizeGeneration(
+  row: {
+    id: string;
+    type: string;
+    prompt: string;
+    created_at: string;
+    result: unknown;
+  },
+  getPublicUrl: (bucket: string, path: string) => string
+): GalleryItem | null {
   const type = row.type;
   const prompt = row.prompt?.trim() || type;
-  const media = resolveGenerationMediaUrls(type, prompt);
+  const media = resolveGenerationMediaUrls({
+    type,
+    prompt,
+    generationId: row.id,
+    result: row.result,
+    getPublicUrl,
+  });
   const displayTitle =
     media.imageUrl || media.videoUrl
       ? type.replace(/-/g, " ")
@@ -157,10 +170,6 @@ function normalizeGeneration(row: {
     };
   }
   if (isVideoGenerationType(type)) {
-    const videoUrl =
-      type === "product_ad" || type === "seedance"
-        ? `/api/generated-video/${row.id}`
-        : media.videoUrl;
     return {
       id: row.id,
       _type: "video",
@@ -168,7 +177,7 @@ function normalizeGeneration(row: {
       title: prompt.slice(0, 80) || "Product Ad",
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
-      videoUrl,
+      videoUrl: media.videoUrl,
     };
   }
   return null;
@@ -215,6 +224,11 @@ export async function getGallery(
     return { items: [], total: 0, hasMore: false, error: "Nicht eingeloggt." };
   }
 
+  const getPublicUrl = (bucket: string, path: string) => {
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   const queries: Promise<GalleryItem[]>[] = [];
 
   if (filter === "all" || filter === "script") {
@@ -225,6 +239,7 @@ export async function getGallery(
           .select("id, topic, script, settings, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) => rows.map(normalizeScript))
     );
   }
@@ -237,6 +252,7 @@ export async function getGallery(
           .select("id, topic, concepts, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) =>
         rows.map((row) =>
           normalizeThumbnail({
@@ -256,6 +272,7 @@ export async function getGallery(
           .select("id, niche_data, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) =>
         rows.map((row) =>
           normalizeNiche({
@@ -275,6 +292,7 @@ export async function getGallery(
           .select("id, niche, results, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) =>
         rows.map((row) =>
           normalizeOutlier({
@@ -294,6 +312,7 @@ export async function getGallery(
           .select("id, original_url, results, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) =>
         rows.map((row) =>
           normalizeRemix({
@@ -310,12 +329,13 @@ export async function getGallery(
       fetchTableRows(
         supabase
           .from("generations")
-          .select("id, type, prompt, created_at")
+          .select("id, type, prompt, created_at, result")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
+          .limit(GALLERY_DB_FETCH_LIMIT)
       ).then((rows) =>
         rows
-          .map(normalizeGeneration)
+          .map((row) => normalizeGeneration(row, getPublicUrl))
           .filter((item): item is GalleryItem => item !== null)
           .filter((item) => matchesFilter(item, filter))
       )
@@ -323,18 +343,18 @@ export async function getGallery(
   }
 
   const results = await Promise.all(queries);
-  const allItems = results
+  const cappedItems = results
     .flat()
     .filter((item) => matchesFilter(item, filter))
     .filter((item) => matchesSearch(item, search));
 
-  allItems.sort(
+  cappedItems.sort(
     (a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
-  const total = allItems.length;
-  const paginated = allItems.slice(page * limit, (page + 1) * limit);
+  const total = cappedItems.length;
+  const paginated = cappedItems.slice(page * limit, (page + 1) * limit);
 
   return {
     items: paginated,

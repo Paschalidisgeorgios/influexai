@@ -17,17 +17,16 @@ import {
   type NoCreditsModalPlanInfo,
 } from "@/components/ui/NoCreditsModal";
 import {
+  isClientCreditExempt,
   onBuyCreditsRequest,
   openBuyCreditsModal,
+  syncClientCreditExemptFromEmail,
   type NoCreditsModalDetail,
 } from "@/lib/client-credits-ui";
 import {
   getPlanDisplayName,
   getPlanMonthlyCredits,
 } from "@/lib/subscription-plans";
-
-const LOW_CREDITS_THRESHOLD = 20;
-const LOW_SHOWN_KEY = "influexai_buy_credits_low_shown";
 
 type BuyCreditsContextValue = {
   open: () => void;
@@ -100,7 +99,6 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   const [planMonthlyCredits, setPlanMonthlyCredits] = useState(50);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [forceOpen, setForceOpen] = useState(false);
   const [modalDetail, setModalDetail] = useState<NoCreditsModalDetail | null>(
     null
   );
@@ -112,6 +110,8 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
+
+    syncClientCreditExemptFromEmail(user.email);
 
     const { data } = await supabase
       .from("profiles")
@@ -149,54 +149,18 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     };
   }, [loadProfile]);
 
-  const openModal = useCallback(
-    (opts?: { force?: boolean; detail?: NoCreditsModalDetail }) => {
-      if (opts?.detail) setModalDetail(opts.detail);
-      else setModalDetail(null);
-      if (opts?.force) setForceOpen(true);
-      setModalOpen(true);
-    },
-    []
-  );
+  const openModal = useCallback((opts?: { detail?: NoCreditsModalDetail }) => {
+    if (opts?.detail) setModalDetail(opts.detail);
+    else setModalDetail(null);
+    setModalOpen(true);
+  }, []);
 
   useEffect(() => {
     return onBuyCreditsRequest((detail) => {
-      openModal({
-        force: Boolean(
-          detail &&
-            typeof detail.remaining === "number" &&
-            detail.remaining <= 0
-        ),
-        detail,
-      });
+      if (isClientCreditExempt()) return;
+      openModal({ detail });
     });
   }, [openModal]);
-
-  useEffect(() => {
-    if (credits === null || !hasPlan) return;
-
-    if (credits <= 0) {
-      setForceOpen(true);
-      setModalDetail((prev) => prev ?? { remaining: 0 });
-      setModalOpen(true);
-      return;
-    }
-
-    setForceOpen(false);
-
-    if (credits < LOW_CREDITS_THRESHOLD) {
-      try {
-        if (!sessionStorage.getItem(LOW_SHOWN_KEY)) {
-          sessionStorage.setItem(LOW_SHOWN_KEY, "1");
-          setModalDetail(null);
-          setModalOpen(true);
-        }
-      } catch {
-        setModalDetail(null);
-        setModalOpen(true);
-      }
-    }
-  }, [credits, hasPlan]);
 
   const refreshCreditsAfterCheckout = useCallback(
     async (sessionId: string | null) => {
@@ -244,7 +208,6 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
     stripCheckoutSuccessParams();
     setModalOpen(false);
-    setForceOpen(false);
     setModalDetail(null);
     setToast(t("checkout_success"));
 
@@ -252,10 +215,11 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   }, [searchParams, refreshCreditsAfterCheckout, t]);
 
   const handleClose = () => {
-    if (forceOpen) return;
     setModalOpen(false);
     setModalDetail(null);
   };
+
+  const showModal = modalOpen && hasPlan;
 
   const planInfo: NoCreditsModalPlanInfo | null = hasPlan
     ? {
@@ -270,24 +234,25 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       value={{ open: () => openModal(), credits }}
     >
       {children}
-      <NoCreditsModal
-        open={modalOpen && hasPlan}
-        onClose={handleClose}
-        forceOpen={forceOpen}
-        required={modalDetail?.required}
-        remaining={
-          modalDetail?.remaining ??
-          (typeof credits === "number" ? credits : undefined)
-        }
-        initialView={
-          modalDetail?.showPackages
-            ? "packages"
-            : typeof modalDetail?.required === "number"
-              ? "prompt"
-              : undefined
-        }
-        planInfo={planInfo}
-      />
+      {showModal ? (
+        <NoCreditsModal
+          open
+          onClose={handleClose}
+          required={modalDetail?.required}
+          remaining={
+            modalDetail?.remaining ??
+            (typeof credits === "number" ? credits : undefined)
+          }
+          initialView={
+            modalDetail?.showPackages
+              ? "packages"
+              : typeof modalDetail?.required === "number"
+                ? "prompt"
+                : undefined
+          }
+          planInfo={planInfo}
+        />
+      ) : null}
       {toast && (
         <CreditsToast message={toast} onDone={() => setToast(null)} />
       )}
