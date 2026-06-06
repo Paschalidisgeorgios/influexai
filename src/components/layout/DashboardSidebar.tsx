@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BarChart2, Home, Images, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminUser } from "@/lib/access";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS } from "@/lib/dashboard-flows";
 import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
@@ -101,13 +102,19 @@ export function DashboardSidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("credits, plan, is_admin")
+        .select("credits, plan, is_admin, role")
         .eq("id", user.id)
         .single();
       if (data) {
         setCredits(data.credits);
         setMaxCredits(getPlanMonthlyCredits(data.plan));
-        setIsAdmin(data.is_admin ?? false);
+        setIsAdmin(
+          isAdminUser({
+            email: user.email,
+            is_admin: data.is_admin,
+            role: data.role,
+          })
+        );
       }
       const { data: tenant } = await supabase
         .from("tenants")

@@ -10,6 +10,7 @@ import { PostGenerationUpsell } from "@/components/post-generation-upsell";
 import { PlatformBanners } from "@/components/platform-banners";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminUser } from "@/lib/access";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [credits, setCredits] = useState<number | null>(null);
@@ -24,13 +25,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
     const { data } = await supabase
       .from("profiles")
-      .select("credits, is_admin")
+      .select("credits, is_admin, role")
       .eq("id", user.id)
       .single();
 
     if (data) {
       setCredits(data.credits ?? 0);
-      setIsAdmin(data.is_admin ?? false);
+      setIsAdmin(
+        isAdminUser({
+          email: user.email,
+          is_admin: data.is_admin,
+          role: data.role,
+        })
+      );
     }
   }, [supabase]);
 

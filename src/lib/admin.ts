@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isAdminUser } from "@/lib/access";
 
 export async function requireAdmin(): Promise<
   { ok: true; userId: string } | { ok: false; error: string }
@@ -12,11 +13,19 @@ export async function requireAdmin(): Promise<
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, role")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) return { ok: false, error: "Kein Admin-Zugriff." };
+  if (
+    !isAdminUser({
+      email: user.email,
+      is_admin: profile?.is_admin,
+      role: profile?.role,
+    })
+  ) {
+    return { ok: false, error: "Kein Admin-Zugriff." };
+  }
 
   return { ok: true, userId: user.id };
 }

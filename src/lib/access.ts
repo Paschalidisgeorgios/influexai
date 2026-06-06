@@ -39,6 +39,11 @@ function isPrivilegedAccessUser(user: AccessUser): boolean {
   return role === "admin" || role === "owner";
 }
 
+/** Admin panel + server admin routes — email allowlist, profiles.is_admin, or role admin/owner. */
+export function isAdminUser(user: AccessUser): boolean {
+  return isPrivilegedAccessUser(user);
+}
+
 /** Credits are never required or deducted for admin emails. */
 export function isCreditExemptEmail(email?: string | null): boolean {
   return isAdminEmail(email);

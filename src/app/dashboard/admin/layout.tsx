@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isAdminUser } from "@/lib/access";
 import { redirect } from "next/navigation";
 
 export default async function DashboardAdminLayout({
@@ -15,11 +16,19 @@ export default async function DashboardAdminLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, role")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) redirect("/dashboard");
+  if (
+    !isAdminUser({
+      email: user.email,
+      is_admin: profile?.is_admin,
+      role: profile?.role,
+    })
+  ) {
+    redirect("/dashboard");
+  }
 
   return <>{children}</>;
 }
