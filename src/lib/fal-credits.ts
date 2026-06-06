@@ -2,8 +2,8 @@
 export const FAL_CREDITS = {
   /** Kling image-to-video (~20s) */
   klingVideo: 75,
-  /** Seedance image-to-video (5s) */
-  seedanceVideo: 25,
+  /** Seedance image-to-video (5s @ ~$0.2419/s) */
+  seedanceVideo: 40,
   /** Flux Pro text-to-image */
   fluxProT2i: 8,
   /** Flux Dev text-to-image */

@@ -119,6 +119,14 @@ export async function resolveImageUrlForSeedance(
   }
 
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    if (!trimmed.startsWith("https://")) {
+      throw new Error(
+        "Bild-URL muss https:// sein (localhost nicht erlaubt)"
+      );
+    }
+    if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
+      throw new Error("localhost-URLs funktionieren nicht mit fal.ai");
+    }
     return trimmed;
   }
 
@@ -168,7 +176,7 @@ export async function runSeedanceGeneration(
           image_url: falImageUrl,
           prompt,
           resolution: "720p",
-          duration: "auto",
+          duration: "5",
           aspect_ratio: "auto",
           generate_audio: true,
         },
