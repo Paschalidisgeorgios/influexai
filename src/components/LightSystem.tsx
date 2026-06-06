@@ -174,6 +174,25 @@ function clearWorld() {
   root.style.removeProperty("--heading-leading");
 }
 
+function isToolDemosInView(): boolean {
+  const el = document.getElementById("tool-demos");
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
+function applyOverlayOpacity(inDemo: boolean) {
+  const root = document.documentElement;
+  root.style.setProperty("--grain-opacity", inDemo ? "0" : "0.02");
+  root.style.setProperty("--vignette-opacity", inDemo ? "0" : "1");
+}
+
+function clearOverlayOpacity() {
+  const root = document.documentElement;
+  root.style.removeProperty("--grain-opacity");
+  root.style.removeProperty("--vignette-opacity");
+}
+
 export function LightSystem({ children }: { children: ReactNode }) {
   useEffect(() => {
     const reducedMotion = window.matchMedia(
@@ -194,7 +213,8 @@ export function LightSystem({ children }: { children: ReactNode }) {
         reducedMotion
       );
       const { world, mix } = worldFromProgress(progress, reducedMotion);
-      const key = `${accent}|${glow.x}|${glow.y}|${glow.strength}|${world}|${mix.toFixed(3)}`;
+      const inDemo = isToolDemosInView();
+      const key = `${accent}|${glow.x}|${glow.y}|${glow.strength}|${world}|${mix.toFixed(3)}|${inDemo}`;
 
       if (key !== lastKey) {
         applyLight({
@@ -204,6 +224,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
           glowStrength: glow.strength,
         });
         applyWorld(world, mix);
+        applyOverlayOpacity(inDemo);
         lastKey = key;
       }
     };
@@ -220,6 +241,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
       glowStrength: "1",
     });
     applyWorld("creator", 0);
+    applyOverlayOpacity(isToolDemosInView());
     scheduleUpdate();
 
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
@@ -231,6 +253,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
       if (rafId) cancelAnimationFrame(rafId);
       clearLight();
       clearWorld();
+      clearOverlayOpacity();
     };
   }, []);
 

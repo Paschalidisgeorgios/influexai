@@ -4,6 +4,8 @@ import { assertPublicMediaUrl } from "@/lib/faceswap-media";
 
 const FACESWAP_BUCKET = "faceswap-uploads";
 
+export { FACESWAP_BUCKET };
+
 /**
  * Upload face-swap media to a public HTTPS URL for Akool.
  * Prefer FAL CDN; fall back to Supabase Storage when FAL is unavailable.

@@ -120,10 +120,14 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
 
       {outputs.image != null && !outputs.productPreview && (
         <ResultSection title="Generiertes Bild">
+          {outputs.image.improvedPrompt ? (
+            <p className="text-xs text-white/40 leading-relaxed mb-3">
+              {outputs.image.improvedPrompt}
+            </p>
+          ) : null}
           <AgentMediaImage
             src={outputs.image.imageUrl}
             alt="Generiertes Bild"
-            caption={outputs.image.prompt}
           />
         </ResultSection>
       )}

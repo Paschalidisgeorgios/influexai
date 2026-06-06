@@ -1,3 +1,5 @@
+import { FAL_CREDITS } from "@/lib/fal-credits";
+
 /** SoulX-FlashHead on fal.ai (realtime portrait animation). */
 export const FAL_FLASHHEAD_MODEL = "fal-ai/flashhead";
 
@@ -9,6 +11,7 @@ export const FAL_FLASHHEAD_MODEL_ALIASES = [
 
 export const FAL_LIVE_PORTRAIT_FALLBACK = "fal-ai/live-portrait";
 
+export const LIVE_CREATOR_PORTRAIT_CREDIT_COST = FAL_CREDITS.liveCreatorPortrait;
 export const LIVE_CREATOR_CREDITS_PER_MINUTE = 2;
 export const LIVE_CREATOR_LOW_CREDITS_WARNING = 10;
 export const LIVE_CREATOR_HEARTBEAT_MS = 60_000;

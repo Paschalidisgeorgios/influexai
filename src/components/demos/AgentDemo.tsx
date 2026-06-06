@@ -80,8 +80,8 @@ export function AgentDemo() {
 
   return (
     <div ref={ref} className={["tool-demo-beat", visible ? "is-visible" : ""].filter(Boolean).join(" ")}>
-      <p className="tool-demo-beat__problem">{t("problem")}</p>
-      <LightFrame className="tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#0f0f12]">
+      <p className="tool-demo-beat__problem demo-heading">{t("problem")}</p>
+      <LightFrame className="tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#111114]">
         <div className="tool-demo-panel agent-demo p-5 md:p-6 space-y-4">
           <div className="agent-demo__input rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 min-h-[44px]">
             <p className="text-xs text-white/80 leading-relaxed">

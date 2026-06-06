@@ -1,9 +1,10 @@
 import type { Locale } from "@/lib/locale";
+import { FAL_CREDITS } from "@/lib/fal-credits";
 
 export const PRODUCT_AD_CREDITS = {
-  standard: 3,
-  batch: 9,
-  upscaleExtra: 2,
+  standard: FAL_CREDITS.klingVideo,
+  batch: FAL_CREDITS.klingVideo * 3,
+  upscaleExtra: 0,
 } as const;
 
 export const KLING_PRODUCT_VIDEO_MODEL =

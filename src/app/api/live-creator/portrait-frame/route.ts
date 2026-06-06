@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
-import { FAL_LIVE_PORTRAIT_FALLBACK } from "@/lib/live-creator-config";
+import {
+  FAL_LIVE_PORTRAIT_FALLBACK,
+  LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+} from "@/lib/live-creator-config";
 import { fal } from "@fal-ai/client";
 import { assertGatedFeature } from "@/lib/access.server";
 
@@ -66,6 +70,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const creditCheck = await hasEnoughCredits(
+    supabase,
+    user.id,
+    LIVE_CREATOR_PORTRAIT_CREDIT_COST
+  );
+  if (!creditCheck.ok) {
+    return NextResponse.json(
+      {
+        error: `Nicht genug Credits (${LIVE_CREATOR_PORTRAIT_CREDIT_COST} benötigt)`,
+        credits: creditCheck.credits,
+      },
+      { status: 402 }
+    );
+  }
+
   try {
     configureFalClient();
 
@@ -97,10 +116,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+      "Live Creator — Portrait-Frame",
+      {
+        generationType: "live-creator",
+        skipGenerationLog: true,
+      }
+    );
+
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
+        { status: 402 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       imageUrl: mediaUrl,
       mode: "live-portrait-fallback",
+      creditsUsed: LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+      creditsLeft: deduction.remainingCredits,
     });
   } catch (err: unknown) {
     console.error("[live-creator/portrait-frame]", err);

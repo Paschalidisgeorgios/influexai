@@ -22,6 +22,7 @@ import {
   LORA_STEPS_DEFAULT,
   LORA_STEPS_MAX,
   LORA_STEPS_MIN,
+  LORA_STORAGE_BUCKET,
   LORA_TYPE_META,
   TRIGGER_WORD_PRESETS,
   type LoraModelType,
@@ -105,7 +106,7 @@ function LoraTrainingPageInner() {
       for (const m of data) {
         if (m.thumbnail_url) {
           const { data: signed } = await supabase.storage
-            .from("lora-training")
+            .from(LORA_STORAGE_BUCKET)
             .createSignedUrl(m.thumbnail_url, 3600);
           if (signed?.signedUrl) urls[m.id] = signed.signedUrl;
         }

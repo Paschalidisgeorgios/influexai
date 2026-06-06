@@ -374,13 +374,10 @@ allow_dynamic_registration = false
 # Growth Agent: invoked by pg_cron (see migrations/034). JWT off — uses service role Bearer.
 [functions.growth-agent]
 verify_jwt = false
-# Daily run 07:00 UTC (pg_cron in migration 034 is authoritative in production)
-schedule = "0 7 * * *"
 
-# Churn Prevention (Tag 3/7/14) — pg_cron migration 037 @ 10:00 UTC + optional CLI schedule
+# Churn Prevention (Tag 3/7/14) — pg_cron migration 037 @ 10:00 UTC
 [functions.churn-prevention]
 verify_jwt = false
-schedule = "0 10 * * *"
 
 [edge_runtime]
 enabled = true

@@ -1152,6 +1152,22 @@
     "cat_viral": "Viral Content",
     "cat_darknoir": "Dark Noir"
   },
+  "upscalerPage": {
+    "title": "HD Upscaler",
+    "subtitle": "Clarity Upscaler (fal.ai) — wähle ein Bild aus deiner Galerie und schärfe es in 2× Auflösung.",
+    "pick_image": "Bild aus Galerie wählen",
+    "empty_gallery": "Noch keine Bilder. Erstelle zuerst welche im Bild Generator.",
+    "upscale_cta": "Upscalen 2× — {cost} Credits",
+    "credits_hint": "{cost} Credits pro Upscale · Guthaben: {balance}",
+    "result_title": "Vorher / Nachher"
+  },
+  "voiceAgentPage": {
+    "title": "Voice Agent",
+    "badge": "Coming Soon",
+    "body": "ElevenLabs Conversational AI — sprich mit einem KI-Agenten in Echtzeit. Wir aktivieren das Feature, sobald dein ElevenLabs-Konto Conversational AI unterstützt.",
+    "elevenlabs_hint": "Hinweis: Du brauchst separates ElevenLabs-Guthaben für Conversational AI (zusätzlich zu TTS in Stimme & Musik).",
+    "voice_cta": "Zu Stimme & Musik"
+  },
   "planGate": {
     "kicker": "Los geht's",
     "title": "Wähle einen Plan um zu starten",

@@ -32,7 +32,7 @@ export function ToolDemosSection() {
         <SpringReveal>
           <div className="mb-12 md:mb-16 text-center max-w-2xl mx-auto">
             <span className="kicker mb-2.5 block">{t("section_kicker")}</span>
-            <h2 className="landing-heading text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05]">
+            <h2 className="demo-heading landing-heading text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05]">
               {t("section_headline")}
             </h2>
           </div>

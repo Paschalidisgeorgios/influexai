@@ -102,6 +102,15 @@ function extractImageUrl(result: unknown): string | null {
   );
 }
 
+export function logFalAiError(error: unknown): void {
+  const err = error as { status?: number; message?: string; body?: unknown };
+  console.error("FAL.AI ERROR:", {
+    status: err?.status,
+    message: err?.message,
+    body: err?.body ?? error,
+  });
+}
+
 export function parseFalError(error: unknown): string {
   const message =
     error instanceof Error

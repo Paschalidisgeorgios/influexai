@@ -36,9 +36,9 @@ export function ToolDemoBeat({
         .filter(Boolean)
         .join(" ")}
     >
-      <p className="tool-demo-beat__problem">{problem}</p>
+      <p className="tool-demo-beat__problem demo-heading">{problem}</p>
       <DemoVisibleContext.Provider value={visible}>
-        <LightFrame className="tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#0f0f12]">
+        <LightFrame className="tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#111114]">
           {children}
         </LightFrame>
       </DemoVisibleContext.Provider>

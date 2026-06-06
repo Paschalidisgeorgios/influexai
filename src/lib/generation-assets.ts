@@ -42,11 +42,13 @@ export async function createGenerationRecord(
   type: string,
   result: GenerationAssetResult,
   creditsUsed = 0,
-  prompt = ""
+  prompt = "",
+  generationId?: string
 ): Promise<string> {
   const { data, error } = await supabase
     .from("generations")
     .insert({
+      ...(generationId ? { id: generationId } : {}),
       user_id: userId,
       type,
       prompt: prompt.slice(0, 500),
@@ -57,6 +59,15 @@ export async function createGenerationRecord(
     .single();
 
   if (error || !data?.id) {
+    console.error("DB INSERT FEHLER:", {
+      error: error?.message,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint,
+      table: "generations",
+      userId,
+      type,
+    });
     throw new Error("Generierung konnte nicht gespeichert werden.");
   }
   return data.id as string;

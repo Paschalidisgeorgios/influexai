@@ -131,6 +131,14 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!running) textareaRef.current?.focus();
+  }, [running]);
+
+  useEffect(() => {
     const supabase = createClient();
     void (async () => {
       const {
@@ -225,6 +233,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
     if (!msg || running) return;
 
     setInput("");
+    textareaRef.current?.focus();
     setRunning(true);
     setSaved(false);
     setActiveTool(null);

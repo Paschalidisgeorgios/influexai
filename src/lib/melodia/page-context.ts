@@ -25,7 +25,7 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
     "Der Nutzer ist beim Bild Generator. Er wählt Kategorie und Prompt — Standard oder High-Res. Hilf bei präzisen Prompts, Stil und wenn das Bild nicht der Vorstellung entspricht (Prompt verfeinern, Kategorie wechseln).",
 
   "/dashboard/seedance":
-    "Der Nutzer ist bei Bild zu Video (Seedance). Er lädt ein Bild hoch oder nutzt ein generiertes Bild und erstellt daraus ein kurzes Video mit Bewegung. Erkläre: klares Motiv, passende Bewegungsbeschreibung, 15 Credits pro Video.",
+    "Der Nutzer ist bei Bild zu Video (Seedance). Er lädt ein Bild hoch oder nutzt ein generiertes Bild und erstellt daraus ein kurzes Video mit Bewegung. Erkläre: klares Motiv, passende Bewegungsbeschreibung, 25 Credits pro Video.",
 
   "/dashboard/ugc-video":
     "Der Nutzer ist bei UGC Video. Er erstellt authentische Creator-Videos im 9:16 UGC-Stil — Produkt, Avatar oder Script. Hilf bei Produktbild, Hook-Idee oder wenn er UGC vs. Produkt-Werbung verwechselt.",

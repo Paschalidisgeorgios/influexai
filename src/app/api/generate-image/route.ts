@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
@@ -11,7 +12,7 @@ import {
 import {
   configureFalClient,
   getFalKey,
-  parseFalError,
+  logFalAiError,
 } from "@/lib/fal-image";
 import {
   createGenerationRecord,
@@ -116,6 +117,39 @@ export async function POST(request: NextRequest) {
       seed,
     });
 
+    const generationId = randomUUID();
+    const { previewPath, sourcePath, width, height } =
+      await ingestImageGeneratorAssets(user.id, generationId, falResult.url);
+
+    await createGenerationRecord(
+      supabase,
+      user.id,
+      "image",
+      {
+        paid: false,
+        downloadPaid: false,
+        mode: "preview",
+        assetKind: "image",
+        category,
+        model: falResult.model,
+        width: width ?? falResult.width,
+        height: height ?? falResult.height,
+        generationTimeMs: Date.now() - started,
+        seed,
+        highRes,
+        parentGenerationId: isVariation ? parentGenerationId : undefined,
+        previewPath,
+        sourcePath,
+      },
+      0,
+      trimmedPrompt.slice(0, 500),
+      generationId
+    );
+
+    await updateGenerationResult(supabase, generationId, user.id, {
+      credits_used: creditCost,
+    });
+
     const deduction = await deductCredits(
       supabase,
       user.id,
@@ -138,39 +172,6 @@ export async function POST(request: NextRequest) {
         { status: 402 }
       );
     }
-
-    const generationId = await createGenerationRecord(
-      supabase,
-      user.id,
-      "image",
-      {
-        paid: false,
-        downloadPaid: false,
-        mode: "preview",
-        assetKind: "image",
-        category,
-        model: falResult.model,
-        width: falResult.width,
-        height: falResult.height,
-        generationTimeMs: Date.now() - started,
-        seed,
-        highRes,
-        parentGenerationId: isVariation ? parentGenerationId : undefined,
-      },
-      creditCost,
-      trimmedPrompt.slice(0, 500)
-    );
-
-    const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(user.id, generationId, falResult.url);
-
-    await updateGenerationResult(supabase, generationId, user.id, {
-      previewPath,
-      sourcePath,
-      width: width ?? falResult.width,
-      height: height ?? falResult.height,
-      credits_used: creditCost,
-    });
 
     const response: Record<string, unknown> = {
       success: true,
@@ -204,9 +205,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error: unknown) {
-    console.error("generate-image error:", error);
+    logFalAiError(error);
+    const err = error as { message?: string };
     return NextResponse.json(
-      { success: false, error: parseFalError(error) },
+      {
+        success: false,
+        error: err?.message ?? "Unbekannter Fehler",
+      },
       { status: 500 }
     );
   }

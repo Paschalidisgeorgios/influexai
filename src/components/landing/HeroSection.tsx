@@ -17,24 +17,97 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
+type HeroMediaItem =
+  | { type: "image"; src: string; alt?: string }
+  | { type: "video"; src: string; poster: string };
+
+const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
+  { type: "image", src: "/images/landing/feature-1.png", alt: "Creator mit InfluexAI" },
+  // Video kommt hier sobald fertig:
+  // {
+  //   type: "video",
+  //   src: "/videos/landing/feature-1.mp4",
+  //   poster: "/images/landing/feature-1.png",
+  // },
+];
+
+const HERO_MEDIA_CROSSFADE_MS = 800;
+const HERO_MEDIA_INTERVAL_MS = 6000;
+
 function HeroImage() {
   const ref = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   useParallax(ref);
+
+  const itemCount = HERO_MEDIA_ITEMS.length;
+  const canRotate = itemCount > 1;
+
+  useEffect(() => {
+    if (!canRotate) return;
+    const id = window.setInterval(() => {
+      setActiveIndex((i) => (i + 1) % itemCount);
+    }, HERO_MEDIA_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [canRotate, itemCount]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((el, i) => {
+      if (!el || HERO_MEDIA_ITEMS[i]?.type !== "video") return;
+      if (i === activeIndex) {
+        void el.play().catch(() => {});
+      } else {
+        el.pause();
+      }
+    });
+  }, [activeIndex]);
 
   return (
     <div className="overflow-hidden aspect-[3/4] rounded-2xl border border-white/[0.08] w-full">
       <div ref={ref} className="relative w-full h-full min-h-[480px]">
-        <Image
-          src="/images/landing/feature-1.png"
-          alt="Creator mit InfluexAI"
-          fill
-          className="object-cover"
-          style={{ filter: "brightness(0.88) saturate(1.1)" }}
-          priority
-          sizes="(min-width: 1024px) 50vw, 0px"
-        />
+        {HERO_MEDIA_ITEMS.map((item, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <div
+              key={item.type === "image" ? item.src : item.src}
+              className="absolute inset-0 transition-opacity ease-in-out"
+              style={{
+                opacity: isActive ? 1 : 0,
+                transitionDuration: `${HERO_MEDIA_CROSSFADE_MS}ms`,
+                zIndex: isActive ? 1 : 0,
+              }}
+              aria-hidden={!isActive}
+            >
+              {item.type === "image" ? (
+                <Image
+                  src={item.src}
+                  alt={item.alt ?? ""}
+                  fill
+                  className="object-cover"
+                  style={{ filter: "brightness(0.88) saturate(1.1)" }}
+                  priority={index === 0}
+                  sizes="(min-width: 1024px) 50vw, 0px"
+                />
+              ) : (
+                <video
+                  ref={(el) => {
+                    videoRefs.current[index] = el;
+                  }}
+                  src={item.src}
+                  poster={item.poster}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ filter: "brightness(0.88) saturate(1.1)" }}
+                />
+              )}
+            </div>
+          );
+        })}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none z-[2]"
           style={{
             background:
               "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 45%), linear-gradient(to left, rgba(6,6,8,0.4) 0%, transparent 40%)",

@@ -17,8 +17,9 @@ import {
   updateGenerationResult,
   getOwnedGeneration,
 } from "@/lib/generation-assets";
+import { FAL_CREDITS } from "@/lib/fal-credits";
 
-const CREDIT_COST = 2;
+const CREDIT_COST = FAL_CREDITS.fluxPulid;
 
 configureFalClient();
 

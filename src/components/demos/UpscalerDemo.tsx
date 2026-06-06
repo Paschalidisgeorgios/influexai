@@ -105,13 +105,14 @@ export function UpscalerDemo({ src, videoSrc }: UpscalerDemoProps) {
   const { ref, visible } = useDemoReveal();
   const { progress, reducedMotion } = useSweepProgress(visible);
   const sweepPct = progress * 100;
+  const done = progress >= 1;
   const showBeam = !reducedMotion && progress > 0 && progress < 1;
 
   return (
     <div ref={ref} className={["tool-demo-beat", visible ? "is-visible" : ""].filter(Boolean).join(" ")}>
       <div className="upscaler-grid">
         <div className="upscaler-grid__copy">
-          <h3 className="landing-heading text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] mb-3">
+          <h3 className="demo-heading landing-heading text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] mb-3">
             {t("title")}
           </h3>
           <p className="text-sm md:text-base text-white/65 leading-relaxed max-w-md">
@@ -119,26 +120,36 @@ export function UpscalerDemo({ src, videoSrc }: UpscalerDemoProps) {
           </p>
         </div>
 
-        <LightFrame className="upscaler-grid__visual tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#0f0f12]">
-          <div className="upscaler-demo relative aspect-[16/10] overflow-hidden bg-[#0a0a0c]">
-            <div className="absolute inset-0">
-              <UpscalerMedia
-                src={src}
-                videoSrc={videoSrc}
-                className="upscaler-demo__media upscaler-demo__media--blur h-full w-full object-cover"
-              />
-            </div>
+        <LightFrame className="upscaler-grid__visual tool-demo-beat__frame rounded-2xl border border-white/[0.08] bg-[#111114]">
+          <div className="upscaler-demo relative aspect-[16/10] overflow-hidden bg-[#111114]">
+            {!done ? (
+              <div className="absolute inset-0" aria-hidden>
+                <UpscalerMedia
+                  src={src}
+                  videoSrc={videoSrc}
+                  className="upscaler-demo__media upscaler-demo__media--blur h-full w-full object-cover"
+                />
+              </div>
+            ) : null}
 
-            <div
-              className="absolute inset-0 overflow-hidden"
-              style={{ clipPath: `inset(0 ${100 - sweepPct}% 0 0)` }}
-            >
+            {done ? (
               <UpscalerMedia
                 src={src}
                 videoSrc={videoSrc}
-                className="upscaler-demo__media h-full w-full object-cover"
+                className="upscaler-demo__media upscaler-demo__media--sharp absolute inset-0 h-full w-full object-cover"
               />
-            </div>
+            ) : (
+              <div
+                className="absolute inset-0 overflow-hidden"
+                style={{ clipPath: `inset(0 ${100 - sweepPct}% 0 0)` }}
+              >
+                <UpscalerMedia
+                  src={src}
+                  videoSrc={videoSrc}
+                  className="upscaler-demo__media h-full w-full object-cover"
+                />
+              </div>
+            )}
 
             {showBeam ? (
               <div

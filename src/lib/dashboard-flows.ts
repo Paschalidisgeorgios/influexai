@@ -1,4 +1,5 @@
 import {
+  Bot,
   FileText,
   Flame,
   ChartBar,
@@ -17,6 +18,7 @@ import {
   Home,
   PlusCircle,
   User,
+  ZoomIn,
   type LucideIcon,
 } from "lucide-react";
 import { TablerPhoto } from "@/components/icons/TablerPhoto";
@@ -90,8 +92,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     i18nKey: "video_ad",
     title: "Produkt-Werbung",
     tagline: "Werbespots für TikTok, Reels & YouTube aus einer URL",
-    creditCost: 5,
-    creditLabel: "5 Credits",
+    creditCost: 75,
+    creditLabel: "75 Credits",
     genTypes: ["produkt", "product_ad", "video-ad"],
   },
   {
@@ -101,8 +103,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     icon: Sparkles,
     title: "Mein KI-Ich",
     tagline: "Dein Gesicht in jeder Szene — konsistente KI-Bilder",
-    creditCost: 2,
-    creditLabel: "2 Credits",
+    creditCost: 8,
+    creditLabel: "8 Credits",
     genTypes: ["ki-ich"],
   },
   {
@@ -126,10 +128,22 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     i18nKey: "image_generator",
     title: "Bild Generator",
     tagline: "10 Kategorien · Standard & High-Res · Upscaler",
-    creditCost: 1,
-    creditLabel: "ab 1 Credit",
+    creditCost: 5,
+    creditLabel: "ab 5 Credits",
     badge: "NEU",
     genTypes: ["image", "image-generator"],
+  },
+  {
+    id: "upscaler",
+    href: "/dashboard/upscaler",
+    category: "create",
+    icon: ZoomIn,
+    title: "HD Upscaler",
+    tagline: "Clarity Upscaler — Schärfe & Detail für deine Bilder",
+    creditCost: 4,
+    creditLabel: "4 Credits",
+    badge: "NEU",
+    genTypes: ["image", "upscale"],
   },
   {
     id: "seedance",
@@ -138,8 +152,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     icon: Film,
     title: "Bild zu Video",
     tagline: "Statisches Bild in bewegtes Video mit Sound verwandeln",
-    creditCost: 15,
-    creditLabel: "15 Credits",
+    creditCost: 25,
+    creditLabel: "25 Credits",
     badge: "NEU",
     genTypes: ["seedance", "image_to_video"],
   },
@@ -257,6 +271,19 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     badge: "NEU",
     genTypes: ["voice-tts", "stimme-clone", "stimme-speak"],
   },
+  {
+    id: "voice-agent",
+    href: "/dashboard/voice-agent",
+    category: "live",
+    icon: Bot,
+    title: "Voice Agent",
+    tagline: "ElevenLabs Conversational AI — demnächst",
+    creditCost: null,
+    creditLabel: "Coming Soon",
+    badge: "SOON",
+    locked: true,
+    genTypes: ["voice-agent"],
+  },
 ];
 
 export const NAV_GROUPS: {
@@ -286,10 +313,24 @@ export const NAV_GROUPS: {
         badge: "NEU",
       },
       {
+        id: "upscaler",
+        href: "/dashboard/upscaler",
+        label: "HD Upscaler",
+        icon: ZoomIn,
+        badge: "NEU",
+      },
+      {
         id: "seedance",
         href: "/dashboard/seedance",
         label: "Bild zu Video",
         icon: Film,
+        badge: "NEU",
+      },
+      {
+        id: "lora-training",
+        href: "/dashboard/lora-training",
+        label: "LoRA Training",
+        icon: Brain,
         badge: "NEU",
       },
       {
@@ -317,6 +358,13 @@ export const NAV_GROUPS: {
       { id: "live-creator", href: "/dashboard/live-creator", labelKey: "live_creator", icon: Video, badge: "LIVE", comingSoon: false },
       { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace, badge: "NEU" },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
+      {
+        id: "voice-agent",
+        href: "/dashboard/voice-agent",
+        label: "Voice Agent",
+        icon: Bot,
+        badge: "SOON",
+      },
     ],
   },
 ];

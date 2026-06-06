@@ -1,7 +1,9 @@
+import { FAL_CREDITS } from "@/lib/fal-credits";
+
 export const IMAGE_GEN_CREDITS = {
-  standard: 1,
-  highRes: 3,
-  upscale: 2,
+  standard: FAL_CREDITS.fluxDev,
+  highRes: FAL_CREDITS.fluxProT2i,
+  upscale: FAL_CREDITS.clarityUpscaler,
   download: 1,
-  variation: 1,
+  variation: FAL_CREDITS.fluxDev,
 } as const;

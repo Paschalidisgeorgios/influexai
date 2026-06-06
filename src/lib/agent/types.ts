@@ -23,6 +23,7 @@ export type AgentImageOutput = {
   imageUrl: string;
   generationId: string;
   prompt?: string;
+  improvedPrompt?: string;
 };
 
 export type AgentVideoOutput = {

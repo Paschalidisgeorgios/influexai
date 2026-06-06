@@ -121,8 +121,8 @@ const ENDPOINTS = [
   {
     method: "POST",
     path: "/image",
-    credits: 1,
-    desc: "Generiert ein KI-Bild (Standard 1 Credit, high_res: 3 Credits).",
+    credits: 5,
+    desc: "Generiert ein KI-Bild (Standard 5 Credits, high_res: 8 Credits).",
     params: [
       ["prompt", "string", "yes", "Bildbeschreibung"],
       ["category", "string", "no", "creator, product, …"],

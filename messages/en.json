@@ -666,6 +666,22 @@
     "variation_b": "Version B",
     "variation_button": "Create variation — 1 Credit"
   },
+  "upscalerPage": {
+    "title": "HD Upscaler",
+    "subtitle": "Clarity Upscaler (fal.ai) — pick a gallery image and sharpen it at 2× resolution.",
+    "pick_image": "Choose from gallery",
+    "empty_gallery": "No images yet. Create some in the Image Generator first.",
+    "upscale_cta": "Upscale 2× — {cost} Credits",
+    "credits_hint": "{cost} credits per upscale · Balance: {balance}",
+    "result_title": "Before / After"
+  },
+  "voiceAgentPage": {
+    "title": "Voice Agent",
+    "badge": "Coming Soon",
+    "body": "ElevenLabs Conversational AI — talk to an AI agent in real time. We will enable this when your ElevenLabs account supports Conversational AI.",
+    "elevenlabs_hint": "Note: Conversational AI requires separate ElevenLabs credits (in addition to TTS in Voice & Music).",
+    "voice_cta": "Go to Voice & Music"
+  },
   "landing": {
     "auth_login": "Sign in",
     "auth_signup": "Get started",
