@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { ArrowUp, Loader2, Paperclip } from "lucide-react";
 import { saveAgentRun } from "@/app/actions/save-agent-run";
 import { notifyGenerationsUpdated, handleApiPlanRequired, openBuyCreditsModal } from "@/lib/client-credits-ui";
+import { formatStarterFromPrice } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/client";
 import { AgentResultCard } from "./AgentResultCard";
 import { AgentToolTimeline, AgentToolStepCards } from "./AgentToolTimeline";
@@ -270,7 +271,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
       if (res.status === 403) {
         handleApiPlanRequired();
         appendAssistantDelta(
-          "\n\nWähle einen Plan um zu starten — alle Tools ab €9,99/Monat."
+          `\n\nWähle einen Plan um zu starten — alle Tools ab €${formatStarterFromPrice("de")}/Monat.`
         );
         setRunning(false);
         return;

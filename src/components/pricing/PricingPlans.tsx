@@ -9,6 +9,7 @@ import {
   SUBSCRIPTION_PLAN_ORDER,
   SUBSCRIPTION_PLANS,
   YEARLY_DISCOUNT_PERCENT,
+  formatPlanPrice,
   getClientStripePriceId,
   type BillingInterval,
 } from "@/lib/subscription-plans";
@@ -29,12 +30,6 @@ const ALL_PLAN_TOOL_KEYS = [
   "all_tools_f12",
 ] as const;
 
-function formatPriceAmount(price: number): string {
-  return Number.isInteger(price)
-    ? String(price)
-    : price.toFixed(2).replace(".", ",");
-}
-
 /** € inline before amount — superscript style, same line as number (locale-agnostic). */
 function EuroPrice({ amount }: { amount: number }) {
   return (
@@ -49,7 +44,7 @@ function EuroPrice({ amount }: { amount: number }) {
       >
         {"\u20AC"}
       </span>
-      <span>{formatPriceAmount(amount)}</span>
+      <span>{formatPlanPrice(amount)}</span>
     </span>
   );
 }

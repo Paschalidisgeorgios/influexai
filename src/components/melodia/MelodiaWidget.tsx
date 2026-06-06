@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowUp, X } from "lucide-react";
 import { handleApiPlanRequired, openBuyCreditsModal } from "@/lib/client-credits-ui";
+import { formatStarterFromPrice } from "@/lib/pricing";
 
 type ChatMessage = {
   id: string;
@@ -103,7 +104,7 @@ export default function MelodiaWidget({ userName, currentPath }: Props) {
                 ? {
                     ...m,
                     content:
-                      "Wähle einen Plan um zu starten — alle Tools ab €9,99/Monat inklusive.",
+                      `Wähle einen Plan um zu starten — alle Tools ab €${formatStarterFromPrice("de")}/Monat inklusive.`,
                   }
                 : m
             )

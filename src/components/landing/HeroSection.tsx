@@ -9,7 +9,6 @@ import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
-import { useParallax } from "@/components/use-parallax";
 
 const GridReveal = dynamic(
   () => import("@/components/landing/GridReveal"),
@@ -29,129 +28,259 @@ const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
     src: "/videos/landing/feature-1.mp4",
     poster: "/images/landing/feature-1.png",
   },
+  {
+    type: "video",
+    src: "/videos/landing/feature-2.mp4",
+    poster: "/images/landing/feature-1.png",
+  },
 ];
 
 const HERO_MEDIA_CROSSFADE_MS = 800;
 const HERO_IMAGE_DURATION_MS = 6000;
+const HERO_COLOR_FLASH_MS = 600;
 
-const HERO_IMAGE_INDEX = HERO_MEDIA_ITEMS.findIndex((item) => item.type === "image");
-const HERO_VIDEO_INDEX = HERO_MEDIA_ITEMS.findIndex((item) => item.type === "video");
-const HERO_HAS_VIDEO_CYCLE =
-  HERO_IMAGE_INDEX >= 0 && HERO_VIDEO_INDEX >= 0 && HERO_IMAGE_INDEX !== HERO_VIDEO_INDEX;
+const HERO_IMAGE_INDEX = 0;
+const HERO_VIDEO_1_INDEX = 1;
+const HERO_VIDEO_2_INDEX = 2;
+
+const HERO_MEDIA_MASK_HORIZONTAL =
+  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.8) 20%, black 32%, black 100%)";
+const HERO_MEDIA_MASK_VERTICAL =
+  "linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)";
+const HERO_MEDIA_MASK_IMAGE = [
+  HERO_MEDIA_MASK_HORIZONTAL,
+  HERO_MEDIA_MASK_VERTICAL,
+].join(", ");
+
+const HERO_MEDIA_MASK_STYLE = {
+  WebkitMaskImage: HERO_MEDIA_MASK_IMAGE,
+  WebkitMaskComposite: "source-in",
+  maskImage: HERO_MEDIA_MASK_IMAGE,
+  maskComposite: "intersect",
+} as const;
+
+const HERO_MEDIA_MASK_WRAPPER_STYLE = {
+  position: "absolute" as const,
+  inset: 0,
+  width: "100%",
+  height: "100%",
+  overflow: "hidden" as const,
+  ...HERO_MEDIA_MASK_STYLE,
+};
+
+const HERO_MEDIA_FRAME_STYLE = {
+  border: "none",
+  outline: "none",
+  boxShadow: "none",
+  borderRadius: 0,
+} as const;
+
+const HERO_MEDIA_CONTAINER_STYLE = {
+  ...HERO_MEDIA_FRAME_STYLE,
+  position: "absolute" as const,
+  top: 0,
+  right: "-6vw",
+  bottom: 0,
+  width: "clamp(320px, 62vw, 900px)",
+  height: "100%",
+  overflow: "hidden" as const,
+  pointerEvents: "none" as const,
+  zIndex: 3,
+};
+
+const HERO_MEDIA_LAYER_STYLE = {
+  ...HERO_MEDIA_FRAME_STYLE,
+  width: "100%",
+  height: "100%",
+};
+
+const HERO_MEDIA_OBJECT_STYLE = {
+  display: "block" as const,
+  width: "100%",
+  height: "100%",
+  objectFit: "cover" as const,
+  objectPosition: "center top",
+};
+
+const HERO_MEDIA_FILTER = "brightness(1.04) saturate(1.08)";
 
 function HeroBackgroundMedia() {
-  const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const imageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [activeIndex, setActiveIndex] = useState(
-    HERO_IMAGE_INDEX >= 0 ? HERO_IMAGE_INDEX : 0
-  );
-  useParallax(ref, 0.04, 1.02);
+  const videoRef1 = useRef<HTMLVideoElement | null>(null);
+  const videoRef2 = useRef<HTMLVideoElement | null>(null);
+  const colorFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeIndex, setActiveIndex] = useState(HERO_IMAGE_INDEX);
+  const [imageGeneration, setImageGeneration] = useState(0);
+  const [colorFlash, setColorFlash] = useState(false);
 
-  const clearImageTimer = () => {
-    if (imageTimerRef.current) {
-      clearTimeout(imageTimerRef.current);
-      imageTimerRef.current = null;
+  const clearColorFlashTimer = () => {
+    if (colorFlashTimerRef.current) {
+      clearTimeout(colorFlashTimerRef.current);
+      colorFlashTimerRef.current = null;
     }
   };
 
-  useEffect(() => {
-    if (!HERO_HAS_VIDEO_CYCLE || activeIndex !== HERO_IMAGE_INDEX) {
-      clearImageTimer();
-      return;
-    }
+  const triggerColorFlash = () => {
+    clearColorFlashTimer();
+    setColorFlash(true);
+    colorFlashTimerRef.current = setTimeout(() => {
+      setColorFlash(false);
+      colorFlashTimerRef.current = null;
+    }, HERO_COLOR_FLASH_MS);
+  };
 
-    clearImageTimer();
-    imageTimerRef.current = setTimeout(() => {
-      setActiveIndex(HERO_VIDEO_INDEX);
+  useEffect(() => {
+    if (activeIndex === HERO_IMAGE_INDEX) {
+      setImageGeneration((g) => g + 1);
+    }
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (activeIndex !== HERO_IMAGE_INDEX) return;
+
+    const id = setTimeout(() => {
+      setActiveIndex(HERO_VIDEO_1_INDEX);
     }, HERO_IMAGE_DURATION_MS);
 
-    return clearImageTimer;
+    return () => clearTimeout(id);
   }, [activeIndex]);
 
   useEffect(() => {
-    const el = videoRef.current;
-    if (!el || HERO_VIDEO_INDEX < 0) return;
+    const v1 = videoRef1.current;
+    const v2 = videoRef2.current;
+    if (v1) void v1.load();
+    if (v2) void v2.load();
+  }, []);
 
-    if (activeIndex === HERO_VIDEO_INDEX) {
-      el.currentTime = 0;
-      void el.play().catch(() => {});
-      return;
+  useEffect(() => {
+    const v1 = videoRef1.current;
+    const v2 = videoRef2.current;
+
+    if (activeIndex === HERO_VIDEO_1_INDEX && v1) {
+      if (v1.paused) {
+        v1.currentTime = 0;
+        void v1.play().catch(() => {});
+      }
+      v2?.pause();
+    } else if (activeIndex === HERO_VIDEO_2_INDEX && v2) {
+      if (v2.paused) {
+        v2.currentTime = 0;
+        void v2.play().catch(() => {});
+      }
+      v1?.pause();
+    } else {
+      v1?.pause();
+      v2?.pause();
     }
-
-    el.pause();
   }, [activeIndex]);
 
-  const handleVideoEnded = () => {
-    if (HERO_IMAGE_INDEX >= 0) {
-      setActiveIndex(HERO_IMAGE_INDEX);
+  useEffect(() => {
+    return () => {
+      clearColorFlashTimer();
+    };
+  }, []);
+
+  const handleVideo1Ended = () => {
+    triggerColorFlash();
+    const v2 = videoRef2.current;
+    if (v2) {
+      v2.currentTime = 0;
+      void v2.play().catch(() => {});
     }
+    setActiveIndex(HERO_VIDEO_2_INDEX);
+  };
+
+  const handleVideo2Ended = () => {
+    setActiveIndex(HERO_IMAGE_INDEX);
   };
 
   return (
     <div
-      className="pointer-events-none absolute z-[1]"
-      style={{
-        top: "50%",
-        right: "clamp(0%, 1vw, 4%)",
-        width: "clamp(300px, 46vw, 580px)",
-        height: "clamp(340px, 58vh, 640px)",
-        transform: "translateY(-50%)",
-      }}
+      className="hidden md:block"
+      style={HERO_MEDIA_CONTAINER_STYLE}
       aria-hidden
     >
-      <div
-        ref={ref}
-        className="relative h-full w-full overflow-hidden"
-        style={{
-          opacity: 0.72,
-          maskImage:
-            "radial-gradient(ellipse 92% 84% at 58% 50%, #000 38%, transparent 78%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 92% 84% at 58% 50%, #000 38%, transparent 78%)",
-        }}
-      >
+      <div className="relative" style={HERO_MEDIA_LAYER_STYLE}>
         {HERO_MEDIA_ITEMS.map((item, index) => {
           const isActive = index === activeIndex;
           return (
             <div
-              key={item.type === "image" ? item.src : item.src}
+              key={`${item.type}-${index}-${item.src}`}
               className="absolute inset-0 transition-opacity ease-in-out"
               style={{
                 opacity: isActive ? 1 : 0,
                 transitionDuration: `${HERO_MEDIA_CROSSFADE_MS}ms`,
                 zIndex: isActive ? 1 : 0,
+                willChange: "opacity",
+                ...HERO_MEDIA_LAYER_STYLE,
               }}
             >
               {item.type === "image" ? (
-                <Image
-                  src={item.src}
-                  alt=""
-                  fill
-                  className="object-cover object-center"
-                  style={{ filter: "brightness(1.04) saturate(1.08)" }}
-                  priority={index === 0}
-                  sizes="(min-width: 768px) 40vw, 70vw"
-                />
+                <div
+                  key={`hero-img-${imageGeneration}`}
+                  className="hero-ken-burns absolute inset-0"
+                  style={HERO_MEDIA_LAYER_STYLE}
+                >
+                  <div
+                    style={{
+                      ...HERO_MEDIA_MASK_WRAPPER_STYLE,
+                      ...HERO_MEDIA_FRAME_STYLE,
+                    }}
+                  >
+                    <Image
+                      src={item.src}
+                      alt=""
+                      fill
+                      className="object-cover object-top"
+                      style={{ filter: HERO_MEDIA_FILTER }}
+                      priority={index === 0}
+                      sizes="62vw"
+                    />
+                  </div>
+                </div>
               ) : (
-                <video
-                  ref={(el) => {
-                    videoRef.current = el;
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    ...HERO_MEDIA_MASK_WRAPPER_STYLE,
+                    ...HERO_MEDIA_FRAME_STYLE,
                   }}
-                  src={item.src}
-                  poster={item.poster}
-                  autoPlay
-                  muted
-                  playsInline
-                  onEnded={handleVideoEnded}
-                  className="absolute inset-0 h-full w-full object-cover object-center"
-                  style={{ filter: "brightness(1.04) saturate(1.08)" }}
-                />
+                >
+                  <video
+                    ref={index === HERO_VIDEO_1_INDEX ? videoRef1 : videoRef2}
+                    src={item.src}
+                    poster={item.poster}
+                    muted
+                    playsInline
+                    preload="auto"
+                    onEnded={
+                      index === HERO_VIDEO_1_INDEX
+                        ? handleVideo1Ended
+                        : handleVideo2Ended
+                    }
+                    style={{
+                      filter: HERO_MEDIA_FILTER,
+                      ...HERO_MEDIA_OBJECT_STYLE,
+                      border: "none",
+                      outline: "none",
+                      boxShadow: "none",
+                      willChange: "opacity",
+                    }}
+                  />
+                </div>
               )}
             </div>
           );
         })}
       </div>
+
+      <div
+        className="absolute inset-0 z-[5] pointer-events-none"
+        style={{
+          background: "#B4FF00",
+          opacity: colorFlash ? 0.7 : 0,
+          transition: "opacity 0.3s ease",
+        }}
+      />
     </div>
   );
 }
@@ -176,10 +305,13 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   return (
     <section
       id="landing-hero-sentinel"
-      className="relative min-h-[min(100vh,920px)] overflow-hidden"
+      className="relative min-h-[min(100vh,920px)] overflow-visible"
     >
       {/* Base grid + interactive reveal */}
-      <div className="absolute inset-0 z-0" aria-hidden>
+      <div
+        className="absolute inset-0 z-0 overflow-visible pointer-events-none"
+        aria-hidden
+      >
         <div
           className="absolute inset-0 z-[1] hidden md:block"
           style={{
@@ -203,18 +335,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         <GridReveal />
       </div>
 
-      {/* Subtle hero media — background, no frame */}
       <HeroBackgroundMedia />
-
-      {/* Vignettes — blend media into Acid Noir */}
-      <div
-        className="absolute inset-0 z-[2] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 95% 90% at 76% 48%, rgba(180,255,0,0.07) 0%, transparent 58%), linear-gradient(to right, #060608 0%, rgba(6,6,8,0.45) 36%, rgba(6,6,8,0.08) 62%, rgba(6,6,8,0.22) 100%), linear-gradient(to top, rgba(6,6,8,0.55) 0%, transparent 28%)",
-        }}
-        aria-hidden
-      />
 
       {/* Copy */}
       <div

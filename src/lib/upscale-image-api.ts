@@ -1,9 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { randomUUID } from "crypto";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { configureFalClient, getFalKey, parseFalError } from "@/lib/fal-image";
 import {
+  configureFalClient,
+  getFalKey,
+  parseFalError,
+  uploadDataUrlToFal,
+} from "@/lib/fal-image";
+import {
+  createGenerationRecord,
   GENERATED_ASSETS_BUCKET,
   getOwnedGeneration,
+  ingestImageGeneratorAssets,
   ingestUpscaledFromUrl,
   sourceStoragePath,
   updateGenerationResult,
@@ -13,6 +21,8 @@ import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { upscaleGeneratorImage } from "@/lib/image-generator-fal";
 
 configureFalClient();
+
+const MAX_UPLOAD_DATA_URL_LENGTH = 15_000_000;
 
 function protectedImageUrl(generationId: string, variant: string) {
   return `/api/generated-image/${generationId}?variant=${variant}`;
@@ -30,6 +40,63 @@ export type UpscaleImageFailure = {
   status: number;
   error: string;
 };
+
+async function ingestUploadedImageForUpscale(
+  supabase: SupabaseClient,
+  userId: string,
+  imageDataUrl: string
+): Promise<
+  | { ok: true; generationId: string }
+  | { ok: false; failure: UpscaleImageFailure }
+> {
+  const trimmed = imageDataUrl.trim();
+  if (!trimmed.startsWith("data:image/")) {
+    return {
+      ok: false,
+      failure: { status: 400, error: "Ungültiges Bildformat." },
+    };
+  }
+
+  if (trimmed.length > MAX_UPLOAD_DATA_URL_LENGTH) {
+    return {
+      ok: false,
+      failure: { status: 400, error: "Bild ist zu groß (max. 10 MB)." },
+    };
+  }
+
+  try {
+    const falUrl = await uploadDataUrlToFal(trimmed);
+    const generationId = randomUUID();
+
+    await createGenerationRecord(
+      supabase,
+      userId,
+      "image",
+      { paid: false },
+      0,
+      "HD Upscaler — Upload",
+      generationId
+    );
+
+    const { previewPath, sourcePath, width, height } =
+      await ingestImageGeneratorAssets(userId, generationId, falUrl);
+
+    await updateGenerationResult(supabase, generationId, userId, {
+      previewPath,
+      sourcePath,
+      width,
+      height,
+    });
+
+    return { ok: true, generationId };
+  } catch (error: unknown) {
+    console.error("upscale upload ingest error:", error);
+    return {
+      ok: false,
+      failure: { status: 500, error: parseFalError(error) },
+    };
+  }
+}
 
 export async function runImageUpscale(
   supabase: SupabaseClient,
@@ -135,4 +202,36 @@ export async function runImageUpscale(
       failure: { status: 500, error: parseFalError(error) },
     };
   }
+}
+
+export async function runImageUpscaleRequest(
+  supabase: SupabaseClient,
+  userId: string,
+  input: { generationId?: string; imageDataUrl?: string }
+): Promise<
+  | { ok: true; data: UpscaleImageSuccess }
+  | { ok: false; failure: UpscaleImageFailure }
+> {
+  let generationId = input.generationId?.trim() ?? "";
+
+  if (input.imageDataUrl?.trim()) {
+    const ingested = await ingestUploadedImageForUpscale(
+      supabase,
+      userId,
+      input.imageDataUrl
+    );
+    if (!ingested.ok) {
+      return ingested;
+    }
+    generationId = ingested.generationId;
+  }
+
+  if (!generationId) {
+    return {
+      ok: false,
+      failure: { status: 400, error: "Kein Bild ausgewählt." },
+    };
+  }
+
+  return runImageUpscale(supabase, userId, generationId);
 }

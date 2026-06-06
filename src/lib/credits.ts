@@ -1,7 +1,26 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isCreditExemptEmail } from "@/lib/access";
 import { logCreditTransaction, logGeneration } from "@/lib/activity-log";
 import { invalidateUserCredits, invalidateUserGenerations } from "@/lib/cache";
 import { invokePushNotification } from "@/lib/push-notifications";
+
+/**
+ * Credit bypass for admin emails — verified via Supabase auth session (never trust client input).
+ */
+export async function isCreditExemptUser(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId) {
+    return false;
+  }
+
+  return isCreditExemptEmail(user.email);
+}
 
 export type DeductCreditsResult = {
   success: boolean;
@@ -77,6 +96,29 @@ export async function deductCredits(
       remainingCredits: 0,
       error: "Ungültiger Credit-Betrag.",
     };
+  }
+
+  if (await isCreditExemptUser(supabase, userId)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", userId)
+      .single();
+
+    const remainingCredits = profile?.credits ?? 0;
+    const generationType = meta?.generationType ?? action;
+    const prompt = meta?.prompt ?? action;
+
+    if (!meta?.skipGenerationLog) {
+      await logGeneration(supabase, userId, {
+        type: generationType,
+        prompt,
+        creditsUsed: 0,
+      });
+    }
+
+    invalidateUserGenerations(userId);
+    return { success: true, remainingCredits };
   }
 
   const { data: profile, error: fetchError } = await supabase
@@ -225,5 +267,10 @@ export async function hasEnoughCredits(
     .single();
 
   const credits = profile?.credits ?? 0;
+
+  if (await isCreditExemptUser(supabase, userId)) {
+    return { ok: true, credits };
+  }
+
   return { ok: credits >= amount, credits };
 }

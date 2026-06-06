@@ -16,6 +16,9 @@ const NAV_LINKS = [
   { key: "nav_agency" as const, href: "/agency", external: true },
 ];
 
+const LANDING_NAV_LINK =
+  "nav-item relative inline-flex text-sm font-medium text-[#1a1a1a] px-3.5 py-1.5 rounded-lg transition-colors duration-150 hover:text-[#060608]";
+
 export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const t = useTranslations("landing");
   const [scrolled, setScrolled] = useState(false);
@@ -40,7 +43,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   return (
     <>
       <header
-        className={`landing-nav-shell${scrolled ? " landing-nav-shell--scrolled" : ""}`}
+        className={`sticky top-0 z-50 w-full landing-nav-shell${scrolled ? " landing-nav-shell--scrolled" : ""}`}
       >
         <nav
           className={`landing-nav-bar${scrolled ? " landing-nav-bar--scrolled" : ""}`}
@@ -58,21 +61,21 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           <div className="hidden md:flex items-center gap-0 min-w-0 flex-1 justify-center">
             {agencyMode ? (
               <>
-                <Link href="/" className="nav-item">
+                <Link href="/" className={LANDING_NAV_LINK}>
                   {t("nav_home")}
                 </Link>
-                <a href="#agency-pricing" className="nav-item">
+                <a href="#agency-pricing" className={LANDING_NAV_LINK}>
                   {t("nav_pricing")}
                 </a>
               </>
             ) : (
               NAV_LINKS.map((l) =>
                 l.external ? (
-                  <Link key={l.href} href={l.href} className="nav-item">
+                  <Link key={l.href} href={l.href} className={LANDING_NAV_LINK}>
                     {t(l.key)}
                   </Link>
                 ) : (
-                  <a key={l.href} href={l.href} className="nav-item">
+                  <a key={l.href} href={l.href} className={LANDING_NAV_LINK}>
                     {t(l.key)}
                   </a>
                 )

@@ -10,18 +10,27 @@ import { PostGenerationUpsell } from "@/components/post-generation-upsell";
 import { PlatformBanners } from "@/components/platform-banners";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { createClient } from "@/lib/supabase/client";
-import { isAdminUser } from "@/lib/access";
+import { isAdminUser, isCreditExemptEmail } from "@/lib/access";
+import { isClientCreditExempt, syncClientCreditExemptFromEmail } from "@/lib/client-credits-ui";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [credits, setCredits] = useState<number | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isCreditExempt, setIsCreditExempt] = useState(false);
+  const [creditsReady, setCreditsReady] = useState(false);
   const supabase = createClient();
 
   const loadCredits = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setCreditsReady(true);
+      return;
+    }
+
+    syncClientCreditExemptFromEmail(user.email);
+    setIsCreditExempt(isCreditExemptEmail(user.email));
 
     const { data } = await supabase
       .from("profiles")
@@ -39,6 +48,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         })
       );
     }
+    setCreditsReady(true);
   }, [supabase]);
 
   useEffect(() => {
@@ -46,8 +56,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     const onUpdate = () => loadCredits();
     const onOptimistic = (e: Event) => {
       const v = (e as CustomEvent<number | null>).detail;
-      if (typeof v === "number") setCredits(v);
-      else loadCredits();
+      if (typeof v === "number" && !isClientCreditExempt()) {
+        setCredits(v);
+      } else {
+        loadCredits();
+      }
     };
     window.addEventListener("credits-updated", onUpdate);
     window.addEventListener("optimistic-credits", onOptimistic);
@@ -66,8 +79,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <DashboardHeader credits={credits} />
         <PlatformBanners isAdmin={isAdmin} />
-        {credits !== null && <CreditsWarningBanner credits={credits} />}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-5 pb-20 md:pb-0">
+        {creditsReady && credits !== null && !isCreditExempt && (
+          <CreditsWarningBanner credits={credits} />
+        )}
+        <main className="relative z-[1] flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-5 pb-20 md:pb-0 pointer-events-auto">
           <ReengagementBanner />
           {children}
         </main>

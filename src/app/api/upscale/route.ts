@@ -1,28 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { runImageUpscale } from "@/lib/upscale-image-api";
+import { runImageUpscaleRequest } from "@/lib/upscale-image-api";
 
 export const maxDuration = 120;
 
 /**
- * POST { generationId } — preferred (credits + storage)
- * POST { imageUrl, generationId } — imageUrl ignored; generationId required for billing
+ * POST { generationId } — gallery image
+ * POST { imageDataUrl } — uploaded image (base64 data URL)
  */
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     generationId?: string;
-    imageUrl?: string;
+    imageDataUrl?: string;
   };
 
   const generationId = body.generationId?.trim();
-  if (!generationId) {
+  const imageDataUrl = body.imageDataUrl?.trim();
+
+  if (!generationId && !imageDataUrl) {
     return NextResponse.json(
-      {
-        error:
-          body.imageUrl?.trim()
-            ? "Bitte generationId mitsenden — Upscale läuft über deine gespeicherte Generierung."
-            : "generationId fehlt",
-      },
+      { error: "generationId oder imageDataUrl erforderlich" },
       { status: 400 }
     );
   }
@@ -36,7 +33,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const result = await runImageUpscale(supabase, user.id, generationId);
+  const result = await runImageUpscaleRequest(supabase, user.id, {
+    generationId,
+    imageDataUrl,
+  });
 
   if (!result.ok) {
     return NextResponse.json(

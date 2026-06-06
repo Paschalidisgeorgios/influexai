@@ -134,6 +134,7 @@ export default async function RootLayout({
       lang={locale}
       dir={isRTL ? "rtl" : "ltr"}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${bebasNeue.variable} ${dmSans.variable} ${fraunces.variable} ${notoSansArabic.variable} dark`}
     >
       <head>

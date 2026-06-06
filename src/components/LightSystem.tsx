@@ -259,10 +259,10 @@ export function LightSystem({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className="ix-stage" aria-hidden />
+      <div className="ix-stage pointer-events-none" aria-hidden />
       {children}
-      <div className="ix-vignette" aria-hidden />
-      <div className="ix-grain" aria-hidden />
+      <div className="ix-vignette pointer-events-none" aria-hidden />
+      <div className="ix-grain pointer-events-none" aria-hidden />
     </>
   );
 }

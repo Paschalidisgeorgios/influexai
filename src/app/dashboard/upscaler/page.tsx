@@ -1,23 +1,38 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent,
+} from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ZoomIn } from "lucide-react";
+import { Upload, ZoomIn, X } from "lucide-react";
 import { ImageCompareSlider } from "@/components/image-generator/ImageCompareSlider";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
+import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { createClient } from "@/lib/supabase/client";
 import { useUserCredits } from "@/hooks/use-user-credits";
+
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 type GalleryImage = {
   id: string;
   prompt: string;
   previewUrl: string;
   hasUpscaled: boolean;
+};
+
+type UploadedImage = {
+  previewUrl: string;
+  dataUrl: string;
+  fileName: string;
 };
 
 function cardStyle() {
@@ -34,9 +49,12 @@ function UpscalerPageInner() {
   const tImg = useTranslations("imageGenerator");
   const searchParams = useSearchParams();
   const { credits, reload: reloadCredits } = useUserCredits();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [upload, setUpload] = useState<UploadedImage | null>(null);
+  const [dragOver, setDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [compare, setCompare] = useState<{
@@ -45,6 +63,7 @@ function UpscalerPageInner() {
   } | null>(null);
 
   const creditCost = IMAGE_GEN_CREDITS.upscale;
+  const hasActiveImage = Boolean(selectedId || upload);
 
   const loadImages = useCallback(async () => {
     const supabase = createClient();
@@ -83,11 +102,63 @@ function UpscalerPageInner() {
 
   useEffect(() => {
     const preselect = searchParams.get("generation");
-    if (preselect) setSelectedId(preselect);
+    if (preselect) {
+      setSelectedId(preselect);
+      setUpload(null);
+    }
   }, [searchParams]);
 
+  const selectGalleryImage = (id: string) => {
+    setSelectedId(id);
+    setUpload(null);
+    setCompare(null);
+    setError(null);
+  };
+
+  const clearUpload = () => {
+    setUpload(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError(t("upload_invalid_type"));
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setError(t("upload_too_large"));
+      return;
+    }
+
+    setError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setUpload({
+        previewUrl: dataUrl,
+        dataUrl,
+        fileName: file.name,
+      });
+      setSelectedId(null);
+      setCompare(null);
+    };
+    reader.onerror = () => {
+      setError(t("upload_read_error"));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDragOver(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
+
   const runUpscale = async () => {
-    if (!selectedId) return;
+    if (!hasActiveImage) return;
     setLoading(true);
     setError(null);
     setCompare(null);
@@ -95,7 +166,11 @@ function UpscalerPageInner() {
       const res = await fetch("/api/upscale", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ generationId: selectedId }),
+        body: JSON.stringify(
+          upload
+            ? { imageDataUrl: upload.dataUrl }
+            : { generationId: selectedId }
+        ),
       });
       const data = await res.json();
       if (
@@ -114,6 +189,13 @@ function UpscalerPageInner() {
         originalUrl: data.originalUrl,
         upscaledUrl: data.upscaledUrl,
       });
+      if (data.generationId) {
+        setSelectedId(data.generationId);
+        setUpload(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
       window.dispatchEvent(new Event("credits-updated"));
       await reloadCredits();
       await loadImages();
@@ -153,6 +235,80 @@ function UpscalerPageInner() {
 
       <div style={cardStyle()} className="mb-6">
         <h2 className="mb-3 text-sm font-semibold text-white/85">
+          {t("upload_title")}
+        </h2>
+
+        <div
+          onDrop={handleDrop}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onClick={() => fileInputRef.current?.click()}
+          className={`mb-4 cursor-pointer rounded-xl border-2 border-dashed px-4 py-8 text-center transition-all ${
+            dragOver
+              ? "border-[#B4FF00] bg-[#B4FF00]/5"
+              : "border-white/15 bg-[#0a0a0d] hover:border-white/25"
+          }`}
+        >
+          <Upload
+            size={28}
+            className={`mx-auto mb-3 ${dragOver ? "text-[#B4FF00]" : "text-white/45"}`}
+          />
+          <p className="text-sm font-medium text-white/85">{t("upload_drop")}</p>
+          <p className="mt-1 text-xs text-white/45">{t("upload_hint")}</p>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              fileInputRef.current?.click();
+            }}
+            className="mt-4 inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-white/15 bg-[#141418] px-4 text-sm font-semibold text-[#F0EFE8] transition-colors hover:border-[#B4FF00]/40 hover:text-[#B4FF00]"
+          >
+            <Upload size={16} />
+            {t("upload_button")}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) handleFile(file);
+            }}
+          />
+        </div>
+
+        {upload && (
+          <div className="mb-5">
+            <p className="mb-2 text-xs font-medium text-[#B4FF00]">
+              {t("upload_active")}
+            </p>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+              <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-[#B4FF00] ring-2 ring-[#B4FF00]/30">
+                <Image
+                  src={upload.previewUrl}
+                  alt={upload.fileName}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={clearUpload}
+                  className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-white/90 hover:bg-black/90"
+                  aria-label={t("upload_clear")}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <h2 className="mb-3 text-sm font-semibold text-white/85">
           {t("pick_image")}
         </h2>
         {images.length === 0 ? (
@@ -160,15 +316,12 @@ function UpscalerPageInner() {
         ) : (
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
             {images.map((img) => {
-              const active = selectedId === img.id;
+              const active = selectedId === img.id && !upload;
               return (
                 <button
                   key={img.id}
                   type="button"
-                  onClick={() => {
-                    setSelectedId(img.id);
-                    setCompare(null);
-                  }}
+                  onClick={() => selectGalleryImage(img.id)}
                   className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
                     active
                       ? "border-[#B4FF00] ring-2 ring-[#B4FF00]/30"
@@ -195,7 +348,7 @@ function UpscalerPageInner() {
 
         <button
           type="button"
-          disabled={!selectedId || loading}
+          disabled={!hasActiveImage || loading}
           onClick={runUpscale}
           className="mt-4 min-h-[44px] w-full rounded-xl bg-[#B4FF00] text-sm font-bold text-[#060608] disabled:opacity-50"
         >

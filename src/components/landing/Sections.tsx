@@ -11,6 +11,7 @@ import { PoweredByFooter } from "@/components/tenant-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { LightFrame } from "@/components/LightFrame";
+import { getStarterPriceParams } from "@/lib/pricing";
 
 const TICKER_KEYS = [
   "i0",
@@ -313,6 +314,8 @@ export function FeaturesSection() {
 
 export function HowItWorksSection() {
   const t = useTranslations("landingPage.how");
+  const locale = useLocale();
+  const priceParams = getStarterPriceParams(locale);
 
   return (
     <section
@@ -355,7 +358,7 @@ export function HowItWorksSection() {
                 className="text-sm leading-[1.7]"
                 style={{ color: "var(--wd)" }}
               >
-                {t(`${key}_desc`)}
+                {t(`${key}_desc`, key === "s1" ? priceParams : undefined)}
               </p>
               </div>
               </SpringReveal>
@@ -379,6 +382,8 @@ export function HowItWorksSection() {
 
 export function FaqSection() {
   const t = useTranslations("landingPage.faq");
+  const locale = useLocale();
+  const priceParams = getStarterPriceParams(locale);
   const [open, setOpen] = useState<number | null>(0);
 
   return (
@@ -430,7 +435,7 @@ export function FaqSection() {
                   className="px-5 pb-5 text-[0.875rem] leading-[1.75]"
                   style={{ color: "var(--wd)" }}
                 >
-                  {t(`a${key.slice(1)}`)}
+                  {t(`a${key.slice(1)}`, key === "q2" ? priceParams : undefined)}
                 </div>
               )}
             </div>
@@ -494,6 +499,8 @@ export function PricingSection() {
 
 export function CtaSection() {
   const t = useTranslations("landingPage.cta");
+  const locale = useLocale();
+  const priceParams = getStarterPriceParams(locale);
 
   return (
     <section
@@ -532,14 +539,14 @@ export function CtaSection() {
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center">
           <AcidMotionButton href="/auth/sign-up" className="btn-acid justify-center">
-            {t("primary")}
+            {t("primary", priceParams)}
           </AcidMotionButton>
           <a href="#brands" className="btn-ghost justify-center">
             {t("secondary")}
           </a>
         </div>
         <p className="mt-4 text-[0.78rem]" style={{ color: "var(--grey)" }}>
-          {t("note")}
+          {t("note", priceParams)}
         </p>
       </div>
     </section>

@@ -553,7 +553,7 @@
   },
   "hero": {
     "badge": "Studio Créateur IA",
-    "cta_primary": "Commencer — dès €9,99",
+    "cta_primary": "Commencer — dès €{price}",
     "cta_secondary": "Voir les fonctions",
     "headline": "Ton prochain Short viral — en 60 secondes.",
     "rotating_titles": [
@@ -673,15 +673,15 @@
       "headline2": "Pas de limite.",
       "headline3": "Pas d'attente.",
       "kicker": "Commencer maintenant",
-      "note": "Credits à partir de €9,99 · Sans abonnement · Conforme GDPR",
-      "primary": "→ Commencer maintenant — à partir de €9,99",
+      "note": "Credits à partir de €{price} · Sans abonnement · Conforme GDPR",
+      "primary": "→ Commencer maintenant — à partir de €{price}",
       "secondary": "Pour les marques →",
       "sub1": "Pour les créateurs qui veulent devenir viraux.",
       "sub2": "Pour les marques qui veulent scaler."
     },
     "faq": {
       "a1": "Les Credits sont la monnaie d'InfluexAI. Chaque module coûte 2 à 5 Credits par génération. Les Credits n'expirent pas.",
-      "a2": "Non. Tu achètes des Credits une seule fois à partir de €9,99 — pas d'abonnement, pas de frais cachés.",
+      "a2": "Non. Tu achètes des Credits une seule fois à partir de €{price} — pas d'abonnement, pas de frais cachés.",
       "a3": "Oui. Serveurs dans l'UE, aucune transmission de tes données à des tiers sans consentement.",
       "a4": "Oui — dans le module Voix & Musique. 30+ secondes d'audio suffisent pour un clonage de haute qualité.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — tous les formats courants.",
@@ -751,7 +751,7 @@
       "headline1": "En 3 étapes",
       "headline2": "vers ton contenu.",
       "kicker": "Comment ça marche",
-      "s1_desc": "Crée ton compte. Credits à partir de €9,99 — commence immédiatement.",
+      "s1_desc": "Crée ton compte. Credits à partir de €{price} — commence immédiatement.",
       "s1_title": "Créer un compte",
       "s2_desc": "Live Creator, KI-Ich, Publicité produit ou Voix & Musique — tout dans un seul studio.",
       "s2_title": "Choisir un module",
@@ -973,7 +973,7 @@
   },
   "planGate": {
     "back": "Retour au tableau de bord",
-    "body": "Commence dès 9,99 €/mois — tous les outils inclus.",
+    "body": "Commence dès {price} €/mois — tous les outils inclus.",
     "cta": "Choisir un plan",
     "kicker": "C'est parti",
     "title": "Choisis un plan pour commencer"

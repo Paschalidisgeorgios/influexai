@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { getStarterPriceParams } from "@/lib/pricing";
 
 const MOBILE_MAX_WIDTH = 768;
 
@@ -29,6 +30,8 @@ function useIsMobile() {
 
 export function AdSpot() {
   const t = useTranslations("hero");
+  const locale = useLocale();
+  const priceParams = getStarterPriceParams(locale);
   const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -318,7 +321,7 @@ export function AdSpot() {
             boxShadow: "0 0 40px rgba(180,255,0,0.25)",
           }}
         >
-          → {t("cta_primary")}
+          → {t("cta_primary", priceParams)}
         </a>
       </div>
 

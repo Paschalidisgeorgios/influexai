@@ -353,7 +353,7 @@ html[data-world="brand"] {
   .landing-nav-shell {
     position: sticky;
     top: 0;
-    z-index: 40;
+    z-index: 50;
     width: 100%;
     padding: clamp(12px, 2.5vw, 18px) clamp(16px, 5vw, 40px);
     transition:
@@ -408,7 +408,7 @@ html[data-world="brand"] {
     bottom: 4px;
     height: 2px;
     border-radius: 1px;
-    background: var(--acid, #b4ff00);
+    background: #b4ff00;
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -752,6 +752,20 @@ html[data-world="brand"] {
     opacity: 1;
     transform: none;
   }
+}
+
+@keyframes kenBurns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.hero-ken-burns {
+  animation: kenBurns 8s ease-in-out 6s forwards;
+  transform-origin: center top;
 }
 
 @keyframes hero-enter-up {
@@ -1504,7 +1518,6 @@ html[data-world="brand"] {
   z-index: 2;
 }
 
-body { padding-top: 64px; }
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 64px;
   display: flex; align-items: center; background: transparent;

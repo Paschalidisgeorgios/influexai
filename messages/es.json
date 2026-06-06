@@ -553,7 +553,7 @@
   },
   "hero": {
     "badge": "Estudio de Creador IA",
-    "cta_primary": "Empieza ya — desde €9,99",
+    "cta_primary": "Empieza ya — desde €{price}",
     "cta_secondary": "Ver funciones",
     "headline": "Tu próximo Short viral — en 60 segundos.",
     "rotating_titles": [
@@ -673,15 +673,15 @@
       "headline2": "Sin Límites.",
       "headline3": "Sin Esperas.",
       "kicker": "Empezar ahora",
-      "note": "Credits desde €9,99 · Sin suscripción · Cumple con GDPR",
-      "primary": "→ Empezar ahora — desde €9,99",
+      "note": "Credits desde €{price} · Sin suscripción · Cumple con GDPR",
+      "primary": "→ Empezar ahora — desde €{price}",
       "secondary": "Para Marcas →",
       "sub1": "Para creators que quieren volverse virales.",
       "sub2": "Para marcas que quieren escalar."
     },
     "faq": {
       "a1": "Los Credits son la moneda en InfluexAI. Cada módulo cuesta 2–5 Credits por generación. Los Credits no expiran.",
-      "a2": "No. Compras Credits una sola vez desde €9,99 — sin suscripción, sin costos ocultos.",
+      "a2": "No. Compras Credits una sola vez desde €{price} — sin suscripción, sin costos ocultos.",
       "a3": "Sí. Servidores en la UE, sin compartir tus datos con terceros sin consentimiento.",
       "a4": "Sí — en el módulo Voz y Música. 30+ segundos de audio son suficientes para una clonación de alta calidad.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts y formato largo, LinkedIn — todos los formatos populares.",
@@ -751,7 +751,7 @@
       "headline1": "En 3 Pasos",
       "headline2": "al Contenido.",
       "kicker": "Cómo Funciona",
-      "s1_desc": "Crea tu cuenta. Credits desde €9,99 — empieza de inmediato.",
+      "s1_desc": "Crea tu cuenta. Credits desde €{price} — empieza de inmediato.",
       "s1_title": "Crear Cuenta",
       "s2_desc": "Live Creator, KI-Ich, Publicidad de Producto o Voz y Música — todo en un solo estudio.",
       "s2_title": "Elegir Módulo",
@@ -973,7 +973,7 @@
   },
   "planGate": {
     "back": "Al panel",
-    "body": "Empieza desde 9,99 €/mes — todas las herramientas incluidas.",
+    "body": "Empieza desde {price} €/mes — todas las herramientas incluidas.",
     "cta": "Elegir plan",
     "kicker": "Empezar",
     "title": "Elige un plan para empezar"

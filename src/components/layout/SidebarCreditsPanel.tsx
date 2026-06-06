@@ -23,16 +23,22 @@ function barColor(level: CreditLevel): string {
 type Props = {
   credits: number;
   maxCredits: number;
+  isCreditExempt?: boolean;
 };
 
-export function SidebarCreditsPanel({ credits, maxCredits }: Props) {
+export function SidebarCreditsPanel({
+  credits,
+  maxCredits,
+  isCreditExempt = false,
+}: Props) {
   const tNav = useTranslations("nav");
-  const level = creditLevel(credits, maxCredits);
+  const level = isCreditExempt ? "ok" : creditLevel(credits, maxCredits);
   const percent = Math.min(100, Math.max(0, (credits / maxCredits) * 100));
   const color = barColor(level);
 
-  const hint =
-    level === "low"
+  const hint = isCreditExempt
+    ? null
+    : level === "low"
       ? tNav("credits_running_low")
       : level === "critical"
         ? tNav("credits_almost_empty")
@@ -84,15 +90,17 @@ export function SidebarCreditsPanel({ credits, maxCredits }: Props) {
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={() => openBuyCreditsModal()}
-        className={`block w-full text-center py-1.5 rounded-lg bg-[var(--accent,#B4FF00)]/10 border border-[var(--accent,#B4FF00)]/20 text-[var(--accent,#B4FF00)] text-[0.72rem] font-bold cursor-pointer transition-colors hover:bg-[var(--accent,#B4FF00)]/15 ${
-          level === "empty" ? "sidebar-topup-pulse" : ""
-        }`}
-      >
-        ⚡ {tNav("top_up")}
-      </button>
+      {!isCreditExempt && (
+        <button
+          type="button"
+          onClick={() => openBuyCreditsModal()}
+          className={`block w-full text-center py-1.5 rounded-lg bg-[var(--accent,#B4FF00)]/10 border border-[var(--accent,#B4FF00)]/20 text-[var(--accent,#B4FF00)] text-[0.72rem] font-bold cursor-pointer transition-colors hover:bg-[var(--accent,#B4FF00)]/15 ${
+            level === "empty" ? "sidebar-topup-pulse" : ""
+          }`}
+        >
+          ⚡ {tNav("top_up")}
+        </button>
+      )}
 
       <style jsx global>{`
         @keyframes sidebar-topup-pulse {

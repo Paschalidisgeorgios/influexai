@@ -553,7 +553,7 @@
   },
   "hero": {
     "badge": "Estúdio de Criador IA",
-    "cta_primary": "Começar — a partir de €9,99",
+    "cta_primary": "Começar — a partir de €{price}",
     "cta_secondary": "Ver funcionalidades",
     "headline": "Seu próximo Short viral — em 60 segundos.",
     "rotating_titles": [
@@ -673,15 +673,15 @@
       "headline2": "Sem limite.",
       "headline3": "Sem espera.",
       "kicker": "Comece agora",
-      "note": "Credits a partir de €9,99 · Sem assinatura · Conforme GDPR",
-      "primary": "→ Comece agora — a partir de €9,99",
+      "note": "Credits a partir de €{price} · Sem assinatura · Conforme GDPR",
+      "primary": "→ Comece agora — a partir de €{price}",
       "secondary": "Para Marcas →",
       "sub1": "Para Creators que querem viralizar.",
       "sub2": "Para Marcas que querem escalar."
     },
     "faq": {
       "a1": "Credits são a moeda no InfluexAI. Cada módulo custa 2–5 Credits por geração. Credits não expiram.",
-      "a2": "Não. Você compra Credits uma única vez a partir de €9,99 — sem assinatura, sem custos ocultos.",
+      "a2": "Não. Você compra Credits uma única vez a partir de €{price} — sem assinatura, sem custos ocultos.",
       "a3": "Sim. Servidores na UE, sem compartilhamento dos seus dados com terceiros sem consentimento.",
       "a4": "Sim — no módulo Voz & Música. 30+ segundos de áudio são suficientes para uma clonagem de alta qualidade.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — todos os formatos populares.",
@@ -751,7 +751,7 @@
       "headline1": "Em 3 Passos",
       "headline2": "para o Conteúdo.",
       "kicker": "Como Funciona",
-      "s1_desc": "Crie uma conta. Credits a partir de €9,99 — comece imediatamente.",
+      "s1_desc": "Crie uma conta. Credits a partir de €{price} — comece imediatamente.",
       "s1_title": "Criar Conta",
       "s2_desc": "Live Creator, KI-Ich, Publicidade de Produto ou Voz & Música — tudo em um único estúdio.",
       "s2_title": "Escolher Módulo",
@@ -973,7 +973,7 @@
   },
   "planGate": {
     "back": "Voltar ao painel",
-    "body": "Comece a partir de €9,99/mês — todas as ferramentas incluídas.",
+    "body": "Comece a partir de €{price}/mês — todas as ferramentas incluídas.",
     "cta": "Escolher plano",
     "kicker": "Começar",
     "title": "Escolha um plano para começar"

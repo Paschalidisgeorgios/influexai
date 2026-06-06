@@ -2,7 +2,12 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { hasActivePlan, type AccessUser, type PlanTier } from "@/lib/access";
+import {
+  hasActivePlan,
+  isAdminEmail,
+  type AccessUser,
+  type PlanTier,
+} from "@/lib/access";
 import type { GatedFeature } from "@/lib/plan-gating";
 
 export type FeatureAccessResult =
@@ -21,13 +26,29 @@ export async function requireActivePlan(): Promise<FeatureAccessResult> {
     return { ok: false, status: 401, error: "Nicht eingeloggt." };
   }
 
+  if (isAdminEmail(user.email)) {
+    return {
+      ok: true,
+      userId: user.id,
+      profile: {
+        plan: "business",
+        role: "admin",
+        is_admin: true,
+        email: user.email,
+      },
+    };
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("plan, role, is_admin")
     .eq("id", user.id)
     .single();
 
-  const accessUser: AccessUser = profile ?? { plan: "free", role: "user" };
+  const accessUser: AccessUser = {
+    ...(profile ?? { plan: "free", role: "user" }),
+    email: user.email,
+  };
 
   if (!hasActivePlan(accessUser)) {
     return {

@@ -55,6 +55,12 @@ const TONES = [
 
 const LANGUAGES = ["Deutsch", "Englisch", "Deutsch + Englisch (bilingual)"];
 
+const TOPIC_SUGGESTIONS = [
+  "5 Fehler beim YouTube Start",
+  "Warum die meisten Shorts floppen",
+  "Morning Routine für Produktivität",
+] as const;
+
 function blockStyle(tag: "hook" | "main" | "cta" | null) {
   if (tag === "hook") {
     return {
@@ -152,6 +158,8 @@ function ScriptGeneratorPageInner() {
   const [savedOk, setSavedOk] = useState(false);
   const [selectedHookIdx, setSelectedHookIdx] = useState<number | null>(null);
   const genStarted = useRef(false);
+  const topicInputRef = useRef<HTMLInputElement | null>(null);
+  const [topicFocused, setTopicFocused] = useState(false);
   const [creatorNiche, setCreatorNiche] = useState<string | null>(null);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
@@ -167,6 +175,23 @@ function ScriptGeneratorPageInner() {
     fontSize: "0.95rem",
     outline: "none" as const,
     fontFamily: "var(--font-dm), sans-serif",
+  };
+
+  const topicInputStyle = {
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "8px",
+    background: "rgba(255,255,255,0.05)",
+    border: `1px solid ${topicFocused ? "#B4FF00" : "rgba(255,255,255,0.1)"}`,
+    color: "white",
+    fontSize: "15px",
+    outline: "none" as const,
+    fontFamily: "var(--font-dm), sans-serif",
+    boxSizing: "border-box" as const,
+    pointerEvents: "auto" as const,
+    position: "relative" as const,
+    zIndex: 20,
+    cursor: "text" as const,
   };
 
   const labelStyle = {
@@ -241,8 +266,10 @@ function ScriptGeneratorPageInner() {
     };
   }, [step]);
 
+  const canGenerate = topic.trim().length > 0;
+
   const buildInput = (): GenerateScriptInput => ({
-    topic,
+    topic: topic.trim(),
     duration,
     tone,
     language,
@@ -371,7 +398,15 @@ function ScriptGeneratorPageInner() {
   const estSeconds = result?.estimatedSeconds ?? Math.round(wordCount / 2.5);
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <div
+      style={{
+        maxWidth: 1100,
+        margin: "0 auto",
+        position: "relative",
+        zIndex: 1,
+        pointerEvents: "auto",
+      }}
+    >
       <div style={{ marginBottom: 28 }}>
         <div
           style={{
@@ -452,20 +487,73 @@ function ScriptGeneratorPageInner() {
             flexDirection: "column",
             gap: 16,
             maxWidth: 560,
+            position: "relative",
+            zIndex: 1,
+            isolation: "isolate",
+            pointerEvents: "auto",
           }}
         >
-          <div>
+          <div
+            style={{
+              position: "relative",
+              zIndex: 20,
+              pointerEvents: "auto",
+            }}
+          >
             <label htmlFor="script-topic" style={labelStyle}>
               Thema / Titel
             </label>
             <input
+              ref={topicInputRef}
               id="script-topic"
+              data-testid="script-topic-input"
+              name="topic"
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
+              onFocus={() => setTopicFocused(true)}
+              onBlur={() => setTopicFocused(false)}
               placeholder="z.B. 5 Fehler beim YouTube Start"
-              style={inputStyle}
+              autoComplete="off"
+              spellCheck={false}
+              disabled={false}
+              readOnly={false}
+              tabIndex={0}
+              aria-label="Thema oder Titel"
+              className="relative z-20 pointer-events-auto"
+              style={topicInputStyle}
             />
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 8,
+                marginTop: 10,
+              }}
+            >
+              {TOPIC_SUGGESTIONS.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => {
+                    setTopic(suggestion);
+                    topicInputRef.current?.focus();
+                  }}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: 999,
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "rgba(255,255,255,0.75)",
+                    fontSize: "0.78rem",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-dm), sans-serif",
+                  }}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
           <div>
             <label htmlFor="script-duration" style={labelStyle}>
@@ -557,18 +645,18 @@ function ScriptGeneratorPageInner() {
           <button
             type="button"
             onClick={runGenerate}
-            disabled={!topic.trim()}
+            disabled={!canGenerate}
             style={{
               width: "100%",
               padding: "14px",
               borderRadius: 11,
               border: "none",
-              background: topic.trim() ? "#B4FF00" : "#2a2a2a",
-              color: topic.trim() ? "#060608" : "rgba(255,255,255,0.65)",
+              background: canGenerate ? "#B4FF00" : "#2a2a2a",
+              color: canGenerate ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
-              cursor: topic.trim() ? "pointer" : "default",
+              cursor: canGenerate ? "pointer" : "not-allowed",
             }}
           >
             SCRIPT GENERIEREN →

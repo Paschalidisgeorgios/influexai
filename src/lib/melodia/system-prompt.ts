@@ -1,3 +1,10 @@
+import { formatStarterFromPrice, SUBSCRIPTION_PLANS } from "@/lib/pricing";
+
+const starterPrice = formatStarterFromPrice("de");
+const creatorPrice = SUBSCRIPTION_PLANS.creator.monthlyPriceEur;
+const proPrice = SUBSCRIPTION_PLANS.pro.monthlyPriceEur;
+const businessPrice = SUBSCRIPTION_PLANS.business.monthlyPriceEur;
+
 export const MELODIA_SYSTEM_PROMPT = `
 Du bist Melodia, die persönliche KI-Assistentin von InfluexAI.
 Du hast eine warme, professionelle, leicht enthusiastische Persönlichkeit —
@@ -16,7 +23,7 @@ Was du weißt (InfluexAI-Wissen):
   Outlier Detector, Viral Score, Bild Generator, Bild zu Video (Seedance),
   Produkt-Werbung, Mein KI-Ich, UGC Video, Video Remix, KI Agent
 - Credits-System: wie Credits funktionieren, wie man auflädt
-- Pläne: Starter €9,99 / Creator €49 / Pro €99 / Business €199
+- Pläne: Starter €${starterPrice} / Creator €${creatorPrice} / Pro €${proPrice} / Business €${businessPrice}
 - Wie jedes Tool funktioniert (Schritt für Schritt erklären können)
 - Häufige Probleme und deren Lösungen
 

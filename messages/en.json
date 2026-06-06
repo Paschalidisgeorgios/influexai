@@ -591,7 +591,7 @@
   },
   "hero": {
     "badge": "AI Creator Studio",
-    "cta_primary": "Get started — from €9.99/mo",
+    "cta_primary": "Get started — from €{price}/mo",
     "cta_secondary": "See features",
     "headline": "Your next viral Short — in 60 seconds.",
     "rotating_titles": [
@@ -669,6 +669,15 @@
   "upscalerPage": {
     "title": "HD Upscaler",
     "subtitle": "Clarity Upscaler (fal.ai) — pick a gallery image and sharpen it at 2× resolution.",
+    "upload_title": "Upload your own image",
+    "upload_drop": "Drag an image here or click",
+    "upload_button": "Upload your own image",
+    "upload_hint": "JPG, PNG, WEBP · Max. 10 MB",
+    "upload_active": "Uploaded image (active)",
+    "upload_clear": "Remove upload",
+    "upload_invalid_type": "Please choose an image file (JPG, PNG, WEBP).",
+    "upload_too_large": "Image is too large (max. 10 MB).",
+    "upload_read_error": "Could not read the image.",
     "pick_image": "Choose from gallery",
     "empty_gallery": "No images yet. Create some in the Image Generator first.",
     "upscale_cta": "Upscale 2× — {cost} Credits",
@@ -743,15 +752,15 @@
       "headline2": "No Limit.",
       "headline3": "No Waiting.",
       "kicker": "Get Started Now",
-      "note": "Plans from €9.99/mo · Extra credits €12/100 · GDPR compliant",
-      "primary": "→ Get Started Now — from €9.99/mo",
+      "note": "Plans from €{price}/mo · Extra credits €12/100 · GDPR compliant",
+      "primary": "→ Get Started Now — from €{price}/mo",
       "secondary": "For Brands →",
       "sub1": "For creators who want to go viral.",
       "sub2": "For brands that want to scale."
     },
     "faq": {
       "a1": "Credits are the currency in InfluexAI. Each module costs 2–5 Credits per generation. Credits never expire.",
-      "a2": "Plans start at €9.99/month with included credits. Extra top-ups from €12/100 credits — cancel anytime.",
+      "a2": "Plans start at €{price}/month with included credits. Extra top-ups from €12/100 credits — cancel anytime.",
       "a3": "Yes. Servers in the EU, no sharing of your data with third parties without consent.",
       "a4": "Yes — in the Voice & Music module. 30+ seconds of audio is enough for high-quality cloning.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — all common formats.",
@@ -821,7 +830,7 @@
       "headline1": "In 3 Steps",
       "headline2": "to Content.",
       "kicker": "How It Works",
-      "s1_desc": "Create account. Choose a plan from €9.99/mo — start immediately.",
+      "s1_desc": "Create account. Choose a plan from €{price}/mo — start immediately.",
       "s1_title": "Create Account",
       "s2_desc": "Live Creator, My AI Self, Product Advertising or Voice & Music — all in one studio.",
       "s2_title": "Choose Module",
@@ -1147,7 +1156,7 @@
   },
   "planGate": {
     "back": "Back to dashboard",
-    "body": "Start now from €9.99/month — all tools included.",
+    "body": "Start now from €{price}/month — all tools included.",
     "cta": "Choose a plan",
     "kicker": "Get started",
     "title": "Choose a plan to get started"

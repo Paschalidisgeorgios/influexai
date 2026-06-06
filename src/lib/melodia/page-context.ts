@@ -1,3 +1,7 @@
+import { formatStarterFromPrice, SUBSCRIPTION_PLANS } from "@/lib/pricing";
+
+const melodiaPlanPrices = `Starter €${formatStarterFromPrice("de")} / Creator €${SUBSCRIPTION_PLANS.creator.monthlyPriceEur} / Pro €${SUBSCRIPTION_PLANS.pro.monthlyPriceEur} / Business €${SUBSCRIPTION_PLANS.business.monthlyPriceEur}`;
+
 /**
  * Seiten-spezifischer Kontext für Melodia — wird in den System-Prompt injiziert.
  * Keys sind kanonische Dashboard-Pfade; Aliase werden in resolveMelodiaPath normalisiert.
@@ -61,7 +65,9 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
     "Der Nutzer ist bei Analytics — Übersicht über Nutzung, Generierungen und Performance. Erkläre Metriken verständlich; verweise bei inhaltlichen Fragen an passende Tools.",
 
   "/dashboard/credits":
-    "Der Nutzer ist bei Credits & Plan. Er kann Credits kaufen oder seinen Plan verwalten. Erkläre Pläne (Starter €9,99 / Creator €49 / Pro €99 / Business €199) und wie Credits pro Tool verbraucht werden.",
+    "Der Nutzer ist bei Credits & Plan. Er kann Credits kaufen oder seinen Plan verwalten. Erkläre Pläne (" +
+      melodiaPlanPrices +
+      ") und wie Credits pro Tool verbraucht werden.",
 
   "/dashboard/settings":
     "Der Nutzer ist in den Einstellungen — Profil, Sprache, Benachrichtigungen. Hilf bei Account-Fragen; bei KI-Inhalten verweise auf den KI Agent oder das jeweilige Tool.",

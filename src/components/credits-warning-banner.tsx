@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { isCreditExemptEmail } from "@/lib/access";
 import { openBuyCreditsModal } from "@/lib/client-credits-ui";
 
 type BannerTier = "low" | "critical";
@@ -24,6 +26,14 @@ export function CreditsWarningBanner({ credits }: Props) {
   const t = useTranslations("buyCredits");
   const tier = getTier(credits);
   const [dismissedTier, setDismissedTier] = useState<string | null>(null);
+  const [creditExempt, setCreditExempt] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase.auth.getUser().then(({ data: { user } }) => {
+      setCreditExempt(isCreditExemptEmail(user?.email));
+    });
+  }, []);
 
   useEffect(() => {
     try {
@@ -46,6 +56,7 @@ export function CreditsWarningBanner({ credits }: Props) {
     }
   }, [tier]);
 
+  if (creditExempt === null || creditExempt) return null;
   if (!tier) return null;
   if (dismissedTier === tier) return null;
 

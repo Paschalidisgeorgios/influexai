@@ -28,7 +28,7 @@ export const SUBSCRIPTION_PLANS: Record<
   starter: {
     id: "starter",
     monthlyCredits: 50,
-    monthlyPriceEur: 9.99,
+    monthlyPriceEur: 7.99,
     yearlyPricePerMonthEur: 7.99,
     stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_STARTER_MONTHLY",
     stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_STARTER_YEARLY",
@@ -159,6 +159,20 @@ export function displayPrice(
   return interval === "yearly"
     ? config.yearlyPricePerMonthEur
     : config.monthlyPriceEur;
+}
+
+/** Lowest Starter €/month — matches the cheapest row in the pricing table. */
+export function getStarterFromPriceEur(): number {
+  const starter = SUBSCRIPTION_PLANS.starter;
+  return Math.min(starter.monthlyPriceEur, starter.yearlyPricePerMonthEur);
+}
+
+/** Format plan price for UI copy (DE: comma decimal, EN: dot). */
+export function formatPlanPrice(amount: number, locale?: string | null): string {
+  const formatted = Number.isInteger(amount)
+    ? String(amount)
+    : amount.toFixed(2);
+  return locale === "en" ? formatted : formatted.replace(".", ",");
 }
 
 export const EXTRA_CREDIT_UNIT_EUR = 12;
