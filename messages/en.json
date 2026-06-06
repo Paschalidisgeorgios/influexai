@@ -504,7 +504,7 @@
       "script_placeholder": "What should the creator say? Max 500 characters…",
       "language_label": "Language",
       "voice_label": "Voice",
-      "voice_akool": "Akool voices",
+      "voice_akool": "InfluexAI Voice",
       "voice_elevenlabs": "ElevenLabs",
       "avatar_label": "Choose UGC avatar",
       "hooks_button": "Hook generator — 3 variants",
@@ -901,7 +901,7 @@
       "yearly_discount": "−{percent}%"
     },
     "ticker": {
-      "i0": "InfluexAI LiveSwap",
+      "i0": "InfluexAI LiveSwap™",
       "i1": "InfluexAI Vision",
       "i10": "Face Consistency",
       "i11": "Multi-Platform Export",

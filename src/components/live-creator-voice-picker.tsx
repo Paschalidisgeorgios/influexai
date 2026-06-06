@@ -8,6 +8,7 @@ import {
 } from "@/lib/elevenlabs-tts";
 import { useLocale } from "next-intl";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
+import { playElevenLabsVoicePreview } from "@/lib/voice-preview-client";
 
 type LiveCreatorVoicePickerProps = {
   selectedVoiceId: string;
@@ -76,21 +77,36 @@ export function LiveCreatorVoicePicker({
 
   const playPreview = (voice: ElevenLabsVoice, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (playingId === voice.id) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setPlayingId(null);
+      return;
+    }
+
+    if (!voice.previewUrl) {
+      void playElevenLabsVoicePreview(
+        voice.id,
+        null,
+        audioRef,
+        (playing) => setPlayingId(playing ? voice.id : null)
+      );
+      return;
+    }
+
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-    if (playingId === voice.id) {
-      setPlayingId(null);
-      return;
-    }
-    if (!voice.previewUrl) return;
+
     const audio = new Audio(voice.previewUrl);
     audioRef.current = audio;
     setPlayingId(voice.id);
-    audio.play();
     audio.onended = () => setPlayingId(null);
     audio.onerror = () => setPlayingId(null);
+    void audio.play().catch(() => setPlayingId(null));
   };
 
   if (loading) {
@@ -170,20 +186,18 @@ export function LiveCreatorVoicePicker({
                     {voice.accent ?? voice.category}
                   </p>
                 </div>
-                {voice.previewUrl && (
-                  <button
-                    type="button"
-                    onClick={(e) => playPreview(voice, e)}
-                    className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs flex-shrink-0 transition-all ${
-                      playingId === voice.id
-                        ? "border-[#B4FF00] bg-[#B4FF00] text-black"
-                        : "border-white/20 text-white/80 hover:border-[#B4FF00]"
-                    }`}
-                    aria-label="Vorschau"
-                  >
-                    {playingId === voice.id ? "⏹" : "▶"}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => void playPreview(voice, e)}
+                  className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs flex-shrink-0 transition-all ${
+                    playingId === voice.id
+                      ? "border-[#B4FF00] bg-[#B4FF00] text-black"
+                      : "border-white/20 text-white/80 hover:border-[#B4FF00]"
+                  }`}
+                  aria-label="Vorschau"
+                >
+                  {playingId === voice.id ? "⏹" : "▶"}
+                </button>
               </div>
             );
           })

@@ -514,7 +514,7 @@ export function LiveCreatorStudioInner() {
           {phase === "setup" && (
             <div className="flex h-full flex-col overflow-y-auto p-4">
               <p className="text-white/80 text-sm mb-3">{t("pick_character")}</p>
-              <div className="grid grid-cols-3 gap-2 flex-1 min-h-0 overflow-y-auto mb-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1 min-h-0 overflow-y-auto mb-3">
                 {characters.map((c) => {
                   const selected = selectedCharacterId === c.id;
                   return (
@@ -542,7 +542,10 @@ export function LiveCreatorStudioInner() {
                 })}
                 <button
                   type="button"
-                  onClick={() => uploadInputRef.current?.click()}
+                  onClick={() => {
+                    setSelectedCharacterId("upload");
+                    uploadInputRef.current?.click();
+                  }}
                   className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 border-dashed transition-all ${
                     selectedCharacterId === "upload"
                       ? "border-[#B4FF00] bg-[#B4FF00]/5"

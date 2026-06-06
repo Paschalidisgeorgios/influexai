@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import { Lock } from "lucide-react";
 
 type Props = {
@@ -32,6 +32,8 @@ export function ProtectedGeneratedImage({
   className = "",
   aspectClassName = "",
 }: Props) {
+  const [loadError, setLoadError] = useState(false);
+
   const handleDownload = () => {
     if (!generationId) return;
     window.location.href = `/api/download/${generationId}`;
@@ -49,27 +51,35 @@ export function ProtectedGeneratedImage({
             ? "border-white/12"
             : "border-[rgba(180,255,0,0.2)]"
         } ${aspectClassName}`}
+        style={{ minHeight: 280, background: "#0f0f12" }}
       >
-        <Image
-          src={src}
-          alt={alt}
-          width={1024}
-          height={1024}
-          unoptimized
-          draggable={false}
-          onContextMenu={(e) => e.preventDefault()}
-          className={`generated-image block h-auto w-full ${
-            locked ? "blur-[2px] scale-[1.02]" : ""
-          }`}
-          style={{
-            userSelect: "none",
-            WebkitUserDrag: "none",
-          } as React.CSSProperties}
-        />
+        {loadError ? (
+          <div className="flex min-h-[280px] items-center justify-center px-6 text-center text-sm text-white/60">
+            Vorschau konnte nicht geladen werden. Bitte Seite neu laden oder
+            erneut generieren.
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt}
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+            onError={() => setLoadError(true)}
+            className={`generated-image block h-auto w-full ${
+              locked ? "opacity-90 scale-[1.01]" : ""
+            }`}
+            style={{
+              userSelect: "none",
+              WebkitUserDrag: "none",
+              filter: locked ? "blur(2px) brightness(0.92)" : undefined,
+            } as React.CSSProperties}
+          />
+        )}
 
-        {locked && (
+        {locked && !loadError && (
           <div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/35 px-6 text-center"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/10 px-6 text-center"
             onContextMenu={(e) => e.preventDefault()}
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/50">

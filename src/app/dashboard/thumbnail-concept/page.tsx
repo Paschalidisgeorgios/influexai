@@ -15,13 +15,13 @@ import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
-
-const CREDIT_COST = 1;
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
 import {
   getSafeSearchParam,
   scriptGeneratorTopicUrl,
 } from "@/lib/safe-url-param";
+
+const CREDIT_COST = 1;
 
 type Step = "input" | "loading" | "results";
 
@@ -236,6 +236,32 @@ function ThumbnailConceptPageInner() {
           ⚡ 1 Credit pro Generierung · 4 Konzepte · CSS-Vorschau (keine
           Bild-Generierung)
         </p>
+      </div>
+
+      <div
+        style={{
+          marginBottom: 24,
+          padding: "14px 16px",
+          borderRadius: 12,
+          border: "1px solid rgba(180,255,0,0.25)",
+          background: "rgba(180,255,0,0.08)",
+          color: "rgba(240,239,232,0.92)",
+          fontSize: "0.88rem",
+          lineHeight: 1.55,
+        }}
+      >
+        Dies ist eine CSS-Vorschau — kein echtes Bild.{" "}
+        <Link
+          href="/dashboard/image-generator"
+          style={{
+            color: "#B4FF00",
+            fontWeight: 700,
+            textDecoration: "underline",
+            textUnderlineOffset: 3,
+          }}
+        >
+          Nutze den Bild Generator für echte KI-Bilder.
+        </Link>
       </div>
 
       {step === "input" && (

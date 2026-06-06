@@ -213,7 +213,7 @@ export async function POST(request: NextRequest) {
     } else {
       if (!akoolVoiceId) {
         return NextResponse.json(
-          { error: "Bitte eine Akool-Stimme wählen" },
+          { error: "Bitte eine InfluexAI Voice wählen" },
           { status: 400 }
         );
       }

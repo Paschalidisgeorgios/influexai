@@ -3,6 +3,9 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 /** Same model as Produkt-Werbung (verified working in production). */
 export const ANTHROPIC_MODEL = "claude-opus-4-5";
 
+/** Script Generator — Sonnet 4 (claude-sonnet-4-20250514 returns 404 on current API). */
+export const SCRIPT_GENERATOR_MODEL = "claude-sonnet-4-5-20250929";
+
 export const CLAUDE_JSON_SYSTEM_RULE =
   "Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.";
 
@@ -40,7 +43,11 @@ export function getAnthropicConfigError(): string | null {
   return null;
 }
 
-export function anthropicUserErrorFromStatus(status: number): string {
+export function anthropicUserErrorFromStatus(status: number, body?: string): string {
+  if (status === 404 && body?.includes("not_found_error")) {
+    const match = body.match(/"message":"([^"]+)"/);
+    if (match?.[1]) return `KI-Modell nicht verfügbar: ${match[1]}`;
+  }
   if (status === 401 || status === 403) {
     return "KI ist gerade nicht verfügbar. Bitte später erneut versuchen.";
   }
@@ -92,10 +99,15 @@ export async function createAnthropicMessage(
 
     if (!response.ok) {
       const errBody = await response.text();
-      console.error("Anthropic API:", response.status, errBody.slice(0, 500));
+      console.error(
+        "Anthropic API:",
+        response.status,
+        params.model ?? ANTHROPIC_MODEL,
+        errBody.slice(0, 500)
+      );
       return {
         ok: false,
-        error: anthropicUserErrorFromStatus(response.status),
+        error: anthropicUserErrorFromStatus(response.status, errBody),
       };
     }
 
@@ -107,6 +119,7 @@ export async function createAnthropicMessage(
     return { ok: true, text };
   } catch (e) {
     console.error("Anthropic fetch:", e);
+    if (e instanceof Error && e.stack) console.error(e.stack);
     return {
       ok: false,
       error: "Netzwerkfehler bei der KI-Anfrage. Bitte erneut versuchen.",

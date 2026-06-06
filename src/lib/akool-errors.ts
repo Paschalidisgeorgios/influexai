@@ -35,8 +35,8 @@ export function mapAkoolErrorMessage(
     return FACE_SWAP_NO_FACE_TARGET;
   }
 
-  if (/authentication|token|unauthorized/i.test(msg)) {
-    return "Video-Dienst nicht erreichbar. Bitte später erneut versuchen.";
+  if (/authentication|token|unauthorized|api.key|invalid.*key/i.test(msg)) {
+    return "InfluexAI LiveSwap™ ist gerade nicht verfügbar. Bitte später erneut versuchen.";
   }
 
   if (/url|invalid.*link|download|fetch|accessible/i.test(msg)) {

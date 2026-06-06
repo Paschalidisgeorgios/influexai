@@ -16,9 +16,12 @@ type AkoolResponse<T> = {
 };
 
 export async function getAkoolToken(): Promise<string | null> {
-  const clientId = process.env.AKOOL_CLIENT_ID;
-  const clientSecret = process.env.AKOOL_API_KEY;
-  if (!clientId || !clientSecret) return null;
+  const clientId = process.env.AKOOL_CLIENT_ID?.trim();
+  const clientSecret = process.env.AKOOL_API_KEY?.trim();
+  if (!clientId || !clientSecret) {
+    console.error("[akool] getToken: AKOOL_CLIENT_ID or AKOOL_API_KEY missing");
+    return null;
+  }
 
   const response = await fetch(`${AKOOL_BASE_URL}/getToken`, {
     method: "POST",
@@ -28,6 +31,10 @@ export async function getAkoolToken(): Promise<string | null> {
   const data = (await response.json()) as AkoolResponse<{ token?: string }> & {
     token?: string;
   };
+  if (data.code !== 1000) {
+    console.error("[akool] getToken failed:", data.code, data.msg);
+    return null;
+  }
   return data.data?.token ?? data.token ?? null;
 }
 
@@ -36,18 +43,18 @@ export function getAkoolApiKey(): string | undefined {
 }
 
 export async function akoolAuthHeaders(): Promise<HeadersInit> {
+  const token = await getAkoolToken();
+  if (token) {
+    return {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+  }
   const apiKey = getAkoolApiKey();
   if (apiKey) {
     return { "x-api-key": apiKey, "Content-Type": "application/json" };
   }
-  const token = await getAkoolToken();
-  if (!token) {
-    throw new Error("Akool authentication failed");
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+  throw new Error("InfluexAI LiveSwap™ authentication failed");
 }
 
 export async function createTalkingPhotoVideo(body: {

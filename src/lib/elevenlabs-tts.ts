@@ -76,7 +76,12 @@ export async function synthesizeElevenLabsSpeech(
       console.error("ElevenLabs error:", response.status, errorText);
 
       if (response.status === 401) {
-        return { ok: false, error: "API-Key ungültig", code: "INVALID_KEY" };
+        return {
+          ok: false,
+          error:
+            "ElevenLabs API-Key ungültig — prüfe ELEVENLABS_API_KEY in .env.local.",
+          code: "INVALID_KEY",
+        };
       }
       if (response.status === 422) {
         return { ok: false, error: "Voice-ID ungültig", code: "INVALID_VOICE" };

@@ -4,6 +4,7 @@ import { hasEnoughCredits } from "@/lib/credits";
 import {
   LIVE_CREATOR_CREDITS_PER_MINUTE,
   LIVE_CREATOR_LOW_CREDITS_WARNING,
+  LIVE_CREATOR_STUDIO_PRESET_IDS,
   PRESET_LIVE_CHARACTERS,
 } from "@/lib/live-creator-config";
 import { resolveUserKiIchCharacter } from "@/lib/live-creator-ki-ich";
@@ -28,9 +29,10 @@ export async function GET() {
   }
 
   const kiIch = await resolveUserKiIchCharacter(supabase, user.id);
-  const characters = kiIch
-    ? [kiIch, ...PRESET_LIVE_CHARACTERS]
-    : [...PRESET_LIVE_CHARACTERS];
+  const studioPresets = LIVE_CREATOR_STUDIO_PRESET_IDS.map((id) =>
+    PRESET_LIVE_CHARACTERS.find((c) => c.id === id)
+  ).filter((c): c is NonNullable<typeof c> => !!c);
+  const characters = kiIch ? [kiIch, ...studioPresets] : studioPresets;
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -39,8 +41,7 @@ export async function GET() {
     .single();
 
   const credits = profile?.credits ?? 0;
-  const preferredId =
-    kiIch?.id ?? PRESET_LIVE_CHARACTERS[0]?.id ?? "";
+  const preferredId = kiIch?.id ?? studioPresets[0]?.id ?? "";
 
   return NextResponse.json({
     success: true,

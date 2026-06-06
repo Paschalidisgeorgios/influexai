@@ -112,7 +112,9 @@ export default function UgcVideoPage() {
       fetch("/api/ugc-video/voices").then((r) => r.json()),
     ])
       .then(([avatarRes, voiceRes]) => {
-        if (avatarRes.avatars?.length) {
+        if (avatarRes.error) {
+          setError(sanitizeUserMessage(avatarRes.error));
+        } else if (avatarRes.avatars?.length) {
           setAvatars(avatarRes.avatars);
           setSelectedAvatarId(avatarRes.avatars[0].avatar_id);
           if (avatarRes.avatars[0].voice_id) {
@@ -496,13 +498,16 @@ export default function UgcVideoPage() {
               {t("avatar_label")}
             </label>
             {avatarsLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-[3/4] rounded-xl bg-white/5 animate-pulse"
-                  />
-                ))}
+              <div>
+                <p className="text-white/65 text-sm mb-3">{t("avatars_loading")}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-[3/4] rounded-xl bg-white/5 animate-pulse"
+                    />
+                  ))}
+                </div>
               </div>
             ) : avatars.length === 0 ? (
               <p className="text-white/65 text-sm">{t("no_avatars")}</p>

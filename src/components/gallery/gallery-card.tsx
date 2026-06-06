@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
@@ -319,15 +318,19 @@ function GalleryImagePreview({ src }: { src: string | null | undefined }) {
   }
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={src}
       alt=""
-      fill
-      sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
       loading="lazy"
-      style={{ objectFit: "cover" }}
-      unoptimized
       onError={() => setFailed(true)}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
     />
   );
 }
@@ -340,40 +343,148 @@ function GalleryVideoPreview({ src }: { src: string | null | undefined }) {
   }
 
   return (
-    <>
-      <video
-        src={src}
-        preload="none"
-        playsInline
-        muted
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        onError={() => setFailed(true)}
-      />
-      <a
-        href={src}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "rgba(6,6,8,0.35)",
-          color: "#B4FF00",
-          fontSize: "2rem",
-          textDecoration: "none",
-        }}
+    <video
+      src={src}
+      preload="none"
+      playsInline
+      muted
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function MediaLightbox({
+  open,
+  onClose,
+  kind,
+  src,
+  title,
+}: {
+  open: boolean;
+  onClose: () => void;
+  kind: "image" | "video";
+  src: string;
+  title?: string;
+}) {
+  if (!open) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title ?? "Medien-Vorschau"}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 200,
+        background: "rgba(6,6,8,0.92)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{ maxWidth: "min(960px, 96vw)", width: "100%" }}
+        onClick={(e) => e.stopPropagation()}
       >
-        ▶
-      </a>
-    </>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+            gap: 12,
+          }}
+        >
+          <p
+            style={{
+              color: "#F0EFE8",
+              fontSize: "0.9rem",
+              fontWeight: 600,
+              margin: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {title ?? "Vorschau"}
+          </p>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <a
+              href={src}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#B4FF00",
+                fontSize: "0.78rem",
+                textDecoration: "none",
+              }}
+            >
+              Neuer Tab
+            </a>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: "transparent",
+                color: "#F0EFE8",
+                cursor: "pointer",
+                fontSize: "0.78rem",
+              }}
+            >
+              Schließen
+            </button>
+          </div>
+        </div>
+        {kind === "video" ? (
+          <video
+            src={src}
+            controls
+            autoPlay
+            playsInline
+            style={{
+              width: "100%",
+              maxHeight: "78vh",
+              borderRadius: 12,
+              background: "#000",
+            }}
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={title ?? ""}
+            style={{
+              width: "100%",
+              maxHeight: "78vh",
+              objectFit: "contain",
+              borderRadius: 12,
+              background: "#0f0f12",
+            }}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 
 export function GalleryCard({ item, onDelete }: GalleryCardProps) {
   const router = useRouter();
   const canDelete = !["image", "video"].includes(item._type);
+  const [lightbox, setLightbox] = useState<{
+    kind: "image" | "video";
+    src: string;
+    title?: string;
+  } | null>(null);
 
   const handleDelete = () => onDelete(item.id, item._type);
 
@@ -648,117 +759,211 @@ export function GalleryCard({ item, onDelete }: GalleryCardProps) {
 
   if (item._type === "image") {
     return (
-      <article style={cardStyle}>
-        <CardHeader
-          item={item}
-          badge={{ emoji: "🎭", label: "KI-Ich" }}
-          onDelete={handleDelete}
-          canDelete={canDelete}
-        />
-        <div style={{ ...bodyPadding, paddingTop: 0 }}>
-          <div
-            style={{
-              aspectRatio: "1",
-              borderRadius: 10,
-              background: "linear-gradient(135deg, #18181d, #0f0f12)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "2.5rem",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {item.imageUrl ? (
-              <GalleryImagePreview src={item.imageUrl} />
-            ) : (
-              "📸"
-            )}
-          </div>
-          <p
-            style={{
-              fontSize: "0.78rem",
-              color: "rgba(255,255,255,0.65)",
-              marginTop: 8,
-            }}
-          >
-            {item.generationType?.includes("preview")
-              ? "Hochauflösend generieren →"
-              : item.title}
-          </p>
-        </div>
-        <ActionRow>
-          <ActionBtn
-            label="Neu generieren"
-            href="/dashboard/ki-ich"
-            primary
+      <>
+        <article style={cardStyle}>
+          <CardHeader
+            item={item}
+            badge={{ emoji: "🎭", label: "KI-Ich" }}
+            onDelete={handleDelete}
+            canDelete={canDelete}
           />
-        </ActionRow>
-      </article>
+          <div style={{ ...bodyPadding, paddingTop: 0 }}>
+            <button
+              type="button"
+              onClick={() =>
+                item.imageUrl &&
+                setLightbox({
+                  kind: "image",
+                  src: item.imageUrl,
+                  title: item.title,
+                })
+              }
+              disabled={!item.imageUrl}
+              style={{
+                width: "100%",
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                cursor: item.imageUrl ? "pointer" : "default",
+                textAlign: "left",
+              }}
+            >
+              <div
+                style={{
+                  aspectRatio: "1",
+                  borderRadius: 10,
+                  background: "linear-gradient(135deg, #18181d, #0f0f12)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "2.5rem",
+                  overflow: "hidden",
+                  position: "relative",
+                }}
+              >
+                {item.imageUrl ? (
+                  <GalleryImagePreview src={item.imageUrl} />
+                ) : (
+                  "📸"
+                )}
+              </div>
+            </button>
+            <p
+              style={{
+                fontSize: "0.78rem",
+                color: "rgba(255,255,255,0.65)",
+                marginTop: 8,
+              }}
+            >
+              {item.generationType?.includes("preview")
+                ? "Hochauflösend generieren →"
+                : item.title}
+            </p>
+          </div>
+          <ActionRow>
+            {item.imageUrl && (
+              <ActionBtn
+                label="Öffnen"
+                onClick={() =>
+                  setLightbox({
+                    kind: "image",
+                    src: item.imageUrl!,
+                    title: item.title,
+                  })
+                }
+                primary
+              />
+            )}
+            <ActionBtn label="Neu generieren" href="/dashboard/ki-ich" />
+          </ActionRow>
+        </article>
+        {lightbox && (
+          <MediaLightbox
+            open
+            kind={lightbox.kind}
+            src={lightbox.src}
+            title={lightbox.title}
+            onClose={() => setLightbox(null)}
+          />
+        )}
+      </>
     );
   }
 
   if (item._type === "video") {
     const isLive = item.generationType?.includes("live-creator");
     return (
-      <article style={cardStyle}>
-        <CardHeader
-          item={item}
-          badge={{ emoji: "🎬", label: isLive ? "Live Creator" : "Video" }}
-          onDelete={handleDelete}
-          canDelete={canDelete}
-        />
-        <div style={{ ...bodyPadding, paddingTop: 0 }}>
-          <div
-            style={{
-              aspectRatio: "16/9",
-              borderRadius: 10,
-              background: "#0f0f12",
-              border: "1px solid rgba(255,255,255,0.08)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <GalleryVideoPreview src={item.videoUrl} />
+      <>
+        <article style={cardStyle}>
+          <CardHeader
+            item={item}
+            badge={{ emoji: "🎬", label: isLive ? "Live Creator" : "Video" }}
+            onDelete={handleDelete}
+            canDelete={canDelete}
+          />
+          <div style={{ ...bodyPadding, paddingTop: 0 }}>
+            <button
+              type="button"
+              onClick={() =>
+                item.videoUrl &&
+                setLightbox({
+                  kind: "video",
+                  src: item.videoUrl,
+                  title: item.title,
+                })
+              }
+              disabled={!item.videoUrl}
+              style={{
+                width: "100%",
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                cursor: item.videoUrl ? "pointer" : "default",
+                textAlign: "left",
+              }}
+            >
+              <div
+                style={{
+                  aspectRatio: "16/9",
+                  borderRadius: 10,
+                  background: "#0f0f12",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <GalleryVideoPreview src={item.videoUrl} />
+                {item.videoUrl && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "rgba(6,6,8,0.35)",
+                      color: "#B4FF00",
+                      fontSize: "2rem",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    ▶
+                  </span>
+                )}
+              </div>
+            </button>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: "rgba(255,255,255,0.8)",
+                marginTop: 8,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {item.title}
+            </p>
           </div>
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "rgba(255,255,255,0.8)",
-              marginTop: 8,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {item.title}
-          </p>
-        </div>
-        <ActionRow>
-          {item.videoUrl ? (
-            <>
+          <ActionRow>
+            {item.videoUrl ? (
+              <>
+                <ActionBtn
+                  label="Abspielen"
+                  onClick={() =>
+                    setLightbox({
+                      kind: "video",
+                      src: item.videoUrl!,
+                      title: item.title,
+                    })
+                  }
+                  primary
+                />
+                <ActionBtn label="Download" href={item.videoUrl} />
+              </>
+            ) : (
               <ActionBtn
-                label="Abspielen"
-                href={item.videoUrl}
+                label="Neu generieren"
+                href={isLive ? "/dashboard/live-creator" : "/dashboard/produkt"}
                 primary
               />
-              <ActionBtn
-                label="Download"
-                href={item.videoUrl}
-              />
-            </>
-          ) : (
-            <ActionBtn
-              label="Neu generieren"
-              href={isLive ? "/dashboard/live-creator" : "/dashboard/produkt"}
-              primary
-            />
-          )}
-        </ActionRow>
-      </article>
+            )}
+          </ActionRow>
+        </article>
+        {lightbox && (
+          <MediaLightbox
+            open
+            kind={lightbox.kind}
+            src={lightbox.src}
+            title={lightbox.title}
+            onClose={() => setLightbox(null)}
+          />
+        )}
+      </>
     );
   }
 

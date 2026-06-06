@@ -47,16 +47,21 @@ async function bearerHeaders(): Promise<HeadersInit> {
   if (apiKey) {
     return { "x-api-key": apiKey, "Content-Type": "application/json" };
   }
-  throw new Error("Akool authentication failed");
+  throw new Error("InfluexAI LiveSwap™ authentication failed");
+}
+
+function parseAkoolListPayload(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data;
+  if (!data || typeof data !== "object") return [];
+  const root = data as Record<string, unknown>;
+  if (Array.isArray(root.result)) return root.result;
+  if (Array.isArray(root.list)) return root.list;
+  if (Array.isArray(root.items)) return root.items;
+  return [];
 }
 
 function parseAvatarList(data: unknown): UgcAvatar[] {
-  const root = data as Record<string, unknown> | unknown[] | null;
-  const list = Array.isArray(root)
-    ? root
-    : Array.isArray((root as Record<string, unknown>)?.list)
-      ? ((root as Record<string, unknown>).list as unknown[])
-      : [];
+  const list = parseAkoolListPayload(data);
 
   const mapped: UgcAvatar[] = [];
   for (const item of list) {
@@ -97,10 +102,7 @@ export async function listAkoolVoices(
   page = 1,
   size = 40
 ): Promise<AkoolVoiceItem[]> {
-  const apiKey = getAkoolApiKey();
-  const headers: HeadersInit = apiKey
-    ? { "x-api-key": apiKey }
-    : await bearerHeaders();
+  const headers = await bearerHeaders();
 
   const url = `${AKOOL_V3}/voice/list?page=${page}&size=${size}`;
   const response = await fetch(url, { method: "GET", headers });
@@ -109,7 +111,7 @@ export async function listAkoolVoices(
     throw new Error(json.msg || "Stimmen-Liste nicht verfügbar");
   }
 
-  const list = Array.isArray(json.data) ? json.data : [];
+  const list = parseAkoolListPayload(json.data);
   const voices: AkoolVoiceItem[] = [];
   for (const item of list) {
     const row = item as Record<string, unknown>;

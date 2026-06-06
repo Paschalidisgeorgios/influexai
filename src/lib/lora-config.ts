@@ -110,3 +110,31 @@ export function trainingFalEndpoint(type: LoraModelType): string {
 export function creditsForLoraType(type: LoraModelType): number {
   return LORA_TRAINING_CREDITS[type];
 }
+
+/** Step-based LoRA training pricing (500→30 … 2000→100, linear between tiers). */
+const LORA_STEP_CREDIT_ANCHORS: ReadonlyArray<[steps: number, credits: number]> =
+  [
+    [500, 30],
+    [1000, 50],
+    [1500, 75],
+    [2000, 100],
+  ];
+
+export function creditsForLoraSteps(steps: number): number {
+  const clamped = Math.min(
+    LORA_STEPS_MAX,
+    Math.max(LORA_STEPS_MIN, Math.round(steps))
+  );
+
+  for (let i = 0; i < LORA_STEP_CREDIT_ANCHORS.length - 1; i++) {
+    const [s0, c0] = LORA_STEP_CREDIT_ANCHORS[i]!;
+    const [s1, c1] = LORA_STEP_CREDIT_ANCHORS[i + 1]!;
+    if (clamped <= s1) {
+      if (clamped <= s0) return c0;
+      const ratio = (clamped - s0) / (s1 - s0);
+      return Math.round(c0 + ratio * (c1 - c0));
+    }
+  }
+
+  return LORA_STEP_CREDIT_ANCHORS[LORA_STEP_CREDIT_ANCHORS.length - 1]![1];
+}

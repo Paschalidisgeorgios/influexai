@@ -297,7 +297,7 @@
       "script_placeholder": "Was soll der Creator sagen? Max. 500 Zeichen…",
       "language_label": "Sprache",
       "voice_label": "Stimme",
-      "voice_akool": "Akool Stimmen",
+      "voice_akool": "InfluexAI Voice",
       "voice_elevenlabs": "ElevenLabs",
       "avatar_label": "UGC Avatar wählen",
       "hooks_button": "Hook Generator — 3 Varianten",
@@ -311,6 +311,7 @@
       "new_video": "Neues Video",
       "credits_left": "{count} Credits übrig",
       "no_avatars": "Keine Avatare verfügbar.",
+      "avatars_loading": "Avatare werden geladen…",
       "error_load": "Avatare konnten nicht geladen werden.",
       "error_generic": "Video-Generierung fehlgeschlagen.",
       "error_failed": "Video-Generierung fehlgeschlagen. Bitte erneut versuchen.",
@@ -909,7 +910,7 @@
       "pro_f6": "Master Agent"
     },
     "ticker": {
-      "i0": "InfluexAI LiveSwap",
+      "i0": "InfluexAI LiveSwap™",
       "i1": "InfluexAI Vision",
       "i10": "Face Consistency",
       "i11": "Multi-Platform Export",
@@ -966,7 +967,7 @@
     "tab_studio": "Live Studio",
     "tab_talking": "Avatar Video",
     "title": "Live Creator Mode",
-    "upload_character": "Eigenes Bild"
+    "upload_character": "Eigenes Bild hochladen"
   },
   "nav": {
     "agent": "KI Agent",

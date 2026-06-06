@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ImageGenerationLoading } from "@/components/image-generation-loading";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
@@ -63,6 +63,12 @@ export default function KiIchPage() {
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (previewUrl) {
+      console.log("previewUrl:", previewUrl);
+    }
+  }, [previewUrl]);
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;

@@ -26,6 +26,13 @@ export type LiveCreatorCharacter = {
   kind: "preset" | "ki-ich" | "upload";
 };
 
+/** Presets shown in Live Creator studio (Casey, Sam, Riley + custom upload). */
+export const LIVE_CREATOR_STUDIO_PRESET_IDS = [
+  "preset-6",
+  "preset-4",
+  "preset-5",
+] as const;
+
 export const PRESET_LIVE_CHARACTERS: LiveCreatorCharacter[] = [
   {
     id: "preset-1",

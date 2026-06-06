@@ -14,6 +14,8 @@ import {
   mapAkoolVideoStatus,
 } from "@/lib/akool";
 import { assertGatedFeature } from "@/lib/access.server";
+import { mapAkoolErrorMessage } from "@/lib/akool-errors";
+import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export const maxDuration = 300;
 
@@ -230,12 +232,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: unknown) {
     console.error("[live-creator POST]", err);
+    const raw = err instanceof Error ? err.message : "Video-Generierung fehlgeschlagen";
     return NextResponse.json(
       {
-        error:
-          err instanceof Error
-            ? err.message
-            : "Video-Generierung fehlgeschlagen",
+        error: sanitizeUserMessage(mapAkoolErrorMessage(raw, "general")),
       },
       { status: 500 }
     );

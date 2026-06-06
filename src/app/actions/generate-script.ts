@@ -13,6 +13,7 @@ import {
   CLAUDE_JSON_SYSTEM_RULE,
   createAnthropicMessage,
   parseClaudeJson,
+  SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
 
 const GENERATE_COST = 2;
@@ -54,6 +55,24 @@ type GenerateFailure = {
   error: string;
 };
 
+function scriptGenerationUserError(e: unknown): string {
+  const msg = e instanceof Error ? e.message : "";
+  if (!msg) return "Generierung fehlgeschlagen. Bitte erneut versuchen.";
+  if (msg.includes("Nicht genug Credits")) return msg;
+  if (
+    msg.includes("KI ist") ||
+    msg.includes("Zu viele Anfragen") ||
+    msg.includes("Netzwerkfehler") ||
+    msg.includes("KI-Antwort") ||
+    msg.includes("Leeres Script")
+  ) {
+    return msg;
+  }
+  return msg.length <= 180
+    ? msg
+    : "Generierung fehlgeschlagen. Bitte erneut versuchen.";
+}
+
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -62,7 +81,16 @@ function parseScriptResponse(
   raw: string,
   hookVariantsRequested: boolean
 ): GeneratedScript {
-  const parsed = parseClaudeJson<Record<string, unknown>>(raw);
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = parseClaudeJson<Record<string, unknown>>(raw);
+  } catch (parseErr) {
+    console.error("parseScriptResponse JSON:", parseErr, raw.slice(0, 400));
+    throw new Error(
+      "KI-Antwort konnte nicht gelesen werden. Bitte erneut versuchen."
+    );
+  }
+
   const data =
     parsed?.script !== undefined
       ? parsed
@@ -130,6 +158,7 @@ JSON:
   const claude = await createAnthropicMessage({
     system: systemPrompt,
     user: userPrompt,
+    model: SCRIPT_GENERATOR_MODEL,
   });
   if (!claude.ok) {
     throw new Error(claude.error);
@@ -211,16 +240,11 @@ export async function generateScript(
 
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "";
     console.error("generateScript:", e);
+    if (e instanceof Error && e.stack) console.error(e.stack);
     return {
       success: false,
-      error:
-        msg && msg.includes("Nicht genug Credits")
-          ? msg
-          : msg && msg.includes("KI ist")
-            ? msg
-            : "Generierung fehlgeschlagen. Bitte erneut versuchen.",
+      error: scriptGenerationUserError(e),
     };
   }
 }
@@ -309,16 +333,11 @@ export async function regenerateScript(
 
     return { success: true, result, creditsLeft: deduction.remainingCredits };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "";
     console.error("regenerateScript:", e);
+    if (e instanceof Error && e.stack) console.error(e.stack);
     return {
       success: false,
-      error:
-        msg && msg.includes("Nicht genug Credits")
-          ? msg
-          : msg && msg.includes("KI ist")
-            ? msg
-            : "Generierung fehlgeschlagen. Bitte erneut versuchen.",
+      error: scriptGenerationUserError(e),
     };
   }
 }
@@ -368,11 +387,16 @@ export async function listSavedScripts(): Promise<SavedScriptRow[]> {
   } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("saved_scripts")
     .select("id, topic, script, settings, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("listSavedScripts:", error.message);
+    return [];
+  }
 
   return (data ?? []) as SavedScriptRow[];
 }

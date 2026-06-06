@@ -14,7 +14,7 @@ import {
 import { UseLoraModal } from "@/components/lora/UseLoraModal";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import {
-  creditsForLoraType,
+  creditsForLoraSteps,
   LORA_ESTIMATED_MINUTES,
   LORA_MAX_IMAGES,
   LORA_MIN_IMAGES,
@@ -85,7 +85,7 @@ function LoraTrainingPageInner() {
   const fileRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const creditCost = creditsForLoraType(trainType);
+  const creditCost = creditsForLoraSteps(trainingSteps);
 
   const loadModels = useCallback(async () => {
     const supabase = createClient();
@@ -421,7 +421,14 @@ function LoraTrainingPageInner() {
               <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginTop: 8 }}>{t("trigger_hint")}</p>
             </div>
             <div>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8 }}>{t("steps_label")}: {trainingSteps}</label>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)" }}>
+                  {t("steps_label")}: {trainingSteps}
+                </label>
+                <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#B4FF00" }}>
+                  {creditCost} Credits
+                </span>
+              </div>
               <input type="range" min={LORA_STEPS_MIN} max={LORA_STEPS_MAX} step={100} value={trainingSteps} onChange={(e) => setTrainingSteps(Number(e.target.value))} style={{ width: "100%", accentColor: "#B4FF00" }} />
               <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", marginTop: 6 }}>{t("steps_hint")}</p>
             </div>

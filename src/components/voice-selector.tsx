@@ -8,6 +8,7 @@ import {
 } from "@/lib/elevenlabs-tts";
 import { useLocale } from "next-intl";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
+import { playElevenLabsVoicePreview } from "@/lib/voice-preview-client";
 
 export type { ElevenLabsVoice };
 
@@ -140,24 +141,36 @@ export function VoiceSelector({
   const playPreview = (voice: ElevenLabsVoice, e: React.MouseEvent) => {
     e.stopPropagation();
 
+    if (playingId === voice.id) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setPlayingId(null);
+      return;
+    }
+
+    if (!voice.previewUrl) {
+      void playElevenLabsVoicePreview(
+        voice.id,
+        null,
+        audioRef,
+        (playing) => setPlayingId(playing ? voice.id : null)
+      );
+      return;
+    }
+
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
 
-    if (playingId === voice.id) {
-      setPlayingId(null);
-      return;
-    }
-
-    if (!voice.previewUrl) return;
-
     const audio = new Audio(voice.previewUrl);
     audioRef.current = audio;
     setPlayingId(voice.id);
-    audio.play();
     audio.onended = () => setPlayingId(null);
     audio.onerror = () => setPlayingId(null);
+    void audio.play().catch(() => setPlayingId(null));
   };
 
   if (loading) {
@@ -337,20 +350,18 @@ export function VoiceSelector({
                 </div>
               </div>
 
-              {voice.previewUrl && (
-                <button
-                  type="button"
-                  onClick={(e) => playPreview(voice, e)}
-                  className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all text-xs ${
-                    playingId === voice.id
-                      ? "border-[#B4FF00] bg-[#B4FF00] text-black"
-                      : "border-white/20 text-white/80 hover:border-[#B4FF00] hover:text-[#B4FF00]"
-                  }`}
-                  title="Vorschau abspielen"
-                >
-                  {playingId === voice.id ? "⏹" : "▶"}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={(e) => playPreview(voice, e)}
+                className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all text-xs ${
+                  playingId === voice.id
+                    ? "border-[#B4FF00] bg-[#B4FF00] text-black"
+                    : "border-white/20 text-white/80 hover:border-[#B4FF00] hover:text-[#B4FF00]"
+                }`}
+                title="Vorschau abspielen"
+              >
+                {playingId === voice.id ? "⏹" : "▶"}
+              </button>
             </div>
           ))
         )}

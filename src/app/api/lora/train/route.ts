@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
-  creditsForLoraType,
+  creditsForLoraSteps,
   LORA_STEPS_DEFAULT,
   LORA_STEPS_MAX,
   LORA_STEPS_MIN,
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Not logged in" }, { status: 401 });
   }
 
-  const creditCost = creditsForLoraType(type);
+  const creditCost = creditsForLoraSteps(steps);
   const creditCheck = await hasEnoughCredits(supabase, user.id, creditCost);
   if (!creditCheck.ok) {
     return NextResponse.json(
