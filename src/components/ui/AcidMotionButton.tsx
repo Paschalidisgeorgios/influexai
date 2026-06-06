@@ -7,11 +7,6 @@ import { forwardRef } from "react";
 
 const spring = { type: "spring" as const, stiffness: 400, damping: 17 };
 
-const acidShockTap = {
-  scale: 0.97,
-  boxShadow: "0 0 0 14px rgba(180,255,0,0.28)",
-};
-
 type AcidMotionButtonProps = {
   href?: string;
   className?: string;
@@ -31,14 +26,16 @@ export const AcidMotionButton = forwardRef<
 ) {
   const classes = className ?? "btn-acid";
   const isPrimary = classes.includes("btn-acid");
+  const tap = isPrimary ? { scale: 0.97 } : { scale: 0.97 };
+  const hover = { scale: 1.03 };
 
   if (href) {
     return (
       <motion.span
-        whileHover={{ scale: 1.03 }}
-        whileTap={isPrimary ? acidShockTap : { scale: 0.97 }}
+        whileHover={hover}
+        whileTap={tap}
         transition={spring}
-        className="inline-flex"
+        className={`inline-flex${isPrimary ? " acid-motion-btn--primary" : ""}`}
         style={{ willChange: "transform" }}
       >
         <Link
@@ -58,10 +55,10 @@ export const AcidMotionButton = forwardRef<
       ref={ref}
       type={type}
       disabled={disabled}
-      className={classes}
+      className={`${classes}${isPrimary ? " acid-motion-btn--primary" : ""}`}
       onClick={onClick as MouseEventHandler<HTMLButtonElement> | undefined}
-      whileHover={{ scale: 1.03 }}
-      whileTap={isPrimary ? acidShockTap : { scale: 0.97 }}
+      whileHover={hover}
+      whileTap={tap}
       transition={spring}
       style={{ ...style, willChange: "transform" }}
     >

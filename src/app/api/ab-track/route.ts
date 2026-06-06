@@ -41,21 +41,24 @@ export async function POST(request: NextRequest) {
 
   const userAgent = request.headers.get("user-agent") ?? "";
 
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  try {
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
-  const { error } = await supabaseAdmin.from("ab_events").insert({
-    variant,
-    event,
-    session_id: sessionId,
-    user_agent: userAgent.slice(0, 500),
-  });
+    const { error } = await supabaseAdmin.from("ab_events").insert({
+      variant,
+      event,
+      session_id: sessionId,
+      user_agent: userAgent.slice(0, 500),
+    });
 
-  if (error) {
-    console.error("[ab-track]", error.message);
-    return NextResponse.json({ error: "Failed to log event" }, { status: 500 });
+    if (error) {
+      console.warn("[ab-track]", error.message);
+    }
+  } catch (err) {
+    console.warn("[ab-track]", err);
   }
 
   return response;

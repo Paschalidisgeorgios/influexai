@@ -353,23 +353,20 @@ html[data-world="brand"] {
     background: rgba(255, 255, 255, 0.05);
   }
 
-  /* Landing toolbar — light bar on Acid Noir (fixed: sticky breaks under body overflow-x:hidden) */
+  /* Landing toolbar — sticky via Tailwind on .landing-nav-shell */
   .landing-nav-shell {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    width: 100%;
     padding: clamp(12px, 2.5vw, 18px) clamp(16px, 5vw, 40px);
     transition:
       padding 0.3s ease,
       background 0.3s ease;
   }
   .landing-nav-spacer {
-    height: var(--landing-nav-height, 5.75rem);
+    height: 0;
     flex-shrink: 0;
     pointer-events: none;
+  }
+  .acid-motion-btn--primary:active {
+    box-shadow: 0 0 0 14px rgba(180, 255, 0, 0.28);
   }
   .landing-nav-shell--scrolled {
     padding-top: 8px;
