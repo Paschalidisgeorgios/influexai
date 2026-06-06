@@ -421,13 +421,6 @@ export const NAV_GROUPS: {
       { id: "live-creator", href: "/dashboard/live-creator", labelKey: "live_creator", icon: Video, badge: "LIVE", comingSoon: false },
       { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace, badge: "NEU" },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
-      {
-        id: "voice-agent",
-        href: "/dashboard/voice-agent",
-        label: "Voice Agent",
-        icon: Bot,
-        badge: "SOON",
-      },
     ],
   },
 ];
