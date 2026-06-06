@@ -63,10 +63,8 @@ export function HeroTitle({ titles }: Props) {
     <h1
       aria-live="polite"
       aria-atomic="true"
+      className="relative mb-7 min-h-[160px] w-full max-w-full md:mb-7 md:min-h-[320px]"
       style={{
-        position: "relative",
-        minHeight: 320,
-        marginBottom: 28,
         fontFamily: "var(--heading-font)",
         fontWeight: "var(--heading-weight, 400)" as unknown as number,
         fontStyle: "var(--heading-style, normal)" as React.CSSProperties["fontStyle"],
@@ -79,9 +77,8 @@ export function HeroTitle({ titles }: Props) {
         return (
           <span
             key={`${index}-${i}-${line}`}
+            className="block w-full max-w-full text-[clamp(36px,9vw,72px)] md:text-[clamp(52px,12vw,120px)]"
             style={{
-              display: "block",
-              fontSize: "clamp(52px, 12vw, 120px)",
               fontWeight: "inherit",
               lineHeight: "var(--heading-leading, 0.88)",
               letterSpacing: "inherit",

@@ -45,7 +45,7 @@ export function TrustBarSection() {
 
   return (
     <div
-      className="trust-bar max-h-[80px] overflow-hidden border-y border-[var(--border)]"
+      className="trust-bar max-h-[80px] overflow-hidden overflow-x-hidden max-w-full border-y border-[var(--border)]"
       style={{ background: "var(--bg-1)" }}
       aria-label={t("launchBanner")}
     >
@@ -269,7 +269,7 @@ function LandingPreFooterCta() {
 
   return (
     <div
-      className={`${LANDING_SECTION_COMPACT_CLASS} relative overflow-hidden text-center`}
+      className={`${LANDING_SECTION_COMPACT_CLASS} relative overflow-x-hidden max-w-full text-center`}
       style={{
         background: "var(--bg)",
         borderTop: "1px solid var(--border)",

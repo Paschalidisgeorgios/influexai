@@ -40,7 +40,7 @@ export function SidebarNavLink({
       {active && (
         <motion.span
           layoutId="sidebar-active-indicator"
-          className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-[#B4FF00]"
+          className="pointer-events-none absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-[#B4FF00]"
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{ scaleY: 1, opacity: 1 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}

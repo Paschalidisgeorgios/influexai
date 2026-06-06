@@ -12,7 +12,7 @@ export function DashboardLayoutClient({
 }) {
   return (
     <div className="flex h-screen overflow-hidden bg-[#060608]">
-      <div className="hidden lg:flex">
+      <div className="hidden md:flex shrink-0">
         <DashboardSidebar />
       </div>
       <DashboardShell>

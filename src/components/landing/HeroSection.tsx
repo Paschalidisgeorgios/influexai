@@ -305,8 +305,30 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   return (
     <section
       id="landing-hero-sentinel"
-      className="relative min-h-[min(100vh,920px)] overflow-visible"
+      className="relative min-h-[min(100vh,920px)] overflow-x-clip max-w-[100vw]"
     >
+      {/* Mobile: dezentes Hintergrundbild (CSS, kein Video) */}
+      <div
+        className="absolute inset-0 z-[2] md:hidden pointer-events-none overflow-hidden"
+        aria-hidden
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/images/landing/feature-1.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            opacity: 0.15,
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0.92) 100%)",
+          }}
+        />
+      </div>
       {/* Base grid + interactive reveal */}
       <div
         className="absolute inset-0 z-0 overflow-visible pointer-events-none"
@@ -339,7 +361,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
       {/* Copy */}
       <div
-        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] max-w-[1160px] flex-col justify-center"
+        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden"
         style={{
           padding:
             "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
@@ -384,23 +406,23 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         </SpringReveal>
 
         <SpringReveal delay={0.16}>
-          <p className="hero-subtitle mb-8 max-w-[520px]">
+          <p className="hero-subtitle mb-8 w-full max-w-full md:max-w-[520px]">
             {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
           </p>
         </SpringReveal>
 
         <SpringReveal delay={0.4}>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 mb-10">
+          <div className="flex w-full max-w-full flex-col gap-2.5 mb-10 sm:flex-row sm:flex-wrap">
             <AcidMotionButton
               href="/auth/sign-up"
-              className="btn-acid justify-center sm:justify-start"
+              className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
               onClick={() => void trackAbEvent("signup_click", variant)}
             >
               → {t("cta_primary", priceParams)}
             </AcidMotionButton>
             <a
               href="#features"
-              className="btn-ghost justify-center sm:justify-start"
+              className="btn-ghost w-full justify-center sm:w-auto sm:justify-start"
             >
               {t("cta_secondary")}
             </a>

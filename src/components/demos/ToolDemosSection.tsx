@@ -29,7 +29,7 @@ export function ToolDemosSection() {
   return (
     <section
       id="tool-demos"
-      className="py-16 md:py-24 px-[clamp(20px,6vw,64px)]"
+      className="w-full max-w-[100vw] py-16 md:py-24 px-[clamp(20px,6vw,64px)] overflow-x-hidden"
     >
       <div className="max-w-[960px] mx-auto">
         <SpringReveal>
