@@ -526,6 +526,21 @@
       "error_no_script": "Please enter a script.",
       "error_credits": "Not enough credits ({cost} required)."
     },
+    "viral_hook": {
+      "title": "Viral Hook Extractor",
+      "description": "YouTube URL → hook + storytelling structure → script",
+      "button": "Extract hook — {cost} credits"
+    },
+    "content_kalender": {
+      "title": "Content Calendar",
+      "description": "30-day content plan with topics, hooks and posting times",
+      "button": "Generate calendar — {cost} credits"
+    },
+    "trend_to_script": {
+      "title": "Trend → Script",
+      "description": "Spot a trend → get a matching script instantly",
+      "button": "Generate script — {cost} credits"
+    },
     "viral_score": {
       "analyze_again": "New analysis",
       "analyzing": "Calculating viral score…",
@@ -971,6 +986,41 @@
         "tag2": "Contrarian Angle",
         "tag3": "List Format (viral)",
         "title": "\"5 mistakes 99% make\""
+      },
+      "viralHook": {
+        "problem": "You see viral videos — but don't know why the hook works?",
+        "benefit_prefix": "Hook + storytelling in",
+        "benefit_highlight": "seconds",
+        "benefit_suffix": " — turn it into a script instantly.",
+        "url": "youtube.com/shorts/…",
+        "hook": "\"Stop — you're making this mistake every morning…\"",
+        "problem_line": "99% start the day wrong",
+        "cta_line": "Follow for part 2"
+      },
+      "contentKalender": {
+        "problem": "No idea what to post tomorrow?",
+        "benefit_prefix": "",
+        "benefit_highlight": "30 days",
+        "benefit_suffix": " planned — topic, hook, time & hashtags per post.",
+        "row1_day": "1",
+        "row1_topic": "Morning routine myth",
+        "row1_hook": "This kills your focus…",
+        "row2_day": "4",
+        "row2_topic": "3 tools under 5 min",
+        "row2_hook": "Nobody uses tool #2…",
+        "row3_day": "7",
+        "row3_topic": "Week recap",
+        "row3_hook": "My best idea this week…"
+      },
+      "trendToScript": {
+        "problem": "Trends come and go — you're always late?",
+        "benefit_prefix": "Trend × niche =",
+        "benefit_highlight": "ready script",
+        "benefit_suffix": " with hook, story & CTA.",
+        "trend": "AI Agents",
+        "niche": "Productivity",
+        "hook": "AI agents replace your job — or your workflow?",
+        "main": "Here are 3 agents I use daily…"
       },
       "viralscore": {
         "benefit_number": "87/100",

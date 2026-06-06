@@ -7,6 +7,9 @@ import { ScriptGeneratorDemo } from "./ScriptGeneratorDemo";
 import { NicheAnalyzerDemo } from "./NicheAnalyzerDemo";
 import { ThumbnailConceptDemo } from "./ThumbnailConceptDemo";
 import { OutlierDetectorDemo } from "./OutlierDetectorDemo";
+import { ViralHookDemo } from "./ViralHookDemo";
+import { ContentKalenderDemo } from "./ContentKalenderDemo";
+import { TrendToScriptDemo } from "./TrendToScriptDemo";
 import { ViralScoreDemo } from "./ViralScoreDemo";
 import { AvatarDemo } from "./AvatarDemo";
 import { AgentDemo } from "./AgentDemo";
@@ -55,6 +58,15 @@ export function ToolDemosSection() {
           </FocusWrap>
           <FocusWrap>
             <OutlierDetectorDemo />
+          </FocusWrap>
+          <FocusWrap>
+            <ViralHookDemo />
+          </FocusWrap>
+          <FocusWrap>
+            <ContentKalenderDemo />
+          </FocusWrap>
+          <FocusWrap>
+            <TrendToScriptDemo />
           </FocusWrap>
           <FocusWrap>
             <ViralScoreDemo />
