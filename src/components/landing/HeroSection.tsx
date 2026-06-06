@@ -103,6 +103,12 @@ const HERO_MEDIA_OBJECT_STYLE = {
 
 const HERO_MEDIA_FILTER = "brightness(1.04) saturate(1.08)";
 
+function prepVideoAtStart(video: HTMLVideoElement) {
+  video.pause();
+  video.currentTime = 0;
+  video.addEventListener("seeked", () => {}, { once: true });
+}
+
 function HeroBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
@@ -122,10 +128,12 @@ function HeroBackgroundMedia() {
   }, [activeIndex]);
 
   useEffect(() => {
-    const v1 = videoRef1.current;
-    const v2 = videoRef2.current;
-    if (v1) void v1.load();
-    if (v2) void v2.load();
+    if (videoRef1.current) {
+      videoRef1.current.load();
+    }
+    if (videoRef2.current) {
+      videoRef2.current.load();
+    }
   }, []);
 
   useEffect(() => {
@@ -133,29 +141,23 @@ function HeroBackgroundMedia() {
     const v2 = videoRef2.current;
 
     if (activeIndex === HERO_VIDEO_1_INDEX && v1) {
-      if (v1.paused) {
-        v1.currentTime = 0;
-        void v1.play().catch(() => {});
-      }
+      void v1.play().catch(() => {});
       v2?.pause();
     } else if (activeIndex === HERO_VIDEO_2_INDEX && v2) {
-      if (v2.paused) {
-        v2.currentTime = 0;
-        void v2.play().catch(() => {});
+      v2.currentTime = 0;
+      void v2.play().catch(() => {});
+      if (v1) {
+        prepVideoAtStart(v1);
       }
-      v1?.pause();
-    } else {
-      v1?.pause();
+    } else if (activeIndex === HERO_IMAGE_INDEX) {
       v2?.pause();
+      if (v1) {
+        prepVideoAtStart(v1);
+      }
     }
   }, [activeIndex]);
 
   const handleVideo1Ended = () => {
-    const v2 = videoRef2.current;
-    if (v2) {
-      v2.currentTime = 0;
-      void v2.play().catch(() => {});
-    }
     setActiveIndex(HERO_VIDEO_2_INDEX);
   };
 
