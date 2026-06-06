@@ -10,7 +10,7 @@ import {
   saveThumbnailConcept,
   type ThumbnailConcept,
 } from "@/app/actions/generate-thumbnail";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -137,7 +137,9 @@ function ThumbnailConceptPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(sanitizeUserMessage(res.error));
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         setStep("input");
         return;
       }

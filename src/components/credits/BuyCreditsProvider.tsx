@@ -12,11 +12,19 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan } from "@/lib/access";
-import { NoCreditsModal } from "@/components/ui/NoCreditsModal";
+import {
+  NoCreditsModal,
+  type NoCreditsModalPlanInfo,
+} from "@/components/ui/NoCreditsModal";
 import {
   onBuyCreditsRequest,
   openBuyCreditsModal,
+  type NoCreditsModalDetail,
 } from "@/lib/client-credits-ui";
+import {
+  getPlanDisplayName,
+  getPlanMonthlyCredits,
+} from "@/lib/subscription-plans";
 
 const LOW_CREDITS_THRESHOLD = 20;
 const LOW_SHOWN_KEY = "influexai_buy_credits_low_shown";
@@ -58,7 +66,8 @@ function CreditsToast({
       style={{
         background: "var(--accent, #B4FF00)",
         color: "#060608",
-        boxShadow: "0 8px 32px color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)",
+        boxShadow:
+          "0 8px 32px color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)",
       }}
     >
       {message}
@@ -87,8 +96,14 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
   const [credits, setCredits] = useState<number | null>(null);
   const [hasPlan, setHasPlan] = useState(false);
+  const [planName, setPlanName] = useState("Free");
+  const [planMonthlyCredits, setPlanMonthlyCredits] = useState(50);
+  const [hasSubscription, setHasSubscription] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [forceOpen, setForceOpen] = useState(false);
+  const [modalDetail, setModalDetail] = useState<NoCreditsModalDetail | null>(
+    null
+  );
   const [toast, setToast] = useState<string | null>(null);
   const processedCheckoutRef = useRef<string | null>(null);
 
@@ -100,19 +115,21 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
     const { data } = await supabase
       .from("profiles")
-      .select("credits, plan, role, is_admin")
+      .select("credits, plan, role, is_admin, stripe_subscription_id")
       .eq("id", user.id)
       .single();
 
     if (data) {
       setCredits(data.credits ?? 0);
-      setHasPlan(
-        hasActivePlan({
-          plan: data.plan,
-          role: data.role,
-          is_admin: data.is_admin,
-        })
-      );
+      const active = hasActivePlan({
+        plan: data.plan,
+        role: data.role,
+        is_admin: data.is_admin,
+      });
+      setHasPlan(active);
+      setPlanName(getPlanDisplayName(data.plan));
+      setPlanMonthlyCredits(getPlanMonthlyCredits(data.plan));
+      setHasSubscription(Boolean(data.stripe_subscription_id));
     }
   }, [supabase]);
 
@@ -132,13 +149,27 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     };
   }, [loadProfile]);
 
-  const openModal = useCallback((opts?: { force?: boolean }) => {
-    if (opts?.force) setForceOpen(true);
-    setModalOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (opts?: { force?: boolean; detail?: NoCreditsModalDetail }) => {
+      if (opts?.detail) setModalDetail(opts.detail);
+      else setModalDetail(null);
+      if (opts?.force) setForceOpen(true);
+      setModalOpen(true);
+    },
+    []
+  );
 
   useEffect(() => {
-    return onBuyCreditsRequest(() => openModal({ force: true }));
+    return onBuyCreditsRequest((detail) => {
+      openModal({
+        force: Boolean(
+          detail &&
+            typeof detail.remaining === "number" &&
+            detail.remaining <= 0
+        ),
+        detail,
+      });
+    });
   }, [openModal]);
 
   useEffect(() => {
@@ -146,6 +177,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
     if (credits <= 0) {
       setForceOpen(true);
+      setModalDetail((prev) => prev ?? { remaining: 0 });
       setModalOpen(true);
       return;
     }
@@ -156,9 +188,11 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       try {
         if (!sessionStorage.getItem(LOW_SHOWN_KEY)) {
           sessionStorage.setItem(LOW_SHOWN_KEY, "1");
+          setModalDetail(null);
           setModalOpen(true);
         }
       } catch {
+        setModalDetail(null);
         setModalOpen(true);
       }
     }
@@ -211,6 +245,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     stripCheckoutSuccessParams();
     setModalOpen(false);
     setForceOpen(false);
+    setModalDetail(null);
     setToast(t("checkout_success"));
 
     void refreshCreditsAfterCheckout(sessionId);
@@ -219,15 +254,39 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   const handleClose = () => {
     if (forceOpen) return;
     setModalOpen(false);
+    setModalDetail(null);
   };
 
+  const planInfo: NoCreditsModalPlanInfo | null = hasPlan
+    ? {
+        planName,
+        monthlyCredits: planMonthlyCredits,
+        hasSubscription,
+      }
+    : null;
+
   return (
-    <BuyCreditsContext.Provider value={{ open: () => openModal(), credits }}>
+    <BuyCreditsContext.Provider
+      value={{ open: () => openModal(), credits }}
+    >
       {children}
       <NoCreditsModal
         open={modalOpen && hasPlan}
         onClose={handleClose}
         forceOpen={forceOpen}
+        required={modalDetail?.required}
+        remaining={
+          modalDetail?.remaining ??
+          (typeof credits === "number" ? credits : undefined)
+        }
+        initialView={
+          modalDetail?.showPackages
+            ? "packages"
+            : typeof modalDetail?.required === "number"
+              ? "prompt"
+              : undefined
+        }
+        planInfo={planInfo}
       />
       {toast && (
         <CreditsToast message={toast} onDone={() => setToast(null)} />

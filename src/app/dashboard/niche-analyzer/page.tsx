@@ -8,7 +8,7 @@ import {
   saveNicheChoice,
   type NicheIdea,
 } from "@/app/actions/analyze-niche";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
@@ -120,7 +120,9 @@ export default function NicheAnalyzerPage() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(sanitizeUserMessage(result.error));
+        if (shouldShowInlineGenerationError(result)) {
+          setError(sanitizeUserMessage(result.error));
+        }
         setStep("input");
         return;
       }

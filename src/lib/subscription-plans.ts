@@ -123,6 +123,12 @@ export function getPlanMonthlyCredits(plan: string | null | undefined): number {
   return SUBSCRIPTION_PLANS[id].monthlyCredits;
 }
 
+export function getPlanDisplayName(plan: string | null | undefined): string {
+  const id = normalizePlan(plan);
+  if (id === "free") return "Free";
+  return id.charAt(0).toUpperCase() + id.slice(1);
+}
+
 export function getStripePriceId(
   plan: Exclude<SubscriptionPlanId, "free">,
   interval: BillingInterval

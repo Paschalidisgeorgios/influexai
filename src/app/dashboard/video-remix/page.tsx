@@ -8,7 +8,7 @@ import { Repeat2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { remixVideo } from "@/app/actions/remix-video";
 import type { RemixConcept } from "@/lib/remix-analysis";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
@@ -173,7 +173,9 @@ export default function VideoRemixPage() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(sanitizeUserMessage(result.error));
+        if (shouldShowInlineGenerationError(result)) {
+          setError(sanitizeUserMessage(result.error));
+        }
         setStep("input");
         return;
       }

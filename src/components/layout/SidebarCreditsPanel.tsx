@@ -86,7 +86,7 @@ export function SidebarCreditsPanel({ credits, maxCredits }: Props) {
 
       <button
         type="button"
-        onClick={openBuyCreditsModal}
+        onClick={() => openBuyCreditsModal()}
         className={`block w-full text-center py-1.5 rounded-lg bg-[var(--accent,#B4FF00)]/10 border border-[var(--accent,#B4FF00)]/20 text-[var(--accent,#B4FF00)] text-[0.72rem] font-bold cursor-pointer transition-colors hover:bg-[var(--accent,#B4FF00)]/15 ${
           level === "empty" ? "sidebar-topup-pulse" : ""
         }`}

@@ -14,7 +14,7 @@ import {
   type GenerateScriptInput,
   type ScriptSettings,
 } from "@/app/actions/generate-script";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { ScriptSkeleton } from "@/components/skeletons/script-skeleton";
@@ -283,7 +283,9 @@ function ScriptGeneratorPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(sanitizeUserMessage(res.error));
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         setStep("input");
         return;
       }
@@ -312,7 +314,9 @@ function ScriptGeneratorPageInner() {
       );
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(sanitizeUserMessage(res.error));
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         setStep("results");
         return;
       }

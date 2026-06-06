@@ -7,6 +7,7 @@ import { Video } from "lucide-react";
 import { LiveCreatorVoicePicker } from "@/components/live-creator-voice-picker";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
+import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { useLocale } from "next-intl";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -223,7 +224,7 @@ export default function UgcVideoPage() {
       return;
     }
     if (credits !== null && credits < CREDIT_COST) {
-      setError(t("error_credits", { cost: CREDIT_COST }));
+      handleInsufficientCredits(credits, CREDIT_COST);
       return;
     }
 
@@ -250,6 +251,17 @@ export default function UgcVideoPage() {
         }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          CREDIT_COST
+        )
+      ) {
+        setStep("input");
+        setSubmitting(false);
+        return;
+      }
       if (!res.ok) throw new Error(data.error ?? t("error_generic"));
 
       pollJob(data.jobId);

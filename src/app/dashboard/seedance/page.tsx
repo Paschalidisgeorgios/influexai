@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Film, Link2, Upload } from "lucide-react";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
+import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { SEEDANCE_CREDIT_COST, SEEDANCE_UI_NAME } from "@/lib/seedance-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { createClient } from "@/lib/supabase/client";
@@ -194,6 +195,17 @@ export default function SeedancePage() {
         }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          SEEDANCE_CREDIT_COST
+        )
+      ) {
+        stopTimers();
+        setGenerating(false);
+        return;
+      }
       if (!res.ok || !data.videoUrl) {
         throw new Error(data.error ?? "Video-Generierung fehlgeschlagen");
       }

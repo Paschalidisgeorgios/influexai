@@ -6,7 +6,6 @@ import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { CreditsWarningBanner } from "@/components/credits-warning-banner";
 import { ReengagementBanner } from "@/components/reengagement-banner";
-import { UpgradePromptListener } from "@/components/upgrade-prompt";
 import { PostGenerationUpsell } from "@/components/post-generation-upsell";
 import { PlatformBanners } from "@/components/platform-banners";
 import { PoweredByFooter } from "@/components/tenant-provider";
@@ -67,7 +66,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </main>
         <PoweredByFooter />
         <MobileBottomNav />
-        <UpgradePromptListener />
         <PostGenerationUpsell />
       </div>
     </BuyCreditsProvider>

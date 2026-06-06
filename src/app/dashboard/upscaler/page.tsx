@@ -9,6 +9,7 @@ import { ImageCompareSlider } from "@/components/image-generator/ImageCompareSli
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { createClient } from "@/lib/supabase/client";
 import { useUserCredits } from "@/hooks/use-user-credits";
 
@@ -97,6 +98,15 @@ function UpscalerPageInner() {
         body: JSON.stringify({ generationId: selectedId }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          creditCost
+        )
+      ) {
+        return;
+      }
       if (!res.ok || !data.success) {
         throw new Error(data.error || tImg("error_upscale"));
       }

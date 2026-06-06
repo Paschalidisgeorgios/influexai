@@ -8,12 +8,15 @@ const panelTransition = {
   ease: [0.16, 1, 0.3, 1] as const,
 };
 
+type PanelTransition = typeof panelTransition;
+
 type MotionModalProps = {
   open: boolean;
   onClose?: () => void;
   children: ReactNode;
   className?: string;
   overlayClassName?: string;
+  panelTransition?: PanelTransition;
 };
 
 export function MotionModal({
@@ -22,7 +25,9 @@ export function MotionModal({
   children,
   className,
   overlayClassName,
+  panelTransition: panelTransitionOverride,
 }: MotionModalProps) {
+  const transition = panelTransitionOverride ?? panelTransition;
   return (
     <AnimatePresence>
       {open && (
@@ -44,7 +49,7 @@ export function MotionModal({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={panelTransition}
+            transition={transition}
             onClick={(e) => e.stopPropagation()}
           >
             {children}

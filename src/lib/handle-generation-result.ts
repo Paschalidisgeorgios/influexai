@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  handleInsufficientCredits,
+  handleGenerationCreditError,
   notifyGenerationComplete,
 } from "@/lib/client-credits-ui";
 
@@ -29,8 +29,8 @@ export function onGenerationActionResult(
     return true;
   }
 
-  if (typeof res.credits === "number" && typeof res.required === "number") {
-    handleInsufficientCredits(res.credits, res.required);
-  }
+  handleGenerationCreditError(res);
   return false;
 }
+
+export { shouldShowInlineGenerationError } from "@/lib/client-credits-ui";

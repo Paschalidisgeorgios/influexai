@@ -5,6 +5,8 @@ import Image from "next/image";
 import { ImageGenerationLoading } from "@/components/image-generation-loading";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import { FAL_CREDITS } from "@/lib/fal-credits";
 
 type Step = "upload" | "describe" | "loading" | "preview" | "result";
 
@@ -91,6 +93,15 @@ export default function KiIchPage() {
       }),
     });
     const data = await res.json();
+    if (
+      handleApiInsufficientCredits(
+        res.status,
+        data as { error?: string; credits?: number },
+        FAL_CREDITS.fluxPulid
+      )
+    ) {
+      throw new Error("__CREDITS_HANDLED__");
+    }
     if (!res.ok || !data.imageUrl || !data.generationId) {
       throw new Error(data.error || "Fehler beim Generieren");
     }
@@ -115,6 +126,10 @@ export default function KiIchPage() {
       setPreviewUrl(data.imageUrl);
       setStep("preview");
     } catch (err: unknown) {
+      if (err instanceof Error && err.message === "__CREDITS_HANDLED__") {
+        setStep("describe");
+        return;
+      }
       setError(
         sanitizeUserMessage(
           err instanceof Error
@@ -140,6 +155,10 @@ export default function KiIchPage() {
       setStep("result");
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err: unknown) {
+      if (err instanceof Error && err.message === "__CREDITS_HANDLED__") {
+        setStep("preview");
+        return;
+      }
       setError(
         sanitizeUserMessage(
           err instanceof Error

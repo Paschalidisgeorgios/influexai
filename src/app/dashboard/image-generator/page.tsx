@@ -16,6 +16,10 @@ import {
   type ImageCategoryKey,
   uiFormatToImageSize,
 } from "@/lib/generation-config";
+import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import {
+  IMAGE_GEN_CREDITS,
+} from "@/lib/image-generator-credits";
 import { createClient } from "@/lib/supabase/client";
 
 type UiFormat = "1:1" | "16:9" | "9:16" | "4:3";
@@ -137,6 +141,18 @@ export default function ImageGeneratorPage() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
+      const creditCost = highRes
+        ? IMAGE_GEN_CREDITS.highRes
+        : IMAGE_GEN_CREDITS.standard;
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          creditCost
+        )
+      ) {
+        return;
+      }
       if (!res.ok || !data.imageUrl) {
         throw new Error(data.error || t("error_generic"));
       }
@@ -181,6 +197,15 @@ export default function ImageGeneratorPage() {
         }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          IMAGE_GEN_CREDITS.variation
+        )
+      ) {
+        return;
+      }
       if (!res.ok || !data.imageUrl) {
         throw new Error(data.error || t("error_generic"));
       }
@@ -216,6 +241,15 @@ export default function ImageGeneratorPage() {
         body: JSON.stringify({ generationId: result.generationId }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          IMAGE_GEN_CREDITS.upscale
+        )
+      ) {
+        return;
+      }
       if (!res.ok) throw new Error(data.error || t("error_upscale"));
       setCompare({
         originalUrl: data.originalUrl,
@@ -253,6 +287,15 @@ export default function ImageGeneratorPage() {
         body: JSON.stringify({ generationId: result.generationId }),
       });
       const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          IMAGE_GEN_CREDITS.download
+        )
+      ) {
+        return;
+      }
       if (!res.ok) throw new Error(data.error || t("error_download"));
       setResult((r) =>
         r

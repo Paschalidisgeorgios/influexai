@@ -2,6 +2,7 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
@@ -47,7 +48,7 @@ export async function generateVoice(
 
   const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
   if (!creditCheck.ok) {
-    return { success: false, error: "Nicht genug Credits." };
+    return insufficientCreditsError(creditCheck.credits, CREDIT_COST);
   }
 
   try {

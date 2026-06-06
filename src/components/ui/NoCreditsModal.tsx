@@ -1,17 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Zap } from "lucide-react";
+import { ArrowLeft, Zap } from "lucide-react";
 import { MotionModal } from "@/components/ui/MotionModal";
-import { CREDIT_PACKAGES, getStripePriceIdForPackage } from "@/lib/credit-packages";
+import {
+  CREDIT_PACKAGES,
+  getPackageById,
+  getStripePriceIdForPackage,
+  recommendCreditPackageId,
+  type CreditPackageId,
+} from "@/lib/credit-packages";
+import { YEARLY_DISCOUNT_PERCENT } from "@/lib/subscription-plans";
+
+export type NoCreditsModalPlanInfo = {
+  planName: string;
+  monthlyCredits: number;
+  hasSubscription: boolean;
+  daysUntilRenewal?: number | null;
+};
 
 type Props = {
   open: boolean;
   onClose?: () => void;
-  /** When true, modal cannot be dismissed (0 credits with active plan). */
   forceOpen?: boolean;
+  required?: number;
+  remaining?: number;
+  initialView?: "prompt" | "packages";
+  planInfo?: NoCreditsModalPlanInfo | null;
 };
 
 function formatEur(amount: number): string {
@@ -21,16 +38,50 @@ function formatEur(amount: number): string {
 }
 
 function formatCentPerCredit(pricePerCredit: number): string {
-  const cents = Math.round(pricePerCredit * 100);
-  return String(cents);
+  return String(Math.round(pricePerCredit * 100));
 }
 
-export function NoCreditsModal({ open, onClose, forceOpen = false }: Props) {
+export function NoCreditsModal({
+  open,
+  onClose,
+  forceOpen = false,
+  required,
+  remaining,
+  initialView,
+  planInfo,
+}: Props) {
   const t = useTranslations("noCredits");
+  const [view, setView] = useState<"prompt" | "packages">("prompt");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const canClose = !forceOpen && onClose;
+  const resolvedRemaining =
+    typeof remaining === "number" ? remaining : undefined;
+  const resolvedRequired =
+    typeof required === "number"
+      ? required
+      : typeof resolvedRemaining === "number"
+        ? resolvedRemaining + 1
+        : undefined;
+  const missing =
+    typeof resolvedRequired === "number" && typeof resolvedRemaining === "number"
+      ? Math.max(0, resolvedRequired - resolvedRemaining)
+      : undefined;
+  const recommendedId: CreditPackageId =
+    typeof missing === "number"
+      ? recommendCreditPackageId(missing)
+      : "extra_300";
+  const recommendedPkg = getPackageById(recommendedId);
+
+  useEffect(() => {
+    if (!open) return;
+    setError(null);
+    setView(
+      initialView ??
+        (typeof required === "number" ? "prompt" : "packages")
+    );
+  }, [open, initialView, required]);
 
   const handleCheckout = async (priceId: string | undefined) => {
     if (!priceId) {
@@ -58,143 +109,290 @@ export function NoCreditsModal({ open, onClose, forceOpen = false }: Props) {
     }
   };
 
+  const planFooter = planInfo ? (
+    <div className="mt-5 space-y-1 text-center text-xs text-white/40">
+      <p>
+        {t("plan_footer", {
+          plan: planInfo.planName,
+          monthly: planInfo.monthlyCredits,
+        })}
+      </p>
+      {planInfo.hasSubscription &&
+        (typeof planInfo.daysUntilRenewal === "number" ? (
+          <p>
+            {t("renewal_days", { days: planInfo.daysUntilRenewal })}
+          </p>
+        ) : (
+          <p>{t("renewal_monthly")}</p>
+        ))}
+    </div>
+  ) : null;
+
   return (
     <MotionModal
       open={open}
       onClose={canClose ? onClose : undefined}
-      overlayClassName="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 bg-[#060608]/92 backdrop-blur-sm"
+      overlayClassName="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 bg-[rgba(0,0,0,0.7)] backdrop-blur-[8px]"
+      panelTransition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
       className="w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-2xl bg-[#0f0f12] border border-[#B4FF00]/25 shadow-[0_24px_64px_rgba(0,0,0,0.6)]"
     >
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center gap-2 mb-3">
-          <span
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent,#B4FF00)]/15"
-            aria-hidden
-          >
-            <Zap
-              size={18}
-              className="text-[var(--accent,#B4FF00)]"
-              strokeWidth={2.5}
-            />
-          </span>
-          <h2
-            className="text-xl sm:text-2xl font-bold text-[#F0EFE8]"
-            style={{ fontFamily: "var(--font-syne), sans-serif" }}
-          >
-            {t("title")}
-          </h2>
-        </div>
-        <p className="text-sm text-white/70 leading-relaxed max-w-md mx-auto">
-          {t("subtext")}
-        </p>
-        {forceOpen && (
-          <p className="mt-2 text-sm font-semibold text-[#ff6b7a]">
-            {t("force_hint")}
-          </p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {CREDIT_PACKAGES.map((pkg) => {
-          const priceId = getStripePriceIdForPackage(pkg);
-          const isLoading = loadingPriceId === priceId;
-          const isPopular = pkg.popular ?? false;
-          const isBest = pkg.bestValue ?? false;
-
-          return (
-            <div
-              key={pkg.id}
-              className="relative flex flex-col rounded-xl border p-4 sm:p-5 text-center"
-              style={{
-                borderColor: isPopular
-                  ? "var(--accent, #B4FF00)"
-                  : "rgba(255,255,255,0.1)",
-                background: isPopular
-                  ? "rgba(180,255,0,0.05)"
-                  : "rgba(255,255,255,0.03)",
-              }}
-            >
-              {isPopular && (
-                <span
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap"
-                  style={{
-                    background: "var(--accent, #B4FF00)",
-                    color: "#060608",
-                  }}
-                >
-                  {t("popular_badge")}
-                </span>
-              )}
-              {isBest && (
-                <span
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap border border-white/15 bg-[#0f0f12] text-[#F0EFE8]"
-                >
-                  {t("best_deal_badge")}
-                </span>
-              )}
-
-              <p
-                className="mt-2 text-2xl sm:text-3xl font-bold text-[#F0EFE8]"
-                style={{ fontFamily: "var(--font-bebas), sans-serif" }}
+      {view === "prompt" ? (
+        <>
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center gap-2 mb-3">
+              <span
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent,#B4FF00)]/15"
+                aria-hidden
               >
-                {pkg.credits}
-              </p>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
-                Credits
-              </p>
-              <p
-                className="text-xl font-bold text-[var(--accent,#B4FF00)] mb-1"
-                style={{ fontFamily: "var(--font-bebas), sans-serif" }}
+                <Zap
+                  size={20}
+                  className="text-[var(--accent,#B4FF00)]"
+                  strokeWidth={2.5}
+                />
+              </span>
+              <h2
+                className="text-xl sm:text-2xl font-bold text-[#F0EFE8]"
+                style={{ fontFamily: "var(--font-syne), sans-serif" }}
               >
-                €{formatEur(pkg.priceEur)}
+                {t("insufficient_title")}
+              </h2>
+            </div>
+            {typeof resolvedRequired === "number" &&
+            typeof resolvedRemaining === "number" ? (
+              <>
+                <p className="text-sm text-white/70 leading-relaxed max-w-md mx-auto">
+                  {t("insufficient_subtext", {
+                    required: resolvedRequired,
+                    remaining: resolvedRemaining,
+                  })}
+                </p>
+                {typeof missing === "number" && missing > 0 && (
+                  <p className="mt-2 text-sm font-semibold text-[var(--accent,#B4FF00)]">
+                    {t("insufficient_missing", { missing })}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-white/70 leading-relaxed max-w-md mx-auto">
+                {t("subtext")}
               </p>
-              <p className="text-[11px] text-white/45 mb-4">
-                {t("per_credit", {
-                  cents: formatCentPerCredit(pkg.pricePerCredit),
+            )}
+            {forceOpen && (
+              <p className="mt-2 text-sm font-semibold text-[#ff6b7a]">
+                {t("force_hint")}
+              </p>
+            )}
+            {recommendedPkg && typeof missing === "number" && (
+              <p className="mt-4 text-xs text-white/50">
+                {t("recommended_pack", {
+                  credits: recommendedPkg.credits,
+                  price: formatEur(recommendedPkg.priceEur),
                 })}
               </p>
+            )}
+          </div>
 
-              <button
-                type="button"
-                disabled={loadingPriceId !== null}
-                onClick={() => void handleCheckout(priceId)}
-                className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
-                style={{
-                  background: isPopular
-                    ? "var(--accent, #B4FF00)"
-                    : "rgba(180,255,0,0.12)",
-                  color: isPopular ? "#060608" : "var(--accent, #B4FF00)",
-                }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setView("packages")}
+              className="w-full py-3.5 px-4 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: "var(--accent, #B4FF00)",
+                color: "#060608",
+              }}
+            >
+              {t("buy_credits_primary")}
+            </button>
+            <Link
+              href="/pricing"
+              onClick={canClose ? onClose : undefined}
+              className="flex flex-col items-center justify-center w-full py-3 px-4 rounded-xl text-sm font-bold border border-white/15 text-[#F0EFE8] hover:border-[var(--accent,#B4FF00)]/40 hover:bg-white/[0.03] transition-colors text-center"
+            >
+              {t("upgrade_plan_secondary")}
+              <span className="mt-1 text-[11px] font-normal text-white/45">
+                {t("upgrade_plan_hint", {
+                  percent: YEARLY_DISCOUNT_PERCENT,
+                })}
+              </span>
+            </Link>
+          </div>
+
+          {planFooter}
+
+          {canClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="block w-full mt-4 text-sm text-white/45 hover:text-white/65 min-h-[44px]"
+            >
+              {t("close")}
+            </button>
+          )}
+        </>
+      ) : (
+        <>
+          {typeof required === "number" && (
+            <button
+              type="button"
+              onClick={() => setView("prompt")}
+              className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/75 transition-colors"
+            >
+              <ArrowLeft size={16} />
+              {t("back")}
+            </button>
+          )}
+
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center gap-2 mb-3">
+              <span
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent,#B4FF00)]/15"
+                aria-hidden
               >
-                {isLoading ? "…" : t("buy_button")}
-              </button>
+                <Zap
+                  size={18}
+                  className="text-[var(--accent,#B4FF00)]"
+                  strokeWidth={2.5}
+                />
+              </span>
+              <h2
+                className="text-xl sm:text-2xl font-bold text-[#F0EFE8]"
+                style={{ fontFamily: "var(--font-syne), sans-serif" }}
+              >
+                {t("title")}
+              </h2>
             </div>
-          );
-        })}
-      </div>
+            <p className="text-sm text-white/70 leading-relaxed max-w-md mx-auto">
+              {t("subtext")}
+            </p>
+          </div>
 
-      {error && (
-        <p className="mt-4 text-center text-sm text-[#ff6b7a]">{error}</p>
-      )}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {CREDIT_PACKAGES.map((pkg) => {
+              const priceId = getStripePriceIdForPackage(pkg);
+              const isLoading = loadingPriceId === priceId;
+              const isRecommended = pkg.id === recommendedId;
+              const isPopular = (pkg.popular ?? false) && !isRecommended;
+              const isBest = (pkg.bestValue ?? false) && !isRecommended;
 
-      <p className="mt-6 text-center text-xs text-white/45">
-        {t("upgrade_hint")}{" "}
-        <Link
-          href="/pricing"
-          className="text-white/55 underline underline-offset-2 hover:text-[var(--accent,#B4FF00)] transition-colors"
-        >
-          {t("upgrade_link")}
-        </Link>
-      </p>
+              return (
+                <div
+                  key={pkg.id}
+                  className="relative flex flex-col rounded-xl border p-4 sm:p-5 text-center"
+                  style={{
+                    borderColor: isRecommended
+                      ? "var(--accent, #B4FF00)"
+                      : isPopular
+                        ? "var(--accent, #B4FF00)"
+                        : "rgba(255,255,255,0.1)",
+                    background: isRecommended
+                      ? "rgba(180,255,0,0.08)"
+                      : isPopular
+                        ? "rgba(180,255,0,0.05)"
+                        : "rgba(255,255,255,0.03)",
+                    boxShadow: isRecommended
+                      ? "0 0 0 1px color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)"
+                      : undefined,
+                  }}
+                >
+                  {isRecommended && (
+                    <span
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap"
+                      style={{
+                        background: "var(--accent, #B4FF00)",
+                        color: "#060608",
+                      }}
+                    >
+                      {t("recommended_badge")}
+                    </span>
+                  )}
+                  {isPopular && (
+                    <span
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap"
+                      style={{
+                        background: "var(--accent, #B4FF00)",
+                        color: "#060608",
+                      }}
+                    >
+                      {t("popular_badge")}
+                    </span>
+                  )}
+                  {isBest && (
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap border border-white/15 bg-[#0f0f12] text-[#F0EFE8]">
+                      {t("best_deal_badge")}
+                    </span>
+                  )}
 
-      {canClose && (
-        <button
-          type="button"
-          onClick={onClose}
-          className="block w-full mt-4 text-sm text-white/45 hover:text-white/65 min-h-[44px]"
-        >
-          {t("close")}
-        </button>
+                  <p
+                    className="mt-2 text-2xl sm:text-3xl font-bold text-[#F0EFE8]"
+                    style={{ fontFamily: "var(--font-bebas), sans-serif" }}
+                  >
+                    {pkg.credits}
+                  </p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
+                    Credits
+                  </p>
+                  <p
+                    className="text-xl font-bold text-[var(--accent,#B4FF00)] mb-1"
+                    style={{ fontFamily: "var(--font-bebas), sans-serif" }}
+                  >
+                    €{formatEur(pkg.priceEur)}
+                  </p>
+                  <p className="text-[11px] text-white/45 mb-4">
+                    {t("per_credit", {
+                      cents: formatCentPerCredit(pkg.pricePerCredit),
+                    })}
+                  </p>
+
+                  <button
+                    type="button"
+                    disabled={loadingPriceId !== null}
+                    onClick={() => void handleCheckout(priceId)}
+                    className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                    style={{
+                      background:
+                        isRecommended || isPopular
+                          ? "var(--accent, #B4FF00)"
+                          : "rgba(180,255,0,0.12)",
+                      color:
+                        isRecommended || isPopular
+                          ? "#060608"
+                          : "var(--accent, #B4FF00)",
+                    }}
+                  >
+                    {isLoading ? "…" : t("buy_button")}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {error && (
+            <p className="mt-4 text-center text-sm text-[#ff6b7a]">{error}</p>
+          )}
+
+          <p className="mt-6 text-center text-xs text-white/45">
+            {t("upgrade_hint")}{" "}
+            <Link
+              href="/pricing"
+              className="text-white/55 underline underline-offset-2 hover:text-[var(--accent,#B4FF00)] transition-colors"
+            >
+              {t("upgrade_link")}
+            </Link>
+          </p>
+
+          {planFooter}
+
+          {canClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="block w-full mt-4 text-sm text-white/45 hover:text-white/65 min-h-[44px]"
+            >
+              {t("close")}
+            </button>
+          )}
+        </>
       )}
     </MotionModal>
   );

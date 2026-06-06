@@ -4,6 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { Music2 } from "lucide-react";
 import { generateVoice } from "@/app/actions/generate-voice";
+import {
+  onGenerationActionResult,
+  shouldShowInlineGenerationError,
+} from "@/lib/handle-generation-result";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { VoiceSelector } from "@/components/voice-selector";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
@@ -195,7 +199,10 @@ export default function VoicePage() {
     const result = await generateVoice(script, voiceId, stability);
     setGenerating(false);
     if (!result.success) {
-      setError(sanitizeUserMessage(result.error, { allowElevenLabs: true }));
+      onGenerationActionResult(result);
+      if (shouldShowInlineGenerationError(result)) {
+        setError(sanitizeUserMessage(result.error, { allowElevenLabs: true }));
+      }
       return;
     }
     setAudioUrl(result.audioUrl);

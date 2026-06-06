@@ -117,7 +117,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
         <LanguageSwitcher compact />
         <button
           type="button"
-          onClick={openBuyCredits}
+          onClick={() => openBuyCredits()}
           className="flex cursor-pointer items-center gap-1.5 rounded-[9px] px-3.5 py-1.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
           style={{
             background: badgeStyle.background,

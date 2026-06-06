@@ -66,7 +66,7 @@ export function LowCreditsSidebar({
       </div>
       <button
         type="button"
-        onClick={openBuyCreditsModal}
+        onClick={() => openBuyCreditsModal()}
         style={{
           display: "block",
           width: "100%",

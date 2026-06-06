@@ -23,12 +23,11 @@ type HeroMediaItem =
 
 const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
   { type: "image", src: "/images/landing/feature-1.png", alt: "Creator mit InfluexAI" },
-  // Video kommt hier sobald fertig:
-  // {
-  //   type: "video",
-  //   src: "/videos/landing/feature-1.mp4",
-  //   poster: "/images/landing/feature-1.png",
-  // },
+  {
+    type: "video",
+    src: "/videos/landing/feature-1.mp4",
+    poster: "/images/landing/feature-1.png",
+  },
 ];
 
 const HERO_MEDIA_CROSSFADE_MS = 800;

@@ -7,7 +7,7 @@ import { getSafeSearchParam, scriptGeneratorTopicUrl } from "@/lib/safe-url-para
 import { Flame } from "lucide-react";
 import { detectOutliers } from "@/app/actions/detect-outliers";
 import type { OutlierConcept, ViralMechanism } from "@/lib/outlier-analysis";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
@@ -176,7 +176,9 @@ function OutlierDetectorPageInner() {
       );
       if (!result.success) {
         onGenerationActionResult(result);
-        setError(sanitizeUserMessage(result.error));
+        if (shouldShowInlineGenerationError(result)) {
+          setError(sanitizeUserMessage(result.error));
+        }
         setStep("input");
         setProgress(0);
         return;

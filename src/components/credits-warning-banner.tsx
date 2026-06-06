@@ -106,7 +106,7 @@ export function CreditsWarningBanner({ credits }: Props) {
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <button
           type="button"
-          onClick={openBuyCreditsModal}
+          onClick={() => openBuyCreditsModal()}
           style={{
             padding: "9px 18px",
             borderRadius: 8,

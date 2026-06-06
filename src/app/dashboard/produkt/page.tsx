@@ -16,6 +16,7 @@ import {
 import type { ProductAdScript } from "@/lib/product-ad-script";
 import { LOCALE_LANGUAGE_NAMES, type Locale } from "@/lib/locale";
 import { createClient } from "@/lib/supabase/client";
+import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 
 type Step = "input" | "loading" | "result";
 
@@ -233,6 +234,18 @@ function ProduktWerbungPageInner() {
       });
       const data = await res.json();
       clearInterval(interval);
+
+      const creditCost = opts.batch ? creditBatch : creditSingle;
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          creditCost
+        )
+      ) {
+        setStep("input");
+        return;
+      }
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || t("error_generic"));

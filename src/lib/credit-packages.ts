@@ -68,6 +68,14 @@ export function getStripePriceIdForPackage(pkg: CreditPackage): string | undefin
   return process.env[pkg.stripePriceEnv]?.trim() || undefined;
 }
 
+/** Smallest pack that covers the credit shortfall (by missing amount). */
+export function recommendCreditPackageId(missing: number): CreditPackageId {
+  if (missing < 50) return "extra_100";
+  if (missing < 250) return "extra_300";
+  if (missing < 650) return "extra_700";
+  return "extra_1500";
+}
+
 export const CREDIT_CALCULATOR_TIERS = [100, 300, 700, 1500] as const;
 
 export const EXTRA_CREDIT_RATE_LABEL = "€0.04 / Credit";

@@ -8,7 +8,7 @@ import type {
 } from "@/lib/competitor-analysis";
 import { COMPETITOR_ANALYSIS_CREDIT_COST } from "@/lib/competitor-analysis";
 import { TablerSpy } from "@/components/icons/TablerSpy";
-import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { createClient } from "@/lib/supabase/client";
@@ -153,7 +153,9 @@ function CompetitorPageInner() {
 
       if (!res.success) {
         onGenerationActionResult(res);
-        setError(sanitizeUserMessage(res.error));
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         setStep("input");
         return;
       }
