@@ -32,9 +32,15 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.overflowX = "clip";
+    }
     return () => {
       document.body.style.overflow = "";
+      document.body.style.overflowX = "";
     };
   }, [menuOpen]);
 
@@ -43,7 +49,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full max-w-[100vw] landing-nav-shell${scrolled ? " landing-nav-shell--scrolled" : ""}`}
+        className={`landing-nav-shell w-full max-w-[100vw]${scrolled ? " landing-nav-shell--scrolled" : ""}`}
       >
         <nav
           className={`landing-nav-bar${scrolled ? " landing-nav-bar--scrolled" : ""}`}
@@ -142,6 +148,8 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           </div>
         </nav>
       </header>
+
+      <div className="landing-nav-spacer" aria-hidden />
 
       <div
         className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}

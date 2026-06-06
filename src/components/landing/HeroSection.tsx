@@ -37,7 +37,6 @@ const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
 
 const HERO_MEDIA_CROSSFADE_MS = 800;
 const HERO_IMAGE_DURATION_MS = 6000;
-const HERO_COLOR_FLASH_MS = 600;
 
 const HERO_IMAGE_INDEX = 0;
 const HERO_VIDEO_1_INDEX = 1;
@@ -107,26 +106,8 @@ const HERO_MEDIA_FILTER = "brightness(1.04) saturate(1.08)";
 function HeroBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
-  const colorFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeIndex, setActiveIndex] = useState(HERO_IMAGE_INDEX);
   const [imageGeneration, setImageGeneration] = useState(0);
-  const [colorFlash, setColorFlash] = useState(false);
-
-  const clearColorFlashTimer = () => {
-    if (colorFlashTimerRef.current) {
-      clearTimeout(colorFlashTimerRef.current);
-      colorFlashTimerRef.current = null;
-    }
-  };
-
-  const triggerColorFlash = () => {
-    clearColorFlashTimer();
-    setColorFlash(true);
-    colorFlashTimerRef.current = setTimeout(() => {
-      setColorFlash(false);
-      colorFlashTimerRef.current = null;
-    }, HERO_COLOR_FLASH_MS);
-  };
 
   useEffect(() => {
     if (activeIndex === HERO_IMAGE_INDEX) {
@@ -173,14 +154,7 @@ function HeroBackgroundMedia() {
     }
   }, [activeIndex]);
 
-  useEffect(() => {
-    return () => {
-      clearColorFlashTimer();
-    };
-  }, []);
-
   const handleVideo1Ended = () => {
-    triggerColorFlash();
     const v2 = videoRef2.current;
     if (v2) {
       v2.currentTime = 0;
@@ -272,15 +246,6 @@ function HeroBackgroundMedia() {
           );
         })}
       </div>
-
-      <div
-        className="absolute inset-0 z-[5] pointer-events-none"
-        style={{
-          background: "#B4FF00",
-          opacity: colorFlash ? 0.7 : 0,
-          transition: "opacity 0.3s ease",
-        }}
-      />
     </div>
   );
 }

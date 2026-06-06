@@ -37,13 +37,17 @@ export default function AdminPage() {
     fetch("/api/admin/stats")
       .then((r) => r.json())
       .then((data) => {
-        setStats(data.stats);
-        setUsers(data.users);
+        setStats(data.stats ?? null);
+        setUsers(Array.isArray(data.users) ? data.users : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUsers([]);
         setLoading(false);
       });
   }, []);
 
-  const filtered = users.filter(
+  const filtered = (users ?? []).filter(
     (u) =>
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
       u.full_name?.toLowerCase().includes(search.toLowerCase())
@@ -338,7 +342,7 @@ export default function AdminPage() {
                   color: "#F0EFE8",
                 }}
               >
-                Alle Nutzer ({users.length})
+                Alle Nutzer ({(users ?? []).length})
               </h2>
               <input
                 value={search}

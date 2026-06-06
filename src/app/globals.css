@@ -36,6 +36,7 @@
   --border-hi: rgba(255, 255, 255, 0.13);
   --sidebar-w: 240px;
   --header-h: 56px;
+  --landing-nav-height: 5.75rem;
   --r: 12px;
   --r-lg: 20px;
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -352,16 +353,23 @@ html[data-world="brand"] {
     background: rgba(255, 255, 255, 0.05);
   }
 
-  /* Landing toolbar — light bar on Acid Noir */
+  /* Landing toolbar — light bar on Acid Noir (fixed: sticky breaks under body overflow-x:hidden) */
   .landing-nav-shell {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
     width: 100%;
     padding: clamp(12px, 2.5vw, 18px) clamp(16px, 5vw, 40px);
     transition:
       padding 0.3s ease,
       background 0.3s ease;
+  }
+  .landing-nav-spacer {
+    height: var(--landing-nav-height, 5.75rem);
+    flex-shrink: 0;
+    pointer-events: none;
   }
   .landing-nav-shell--scrolled {
     padding-top: 8px;
