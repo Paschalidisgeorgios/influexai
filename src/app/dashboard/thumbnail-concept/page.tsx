@@ -247,13 +247,18 @@ function ThumbnailConceptPageInner() {
             border: "1px solid rgba(255,255,255,0.07)",
           }}
         >
-          <label style={labelStyle}>Video Titel oder Thema</label>
-          <input
-            type="text"
+          <label style={labelStyle}>Dein Prompt</label>
+          <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="z.B. 5 Fehler die deinen Kanal killen"
-            style={{ ...inputStyle, marginBottom: 20 }}
+            placeholder="z.B. Schockiertes Gesicht, roter Hintergrund, Text: 3 Fehler die dich Follower kosten"
+            rows={4}
+            style={{
+              ...inputStyle,
+              marginBottom: 20,
+              minHeight: 100,
+              resize: "vertical" as const,
+            }}
           />
 
           <label style={labelStyle}>Thumbnail Stil</label>

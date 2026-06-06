@@ -69,7 +69,6 @@ export function VoiceSelector({
   const [voices, setVoices] = useState<ElevenLabsVoice[]>([]);
   const [filtered, setFiltered] = useState<ElevenLabsVoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Alle");
   const [genderFilter, setGenderFilter] = useState("Alle");
@@ -83,9 +82,6 @@ export function VoiceSelector({
       if (result.voices.length > 0) {
         setVoices(result.voices);
         setFiltered(result.voices);
-      }
-      if (!result.success && result.error) {
-        setLoadError(result.error);
       }
       setLoading(false);
     });
@@ -178,12 +174,6 @@ export function VoiceSelector({
 
   return (
     <div className="space-y-3">
-      {loadError && (
-        <p className="text-amber-400/90 text-xs">
-          API-Hinweis: {loadError}. Fallback-Stimmen werden angezeigt.
-        </p>
-      )}
-
       <div className="flex gap-2">
         <input
           type="text"

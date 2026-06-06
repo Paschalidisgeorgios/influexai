@@ -1,16 +1,29 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { Video } from "lucide-react";
-import { LiveCreatorVoicePicker } from "@/components/live-creator-voice-picker";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { useLocale } from "next-intl";
 import { useUserCredits } from "@/hooks/use-user-credits";
+
+const LiveCreatorVoicePicker = dynamic(
+  () =>
+    import("@/components/live-creator-voice-picker").then(
+      (m) => m.LiveCreatorVoicePicker
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="text-sm text-white/65 py-2">Stimmen werden geladen…</p>
+    ),
+  }
+);
 
 const CREDIT_COST = 5;
 const MAX_SCRIPT = 500;

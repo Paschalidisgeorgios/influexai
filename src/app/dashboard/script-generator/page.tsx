@@ -493,7 +493,7 @@ function ScriptGeneratorPageInner() {
                 htmlFor="script-topic"
                 style={{ ...labelStyle, cursor: "text" }}
               >
-                Thema / Titel
+                Thema / Prompt
               </label>
               <input
                 ref={topicInputRef}
@@ -505,23 +505,12 @@ function ScriptGeneratorPageInner() {
                 onChange={(e) => setTopic(e.target.value)}
                 onFocus={() => setTopicFocused(true)}
                 onBlur={() => setTopicFocused(false)}
-                placeholder="z.B. 5 Fehler beim YouTube Start"
+                placeholder="z.B. Warum KI Creator die Zukunft sind, 5 Fehler beim YouTube Start..."
                 autoComplete="off"
                 spellCheck={false}
-                aria-label="Thema oder Titel"
+                aria-label="Thema oder Prompt"
                 style={topicInputStyle}
               />
-              <p
-                data-testid="script-topic-debug"
-                style={{
-                  margin: "6px 0 0",
-                  fontSize: "0.75rem",
-                  color: "#B4FF00",
-                  fontFamily: "var(--font-dm), sans-serif",
-                }}
-              >
-                Debug: {topic || "leer"}
-              </p>
             </div>
             <div
               style={{

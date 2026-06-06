@@ -5,4 +5,4 @@ export const SEEDANCE_MODEL =
 
 export const SEEDANCE_CREDIT_COST = FAL_CREDITS.seedanceVideo;
 
-export const SEEDANCE_UI_NAME = "InfluexAI Video Engine";
+export const SEEDANCE_UI_NAME = "BILD ZU VIDEO";

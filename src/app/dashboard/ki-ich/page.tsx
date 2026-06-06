@@ -51,6 +51,7 @@ export default function KiIchPage() {
   const [step, setStep] = useState<Step>("upload");
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [avatarStyle, setAvatarStyle] = useState("");
   const [scene, setScene] = useState("");
   const [generationId, setGenerationId] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -81,13 +82,16 @@ export default function KiIchPage() {
     if (file) handleFile(file);
   };
 
+  const buildScenePrompt = () =>
+    [avatarStyle.trim(), scene.trim()].filter(Boolean).join(", ");
+
   const callKiIch = async (mode: "preview" | "final") => {
     const res = await fetch("/api/ki-ich", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         imageUrl: photo,
-        scene,
+        scene: buildScenePrompt(),
         mode,
         generationId: mode === "final" ? generationId : undefined,
       }),
@@ -112,7 +116,7 @@ export default function KiIchPage() {
   };
 
   const handleGenerate = async () => {
-    if (!photo || !scene) return;
+    if (!photo || !buildScenePrompt()) return;
     setError(null);
     setLoadingMode("preview");
     setStep("loading");
@@ -142,7 +146,7 @@ export default function KiIchPage() {
   };
 
   const handleGenerateHQ = async () => {
-    if (!photo || !scene || !generationId) return;
+    if (!photo || !buildScenePrompt() || !generationId) return;
     setError(null);
     setUnlockLoading(true);
     setLoadingMode("final");
@@ -176,6 +180,7 @@ export default function KiIchPage() {
     setStep("upload");
     setPhoto(null);
     setPhotoFile(null);
+    setAvatarStyle("");
     setScene("");
     setPreviewUrl(null);
     setResultUrl(null);
@@ -385,6 +390,60 @@ export default function KiIchPage() {
             </button>
           </div>
 
+          <div
+            style={{
+              padding: 20,
+              borderRadius: 14,
+              background: "#0f0f12",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <label
+              htmlFor="ki-avatar-style"
+              style={{
+                display: "block",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "rgba(255,255,255,0.65)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 10,
+              }}
+            >
+              Wie soll dein KI-Avatar aussehen?
+            </label>
+            <textarea
+              id="ki-avatar-style"
+              value={avatarStyle}
+              onChange={(e) => setAvatarStyle(e.target.value)}
+              placeholder="z.B. Professionelles Studio-Portrait, dunkler Hintergrund, dramatisches Licht, 4K"
+              rows={3}
+              style={{
+                width: "100%",
+                minHeight: 100,
+                padding: "12px 14px",
+                borderRadius: 10,
+                background: "#18181d",
+                border: "1px solid rgba(255,255,255,0.09)",
+                color: "#F0EFE8",
+                fontSize: "0.9rem",
+                outline: "none",
+                resize: "vertical",
+                fontFamily: "var(--font-dm), sans-serif",
+                lineHeight: 1.6,
+                boxSizing: "border-box",
+              }}
+              onFocus={(e) =>
+                ((e.target as HTMLTextAreaElement).style.borderColor =
+                  "rgba(180,255,0,0.4)")
+              }
+              onBlur={(e) =>
+                ((e.target as HTMLTextAreaElement).style.borderColor =
+                  "rgba(255,255,255,0.09)")
+              }
+            />
+          </div>
+
           {/* Scene presets */}
           <div
             style={{
@@ -484,18 +543,18 @@ export default function KiIchPage() {
 
           <button
             onClick={handleGenerate}
-            disabled={!scene.trim()}
+            disabled={!buildScenePrompt().trim()}
             style={{
               width: "100%",
               padding: "15px",
               borderRadius: 12,
               border: "none",
-              background: scene.trim() ? "#B4FF00" : "#2a2a2a",
-              color: scene.trim() ? "#060608" : "rgba(255,255,255,0.65)",
+              background: buildScenePrompt().trim() ? "#B4FF00" : "#2a2a2a",
+              color: buildScenePrompt().trim() ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
-              cursor: scene.trim() ? "pointer" : "default",
+              cursor: buildScenePrompt().trim() ? "pointer" : "default",
             }}
           >
             VORSCHAU GENERIEREN → (kostenlos)

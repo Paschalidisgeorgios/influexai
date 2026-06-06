@@ -365,9 +365,9 @@ export default function ImageGeneratorPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10">
+      <div className="grid min-w-0 gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10" style={{ width: "100%" }}>
         {/* Left column — 40% */}
-        <div className="flex flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-5" style={{ width: "100%" }}>
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">
               {t("prompt_label")}
@@ -385,7 +385,15 @@ export default function ImageGeneratorPage() {
             <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">
               {t("category_label")}
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div
+              style={{
+                width: "100%",
+                overflow: "hidden",
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: 8,
+              }}
+            >
               {IMAGE_CATEGORY_KEYS.map((key) => {
                 const active = category === key;
                 return (
@@ -393,11 +401,12 @@ export default function ImageGeneratorPage() {
                     key={key}
                     type="button"
                     onClick={() => setCategory(key)}
-                    className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
+                    className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                       active
                         ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
                         : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20"
                     }`}
+                    style={{ width: "100%", minWidth: 0 }}
                   >
                     <span className="text-lg" aria-hidden>
                       {CATEGORY_ICONS[key]}
@@ -433,12 +442,13 @@ export default function ImageGeneratorPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row" style={{ width: "100%" }}>
             <button
               type="button"
               disabled={isBusy}
               onClick={() => runGenerate(false)}
-              className="flex-1 rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
+              className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
+              style={{ flex: 1, minWidth: 0 }}
             >
               {loading ? t("loading_standard") : t("generate_standard")}
             </button>
@@ -446,7 +456,8 @@ export default function ImageGeneratorPage() {
               type="button"
               disabled={isBusy}
               onClick={() => runGenerate(true)}
-              className="flex-1 rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00] disabled:opacity-80"
+              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00] disabled:opacity-80"
+              style={{ flex: 1, minWidth: 0 }}
             >
               {loadingHighRes ? t("loading_highres") : t("generate_highres")}
             </button>

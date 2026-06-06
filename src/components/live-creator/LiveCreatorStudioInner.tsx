@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useTranslations } from "next-intl";
 import { fal } from "@fal-ai/client";
 import {
@@ -366,7 +367,9 @@ export function LiveCreatorStudioInner() {
     if (!character) return;
 
     setError(null);
-    setPhase("connecting");
+    flushSync(() => {
+      setPhase("connecting");
+    });
     setCreditsUsed(0);
     setStreamMode("realtime");
     setOutputUrl(null);
@@ -475,29 +478,33 @@ export function LiveCreatorStudioInner() {
                 className="absolute inset-0 h-full w-full object-cover"
               />
             )
-          ) : selectedCharacter ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={selectedCharacter.imageUrl}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover opacity-40"
-            />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-white/25 text-sm">
-              {t("output_placeholder")}
-            </div>
+            selectedCharacter ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={selectedCharacter.imageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover opacity-40"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-white/25 text-sm">
+                {t("output_placeholder")}
+              </div>
+            )
           )}
 
-          <video
-            ref={webcamVideoRef}
-            className={
-              phase === "live"
-                ? "absolute bottom-3 right-3 z-30 h-[200px] w-[200px] rounded-full border-2 border-[#B4FF00]/50 object-cover shadow-lg shadow-black/60 bg-black scale-x-[-1]"
-                : "pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
-            }
-            muted
-            playsInline
-          />
+          {(phase === "connecting" || phase === "live") && (
+            <video
+              ref={webcamVideoRef}
+              className={
+                phase === "live"
+                  ? "absolute bottom-3 right-3 z-30 h-[200px] w-[200px] rounded-full border-2 border-[#B4FF00]/50 object-cover shadow-lg shadow-black/60 bg-black scale-x-[-1]"
+                  : "pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
+              }
+              muted
+              playsInline
+            />
+          )}
         </div>
 
         <div
