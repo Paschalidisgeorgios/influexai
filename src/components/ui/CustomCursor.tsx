@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
+function isDashboardPath(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+}
+
 export function CustomCursor() {
   const pathname = usePathname();
   const ring1 = useRef<HTMLDivElement>(null);
@@ -10,8 +15,7 @@ export function CustomCursor() {
   const ring3 = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
 
-  const disabled =
-    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const disabled = isDashboardPath(pathname);
 
   useEffect(() => {
     if (disabled) {
@@ -105,7 +109,7 @@ export function CustomCursor() {
     };
   }, [disabled]);
 
-  if (!active || disabled) return null;
+  if (disabled || !active) return null;
 
   const baseStyle: CSSProperties = {
     position: "absolute",
@@ -121,15 +125,13 @@ export function CustomCursor() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden"
-      style={{ pointerEvents: "none" }}
+      className="custom-cursor-layer pointer-events-none fixed inset-0 z-[99999] overflow-hidden"
     >
       <div
         ref={ring1}
-        className="pointer-events-none"
+        className="custom-cursor-dot pointer-events-none"
         style={{
           ...baseStyle,
-          pointerEvents: "none",
           width: 8,
           height: 8,
           background: "var(--accent, #B4FF00)",
@@ -138,10 +140,9 @@ export function CustomCursor() {
       />
       <div
         ref={ring2}
-        className="pointer-events-none"
+        className="custom-cursor-ring pointer-events-none"
         style={{
           ...baseStyle,
-          pointerEvents: "none",
           width: 24,
           height: 24,
           opacity: 0.5,
@@ -150,10 +151,9 @@ export function CustomCursor() {
       />
       <div
         ref={ring3}
-        className="pointer-events-none"
+        className="custom-cursor-ring pointer-events-none"
         style={{
           ...baseStyle,
-          pointerEvents: "none",
           width: 44,
           height: 44,
           opacity: 0.2,

@@ -1565,6 +1565,33 @@ html[data-world="brand"] {
   max-width: 100vw;
 }
 
+/* Custom cursor — must never capture clicks */
+.custom-cursor-layer,
+.custom-cursor-layer *,
+.custom-cursor-dot,
+.custom-cursor-ring {
+  pointer-events: none !important;
+}
+
+/* Dashboard + forms — inputs always reachable above decorative layers */
+input,
+textarea,
+select,
+button {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
+}
+
+[data-dashboard] input,
+[data-dashboard] textarea,
+[data-dashboard] select,
+[data-dashboard] button {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
+}
+
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 64px;
   display: flex; align-items: center; background: transparent;

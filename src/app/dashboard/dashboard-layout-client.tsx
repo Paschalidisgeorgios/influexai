@@ -11,7 +11,7 @@ export function DashboardLayoutClient({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-[#060608]">
+    <div className="flex h-screen overflow-hidden bg-[#060608]" data-dashboard>
       <div className="hidden md:flex shrink-0">
         <DashboardSidebar />
       </div>
