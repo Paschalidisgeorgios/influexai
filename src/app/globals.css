@@ -1349,3 +1349,33 @@ header.site-header.site-header--scrolled {
   -webkit-backdrop-filter: blur(16px);
   border-bottom-color: rgba(255, 255, 255, 0.07);
 }
+
+.ix-frame {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0a0a0c;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
+    0 0 40px -8px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.ix-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+@media (max-width: 720px) {
+  .upscaler-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .upscaler-grid > div:last-child {
+    max-width: 360px;
+    margin: 1.5rem auto 0;
+  }
+}

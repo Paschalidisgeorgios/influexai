@@ -25,7 +25,7 @@ import {
 } from "@/components/landing";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LightSystem } from "@/components/LightSystem";
-import { ToolDemosSection } from "@/components/demos/ToolDemosSection";
+import ToolDemosSection from "@/components/demos/ToolDemosSection";
 import { ABTracker } from "@/components/ab-tracker";
 import { LiveStatsBar } from "@/components/live-stats-bar";
 import { CommunityPreview } from "@/components/community-preview";

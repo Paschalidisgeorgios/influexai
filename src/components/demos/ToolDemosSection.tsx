@@ -67,3 +67,5 @@ export function ToolDemosSection() {
     </section>
   );
 }
+
+export default ToolDemosSection;
