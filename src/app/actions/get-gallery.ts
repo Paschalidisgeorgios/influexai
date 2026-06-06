@@ -32,6 +32,7 @@ function isVideoGenerationType(type: string): boolean {
     t.includes("voice") ||
     t.includes("stimme") ||
     t === "product_ad" ||
+    t === "seedance" ||
     (t.includes("video") && !t.includes("remix"))
   );
 }
@@ -157,7 +158,7 @@ function normalizeGeneration(row: {
   }
   if (isVideoGenerationType(type)) {
     const videoUrl =
-      type === "product_ad"
+      type === "product_ad" || type === "seedance"
         ? `/api/generated-video/${row.id}`
         : media.videoUrl;
     return {

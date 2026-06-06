@@ -768,14 +768,14 @@
       "creator_f5": "Κλωνοποίηση φωνής",
       "creator_name": "Creator",
       "extra_credits": "Επιπλέον Credits",
-      "extra_credits_suffix": "από 12€/100 Credits.",
+      "extra_credits_suffix": "Pay-as-you-go από €5 (100 credits).",
       "footnote": "Τα Credits δεν λήγουν.",
       "headline": "Διαφανές. Επεκτάσιμο.",
       "kicker": "Τιμές",
       "monthly": "Μηνιαία",
       "page_subtitle": "Μηνιαία πλάνα με συμπεριλαμβανόμενα credits. Ακύρωση ανά πάσα στιγμή.",
       "per_month": "/Μήνα",
-      "popular": "★ Πιο Δημοφιλές Πλάνο",
+      "popular": "Πιο Δημοφιλές Πλάνο",
       "pro_credits": "800 Credits/μήνα",
       "pro_cta": "Γίνε Pro",
       "pro_desc": "Για επαγγελματίες creators & streamers.",
@@ -1077,15 +1077,10 @@
   },
   "founding": {
     "kicker": "EARLY ACCESS · 2026",
-    "headline1": "YOU'RE EARLY.",
-    "headline2": "THAT'S YOUR EDGE.",
-    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
-    "c1_title": "Ιδρυτικό Μέλος",
-    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
-    "c2_title": "Direct line",
-    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
-    "c3_title": "From the start",
-    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
-    "cta": "Become a Founding Creator"
+    "headline": "Γίνε Founding Creator",
+    "subtext": "Γίνε από τους πρώτους. Founding Creators παίρνουν 20% έκπτωση για πάντα και early access σε νέα features.",
+    "slot_label": "Θέση {slot} από {total} ακόμα ελεύθερη",
+    "cta": "Απόκτησε early access",
+    "note": "Χωρίς fake hype — είμαστε νέοι και χτίζουμε μαζί σου."
   }
 }

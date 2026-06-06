@@ -28,7 +28,6 @@ import { LightSystem } from "@/components/LightSystem";
 import ToolDemosSection from "@/components/demos/ToolDemosSection";
 import { ABTracker } from "@/components/ab-tracker";
 import { LiveStatsBar } from "@/components/live-stats-bar";
-import { CommunityPreview } from "@/components/community-preview";
 import type { AbVariant } from "@/lib/ab-tracking";
 
 export const dynamic = "force-dynamic";
@@ -92,7 +91,6 @@ export default async function HomePage() {
           <ToolDemosSection />
           <ForBrandsSection />
           <FoundingCreatorsSection />
-          <CommunityPreview />
           <FeaturesSection />
           <AgencyTeaserSection />
           <PricingSection />

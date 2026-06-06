@@ -41,6 +41,23 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.7);
   --glow-acid: 0 0 32px rgba(180, 255, 0, 0.18);
+  --world: "creator";
+  --world-mix: 0;
+  --heading-font: var(--font-bebas), "Bebas Neue", sans-serif;
+  --heading-weight: 400;
+  --heading-style: normal;
+  --heading-transform: uppercase;
+  --heading-tracking: -0.04em;
+  --heading-leading: 0.88;
+}
+
+html[data-world="brand"] {
+  --heading-font: var(--font-fraunces), "Fraunces", Georgia, serif;
+  --heading-weight: 300;
+  --heading-style: italic;
+  --heading-transform: none;
+  --heading-tracking: -0.02em;
+  --heading-leading: 1.08;
 }
 
 @layer base {
@@ -101,30 +118,61 @@
     paint-order: normal !important;
   }
 
-  /* Landing: Bebas Neue ships as weight 400 only — avoid faux-bold (looks like 3D outline) */
+  /* Landing: Two Worlds — Creator (Bebas) → Brand (Fraunces) via LightSystem scroll */
   .landing-root h1,
   .landing-root h2,
   .landing-root h3,
   .landing-heading {
-    font-family: var(--font-bebas), "Bebas Neue", -apple-system, BlinkMacSystemFont,
-      "Helvetica Neue", Arial, sans-serif;
-    font-weight: 400;
-    letter-spacing: -0.04em;
-    line-height: 0.88;
-    text-transform: uppercase;
+    font-family: var(--heading-font);
+    font-weight: var(--heading-weight, 400);
+    font-style: var(--heading-style, normal);
+    letter-spacing: var(--heading-tracking, -0.04em);
+    line-height: var(--heading-leading, 0.88);
+    text-transform: var(--heading-transform, uppercase);
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     text-shadow: none !important;
     -webkit-text-stroke: 0 !important;
     paint-order: normal !important;
     filter: none;
+    transition:
+      letter-spacing 0.45s ease,
+      line-height 0.45s ease,
+      font-style 0.45s ease,
+      font-weight 0.45s ease;
   }
   .landing-root h1 {
-    font-weight: 400;
+    font-weight: var(--heading-weight, 400);
   }
   .landing-root h2,
   .landing-heading {
-    font-weight: 400;
+    font-weight: var(--heading-weight, 400);
+  }
+
+  /* Marken-Welt: ForBrandsSection — immer Fraunces Serif */
+  .world-brand .landing-heading,
+  .world-brand .brand-section-headline,
+  #brands .landing-heading,
+  #brands .brand-section-headline {
+    font-family: var(--font-fraunces), "Fraunces", Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+  }
+
+  #brands .feat-card-title {
+    font-family: var(--font-fraunces), "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: -0.01em;
   }
 
   /* Achieve cards — override Bebas h3 (must live in base layer, after .landing-root h3) */

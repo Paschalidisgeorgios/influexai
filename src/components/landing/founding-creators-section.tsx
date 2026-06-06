@@ -1,12 +1,11 @@
 "use client";
 
-import { Crown, Rocket, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
-const CARD_KEYS = ["c1", "c2", "c3"] as const;
-const CARD_ICONS = [Crown, Zap, Rocket] as const;
+const AVATAR_SLOTS = [1, 2, 3] as const;
+const TOTAL_SLOTS = 50;
 
 export function FoundingCreatorsSection() {
   const t = useTranslations("founding");
@@ -17,85 +16,75 @@ export function FoundingCreatorsSection() {
       className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
       style={{ background: "#060608" }}
     >
-      <div className="max-w-[1160px] mx-auto">
+      <div className="mx-auto max-w-[720px] text-center">
         <SpringReveal>
           <p
-            className="mb-5 text-center font-bold uppercase"
+            className="mb-4 font-bold uppercase tracking-[0.22em]"
             style={{
               fontSize: 11,
               color: "var(--accent, #B4FF00)",
-              letterSpacing: "0.22em",
               fontFamily: "var(--font-dm), sans-serif",
             }}
           >
             {t("kicker")}
           </p>
-          <h2 className="landing-heading text-[clamp(2.5rem,5vw,4.5rem)] text-center mb-6 leading-[0.92]">
-            {t("headline1")}
-            <br />
-            <span className="acid-highlight">{t("headline2")}</span>
+          <h2 className="landing-heading mb-6 text-[clamp(2.25rem,5vw,3.5rem)] leading-[0.95]">
+            {t("headline")}
           </h2>
           <p
-            className="text-center max-w-[560px] mx-auto mb-12 text-[1.05rem] leading-[1.75]"
+            className="mx-auto mb-10 max-w-[560px] text-[1.05rem] leading-[1.75]"
             style={{ color: "rgba(255,255,255,0.7)" }}
           >
             {t("subtext")}
           </p>
         </SpringReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          {CARD_KEYS.map((key, i) => {
-            const Icon = CARD_ICONS[i];
-            return (
-              <SpringReveal key={key} delay={0.06 + i * 0.06}>
+        <SpringReveal delay={0.08}>
+          <div className="mb-10 flex flex-wrap items-start justify-center gap-6 sm:gap-8">
+            {AVATAR_SLOTS.map((slot) => (
+              <div
+                key={slot}
+                className="flex min-w-[100px] max-w-[120px] flex-col items-center gap-2.5"
+              >
                 <div
-                  className="h-full p-6 md:p-7 flex flex-col gap-4 rounded-3xl backdrop-blur-md"
+                  className="flex h-[72px] w-[72px] items-center justify-center rounded-full border border-dashed sm:h-20 sm:w-20"
                   style={{
-                    background: "rgba(20,20,20,0.4)",
-                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderColor: "color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)",
+                    background: "rgba(255,255,255,0.03)",
                   }}
+                  aria-hidden
                 >
-                  <div
-                    className="flex items-center justify-center w-11 h-11 rounded-xl"
-                    style={{
-                      background: "rgba(180,255,0,0.08)",
-                      border: "1px solid rgba(180,255,0,0.2)",
-                    }}
+                  <span
+                    className="text-lg font-light"
+                    style={{ color: "rgba(255,255,255,0.25)" }}
                   >
-                    <Icon size={22} color="var(--accent, #B4FF00)" strokeWidth={1.75} aria-hidden />
-                  </div>
-                  <div>
-                    <h3
-                      className="text-base font-bold mb-2"
-                      style={{
-                        color: "#F0EFE8",
-                        fontFamily: "var(--font-dm), sans-serif",
-                      }}
-                    >
-                      {t(`${key}_title`)}
-                    </h3>
-                    <p
-                      className="text-[0.9rem] leading-[1.65] m-0"
-                      style={{ color: "rgba(255,255,255,0.7)" }}
-                    >
-                      {t(`${key}_text`)}
-                    </p>
-                  </div>
+                    ?
+                  </span>
                 </div>
-              </SpringReveal>
-            );
-          })}
-        </div>
-
-        <SpringReveal delay={0.24}>
-          <div className="text-center">
-            <AcidMotionButton
-              href="/auth/sign-up"
-              className="btn-acid rounded-full px-8 py-3.5 justify-center"
-            >
-              → {t("cta")}
-            </AcidMotionButton>
+                <p
+                  className="m-0 text-[0.72rem] leading-snug"
+                  style={{ color: "rgba(255,255,255,0.5)" }}
+                >
+                  {t("slot_label", { slot, total: TOTAL_SLOTS })}
+                </p>
+              </div>
+            ))}
           </div>
+        </SpringReveal>
+
+        <SpringReveal delay={0.16}>
+          <AcidMotionButton
+            href="/auth/sign-up"
+            className="btn-acid justify-center rounded-full px-8 py-3.5"
+          >
+            → {t("cta")}
+          </AcidMotionButton>
+          <p
+            className="mt-4 text-[0.78rem]"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
+            {t("note")}
+          </p>
         </SpringReveal>
       </div>
     </section>

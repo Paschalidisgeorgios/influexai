@@ -66,6 +66,30 @@ function glowFromScroll(progress: number, reducedMotion: boolean) {
   return { x, y, strength: strength.toFixed(3) };
 }
 
+type ScrollWorld = "creator" | "transition" | "brand";
+
+const HEADING_FONT_CREATOR =
+  'var(--font-bebas), "Bebas Neue", sans-serif';
+const HEADING_FONT_BRAND =
+  'var(--font-fraunces), "Fraunces", Georgia, serif';
+
+function worldFromProgress(
+  progress: number,
+  reducedMotion: boolean
+): { world: ScrollWorld; mix: number } {
+  const threshold = reducedMotion ? 0.5 : undefined;
+  if (threshold !== undefined) {
+    return progress >= threshold
+      ? { world: "brand", mix: 1 }
+      : { world: "creator", mix: 0 };
+  }
+
+  if (progress < 0.45) return { world: "creator", mix: 0 };
+  if (progress > 0.55) return { world: "brand", mix: 1 };
+  const mix = (progress - 0.45) / 0.1;
+  return { world: "transition", mix };
+}
+
 function applyLight(vars: {
   accent: string;
   glowX: string;
@@ -80,6 +104,54 @@ function applyLight(vars: {
   root.style.setProperty("--glow-strength", vars.glowStrength);
 }
 
+function applyWorld(world: ScrollWorld, mix: number) {
+  const root = document.documentElement;
+  root.dataset.world = world;
+  root.style.setProperty("--world", `"${world}"`);
+  root.style.setProperty("--world-mix", mix.toFixed(3));
+
+  const useBrandFont = world === "brand" || (world === "transition" && mix >= 0.5);
+  root.style.setProperty(
+    "--heading-font",
+    useBrandFont ? HEADING_FONT_BRAND : HEADING_FONT_CREATOR
+  );
+
+  if (world === "brand") {
+    root.style.setProperty("--heading-weight", "300");
+    root.style.setProperty("--heading-style", "italic");
+    root.style.setProperty("--heading-transform", "none");
+    root.style.setProperty("--heading-tracking", "-0.02em");
+    root.style.setProperty("--heading-leading", "1.08");
+  } else if (world === "creator") {
+    root.style.setProperty("--heading-weight", "400");
+    root.style.setProperty("--heading-style", "normal");
+    root.style.setProperty("--heading-transform", "uppercase");
+    root.style.setProperty("--heading-tracking", "-0.04em");
+    root.style.setProperty("--heading-leading", "0.88");
+  } else {
+    root.style.setProperty(
+      "--heading-weight",
+      mix >= 0.5 ? "300" : "400"
+    );
+    root.style.setProperty(
+      "--heading-style",
+      mix >= 0.5 ? "italic" : "normal"
+    );
+    root.style.setProperty(
+      "--heading-transform",
+      mix >= 0.5 ? "none" : "uppercase"
+    );
+    root.style.setProperty(
+      "--heading-tracking",
+      `${(-0.04 + mix * 0.02).toFixed(3)}em`
+    );
+    root.style.setProperty(
+      "--heading-leading",
+      (0.88 + mix * 0.2).toFixed(3)
+    );
+  }
+}
+
 function clearLight() {
   const root = document.documentElement;
   root.style.removeProperty("--accent");
@@ -87,6 +159,19 @@ function clearLight() {
   root.style.removeProperty("--glow-x");
   root.style.removeProperty("--glow-y");
   root.style.removeProperty("--glow-strength");
+}
+
+function clearWorld() {
+  const root = document.documentElement;
+  delete root.dataset.world;
+  root.style.removeProperty("--world");
+  root.style.removeProperty("--world-mix");
+  root.style.removeProperty("--heading-font");
+  root.style.removeProperty("--heading-weight");
+  root.style.removeProperty("--heading-style");
+  root.style.removeProperty("--heading-transform");
+  root.style.removeProperty("--heading-tracking");
+  root.style.removeProperty("--heading-leading");
 }
 
 export function LightSystem({ children }: { children: ReactNode }) {
@@ -108,7 +193,8 @@ export function LightSystem({ children }: { children: ReactNode }) {
         progress,
         reducedMotion
       );
-      const key = `${accent}|${glow.x}|${glow.y}|${glow.strength}`;
+      const { world, mix } = worldFromProgress(progress, reducedMotion);
+      const key = `${accent}|${glow.x}|${glow.y}|${glow.strength}|${world}|${mix.toFixed(3)}`;
 
       if (key !== lastKey) {
         applyLight({
@@ -117,6 +203,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
           glowY: glow.y,
           glowStrength: glow.strength,
         });
+        applyWorld(world, mix);
         lastKey = key;
       }
     };
@@ -132,6 +219,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
       glowY: "14%",
       glowStrength: "1",
     });
+    applyWorld("creator", 0);
     scheduleUpdate();
 
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
@@ -142,6 +230,7 @@ export function LightSystem({ children }: { children: ReactNode }) {
       window.removeEventListener("resize", scheduleUpdate);
       if (rafId) cancelAnimationFrame(rafId);
       clearLight();
+      clearWorld();
     };
   }, []);
 

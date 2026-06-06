@@ -1,0 +1,86 @@
+{
+  "block12_audit": {
+    "current_credits_in_db": 499,
+    "operations": [
+      {
+        "block": 1,
+        "tool": "Script Generator",
+        "expected": 2,
+        "actual": 2,
+        "note": "generateScript OK"
+      },
+      {
+        "block": 1,
+        "tool": "Niche Analyzer",
+        "expected": 2,
+        "actual": 2,
+        "note": "analyzeNiche OK"
+      },
+      {
+        "block": 1,
+        "tool": "Viral Score",
+        "expected": 2,
+        "actual": 2,
+        "note": "200→198"
+      },
+      {
+        "block": 1,
+        "tool": "KI Agent",
+        "expected": "~11 (Schätzung)",
+        "actual": 10,
+        "note": "198→188, 5 Tools"
+      },
+      {
+        "block": 2,
+        "tool": "Bild Generator",
+        "expected": 1,
+        "actual": 1,
+        "note": "500→499 trotz DB-Fehler"
+      },
+      {
+        "block": 2,
+        "tool": "Produkt-Werbung",
+        "expected": 3,
+        "actual": 0,
+        "note": "Abbruch vor deductCredits"
+      },
+      {
+        "block": 2,
+        "tool": "KI-Ich",
+        "expected": "0 preview / 2 final",
+        "actual": 0,
+        "note": "Preview+Final fehlgeschlagen (DB)"
+      }
+    ],
+    "expected_total_deducted": 17,
+    "actual_total_deducted": 17,
+    "matches_defined_costs": "Teilweise — Agent −10 statt ~11 Schätzung; Produkt/KI-Ich 0 wegen generations-Tabelle; Bild −1 obwohl 500-Fehler"
+  },
+  "tests": [
+    {
+      "name": "2_low_credit_banner",
+      "credits_set": 8,
+      "banner_visible": true,
+      "banner_variant": "low",
+      "banner_text": "Nur noch 8 Credits übrig\n\nJetzt aufladen →\n×",
+      "expected": "Banner bei credits < 20 (data-variant=low)",
+      "pass": true,
+      "note": "Styling ist rot (#ef4444), nicht amber — low-Tier ab 5–19 Credits"
+    },
+    {
+      "name": "3_zero_credits_modal",
+      "credits_set": 0,
+      "modal_visible": false,
+      "force_open_hint_visible": true,
+      "modal_dismiss_blocked": false,
+      "checkout_api_status": 500,
+      "checkout_api_body": "{\"error\":\"No such price: 'price_1TelFY14wsQifjWWSrxVRvjL'; a similar object exists in live mode, but a test mode key was used to make this request.\"}",
+      "stripe_checkout_url": null,
+      "pass": false
+    }
+  ],
+  "restore": {
+    "credits": 62,
+    "email": "test@influexai.test"
+  }
+}

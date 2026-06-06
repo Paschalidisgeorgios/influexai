@@ -64,12 +64,15 @@ export function ForBrandsSection() {
   return (
     <section
       id="brands"
-      className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
+      className="world-brand py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
       style={{ background: "var(--bg-1)" }}
     >
-      <div className="max-w-[1160px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-start mb-14">
-          <div className="min-w-0">
+      <div className="mx-auto w-full min-w-0 max-w-[1160px]">
+        <div
+          lang={locale}
+          className="mb-14 grid w-full min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12"
+        >
+          <div className="min-w-0 max-w-full">
             <span className="kicker mb-2.5">{t("kicker")}</span>
             <span
               className="block"
@@ -83,7 +86,7 @@ export function ForBrandsSection() {
             />
             <h2
               lang={locale}
-              className="landing-heading brand-section-headline break-words hyphens-auto text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.08] max-w-full"
+              className="brand-section-headline landing-heading w-full min-w-0 max-w-full text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.08] break-words hyphens-auto"
             >
               {t("headline1")}
               <br />
@@ -92,9 +95,9 @@ export function ForBrandsSection() {
               <span className="acid-highlight">{t("headline3")}</span>
             </h2>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 max-w-full">
             <p
-              className="mb-6"
+              className="mb-6 max-w-full"
               style={{
                 fontSize: "clamp(0.9rem,1.6vw,1rem)",
                 color: "var(--wd)",
@@ -127,9 +130,9 @@ export function ForBrandsSection() {
                   >
                     {String(i + 1).padStart(2, "0")}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div
-                      className="font-bold text-sm mb-1"
+                      className="mb-1 text-sm font-bold"
                       style={{ color: "var(--white)" }}
                     >
                       {t(`${key}_title`)}

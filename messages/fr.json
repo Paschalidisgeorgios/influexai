@@ -768,14 +768,14 @@
       "creator_f5": "Clonage vocal",
       "creator_name": "Créateur",
       "extra_credits": "Credits supplémentaires",
-      "extra_credits_suffix": "à partir de 12€/100 Credits.",
+      "extra_credits_suffix": "Pay-as-you-go dès 5 € (100 crédits).",
       "footnote": "Les Credits n'expirent pas.",
       "headline": "Transparent. Évolutif.",
       "kicker": "Tarifs",
       "monthly": "Mensuel",
       "page_subtitle": "Forfaits mensuels avec crédits inclus. Résiliable à tout moment.",
       "per_month": "/mois",
-      "popular": "★ Offre la plus populaire",
+      "popular": "Offre la plus populaire",
       "pro_credits": "800 Credits/mois",
       "pro_cta": "Passer Pro",
       "pro_desc": "Pour créateurs & streamers professionnels.",
@@ -1077,15 +1077,10 @@
   },
   "founding": {
     "kicker": "ACCÈS ANTICIPÉ · 2026",
-    "headline1": "YOU'RE EARLY.",
-    "headline2": "THAT'S YOUR EDGE.",
-    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
-    "c1_title": "Membre Fondateur",
-    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
-    "c2_title": "Direct line",
-    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
-    "c3_title": "From the start",
-    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
-    "cta": "Become a Founding Creator"
+    "headline": "Deviens Founding Creator",
+    "subtext": "Sois parmi les premiers. Les Founding Creators bénéficient de −20 % à vie et d'un accès anticipé aux nouvelles fonctionnalités.",
+    "slot_label": "Place {slot} sur {total} encore libre",
+    "cta": "Obtenir l'accès anticipé",
+    "note": "Pas de faux hype — nous sommes nouveaux et construisons avec toi."
   }
 }

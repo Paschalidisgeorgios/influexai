@@ -67,7 +67,11 @@ export function HeroTitle({ titles }: Props) {
         position: "relative",
         minHeight: 320,
         marginBottom: 28,
-        fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+        fontFamily: "var(--heading-font)",
+        fontWeight: "var(--heading-weight, 400)" as unknown as number,
+        fontStyle: "var(--heading-style, normal)" as React.CSSProperties["fontStyle"],
+        letterSpacing: "var(--heading-tracking, -0.04em)",
+        textTransform: "var(--heading-transform, uppercase)" as React.CSSProperties["textTransform"],
       }}
     >
       {slide.lines.map((line, i) => {
@@ -78,10 +82,10 @@ export function HeroTitle({ titles }: Props) {
             style={{
               display: "block",
               fontSize: "clamp(52px, 12vw, 120px)",
-              fontWeight: 400,
-              lineHeight: 0.9,
-              letterSpacing: "-0.04em",
-              textTransform: "uppercase",
+              fontWeight: "inherit",
+              lineHeight: "var(--heading-leading, 0.88)",
+              letterSpacing: "inherit",
+              textTransform: "inherit",
               color: i === accentIndex ? "var(--accent, #B4FF00)" : "#ffffff",
               textShadow: "none",
               WebkitTextStroke: "0",

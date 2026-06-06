@@ -1,0 +1,44 @@
+{
+  "precondition": {
+    "env_local_path": "C:\\Projekte\\Influexai\\.env.local",
+    "env_local_exists": true,
+    "FAL_KEY_set": true,
+    "FAL_KEY_length": 69,
+    "dev_server": "http://localhost:3000",
+    "ANTHROPIC_set": true,
+    "fal_probe_ok": 200
+  },
+  "tests": [
+    {
+      "name": "1_bild_generator",
+      "http_status": 500,
+      "api_body_preview": "{\"success\":false,\"error\":\"Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.\"}",
+      "duration_ms": 10542,
+      "credits_before": 500,
+      "credits_after": 499,
+      "FAIL": "Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.",
+      "fal_hint": "Siehe Server-Log + api_body_preview"
+    },
+    {
+      "name": "2_produkt_werbung",
+      "http_status": 500,
+      "duration_ms": 215093,
+      "api_body_preview": "{\"success\":false,\"error\":\"Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.\"}",
+      "credits_before": 499,
+      "credits_after": 499,
+      "FAIL": "Bildgenerierung fehlgeschlagen. Bitte erneut versuchen."
+    },
+    {
+      "name": "3_ki_ich",
+      "preview_http": 500,
+      "preview_body": "{\"success\":false,\"error\":\"Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.\"}",
+      "a_preview_fail": "Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.",
+      "final_http": 500,
+      "final_duration_ms": 65364,
+      "final_body": "{\"success\":false,\"error\":\"Bildgenerierung fehlgeschlagen. Bitte erneut versuchen.\"}",
+      "credits_before": 499,
+      "credits_after": 499,
+      "FAIL": "Bildgenerierung fehlgeschlagen. Bitte erneut versuchen."
+    }
+  ]
+}

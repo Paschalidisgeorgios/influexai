@@ -768,14 +768,14 @@
       "creator_f5": "Ses klonlama",
       "creator_name": "Creator",
       "extra_credits": "Ekstra Credits",
-      "extra_credits_suffix": "12€/100 Credits'ten itibaren.",
+      "extra_credits_suffix": "Pay-as-you-go 5 €'den itibaren (100 kredi).",
       "footnote": "Credits'in süresi dolmaz.",
       "headline": "Şeffaf. Ölçeklenebilir.",
       "kicker": "Fiyatlandırma",
       "monthly": "Aylık",
       "page_subtitle": "Dahil kredili aylık planlar. İstediğin zaman iptal et.",
       "per_month": "/ay",
-      "popular": "★ En Popüler Plan",
+      "popular": "En Popüler Plan",
       "pro_credits": "800 Credits/ay",
       "pro_cta": "Pro ol",
       "pro_desc": "Profesyonel creator'lar ve yayıncılar için.",
@@ -1077,15 +1077,10 @@
   },
   "founding": {
     "kicker": "ERKEN ERİŞİM · 2026",
-    "headline1": "YOU'RE EARLY.",
-    "headline2": "THAT'S YOUR EDGE.",
-    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
-    "c1_title": "Kurucu Üye",
-    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
-    "c2_title": "Direct line",
-    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
-    "c3_title": "From the start",
-    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
-    "cta": "Become a Founding Creator"
+    "headline": "Founding Creator ol",
+    "subtext": "İlkler arasında ol. Founding Creator'lar ömür boyu %20 indirim ve yeni özelliklere herkesten önce erişim kazanır.",
+    "slot_label": "{total} yerden {slot}. hâlâ boş",
+    "cta": "Erken erişim al",
+    "note": "Sahte hype yok — yeniyiz ve seninle birlikte inşa ediyoruz."
   }
 }

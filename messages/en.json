@@ -815,14 +815,14 @@
       "creator_f5": "Voice Cloning",
       "creator_name": "Creator",
       "extra_credits": "Extra Credits",
-      "extra_credits_suffix": "from €12/100 Credits.",
+      "extra_credits_suffix": "Pay-as-you-go from €5 (100 credits).",
       "footnote": "Credits never expire.",
       "headline": "Transparent. Scalable.",
       "kicker": "Pricing",
       "monthly": "Monthly",
       "page_subtitle": "Monthly plans with included credits. Cancel anytime.",
       "per_month": "/month",
-      "popular": "★ Most Popular Plan",
+      "popular": "Most Popular Plan",
       "pro_credits": "800 Credits/month",
       "pro_cta": "Go Pro",
       "pro_desc": "For professional creators & streamers.",
@@ -1228,15 +1228,10 @@
   },
   "founding": {
     "kicker": "EARLY ACCESS · 2026",
-    "headline1": "YOU'RE EARLY.",
-    "headline2": "THAT'S YOUR EDGE.",
-    "subtext": "InfluexAI just launched. The first creators help shape the platform — and lock in advantages no one else will get later.",
-    "c1_title": "Founding Member",
-    "c1_text": "Be among the first creators. Your feedback shapes every new feature.",
-    "c2_title": "Direct line",
-    "c2_text": "Short paths, no queue. Request features and talk directly with the team.",
-    "c3_title": "From the start",
-    "c3_text": "Be part of the platform as it grows — and help shape where it goes.",
-    "cta": "Become a Founding Creator"
+    "headline": "Become a Founding Creator",
+    "subtext": "Be among the first. Founding Creators get a lifetime 20% discount plus early access to new features before everyone else.",
+    "slot_label": "Spot {slot} of {total} still open",
+    "cta": "Secure early access now",
+    "note": "No fake hype — we're new and building with you."
   }
 }
