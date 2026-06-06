@@ -27,17 +27,20 @@ export function ToolDemosSection() {
   const t = useTranslations("landingPage.toolDemos");
 
   return (
-    <section id="tool-demos" className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]">
+    <section
+      id="tool-demos"
+      className="py-16 md:py-24 px-[clamp(20px,6vw,64px)]"
+    >
       <div className="max-w-[960px] mx-auto">
         <SpringReveal>
-          <div className="mb-12 md:mb-16 text-center max-w-2xl mx-auto">
-            <span className="kicker mb-2.5 block">{t("section_kicker")}</span>
-            <h2 className="demo-heading landing-heading text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05]">
+          <div className="mb-8 text-center max-w-2xl mx-auto">
+            <span className="kicker mb-2 block">{t("section_kicker")}</span>
+            <h2 className="demo-heading landing-heading text-[clamp(1.85rem,4vw,3rem)] leading-[1.05]">
               {t("section_headline")}
             </h2>
           </div>
         </SpringReveal>
-        <div className="flex flex-col gap-16 md:gap-20">
+        <div className="flex flex-col gap-8 md:gap-12">
           <FocusWrap>
             <ScriptGeneratorDemo />
           </FocusWrap>

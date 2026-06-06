@@ -12,22 +12,17 @@ import {
 import type { Locale } from "@/lib/locale";
 import {
   HeroSection,
-  TickerStrip,
-  ForBrandsSection,
+  TrustBarSection,
   HowItWorksSection,
-  FeaturesSection,
-  AgencyTeaserSection,
-  FoundingCreatorsSection,
+  CreatorBrandTabsSection,
   PricingSection,
   FaqSection,
-  CtaSection,
   LandingFooter,
   LandingNav,
 } from "@/components/landing";
 import { LightSystem } from "@/components/LightSystem";
 import ToolDemosSection from "@/components/demos/ToolDemosSection";
 import { ABTracker } from "@/components/ab-tracker";
-import { LiveStatsBar } from "@/components/live-stats-bar";
 import type { AbVariant } from "@/lib/ab-tracking";
 
 export const dynamic = "force-dynamic";
@@ -85,17 +80,12 @@ export default async function HomePage() {
         <LandingNav />
         <main className="landing-root">
           <HeroSection variant={variant} />
-          <LiveStatsBar />
-          <TickerStrip />
+          <TrustBarSection />
           <HowItWorksSection />
+          <CreatorBrandTabsSection />
           <ToolDemosSection />
-          <ForBrandsSection />
-          <FoundingCreatorsSection />
-          <FeaturesSection />
-          <AgencyTeaserSection />
           <PricingSection />
           <FaqSection />
-          <CtaSection />
         </main>
         <LandingFooter />
       </LightSystem>

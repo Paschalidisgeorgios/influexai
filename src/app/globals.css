@@ -64,6 +64,7 @@ html[data-world="brand"] {
   html {
     scroll-behavior: smooth;
     color-scheme: dark;
+    overflow-x: clip;
   }
   body {
     background: var(--bg);
@@ -71,7 +72,7 @@ html[data-world="brand"] {
     font-family: var(--font-dm), "DM Sans", -apple-system, BlinkMacSystemFont,
       "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   body,
   p,
@@ -1516,6 +1517,13 @@ html[data-world="brand"] {
 .landing-root {
   position: relative;
   z-index: 2;
+}
+
+.trust-bar__ticker {
+  max-height: 80px;
+}
+.trust-bar__ticker .ticker-inner {
+  animation-duration: 28s;
 }
 
 .site-header {
