@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { UseLoraModal } from "@/components/lora/UseLoraModal";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { calcLoraCredits } from "@/lib/lora-credits";
 import {
-  creditsForLoraSteps,
   LORA_ESTIMATED_MINUTES,
   LORA_MAX_IMAGES,
   LORA_MIN_IMAGES,
@@ -85,7 +85,7 @@ function LoraTrainingPageInner() {
   const fileRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const creditCost = creditsForLoraSteps(trainingSteps);
+  const creditCost = calcLoraCredits(trainingSteps);
 
   const loadModels = useCallback(async () => {
     const supabase = createClient();
@@ -359,8 +359,7 @@ function LoraTrainingPageInner() {
                       <span style={{ marginLeft: "auto", fontSize: "0.65rem", color: "#B4FF00", fontWeight: 800 }}>✓ {t("recommended")}</span>
                     )}
                   </div>
-                  <p style={{ margin: "0 0 10px", fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>{t(`type_${type}_desc`)}</p>
-                  <span style={{ fontSize: "0.75rem", color: "#B4FF00", fontWeight: 700 }}>{meta.credits} {t("credits_label")}</span>
+                  <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>{t(`type_${type}_desc`)}</p>
                 </button>
               );
             })}
@@ -439,6 +438,18 @@ function LoraTrainingPageInner() {
               </label>
             )}
           </div>
+
+          <p
+            style={{
+              textAlign: "center",
+              color: "#B4FF00",
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              marginBottom: 10,
+            }}
+          >
+            {t("cost_preview", { credits: creditCost })}
+          </p>
 
           <button
             type="button"

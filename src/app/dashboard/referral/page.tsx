@@ -91,7 +91,7 @@ export default function ReferralPage() {
   const { pagination } = data;
 
   return (
-    <div className="mx-auto max-w-[800px] pb-12">
+    <div className="mx-auto w-full min-w-0 max-w-[800px] pb-12">
       <header className="mb-8 flex items-center gap-3">
         <TablerGift size={32} color="#B4FF00" strokeWidth={2.2} />
         <div>
@@ -187,9 +187,9 @@ export default function ReferralPage() {
         </ol>
       </section>
 
-      {/* D) Table */}
+      {/* D) History */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f0f12]">
-        <div className="grid grid-cols-3 gap-2 border-b border-white/10 px-4 py-3 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
+        <div className="hidden sm:grid sm:grid-cols-3 sm:gap-2 border-b border-white/10 px-4 py-3 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
           <span>{t("col_date")}</span>
           <span>{t("col_status")}</span>
           <span className="text-right">{t("col_credits")}</span>
@@ -202,15 +202,21 @@ export default function ReferralPage() {
           data.history.map((row) => (
             <div
               key={row.id}
-              className="grid grid-cols-3 gap-2 border-b border-white/5 px-4 py-3 text-sm text-[#F0EFE8] last:border-0"
+              className="border-b border-white/5 px-4 py-3 text-sm text-[#F0EFE8] last:border-0 sm:grid sm:grid-cols-3 sm:gap-2 sm:items-center"
             >
-              <span>
+              <div className="mb-2 sm:mb-0">
+                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                  {t("col_date")}
+                </span>
                 {formatDate(row.date)}
                 <span className="mt-0.5 block text-xs text-white/65">
                   {row.label}
                 </span>
-              </span>
-              <span>
+              </div>
+              <div className="mb-2 sm:mb-0">
+                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                  {t("col_status")}
+                </span>
                 <span
                   className={`inline-block rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${
                     row.status === "purchased"
@@ -222,10 +228,15 @@ export default function ReferralPage() {
                     ? t("status_purchased")
                     : t("status_signed_up")}
                 </span>
-              </span>
-              <span className="text-right font-bold text-[#B4FF00]">
-                +{row.creditsEarned}
-              </span>
+              </div>
+              <div className="sm:text-right">
+                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                  {t("col_credits")}
+                </span>
+                <span className="font-bold text-[#B4FF00]">
+                  +{row.creditsEarned}
+                </span>
+              </div>
             </div>
           ))
         )}
@@ -237,7 +248,7 @@ export default function ReferralPage() {
             type="button"
             disabled={page <= 1 || loading}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
+            className="min-h-[44px] rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
           >
             {t("page_prev")}
           </button>
@@ -251,7 +262,7 @@ export default function ReferralPage() {
             type="button"
             disabled={page >= pagination.totalPages || loading}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
+            className="min-h-[44px] rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-[#F0EFE8] disabled:opacity-40 hover:border-[#B4FF00]/40"
           >
             {t("page_next")}
           </button>

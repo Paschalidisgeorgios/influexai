@@ -336,6 +336,7 @@
     },
     "loraTraining": {
       "credits_label": "Credits",
+      "cost_preview": "This training costs {credits} credits",
       "delete_button": "Delete",
       "delete_confirm": "Delete this model?",
       "demo_title": "Before / After",

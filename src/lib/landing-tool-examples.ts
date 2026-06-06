@@ -19,3 +19,27 @@ export const LANDING_TOOL_EXAMPLES: LandingToolExample[] = [
   { id: "viralscore", image: "/images/examples/viralscore.jpg", href: "/dashboard/viral-score" },
   { id: "agent", image: "/images/examples/agent.jpg", href: "/dashboard/agent" },
 ];
+
+/** Kompakte Landing-Feature-Karten (Startseite) */
+export const LANDING_FEATURE_HIGHLIGHTS: LandingToolExample[] = [
+  {
+    id: "script",
+    image: "/images/examples/script.jpg",
+    href: "/dashboard/script-generator",
+  },
+  {
+    id: "product",
+    image: "/images/examples/product.jpg",
+    href: "/dashboard/produkt",
+  },
+  {
+    id: "thumbnail",
+    image: "/images/examples/thumbnail.jpg",
+    href: "/dashboard/thumbnail-concept",
+  },
+  {
+    id: "agent",
+    image: "/images/examples/agent.jpg",
+    href: "/dashboard/agent",
+  },
+];

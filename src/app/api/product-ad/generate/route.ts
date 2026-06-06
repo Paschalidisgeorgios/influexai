@@ -27,7 +27,6 @@ import { assertGatedFeature } from "@/lib/access.server";
 import {
   createGenerationRecord,
   ingestFinalAssetFromUrl,
-  updateGenerationResult,
 } from "@/lib/generation-assets";
 import { isValidLocale, type Locale } from "@/lib/locale";
 
@@ -88,6 +87,7 @@ async function runSingleGeneration(
     productName: string;
     productDescription: string;
     imageUrl: string;
+    falImageUrl?: string;
     audience: string;
     platform: ProductAdPlatform;
     style: ProductAdStyle;
@@ -104,23 +104,34 @@ async function runSingleGeneration(
   configureFalClient();
 
   let script: ProductAdScript;
+  let falImageUrl: string;
+
   if (params.editedScript) {
     script = params.editedScript;
+    falImageUrl =
+      params.falImageUrl ?? (await resolveImageUrl(params.imageUrl));
   } else {
-    const scriptResult = await generateProductAdScript({
-      productName: params.productName,
-      productDescription: params.productDescription,
-      audience: params.audience,
-      platform: params.platform,
-      style: params.style,
-      language: params.language,
-      ctaText: params.ctaText,
-      variationFocus: params.variationFocus,
-    });
+    const [scriptResult, resolvedImageUrl] = await Promise.all([
+      generateProductAdScript({
+        productName: params.productName,
+        productDescription: params.productDescription,
+        audience: params.audience,
+        platform: params.platform,
+        style: params.style,
+        language: params.language,
+        ctaText: params.ctaText,
+        variationFocus: params.variationFocus,
+      }),
+      params.falImageUrl
+        ? Promise.resolve(params.falImageUrl)
+        : resolveImageUrl(params.imageUrl),
+    ]);
+
     if (!scriptResult.ok) {
       throw new Error(scriptResult.error);
     }
     script = scriptResult.script;
+    falImageUrl = resolvedImageUrl;
   }
 
   const variationSuffix =
@@ -136,7 +147,6 @@ async function runSingleGeneration(
       : variationSuffix
   );
 
-  const falImageUrl = await resolveImageUrl(params.imageUrl);
   const { videoUrl: falVideoUrl, model } = await generateKlingProductVideo({
     imageUrl: falImageUrl,
     prompt: videoPrompt,
@@ -145,7 +155,15 @@ async function runSingleGeneration(
     cfgScale: params.upscale ? 0.65 : 0.5,
   });
 
-  const generationId = await createGenerationRecord(
+  const generationId = crypto.randomUUID();
+  const { path: finalPath } = await ingestFinalAssetFromUrl(
+    userId,
+    generationId,
+    falVideoUrl,
+    "video"
+  );
+
+  await createGenerationRecord(
     supabase,
     userId,
     "product_ad",
@@ -163,22 +181,12 @@ async function runSingleGeneration(
       batchId,
       seed: params.seed,
       upscaled: params.upscale,
+      finalPath,
     },
-    0,
-    params.productName.slice(0, 500)
+    creditCost,
+    params.productName.slice(0, 500),
+    generationId
   );
-
-  const { path: finalPath } = await ingestFinalAssetFromUrl(
-    userId,
-    generationId,
-    falVideoUrl,
-    "video"
-  );
-
-  await updateGenerationResult(supabase, generationId, userId, {
-    finalPath,
-    credits_used: creditCost,
-  });
 
   return {
     generationId,
@@ -283,29 +291,31 @@ export async function POST(request: NextRequest) {
         "lifestyle",
         "problem_solution",
       ];
-      const results: AdGenerationResult[] = [];
+      const falImageUrl = await resolveImageUrl(imageUrl);
 
-      for (const focus of focuses) {
-        const result = await runSingleGeneration(
-          supabase,
-          user.id,
-          {
-            productName,
-            productDescription,
-            imageUrl,
-            audience,
-            platform,
-            style,
-            language,
-            ctaText,
-            upscale,
-            variationFocus: focus,
-          },
-          perItemCost,
-          batchId
-        );
-        results.push(result);
-      }
+      const results = await Promise.all(
+        focuses.map((focus) =>
+          runSingleGeneration(
+            supabase,
+            user.id,
+            {
+              productName,
+              productDescription,
+              imageUrl,
+              falImageUrl,
+              audience,
+              platform,
+              style,
+              language,
+              ctaText,
+              upscale,
+              variationFocus: focus,
+            },
+            perItemCost,
+            batchId
+          )
+        )
+      );
 
       const deduction = await deductCredits(
         supabase,
@@ -345,6 +355,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const falImageUrl =
+      body.editedScript != null
+        ? await resolveImageUrl(imageUrl)
+        : undefined;
+
     const result = await runSingleGeneration(
       supabase,
       user.id,
@@ -352,6 +367,7 @@ export async function POST(request: NextRequest) {
         productName,
         productDescription,
         imageUrl,
+        falImageUrl,
         audience,
         platform,
         style,

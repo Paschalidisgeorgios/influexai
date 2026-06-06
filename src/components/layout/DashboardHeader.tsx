@@ -106,19 +106,19 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
       : creditsBadgeStyle(100);
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-b border-white/[0.07] bg-[#060608]/85 px-5 backdrop-blur-xl">
-      <div className="flex items-center gap-1.5 text-sm">
-        <span className="font-medium text-white/65">Studio</span>
-        <span className="text-[#2a2a2a]">›</span>
-        <span className="font-semibold text-[#F0EFE8]">Dashboard</span>
+    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-white/[0.07] bg-[#060608]/85 px-3 sm:px-5 backdrop-blur-xl min-w-0">
+      <div className="flex min-w-0 items-center gap-1.5 text-sm">
+        <span className="hidden sm:inline font-medium text-white/65">Studio</span>
+        <span className="hidden sm:inline text-[#2a2a2a]">›</span>
+        <span className="truncate font-semibold text-[#F0EFE8]">Dashboard</span>
       </div>
 
-      <div className="flex items-center gap-2.5">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
         <LanguageSwitcher compact />
         <button
           type="button"
           onClick={() => openBuyCredits()}
-          className="flex cursor-pointer items-center gap-1.5 rounded-[9px] px-3.5 py-1.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
+          className="flex min-h-[44px] cursor-pointer items-center gap-1 rounded-[9px] px-2.5 py-1.5 sm:px-3.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
           style={{
             background: badgeStyle.background,
             border: badgeStyle.border,
@@ -126,20 +126,20 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
         >
           <span
             data-testid="credits-display"
-            className="text-[0.95rem] font-extrabold"
+            className="text-[0.85rem] sm:text-[0.95rem] font-extrabold whitespace-nowrap"
             style={{ color: creditColor }}
           >
             ⚡{" "}
             <AnimatedCredits
               value={displayCredits}
               style={{ color: creditColor }}
-            />{" "}
-            {t("credits_label")}
+            />
+            <span className="hidden min-[380px]:inline"> {t("credits_label")}</span>
           </span>
         </button>
 
         {profile?.plan && profile.plan !== "free" && (
-          <div className="rounded-md border border-white/[0.09] bg-white/[0.05] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-white/65">
+          <div className="hidden sm:block rounded-md border border-white/[0.09] bg-white/[0.05] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-white/65">
             {planLabel[profile.plan] ?? profile.plan}
           </div>
         )}
@@ -151,7 +151,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
             aria-expanded={showMenu}
             aria-haspopup="menu"
             onClick={() => setShowMenu((open) => !open)}
-            className="flex cursor-pointer items-center gap-2 rounded-[10px] border border-[#B4FF00]/20 bg-[#B4FF00]/10 py-1 pl-1 pr-2 transition-colors hover:bg-[#B4FF00]/14"
+            className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-[10px] border border-[#B4FF00]/20 bg-[#B4FF00]/10 py-1 pl-1 pr-1 sm:pr-2 transition-colors hover:bg-[#B4FF00]/14"
           >
             <span
               className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#B4FF00]/15 font-[family-name:var(--font-bebas)] text-base tracking-wide text-[#B4FF00]"

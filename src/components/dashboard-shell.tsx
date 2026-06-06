@@ -82,7 +82,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {creditsReady && credits !== null && !isCreditExempt && (
           <CreditsWarningBanner credits={credits} />
         )}
-        <main className="relative z-[1] flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden p-4 md:p-5 pb-20 md:pb-0 box-border">
+        <main className="relative z-[1] flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0 box-border">
           <ReengagementBanner />
           {children}
         </main>

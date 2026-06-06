@@ -286,7 +286,7 @@ function UpscalerPageInner() {
             <p className="mb-2 text-xs font-medium text-[#B4FF00]">
               {t("upload_active")}
             </p>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-[#B4FF00] ring-2 ring-[#B4FF00]/30">
                 <Image
                   src={upload.previewUrl}
@@ -314,7 +314,7 @@ function UpscalerPageInner() {
         {images.length === 0 ? (
           <p className="text-sm text-white/45">{t("empty_gallery")}</p>
         ) : (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {images.map((img) => {
               const active = selectedId === img.id && !upload;
               return (

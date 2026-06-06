@@ -52,7 +52,7 @@ export default function CreditsPage() {
   const showFirstPurchase = stats && !stats.hasPurchased;
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto", position: "relative" }}>
+    <div className="w-full min-w-0 max-w-[960px] mx-auto box-border">
       {showUrgent && (
         <div
           style={{
@@ -285,7 +285,7 @@ export default function CreditsPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
           gap: 16,
           alignItems: "stretch",
         }}
@@ -301,6 +301,7 @@ export default function CreditsPage() {
             <div
               key={pkg.id}
               data-testid="pricing-card"
+              className={isPopular ? "credit-pack-card credit-pack-card--popular" : "credit-pack-card"}
               style={{
                 padding: isPopular ? 28 : 24,
                 borderRadius: 18,
@@ -312,6 +313,8 @@ export default function CreditsPage() {
                 flexDirection: "column",
                 position: "relative",
                 transform: isPopular ? "scale(1.02)" : "none",
+                minWidth: 0,
+                maxWidth: "100%",
               }}
             >
               {isPopular && (

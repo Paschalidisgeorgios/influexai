@@ -385,15 +385,7 @@ export default function ImageGeneratorPage() {
             <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">
               {t("category_label")}
             </p>
-            <div
-              style={{
-                width: "100%",
-                overflow: "hidden",
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 8,
-              }}
-            >
+            <div className="flex flex-wrap gap-2">
               {IMAGE_CATEGORY_KEYS.map((key) => {
                 const active = category === key;
                 return (
@@ -401,17 +393,16 @@ export default function ImageGeneratorPage() {
                     key={key}
                     type="button"
                     onClick={() => setCategory(key)}
-                    className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
+                    className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                       active
                         ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
                         : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20"
                     }`}
-                    style={{ width: "100%", minWidth: 0 }}
                   >
                     <span className="text-lg" aria-hidden>
                       {CATEGORY_ICONS[key]}
                     </span>
-                    <span className="truncate">
+                    <span className="whitespace-nowrap">
                       {t(`cat_${key}` as "cat_portrait")}
                     </span>
                   </button>

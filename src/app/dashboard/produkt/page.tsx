@@ -41,7 +41,7 @@ type AdResult = {
   seed?: number;
 };
 
-const LOADING_STEPS = ["scrape", "script", "video"] as const;
+const LOADING_STEPS = ["script", "video"] as const;
 
 function fieldStyle(focused = false) {
   return {
@@ -90,6 +90,8 @@ function ProduktWerbungPageInner() {
   );
   const [dragOver, setDragOver] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [loadingScript, setLoadingScript] = useState<ProductAdScript | null>(null);
+  const [loadingScriptText, setLoadingScriptText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AdResult | null>(null);
   const [batchResults, setBatchResults] = useState<AdResult[] | null>(null);
@@ -203,37 +205,58 @@ function ProduktWerbungPageInner() {
     setError(null);
     setStep("loading");
     setLoadingStep(0);
+    setLoadingScript(null);
+    setLoadingScriptText(null);
     setBatchResults(null);
     setResult(null);
 
-    const interval = window.setInterval(() => {
-      setLoadingStep((s) => Math.min(s + 1, LOADING_STEPS.length - 1));
-    }, 4000);
+    const payload = {
+      productName: productName.trim(),
+      productDescription: [productDescription, productPrice && `Price: ${productPrice}`]
+        .filter(Boolean)
+        .join("\n"),
+      imageUrl,
+      audience: audience.trim(),
+      platform,
+      style,
+      language,
+      ctaText: ctaText.trim(),
+      upscale,
+    };
+
+    let scriptForVideo: ProductAdScript | undefined = opts.editedScript;
 
     try {
+      if (!opts.batch && !scriptForVideo) {
+        const scriptRes = await fetch("/api/product-ad/script", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const scriptData = await scriptRes.json();
+        if (!scriptRes.ok || !scriptData.success) {
+          throw new Error(scriptData.error || t("error_generic"));
+        }
+        scriptForVideo = scriptData.script as ProductAdScript;
+        setLoadingScript(scriptForVideo);
+        setLoadingScriptText(scriptData.scriptText ?? null);
+        setLoadingStep(1);
+      } else if (opts.batch) {
+        setLoadingStep(1);
+      }
+
       const res = await fetch("/api/product-ad/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productName: productName.trim(),
-          productDescription: [productDescription, productPrice && `Price: ${productPrice}`]
-            .filter(Boolean)
-            .join("\n"),
-          imageUrl,
-          audience: audience.trim(),
-          platform,
-          style,
-          language,
-          ctaText: ctaText.trim(),
+          ...payload,
           batch: opts.batch,
-          upscale,
           variation: opts.variation,
-          editedScript: opts.editedScript,
+          editedScript: scriptForVideo,
           parentGenerationId: result?.generationId,
         }),
       });
       const data = await res.json();
-      clearInterval(interval);
 
       const creditCost = opts.batch ? creditBatch : creditSingle;
       if (
@@ -262,7 +285,6 @@ function ProduktWerbungPageInner() {
       loadHistory();
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
-      clearInterval(interval);
       setError(
         sanitizeUserMessage(err instanceof Error ? err.message : t("error_generic"))
       );
@@ -666,6 +688,15 @@ function ProduktWerbungPageInner() {
           <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.8rem", color: "#F0EFE8", marginBottom: 10 }}>
             {t(`loading_${LOADING_STEPS[loadingStep]}`)}
           </h2>
+          {loadingScript && (
+            <div style={{ textAlign: "left", maxWidth: 520, margin: "0 auto 20px", padding: 16, borderRadius: 12, background: "#18181d", border: "1px solid rgba(180,255,0,0.2)" }}>
+              <div style={{ fontSize: "0.65rem", fontWeight: 800, color: "#B4FF00", marginBottom: 8, letterSpacing: "0.12em" }}>HOOK</div>
+              <p style={{ margin: "0 0 12px", fontSize: "1.05rem", fontWeight: 700, color: "#F0EFE8", lineHeight: 1.4 }}>{loadingScript.hook}</p>
+              {loadingScriptText && (
+                <p style={{ margin: 0, fontSize: "0.82rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{loadingScriptText}</p>
+              )}
+            </div>
+          )}
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>{t("loading_hint")}</p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>

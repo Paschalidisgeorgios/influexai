@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
   }));
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto", padding: "8px 4px 48px" }}>
+    <div className="w-full min-w-0 max-w-[960px] mx-auto box-border" style={{ padding: "8px 0 48px" }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1
@@ -198,7 +198,8 @@ export default function AnalyticsPage() {
             borderRadius: 12,
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.06)",
-            width: "fit-content",
+            width: "100%",
+            maxWidth: "100%",
           }}
         >
           {RANGES.map((r) => {
@@ -209,7 +210,8 @@ export default function AnalyticsPage() {
                 type="button"
                 onClick={() => setRange(r.id)}
                 style={{
-                  padding: "8px 14px",
+                  padding: "10px 14px",
+                  minHeight: 44,
                   borderRadius: 8,
                   border: "none",
                   cursor: "pointer",
@@ -230,6 +232,7 @@ export default function AnalyticsPage() {
 
       {/* Overview cards */}
       <div
+        className="analytics-overview-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
@@ -584,16 +587,12 @@ export default function AnalyticsPage() {
           )}
         </div>
 
-        <div
-          style={{
-            borderRadius: 12,
-            overflow: "hidden",
-            border: "1px solid rgba(255,255,255,0.07)",
-          }}
-        >
+        <div className="overflow-x-auto rounded-xl border border-white/10">
           <table
+            className="dashboard-data-table"
             style={{
               width: "100%",
+              minWidth: 520,
               borderCollapse: "collapse",
               fontSize: "0.78rem",
             }}

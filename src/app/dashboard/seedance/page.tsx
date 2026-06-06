@@ -338,7 +338,7 @@ export default function SeedancePage() {
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[rgba(255,255,255,0.65)]">
                 Aus deiner Gallery
               </p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
                 {galleryImages.map((item) => (
                   <button
                     key={item.id}

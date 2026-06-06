@@ -44,6 +44,72 @@ export default function ToolsIndexPage() {
           {featureCount * nicheCount} spezialisierte Landingpages für
           Long-Tail-SEO.
         </p>
+
+        <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href="/tools/viral-hook-extraktor"
+            className="group rounded-2xl border border-white/10 bg-[#0f0f12] p-6 transition-colors hover:border-[#B4FF00]/40"
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-xl">⚡</span>
+              <span className="rounded-full bg-[#B4FF00] px-2 py-0.5 text-[0.65rem] font-bold text-[#060608]">
+                NEU
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-white group-hover:text-[#B4FF00]">
+              Viral Hook Extraktor
+            </h2>
+            <p className="mt-2 text-sm text-white/65">
+              Thema, Nische oder Transkript → virale Hooks in Sekunden. 1 Credit.
+            </p>
+            <span className="mt-4 inline-block text-sm font-medium text-[#B4FF00]">
+              Tool öffnen →
+            </span>
+          </Link>
+
+          <Link
+            href="/tools/content-kalender"
+            className="group rounded-2xl border border-white/10 bg-[#0f0f12] p-6 transition-colors hover:border-[#B4FF00]/40"
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-xl">📅</span>
+              <span className="rounded-full bg-[#B4FF00] px-2 py-0.5 text-[0.65rem] font-bold text-[#060608]">
+                NEU
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-white group-hover:text-[#B4FF00]">
+              Content Kalender KI
+            </h2>
+            <p className="mt-2 text-sm text-white/65">
+              Nische + Plattform + Frequenz → 4-Wochen Plan. 2 Credits.
+            </p>
+            <span className="mt-4 inline-block text-sm font-medium text-[#B4FF00]">
+              Tool öffnen →
+            </span>
+          </Link>
+
+          <Link
+            href="/tools/trend-script"
+            className="group rounded-2xl border border-white/10 bg-[#0f0f12] p-6 transition-colors hover:border-[#B4FF00]/40"
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-xl">🚀</span>
+              <span className="rounded-full bg-[#B4FF00] px-2 py-0.5 text-[0.65rem] font-bold text-[#060608]">
+                NEU
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-white group-hover:text-[#B4FF00]">
+              Trend → Script
+            </h2>
+            <p className="mt-2 text-sm text-white/65">
+              YouTube-Trends der letzten 30 Tage → fertiges Script. 3 Credits.
+            </p>
+            <span className="mt-4 inline-block text-sm font-medium text-[#B4FF00]">
+              Tool öffnen →
+            </span>
+          </Link>
+        </section>
+
         <ToolsIndexClient />
       </div>
     </div>

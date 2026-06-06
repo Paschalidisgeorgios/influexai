@@ -91,7 +91,7 @@ export function AgentViralScoreResult({ data }: { data: unknown }) {
           <p className="text-xs text-white/55">{score.verdict}</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {rows.map((row) => (
           <div
             key={row.label}

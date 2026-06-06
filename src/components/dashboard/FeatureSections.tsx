@@ -69,7 +69,7 @@ export function FeatureSections({
         </h2>
         <div
           className="
-            flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin
+            flex gap-3 overflow-x-auto max-w-full pb-2 snap-x snap-mandatory scrollbar-thin
             md:grid md:grid-cols-2 md:overflow-visible md:pb-0
             xl:grid-cols-3 2xl:grid-cols-4
           "
@@ -78,7 +78,7 @@ export function FeatureSections({
             <RevealUp
               key={flow.id}
               delay={index * 0.05}
-              className="min-w-[260px] md:min-w-0 snap-center shrink-0 md:shrink"
+              className="min-w-[min(85vw,280px)] md:min-w-0 snap-center shrink-0 md:shrink"
             >
               <FeatureCard
                 title={resolveTitle(flow)}
@@ -104,7 +104,7 @@ export function FeatureSections({
 
   return (
     <div
-      className="space-y-8 mb-8"
+      className="space-y-8 mb-8 min-w-0 max-w-full"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >

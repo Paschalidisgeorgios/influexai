@@ -6,7 +6,10 @@ export type FeatureKey =
   | "video-remix"
   | "video-ad"
   | "ki-ich"
-  | "stimme";
+  | "stimme"
+  | "viral-hook-extraktor"
+  | "content-kalender"
+  | "trend-script";
 
 export type NicheKey = keyof typeof NICHES;
 
@@ -90,6 +93,36 @@ export const FEATURES = {
     route: "/dashboard/stimme",
     creditCost: 2,
     aliases: ["stimme", "voiceover", "ki stimme"],
+  },
+  "viral-hook-extraktor": {
+    name: "Viral Hook Extraktor",
+    nameDe: "Viral Hook Extraktor",
+    description: "Virale Hooks für die ersten 3 Sekunden aus Thema, Nische oder Transkript",
+    icon: "Zap",
+    cta: "Hooks generieren",
+    route: "/tools/viral-hook-extraktor",
+    creditCost: 1,
+    aliases: ["viral hook", "hook extraktor", "scroll stopper", "video hook"],
+  },
+  "content-kalender": {
+    name: "Content Calendar",
+    nameDe: "Content Kalender KI",
+    description: "4-Wochen Content-Plan mit Ideen und Formaten für deine Plattform",
+    icon: "Calendar",
+    cta: "Kalender generieren",
+    route: "/tools/content-kalender",
+    creditCost: 2,
+    aliases: ["content kalender", "content plan", "posting plan", "social media plan"],
+  },
+  "trend-script": {
+    name: "Trend to Script",
+    nameDe: "Trend → Script",
+    description: "Aktuelle YouTube-Trends analysieren und sofort passendes Script generieren",
+    icon: "Rocket",
+    cta: "Script generieren",
+    route: "/tools/trend-script",
+    creditCost: 3,
+    aliases: ["trend script", "trend to script", "viral trends", "youtube trends"],
   },
 } as const satisfies Record<
   FeatureKey,

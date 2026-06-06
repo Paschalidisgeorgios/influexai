@@ -393,6 +393,7 @@
       "type_character_desc": "KI-Charakter oder Avatar trainieren. Konsistenter Look überall.",
       "recommended": "Empfohlen",
       "credits_label": "Credits",
+      "cost_preview": "Dieses Training kostet {credits} Credits",
       "upload_label": "Trainings-Bilder",
       "upload_drop": "Bilder hier ablegen oder tippen · JPG, PNG, WEBP",
       "upload_rules": "Min. {min} · Empfohlen {rec} · Max. {max} Bilder · je 10 MB",

@@ -2,13 +2,6 @@ export type LoraModelType = "portrait" | "style" | "product" | "character";
 
 export type LoraModelStatus = "training" | "ready" | "failed";
 
-export const LORA_TRAINING_CREDITS: Record<LoraModelType, number> = {
-  portrait: 50,
-  style: 40,
-  product: 40,
-  character: 50,
-};
-
 export const LORA_GENERATION_CREDIT = 2;
 
 export const LORA_MIN_IMAGES = 10;
@@ -39,7 +32,6 @@ export const TRIGGER_WORD_PRESETS = [
 export const LORA_TYPE_META: Record<
   LoraModelType,
   {
-    credits: number;
     recommended: boolean;
     usesPortraitTrainer: boolean;
     defaultIsStyle: boolean;
@@ -47,28 +39,24 @@ export const LORA_TYPE_META: Record<
   }
 > = {
   portrait: {
-    credits: 50,
     recommended: true,
     usesPortraitTrainer: true,
     defaultIsStyle: false,
     tipKey: "tip_portrait",
   },
   style: {
-    credits: 40,
     recommended: false,
     usesPortraitTrainer: false,
     defaultIsStyle: true,
     tipKey: "tip_style",
   },
   product: {
-    credits: 40,
     recommended: false,
     usesPortraitTrainer: false,
     defaultIsStyle: false,
     tipKey: "tip_product",
   },
   character: {
-    credits: 50,
     recommended: false,
     usesPortraitTrainer: false,
     defaultIsStyle: false,
@@ -107,34 +95,3 @@ export function trainingFalEndpoint(type: LoraModelType): string {
     : FAL_LORA_MODELS.FAST_TRAINER;
 }
 
-export function creditsForLoraType(type: LoraModelType): number {
-  return LORA_TRAINING_CREDITS[type];
-}
-
-/** Step-based LoRA training pricing (500→30 … 2000→100, linear between tiers). */
-const LORA_STEP_CREDIT_ANCHORS: ReadonlyArray<[steps: number, credits: number]> =
-  [
-    [500, 30],
-    [1000, 50],
-    [1500, 75],
-    [2000, 100],
-  ];
-
-export function creditsForLoraSteps(steps: number): number {
-  const clamped = Math.min(
-    LORA_STEPS_MAX,
-    Math.max(LORA_STEPS_MIN, Math.round(steps))
-  );
-
-  for (let i = 0; i < LORA_STEP_CREDIT_ANCHORS.length - 1; i++) {
-    const [s0, c0] = LORA_STEP_CREDIT_ANCHORS[i]!;
-    const [s1, c1] = LORA_STEP_CREDIT_ANCHORS[i + 1]!;
-    if (clamped <= s1) {
-      if (clamped <= s0) return c0;
-      const ratio = (clamped - s0) / (s1 - s0);
-      return Math.round(c0 + ratio * (c1 - c0));
-    }
-  }
-
-  return LORA_STEP_CREDIT_ANCHORS[LORA_STEP_CREDIT_ANCHORS.length - 1]![1];
-}
