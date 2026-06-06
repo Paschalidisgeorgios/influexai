@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import {
   CONTENT_KALENDER_FREQUENCIES,
@@ -462,6 +463,7 @@ function ContentKalenderPageInner() {
                 </div>
               ))}
             </div>
+            <AiOutputDisclaimer />
           </div>
         )}
       </div>

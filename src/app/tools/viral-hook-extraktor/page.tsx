@@ -7,6 +7,7 @@ import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 import { useUserCredits } from "@/hooks/use-user-credits";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = VIRAL_HOOK_EXTRACTOR_CREDIT_COST;
 
@@ -330,6 +331,7 @@ function ViralHookExtraktorPageInner() {
                 </button>
               </div>
             ))}
+            <AiOutputDisclaimer />
           </div>
         )}
       </div>

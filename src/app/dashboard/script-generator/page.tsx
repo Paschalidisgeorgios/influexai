@@ -18,6 +18,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { ScriptSkeleton } from "@/components/skeletons/script-skeleton";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
 import { createClient } from "@/lib/supabase/client";
@@ -982,6 +983,7 @@ function ScriptGeneratorPageInner() {
               Neues Thema
             </button>
           </div>
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>

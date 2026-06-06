@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { UseLoraModal } from "@/components/lora/UseLoraModal";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {
   LORA_ESTIMATED_MINUTES,
@@ -503,6 +504,7 @@ function LoraTrainingPageInner() {
           <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.6rem", color: "#F0EFE8" }}>{t("done_title")}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 16 }}>{t("done_subtitle")}</p>
           <button type="button" onClick={resetForm} style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#B4FF00", color: "#060608", fontWeight: 700, cursor: "pointer" }}>{t("done_button")}</button>
+          <AiOutputDisclaimer className="mt-4" />
         </div>
       )}
 

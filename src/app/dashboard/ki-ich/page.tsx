@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ImageGenerationLoading } from "@/components/image-generation-loading";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { FAL_CREDITS } from "@/lib/fal-credits";
 
@@ -625,6 +626,7 @@ export default function KiIchPage() {
           {error && (
             <p style={{ color: "#ff6b7a", fontSize: "0.85rem" }}>{error}</p>
           )}
+          <AiOutputDisclaimer />
         </div>
       )}
 
@@ -657,6 +659,7 @@ export default function KiIchPage() {
             className="generated-image-wrapper--unlocked"
           />
 
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>

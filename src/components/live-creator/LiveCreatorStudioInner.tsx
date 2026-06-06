@@ -22,6 +22,7 @@ import {
   type FlashheadRealtimeResult,
 } from "@/lib/live-creator-webcam";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 type StudioPhase = "setup" | "connecting" | "live" | "ended";
 type StreamMode = "realtime" | "fallback";
@@ -627,6 +628,7 @@ export function LiveCreatorStudioInner() {
           )}
         </div>
       </div>
+      {outputUrl ? <AiOutputDisclaimer className="mt-3 px-1" /> : null}
     </div>
   );
 }

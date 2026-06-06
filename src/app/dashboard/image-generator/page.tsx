@@ -9,6 +9,7 @@ import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGenerat
 import { TablerPhoto } from "@/components/icons/TablerPhoto";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import {
   CATEGORY_PROMPTS,
   IMAGE_CATEGORY_KEYS,
@@ -611,6 +612,7 @@ export default function ImageGeneratorPage() {
                   {variationLoading ? t("loading_variation") : t("variation_button")}
                 </button>
               </div>
+              <AiOutputDisclaimer />
             </>
           )}
         </div>

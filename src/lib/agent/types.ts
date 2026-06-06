@@ -91,3 +91,197 @@ export type AgentStreamEvent =
   | { type: "credits"; creditsLeft: number; totalUsed: number }
   | { type: "done"; summary: string }
   | { type: "error"; message: string };
+
+/** KI Agent execution framework (router / mockExecutor) */
+export type AgentExecutionStatus =
+  | "idle"
+  | "planning"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export type AgentStepStatus =
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "skipped";
+
+export type AgentTool =
+  | "script_generator"
+  | "produkt_werbung"
+  | "thumbnail_concept"
+  | "ki_agent"
+  | "ki_ich"
+  | "image_generator"
+  | "viral_hook_extraktor"
+  | "content_kalender"
+  | "trend_script"
+  | "stimme_musik"
+  | "live_creator"
+  | "lora_training";
+
+export type AgentIntent =
+  | "image_generation"
+  | "video_briefing"
+  | "script_generation"
+  | "product_ad"
+  | "hook_generation"
+  | "content_calendar"
+  | "thumbnail_concept"
+  | "avatar_workflow"
+  | "multi_tool_content_package"
+  | "unknown";
+
+export type AgentExecutionStep = {
+  id: string;
+  label: string;
+  status: AgentStepStatus;
+  tool?: AgentTool;
+  result?: unknown;
+  error?: string;
+};
+
+export type AgentScores = {
+  hookScore?: number;
+  clarity?: number;
+  platformFit?: "low" | "medium" | "high";
+  trendFit?: "low" | "medium" | "high";
+  brandFit?: "low" | "medium" | "high";
+  visualFit?: "low" | "medium" | "high";
+  ctaStrength?: number;
+  riskLevel?: "low" | "medium" | "high";
+};
+
+export type AgentResult = {
+  type: string;
+  title: string;
+  summary: string;
+  outputs: unknown[];
+  scores?: AgentScores;
+  nextActions?: string[];
+};
+
+export type AgentExecution = {
+  id: string;
+  userId?: string;
+  prompt: string;
+  intent: AgentIntent;
+  selectedTools: AgentTool[];
+  status: AgentExecutionStatus;
+  steps: AgentExecutionStep[];
+  result?: AgentResult;
+  estimatedCredits?: number;
+  usedCredits?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CampaignMode =
+  | "sprint"
+  | "weekly"
+  | "monthly"
+  | "product_launch";
+
+export type CampaignPlatform =
+  | "instagram"
+  | "tiktok"
+  | "youtube_shorts"
+  | "linkedin";
+
+export type CampaignGoal =
+  | "reach"
+  | "leads"
+  | "trust"
+  | "product_sales"
+  | "branding";
+
+export type CampaignTone =
+  | "professional"
+  | "modern"
+  | "direct"
+  | "trustworthy"
+  | "bold";
+
+export type LegalSensitivity = "low" | "medium" | "high";
+
+export type BrandDNA = {
+  companyName: string;
+  industry: string;
+  targetAudience: string;
+  offer: string;
+  platforms: CampaignPlatform[];
+  toneOfVoice: CampaignTone;
+  forbiddenClaims: string[];
+  forbiddenWords: string[];
+  requiredDisclaimers: string[];
+  visualStyle: string;
+  ctaStyle: string;
+  legalSensitivity: LegalSensitivity;
+  websiteUrl?: string;
+  existingContentExamples?: string[];
+};
+
+export type ContentItem = {
+  id: string;
+  type: "reel" | "carousel" | "story" | "post" | "ad" | "visual_briefing";
+  platform: CampaignPlatform;
+  day?: number;
+  title: string;
+  hook?: string;
+  script?: string;
+  caption?: string;
+  hashtags?: string[];
+  cta?: string;
+  visualBriefing?: string;
+  imagePrompt?: string;
+  scores?: ContentScores;
+  status: "pending" | "generated" | "reviewing" | "approved" | "rejected";
+};
+
+export type ContentScores = {
+  brandFit?: number;
+  clarity?: number;
+  ctaStrength?: number;
+  platformFit?: number;
+  hookScore?: number;
+  claimRisk?: "low" | "medium" | "high";
+  legalRisk?: "low" | "medium" | "high";
+  duplicateSimilarity?: number;
+  overallScore?: number;
+};
+
+export type QualityDecision = "accept" | "improve" | "regenerate" | "manual_review";
+
+export type CampaignResult = {
+  id: string;
+  mode: CampaignMode;
+  title: string;
+  summary: string;
+  brandDNA: Partial<BrandDNA>;
+  assumptionsMade: string[];
+  items: ContentItem[];
+  overallScores: ContentScores;
+  estimatedCredits: number;
+  usedCredits: number;
+  createdAt: string;
+};
+
+export type CampaignExecution = {
+  id: string;
+  userId?: string;
+  prompt: string;
+  mode: CampaignMode;
+  platforms: CampaignPlatform[];
+  goal: CampaignGoal;
+  tone: CampaignTone;
+  brandDNA?: Partial<BrandDNA>;
+  status: AgentExecutionStatus;
+  steps: AgentExecutionStep[];
+  result?: CampaignResult;
+  estimatedCredits: number;
+  usedCredits: number;
+  createdAt: string;
+  updatedAt: string;
+};

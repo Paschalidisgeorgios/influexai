@@ -13,6 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Upload, ZoomIn, X } from "lucide-react";
 import { ImageCompareSlider } from "@/components/image-generator/ImageCompareSlider";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -369,6 +370,7 @@ function UpscalerPageInner() {
             beforeAlt={tImg("compare_before")}
             afterAlt={tImg("compare_after")}
           />
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>

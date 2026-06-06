@@ -13,6 +13,7 @@ import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = 2;
 
@@ -735,6 +736,7 @@ export default function VideoRemixPage() {
               </div>
             );
           })}
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>

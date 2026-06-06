@@ -13,6 +13,7 @@ import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { createClient } from "@/lib/supabase/client";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = COMPETITOR_ANALYSIS_CREDIT_COST;
 
@@ -529,6 +530,7 @@ function CompetitorPageInner() {
           >
             {t("analyze_again")}
           </button>
+          <AiOutputDisclaimer />
         </div>
       )}
 

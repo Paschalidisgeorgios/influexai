@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 type Mode = "video" | "image";
 type FlowStep = "input" | "generating" | "result";
@@ -394,6 +395,7 @@ export function FaceSwapPanel({
             ↺ Neu erstellen
           </button>
         </div>
+        <AiOutputDisclaimer />
       </div>
     );
   }

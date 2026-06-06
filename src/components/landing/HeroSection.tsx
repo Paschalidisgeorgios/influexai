@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { trackAbEvent, type AbVariant } from "@/lib/ab-tracking";
+import type { AbVariant } from "@/lib/ab-tracking";
 import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
 import { SpringReveal } from "@/components/ui/SpringReveal";
@@ -249,7 +249,11 @@ function HeroBackgroundMedia() {
   );
 }
 
-export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
+export function HeroSection({
+  variant: _variant = "a",
+}: {
+  variant?: AbVariant;
+} = {}) {
   const t = useTranslations("hero");
   const locale = useLocale();
   const priceParams = getStarterPriceParams(locale);
@@ -265,6 +269,23 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const [heroRevealed, setHeroRevealed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      return sessionStorage.getItem("influexai_intro_seen") === "1";
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    if (heroRevealed) return;
+    const onIntroDone = () => setHeroRevealed(true);
+    window.addEventListener("influexai-intro-complete", onIntroDone);
+    return () =>
+      window.removeEventListener("influexai-intro-complete", onIntroDone);
+  }, [heroRevealed]);
 
   return (
     <section
@@ -325,12 +346,13 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
       {/* Copy */}
       <div
-        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden"
+        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden transition-opacity duration-500 ease-out"
         style={{
           padding:
             "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
           transform: `translateY(${scrollY * 0.04}px)`,
-          transition: "transform 0.1s linear",
+          transition: "transform 0.1s linear, opacity 0.5s ease-out",
+          opacity: heroRevealed ? 1 : 0,
         }}
       >
         <SpringReveal>
@@ -380,7 +402,6 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
             <AcidMotionButton
               href="/auth/sign-up"
               className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
-              onClick={() => void trackAbEvent("signup_click", variant)}
             >
               → {t("cta_primary", priceParams)}
             </AcidMotionButton>
@@ -394,24 +415,11 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         </SpringReveal>
 
         <SpringReveal delay={0.24}>
-          <div
-            className="flex items-center gap-3 flex-wrap"
+          <p
             style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}
           >
-            {[`✓ ${t("trust_1")}`, `✓ ${t("trust_2")}`, `✓ ${t("trust_3")}`].map(
-              (item, i) => (
-                <span key={item} className="flex items-center gap-3">
-                  {i > 0 && (
-                    <span
-                      className="w-[3px] h-[3px] rounded-full inline-block"
-                      style={{ background: "rgba(255,255,255,0.65)" }}
-                    />
-                  )}
-                  {item}
-                </span>
-              )
-            )}
-          </div>
+            {t("trust_line", priceParams)}
+          </p>
         </SpringReveal>
       </div>
     </section>

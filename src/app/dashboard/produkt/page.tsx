@@ -13,6 +13,7 @@ import {
   type ProductAdPlatform,
   type ProductAdStyle,
 } from "@/lib/product-ad-config";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import type { ProductAdScript } from "@/lib/product-ad-script";
 import { LOCALE_LANGUAGE_NAMES, type Locale } from "@/lib/locale";
 import { createClient } from "@/lib/supabase/client";
@@ -761,6 +762,7 @@ function ProduktWerbungPageInner() {
               </div>
             </div>
           ) : null}
+          {(batchResults || result) && <AiOutputDisclaimer />}
         </div>
       )}
     </div>

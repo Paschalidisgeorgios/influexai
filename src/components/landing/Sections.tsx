@@ -30,7 +30,23 @@ const TICKER_KEYS = [
 ] as const;
 
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
-const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5"] as const;
+const FAQ_KEYS = [
+  "q_sub1",
+  "q_sub2",
+  "q_sub3",
+  "q1",
+  "q2",
+  "q3",
+  "q4",
+  "q5",
+] as const;
+
+function faqAnswerKey(key: (typeof FAQ_KEYS)[number]): string {
+  if (key.startsWith("q_sub")) {
+    return key.replace("q_", "a_");
+  }
+  return `a${key.slice(1)}`;
+}
 
 /** Kompakte Trust-Bar: Launch-Hinweis + Ticker in max. 80px */
 export function TrustBarSection() {
@@ -204,7 +220,10 @@ export function FaqSection() {
                   className="px-4 pb-4 text-[0.85rem] leading-[1.7] md:px-5 md:pb-5"
                   style={{ color: "var(--wd)" }}
                 >
-                  {t(`a${key.slice(1)}`, key === "q2" ? priceParams : undefined)}
+                  {t(
+                    faqAnswerKey(key),
+                    key === "q2" ? priceParams : undefined
+                  )}
                 </div>
               )}
             </div>

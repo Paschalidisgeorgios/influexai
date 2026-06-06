@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import {
@@ -68,10 +68,11 @@ export function PricingPlans({
   className,
 }: PricingPlansProps) {
   const t = useTranslations("landingPage.pricing");
+  const locale = useLocale();
   const [yearly, setYearly] = useState(false);
   const interval: BillingInterval = yearly ? "yearly" : "monthly";
 
-  const sharedFeatures = ALL_PLAN_TOOL_KEYS.map((key) => t(key));
+  const sharedFeatures = [t("credits_included"), ...ALL_PLAN_TOOL_KEYS.map((key) => t(key))];
 
   const planContent = (key: (typeof SUBSCRIPTION_PLAN_ORDER)[number]) => {
     const config = SUBSCRIPTION_PLANS[key];
@@ -151,6 +152,7 @@ export function PricingPlans({
           const loading = subscribeLoading === `${plan.key}-${interval}`;
           const staggerDelays = [0, 0.15, 0.3, 0.45];
           const ctaContent = <>{loading ? "…" : plan.cta}</>;
+          const yearlyTotal = formatPlanPrice(plan.price * 12, locale);
 
           return (
             <SpringReveal
@@ -194,6 +196,18 @@ export function PricingPlans({
                     {t("per_month")}
                   </span>
                 </div>
+                {!yearly ? (
+                  <div
+                    className="mt-1.5 text-[0.68rem] font-bold uppercase tracking-[0.08em]"
+                    style={{ color: "var(--acid)" }}
+                  >
+                    {t("cancel_anytime")}
+                  </div>
+                ) : (
+                  <div className="mt-1.5 text-[0.72rem] text-white/65">
+                    {t("billed_yearly", { amount: yearlyTotal })}
+                  </div>
+                )}
                 <div className="text-[0.75rem] mt-1.5 mb-1 text-white/85">
                   {plan.credits}
                 </div>

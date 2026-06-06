@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { Rocket } from "lucide-react";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import {
   formatViewsCompact,
@@ -443,6 +444,7 @@ function TrendScriptPageInner() {
                 {script}
               </pre>
             </div>
+            <AiOutputDisclaimer />
           </div>
         )}
       </div>

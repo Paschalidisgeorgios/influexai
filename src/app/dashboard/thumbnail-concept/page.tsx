@@ -14,6 +14,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
 import {
@@ -656,6 +657,7 @@ function ThumbnailConceptPageInner() {
               );
             })}
           </div>
+          <AiOutputDisclaimer />
         </div>
       )}
 

@@ -213,6 +213,18 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     genTypes: ["content-kalender"],
   },
   {
+    id: "campaign-autopilot",
+    href: "/dashboard/campaign-autopilot",
+    category: "analyze",
+    icon: Bot,
+    title: "Campaign Autopilot",
+    tagline: "Kampagne planen — Reels, Posts & Ads in einem Lauf",
+    creditCost: 24,
+    creditLabel: "ab 12 Credits",
+    badge: "NEU",
+    genTypes: ["campaign-autopilot"],
+  },
+  {
     id: "trend-to-script",
     href: "/dashboard/trend-to-script",
     category: "analyze",
@@ -401,6 +413,13 @@ export const NAV_GROUPS: {
         href: "/dashboard/content-kalender",
         label: "Content Kalender",
         icon: Calendar,
+        badge: "NEU",
+      },
+      {
+        id: "campaign-autopilot",
+        href: "/dashboard/campaign-autopilot",
+        label: "Campaign Autopilot",
+        icon: Bot,
         badge: "NEU",
       },
       {

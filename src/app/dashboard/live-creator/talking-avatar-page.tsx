@@ -6,6 +6,7 @@ import { LiveCreatorVoicePicker } from "@/components/live-creator-voice-picker";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { useLocale } from "next-intl";
 
 type FlowStep = "input" | "generating" | "result";
@@ -449,6 +450,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
                 ↺ Neu erstellen
               </button>
             </div>
+            <AiOutputDisclaimer />
           </div>
         )}
 

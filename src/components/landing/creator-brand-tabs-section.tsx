@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
-import { LANDING_TOOL_EXAMPLES } from "@/lib/landing-tool-examples";
+import { LANDING_STUDIO_TOOLS, resolveLandingToolHref } from "@/lib/landing-studio-tools";
 import { LightFrame } from "@/components/LightFrame";
 import { LANDING_SECTION_CLASS } from "./section-styles";
 
@@ -62,6 +62,77 @@ function AudienceTabButton({
         aria-hidden
       />
     </button>
+  );
+}
+
+function StudioToolCard({
+  tool,
+  title,
+  description,
+  comingSoonLabel,
+}: {
+  tool: (typeof LANDING_STUDIO_TOOLS)[number];
+  title: string;
+  description: string;
+  comingSoonLabel: string;
+}) {
+  const href = resolveLandingToolHref(tool.href);
+  const disabled = tool.comingSoon === true;
+
+  const cardInner = (
+    <>
+      <div className="relative aspect-[16/10] w-full overflow-hidden">
+        <Image
+          src={tool.image}
+          alt={title}
+          fill
+          className={`object-cover transition-transform duration-500 ${disabled ? "" : "group-hover:scale-[1.03]"}`}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 tool-card-overlay" aria-hidden />
+        {disabled && (
+          <span
+            className="absolute right-2 top-2 rounded-[6px] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+            style={{
+              background: "rgba(180,255,0,0.12)",
+              border: "1px solid rgba(180,255,0,0.35)",
+              color: "#B4FF00",
+            }}
+          >
+            {comingSoonLabel}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-1 p-3 md:p-3.5">
+        <h4
+          className={`tool-card-name transition-colors ${disabled ? "" : "group-hover:text-[#caffb0]"}`}
+        >
+          {title}
+        </h4>
+        <p className="tool-card-desc">{description}</p>
+      </div>
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <div
+        className="glass-card flex flex-col overflow-hidden opacity-55"
+        aria-disabled="true"
+      >
+        {cardInner}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="glass-card group flex flex-col overflow-hidden transition-all duration-300 hover:brightness-110"
+    >
+      {cardInner}
+    </Link>
   );
 }
 
@@ -146,17 +217,17 @@ function CreatorTabPanel() {
 
       <div>
         <SpringReveal>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4 md:mb-8">
             <div>
               <span className="kicker mb-2 block">{tTools("kicker")}</span>
-              <h3 className="landing-heading text-[clamp(2rem,4vw,3.5rem)]">
+              <h3 className="landing-heading text-[clamp(1.75rem,3.5vw,3rem)]">
                 {tTools("headline1")}
                 <br />
                 <span className="acid-highlight">{tTools("headline2")}</span>
               </h3>
             </div>
             <p
-              className="hidden max-w-[280px] text-right text-sm leading-[1.65] sm:block"
+              className="hidden max-w-[260px] text-right text-sm leading-[1.6] lg:block"
               style={{ color: "var(--wd)" }}
             >
               {tTools("sidebar")}
@@ -164,63 +235,15 @@ function CreatorTabPanel() {
           </div>
         </SpringReveal>
 
-        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory -mx-[clamp(20px,6vw,64px)] px-[clamp(20px,6vw,64px)] lg:hidden [scrollbar-width:thin]">
-          {LANDING_TOOL_EXAMPLES.map((tool, i) => (
-            <SpringReveal key={tool.id} delay={(i % 4) * 0.08}>
-              <Link
-                href={tool.href}
-                className="glass-card group flex w-[min(78vw,260px)] flex-shrink-0 snap-start flex-col overflow-hidden transition-all duration-300 hover:brightness-110"
-              >
-                <div className="relative aspect-[16/10] w-full overflow-hidden">
-                  <Image
-                    src={tool.image}
-                    alt={tTools(`${tool.id}_title`)}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    sizes="260px"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 tool-card-overlay" aria-hidden />
-                </div>
-                <div className="flex flex-1 flex-col gap-1 p-3.5">
-                  <h4 className="tool-card-name group-hover:text-[#caffb0] transition-colors">
-                    {tTools(`${tool.id}_title`)}
-                  </h4>
-                  <p className="tool-card-desc">{tTools(`${tool.id}_desc`)}</p>
-                </div>
-              </Link>
-            </SpringReveal>
-          ))}
-        </div>
-
-        <div
-          className="hidden lg:block columns-3 gap-3"
-          style={{ columnFill: "balance" }}
-        >
-          {LANDING_TOOL_EXAMPLES.map((tool, i) => (
-            <SpringReveal key={tool.id} delay={(i % 4) * 0.08}>
-              <Link
-                href={tool.href}
-                className="glass-card group mb-3 break-inside-avoid flex flex-col overflow-hidden transition-all duration-300 hover:brightness-110"
-              >
-                <div className="relative aspect-[16/10] w-full overflow-hidden">
-                  <Image
-                    src={tool.image}
-                    alt={tTools(`${tool.id}_title`)}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    sizes="(min-width: 1024px) 33vw"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 tool-card-overlay" aria-hidden />
-                </div>
-                <div className="flex flex-col gap-1.5 p-4">
-                  <h4 className="tool-card-name group-hover:text-[#caffb0] transition-colors">
-                    {tTools(`${tool.id}_title`)}
-                  </h4>
-                  <p className="tool-card-desc">{tTools(`${tool.id}_desc`)}</p>
-                </div>
-              </Link>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
+          {LANDING_STUDIO_TOOLS.map((tool, i) => (
+            <SpringReveal key={tool.id} delay={(i % 3) * 0.06}>
+              <StudioToolCard
+                tool={tool}
+                title={tTools(`${tool.id}_title`)}
+                description={tTools(`${tool.id}_desc`)}
+                comingSoonLabel={tTools("coming_soon")}
+              />
             </SpringReveal>
           ))}
         </div>

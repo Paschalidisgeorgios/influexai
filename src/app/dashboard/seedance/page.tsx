@@ -8,6 +8,7 @@ import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { SEEDANCE_CREDIT_COST, SEEDANCE_UI_NAME } from "@/lib/seedance-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { createClient } from "@/lib/supabase/client";
 import { useUserCredits } from "@/hooks/use-user-credits";
 
@@ -460,6 +461,7 @@ export default function SeedancePage() {
                   Neues Video
                 </button>
               </div>
+              <AiOutputDisclaimer />
             </div>
           )}
         </div>

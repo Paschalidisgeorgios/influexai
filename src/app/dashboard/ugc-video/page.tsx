@@ -10,6 +10,7 @@ import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { useUserCredits } from "@/hooks/use-user-credits";
 
 const LiveCreatorVoicePicker = dynamic(
@@ -360,6 +361,7 @@ export default function UgcVideoPage() {
               {t("new_video")}
             </button>
           </div>
+          <AiOutputDisclaimer className="mt-4" />
         </div>
       )}
 

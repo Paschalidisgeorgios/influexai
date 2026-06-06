@@ -15,6 +15,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = VIRAL_HOOK_CREDIT_COST;
 
@@ -332,6 +333,7 @@ function ViralHookPageInner() {
               Neu analysieren
             </button>
           </div>
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>

@@ -12,6 +12,7 @@ import { VoiceRecorder } from "@/components/voice-recorder";
 import { VoiceSelector } from "@/components/voice-selector";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 type Tab = "stimme" | "eigen" | "musik";
 
@@ -458,6 +459,7 @@ export default function VoicePage() {
           </p>
 
           {audioUrl && (
+            <>
             <div
               style={{
                 marginTop: 8,
@@ -513,6 +515,8 @@ export default function VoicePage() {
                 ⬇ MP3 herunterladen
               </button>
             </div>
+            <AiOutputDisclaimer />
+            </>
           )}
         </div>
       )}

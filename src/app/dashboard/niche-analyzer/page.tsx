@@ -13,6 +13,7 @@ import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CardGridSkeleton } from "@/components/skeletons/card-grid-skeleton";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link";
 import { resolveNicheSlug } from "@/lib/programmatic-seo";
 
@@ -576,6 +577,7 @@ export default function NicheAnalyzerPage() {
               </button>
             </div>
           ))}
+          <AiOutputDisclaimer />
         </div>
       )}
     </div>
