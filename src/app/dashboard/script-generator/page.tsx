@@ -188,10 +188,6 @@ function ScriptGeneratorPageInner() {
     outline: "none" as const,
     fontFamily: "var(--font-dm), sans-serif",
     boxSizing: "border-box" as const,
-    pointerEvents: "auto" as const,
-    position: "relative" as const,
-    zIndex: 20,
-    cursor: "text" as const,
   };
 
   const labelStyle = {
@@ -265,8 +261,6 @@ function ScriptGeneratorPageInner() {
       clearInterval(progressInterval);
     };
   }, [step]);
-
-  const canGenerate = topic.trim().length > 0;
 
   const buildInput = (): GenerateScriptInput => ({
     topic: topic.trim(),
@@ -400,11 +394,10 @@ function ScriptGeneratorPageInner() {
   return (
     <div
       style={{
+        width: "100%",
         maxWidth: 1100,
         margin: "0 auto",
-        position: "relative",
-        zIndex: 1,
-        pointerEvents: "auto",
+        boxSizing: "border-box",
       }}
     >
       <div style={{ marginBottom: 28 }}>
@@ -487,42 +480,49 @@ function ScriptGeneratorPageInner() {
             flexDirection: "column",
             gap: 16,
             maxWidth: 560,
-            position: "relative",
-            zIndex: 1,
-            isolation: "isolate",
-            pointerEvents: "auto",
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
-          <div
-            style={{
-              position: "relative",
-              zIndex: 20,
-              pointerEvents: "auto",
-            }}
-          >
-            <label htmlFor="script-topic" style={labelStyle}>
-              Thema / Titel
-            </label>
-            <input
-              ref={topicInputRef}
-              id="script-topic"
-              data-testid="script-topic-input"
-              name="topic"
-              type="text"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              onFocus={() => setTopicFocused(true)}
-              onBlur={() => setTopicFocused(false)}
-              placeholder="z.B. 5 Fehler beim YouTube Start"
-              autoComplete="off"
-              spellCheck={false}
-              disabled={false}
-              readOnly={false}
-              tabIndex={0}
-              aria-label="Thema oder Titel"
-              className="relative z-20 pointer-events-auto"
-              style={topicInputStyle}
-            />
+          <div>
+            <div
+              onClick={() => topicInputRef.current?.focus()}
+              role="presentation"
+            >
+              <label
+                htmlFor="script-topic"
+                style={{ ...labelStyle, cursor: "text" }}
+              >
+                Thema / Titel
+              </label>
+              <input
+                ref={topicInputRef}
+                id="script-topic"
+                data-testid="script-topic-input"
+                name="topic"
+                type="text"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                onFocus={() => setTopicFocused(true)}
+                onBlur={() => setTopicFocused(false)}
+                placeholder="z.B. 5 Fehler beim YouTube Start"
+                autoComplete="off"
+                spellCheck={false}
+                aria-label="Thema oder Titel"
+                style={topicInputStyle}
+              />
+              <p
+                data-testid="script-topic-debug"
+                style={{
+                  margin: "6px 0 0",
+                  fontSize: "0.75rem",
+                  color: "#B4FF00",
+                  fontFamily: "var(--font-dm), sans-serif",
+                }}
+              >
+                Debug: {topic || "leer"}
+              </p>
+            </div>
             <div
               style={{
                 display: "flex",
@@ -645,18 +645,18 @@ function ScriptGeneratorPageInner() {
           <button
             type="button"
             onClick={runGenerate}
-            disabled={!canGenerate}
+            disabled={topic.trim().length === 0}
             style={{
               width: "100%",
               padding: "14px",
               borderRadius: 11,
               border: "none",
-              background: canGenerate ? "#B4FF00" : "#2a2a2a",
-              color: canGenerate ? "#060608" : "rgba(255,255,255,0.65)",
+              background: topic.trim().length > 0 ? "#B4FF00" : "#2a2a2a",
+              color: topic.trim().length > 0 ? "#060608" : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
-              cursor: canGenerate ? "pointer" : "not-allowed",
+              cursor: topic.trim().length > 0 ? "pointer" : "not-allowed",
             }}
           >
             SCRIPT GENERIEREN →

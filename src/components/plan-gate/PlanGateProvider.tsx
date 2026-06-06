@@ -57,7 +57,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   }, [pathname, accessUser, profileLoaded]);
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col pointer-events-auto">
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <NoPlanModal open={blocked} />
       {children}
     </div>

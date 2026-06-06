@@ -148,7 +148,7 @@ export default async function RootLayout({
         <TenantBrandingStyles tenant={tenant} />
       </head>
       <body
-        className={`min-h-screen antialiased overflow-x-hidden text-[#F0EFE8] ${isRTL ? "font-[family-name:var(--font-arabic)]" : ""}`}
+        className={`min-h-screen antialiased overflow-x-clip text-[#F0EFE8] ${isRTL ? "font-[family-name:var(--font-arabic)]" : ""}`}
         style={{
           background: "var(--background)",
           color: "var(--white, #F0EFE8)",

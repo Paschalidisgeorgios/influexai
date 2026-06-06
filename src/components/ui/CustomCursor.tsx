@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { usePathname } from "next/navigation";
 
 export function CustomCursor() {
+  const pathname = usePathname();
   const ring1 = useRef<HTMLDivElement>(null);
   const ring2 = useRef<HTMLDivElement>(null);
   const ring3 = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
 
+  const disabled =
+    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+
   useEffect(() => {
+    if (disabled) {
+      setActive(false);
+      document.body.classList.remove("has-custom-cursor");
+      return;
+    }
+
     const desktop =
       window.matchMedia("(min-width: 769px) and (pointer: fine)").matches;
     if (!desktop) return;
@@ -40,7 +51,9 @@ export function CustomCursor() {
     };
 
     const interactive = () =>
-      document.querySelectorAll("a, button, [role='button'], input, textarea, select, label");
+      document.querySelectorAll(
+        "a, button, [role='button'], input, textarea, select, label"
+      );
 
     const bindInteractive = () => {
       interactive().forEach((el) => {
@@ -90,29 +103,33 @@ export function CustomCursor() {
       cancelAnimationFrame(raf);
       document.body.classList.remove("has-custom-cursor");
     };
-  }, []);
+  }, [disabled]);
 
-  if (!active) return null;
+  if (!active || disabled) return null;
 
   const baseStyle: CSSProperties = {
-    position: "fixed",
+    position: "absolute",
     top: 0,
     left: 0,
     borderRadius: "50%",
     pointerEvents: "none",
-    zIndex: 99999,
     border: "1px solid var(--accent, #B4FF00)",
     willChange: "transform",
     transition: "border-color 0.6s ease, background-color 0.6s ease",
   };
 
   return (
-    <>
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden"
+      style={{ pointerEvents: "none" }}
+    >
       <div
         ref={ring1}
-        aria-hidden
+        className="pointer-events-none"
         style={{
           ...baseStyle,
+          pointerEvents: "none",
           width: 8,
           height: 8,
           background: "var(--accent, #B4FF00)",
@@ -121,9 +138,10 @@ export function CustomCursor() {
       />
       <div
         ref={ring2}
-        aria-hidden
+        className="pointer-events-none"
         style={{
           ...baseStyle,
+          pointerEvents: "none",
           width: 24,
           height: 24,
           opacity: 0.5,
@@ -132,15 +150,16 @@ export function CustomCursor() {
       />
       <div
         ref={ring3}
-        aria-hidden
+        className="pointer-events-none"
         style={{
           ...baseStyle,
+          pointerEvents: "none",
           width: 44,
           height: 44,
           opacity: 0.2,
           transition: "transform 0.15s ease, opacity 0.15s ease",
         }}
       />
-    </>
+    </div>
   );
 }

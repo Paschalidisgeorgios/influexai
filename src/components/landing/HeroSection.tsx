@@ -37,7 +37,6 @@ const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
 
 const HERO_MEDIA_CROSSFADE_MS = 800;
 const HERO_IMAGE_DURATION_MS = 6000;
-const HERO_COLOR_FLASH_MS = 600;
 
 const HERO_IMAGE_INDEX = 0;
 const HERO_VIDEO_1_INDEX = 1;
@@ -107,26 +106,8 @@ const HERO_MEDIA_FILTER = "brightness(1.04) saturate(1.08)";
 function HeroBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
-  const colorFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeIndex, setActiveIndex] = useState(HERO_IMAGE_INDEX);
   const [imageGeneration, setImageGeneration] = useState(0);
-  const [colorFlash, setColorFlash] = useState(false);
-
-  const clearColorFlashTimer = () => {
-    if (colorFlashTimerRef.current) {
-      clearTimeout(colorFlashTimerRef.current);
-      colorFlashTimerRef.current = null;
-    }
-  };
-
-  const triggerColorFlash = () => {
-    clearColorFlashTimer();
-    setColorFlash(true);
-    colorFlashTimerRef.current = setTimeout(() => {
-      setColorFlash(false);
-      colorFlashTimerRef.current = null;
-    }, HERO_COLOR_FLASH_MS);
-  };
 
   useEffect(() => {
     if (activeIndex === HERO_IMAGE_INDEX) {
@@ -173,14 +154,7 @@ function HeroBackgroundMedia() {
     }
   }, [activeIndex]);
 
-  useEffect(() => {
-    return () => {
-      clearColorFlashTimer();
-    };
-  }, []);
-
   const handleVideo1Ended = () => {
-    triggerColorFlash();
     const v2 = videoRef2.current;
     if (v2) {
       v2.currentTime = 0;
@@ -272,15 +246,6 @@ function HeroBackgroundMedia() {
           );
         })}
       </div>
-
-      <div
-        className="absolute inset-0 z-[5] pointer-events-none"
-        style={{
-          background: "#B4FF00",
-          opacity: colorFlash ? 0.7 : 0,
-          transition: "opacity 0.3s ease",
-        }}
-      />
     </div>
   );
 }
@@ -305,8 +270,30 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
   return (
     <section
       id="landing-hero-sentinel"
-      className="relative min-h-[min(100vh,920px)] overflow-visible"
+      className="relative min-h-[min(100vh,920px)] overflow-x-clip max-w-[100vw]"
     >
+      {/* Mobile: dezentes Hintergrundbild (CSS, kein Video) */}
+      <div
+        className="absolute inset-0 z-[2] md:hidden pointer-events-none overflow-hidden"
+        aria-hidden
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/images/landing/feature-1.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            opacity: 0.15,
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0.92) 100%)",
+          }}
+        />
+      </div>
       {/* Base grid + interactive reveal */}
       <div
         className="absolute inset-0 z-0 overflow-visible pointer-events-none"
@@ -339,7 +326,7 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
 
       {/* Copy */}
       <div
-        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] max-w-[1160px] flex-col justify-center"
+        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden"
         style={{
           padding:
             "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
@@ -384,23 +371,23 @@ export function HeroSection({ variant = "a" }: { variant?: AbVariant }) {
         </SpringReveal>
 
         <SpringReveal delay={0.16}>
-          <p className="hero-subtitle mb-8 max-w-[520px]">
+          <p className="hero-subtitle mb-8 w-full max-w-full md:max-w-[520px]">
             {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
           </p>
         </SpringReveal>
 
         <SpringReveal delay={0.4}>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 mb-10">
+          <div className="flex w-full max-w-full flex-col gap-2.5 mb-10 sm:flex-row sm:flex-wrap">
             <AcidMotionButton
               href="/auth/sign-up"
-              className="btn-acid justify-center sm:justify-start"
+              className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
               onClick={() => void trackAbEvent("signup_click", variant)}
             >
               → {t("cta_primary", priceParams)}
             </AcidMotionButton>
             <a
               href="#features"
-              className="btn-ghost justify-center sm:justify-start"
+              className="btn-ghost w-full justify-center sm:w-auto sm:justify-start"
             >
               {t("cta_secondary")}
             </a>

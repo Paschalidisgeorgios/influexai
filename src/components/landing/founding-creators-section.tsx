@@ -13,7 +13,7 @@ export function FoundingCreatorsSection() {
   return (
     <section
       id="founding-creators"
-      className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)]"
+      className="py-[clamp(60px,8vw,100px)] px-[clamp(20px,6vw,64px)] overflow-x-hidden max-w-[100vw] w-full"
       style={{ background: "#060608" }}
     >
       <div className="mx-auto max-w-[720px] text-center">

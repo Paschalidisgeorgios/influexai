@@ -1,15 +1,19 @@
 export { LandingNav } from "./LandingNav";
 export { HeroSection } from "./HeroSection";
-export { FoundingCreatorsSection } from "./founding-creators-section";
+export { CreatorBrandTabsSection } from "./creator-brand-tabs-section";
 export { WorldTransition } from "./world-transition";
 export {
+  TrustBarSection,
   TickerStrip,
-  ForBrandsSection,
-  FeaturesSection,
   HowItWorksSection,
   FaqSection,
-  AgencyTeaserSection,
   PricingSection,
-  CtaSection,
   LandingFooter,
+  ForBrandsSection,
+  FeaturesSection,
+  AgencyTeaserSection,
+  CtaSection,
 } from "./Sections";
+
+/** @deprecated Use CreatorBrandTabsSection */
+export { FoundingCreatorsSection } from "./founding-creators-section";
