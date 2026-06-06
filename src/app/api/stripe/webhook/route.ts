@@ -10,6 +10,7 @@ import {
   normalizePlan,
   type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
+import { creditsForStripePriceId } from "@/lib/stripe-credit-prices";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -252,6 +253,84 @@ async function handleAgencyCredits(
     .eq("id", tenantId);
 }
 
+async function resolveCreditPurchaseAmount(
+  session: Stripe.Checkout.Session
+): Promise<number> {
+  const fromMeta = parseInt(
+    session.metadata?.credits_amount ?? session.metadata?.credits ?? "0",
+    10
+  );
+  if (fromMeta > 0) return fromMeta;
+
+  const metaPriceId = session.metadata?.stripe_price_id?.trim();
+  if (metaPriceId) {
+    const mapped = creditsForStripePriceId(metaPriceId);
+    if (mapped > 0) return mapped;
+  }
+
+  if (session.mode !== "payment") return 0;
+
+  try {
+    const full = await stripe.checkout.sessions.retrieve(session.id, {
+      expand: ["line_items.data.price"],
+    });
+    const priceId = full.line_items?.data[0]?.price?.id ?? "";
+    return creditsForStripePriceId(priceId);
+  } catch (e) {
+    console.error("webhook credit session retrieve:", e);
+    return 0;
+  }
+}
+
+async function handleCreditPackPurchase(
+  supabaseAdmin: SupabaseClient,
+  session: Stripe.Checkout.Session
+) {
+  const checkoutType = session.metadata?.checkout_type;
+  if (
+    checkoutType === "agency_subscription" ||
+    checkoutType === "agency_credits" ||
+    checkoutType === "platform_subscription"
+  ) {
+    return;
+  }
+
+  const userId =
+    session.metadata?.user_id ?? session.metadata?.userId ?? null;
+  if (!userId) return;
+
+  const isCreditCheckout =
+    session.metadata?.type === "credits" || session.mode === "payment";
+  if (!isCreditCheckout) return;
+
+  const credits = await resolveCreditPurchaseAmount(session);
+  if (credits <= 0) return;
+
+  const result = await addCredits(
+    supabaseAdmin,
+    userId,
+    credits,
+    `${credits} Credits gekauft`
+  );
+
+  if (result.success) {
+    await markReferralPurchased(userId);
+
+    const amountCents = session.amount_total ?? 0;
+    await supabaseAdmin.from("stripe_payments").upsert(
+      {
+        user_id: userId,
+        amount_cents: amountCents,
+        currency: session.currency ?? "eur",
+        plan: session.metadata?.plan ?? "credits",
+        credits_amount: credits,
+        stripe_session_id: session.id,
+      },
+      { onConflict: "stripe_session_id" }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
@@ -283,48 +362,7 @@ export async function POST(request: NextRequest) {
     await handleAgencySubscription(supabaseAdmin, session);
     await handleAgencyCredits(supabaseAdmin, session);
     await handlePlatformSubscription(supabaseAdmin, session);
-
-    const checkoutType = session.metadata?.checkout_type;
-    if (
-      checkoutType === "agency_subscription" ||
-      checkoutType === "agency_credits" ||
-      checkoutType === "platform_subscription"
-    ) {
-      return NextResponse.json({ received: true });
-    }
-
-    const userId =
-      session.metadata?.user_id ?? session.metadata?.userId ?? null;
-    const credits = parseInt(
-      session.metadata?.credits_amount ?? session.metadata?.credits ?? "0",
-      10
-    );
-
-    if (userId && credits > 0) {
-      const result = await addCredits(
-        supabaseAdmin,
-        userId,
-        credits,
-        `${credits} Credits gekauft`
-      );
-
-      if (result.success) {
-        await markReferralPurchased(userId);
-
-        const amountCents = session.amount_total ?? 0;
-        await supabaseAdmin.from("stripe_payments").upsert(
-          {
-            user_id: userId,
-            amount_cents: amountCents,
-            currency: session.currency ?? "eur",
-            plan: session.metadata?.plan ?? null,
-            credits_amount: credits,
-            stripe_session_id: session.id,
-          },
-          { onConflict: "stripe_session_id" }
-        );
-      }
-    }
+    await handleCreditPackPurchase(supabaseAdmin, session);
   }
 
   if (event.type === "invoice.paid") {

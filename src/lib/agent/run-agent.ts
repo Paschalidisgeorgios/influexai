@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { buildFlowSystemAppend } from "./flows";
 import { MASTER_AGENT_SYSTEM_PROMPT } from "./tools-definition";
 import {
   runAnthropicAgentTurn,
@@ -67,10 +68,10 @@ export async function* runMasterAgentStream(
   let finalSummary = "";
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    const turn = await runAnthropicAgentTurn(
-      MASTER_AGENT_SYSTEM_PROMPT,
-      messages
-    );
+    const flowAppend = buildFlowSystemAppend(history, userMessage);
+    const systemPrompt = MASTER_AGENT_SYSTEM_PROMPT + flowAppend;
+
+    const turn = await runAnthropicAgentTurn(systemPrompt, messages);
 
     if (!turn.ok) {
       yield { type: "error", message: turn.error };

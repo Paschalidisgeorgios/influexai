@@ -1,6 +1,15 @@
 "use client";
 
+import { LightFrame } from "@/components/LightFrame";
 import type { AgentOutputs } from "@/lib/agent/types";
+import { AgentRedirectCards } from "./AgentRedirectCards";
+import {
+  AgentGenericJsonResult,
+  AgentNicheResult,
+  AgentScriptResult,
+  AgentThumbnailResult,
+  AgentViralScoreResult,
+} from "./AgentStructuredResults";
 
 type Props = {
   outputs: AgentOutputs;
@@ -9,7 +18,7 @@ type Props = {
   saved?: boolean;
 };
 
-function Section({
+function ResultSection({
   title,
   children,
 }: {
@@ -18,67 +27,164 @@ function Section({
 }) {
   return (
     <div className="rounded-xl border border-white/10 bg-[#060608]/50 p-4">
-      <h4 className="text-xs font-bold uppercase tracking-wider text-[#B4FF00] mb-2">
+      <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent,#B4FF00)] mb-3">
         {title}
       </h4>
-      <pre className="text-xs text-white/70 whitespace-pre-wrap break-words max-h-48 overflow-y-auto font-mono leading-relaxed">
-        {children}
-      </pre>
+      {children}
+    </div>
+  );
+}
+
+function AgentMediaImage({
+  src,
+  alt,
+  caption,
+}: {
+  src: string;
+  alt: string;
+  caption?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      {caption ? (
+        <p className="text-[11px] text-white/50 font-mono">{caption}</p>
+      ) : null}
+      <LightFrame className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#0f0f12]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          className="w-full max-h-80 object-contain bg-black/40"
+        />
+      </LightFrame>
+    </div>
+  );
+}
+
+function AgentMediaVideo({
+  src,
+  caption,
+}: {
+  src: string;
+  caption?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      {caption ? (
+        <p className="text-[11px] text-white/50 font-mono">{caption}</p>
+      ) : null}
+      <LightFrame className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#0f0f12]">
+        <video
+          src={src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls
+          className="w-full max-h-80 object-contain bg-black/40"
+        />
+      </LightFrame>
     </div>
   );
 }
 
 export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
-  const hasAny = Object.keys(outputs).length > 0;
-  if (!hasAny) return null;
+  const hasRedirects = (outputs.redirects?.length ?? 0) > 0;
+  const hasResults = Object.entries(outputs).some(
+    ([key, value]) => key !== "redirects" && value != null
+  );
+  if (!hasRedirects && !hasResults) return null;
 
   return (
-    <div className="mt-4 rounded-2xl border border-[#B4FF00]/25 bg-[#0f0f12] p-4 space-y-3">
-      <h3 className="text-sm font-bold text-[#F0EFE8]">Ergebnis-Übersicht</h3>
+    <div className="mt-3 space-y-3">
+      {outputs.redirects && outputs.redirects.length > 0 && (
+        <AgentRedirectCards redirects={outputs.redirects} />
+      )}
+
+      {outputs.productPreview != null && (
+        <ResultSection title="UGC Produkt-Preview">
+          <p className="text-sm text-white/85 font-medium mb-2">
+            {outputs.productPreview.productName}
+          </p>
+          {outputs.productPreview.productDescription ? (
+            <p className="text-xs text-white/50 mb-3">
+              {outputs.productPreview.productDescription}
+            </p>
+          ) : null}
+          <AgentMediaImage
+            src={outputs.productPreview.imageUrl}
+            alt={outputs.productPreview.productName}
+          />
+        </ResultSection>
+      )}
+
+      {outputs.image != null && !outputs.productPreview && (
+        <ResultSection title="Generiertes Bild">
+          <AgentMediaImage
+            src={outputs.image.imageUrl}
+            alt="Generiertes Bild"
+            caption={outputs.image.prompt}
+          />
+        </ResultSection>
+      )}
+
+      {outputs.video != null && (
+        <ResultSection title="Generiertes Video">
+          <AgentMediaVideo
+            src={outputs.video.videoUrl}
+            caption={outputs.video.motionPrompt}
+          />
+        </ResultSection>
+      )}
+
+      {outputs.script != null && (
+        <ResultSection title="Script">
+          <AgentScriptResult data={outputs.script} />
+        </ResultSection>
+      )}
+
+      {outputs.viralScore != null && (
+        <ResultSection title="Viral Score">
+          <AgentViralScoreResult data={outputs.viralScore} />
+        </ResultSection>
+      )}
 
       {outputs.niche != null && (
-        <Section title="Nischen-Analyse">
-          {JSON.stringify(outputs.niche, null, 2)}
-        </Section>
-      )}
-      {outputs.outliers != null && (
-        <Section title="Outlier">
-          {JSON.stringify(outputs.outliers, null, 2)}
-        </Section>
-      )}
-      {outputs.script != null && (
-        <Section title="Script">
-          {typeof outputs.script === "object" &&
-          outputs.script !== null &&
-          "script" in outputs.script
-            ? String((outputs.script as { script: string }).script)
-            : JSON.stringify(outputs.script, null, 2)}
-        </Section>
-      )}
-      {outputs.thumbnail != null && (
-        <Section title="Thumbnail">
-          {JSON.stringify(outputs.thumbnail, null, 2)}
-        </Section>
-      )}
-      {outputs.viralScore != null && (
-        <Section title="Viral Score">
-          {JSON.stringify(outputs.viralScore, null, 2)}
-        </Section>
-      )}
-      {outputs.videoIdeas != null && (
-        <Section title="Video-Ideen">
-          {JSON.stringify(outputs.videoIdeas, null, 2)}
-        </Section>
+        <ResultSection title="Nischen-Analyse">
+          <AgentNicheResult data={outputs.niche} />
+        </ResultSection>
       )}
 
-      {onSave && (
+      {outputs.thumbnail != null && (
+        <ResultSection title="Thumbnail-Konzept">
+          <AgentThumbnailResult data={outputs.thumbnail} />
+        </ResultSection>
+      )}
+
+      {outputs.outliers != null && (
+        <ResultSection title="Outlier">
+          <AgentGenericJsonResult data={outputs.outliers} />
+        </ResultSection>
+      )}
+
+      {outputs.competitor != null && (
+        <ResultSection title="Konkurrenz-Analyse">
+          <AgentGenericJsonResult data={outputs.competitor} />
+        </ResultSection>
+      )}
+
+      {onSave && hasResults && (
         <button
           type="button"
           onClick={onSave}
           disabled={saving || saved}
-          className="w-full min-h-[44px] rounded-xl bg-[#B4FF00] text-[#060608] font-bold text-sm disabled:opacity-80"
+          className="w-full min-h-[44px] rounded-xl bg-[var(--accent,#B4FF00)] text-[#060608] font-bold text-sm disabled:opacity-80 hover:brightness-105 transition-all"
         >
-          {saved ? "Gespeichert ✓" : saving ? "Speichern…" : "Alles in einem Klick speichern"}
+          {saved
+            ? "Gespeichert ✓"
+            : saving
+              ? "Speichern…"
+              : "Alles in einem Klick speichern"}
         </button>
       )}
     </div>

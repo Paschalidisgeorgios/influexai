@@ -1,26 +1,31 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Loader2 } from "lucide-react";
 import type { AgentToolName } from "@/lib/agent/types";
+import { AGENT_TOOL_STEP_LABELS } from "@/lib/agent/tools-definition";
+import { AGENT_TOOL_WORKING_LABELS } from "@/lib/agent/tool-labels";
 
-const TIMELINE_ORDER: AgentToolName[] = [
-  "analyze_niche",
-  "generate_script",
-  "calculate_viral_score",
-  "create_thumbnail_concept",
-];
-
-const TIMELINE_LABEL_KEYS: Record<AgentToolName, string> = {
+const TIMELINE_LABEL_KEYS: Partial<Record<AgentToolName, string>> = {
   analyze_niche: "timeline_niche",
-  find_outliers: "timeline_outliers",
+  detect_outlier: "timeline_outliers",
   generate_script: "timeline_script",
-  create_thumbnail_concept: "timeline_thumbnail",
-  calculate_viral_score: "timeline_viral",
-  suggest_video_ideas: "timeline_ideas",
+  generate_thumbnail: "timeline_thumbnail",
+  viral_score: "timeline_viral",
+  analyze_competitor: "timeline_competitor",
+  generate_image: "timeline_image",
+  generate_video_from_image: "timeline_video",
+  ugc_video: "timeline_ugc",
+  produkt_werbung: "timeline_produkt",
+  avatar_video: "timeline_avatar",
+  video_remix: "timeline_remix",
+  stimme_musik: "timeline_voice",
+  live_creator: "timeline_live",
 };
 
 type StepState = {
   tool: AgentToolName;
+  label?: string;
   status: "pending" | "running" | "done" | "error";
 };
 
@@ -31,10 +36,13 @@ type Props = {
 export function AgentToolTimeline({ steps }: Props) {
   const t = useTranslations("agent");
 
-  const statusFor = (tool: AgentToolName): StepState["status"] => {
-    const match = steps.find((s) => s.tool === tool);
-    return match?.status ?? "pending";
+  const labelFor = (step: StepState) => {
+    if (step.label) return step.label;
+    const key = TIMELINE_LABEL_KEYS[step.tool];
+    return key ? t(key as "timeline_niche") : AGENT_TOOL_STEP_LABELS[step.tool];
   };
+
+  if (steps.length === 0) return null;
 
   return (
     <nav
@@ -42,13 +50,13 @@ export function AgentToolTimeline({ steps }: Props) {
       aria-label={t("timeline_label")}
     >
       <ul className="flex md:flex-col gap-4 md:gap-0 overflow-x-auto md:overflow-visible pb-2 md:pb-0 snap-x md:snap-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {TIMELINE_ORDER.map((tool, index) => {
-          const status = statusFor(tool);
-          const isLast = index === TIMELINE_ORDER.length - 1;
+        {steps.map((step, index) => {
+          const status = step.status;
+          const isLast = index === steps.length - 1;
 
           return (
             <li
-              key={tool}
+              key={`${step.tool}-${index}`}
               className="flex md:flex-row items-center gap-2 md:gap-3 shrink-0 md:shrink md:min-h-[52px] snap-start"
             >
               <div className="hidden md:flex flex-col items-center self-stretch">
@@ -95,7 +103,7 @@ export function AgentToolTimeline({ steps }: Props) {
                         : "text-white/65"
                 }`}
               >
-                {t(TIMELINE_LABEL_KEYS[tool] as "timeline_niche")}
+                {labelFor(step)}
                 {status === "done" ? (
                   <span className="text-[#B4FF00] ml-1">✓</span>
                 ) : null}
@@ -105,5 +113,47 @@ export function AgentToolTimeline({ steps }: Props) {
         })}
       </ul>
     </nav>
+  );
+}
+
+export function AgentToolStepCards({
+  steps,
+}: {
+  steps: { tool: AgentToolName; label: string; status: string }[];
+}) {
+  if (steps.length === 0) return null;
+
+  return (
+    <div className="mt-3 space-y-2">
+      {steps.map((step) => {
+        const displayLabel =
+          step.status === "running"
+            ? AGENT_TOOL_WORKING_LABELS[step.tool] ?? step.label
+            : step.label;
+
+        return (
+        <div
+          key={step.tool}
+          className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium ${
+            step.status === "done"
+              ? "border-[var(--accent,#B4FF00)]/25 bg-[var(--accent,#B4FF00)]/5 text-white/75"
+              : step.status === "running"
+                ? "border-[var(--accent,#B4FF00)]/40 bg-[var(--accent,#B4FF00)]/10 text-[var(--accent,#B4FF00)]"
+                : step.status === "error"
+                  ? "border-red-500/30 bg-red-500/10 text-red-300"
+                  : "border-white/10 bg-white/[0.02] text-white/50"
+          }`}
+        >
+          {step.status === "running" ? (
+            <Loader2 size={14} className="shrink-0 animate-spin" />
+          ) : null}
+          <span className="flex-1">{displayLabel}</span>
+          {step.status === "done" ? (
+            <span className="text-[var(--accent,#B4FF00)]">✓</span>
+          ) : null}
+        </div>
+        );
+      })}
+    </div>
   );
 }

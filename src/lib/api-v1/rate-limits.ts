@@ -1,12 +1,7 @@
-import {
-  canUseFeature,
-  type AccessUser,
-} from "@/lib/access";
-import {
-  type SubscriptionPlanId,
-} from "@/lib/subscription-plans";
+import { hasActivePlan, type AccessUser } from "@/lib/access";
+import { normalizePlan, type SubscriptionPlanId } from "@/lib/subscription-plans";
 
-/** Documented daily limits (API access requires Business). */
+/** Documented daily limits — any paid plan may use the API. */
 export const API_RATE_LIMIT_PRO_PER_DAY = 100;
 export const API_RATE_LIMIT_BUSINESS_PER_DAY = 1000;
 
@@ -15,19 +10,16 @@ export function getDailyRateLimitForPlan(
 ): number {
   const accessUser: AccessUser =
     typeof user === "string" || user == null ? { plan: user ?? "free" } : user;
-  if (canUseFeature(accessUser, "business")) {
-    return API_RATE_LIMIT_BUSINESS_PER_DAY;
-  }
-  if (canUseFeature(accessUser, "pro")) {
-    return API_RATE_LIMIT_PRO_PER_DAY;
-  }
-  return 0;
+  if (!hasActivePlan(accessUser)) return 0;
+  const plan = normalizePlan(accessUser.plan);
+  if (plan === "business") return API_RATE_LIMIT_BUSINESS_PER_DAY;
+  return API_RATE_LIMIT_PRO_PER_DAY;
 }
 
 export function canUsePublicApi(user: AccessUser | string | null | undefined): boolean {
   const accessUser: AccessUser =
     typeof user === "string" || user == null ? { plan: user ?? "free" } : user;
-  return canUseFeature(accessUser, "business");
+  return hasActivePlan(accessUser);
 }
 
 export function startOfUtcDay(): string {

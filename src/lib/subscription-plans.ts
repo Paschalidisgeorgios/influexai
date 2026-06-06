@@ -1,3 +1,5 @@
+import { hasActivePlan } from "@/lib/access";
+
 export type SubscriptionPlanId =
   | "free"
   | "starter"
@@ -110,10 +112,9 @@ export function normalizePlan(plan: string | null | undefined): SubscriptionPlan
 
 export function planMeetsRequirement(
   userPlan: string | null | undefined,
-  requiredPlan: SubscriptionPlanId
+  _requiredPlan?: SubscriptionPlanId
 ): boolean {
-  if (requiredPlan === "free") return true;
-  return PLAN_RANK[normalizePlan(userPlan)] >= PLAN_RANK[requiredPlan];
+  return hasActivePlan({ plan: userPlan });
 }
 
 export function getPlanMonthlyCredits(plan: string | null | undefined): number {

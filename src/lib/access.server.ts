@@ -2,16 +2,16 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { canUseFeature, type AccessUser, type PlanTier } from "@/lib/access";
-import { FEATURE_MIN_PLAN, type GatedFeature } from "@/lib/plan-gating";
+import { hasActivePlan, type AccessUser, type PlanTier } from "@/lib/access";
+import type { GatedFeature } from "@/lib/plan-gating";
 
 export type FeatureAccessResult =
   | { ok: true; userId: string; profile: AccessUser }
   | { ok: false; status: 401 | 403; error: string; requiredPlan?: PlanTier };
 
-export async function requireFeatureAccess(
-  requiredPlan: PlanTier
-): Promise<FeatureAccessResult> {
+const NO_PLAN_ERROR = "Wähle einen Plan um zu starten.";
+
+export async function requireActivePlan(): Promise<FeatureAccessResult> {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -29,22 +29,29 @@ export async function requireFeatureAccess(
 
   const accessUser: AccessUser = profile ?? { plan: "free", role: "user" };
 
-  if (!canUseFeature(accessUser, requiredPlan)) {
+  if (!hasActivePlan(accessUser)) {
     return {
       ok: false,
       status: 403,
-      error: "Feature gesperrt — Plan-Upgrade erforderlich.",
-      requiredPlan,
+      error: NO_PLAN_ERROR,
+      requiredPlan: "starter",
     };
   }
 
   return { ok: true, userId: user.id, profile: accessUser };
 }
 
-export async function requireGatedFeature(
-  feature: GatedFeature
+/** @deprecated Tier ignored — any active plan grants access. */
+export async function requireFeatureAccess(
+  _requiredPlan: PlanTier
 ): Promise<FeatureAccessResult> {
-  return requireFeatureAccess(FEATURE_MIN_PLAN[feature]);
+  return requireActivePlan();
+}
+
+export async function requireGatedFeature(
+  _feature: GatedFeature
+): Promise<FeatureAccessResult> {
+  return requireActivePlan();
 }
 
 export function featureAccessErrorBody(
@@ -53,19 +60,24 @@ export function featureAccessErrorBody(
   return {
     error: result.error,
     code: "PLAN_REQUIRED" as const,
-    required_plan: result.requiredPlan,
+    required_plan: result.requiredPlan ?? ("starter" as PlanTier),
   };
 }
 
 /** Returns a 401/403 NextResponse, or null when access is granted. */
-export async function assertGatedFeature(
-  feature: GatedFeature
-): Promise<NextResponse | null> {
-  const access = await requireGatedFeature(feature);
+export async function assertActivePlan(): Promise<NextResponse | null> {
+  const access = await requireActivePlan();
   if (!access.ok) {
     return NextResponse.json(featureAccessErrorBody(access), {
       status: access.status,
     });
   }
   return null;
+}
+
+/** Returns a 401/403 NextResponse, or null when access is granted. */
+export async function assertGatedFeature(
+  _feature: GatedFeature
+): Promise<NextResponse | null> {
+  return assertActivePlan();
 }

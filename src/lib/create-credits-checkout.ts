@@ -63,13 +63,15 @@ export async function createCreditsCheckoutSession(
       },
     },
     success_url: `${SITE_URL}/dashboard?credits=success&session_id={CHECKOUT_SESSION_ID}&amount=${pkg.credits}`,
-    cancel_url: `${SITE_URL}/dashboard?credits=canceled`,
+    cancel_url: `${SITE_URL}/dashboard`,
     metadata: {
       userId,
       user_id: userId,
+      type: "credits",
       credits: pkg.credits.toString(),
       credits_amount: pkg.credits.toString(),
       plan: pkg.id,
+      stripe_price_id: priceId,
     },
   });
 }

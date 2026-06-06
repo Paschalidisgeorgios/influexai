@@ -13,6 +13,7 @@ export type CreditPackage = {
   pricePerCredit: number;
   stripePriceEnv: string;
   popular?: boolean;
+  bestValue?: boolean;
 };
 
 /** Pay-as-you-go credit top-ups */
@@ -34,7 +35,6 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     credits: 300,
     pricePerCredit: 0.04,
     stripePriceEnv: "STRIPE_CREDITS_300",
-    popular: true,
   },
   {
     id: "extra_700",
@@ -44,6 +44,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     credits: 700,
     pricePerCredit: 0.036,
     stripePriceEnv: "STRIPE_CREDITS_700",
+    popular: true,
   },
   {
     id: "extra_1500",
@@ -53,6 +54,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     credits: 1500,
     pricePerCredit: 0.03,
     stripePriceEnv: "STRIPE_CREDITS_1500",
+    bestValue: true,
   },
 ];
 

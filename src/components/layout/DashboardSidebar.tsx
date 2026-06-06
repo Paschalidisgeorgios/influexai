@@ -6,13 +6,12 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BarChart2, Home, Images, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { LowCreditsSidebar } from "@/components/low-credits-sidebar";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS } from "@/lib/dashboard-flows";
 import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
+import { SidebarCreditsPanel } from "@/components/layout/SidebarCreditsPanel";
 import { TablerGift } from "@/components/icons/TablerGift";
-import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 
 type ExtraNavItem = {
   id: string;
@@ -132,11 +131,6 @@ export function DashboardSidebar() {
     };
   }, [supabase]);
 
-  const creditPercent =
-    credits !== null ? Math.min((credits / maxCredits) * 100, 100) : 74;
-  const creditColor =
-    creditPercent > 50 ? "#B4FF00" : creditPercent > 20 ? "#f59e0b" : "#ff6b7a";
-
   const linkClass = (active: boolean, disabled?: boolean) =>
     [
       "flex items-center gap-2.5 rounded-lg text-[0.875rem] font-medium transition-all min-h-[44px]",
@@ -171,22 +165,32 @@ export function DashboardSidebar() {
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
         <SidebarNavLink
-          href="/dashboard/agent"
-          active={pathname === "/dashboard/agent"}
+          href="/dashboard"
+          active={pathname === "/dashboard" || pathname === "/dashboard/agent"}
           collapsed={collapsed}
           title={collapsed ? tNav("agent") : undefined}
-          className={linkClass(pathname === "/dashboard/agent")}
+          className={linkClass(
+            pathname === "/dashboard" || pathname === "/dashboard/agent"
+          )}
         >
           <Star
             size={18}
-            strokeWidth={pathname === "/dashboard/agent" ? 2.5 : 2}
+            strokeWidth={
+              pathname === "/dashboard" || pathname === "/dashboard/agent"
+                ? 2.5
+                : 2
+            }
             className="shrink-0"
             color={
-              pathname === "/dashboard/agent"
+              pathname === "/dashboard" || pathname === "/dashboard/agent"
                 ? "#B4FF00"
                 : "rgba(255,255,255,0.75)"
             }
-            fill={pathname === "/dashboard/agent" ? "#B4FF00" : "transparent"}
+            fill={
+              pathname === "/dashboard" || pathname === "/dashboard/agent"
+                ? "#B4FF00"
+                : "transparent"
+            }
           />
           {!collapsed && (
             <>
@@ -373,42 +377,8 @@ export function DashboardSidebar() {
           })}
       </nav>
 
-      {credits !== null && (
-        <LowCreditsSidebar
-          credits={credits}
-          maxCredits={maxCredits}
-          collapsed={collapsed}
-        />
-      )}
-
-      {!collapsed && (
-        <div className="m-2 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06]">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[0.72rem] text-[rgba(255,255,255,0.65)] font-medium">
-              {tNav("credits")}
-            </span>
-            <AnimatedCredits
-              value={credits}
-              className="text-[0.78rem] font-bold"
-              style={{ color: creditColor }}
-            />
-          </div>
-          <div className="h-1 bg-[#222228] rounded-full overflow-hidden mb-1">
-            <div
-              className="h-full rounded-full transition-[width] duration-500"
-              style={{ width: `${creditPercent}%`, background: creditColor }}
-            />
-          </div>
-          <div className="text-[0.65rem] text-[rgba(255,255,255,0.65)] mb-2.5">
-            {tNav("credits_of", { max: maxCredits })}
-          </div>
-          <a
-            href="/dashboard/credits"
-            className="block text-center py-1.5 rounded-lg bg-[#B4FF00]/8 border border-[#B4FF00]/18 text-[#B4FF00] text-[0.72rem] font-bold no-underline"
-          >
-            ⚡ {tNav("top_up")}
-          </a>
-        </div>
+      {credits !== null && !collapsed && (
+        <SidebarCreditsPanel credits={credits} maxCredits={maxCredits} />
       )}
 
       <SidebarNavLink

@@ -1,27 +1,47 @@
 import type { AgentToolName } from "./types";
 
 export const AGENT_TOOL_STEP_LABELS: Record<AgentToolName, string> = {
-  analyze_niche: "🔍 Analysiere Nische…",
-  find_outliers: "🔥 Suche Outlier-Videos…",
-  generate_script: "✍️ Generiere Script…",
-  create_thumbnail_concept: "🎨 Erstelle Thumbnail-Konzept…",
-  calculate_viral_score: "📊 Berechne Viral Score…",
-  suggest_video_ideas: "💡 Generiere Video-Ideen…",
+  analyze_niche: "🔍 Nische wird analysiert…",
+  generate_script: "✍️ Script wird generiert…",
+  generate_thumbnail: "🎨 Thumbnail-Konzept wird erstellt…",
+  viral_score: "📊 Viral Score wird berechnet…",
+  detect_outlier: "🔥 Outlier werden gesucht…",
+  analyze_competitor: "🎯 Konkurrenz wird analysiert…",
+  generate_image: "🖼 Bild wird generiert…",
+  generate_video_from_image: "🎬 Video wird erstellt…",
+  generate_product_preview: "🛍️ UGC Produktbild wird erstellt…",
+  ugc_video: "🎬 UGC Video — Weiterleitung…",
+  produkt_werbung: "🛍️ Produkt-Werbung — Weiterleitung…",
+  avatar_video: "🧑‍💻 Mein KI-Ich — Weiterleitung…",
+  video_remix: "✂️ Video Remix — Weiterleitung…",
+  stimme_musik: "🎙️ Stimme & Musik — Weiterleitung…",
+  live_creator: "📡 Live Creator — Weiterleitung…",
+};
+
+const REDIRECT_TOOL_INPUT = {
+  type: "object" as const,
+  properties: {
+    headline: {
+      type: "string",
+      description: "Kurze Überschrift, z.B. Perfekt für dein Ziel.",
+    },
+    description: {
+      type: "string",
+      description: "1–2 Sätze warum dieses Tool zum Nutzer passt",
+    },
+  },
 };
 
 export const MASTER_AGENT_TOOLS = [
   {
     name: "analyze_niche" as const,
     description:
-      "Analysiert eine YouTube-Nische und liefert profitable Nischen-Ideen mit Trends.",
+      "Analysiert eine YouTube-Nische (POST /api/niche-analyzer). Liefert profitable Nischen-Ideen mit Trends.",
     input_schema: {
       type: "object" as const,
       properties: {
         niche: { type: "string", description: "Thema oder Nische" },
-        language: {
-          type: "string",
-          description: "Sprache z.B. de, en",
-        },
+        language: { type: "string", description: "Sprache z.B. de, en" },
       },
       required: ["niche"],
     },
@@ -29,57 +49,52 @@ export const MASTER_AGENT_TOOLS = [
   {
     name: "generate_script" as const,
     description:
-      "Generiert ein vollständiges YouTube Shorts Script mit Hook, Story und CTA.",
+      "Generiert ein YouTube Shorts Script (POST /api/script-generator).",
     input_schema: {
       type: "object" as const,
       properties: {
         topic: { type: "string", description: "Video-Thema / Titel" },
-        hook: {
-          type: "string",
-          description: "Optionaler Hook oder Angle",
-        },
+        hook: { type: "string", description: "Optionaler Hook" },
         duration: {
           type: "number",
           description: "Ziel-Länge in Sekunden, z.B. 30 oder 60",
         },
+        language: { type: "string" },
       },
       required: ["topic"],
     },
   },
   {
-    name: "create_thumbnail_concept" as const,
+    name: "generate_thumbnail" as const,
     description:
-      "Erstellt ein CTR-optimiertes Thumbnail-Konzept mit Text, Farben und Layout.",
+      "CTR-optimiertes Thumbnail-Konzept (POST /api/thumbnail-concept).",
     input_schema: {
       type: "object" as const,
       properties: {
         title: { type: "string", description: "Video-Titel" },
-        style: {
-          type: "string",
-          description: "Stil z.B. bold, minimal, dramatic",
-        },
+        style: { type: "string", description: "Stil z.B. bold, dramatic" },
       },
       required: ["title"],
     },
   },
   {
-    name: "calculate_viral_score" as const,
-    description:
-      "Berechnet Viral Score 0–100 für Script, Thumbnail-Idee und Nische.",
+    name: "viral_score" as const,
+    description: "Viral Score 0–100 (POST /api/viral-score).",
     input_schema: {
       type: "object" as const,
       properties: {
         script: { type: "string" },
         thumbnail: { type: "string", description: "Thumbnail-Idee als Text" },
         niche: { type: "string" },
+        language: { type: "string" },
       },
       required: ["script", "thumbnail", "niche"],
     },
   },
   {
-    name: "find_outliers" as const,
+    name: "detect_outlier" as const,
     description:
-      "Findet viral gegangene Outlier-Videos in einer Nische mit Analyse warum sie funktionieren.",
+      "Findet virale Outlier-Videos in einer Nische (POST /api/outlier-detector).",
     input_schema: {
       type: "object" as const,
       properties: {
@@ -90,30 +105,148 @@ export const MASTER_AGENT_TOOLS = [
     },
   },
   {
-    name: "suggest_video_ideas" as const,
+    name: "analyze_competitor" as const,
     description:
-      "Generiert konkrete Video-Ideen mit Hooks basierend auf Trends in einer Nische.",
+      "Konkurrenz-Analyse eines YouTube-Kanals (POST /api/competitor-intelligence).",
     input_schema: {
       type: "object" as const,
       properties: {
-        niche: { type: "string" },
-        count: { type: "number", description: "Anzahl Ideen, default 3" },
+        channelUrl: {
+          type: "string",
+          description: "YouTube-Kanal-URL oder @handle",
+        },
       },
-      required: ["niche"],
+      required: ["channelUrl"],
     },
+  },
+  {
+    name: "generate_image" as const,
+    description:
+      "KI-Bild via Flux (POST /api/image-generator). Liefert imageUrl für Video-Schritte.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        prompt: { type: "string", description: "Detaillierte Bildbeschreibung" },
+      },
+      required: ["prompt"],
+    },
+  },
+  {
+    name: "generate_video_from_image" as const,
+    description:
+      "Video aus Bild via Seedance (POST /api/seedance). Nutze imageUrl aus generate_product_preview oder generate_image.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        imageUrl: { type: "string" },
+        motionPrompt: {
+          type: "string",
+          description: "Bewegung, Kamera, Stimmung",
+        },
+      },
+      required: ["imageUrl", "motionPrompt"],
+    },
+  },
+  {
+    name: "generate_product_preview" as const,
+    description:
+      "Erstellt UGC-Produkt-Preview-Bild (Produkt-Werbung Pipeline, POST /api/product-ad). Nutze bei UGC Creator Flow wenn Produktname und URL/Bild vorhanden.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        productName: { type: "string", description: "Name des Produkts" },
+        productDescription: { type: "string" },
+        productUrl: { type: "string", description: "Shop-URL zum Scrapen" },
+        imageUrl: { type: "string", description: "Direkte Bild-URL falls vorhanden" },
+      },
+      required: ["productName"],
+    },
+  },
+  {
+    name: "ugc_video" as const,
+    description:
+      "Weiterleitung zu UGC Video — wenn Upload (Produktbild) nötig ist. UGC, Brand Deal, authentische Ads.",
+    input_schema: REDIRECT_TOOL_INPUT,
+  },
+  {
+    name: "produkt_werbung" as const,
+    description:
+      "Weiterleitung zu Produkt-Werbung — mehrstufiger Upload-Flow für Marken/Produkte.",
+    input_schema: REDIRECT_TOOL_INPUT,
+  },
+  {
+    name: "avatar_video" as const,
+    description:
+      "Weiterleitung zu Mein KI-Ich — braucht Selfie-Upload für Avatar-Videos.",
+    input_schema: REDIRECT_TOOL_INPUT,
+  },
+  {
+    name: "video_remix" as const,
+    description:
+      "Weiterleitung zu Video Remix — braucht Video-Upload.",
+    input_schema: REDIRECT_TOOL_INPUT,
+  },
+  {
+    name: "stimme_musik" as const,
+    description:
+      "Weiterleitung zu Stimme & Musik — Voiceover, Stimmenklone, Musik.",
+    input_schema: REDIRECT_TOOL_INPUT,
+  },
+  {
+    name: "live_creator" as const,
+    description:
+      "Weiterleitung zu Live Creator — Live-Avatar, Face Swap, Premium-Plan.",
+    input_schema: REDIRECT_TOOL_INPUT,
   },
 ];
 
-export const MASTER_AGENT_SYSTEM_PROMPT = `Du bist der InfluexAI Master Agent — ein persönlicher YouTube-Stratege. Du hilfst Content Creatorn dabei virale YouTube Shorts zu erstellen.
+export const MASTER_AGENT_SYSTEM_PROMPT = `Du bist der InfluexAI Master Agent. Deine Aufgabe ist es, den Nutzer zu verstehen und entweder:
+(a) ein ausführbares Tool direkt auszuführen, oder
+(b) ein Weiterleitungs-Tool zu nutzen (zeigt Link-Karte im Chat), oder
+(c) klärende Fragen zu stellen, wenn das Ziel unklar ist.
 
-Du hast Zugriff auf Tools für: Nischen-Analyse, Script-Generierung, Thumbnail-Konzepte, Viral Score, Outlier-Detection und Video-Ideen.
+AUSFÜHRBARE TOOLS (sofort ausführen, Ergebnis erscheint im Chat):
+- analyze_niche — Nischen-Analyse
+- generate_script — YouTube Shorts Script
+- generate_thumbnail — Thumbnail-Konzept
+- viral_score — Viral Score 0–100
+- detect_outlier — Outlier-Videos in einer Nische
+- analyze_competitor — Konkurrenz-Analyse (channelUrl nötig)
+- generate_image — KI-Bild (Flux)
+- generate_product_preview — UGC Produkt-Preview (Produkt-Werbung)
+- generate_video_from_image — Bild zu Video (Seedance)
 
-Wenn ein User ein Ziel nennt:
-1. Plane die beste Tool-Sequenz (z.B. Nische → Outliers → Script → Thumbnail → Viral Score).
-2. Führe Tools Schritt für Schritt aus und nutze Ergebnisse früherer Tools für spätere (z.B. Hook aus Outlier-Analyse im Script).
-3. Erkläre kurz auf Deutsch was du gerade tust (1–2 Sätze pro Schritt).
-4. Fasse am Ende alles strukturiert zusammen.
+WEITERLEITUNGS-TOOLS (Link-Karte, kein Upload im Chat möglich):
+- ugc_video — UGC mit Produktbild-Upload
+- produkt_werbung — Produkt-Werbung Dashboard
+- avatar_video — Mein KI-Ich (Selfie-Upload)
+- video_remix — Video-Upload
+- stimme_musik — Stimme & Musik
+- live_creator — Live-Avatar / Face Swap
 
-Antworte in der Sprache des Users (Deutsch wenn der User Deutsch schreibt).
-Nutze Tools proaktiv — nicht nur beschreiben was möglich wäre.
-Bei Video-Projekten: führe mindestens Nischen-Analyse, Script und Thumbnail aus wenn sinnvoll.`;
+GEFÜHRTER FLOW: UGC Creator (Referenz für alle Profile):
+1. Erkennung UGC → Frage wörtlich: "Für welches Produkt… Produktbild oder URL?"
+2a. Bild/URL → generate_product_preview → Frage: "Soll ich daraus direkt ein UGC-Video erstellen?"
+2b. Kein Bild → ugc_video Weiterleitung
+3. Ja → generate_video_from_image mit Preview-imageUrl
+
+Nutzer-Profile (weitere Flows folgen demselben Muster):
+UGC Creator → geführter UGC-Flow oben
+Faceless → avatar_video + generate_thumbnail / generate_image
+Content Creator → analyze_niche → generate_script → generate_thumbnail
+Brand/Marketing → produkt_werbung + ugc_video
+Musik/Podcast → stimme_musik
+Konkurrenz → analyze_competitor
+
+Regeln:
+- Wenn unklar: MAXIMAL 2 gezielte Fragen. Kein Blabla.
+- Ausführbare Tools: DIREKT ausführen — AUSSER im UGC-Flow Phase 2a: erst Preview, dann Video-Frage stellen.
+- Einzige erlaubte Bestätigungsfrage: UGC_VIDEO "Soll ich daraus direkt ein UGC-Video erstellen?"
+- Weiterleitungs-Tools: Tool aufrufen mit headline + description für die Karte.
+
+Tool-Workflow:
+1. Beste Sequenz planen und Tools nacheinander ausführen.
+2. Ergebnisse vorheriger Tools für spätere nutzen.
+3. Kurz erklären was du tust (1–2 Sätze pro Schritt).
+
+Antworte in der Sprache des Users.`;

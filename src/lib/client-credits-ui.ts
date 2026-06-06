@@ -29,6 +29,18 @@ export function handleApiInsufficientCredits(): void {
   openBuyCreditsModal();
 }
 
+/** Call when an API returns 403 PLAN_REQUIRED. */
+export function handleApiPlanRequired(): void {
+  if (typeof window === "undefined") return;
+  window.location.href = "/pricing";
+}
+
+/** Fired when new images/videos land in the user gallery cache. */
+export function notifyGenerationsUpdated() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("generations-updated"));
+}
+
 /** Call after successful generation with remaining credits. */
 export function notifyGenerationComplete(remaining: number) {
   if (typeof window === "undefined") return;
@@ -36,6 +48,7 @@ export function notifyGenerationComplete(remaining: number) {
     new CustomEvent(GENERATION_EVENT, { detail: { remaining } })
   );
   window.dispatchEvent(new Event("credits-updated"));
+  notifyGenerationsUpdated();
 }
 
 export function onUpgradePrompt(

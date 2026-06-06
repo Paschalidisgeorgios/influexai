@@ -4,6 +4,10 @@ import { generateScript } from "@/app/actions/generate-script";
 import { generateThumbnailConcepts } from "@/app/actions/generate-thumbnail";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { runCompetitorAnalysis } from "@/lib/competitor-run";
+import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
+import { runProductAdPreviewGeneration } from "@/lib/product-ad-preview-run";
+import { runSeedanceGeneration } from "@/lib/seedance-generate";
 import {
   buildViralScoreUserPrompt,
   parseViralScoreResult,
@@ -11,9 +15,12 @@ import {
   VIRAL_SCORE_SYSTEM_PROMPT,
 } from "@/lib/viral-score";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { logGeneration } from "@/lib/activity-log";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { AGENT_TOOL_CREDITS } from "./credits";
+import {
+  buildAgentRedirect,
+  isAgentRedirectTool,
+} from "./redirect-tools";
 import type { AgentOutputs, AgentToolName } from "./types";
 
 export type ToolExecutionResult =
@@ -132,9 +139,15 @@ export async function executeAgentTool(
   input: Record<string, unknown>,
   outputs: AgentOutputs
 ): Promise<ToolExecutionResult> {
+  if (isAgentRedirectTool(name)) {
+    const redirect = buildAgentRedirect(name, input);
+    outputs.redirects = [...(outputs.redirects ?? []), redirect];
+    return { ok: true, data: redirect, creditsUsed: 0 };
+  }
+
   switch (name) {
     case "analyze_niche": {
-      const niche = String(input.niche ?? "");
+      const niche = String(input.niche ?? input.topic ?? "");
       const result = await analyzeNiche(
         niche,
         "YouTube Shorts Zuschauer",
@@ -147,12 +160,12 @@ export async function executeAgentTool(
       return {
         ok: true,
         data: result.niches,
-        creditsUsed: 2,
+        creditsUsed: AGENT_TOOL_CREDITS.analyze_niche,
         creditsLeft: result.creditsLeft,
       };
     }
 
-    case "find_outliers": {
+    case "detect_outlier": {
       const niche = String(input.niche ?? "");
       const lang = String(input.language ?? "de");
       const result = await detectOutliers(
@@ -169,7 +182,7 @@ export async function executeAgentTool(
       return {
         ok: true,
         data: result.outliers,
-        creditsUsed: AGENT_TOOL_CREDITS.find_outliers,
+        creditsUsed: AGENT_TOOL_CREDITS.detect_outlier,
         creditsLeft: result.creditsLeft,
       };
     }
@@ -199,8 +212,8 @@ export async function executeAgentTool(
       };
     }
 
-    case "create_thumbnail_concept": {
-      const title = String(input.title ?? "");
+    case "generate_thumbnail": {
+      const title = String(input.title ?? input.topic ?? "");
       const style = String(input.style ?? "bold, high CTR");
       const result = await generateThumbnailConcepts({
         topic: title,
@@ -214,12 +227,12 @@ export async function executeAgentTool(
       return {
         ok: true,
         data: result.concepts,
-        creditsUsed: AGENT_TOOL_CREDITS.create_thumbnail_concept,
+        creditsUsed: AGENT_TOOL_CREDITS.generate_thumbnail,
         creditsLeft: result.creditsLeft,
       };
     }
 
-    case "calculate_viral_score": {
+    case "viral_score": {
       const viralResult = await runViralScoreTool({
         script: String(input.script ?? ""),
         thumbnail: String(input.thumbnail ?? ""),
@@ -232,37 +245,163 @@ export async function executeAgentTool(
       return viralResult;
     }
 
-    case "suggest_video_ideas": {
-      const niche = String(input.niche ?? "");
-      const count = Math.min(5, Math.max(1, Number(input.count ?? 3)));
-      const claude = await createAnthropicMessage({
-        system:
-          "Du bist YouTube Shorts Stratege. Antworte NUR mit validem JSON.",
-        user: `Nische: ${niche}
-Erstelle ${count} konkrete Video-Ideen als JSON:
-{"ideas":[{"title":string,"hook":string,"why_viral":string}]}`,
-        maxTokens: 1024,
-      });
-      if (!claude.ok) {
-        return { ok: false, error: claude.error, creditsUsed: 0 };
+    case "analyze_competitor": {
+      const supabase = await createServerSupabaseClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return { ok: false, error: "Nicht eingeloggt.", creditsUsed: 0 };
       }
-      try {
-        const parsed = JSON.parse(
-          claude.text.replace(/```json|```/gi, "").trim()
-        ) as { ideas?: unknown };
-        outputs.videoIdeas = parsed.ideas ?? parsed;
-        return {
-          ok: true,
-          data: outputs.videoIdeas,
-          creditsUsed: 0,
-        };
-      } catch {
+
+      const channelUrl = String(
+        input.channelUrl ?? input.channel_url ?? ""
+      );
+      const result = await runCompetitorAnalysis(
+        supabase,
+        user.id,
+        channelUrl
+      );
+
+      if (!result.ok) {
         return {
           ok: false,
-          error: "Video-Ideen konnten nicht gelesen werden.",
+          error: result.failure.error,
           creditsUsed: 0,
         };
       }
+
+      const { creditsLeft, ...payload } = result.data;
+      outputs.competitor = payload;
+
+      return {
+        ok: true,
+        data: payload,
+        creditsUsed: AGENT_TOOL_CREDITS.analyze_competitor,
+        creditsLeft,
+      };
+    }
+
+    case "generate_image": {
+      const supabase = await createServerSupabaseClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return { ok: false, error: "Nicht eingeloggt.", creditsUsed: 0 };
+      }
+
+      const prompt = String(input.prompt ?? "");
+      const result = await runImageGeneratorGeneration(supabase, user.id, {
+        prompt,
+        category: "creator",
+      });
+
+      if (!result.ok) {
+        return { ok: false, error: result.error, creditsUsed: 0 };
+      }
+
+      const imageOutput = {
+        imageUrl: result.imageUrl,
+        generationId: result.generationId,
+        prompt,
+      };
+      outputs.image = imageOutput;
+
+      return {
+        ok: true,
+        data: imageOutput,
+        creditsUsed: result.creditsUsed,
+        creditsLeft: result.creditsLeft,
+      };
+    }
+
+    case "generate_video_from_image": {
+      const supabase = await createServerSupabaseClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return { ok: false, error: "Nicht eingeloggt.", creditsUsed: 0 };
+      }
+
+      const imageUrl = String(
+        input.imageUrl ??
+          outputs.productPreview?.imageUrl ??
+          outputs.image?.imageUrl ??
+          ""
+      );
+      const motionPrompt = String(
+        input.motionPrompt ??
+          input.prompt ??
+          "Authentic UGC creator presenting product, subtle hand movement, natural lighting, TikTok 9:16 vertical"
+      );
+
+      const result = await runSeedanceGeneration(supabase, user.id, {
+        imageUrl,
+        prompt: motionPrompt,
+      });
+
+      if (!result.ok) {
+        return { ok: false, error: result.error, creditsUsed: 0 };
+      }
+
+      const videoOutput = {
+        videoUrl: result.videoUrl,
+        generationId: result.generationId,
+        motionPrompt,
+      };
+      outputs.video = videoOutput;
+
+      return {
+        ok: true,
+        data: videoOutput,
+        creditsUsed: result.creditsUsed,
+        creditsLeft: result.creditsLeft,
+      };
+    }
+
+    case "generate_product_preview": {
+      const supabase = await createServerSupabaseClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return { ok: false, error: "Nicht eingeloggt.", creditsUsed: 0 };
+      }
+
+      const result = await runProductAdPreviewGeneration(supabase, user.id, {
+        productName: String(input.productName ?? ""),
+        productDescription: String(input.productDescription ?? ""),
+        productUrl: String(input.productUrl ?? input.product_url ?? ""),
+        imageUrl: String(input.imageUrl ?? input.image_url ?? ""),
+      });
+
+      if (!result.ok) {
+        return { ok: false, error: result.error, creditsUsed: 0 };
+      }
+
+      const previewOutput = {
+        imageUrl: result.imageUrl,
+        generationId: result.generationId,
+        productName: result.productName,
+        productDescription: result.productDescription,
+        sourceImageUrl: result.sourceImageUrl,
+        productUrl: result.productUrl,
+      };
+      outputs.productPreview = previewOutput;
+      outputs.image = {
+        imageUrl: result.imageUrl,
+        generationId: result.generationId,
+        prompt: result.productName,
+      };
+
+      return {
+        ok: true,
+        data: previewOutput,
+        creditsUsed: result.creditsUsed,
+        creditsLeft: result.creditsLeft,
+      };
     }
 
     default:

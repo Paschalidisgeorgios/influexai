@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowUp, Loader2 } from "lucide-react";
+import { ArrowUp, Loader2, Paperclip } from "lucide-react";
 import { saveAgentRun } from "@/app/actions/save-agent-run";
+import { notifyGenerationsUpdated, handleApiPlanRequired, openBuyCreditsModal } from "@/lib/client-credits-ui";
 import { createClient } from "@/lib/supabase/client";
 import { AgentResultCard } from "./AgentResultCard";
-import { AgentToolTimeline } from "./AgentToolTimeline";
+import { AgentToolTimeline, AgentToolStepCards } from "./AgentToolTimeline";
+import { AgentTypingIndicator } from "./AgentTypingIndicator";
+import { AgentWorkingStatus } from "./AgentWorkingStatus";
 import type {
   AgentOutputs,
   AgentStreamEvent,
@@ -28,47 +31,85 @@ type Estimate = {
   label: string;
 };
 
-type TabId = "chat" | "workflow";
-
 type Props = {
   suggestedPrompts: string[];
 };
 
+function greetingKey(): "greeting_morning" | "greeting_day" | "greeting_evening" {
+  const hour = new Date().getHours();
+  if (hour < 12) return "greeting_morning";
+  if (hour < 18) return "greeting_day";
+  return "greeting_evening";
+}
+
 const TIMELINE_TOOLS: AgentToolName[] = [
+  "generate_image",
+  "generate_video_from_image",
   "analyze_niche",
   "generate_script",
-  "calculate_viral_score",
-  "create_thumbnail_concept",
+  "viral_score",
+  "generate_thumbnail",
 ];
 
 function stepsForTimeline(
   messages: ChatMessage[],
   running: boolean
-): { tool: AgentToolName; status: "pending" | "running" | "done" | "error" }[] {
+): {
+  tool: AgentToolName;
+  label?: string;
+  status: "pending" | "running" | "done" | "error";
+}[] {
   const assistant = [...messages]
     .reverse()
     .find((m) => m.role === "assistant");
 
-  const stepMap = new Map<AgentToolName, "pending" | "running" | "done" | "error">();
+  const stepMap = new Map<
+    AgentToolName,
+    { label?: string; status: "pending" | "running" | "done" | "error" }
+  >();
   for (const s of assistant?.steps ?? []) {
-    stepMap.set(
-      s.tool,
-      s.status === "done"
-        ? "done"
-        : s.status === "running"
-          ? "running"
-          : s.status === "error"
-            ? "error"
-            : "pending"
-    );
+    stepMap.set(s.tool, {
+      label: s.label,
+      status:
+        s.status === "done"
+          ? "done"
+          : s.status === "running"
+            ? "running"
+            : s.status === "error"
+              ? "error"
+              : "pending",
+    });
   }
 
   if (!running && stepMap.size === 0) return [];
 
+  if (stepMap.size > 0) {
+    return (assistant?.steps ?? []).map((s) => ({
+      tool: s.tool,
+      label: s.label,
+      status:
+        s.status === "done"
+          ? "done"
+          : s.status === "running"
+            ? "running"
+            : s.status === "error"
+              ? "error"
+              : "pending",
+    }));
+  }
+
   return TIMELINE_TOOLS.map((tool) => ({
     tool,
-    status: stepMap.get(tool) ?? "pending",
+    status: "pending" as const,
   }));
+}
+
+function hasGalleryMedia(outputs: AgentOutputs): boolean {
+  return Boolean(
+    outputs.image?.generationId ||
+      outputs.video?.generationId ||
+      outputs.productPreview?.generationId
+  );
 }
 
 export function MasterAgentChat({ suggestedPrompts }: Props) {
@@ -84,7 +125,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [username, setUsername] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<TabId>("chat");
+  const [activeTool, setActiveTool] = useState<AgentToolName | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const assistantIdRef = useRef<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -134,6 +175,13 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
   }, [input, loadEstimate]);
 
   useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
+  }, [input]);
+
+  useEffect(() => {
     if (messages.length > 0) {
       scrollRef.current?.scrollTo({
         top: scrollRef.current.scrollHeight,
@@ -179,9 +227,9 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
     setInput("");
     setRunning(true);
     setSaved(false);
+    setActiveTool(null);
     setLastUserGoal(msg);
     setLastOutputs({});
-    setActiveTab("chat");
 
     const userMsg: ChatMessage = {
       id: `u-${Date.now()}`,
@@ -209,6 +257,24 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg, history }),
       });
+
+      if (res.status === 403) {
+        handleApiPlanRequired();
+        appendAssistantDelta(
+          "\n\nWähle einen Plan um zu starten — alle Tools ab €9,99/Monat."
+        );
+        setRunning(false);
+        return;
+      }
+
+      if (res.status === 402) {
+        openBuyCreditsModal();
+        appendAssistantDelta(
+          "\n\nDeine Credits sind aufgebraucht — lade jetzt nach, um weiterzumachen."
+        );
+        setRunning(false);
+        return;
+      }
 
       if (!res.ok || !res.body) {
         appendAssistantDelta("\n\nFehler beim Starten des Agents.");
@@ -254,8 +320,10 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
           } else if (event.type === "text_delta") {
             appendAssistantDelta(event.text);
           } else if (event.type === "tool_start") {
+            setActiveTool(event.tool);
             updateAssistantStep(event.tool, event.label, "running");
           } else if (event.type === "tool_done") {
+            setActiveTool(null);
             const id = assistantIdRef.current;
             if (id) {
               setMessages((prev) =>
@@ -269,8 +337,12 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
               );
             }
           } else if (event.type === "tool_error") {
+            setActiveTool(null);
             updateAssistantStep(event.tool, event.error, "error");
           } else if (event.type === "outputs") {
+            if (hasGalleryMedia(event.outputs)) {
+              notifyGenerationsUpdated();
+            }
             setLastOutputs(event.outputs);
             setMessages((prev) =>
               prev.map((m) =>
@@ -292,6 +364,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
       appendAssistantDelta("\n\nNetzwerkfehler.");
     } finally {
       setRunning(false);
+      setActiveTool(null);
       assistantIdRef.current = null;
     }
   };
@@ -305,176 +378,143 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
 
   const timelineSteps = stepsForTimeline(messages, running);
   const showTimeline = running || timelineSteps.length > 0;
+  const lastAssistant = [...messages]
+    .reverse()
+    .find((m) => m.role === "assistant");
+  const isEmpty = messages.length === 0;
   const creditHint = estimate
     ? t("credit_confirm", { credits: estimate.typical })
     : input.trim()
       ? t("credit_confirm", { credits: "…" })
       : null;
 
-  const heroInput = (
-    <div className="relative w-full max-w-2xl mx-auto">
+  const renderInputForm = (compact: boolean) => (
+    <form
+      className="w-full"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void handleSubmit();
+      }}
+    >
       <div
-        className="pointer-events-none absolute -inset-x-8 -bottom-8 top-1/4 rounded-[32px] opacity-100"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 40% at 50% 100%, rgba(180,255,0,0.08) 0%, transparent 70%)",
-        }}
-        aria-hidden
-      />
-
-      <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c0f]/90 backdrop-blur-sm overflow-hidden">
-        <div className="flex items-center gap-6 px-5 pt-4 border-b border-white/[0.06]">
-          {(["chat", "workflow"] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-sm font-semibold transition-colors relative ${
-                activeTab === tab
-                  ? "text-[#F0EFE8]"
-                  : "text-white/70 hover:text-white/80"
-              }`}
-            >
-              {t(tab === "chat" ? "tab_chat" : "tab_workflow")}
-              {activeTab === tab && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#B4FF00] rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        {activeTab === "chat" ? (
-          <form
-            className="p-5"
-            onSubmit={(e) => {
+        className={`relative rounded-2xl border border-white/[0.12] bg-white/[0.04] transition-colors focus-within:border-[var(--accent,#B4FF00)] ${
+          compact ? "p-3" : "p-5"
+        }`}
+      >
+        <textarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               void handleSubmit();
-            }}
+            }
+          }}
+          placeholder={t("input_placeholder")}
+          disabled={running}
+          rows={compact ? 2 : 3}
+          className={`w-full resize-none bg-transparent text-[#F0EFE8] leading-relaxed placeholder:text-white/30 outline-none ${
+            compact ? "min-h-[44px] text-sm pl-1 pr-12 pb-1" : "min-h-[72px] text-base pl-1 pr-14 pb-10"
+          }`}
+        />
+        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+          <button
+            type="button"
+            disabled
+            title={t("attach_soon")}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-white/35 cursor-not-allowed"
+            aria-label={t("attach_soon")}
           >
-            <p className="text-sm text-[rgba(255,255,255,0.65)] mb-1">
-              {t("greeting_hey", { name: username || "…" })}
-            </p>
-            <h2
-              className="text-[#F0EFE8] font-bold leading-tight mb-5"
-              style={{
-                fontSize: "clamp(28px, 5vw, 48px)",
-              }}
-            >
-              {t("hero_headline")}
-            </h2>
-
-            <div className="relative">
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void handleSubmit();
-                  }
-                }}
-                placeholder={t("input_placeholder")}
-                disabled={running}
-                rows={4}
-                className="w-full min-h-[80px] md:min-h-[120px] resize-none rounded-xl bg-[#060608] border border-white/10 px-4 py-4 pr-16 pb-14 text-[#F0EFE8] text-base leading-relaxed placeholder:text-white/25 focus:border-[#B4FF00]/40 outline-none transition-colors"
-              />
-              <button
-                type="submit"
-                disabled={running || !input.trim()}
-                className="absolute right-3 bottom-3 flex h-11 w-11 md:h-12 md:w-12 items-center justify-center rounded-xl bg-[#B4FF00] text-[#060608] shadow-[0_0_24px_rgba(180,255,0,0.25)] disabled:opacity-35 hover:brightness-105 transition-all"
-                aria-label={t("send")}
-              >
-                {running ? (
-                  <Loader2 size={22} className="animate-spin" />
-                ) : (
-                  <ArrowUp size={22} strokeWidth={2.5} />
-                )}
-              </button>
-            </div>
-
-            {creditHint && (
-              <p className="mt-2 text-right text-xs text-[rgba(255,255,255,0.65)]">
-                {creditHint}
-              </p>
-            )}
-          </form>
-        ) : (
-          <div className="p-5 space-y-3">
-            <p className="text-sm text-white/80">{t("workflow_desc")}</p>
-            <ol className="space-y-2 text-sm text-white/70">
-              {(
-                [
-                  "timeline_niche",
-                  "timeline_script",
-                  "timeline_viral",
-                  "timeline_thumbnail",
-                ] as const
-              ).map((key, i) => (
-                <li
-                  key={key}
-                  className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5"
-                >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B4FF00]/15 text-xs font-bold text-[#B4FF00]">
-                    {i + 1}
-                  </span>
-                  {t(key)}
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </div>
-
-      {activeTab === "chat" && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap">
-          {suggestedPrompts.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              disabled={running}
-              onClick={() => {
-                setInput(chip);
-                void handleSubmit(chip);
-              }}
-              className="shrink-0 whitespace-nowrap rounded-full border border-white/[0.15] px-5 py-2.5 text-[13px] font-medium text-white/65 hover:border-[#B4FF00]/35 hover:text-[#B4FF00] transition-colors disabled:opacity-40"
-              style={{ borderWidth: "0.5px" }}
-            >
-              {chip}
-            </button>
-          ))}
+            <Paperclip size={16} />
+          </button>
         </div>
+        <button
+          type="submit"
+          disabled={running || !input.trim()}
+          className={`absolute flex items-center justify-center rounded-xl bg-[var(--accent,#B4FF00)] text-[#060608] shadow-[0_0_20px_color-mix(in_srgb,var(--accent,#B4FF00)_30%,transparent)] disabled:opacity-35 hover:brightness-105 transition-all ${
+            compact
+              ? "right-2 bottom-2 h-9 w-9"
+              : "right-4 bottom-4 h-11 w-11 md:h-12 md:w-12"
+          }`}
+          aria-label={t("send")}
+        >
+          {running ? (
+            <Loader2 size={compact ? 18 : 22} className="animate-spin" />
+          ) : (
+            <ArrowUp size={compact ? 18 : 22} strokeWidth={2.5} />
+          )}
+        </button>
+      </div>
+      {creditHint && !compact && (
+        <p className="mt-2 text-center text-xs text-white/50">{creditHint}</p>
       )}
+    </form>
+  );
+
+  const quickActionChips = (
+    <div className="mt-6 flex w-full min-w-0 flex-wrap justify-center gap-2">
+      {suggestedPrompts.map((chip) => (
+        <button
+          key={chip}
+          type="button"
+          disabled={running}
+          onClick={() => void handleSubmit(chip)}
+          className="shrink-0 rounded-full border border-white/[0.15] px-4 py-2.5 text-[13px] font-medium text-white/65 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40"
+          style={{ borderWidth: "0.5px" }}
+        >
+          {chip}
+        </button>
+      ))}
     </div>
   );
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-[#060608]">
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto min-h-0"
-      >
-        <div
-          className={`flex flex-col px-4 ${
-            messages.length === 0
-              ? "justify-center min-h-full py-10 md:py-16"
-              : "py-6 md:py-8"
-          }`}
-        >
-          {heroInput}
-
-          {messages.length > 0 && (
+      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
+        {isEmpty ? (
+          <div className="relative flex min-h-full flex-col items-center justify-center px-2 py-8 md:py-12">
             <div
-              className={`mt-10 max-w-3xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-8 ${
-                showTimeline ? "" : ""
-              }`}
-            >
-              {showTimeline && (
-                <AgentToolTimeline steps={timelineSteps} />
-              )}
+              className="pointer-events-none absolute inset-x-0 top-1/3 h-64 opacity-100"
+              style={{
+                background:
+                  "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(180,255,0,0.06) 0%, transparent 70%)",
+              }}
+              aria-hidden
+            />
+            <div className="relative w-full max-w-2xl">
+              <div className="mb-8 flex items-start gap-3">
+                <span
+                  className="inline-grid shrink-0 place-items-center rounded-lg bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold text-lg"
+                  style={{ width: 32, height: 32, marginRight: 0 }}
+                  aria-hidden
+                >
+                  I
+                </span>
+                <div className="min-w-0 pt-0.5">
+                  <p className="text-base text-[#F0EFE8] font-medium">
+                    {t(greetingKey(), { name: username || "…" })}
+                  </p>
+                  <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#F0EFE8] leading-tight">
+                    {t("hero_headline")}
+                  </h1>
+                </div>
+              </div>
+              {renderInputForm(false)}
+              {quickActionChips}
+            </div>
+          </div>
+        ) : (
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-2 py-6 md:flex-row md:gap-8">
+            {showTimeline && <AgentToolTimeline steps={timelineSteps} />}
+            <div className="min-w-0 flex-1 space-y-4">
+              {messages.map((m) => {
+                const isActiveAssistant =
+                  running &&
+                  m.role === "assistant" &&
+                  m.id === lastAssistant?.id;
 
-              <div className="flex-1 min-w-0 space-y-4">
-                {messages.map((m) => (
+                return (
                   <div
                     key={m.id}
                     className={`flex ${
@@ -484,45 +524,61 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
                     <div
                       className={`max-w-[92%] rounded-2xl px-4 py-3 ${
                         m.role === "user"
-                          ? "bg-[#B4FF00]/12 border border-[#B4FF00]/25 text-[#F0EFE8]"
+                          ? "bg-[var(--accent,#B4FF00)]/12 border border-[var(--accent,#B4FF00)]/25 text-[#F0EFE8]"
                           : "bg-[#18181d] border border-white/10 text-[#F0EFE8]"
                       }`}
                     >
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                        {m.content ||
-                          (running && m.role === "assistant" ? "…" : "")}
-                      </p>
-                      {m.outputs && Object.keys(m.outputs).length > 0 && (
-                        <div className="mt-3">
-                          <AgentResultCard outputs={m.outputs} />
+                      {isActiveAssistant && activeTool ? (
+                        <div className="mb-3">
+                          <AgentWorkingStatus tool={activeTool} />
                         </div>
+                      ) : null}
+                      {m.content ? (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                          {m.content}
+                        </p>
+                      ) : isActiveAssistant && !activeTool ? (
+                        <AgentTypingIndicator label={t("thinking")} />
+                      ) : null}
+                      {m.steps && m.steps.length > 0 && (
+                        <AgentToolStepCards steps={m.steps} />
                       )}
+                      {m.outputs &&
+                        (Object.keys(m.outputs).some(
+                          (k) =>
+                            k !== "redirects" &&
+                            m.outputs![k as keyof AgentOutputs] != null
+                        ) ||
+                          (m.outputs.redirects?.length ?? 0) > 0) && (
+                          <AgentResultCard outputs={m.outputs} />
+                        )}
                     </div>
                   </div>
-                ))}
-
-                {running && !messages.some((m) => m.role === "assistant" && m.content) && (
-                  <p className="text-sm text-[#B4FF00] flex items-center gap-2">
-                    <Loader2 size={16} className="animate-spin" />
-                    {t("thinking")}
-                  </p>
+                );
+              })}
+              {!running &&
+                (Object.keys(lastOutputs).some(
+                  (k) =>
+                    k !== "redirects" &&
+                    lastOutputs[k as keyof AgentOutputs] != null
+                ) ||
+                  (lastOutputs.redirects?.length ?? 0) > 0) && (
+                  <AgentResultCard
+                    outputs={lastOutputs}
+                    onSave={handleSave}
+                    saving={saving}
+                    saved={saved}
+                  />
                 )}
-              </div>
             </div>
-          )}
-
-          {Object.keys(lastOutputs).length > 0 && !running && (
-            <div className="mt-8 max-w-2xl mx-auto w-full">
-              <AgentResultCard
-                outputs={lastOutputs}
-                onSave={handleSave}
-                saving={saving}
-                saved={saved}
-              />
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+      {!isEmpty && (
+        <div className="shrink-0 border-t border-white/10 bg-[#060608] px-2 py-3 md:px-0">
+          <div className="mx-auto max-w-3xl">{renderInputForm(true)}</div>
+        </div>
+      )}
     </div>
   );
 }

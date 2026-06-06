@@ -13,6 +13,22 @@ import {
   type BillingInterval,
 } from "@/lib/subscription-plans";
 
+/** Identical tool list on every plan card — only credits/month differ. */
+const ALL_PLAN_TOOL_KEYS = [
+  "all_tools_f1",
+  "all_tools_f2",
+  "all_tools_f3",
+  "all_tools_f4",
+  "all_tools_f5",
+  "all_tools_f6",
+  "all_tools_f7",
+  "all_tools_f8",
+  "all_tools_f9",
+  "all_tools_f10",
+  "all_tools_f11",
+  "all_tools_f12",
+] as const;
+
 function formatPriceAmount(price: number): string {
   return Number.isInteger(price)
     ? String(price)
@@ -60,47 +76,10 @@ export function PricingPlans({
   const [yearly, setYearly] = useState(false);
   const interval: BillingInterval = yearly ? "yearly" : "monthly";
 
+  const sharedFeatures = ALL_PLAN_TOOL_KEYS.map((key) => t(key));
+
   const planContent = (key: (typeof SUBSCRIPTION_PLAN_ORDER)[number]) => {
     const config = SUBSCRIPTION_PLANS[key];
-    const starterMissing =
-      key === "starter" ? [t("starter_m1"), t("starter_m2"), t("starter_m3")] : [];
-    const starterFeatures = [
-      t("starter_f1"),
-      t("starter_f2"),
-      t("starter_f3"),
-    ];
-    const creatorFeatures = [
-      t("creator_f1"),
-      t("creator_f2"),
-      t("creator_f3"),
-      t("creator_f4"),
-      t("creator_f5"),
-    ];
-    const proFeatures = [
-      t("pro_f1"),
-      t("pro_f2"),
-      t("pro_f3"),
-      t("pro_f4"),
-      t("pro_f5"),
-      t("pro_f6"),
-    ];
-    const businessFeatures = [
-      t("business_f1"),
-      t("business_f2"),
-      t("business_f3"),
-      t("business_f4"),
-      t("business_f5"),
-    ];
-
-    const features =
-      key === "starter"
-        ? starterFeatures
-        : key === "creator"
-          ? creatorFeatures
-          : key === "pro"
-            ? proFeatures
-            : businessFeatures;
-
     const price =
       interval === "yearly"
         ? config.yearlyPricePerMonthEur
@@ -114,8 +93,7 @@ export function PricingPlans({
       credits: t(`${key}_credits`),
       desc: t(`${key}_desc`),
       cta: t(`${key}_cta`),
-      features,
-      missing: starterMissing,
+      features: sharedFeatures,
     };
   };
 
@@ -177,133 +155,124 @@ export function PricingPlans({
         {plans.map((plan, planIndex) => {
           const loading = subscribeLoading === `${plan.key}-${interval}`;
           const staggerDelays = [0, 0.15, 0.3, 0.45];
-          const ctaContent = (
-            <>
-              {loading ? "…" : plan.cta}
-            </>
-          );
+          const ctaContent = <>{loading ? "…" : plan.cta}</>;
 
           return (
             <SpringReveal
               key={plan.key}
               delay={staggerDelays[planIndex] ?? planIndex * 0.15}
             >
-            <div
-              className={`glass-card flex flex-col p-[clamp(20px,3vw,28px)] transition-all duration-200 hover:-translate-y-0.5 relative h-full ${plan.hot ? "pc-hot" : ""}`}
-              style={{
-                marginTop: plan.hot ? 14 : 0,
-              }}
-            >
-              {plan.hot && (
-                <div
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[#060608] font-bold text-[0.7rem] px-4 py-1 rounded-full whitespace-nowrap"
-                  style={{
-                    background: "var(--acid)",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  {t("popular")}
-                </div>
-              )}
-              <div className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-2.5 text-white">
-                {plan.name}
-              </div>
               <div
-                className="text-white font-black"
+                className={`glass-card flex flex-col p-[clamp(20px,3vw,28px)] transition-all duration-200 hover:-translate-y-0.5 relative h-full ${plan.hot ? "pc-hot" : ""}`}
                 style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                  fontSize: "3rem",
-                  letterSpacing: "0.02em",
-                  lineHeight: 1,
+                  marginTop: plan.hot ? 14 : 0,
                 }}
               >
-                <EuroPrice amount={plan.price} />
-                <span
-                  className="text-[0.85rem] ml-0.5 text-white/70 font-normal"
-                  style={{ fontFamily: "var(--font-dm), sans-serif" }}
-                >
-                  {t("per_month")}
-                </span>
-              </div>
-              <div className="text-[0.75rem] mt-1.5 mb-1 text-white/85">
-                {plan.credits}
-              </div>
-              <div className="text-[0.82rem] mb-4 leading-[1.55] text-white/80">
-                {plan.desc}
-              </div>
-
-              {checkoutMode && onSubscribe ? (
-                <button
-                  type="button"
-                  disabled={subscribeLoading !== null}
-                  onClick={() => handleCta(plan.key)}
-                  className="block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer border-none"
-                  style={
-                    plan.hot
-                      ? {
-                          background: "var(--acid)",
-                          color: "#060608",
-                          fontFamily: "var(--font-dm), sans-serif",
-                          opacity: loading ? 0.7 : 1,
-                        }
-                      : {
-                          background: "transparent",
-                          border: "1px solid rgba(255,255,255,0.10)",
-                          color: "rgba(255,255,255,0.85)",
-                          fontFamily: "var(--font-dm), sans-serif",
-                          opacity: loading ? 0.7 : 1,
-                        }
-                  }
-                >
-                  {ctaContent}
-                </button>
-              ) : (
-                <AcidMotionButton
-                  href="/auth/sign-up"
-                  className={`block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 ${
-                    plan.hot ? "btn-acid" : "btn-ghost"
-                  }`}
-                >
-                  {plan.cta}
-                </AcidMotionButton>
-              )}
-
-              <ul className="list-none flex flex-col gap-2.5">
-                {plan.features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2.5 text-[0.84rem] text-white/85"
+                {plan.hot && (
+                  <div
+                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[#060608] font-bold text-[0.7rem] px-4 py-1 rounded-full whitespace-nowrap"
+                    style={{
+                      background: "var(--acid)",
+                      fontFamily: "var(--font-dm), sans-serif",
+                    }}
                   >
-                    <span
-                      className="font-bold flex-shrink-0"
-                      style={{ color: "var(--acid)" }}
+                    {t("popular")}
+                  </div>
+                )}
+                <div className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-2.5 text-white">
+                  {plan.name}
+                </div>
+                <div
+                  className="text-white font-black"
+                  style={{
+                    fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                    fontSize: "3rem",
+                    letterSpacing: "0.02em",
+                    lineHeight: 1,
+                  }}
+                >
+                  <EuroPrice amount={plan.price} />
+                  <span
+                    className="text-[0.85rem] ml-0.5 text-white/70 font-normal"
+                    style={{ fontFamily: "var(--font-dm), sans-serif" }}
+                  >
+                    {t("per_month")}
+                  </span>
+                </div>
+                <div className="text-[0.75rem] mt-1.5 mb-1 text-white/85">
+                  {plan.credits}
+                </div>
+                <div className="text-[0.82rem] mb-4 leading-[1.55] text-white/80">
+                  {plan.desc}
+                </div>
+
+                {checkoutMode && onSubscribe ? (
+                  <button
+                    type="button"
+                    disabled={subscribeLoading !== null}
+                    onClick={() => handleCta(plan.key)}
+                    className="block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer border-none"
+                    style={
+                      plan.hot
+                        ? {
+                            background: "var(--acid)",
+                            color: "#060608",
+                            fontFamily: "var(--font-dm), sans-serif",
+                            opacity: loading ? 0.7 : 1,
+                          }
+                        : {
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.10)",
+                            color: "rgba(255,255,255,0.85)",
+                            fontFamily: "var(--font-dm), sans-serif",
+                            opacity: loading ? 0.7 : 1,
+                          }
+                    }
+                  >
+                    {ctaContent}
+                  </button>
+                ) : (
+                  <AcidMotionButton
+                    href="/auth/sign-up"
+                    className={`block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 ${
+                      plan.hot ? "btn-acid" : "btn-ghost"
+                    }`}
+                  >
+                    {plan.cta}
+                  </AcidMotionButton>
+                )}
+
+                <ul className="list-none flex flex-col gap-2.5">
+                  {plan.features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-2.5 text-[0.84rem] text-white/85"
                     >
-                      ✓
-                    </span>
-                    {f}
-                  </li>
-                ))}
-                {plan.missing.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2.5 text-[0.84rem] text-white/35 line-through"
-                  >
-                    <span className="flex-shrink-0 text-white/35">
-                      —
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <span
+                        className="font-bold flex-shrink-0"
+                        style={{ color: "var(--acid)" }}
+                      >
+                        ✓
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </SpringReveal>
           );
         })}
       </div>
 
-      <p className="mt-5 text-[0.83rem] text-center" style={{ color: "var(--grey)" }}>
+      <p
+        className="mt-5 text-[0.83rem] text-center"
+        style={{ color: "var(--grey)" }}
+      >
         {t("footnote")}{" "}
-        <Link href="/dashboard/credits" style={{ color: "var(--acid)", textDecoration: "none" }}>
+        <Link
+          href="/dashboard/credits"
+          style={{ color: "var(--acid)", textDecoration: "none" }}
+        >
           {t("extra_credits")}
         </Link>{" "}
         {t("extra_credits_suffix")}

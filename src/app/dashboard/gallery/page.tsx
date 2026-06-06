@@ -113,6 +113,15 @@ export default function GalleryPage() {
     await load(0, false);
   }, [load]);
 
+  useEffect(() => {
+    const onGenerationsUpdated = () => {
+      void refreshGallery();
+    };
+    window.addEventListener("generations-updated", onGenerationsUpdated);
+    return () =>
+      window.removeEventListener("generations-updated", onGenerationsUpdated);
+  }, [refreshGallery]);
+
   const { pulling, refreshing } = usePullToRefresh(refreshGallery);
 
   return (

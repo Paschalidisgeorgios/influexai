@@ -11,14 +11,6 @@ export type AccessUser = {
   is_admin?: boolean | null;
 };
 
-const RANK: Record<PlanTier, number> = {
-  free: 0,
-  starter: 1,
-  creator: 2,
-  pro: 3,
-  business: 4,
-};
-
 function normalizePlan(plan: string | null | undefined): PlanTier {
   if (
     plan === "starter" ||
@@ -37,9 +29,19 @@ function isPrivilegedAccessUser(user: AccessUser): boolean {
   return role === "admin" || role === "owner";
 }
 
-/** Plan gate: admin/owner bypass; otherwise compare plan rank. */
-export function canUseFeature(user: AccessUser, requiredPlan: PlanTier): boolean {
+/** Stufe 2: irgendein bezahlter Plan (nicht free). */
+export function hasActivePlan(user: AccessUser): boolean {
   if (isPrivilegedAccessUser(user)) return true;
-  if (requiredPlan === "free") return true;
-  return RANK[normalizePlan(user.plan)] >= RANK[requiredPlan];
+  return normalizePlan(user.plan) !== "free";
+}
+
+/**
+ * Zwei-Stufen-Zugang: Admin/Owner oder aktiver Plan → true.
+ * `requiredPlan` wird ignoriert (kein Tier-Gating mehr).
+ */
+export function canUseFeature(
+  user: AccessUser,
+  _requiredPlan?: PlanTier
+): boolean {
+  return hasActivePlan(user);
 }

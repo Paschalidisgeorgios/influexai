@@ -35,6 +35,25 @@ const nextConfig: NextConfig = {
     ],
   },
   compress: true,
+  async redirects() {
+    return [
+      {
+        source: "/dashboard/produkt-werbung",
+        destination: "/dashboard/produkt",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/mein-ki-ich",
+        destination: "/dashboard/ki-ich",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/stimme-musik",
+        destination: "/dashboard/voice",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const configWithIntl = withNextIntl(nextConfig);

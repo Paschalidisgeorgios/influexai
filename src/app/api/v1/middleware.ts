@@ -67,11 +67,11 @@ export async function authenticateApiRequest(
   if (!canUsePublicApi(accessUser)) {
     return {
       ok: false,
-      response: apiError(
+        response: apiError(
         403,
-        "Public API requires Business plan",
+        "Wähle einen Plan um zu starten.",
         "PLAN_REQUIRED",
-        { required_plan: "business" }
+        { required_plan: "starter" }
       ),
     };
   }
