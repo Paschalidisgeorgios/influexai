@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-const LINE_1_DELAY = 50;
-const LINE_2_DELAY = 200;
-const LINE_3_DELAY = 350;
-const HOLD_UNTIL = 2800;
-const NEXT_TITLE_AT = 3200;
+const SLIDE_INTERVAL_MS = 3200;
 
 type TitleSlide = { lines: string[] };
 
@@ -27,78 +24,72 @@ function parseSlides(raw: string[]): TitleSlide[] {
 
 export function HeroTitle({ titles }: Props) {
   const slides = useMemo(() => parseSlides(titles), [titles]);
-  const [index, setIndex] = useState(0);
-  const [lines, setLines] = useState([false, false, false]);
-
-  const slide = slides[index];
-  const lineCount = slide?.lines.length ?? 0;
+  const slideCount = slides.length;
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    if (slides.length === 0) return;
+    if (slideCount <= 1) return;
 
-    setLines([false, false, false]);
+    const id = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slideCount);
+    }, SLIDE_INTERVAL_MS);
 
-    const t1 = setTimeout(() => setLines([true, false, false]), LINE_1_DELAY);
-    const t2 = setTimeout(() => setLines([true, true, false]), LINE_2_DELAY);
-    const t3 = setTimeout(() => setLines([true, true, true]), LINE_3_DELAY);
-    const t4 = setTimeout(() => setLines([false, false, false]), HOLD_UNTIL);
-    const t5 = setTimeout(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, NEXT_TITLE_AT);
+    return () => clearInterval(id);
+  }, [slideCount]);
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
-    };
-  }, [index, slides.length]);
+  if (slideCount === 0) return null;
 
-  if (!slide || lineCount === 0) return null;
+  const slide = slides[currentSlide];
+  if (!slide) return null;
 
-  const accentIndex = lineCount - 1;
+  const accentIndex = slide.lines.length - 1;
+
+  const headingStyle = {
+    fontFamily: "var(--heading-font)",
+    fontWeight: "var(--heading-weight, 400)" as unknown as number,
+    fontStyle: "var(--heading-style, normal)" as React.CSSProperties["fontStyle"],
+    letterSpacing: "var(--heading-tracking, -0.04em)",
+    textTransform:
+      "var(--heading-transform, uppercase)" as React.CSSProperties["textTransform"],
+  };
 
   return (
-    <h1
+    <div
       aria-live="polite"
       aria-atomic="true"
       className="relative mb-7 min-h-[160px] w-full max-w-full md:mb-7 md:min-h-[320px]"
-      style={{
-        fontFamily: "var(--heading-font)",
-        fontWeight: "var(--heading-weight, 400)" as unknown as number,
-        fontStyle: "var(--heading-style, normal)" as React.CSSProperties["fontStyle"],
-        letterSpacing: "var(--heading-tracking, -0.04em)",
-        textTransform: "var(--heading-transform, uppercase)" as React.CSSProperties["textTransform"],
-      }}
     >
-      {slide.lines.map((line, i) => {
-        const visible = lines[i] ?? false;
-        return (
-          <span
-            key={`${index}-${i}-${line}`}
-            className="block w-full max-w-full text-[clamp(36px,9vw,72px)] md:text-[clamp(52px,12vw,120px)]"
-            style={{
-              fontWeight: "inherit",
-              lineHeight: "var(--heading-leading, 0.88)",
-              letterSpacing: "inherit",
-              textTransform: "inherit",
-              color: i === accentIndex ? "var(--accent, #B4FF00)" : "#ffffff",
-              textShadow: "none",
-              WebkitTextStroke: "0",
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0px)" : "translateY(16px)",
-              transition: visible
-                ? "opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                : "opacity 0.3s ease, transform 0.3s ease",
-              marginBottom: 2,
-            }}
-          >
-            {line}
-          </span>
-        );
-      })}
-    </h1>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={currentSlide}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+        >
+          <h1 style={headingStyle}>
+            {slide.lines.map((line, i) => (
+              <span
+                key={`${currentSlide}-${i}-${line}`}
+                className="block w-full max-w-full text-[clamp(36px,9vw,72px)] md:text-[clamp(52px,12vw,120px)]"
+                style={{
+                  fontWeight: "inherit",
+                  lineHeight: "var(--heading-leading, 0.88)",
+                  letterSpacing: "inherit",
+                  textTransform: "inherit",
+                  color: i === accentIndex ? "var(--accent, #B4FF00)" : "#ffffff",
+                  textShadow: "none",
+                  WebkitTextStroke: "0",
+                  marginBottom: 2,
+                }}
+              >
+                {line}
+              </span>
+            ))}
+          </h1>
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
 

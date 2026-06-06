@@ -107,19 +107,15 @@ function HeroBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(HERO_IMAGE_INDEX);
-  const [imageGeneration, setImageGeneration] = useState(0);
-
-  useEffect(() => {
-    if (activeIndex === HERO_IMAGE_INDEX) {
-      setImageGeneration((g) => g + 1);
-    }
-  }, [activeIndex]);
+  const [imageCycle, setImageCycle] = useState(0);
 
   useEffect(() => {
     if (activeIndex !== HERO_IMAGE_INDEX) return;
 
     const id = setTimeout(() => {
-      setActiveIndex(HERO_VIDEO_1_INDEX);
+      setActiveIndex((prev) =>
+        prev === HERO_IMAGE_INDEX ? HERO_VIDEO_1_INDEX : prev
+      );
     }, HERO_IMAGE_DURATION_MS);
 
     return () => clearTimeout(id);
@@ -164,6 +160,7 @@ function HeroBackgroundMedia() {
   };
 
   const handleVideo2Ended = () => {
+    setImageCycle((c) => c + 1);
     setActiveIndex(HERO_IMAGE_INDEX);
   };
 
@@ -190,7 +187,7 @@ function HeroBackgroundMedia() {
             >
               {item.type === "image" ? (
                 <div
-                  key={`hero-img-${imageGeneration}`}
+                  key={`hero-img-${imageCycle}`}
                   className="hero-ken-burns absolute inset-0"
                   style={HERO_MEDIA_LAYER_STYLE}
                 >
