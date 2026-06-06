@@ -2,6 +2,15 @@ import { parseClaudeJson, CLAUDE_JSON_SYSTEM_RULE } from "@/lib/anthropic";
 
 export const CONTENT_CALENDAR_SYSTEM_PROMPT = `Du bist ein Social-Media Content Strategist für Creator. Erstelle datenbasierte Content-Kalender mit viralen Hooks. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
+export const CONTENT_CALENDAR_CREDIT_COST = 5;
+
+export type GenerateContentCalendarInput = {
+  niche: string;
+  platform: string;
+  frequency: ContentCalendarFrequency;
+  language: "de" | "en";
+};
+
 export type ContentCalendarDay = {
   day: number;
   dateLabel: string;
@@ -17,10 +26,7 @@ export type ContentCalendarResult = {
   summary: string;
 };
 
-export type ContentCalendarFrequency =
-  | "daily"
-  | "three_per_week"
-  | "weekly";
+export type ContentCalendarFrequency = "daily" | "three_per_week" | "weekly";
 
 export function postingSlotsForFrequency(
   frequency: ContentCalendarFrequency

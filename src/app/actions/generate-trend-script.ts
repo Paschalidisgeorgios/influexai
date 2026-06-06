@@ -13,17 +13,10 @@ import {
   parseTrendScriptResult,
   TREND_SCRIPT_SYSTEM_PROMPT,
   type TrendScriptResult,
+  type GenerateTrendScriptInput,
 } from "@/lib/trend-script-analysis";
 
-export const TREND_SCRIPT_CREDIT_COST = 4;
-
-export type GenerateTrendScriptInput = {
-  trend: string;
-  niche: string;
-  platform: string;
-  tone: string;
-  language: "de" | "en";
-};
+const TREND_SCRIPT_CREDIT_COST = 4;
 
 type Success = {
   success: true;

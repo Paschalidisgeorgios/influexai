@@ -12,18 +12,11 @@ import {
   buildContentCalendarUserPrompt,
   CONTENT_CALENDAR_SYSTEM_PROMPT,
   parseContentCalendarResult,
-  type ContentCalendarFrequency,
   type ContentCalendarResult,
+  type GenerateContentCalendarInput,
 } from "@/lib/content-calendar-analysis";
 
-export const CONTENT_CALENDAR_CREDIT_COST = 5;
-
-export type GenerateContentCalendarInput = {
-  niche: string;
-  platform: string;
-  frequency: ContentCalendarFrequency;
-  language: "de" | "en";
-};
+const CONTENT_CALENDAR_CREDIT_COST = 5;
 
 type Success = {
   success: true;

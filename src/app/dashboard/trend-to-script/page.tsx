@@ -3,12 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Rocket } from "lucide-react";
+import { generateTrendScript } from "@/app/actions/generate-trend-script";
 import {
-  generateTrendScript,
+  trendToThumbnailTopic,
   TREND_SCRIPT_CREDIT_COST,
   type GenerateTrendScriptInput,
-} from "@/app/actions/generate-trend-script";
-import { trendToThumbnailTopic, type TrendScriptResult } from "@/lib/trend-script-analysis";
+  type TrendScriptResult,
+} from "@/lib/trend-script-analysis";
 import { parseScriptBlocks } from "@/lib/script-format";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";

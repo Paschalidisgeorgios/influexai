@@ -3,16 +3,14 @@
 import { Suspense, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar } from "lucide-react";
-import {
-  generateContentCalendar,
-  CONTENT_CALENDAR_CREDIT_COST,
-  type GenerateContentCalendarInput,
-} from "@/app/actions/generate-content-calendar";
+import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import {
   calendarToExportText,
+  CONTENT_CALENDAR_CREDIT_COST,
   type ContentCalendarDay,
   type ContentCalendarResult,
   type ContentCalendarFrequency,
+  type GenerateContentCalendarInput,
 } from "@/lib/content-calendar-analysis";
 import { scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";

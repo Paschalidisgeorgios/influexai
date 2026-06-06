@@ -15,18 +15,12 @@ import {
   parseViralHookResult,
   VIRAL_HOOK_SYSTEM_PROMPT,
   type ViralHookResult,
+  type ExtractViralHookInput,
 } from "@/lib/viral-hook-analysis";
 import type { Locale } from "@/lib/locale";
 import { localeToPromptLanguage } from "@/lib/locale";
 
-export const VIRAL_HOOK_CREDIT_COST = 3;
-
-export type ExtractViralHookInput = {
-  mode: "url" | "manual";
-  youtubeUrl?: string;
-  manualDescription?: string;
-  userNiche?: string;
-};
+const VIRAL_HOOK_CREDIT_COST = 3;
 
 type Success = {
   success: true;

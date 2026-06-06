@@ -2,6 +2,16 @@ import { parseClaudeJson, CLAUDE_JSON_SYSTEM_RULE } from "@/lib/anthropic";
 
 export const TREND_SCRIPT_SYSTEM_PROMPT = `Du bist ein viraler Short-Form Script Writer. Du verbindest aktuelle Trends mit Creator-Nischen und schreibst sofort umsetzbare Scripts mit [HOOK], [MAIN], [CTA]. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
+export const TREND_SCRIPT_CREDIT_COST = 4;
+
+export type GenerateTrendScriptInput = {
+  trend: string;
+  niche: string;
+  platform: string;
+  tone: string;
+  language: "de" | "en";
+};
+
 export type TrendScriptResult = {
   trendAnalysis: {
     whyViral: string;

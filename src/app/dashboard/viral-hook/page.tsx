@@ -3,12 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Zap } from "lucide-react";
+import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import {
-  extractViralHook,
+  viralHookToScriptTopic,
   VIRAL_HOOK_CREDIT_COST,
   type ExtractViralHookInput,
-} from "@/app/actions/extract-viral-hook";
-import { viralHookToScriptTopic, type ViralHookResult } from "@/lib/viral-hook-analysis";
+  type ViralHookResult,
+} from "@/lib/viral-hook-analysis";
 import { scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
