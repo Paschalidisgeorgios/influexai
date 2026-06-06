@@ -348,6 +348,99 @@ html[data-world="brand"] {
     color: var(--white);
     background: rgba(255, 255, 255, 0.05);
   }
+
+  /* Landing toolbar — light bar on Acid Noir */
+  .landing-nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    width: 100%;
+    padding: clamp(12px, 2.5vw, 18px) clamp(16px, 5vw, 40px);
+    transition:
+      padding 0.3s ease,
+      background 0.3s ease;
+  }
+  .landing-nav-shell--scrolled {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background: linear-gradient(
+      to bottom,
+      rgba(6, 6, 8, 0.92) 0%,
+      rgba(6, 6, 8, 0.55) 70%,
+      transparent 100%
+    );
+  }
+  .landing-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px clamp(14px, 3vw, 22px);
+    border-radius: 14px;
+    border: 1px solid rgba(6, 6, 8, 0.1);
+    background: #f5f4ef;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset;
+    transition:
+      padding 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .landing-nav-bar--scrolled {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-color: rgba(6, 6, 8, 0.14);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.65) inset,
+      0 10px 32px rgba(0, 0, 0, 0.28),
+      0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+  .landing-nav-bar .nav-item {
+    position: relative;
+    color: rgba(6, 6, 8, 0.78);
+    background: transparent;
+    border-radius: 8px;
+  }
+  .landing-nav-bar .nav-item::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 4px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--acid, #b4ff00);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .landing-nav-bar .nav-item:hover {
+    color: #060608;
+    background: transparent;
+  }
+  .landing-nav-bar .nav-item:hover::after {
+    transform: scaleX(1);
+  }
+  .landing-nav-auth-link {
+    color: rgba(6, 6, 8, 0.72);
+  }
+  .landing-nav-auth-link:hover {
+    color: #060608;
+  }
+  .landing-nav-menu-btn {
+    color: rgba(6, 6, 8, 0.82);
+  }
+  .landing-nav-menu-btn:hover {
+    background: rgba(6, 6, 8, 0.06);
+  }
+  .landing-nav-lang-btn {
+    border-color: rgba(6, 6, 8, 0.12) !important;
+    background: rgba(6, 6, 8, 0.04) !important;
+    color: #060608 !important;
+  }
+  .landing-nav-lang-btn:hover {
+    border-color: rgba(6, 6, 8, 0.2) !important;
+    background: rgba(6, 6, 8, 0.07) !important;
+  }
   .feat-card {
     @apply relative overflow-hidden transition-all duration-200;
     background: var(--bg-1);

@@ -22,7 +22,8 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 28);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -38,97 +39,97 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between transition-all duration-300 ${
-          scrolled
-            ? "bg-[#060608]/90 backdrop-blur-xl border-b border-white/[0.07] py-3 px-[clamp(16px,5vw,40px)]"
-            : "py-[18px] px-[clamp(16px,5vw,40px)]"
-        }`}
+      <header
+        className={`landing-nav-shell${scrolled ? " landing-nav-shell--scrolled" : ""}`}
       >
-        <Link href="/" className="flex items-center gap-2.5 no-underline">
-          <div className="w-8 h-8 rounded-lg bg-[#B4FF00] flex items-center justify-center font-[family-name:var(--font-bebas)] text-lg text-[#060608] leading-none">
-            I
-          </div>
-          <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-white">
-            Influex<span className="text-[#B4FF00]">AI</span>
-          </span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-0">
-          {agencyMode ? (
-            <>
-              <Link href="/" className="nav-item">
-                {t("nav_home")}
-              </Link>
-              <a href="#agency-pricing" className="nav-item">
-                {t("nav_pricing")}
-              </a>
-            </>
-          ) : (
-            NAV_LINKS.map((l) =>
-              l.external ? (
-                <Link key={l.href} href={l.href} className="nav-item">
-                  {t(l.key)}
-                </Link>
-              ) : (
-                <a key={l.href} href={l.href} className="nav-item">
-                  {t(l.key)}
-                </a>
-              )
-            )
-          )}
-        </div>
-
-        <div className="hidden md:flex items-center gap-2.5">
-          <LanguageSwitcher compact />
-          <a
-            href="/auth/sign-in"
-            className="text-sm font-medium px-3 py-2 transition-colors duration-150"
-            style={{ color: "rgba(255,255,255,0.85)" }}
-          >
-            {t("auth_login")}
-          </a>
-          <AcidMotionButton
-            href="/auth/sign-up"
-            className="btn-acid"
-            style={{ padding: "9px 18px", fontSize: "0.85rem" }}
-          >
-            {t("auth_signup")}
-          </AcidMotionButton>
-        </div>
-
-        <button
-          onClick={() => setMenuOpen((v) => !v)}
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/[0.05] transition-all"
-          style={{ color: "rgba(255,255,255,0.85)" }}
-          aria-label="Menü öffnen"
+        <nav
+          className={`landing-nav-bar${scrolled ? " landing-nav-bar--scrolled" : ""}`}
+          aria-label="Hauptnavigation"
         >
-          {menuOpen ? (
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <Link href="/" className="flex items-center gap-2.5 no-underline shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#B4FF00] flex items-center justify-center font-[family-name:var(--font-bebas)] text-lg text-[#060608] leading-none">
+              I
+            </div>
+            <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#060608]">
+              Influex<span className="text-[#5a7300]">AI</span>
+            </span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-0 min-w-0 flex-1 justify-center">
+            {agencyMode ? (
+              <>
+                <Link href="/" className="nav-item">
+                  {t("nav_home")}
+                </Link>
+                <a href="#agency-pricing" className="nav-item">
+                  {t("nav_pricing")}
+                </a>
+              </>
+            ) : (
+              NAV_LINKS.map((l) =>
+                l.external ? (
+                  <Link key={l.href} href={l.href} className="nav-item">
+                    {t(l.key)}
+                  </Link>
+                ) : (
+                  <a key={l.href} href={l.href} className="nav-item">
+                    {t(l.key)}
+                  </a>
+                )
+              )
+            )}
+          </div>
+
+          <div className="hidden md:flex items-center gap-2.5 shrink-0">
+            <LanguageSwitcher compact lightToolbar buttonClassName="landing-nav-lang-btn" />
+            <a
+              href="/auth/sign-in"
+              className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
             >
-              <line x1="4" y1="4" x2="16" y2="16" />
-              <line x1="16" y1="4" x2="4" y2="16" />
-            </svg>
-          ) : (
-            <svg
-              width="22"
-              height="22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
+              {t("auth_login")}
+            </a>
+            <AcidMotionButton
+              href="/auth/sign-up"
+              className="btn-acid"
+              style={{ padding: "9px 18px", fontSize: "0.85rem" }}
             >
-              <line x1="3" y1="6" x2="19" y2="6" />
-              <line x1="3" y1="12" x2="19" y2="12" />
-              <line x1="3" y1="18" x2="19" y2="18" />
-            </svg>
-          )}
-        </button>
-      </nav>
+              {t("auth_signup")}
+            </AcidMotionButton>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            className="landing-nav-menu-btn md:hidden w-9 h-9 flex items-center justify-center rounded-lg transition-all"
+            aria-label="Menü öffnen"
+          >
+            {menuOpen ? (
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="4" y1="4" x2="16" y2="16" />
+                <line x1="16" y1="4" x2="4" y2="16" />
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
+                <line x1="3" y1="6" x2="19" y2="6" />
+                <line x1="3" y1="12" x2="19" y2="12" />
+                <line x1="3" y1="18" x2="19" y2="18" />
+              </svg>
+            )}
+          </button>
+        </nav>
+      </header>
 
       <div className={`mobile-nav-overlay ${menuOpen ? "open" : ""}`}>
         <div className="flex flex-col gap-0 mb-8">
