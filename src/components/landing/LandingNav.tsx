@@ -22,6 +22,27 @@ const LANDING_NAV_LINK =
 const HEADER_CLASS =
   "sticky top-0 z-50 w-full max-w-[100vw] landing-nav-shell";
 
+const MOBILE_NAV_BAR_STYLES = `
+  @media (max-width: 767px) {
+    .landing-nav-bar--mobile {
+      background: rgba(6, 6, 8, 0.98) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+`;
+
+const MOBILE_DRAWER_STYLE = {
+  background: "#0d0f0d",
+  borderRight: "1px solid rgba(180,255,0,0.15)",
+} as const;
+
+const MOBILE_LINK_STYLE = {
+  color: "rgba(255,255,255,0.85)",
+  fontSize: "18px",
+} as const;
+
 export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const t = useTranslations("landing");
   const [mounted, setMounted] = useState(false);
@@ -56,12 +77,13 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
 
   const closeMenu = () => setMenuOpen(false);
 
-  const navBarClass = `landing-nav-bar${
+  const navBarClass = `landing-nav-bar landing-nav-bar--mobile${
     mounted && scrolled ? " landing-nav-bar--scrolled" : ""
   }`;
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: MOBILE_NAV_BAR_STYLES }} />
       <header className={HEADER_CLASS}>
         <nav className={navBarClass} aria-label="Hauptnavigation">
           <Link href="/" className="flex items-center gap-2.5 no-underline shrink-0 min-w-0">
@@ -169,7 +191,12 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             aria-label="Menü schließen"
             onClick={closeMenu}
           />
-          <div className="mobile-nav-drawer" role="dialog" aria-modal="true">
+          <div
+            className="mobile-nav-drawer"
+            role="dialog"
+            aria-modal="true"
+            style={MOBILE_DRAWER_STYLE}
+          >
             <div className="flex items-center justify-between mb-6">
               <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#F0EFE8]">
                 Menü
@@ -190,11 +217,21 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             <div className="flex flex-col gap-0 mb-6 px-0">
               {agencyMode ? (
                 <>
-                  <Link href="/" onClick={closeMenu} className="mobile-nav-link">
+                  <Link
+                    href="/"
+                    onClick={closeMenu}
+                    className="mobile-nav-link"
+                    style={MOBILE_LINK_STYLE}
+                  >
                     {t("nav_home")}
                     <span className="text-xl">↗</span>
                   </Link>
-                  <a href="#agency-pricing" onClick={closeMenu} className="mobile-nav-link">
+                  <a
+                    href="#agency-pricing"
+                    onClick={closeMenu}
+                    className="mobile-nav-link"
+                    style={MOBILE_LINK_STYLE}
+                  >
                     {t("nav_pricing")}
                     <span className="text-xl">↗</span>
                   </a>
@@ -207,6 +244,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                       href={l.href}
                       onClick={closeMenu}
                       className="mobile-nav-link"
+                      style={MOBILE_LINK_STYLE}
                     >
                       {t(l.key)}
                       <span className="text-xl">↗</span>
@@ -217,6 +255,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                       href={l.href}
                       onClick={closeMenu}
                       className="mobile-nav-link"
+                      style={MOBILE_LINK_STYLE}
                     >
                       {t(l.key)}
                       <span className="text-xl">↗</span>
