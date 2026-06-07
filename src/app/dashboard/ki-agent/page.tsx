@@ -18,6 +18,7 @@ import type {
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
@@ -802,6 +803,8 @@ function ResultCard({
           >
             {result.summary}
           </p>
+
+          <AgentResultOutputs result={result} />
 
           {usedCredits !== undefined && (
             <p className="mb-3 text-[10px]" style={{ color: "rgba(180,255,0,0.65)" }}>
