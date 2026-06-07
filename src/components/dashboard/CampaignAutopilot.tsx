@@ -30,7 +30,7 @@ import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
-import { saveCampaignResult } from "@/lib/agent/persistExecution";
+import { saveCampaignResult, saveFeedback } from "@/lib/agent/persistExecution";
 
 type Phase = "idle" | "running" | "done";
 
@@ -662,11 +662,16 @@ export default function CampaignAutopilot() {
 
       {/* Abschnitt 3 — Result */}
       {phase === "done" && result && (
-        <CampaignResultCard
-          result={result}
-          onNewCampaign={handleNewCampaign}
-          onPublish={() => handlePublishRequest(result)}
-        />
+        <>
+          <CampaignResultCard
+            result={result}
+            executionId={execution?.id}
+            campaignMode={execution?.mode}
+            onNewCampaign={handleNewCampaign}
+            onPublish={() => handlePublishRequest(result)}
+          />
+          <AiOutputDisclaimer className="mt-4" />
+        </>
       )}
 
       {guard?.open && (
@@ -683,7 +688,6 @@ export default function CampaignAutopilot() {
         />
       )}
 
-      <AiOutputDisclaimer className="mt-8" />
     </div>
   );
 }
@@ -710,10 +714,14 @@ function ChipRow({
 
 function CampaignResultCard({
   result,
+  executionId,
+  campaignMode,
   onNewCampaign,
   onPublish,
 }: {
   result: CampaignResult;
+  executionId?: string;
+  campaignMode?: CampaignMode;
   onNewCampaign: () => void;
   onPublish: () => void;
 }) {
@@ -912,6 +920,51 @@ function CampaignResultCard({
           >
             Verwendet: {result.usedCredits} Credits
           </p>
+
+          <div className="mb-4 flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Gefällt mir"
+              onClick={() =>
+                void saveFeedback({
+                  executionId,
+                  action: "liked",
+                  tool: "campaign_autopilot",
+                  intent: campaignMode,
+                  rating: 5,
+                })
+              }
+              className="px-2.5 py-1 text-[13px] transition-opacity hover:opacity-80"
+              style={{
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.04)",
+              }}
+            >
+              👍
+            </button>
+            <button
+              type="button"
+              aria-label="Gefällt mir nicht"
+              onClick={() =>
+                void saveFeedback({
+                  executionId,
+                  action: "disliked",
+                  tool: "campaign_autopilot",
+                  intent: campaignMode,
+                  rating: 1,
+                })
+              }
+              className="px-2.5 py-1 text-[13px] transition-opacity hover:opacity-80"
+              style={{
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.04)",
+              }}
+            >
+              👎
+            </button>
+          </div>
 
           <div className="mb-3 flex flex-wrap gap-2">
             {["Mehr Varianten", "Exportieren", "In Kalender"].map((label) => (

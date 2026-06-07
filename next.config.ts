@@ -47,11 +47,6 @@ const nextConfig: NextConfig = {
         destination: "/dashboard/ki-ich",
         permanent: true,
       },
-      {
-        source: "/dashboard/stimme-musik",
-        destination: "/dashboard/voice",
-        permanent: true,
-      },
     ];
   },
 };

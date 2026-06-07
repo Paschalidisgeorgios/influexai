@@ -729,14 +729,17 @@ export default function KiAgentPage() {
 
       {/* Result Card */}
       {phase === "done" && execution?.result && (
-        <ResultCard
-          result={execution.result}
-          usedCredits={execution.usedCredits}
-          executionId={execution.id}
-          tool={execution.selectedTools[0]}
-          intent={execution.intent}
-          onPublish={() => handlePublishRequest(execution.result!)}
-        />
+        <>
+          <ResultCard
+            result={execution.result}
+            usedCredits={execution.usedCredits}
+            executionId={execution.id}
+            tool={execution.selectedTools[0]}
+            intent={execution.intent}
+            onPublish={() => handlePublishRequest(execution.result!)}
+          />
+          <AiOutputDisclaimer className="mt-4" />
+        </>
       )}
 
       {guard?.open && (
@@ -753,7 +756,6 @@ export default function KiAgentPage() {
         />
       )}
 
-      <AiOutputDisclaimer className="mt-8" />
     </div>
   );
 }
