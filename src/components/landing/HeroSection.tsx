@@ -258,26 +258,34 @@ export function HeroSection({
   const locale = useLocale();
   const priceParams = getStarterPriceParams(locale);
   const [audience, setAudience] = useState<Audience>("creator");
-  const [scrollY, setScrollY] = useState(0);
+  const [parallaxY, setParallaxY] = useState(0);
+  const [heroRevealed, setHeroRevealed] = useState(false);
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
     ? (rawRotating as string[])
     : [];
 
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
+    const params = new URLSearchParams(window.location.search);
+    const forceIntro = params.get("intro") === "1";
+    let seen = false;
+    if (!forceIntro) {
+      try {
+        seen = sessionStorage.getItem("influexai_intro_seen") === "1";
+      } catch {
+        seen = false;
+      }
+    }
+    if (seen) {
+      setHeroRevealed(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setParallaxY(window.scrollY * 0.04);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const [heroRevealed, setHeroRevealed] = useState(() => {
-    if (typeof window === "undefined") return true;
-    try {
-      return sessionStorage.getItem("influexai_intro_seen") === "1";
-    } catch {
-      return true;
-    }
-  });
 
   useEffect(() => {
     if (heroRevealed) return;
@@ -354,7 +362,7 @@ export function HeroSection({
         style={{
           padding:
             "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
-          transform: `translateY(${scrollY * 0.04}px)`,
+          transform: `translateY(${parallaxY}px)`,
           transition: "transform 0.1s linear, opacity 0.5s ease-out",
           opacity: heroRevealed ? 1 : 0,
         }}

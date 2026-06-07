@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const INTRO_KEY = "influexai_intro_seen";
 const INTRO_DONE_EVENT = "influexai-intro-complete";
 const INTRO_REVEAL_EVENT = "influexai-intro-reveal";
-const LOGO_SRC = "/images/logo-full.png";
+const LOGO_SRC = "/images/Logo-full.png";
 const INTRO_MS = 15000;
 const REVEAL_MS = 11500;
 const REDUCED_MS = 600;
@@ -90,8 +90,6 @@ export function LogoIntro() {
 
     return () => {
       clearTimers();
-      document.body.style.overflow = "";
-      document.body.classList.remove("logo-intro-active");
     };
   }, [clearTimers]);
 

@@ -1955,8 +1955,13 @@ header.site-header.site-header--scrolled {
   position: fixed;
   inset: 0;
   z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #060608;
   pointer-events: auto;
   animation: logoIntroRootFade 15s ease forwards;
+  animation-fill-mode: forwards;
 }
 
 .logo-intro-root--skip {
@@ -2039,11 +2044,12 @@ header.site-header.site-header--scrolled {
 
 .logo-intro-logo-layer {
   position: relative;
-  z-index: 2;
+  z-index: 6;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: logoIntroLogo 15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-fill-mode: forwards;
   filter: drop-shadow(0 0 42px rgba(180, 255, 0, 0.12));
 }
 
@@ -2054,6 +2060,12 @@ header.site-header.site-header--scrolled {
   object-fit: contain;
   display: block;
   user-select: none;
+}
+
+@media (max-width: 767px) {
+  .intro-logo {
+    width: min(80vw, 320px);
+  }
 }
 
 .logo-intro-line {
