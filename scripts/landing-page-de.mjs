@@ -121,7 +121,7 @@ export const landingPageDe = {
     per_month: "/Monat",
     footnote: "Credits verfallen nicht.",
     extra_credits: "Extra-Credits",
-    extra_credits_suffix: "ab 9€/100 Credits.",
+    extra_credits_suffix: "ab €5/50 Credits.",
     starter_name: "Starter",
     starter_credits: "50 Credits",
     starter_desc: "Einmaliger Einstieg — Credits sofort verfügbar.",

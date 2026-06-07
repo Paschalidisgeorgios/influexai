@@ -161,7 +161,7 @@ src/app/api/credits/checkout/route.ts         — Dashboard Credits-Seite
 - `STRIPE_WEBHOOK_SECRET` — Pflicht für Webhook (`webhook/route.ts:337`)
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — Client/Stripe.js
 - `NEXT_PUBLIC_STRIPE_{PLAN}_{MONTHLY|YEARLY}` — Abo Price IDs
-- `STRIPE_CREDITS_100/300/700/1500` — Credit-Packs
+- `STRIPE_CREDITS_50/150/350/800` — Credit-Packs
 - `STRIPE_AGENCY_*` — Agency
 - `NEXT_PUBLIC_APP_URL` — Redirect URLs
 

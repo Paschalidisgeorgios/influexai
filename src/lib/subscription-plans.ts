@@ -179,4 +179,4 @@ export const EXTRA_CREDIT_UNIT_EUR = 12;
 export const EXTRA_CREDIT_UNIT_CENTS = 1200;
 export const EXTRA_CREDITS_PER_UNIT = 100;
 /** @deprecated Use STRIPE_CREDITS_* env vars in credit-packages.ts */
-export const STRIPE_EXTRA_CREDITS_ENV = "STRIPE_CREDITS_100";
+export const STRIPE_EXTRA_CREDITS_ENV = "STRIPE_CREDITS_50";

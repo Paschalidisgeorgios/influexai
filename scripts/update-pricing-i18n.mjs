@@ -34,7 +34,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2.500 Credits/Monat",
     business_f1: "Alles aus Pro",
-    extra_credits_suffix: "ab €12/100 Credits.",
+    extra_credits_suffix: "ab €12/50 Credits.",
   },
   en: {
     page_subtitle: "Monthly plans with included credits. Cancel anytime.",
@@ -60,7 +60,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2,500 Credits/month",
     business_f1: "Everything in Pro",
-    extra_credits_suffix: "from €12/100 Credits.",
+    extra_credits_suffix: "from €12/50 Credits.",
   },
   es: {
     page_subtitle: "Planes mensuales con créditos incluidos. Cancela cuando quieras.",
@@ -86,7 +86,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2.500 Credits/mes",
     business_f1: "Todo de Pro",
-    extra_credits_suffix: "desde 12€/100 Credits.",
+    extra_credits_suffix: "desde 12€/50 Credits.",
   },
   fr: {
     page_subtitle: "Forfaits mensuels avec crédits inclus. Résiliable à tout moment.",
@@ -112,7 +112,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2 500 Credits/mois",
     business_f1: "Tout Pro",
-    extra_credits_suffix: "à partir de 12€/100 Credits.",
+    extra_credits_suffix: "à partir de 12€/50 Credits.",
   },
   pt: {
     page_subtitle: "Planos mensais com créditos incluídos. Cancele quando quiser.",
@@ -138,7 +138,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2.500 Credits/mês",
     business_f1: "Tudo do Pro",
-    extra_credits_suffix: "a partir de €12/100 Credits.",
+    extra_credits_suffix: "a partir de €12/50 Credits.",
   },
   tr: {
     page_subtitle: "Dahil kredili aylık planlar. İstediğin zaman iptal et.",
@@ -164,7 +164,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2.500 Credits/ay",
     business_f1: "Pro'daki her şey",
-    extra_credits_suffix: "12€/100 Credits'ten itibaren.",
+    extra_credits_suffix: "12€/50 Credits'ten itibaren.",
   },
   el: {
     page_subtitle: "Μηνιαία πλάνα με συμπεριλαμβανόμενα credits. Ακύρωση ανά πάσα στιγμή.",
@@ -190,7 +190,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2.500 Credits/μήνα",
     business_f1: "Όλα από Pro",
-    extra_credits_suffix: "από 12€/100 Credits.",
+    extra_credits_suffix: "από 12€/50 Credits.",
   },
   ar: {
     page_subtitle: "خطط شهرية مع رصيد مضمّن. إلغاء في أي وقت.",
@@ -216,7 +216,7 @@ const pricingByLocale = {
     pro_f6: "Master Agent",
     business_credits: "2,500 Credits/شهر",
     business_f1: "كل ما في Pro",
-    extra_credits_suffix: "من 12€/100 Credits.",
+    extra_credits_suffix: "من 12€/50 Credits.",
   },
 };
 

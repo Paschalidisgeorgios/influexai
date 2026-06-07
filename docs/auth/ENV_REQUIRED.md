@@ -55,10 +55,10 @@ Do **not** commit secret values. Set in `.env.local` (dev) and Vercel **Producti
 
 | Variable | Description |
 |----------|-------------|
-| `STRIPE_CREDITS_100` | Small pack (50 credits) one-time Price ID |
-| `STRIPE_CREDITS_300` | Medium pack (150 credits) |
-| `STRIPE_CREDITS_700` | Large pack (350 credits) |
-| `STRIPE_CREDITS_1500` | XL pack (800 credits) |
+| `STRIPE_CREDITS_50` | Small pack (50 credits) one-time Price ID |
+| `STRIPE_CREDITS_150` | Medium pack (150 credits) |
+| `STRIPE_CREDITS_350` | Large pack (350 credits) |
+| `STRIPE_CREDITS_800` | XL pack (800 credits) |
 
 ## Stripe — Agency / White Label (server only)
 
