@@ -30,23 +30,17 @@ const TICKER_KEYS = [
 ] as const;
 
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
-const FAQ_KEYS = [
-  "q_sub1",
-  "q_sub2",
-  "q_sub3",
-  "q1",
-  "q2",
-  "q3",
-  "q4",
-  "q5",
-] as const;
 
-function faqAnswerKey(key: (typeof FAQ_KEYS)[number]): string {
-  if (key.startsWith("q_sub")) {
-    return key.replace("q_", "a_");
-  }
-  return `a${key.slice(1)}`;
-}
+const FAQ_ITEMS = [
+  { q: "q_sub1", a: "a_sub1" },
+  { q: "q_sub2", a: "a_sub2" },
+  { q: "q_sub3", a: "a_sub3" },
+  { q: "q2", a: "a2" },
+  { q: "q3", a: "a3" },
+  { q: "q4", a: "a4" },
+  { q: "q5", a: "a5" },
+  { q: "q6", a: "a6" },
+] as const;
 
 /** Kompakte Trust-Bar: Launch-Hinweis + Ticker in max. 80px */
 export function TrustBarSection() {
@@ -167,67 +161,138 @@ export function HowItWorksSection() {
 
 export function FaqSection() {
   const t = useTranslations("landingPage.faq");
-  const locale = useLocale();
-  const priceParams = getStarterPriceParams(locale);
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <section
       id="faq"
-      className={LANDING_SECTION_CLASS}
-      style={{ background: "var(--bg)" }}
+      className="px-[clamp(20px,6vw,64px)] py-16 md:py-20"
+      style={{ background: "#060608" }}
     >
-      <div className="mx-auto max-w-[720px]">
-        <span className="kicker mb-2 block text-center">{t("kicker")}</span>
-        <h2 className="landing-heading mb-8 text-center text-[clamp(2rem,4.5vw,3.25rem)] leading-[0.95]">
+      <div className="mx-auto max-w-[1160px]">
+        <p
+          className="mb-2 text-center uppercase"
+          style={{
+            fontSize: 10,
+            color: "#B4FF00",
+            letterSpacing: "0.14em",
+            fontFamily: "var(--font-dm), sans-serif",
+            fontWeight: 700,
+          }}
+        >
+          FAQ
+        </p>
+        <h2
+          className="mb-10 text-center md:mb-12"
+          style={{
+            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontSize: "clamp(2rem, 5vw, 48px)",
+            color: "#ffffff",
+            letterSpacing: "0.02em",
+            lineHeight: 1,
+          }}
+        >
           {t("headline")}
         </h2>
-        <div className="flex flex-col gap-2">
-          {FAQ_KEYS.map((key, i) => (
-            <div
-              key={key}
-              className="overflow-hidden rounded-[12px]"
-              style={{
-                border: "1px solid var(--border)",
-                background: "var(--bg-2)",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setOpen(open === i ? null : i)}
-                className="flex w-full cursor-pointer items-center justify-between gap-4 border-none p-4 text-left md:p-5"
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {FAQ_ITEMS.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={item.q}
                 style={{
-                  background: "transparent",
-                  color: "var(--white)",
-                  fontFamily: "var(--font-dm), sans-serif",
-                  fontWeight: 600,
-                  fontSize: "0.88rem",
+                  background: isOpen
+                    ? "rgba(180,255,0,0.04)"
+                    : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${
+                    isOpen
+                      ? "rgba(180,255,0,0.45)"
+                      : "rgba(180,255,0,0.2)"
+                  }`,
+                  borderRadius: 4,
+                  padding: 0,
+                  transition: "border-color 0.2s ease, background 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (isOpen) return;
+                  e.currentTarget.style.borderColor = "rgba(180,255,0,0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  if (isOpen) return;
+                  e.currentTarget.style.borderColor = "rgba(180,255,0,0.2)";
                 }}
               >
-                {t(key)}
-                <span
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  aria-expanded={isOpen}
                   style={{
-                    color: "var(--acid)",
-                    fontSize: "1.2rem",
-                    flexShrink: 0,
+                    padding: "18px 20px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    textAlign: "left",
+                    gap: 12,
                   }}
                 >
-                  {open === i ? "−" : "+"}
-                </span>
-              </button>
-              {open === i && (
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "#ffffff",
+                      fontFamily: "var(--font-dm), sans-serif",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {t(item.q)}
+                  </span>
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      border: "1px solid rgba(180,255,0,0.4)",
+                      color: "#B4FF00",
+                      fontSize: 14,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
                 <div
-                  className="px-4 pb-4 text-[0.85rem] leading-[1.7] md:px-5 md:pb-5"
-                  style={{ color: "var(--wd)" }}
+                  style={{
+                    maxHeight: isOpen ? 500 : 0,
+                    overflow: "hidden",
+                    transition: "max-height 0.3s ease",
+                  }}
                 >
-                  {t(
-                    faqAnswerKey(key),
-                    key === "q2" ? priceParams : undefined
-                  )}
+                  <p
+                    style={{
+                      padding: "0 20px 18px 20px",
+                      margin: 0,
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.7)",
+                      lineHeight: 1.7,
+                      fontFamily: "var(--font-dm), sans-serif",
+                    }}
+                  >
+                    {t(item.a)}
+                  </p>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

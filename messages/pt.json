@@ -685,10 +685,11 @@
       "a_sub2": "Sim. Planos mensais podem ser cancelados a cada mês. Com planos anuais, seu acesso continua até o fim do período de faturamento pago.",
       "a_sub3": "Credits são seu saldo de uso para gerações de IA — por exemplo scripts, hooks, vídeos, avatares, voz ou ferramentas de imagem. Cada função consome uma quantidade diferente de Credits.",
       "a1": "Credits são a moeda no InfluexAI. Cada módulo custa 2–5 Credits por geração. Credits não expiram.",
-      "a2": "Não é obrigatório para Credits de teste gratuitos. Planos pagos exigem um método de pagamento. Planos começam a partir de €{price}/mês com Credits incluídos — cancele quando quiser.",
-      "a3": "Sim. Servidores na UE, sem compartilhamento dos seus dados com terceiros sem consentimento.",
-      "a4": "Sim — no módulo Voz & Música. 30+ segundos de áudio são suficientes para uma clonagem de alta qualidade.",
-      "a5": "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — todos os formatos populares.",
+      "a2": "Sim, planos pagos exigem um método de pagamento. Os pagamentos são processados com segurança via Stripe. Não armazenamos dados de cartão.",
+      "a3": "Sim. Todos os dados são processados na UE. Usamos Supabase (Frankfurt) e Vercel (região UE). Seus uploads não são usados para treinamento de IA sem seu consentimento explícito.",
+      "a4": "Sim, com InfluexAI Voice (powered by ElevenLabs). Você só pode usar sua própria voz ou material de áudio licenciado.",
+      "a5": "TikTok, Instagram Reels, YouTube Shorts e LinkedIn. Todas as ferramentas são otimizadas para essas plataformas.",
+      "a6": "Sim. Campaign Autopilot foi desenvolvido para marcas e agências. Você pode planejar automaticamente campanhas de conteúdo completas para 2–3 dias, 7 dias ou 30 dias.",
       "headline": "Perguntas Frequentes",
       "kicker": "FAQ",
       "q_sub1": "O INFLUEXAI é uma assinatura?",
@@ -698,7 +699,8 @@
       "q2": "Preciso de cartão de crédito?",
       "q3": "O InfluexAI é conforme com GDPR?",
       "q4": "Posso clonar minha própria voz?",
-      "q5": "Quais plataformas são suportadas?"
+      "q5": "Quais plataformas são suportadas?",
+      "q6": "Posso usar o agente de IA para minha marca?"
     },
     "features": {
       "f1_api0": "Hooks",

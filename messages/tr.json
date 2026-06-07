@@ -685,10 +685,11 @@
       "a_sub2": "Evet. Aylık planlar her ay iptal edilebilir. Yıllık planlarda erişimin, ödenen fatura döneminin sonuna kadar devam eder.",
       "a_sub3": "Credits, AI üretimleri için kullanım bakiyendir — örneğin scriptler, hooklar, videolar, avatarlar, ses veya görsel araçlar. Her özellik farklı miktarda Credits tüketir.",
       "a1": "Credits, InfluexAI'daki para birimidir. Her modül oluşturma başına 2–5 Credits tutar. Credits'in süresi dolmaz.",
-      "a2": "Ücretsiz deneme Credits için zorunlu değil. Ücretli planlar için bir ödeme yöntemi gerekir. Planlar €{price}/ay'dan başlar, Credits dahil — istediğin zaman iptal et.",
-      "a3": "Evet. Sunucular AB'de; onay olmadan verilerin üçüncü taraflarla paylaşılmaz.",
-      "a4": "Evet — Ses & Müzik modülünde. 30+ saniye ses yüksek kaliteli klonlama için yeterli.",
-      "a5": "TikTok, Instagram Reels, YouTube Shorts & Uzun Format, LinkedIn — tüm yaygın formatlar.",
+      "a2": "Evet, ücretli planlar için bir ödeme yöntemi gerekir. Ödemeler Stripe üzerinden güvenli şekilde işlenir. Kart verilerini saklamıyoruz.",
+      "a3": "Evet. Tüm veriler AB'de işlenir. Supabase (Frankfurt) ve Vercel (AB bölgesi) kullanıyoruz. Yüklemelerin açık onayın olmadan AI eğitimi için kullanılmaz.",
+      "a4": "Evet, InfluexAI Voice (powered by ElevenLabs) ile. Yalnızca kendi sesini veya lisanslı ses materyalini kullanabilirsin.",
+      "a5": "TikTok, Instagram Reels, YouTube Shorts ve LinkedIn. Tüm araçlar bu platformlar için optimize edilmiştir.",
+      "a6": "Evet. Campaign Autopilot markalar ve ajanslar için geliştirildi. 2–3 gün, 7 gün veya 30 günlük tam içerik kampanyalarını otomatik planlayabilirsin.",
       "headline": "Sık Sorulan Sorular",
       "kicker": "SSS",
       "q_sub1": "INFLUEXAI bir abonelik mi?",
@@ -698,7 +699,8 @@
       "q2": "Kredi kartı gerekli mi?",
       "q3": "InfluexAI GDPR uyumlu mu?",
       "q4": "Kendi sesimi klonlayabilir miyim?",
-      "q5": "Hangi platformlar destekleniyor?"
+      "q5": "Hangi platformlar destekleniyor?",
+      "q6": "Yapay zeka ajanını markam için kullanabilir miyim?"
     },
     "features": {
       "f1_api0": "Hooklar",

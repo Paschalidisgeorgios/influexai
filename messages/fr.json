@@ -685,10 +685,11 @@
       "a_sub2": "Oui. Les forfaits mensuels sont résiliables chaque mois. Pour les forfaits annuels, ton accès continue jusqu'à la fin de la période de facturation payée.",
       "a_sub3": "Les Credits sont ton solde d'utilisation pour les générations IA — par exemple scripts, hooks, vidéos, avatars, voix ou outils image. Chaque fonction consomme un nombre différent de Credits.",
       "a1": "Les Credits sont la monnaie d'InfluexAI. Chaque module coûte 2 à 5 Credits par génération. Les Credits n'expirent pas.",
-      "a2": "Pas obligatoire pour les Credits d'essai gratuits. Les forfaits payants nécessitent un moyen de paiement. Les forfaits commencent à €{price}/mois avec Credits inclus — résiliable mensuellement.",
-      "a3": "Oui. Serveurs dans l'UE, aucune transmission de tes données à des tiers sans consentement.",
-      "a4": "Oui — dans le module Voix & Musique. 30+ secondes d'audio suffisent pour un clonage de haute qualité.",
-      "a5": "TikTok, Instagram Reels, YouTube Shorts & Long-Form, LinkedIn — tous les formats courants.",
+      "a2": "Oui, les forfaits payants nécessitent un moyen de paiement. Les paiements sont sécurisés via Stripe. Nous ne stockons pas les données de carte.",
+      "a3": "Oui. Toutes les données sont traitées dans l'UE. Nous utilisons Supabase (Francfort) et Vercel (région UE). Tes uploads ne sont pas utilisés pour l'entraînement IA sans ton consentement explicite.",
+      "a4": "Oui, avec InfluexAI Voice (powered by ElevenLabs). Tu ne peux utiliser que ta propre voix ou du matériel audio sous licence.",
+      "a5": "TikTok, Instagram Reels, YouTube Shorts et LinkedIn. Tous les outils sont optimisés pour ces plateformes.",
+      "a6": "Oui. Campaign Autopilot est conçu pour les marques et agences. Tu peux planifier automatiquement des campagnes de contenu complètes pour 2–3 jours, 7 jours ou 30 jours.",
       "headline": "Questions fréquentes",
       "kicker": "FAQ",
       "q_sub1": "INFLUEXAI est-il un abonnement ?",
@@ -698,7 +699,8 @@
       "q2": "Ai-je besoin d'une carte de crédit ?",
       "q3": "InfluexAI est-il conforme au GDPR ?",
       "q4": "Puis-je cloner ma propre voix ?",
-      "q5": "Quelles plateformes sont prises en charge ?"
+      "q5": "Quelles plateformes sont prises en charge ?",
+      "q6": "Puis-je utiliser l'agent IA pour ma marque ?"
     },
     "features": {
       "f1_api0": "Accroches",
