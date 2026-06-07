@@ -187,6 +187,18 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     genTypes: ["live-portrait"],
   },
   {
+    id: "avatar-studio",
+    href: "/dashboard/avatar-studio",
+    category: "create",
+    icon: Sparkles,
+    title: "Avatar Studio",
+    tagline: "Premium Live-Avatar-Export mit Optionen und Qualitätscheck",
+    creditCost: 9,
+    creditLabel: "ab 9 Credits",
+    badge: "NEU",
+    genTypes: ["avatar-studio", "avatar-render"],
+  },
+  {
     id: "niche-analyzer",
     href: "/dashboard/niche-analyzer",
     category: "analyze",
@@ -452,6 +464,13 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         badge: "NEU",
       },
       {
+        id: "avatar-studio",
+        href: "/dashboard/avatar-studio",
+        label: "Avatar Studio",
+        icon: Sparkles,
+        badge: "NEU",
+      },
+      {
         id: "motion-transfer",
         href: "/dashboard/motion-transfer",
         label: "Motion Transfer",
@@ -536,6 +555,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
     path.includes("ugc-video") ||
     path.includes("motion-transfer") ||
     path.includes("live-portrait") ||
+    path.includes("avatar-studio") ||
     path.includes("seedance") ||
     path.includes("live-creator") ||
     path.includes("ki-ich")
