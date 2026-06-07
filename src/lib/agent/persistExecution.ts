@@ -1,5 +1,59 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { AgentExecution, CampaignPlatform, CampaignResult } from "./types";
+
+export async function saveExecutionServer(
+  supabase: SupabaseClient,
+  exec: AgentExecution
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("agent_executions").upsert({
+      id: exec.id,
+      user_id: exec.userId,
+      prompt: exec.prompt,
+      intent: exec.intent,
+      selected_tools: exec.selectedTools,
+      status: exec.status,
+      steps: exec.steps,
+      result: exec.result ?? null,
+      estimated_credits: exec.estimatedCredits ?? 0,
+      used_credits: exec.usedCredits ?? 0,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.error("[persistExecution]", error.message);
+  } catch (e) {
+    console.error("[persistExecution]", e);
+  }
+}
+
+export async function saveCampaignResultServer(
+  supabase: SupabaseClient,
+  result: CampaignResult,
+  userId: string,
+  prompt = "",
+  platforms: CampaignPlatform[] = []
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("campaign_results").insert({
+      id: result.id,
+      user_id: userId,
+      mode: result.mode,
+      prompt,
+      platforms: result.brandDNA?.platforms ?? platforms,
+      brand_dna: result.brandDNA,
+      assumptions: result.assumptionsMade,
+      items: result.items,
+      overall_scores: result.overallScores,
+      estimated_credits: result.estimatedCredits,
+      used_credits: result.usedCredits,
+      title: result.title,
+      summary: result.summary,
+    });
+    if (error) console.error("[saveCampaignResult]", error.message);
+  } catch (e) {
+    console.error("[saveCampaignResult]", e);
+  }
+}
 
 export async function saveExecution(exec: AgentExecution): Promise<void> {
   try {

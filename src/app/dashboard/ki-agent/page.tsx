@@ -15,12 +15,8 @@ import type {
   AgentScores,
   AgentTool,
 } from "@/lib/agent/types";
-import {
-  buildMockResult,
-  createExecution,
-} from "@/lib/agent/mockExecutor";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
-import { saveExecution, saveFeedback } from "@/lib/agent/persistExecution";
+import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
@@ -136,7 +132,6 @@ export default function KiAgentPage() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [showToolPanel, setShowToolPanel] = useState(false);
   const [selectedTool, setSelectedTool] = useState<AgentTool | "auto">("auto");
-  const [userId, setUserId] = useState<string | undefined>();
   const [userCredits, setUserCredits] = useState<number | null>(null);
   const [creditError, setCreditError] = useState<string | null>(null);
   const [guard, setGuard] = useState<GuardState>(null);
@@ -145,7 +140,6 @@ export default function KiAgentPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepIndexRef = useRef(0);
   const lastPromptRef = useRef("");
-  const savedExecutionRef = useRef<string | null>(null);
 
   const adjustTextareaHeight = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -184,7 +178,6 @@ export default function KiAgentPage() {
       if (data && typeof data.credits === "number") {
         setUserCredits(data.credits);
       }
-      setUserId(user.id);
     };
 
     void load();
@@ -199,13 +192,6 @@ export default function KiAgentPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (phase !== "done" || !execution || execution.status !== "completed") return;
-    if (savedExecutionRef.current === execution.id) return;
-    savedExecutionRef.current = execution.id;
-    void saveExecution(execution);
-  }, [phase, execution]);
-
   const clearRunner = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -214,31 +200,61 @@ export default function KiAgentPage() {
   };
 
   const runExecution = useCallback(
-    (trimmed: string) => {
+    async (trimmed: string) => {
       clearRunner();
       setCreditError(null);
 
-      savedExecutionRef.current = null;
+      let data: {
+        execution: AgentExecution;
+        result: AgentResult;
+        usedCredits: number;
+        remainingCredits?: number;
+        error?: string;
+        credits?: number;
+        required?: number;
+      };
 
-      const next = createExecution(trimmed, userId);
-      next.status = "running";
-      next.steps = next.steps.map((step, i) => ({
-        ...step,
-        status: i === 0 ? ("running" as const) : ("pending" as const),
-      }));
-
-      if (
-        userCredits !== null &&
-        next.estimatedCredits !== undefined &&
-        userCredits < next.estimatedCredits
-      ) {
-        openNoCreditsModal({
-          required: next.estimatedCredits,
-          remaining: userCredits,
+      try {
+        const res = await fetch("/api/agent/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: trimmed, type: "agent" }),
         });
-        setCreditError("Nicht genug Credits für diese Ausführung.");
+        data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 402) {
+            openNoCreditsModal({
+              required: data.required ?? 0,
+              remaining: data.credits ?? userCredits ?? 0,
+            });
+          }
+          setCreditError(data.error ?? "Ausführung fehlgeschlagen.");
+          return;
+        }
+      } catch {
+        setCreditError("Netzwerkfehler. Bitte erneut versuchen.");
         return;
       }
+
+      if (typeof data.remainingCredits === "number") {
+        setUserCredits(data.remainingCredits);
+      }
+      window.dispatchEvent(new Event("credits-updated"));
+
+      const serverResult = data.result;
+      const usedCredits = data.usedCredits;
+
+      const next: AgentExecution = {
+        ...data.execution,
+        status: "running",
+        result: undefined,
+        usedCredits: 0,
+        steps: data.execution.steps.map((step, i) => ({
+          ...step,
+          status: i === 0 ? ("running" as const) : ("pending" as const),
+        })),
+      };
 
       lastPromptRef.current = trimmed;
       stepIndexRef.current = 0;
@@ -263,18 +279,12 @@ export default function KiAgentPage() {
               ...prev,
               steps: finalSteps,
               status: "completed",
-              result: buildMockResult({
-                ...prev,
-                steps: finalSteps,
-                status: "completed",
-              }),
-              usedCredits: prev.estimatedCredits ?? 0,
+              result: serverResult,
+              usedCredits,
               updatedAt: new Date().toISOString(),
             };
           });
           setPhase("done");
-          // TODO: deductCredits() server-side anbinden (API route / Server Action)
-          window.dispatchEvent(new Event("credits-updated"));
           return;
         }
 
@@ -291,7 +301,7 @@ export default function KiAgentPage() {
         });
       }, STEP_INTERVAL_MS);
     },
-    [userCredits, userId]
+    [userCredits]
   );
 
   const runWithGuards = useCallback(
