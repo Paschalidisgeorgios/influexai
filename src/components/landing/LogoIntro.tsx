@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const INTRO_STORAGE_KEY = "influexai_intro_seen";
 const INTRO_DONE_EVENT = "influexai:intro-complete";
 const INTRO_REVEAL_EVENT = "influexai:intro-reveal";
-const LOGO_SRC = "/images/logo-intro.png";
+const LOGO_SRC = "/images/landing/logo-intro.png";
 const INTRO_DURATION = 10000;
 const REVEAL_MS = 7500;
 const EXIT_DURATION = 600;
