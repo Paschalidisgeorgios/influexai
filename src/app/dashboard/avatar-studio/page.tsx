@@ -337,7 +337,7 @@ export default function AvatarStudioPage() {
         throw new Error(startData.error ?? "Render konnte nicht gestartet werden.");
       }
 
-      setJobStatus("queued");
+      setJobStatus(startData.status ?? "running");
     } catch (err) {
       setJobStatus("failed");
       setError(
@@ -995,6 +995,16 @@ export default function AvatarStudioPage() {
                 {estimateAvatarCredits(options)} Credits
               </span>
             </div>
+            <p
+              style={{
+                marginTop: 12,
+                fontSize: 11,
+                color: "rgba(255,255,255,0.45)",
+                lineHeight: 1.5,
+              }}
+            >
+              Credits werden erst nach erfolgreichem Render abgebucht.
+            </p>
           </div>
 
           <div
@@ -1124,7 +1134,7 @@ export default function AvatarStudioPage() {
                 {error ?? "Ein unbekannter Fehler ist aufgetreten."}
               </p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 16 }}>
-                Credits werden bei Fehlern zurückgegeben, sobald RunPod angebunden ist.
+                Render fehlgeschlagen — keine Credits abgebucht.
               </p>
               <button type="button" style={primaryBtn(true)} onClick={resetAll}>
                 Erneut versuchen
@@ -1152,6 +1162,18 @@ export default function AvatarStudioPage() {
               >
                 ✓ Avatar bereit
               </div>
+              <p
+                style={{
+                  padding: "10px 16px",
+                  margin: 0,
+                  fontSize: 12,
+                  color: "rgba(255,255,255,0.55)",
+                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                Render abgeschlossen — {estimateAvatarCredits(options)} Credits
+                abgebucht.
+              </p>
               {resultUrl ? (
                 <video
                   src={resultUrl}
