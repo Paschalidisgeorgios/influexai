@@ -21,6 +21,7 @@ export type SubscriptionPlan = {
 
 export const YEARLY_DISCOUNT_PERCENT = 20;
 
+/** Platform plans — Stripe Price IDs via NEXT_PUBLIC_STRIPE_* env vars (see .env.local.example). */
 export const SUBSCRIPTION_PLANS: Record<
   Exclude<SubscriptionPlanId, "free">,
   SubscriptionPlan
@@ -28,8 +29,8 @@ export const SUBSCRIPTION_PLANS: Record<
   starter: {
     id: "starter",
     monthlyCredits: 50,
-    monthlyPriceEur: 7.99,
-    yearlyPricePerMonthEur: 7.99,
+    monthlyPriceEur: 9.99,
+    yearlyPricePerMonthEur: 9.99,
     stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY",
     stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY",
   },
