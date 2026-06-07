@@ -334,9 +334,8 @@ export function HeroSection({
 
       <HeroBackgroundMedia />
 
-      {/* Copy */}
       <div
-        className={`hero-copy relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden ${
+        className={`hero-copy relative z-10 mx-auto w-full max-w-7xl ${
           revealed ? "hero-copy-revealed" : "hero-copy-hidden"
         }`}
         style={
@@ -345,78 +344,86 @@ export function HeroSection({
             : undefined
         }
       >
-        <SpringReveal>
-          <div className="flex items-center gap-2.5 mb-7">
-            <div
-              className="w-[7px] h-[7px] rounded-full bg-[var(--accent,#B4FF00)] animate-blink"
-              aria-hidden
-            />
-            <span className="kicker">{t("badge")} · 2026</span>
+        <div className="grid min-h-[min(100vh,920px)] w-full grid-cols-1 items-center gap-10 overflow-x-hidden lg:grid-cols-[minmax(0,1fr)_minmax(420px,540px)] lg:gap-14">
+          {/* Left: Badge, Toggle, Headline, Subline, CTAs, Trust */}
+          <div className="flex min-w-0 max-w-[680px] flex-col gap-6 lg:gap-7">
+            <SpringReveal>
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="h-[7px] w-[7px] shrink-0 animate-blink rounded-full bg-[var(--accent,#B4FF00)]"
+                  aria-hidden
+                />
+                <span className="kicker">{t("badge")} · 2026</span>
+              </div>
+            </SpringReveal>
+
+            <SpringReveal delay={0.08}>
+              <div className="flex flex-wrap items-center gap-2">
+                {(["creator", "brand"] as Audience[]).map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    onClick={() => setAudience(a)}
+                    className="min-h-[44px] cursor-pointer rounded-full border px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+                    style={{
+                      background: audience === a ? "var(--accent, #B4FF00)" : "transparent",
+                      borderColor:
+                        audience === a ? "var(--accent, #B4FF00)" : "rgba(255,255,255,0.13)",
+                      color: audience === a ? "#060608" : "rgba(255,255,255,0.85)",
+                      fontFamily: "var(--font-dm), sans-serif",
+                    }}
+                  >
+                    {a === "creator" ? "Für Creator" : "Für Marken"}
+                  </button>
+                ))}
+              </div>
+            </SpringReveal>
+
+            <SpringReveal delay={0.12}>
+              <HeroTitle titles={rotatingTitles} />
+            </SpringReveal>
+
+            <SpringReveal delay={0.16}>
+              <p className="hero-subtitle w-full max-w-[520px]">
+                {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
+              </p>
+            </SpringReveal>
+
+            <SpringReveal delay={0.4}>
+              <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+                <AcidMotionButton
+                  href="/auth/sign-up"
+                  className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
+                >
+                  → {t("cta_primary", priceParams)}
+                </AcidMotionButton>
+                <a
+                  href="#features"
+                  className="btn-ghost w-full justify-center sm:w-auto sm:justify-start"
+                >
+                  {t("cta_secondary")}
+                </a>
+              </div>
+            </SpringReveal>
+
+            <SpringReveal delay={0.24}>
+              <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
+                {t("trust_line", priceParams)}
+              </p>
+            </SpringReveal>
+
+            <div className="block lg:hidden">
+              <AgentPreviewDemo compact />
+            </div>
           </div>
-        </SpringReveal>
 
-        <SpringReveal delay={0.08}>
-          <div className="flex items-center gap-2 mb-7 flex-wrap">
-            {(["creator", "brand"] as Audience[]).map((a) => (
-              <button
-                key={a}
-                type="button"
-                onClick={() => setAudience(a)}
-                className="min-h-[44px] px-4 py-2.5 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
-                style={{
-                  background: audience === a ? "var(--accent, #B4FF00)" : "transparent",
-                  borderColor:
-                    audience === a ? "var(--accent, #B4FF00)" : "rgba(255,255,255,0.13)",
-                  color: audience === a ? "#060608" : "rgba(255,255,255,0.85)",
-                  fontFamily: "var(--font-dm), sans-serif",
-                }}
-              >
-                {a === "creator" ? "Für Creator" : "Für Marken"}
-              </button>
-            ))}
+          {/* Right: Agent Preview (desktop) */}
+          <div className="relative hidden w-full items-center justify-end lg:flex">
+            <SpringReveal delay={0.2} className="w-full max-w-[520px]">
+              <AgentPreviewDemo />
+            </SpringReveal>
           </div>
-        </SpringReveal>
-
-        <SpringReveal delay={0.12}>
-          <HeroTitle titles={rotatingTitles} />
-        </SpringReveal>
-
-        <SpringReveal delay={0.2}>
-          <div className="mb-8">
-            <AgentPreviewDemo />
-          </div>
-        </SpringReveal>
-
-        <SpringReveal delay={0.16}>
-          <p className="hero-subtitle mb-8 w-full max-w-full md:max-w-[520px]">
-            {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
-          </p>
-        </SpringReveal>
-
-        <SpringReveal delay={0.4}>
-          <div className="flex w-full max-w-full flex-col gap-2.5 mb-10 sm:flex-row sm:flex-wrap">
-            <AcidMotionButton
-              href="/auth/sign-up"
-              className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
-            >
-              → {t("cta_primary", priceParams)}
-            </AcidMotionButton>
-            <a
-              href="#features"
-              className="btn-ghost w-full justify-center sm:w-auto sm:justify-start"
-            >
-              {t("cta_secondary")}
-            </a>
-          </div>
-        </SpringReveal>
-
-        <SpringReveal delay={0.24}>
-          <p
-            style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}
-          >
-            {t("trust_line", priceParams)}
-          </p>
-        </SpringReveal>
+        </div>
       </div>
     </section>
   );

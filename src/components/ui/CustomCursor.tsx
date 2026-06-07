@@ -14,6 +14,7 @@ export function CustomCursor() {
   const ring2 = useRef<HTMLDivElement>(null);
   const ring3 = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
+  const [hasMoved, setHasMoved] = useState(false);
 
   const disabled = isDashboardPath(pathname);
 
@@ -42,6 +43,7 @@ export function CustomCursor() {
     const move = (e: MouseEvent) => {
       x = e.clientX;
       y = e.clientY;
+      setHasMoved(true);
     };
 
     const onEnter = () => {
@@ -126,6 +128,7 @@ export function CustomCursor() {
     <div
       aria-hidden
       className="custom-cursor-layer pointer-events-none fixed inset-0 z-[99999] overflow-hidden"
+      style={{ opacity: hasMoved ? 1 : 0 }}
     >
       <div
         ref={ring1}
