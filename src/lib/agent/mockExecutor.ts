@@ -1,7 +1,8 @@
-// TODO: echte Tool-APIs hier anbinden (script_generator, image_generator etc.)
-// TODO: Credits abbuchen nach jedem erfolgreichen Schritt
-// TODO: Ergebnis in Supabase agent_executions Tabelle speichern
-// TODO: Job Queue anbinden für lange Generierungen (Vercel Background Functions)
+// NEXT: Echte Tool-Generierung via toolOrchestrator.ts
+//   → src/lib/agent/toolOrchestrator.ts orchestrate() aufrufen
+//   → Tabellen agent_executions/campaign_results existieren (Migration 049-051)
+//   → Credits werden in /api/agent/execute server-side abgebucht
+//   → Job Queue: Vercel Background Functions wenn Campaign > 30 Items
 
 import {
   AgentExecution,
@@ -55,7 +56,6 @@ export function createExecution(prompt: string, userId?: string): AgentExecution
 }
 
 export function buildMockResult(execution: AgentExecution): AgentResult {
-  // TODO: echten Tool-Output hier einsetzen statt Mock
   const scores = scoreResult({}, execution.prompt);
 
   // TODO: GUARD — öffentlich anzeigen erfordert separate Bestätigung
@@ -134,10 +134,9 @@ export function buildCampaignResult(exec: CampaignExecution): CampaignResult {
   const items = buildMockContentItems(exec.mode, exec.platforms);
   const spec = CAMPAIGN_SPECS[exec.mode];
 
-  // TODO: echte Tool-Generierung hier anbinden
-  // TODO: Credits nach jedem Schritt abbuchen
-  // TODO: Ergebnis in Supabase campaign_results Tabelle speichern
-  // TODO: Job Queue für lange Kampagnen anbinden
+  // NEXT: Echte Tool-Generierung via toolOrchestrator.ts (siehe Dateikopf)
+  //   → Campaign Autopilot auf /api/agent/execute umstellen
+  //   → Persistenz via saveCampaignResultServer (Migration 050)
 
   return {
     id: newCampaignId(),
