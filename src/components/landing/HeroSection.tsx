@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
@@ -252,36 +252,6 @@ function HeroBackgroundMedia() {
   );
 }
 
-function readIntroSeenFromStorage(): boolean {
-  try {
-    const value = sessionStorage.getItem("influexai_intro_seen");
-    return value === "true" || value === "1";
-  } catch {
-    return false;
-  }
-}
-
-function shouldRevealHeroInitially(): boolean {
-  if (typeof window === "undefined") return false;
-
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const forceIntro = params.get("intro") === "1";
-    if (forceIntro) return false;
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reducedMotion) return true;
-
-    if (readIntroSeenFromStorage()) return true;
-  } catch {
-    /* private mode */
-  }
-
-  return false;
-}
-
 export function HeroSection({
   variant: _variant = "a",
 }: {
@@ -292,36 +262,32 @@ export function HeroSection({
   const priceParams = getStarterPriceParams(locale);
   const [audience, setAudience] = useState<Audience>("creator");
   const [parallaxY, setParallaxY] = useState(0);
-  const [heroRevealed, setHeroRevealed] = useState(shouldRevealHeroInitially);
+  const [revealed, setRevealed] = useState(false);
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
     ? (rawRotating as string[])
     : [];
 
-  useLayoutEffect(() => {
-    const handleIntroReveal = () => setHeroRevealed(true);
-    const handleIntroComplete = () => setHeroRevealed(true);
-
-    window.addEventListener(INTRO_REVEAL_EVENT, handleIntroReveal, {
-      once: true,
-    });
-    window.addEventListener(INTRO_DONE_EVENT, handleIntroComplete, {
-      once: true,
-    });
-
-    const forceIntro =
-      new URLSearchParams(window.location.search).get("intro") === "1";
-    const alreadySeen = readIntroSeenFromStorage();
-    const introActive =
-      document.documentElement.classList.contains("logo-intro-active");
-
-    if (!forceIntro && alreadySeen && !introActive) {
-      setHeroRevealed(true);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("influexai_intro_seen")) {
+        setRevealed(true);
+        return;
+      }
+    } catch {
+      /* private mode */
     }
 
+    const show = () => setRevealed(true);
+    window.addEventListener(INTRO_REVEAL_EVENT, show);
+    window.addEventListener(INTRO_DONE_EVENT, show);
+
+    const fallback = window.setTimeout(() => setRevealed(true), 11000);
+
     return () => {
-      window.removeEventListener(INTRO_REVEAL_EVENT, handleIntroReveal);
-      window.removeEventListener(INTRO_DONE_EVENT, handleIntroComplete);
+      window.removeEventListener(INTRO_REVEAL_EVENT, show);
+      window.removeEventListener(INTRO_DONE_EVENT, show);
+      window.clearTimeout(fallback);
     };
   }, []);
 
@@ -390,13 +356,15 @@ export function HeroSection({
 
       {/* Copy */}
       <div
-        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden transition-opacity duration-500 ease-out"
+        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden"
         style={{
           padding:
             "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
-          transform: `translateY(${parallaxY}px)`,
-          transition: "transform 0.1s linear, opacity 0.5s ease-out",
-          opacity: heroRevealed ? 1 : 0,
+          opacity: revealed ? 1 : 0,
+          transform: revealed ? `translateY(${parallaxY}px)` : "translateY(8px)",
+          transition: revealed
+            ? "opacity 0.8s ease, transform 0.1s linear"
+            : "opacity 0.8s ease, transform 0.8s ease",
         }}
       >
         <SpringReveal>

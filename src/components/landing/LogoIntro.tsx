@@ -9,7 +9,6 @@ const LOGO_SRC = "/images/Logo-full.png";
 const INTRO_DURATION = 10000;
 const REVEAL_MS = 7500;
 const EXIT_DURATION = 600;
-const ANIM_DURATION = "10s ease forwards";
 
 function dispatchIntroEvent(name: string) {
   window.dispatchEvent(new CustomEvent(name));
@@ -26,7 +25,6 @@ function readIntroSeen(): boolean {
 
 export function LogoIntro() {
   const [showIntro, setShowIntro] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const finishCalledRef = useRef(false);
   const introTimerRef = useRef<number | null>(null);
@@ -77,8 +75,6 @@ export function LogoIntro() {
   }, [finishIntro]);
 
   useEffect(() => {
-    setMounted(true);
-
     const params = new URLSearchParams(window.location.search);
     const forceIntro = params.get("intro") === "1";
 
@@ -122,7 +118,7 @@ export function LogoIntro() {
   }, []);
 
   useEffect(() => {
-    if (!mounted || !showIntro || isExiting) return;
+    if (!showIntro || isExiting) return;
 
     finishCalledRef.current = false;
 
@@ -137,7 +133,7 @@ export function LogoIntro() {
     return () => {
       clearIntroTimers();
     };
-  }, [mounted, showIntro, isExiting, finishIntro, clearIntroTimers]);
+  }, [showIntro, isExiting, finishIntro, clearIntroTimers]);
 
   useEffect(() => {
     return () => {
@@ -151,12 +147,10 @@ export function LogoIntro() {
     };
   }, [releaseIntroLock]);
 
-  if (!mounted || !showIntro) return null;
+  if (!showIntro) return null;
 
   return (
     <div
-      role="presentation"
-      aria-hidden
       style={{
         position: "fixed",
         inset: 0,
@@ -172,14 +166,14 @@ export function LogoIntro() {
       }}
     >
       <div
-        aria-hidden
         style={{
           position: "absolute",
           inset: 0,
           background:
             "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(180,255,0,0.05) 0%, transparent 70%)",
-          animation: `logoIntroGlowPulse ${ANIM_DURATION}`,
+          animation: "logoIntroGlowPulse 10s ease forwards",
           pointerEvents: "none",
+          zIndex: 1,
         }}
       />
 
@@ -194,12 +188,12 @@ export function LogoIntro() {
       >
         <div
           style={{
-            animation: `logoIntroLogo ${ANIM_DURATION}`,
             opacity: 0,
+            animation: "logoIntroLogo 10s ease forwards",
           }}
         >
           <img
-            src={LOGO_SRC}
+            src="/images/Logo-full.png"
             alt="INFLUEXAI"
             draggable={false}
             decoding="sync"
@@ -208,13 +202,13 @@ export function LogoIntro() {
               display: "block",
               width: "clamp(200px, 55vw, 340px)",
               height: "auto",
+              objectFit: "contain",
             }}
           />
         </div>
       </div>
 
       <div
-        aria-hidden
         style={{
           position: "absolute",
           top: "calc(50% - 52px)",
@@ -225,14 +219,13 @@ export function LogoIntro() {
           boxShadow: "0 0 8px rgba(180,255,0,0.7)",
           transform: "scaleX(0)",
           transformOrigin: "center",
-          animation: `logoIntroLine ${ANIM_DURATION}`,
+          animation: "logoIntroLine 10s ease forwards",
           pointerEvents: "none",
           zIndex: 11,
         }}
       />
 
       <div
-        aria-hidden
         style={{
           position: "absolute",
           top: "calc(50% + 52px)",
@@ -243,20 +236,19 @@ export function LogoIntro() {
           boxShadow: "0 0 8px rgba(180,255,0,0.7)",
           transform: "scaleX(0)",
           transformOrigin: "center",
-          animation: `logoIntroLine ${ANIM_DURATION}`,
+          animation: "logoIntroLine 10s ease forwards",
           pointerEvents: "none",
           zIndex: 11,
         }}
       />
 
       <div
-        aria-hidden
         style={{
           position: "absolute",
           inset: 0,
           background: "#060608",
           clipPath: "inset(0 0 0 0)",
-          animation: `logoIntroSplitTop ${ANIM_DURATION}`,
+          animation: "logoIntroSplitTop 10s ease forwards",
           pointerEvents: "none",
           zIndex: 5,
         }}
@@ -267,10 +259,9 @@ export function LogoIntro() {
         onClick={handleSkip}
         style={{
           position: "absolute",
-          bottom: "max(20px, env(safe-area-inset-bottom, 20px))",
+          bottom: 24,
           right: 20,
           zIndex: 20,
-          minHeight: 44,
           padding: "8px 16px",
           borderRadius: 4,
           border: "1px solid rgba(255,255,255,0.15)",
@@ -280,7 +271,7 @@ export function LogoIntro() {
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           cursor: "pointer",
-          fontFamily: "var(--font-dm), DM Sans, sans-serif",
+          fontFamily: "inherit",
         }}
       >
         Überspringen
