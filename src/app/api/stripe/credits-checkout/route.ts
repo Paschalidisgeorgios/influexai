@@ -6,16 +6,47 @@ import {
   isWhitelistedCreditPriceId,
   packageForStripePriceId,
 } from "@/lib/stripe-credit-prices";
+import { getPackageById } from "@/lib/credit-packages";
 import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  let body: { priceId?: string };
+  let body: { priceId?: string; packageId?: string };
   try {
-    body = (await request.json()) as { priceId?: string };
+    body = (await request.json()) as { priceId?: string; packageId?: string };
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
+  }
+
+  const packageId = body.packageId?.trim();
+  if (packageId) {
+    const pkg = getPackageById(packageId);
+    if (!pkg) {
+      return NextResponse.json({ error: "Paket nicht gefunden" }, { status: 400 });
+    }
+
+    try {
+      const session = await createCreditsCheckoutSession(
+        getStripe(),
+        supabase,
+        user.id,
+        pkg
+      );
+      return NextResponse.json({ url: session.url });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Checkout fehlgeschlagen";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
   }
 
   const priceId = body.priceId?.trim();
@@ -26,15 +57,6 @@ export async function POST(request: NextRequest) {
   const pkg = packageForStripePriceId(priceId);
   if (!pkg) {
     return NextResponse.json({ error: "Paket nicht gefunden" }, { status: 400 });
-  }
-
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
   try {

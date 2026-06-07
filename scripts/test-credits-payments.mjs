@@ -135,7 +135,7 @@ async function main() {
     const res = await fetch("/api/credits/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ packageId: "extra_100" }),
+      body: JSON.stringify({ packageId: "small" }),
     });
     const text = await res.text();
     return { status: res.status, body: text.slice(0, 2000) };

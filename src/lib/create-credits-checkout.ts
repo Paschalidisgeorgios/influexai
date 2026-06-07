@@ -70,6 +70,7 @@ export async function createCreditsCheckoutSession(
       type: "credits",
       credits: pkg.credits.toString(),
       credits_amount: pkg.credits.toString(),
+      packId: pkg.id,
       plan: pkg.id,
       stripe_price_id: priceId,
     },

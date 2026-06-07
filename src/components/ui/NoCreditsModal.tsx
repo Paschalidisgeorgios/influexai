@@ -8,8 +8,8 @@ import { MotionModal } from "@/components/ui/MotionModal";
 import {
   CREDIT_PACKAGES,
   getPackageById,
-  getStripePriceIdForPackage,
   recommendCreditPackageId,
+  type CreditPackage,
   type CreditPackageId,
 } from "@/lib/credit-packages";
 import { YEARLY_DISCOUNT_PERCENT } from "@/lib/subscription-plans";
@@ -35,10 +35,6 @@ function formatEur(amount: number): string {
   return Number.isInteger(amount)
     ? String(amount)
     : amount.toFixed(2).replace(".", ",");
-}
-
-function formatCentPerCredit(pricePerCredit: number): string {
-  return String(Math.round(pricePerCredit * 100));
 }
 
 function CheckoutErrorBanner({
@@ -81,9 +77,14 @@ export function NoCreditsModal({
 }: Props) {
   const t = useTranslations("noCredits");
   const [view, setView] = useState<"prompt" | "packages">("prompt");
-  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<CreditPackageId>("medium");
+  const [loadingPackId, setLoadingPackId] = useState<CreditPackageId | null>(
+    null
+  );
   const [checkoutFailed, setCheckoutFailed] = useState(false);
-  const [lastFailedPriceId, setLastFailedPriceId] = useState<string | undefined>();
+  const [lastFailedPackId, setLastFailedPackId] = useState<
+    CreditPackageId | undefined
+  >();
 
   const canClose = !forceOpen && onClose;
   const resolvedRemaining =
@@ -101,64 +102,55 @@ export function NoCreditsModal({
   const recommendedId: CreditPackageId =
     typeof missing === "number"
       ? recommendCreditPackageId(missing)
-      : "extra_300";
+      : "medium";
   const recommendedPkg = getPackageById(recommendedId);
+  const selectedPack = getPackageById(selectedId);
 
   useEffect(() => {
     if (!open) return;
     setCheckoutFailed(false);
-    setLastFailedPriceId(undefined);
-    setLoadingPriceId(null);
+    setLastFailedPackId(undefined);
+    setLoadingPackId(null);
+    setSelectedId(recommendedId);
     setView(
       initialView ??
         (typeof required === "number" ? "prompt" : "packages")
     );
-  }, [open, initialView, required]);
+  }, [open, initialView, required, recommendedId]);
 
-  const handleCheckout = async (priceId: string | undefined) => {
-    if (loadingPriceId) return;
+  const handleCheckout = async (pack: CreditPackage) => {
+    if (loadingPackId) return;
 
-    if (!priceId) {
-      setCheckoutFailed(true);
-      setLastFailedPriceId(undefined);
-      return;
-    }
-
-    setLoadingPriceId(priceId);
+    setLoadingPackId(pack.id);
     setCheckoutFailed(false);
     try {
       const res = await fetch("/api/stripe/credits-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ packageId: pack.id }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (data.url) {
         window.location.href = data.url;
         return;
       }
-      setLastFailedPriceId(priceId);
+      setLastFailedPackId(pack.id);
       setCheckoutFailed(true);
     } catch {
-      setLastFailedPriceId(priceId);
+      setLastFailedPackId(pack.id);
       setCheckoutFailed(true);
     } finally {
-      setLoadingPriceId(null);
+      setLoadingPackId(null);
     }
   };
 
   const retryCheckout = () => {
-    if (lastFailedPriceId) {
-      void handleCheckout(lastFailedPriceId);
-      return;
-    }
-    const fallback = getStripePriceIdForPackage(
-      getPackageById(recommendedId) ?? CREDIT_PACKAGES[0]!
-    );
-    void handleCheckout(fallback);
+    const packId = lastFailedPackId ?? selectedId;
+    const pack = getPackageById(packId) ?? CREDIT_PACKAGES[0]!;
+    void handleCheckout(pack);
   };
 
-  const checkoutBusy = loadingPriceId !== null;
+  const checkoutBusy = loadingPackId !== null;
 
   if (!open) {
     return null;
@@ -241,7 +233,7 @@ export function NoCreditsModal({
               <p className="mt-4 text-xs text-white/50">
                 {t("recommended_pack", {
                   credits: recommendedPkg.credits,
-                  price: formatEur(recommendedPkg.priceEur),
+                  price: formatEur(recommendedPkg.priceNumeric),
                 })}
               </p>
             )}
@@ -250,7 +242,10 @@ export function NoCreditsModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => setView("packages")}
+              onClick={() => {
+                setSelectedId(recommendedId);
+                setView("packages");
+              }}
               className="w-full py-3.5 px-4 rounded-xl text-sm font-bold transition-all"
               style={{
                 background: "var(--accent, #B4FF00)",
@@ -329,114 +324,176 @@ export function NoCreditsModal({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {CREDIT_PACKAGES.map((pkg) => {
-              const priceId = getStripePriceIdForPackage(pkg);
-              const isLoading = loadingPriceId === priceId;
-              const isRecommended = pkg.id === recommendedId;
-              const isPopular = (pkg.popular ?? false) && !isRecommended;
-              const isBest = (pkg.bestValue ?? false) && !isRecommended;
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2">
+            {CREDIT_PACKAGES.map((pack) => {
+              const selected = selectedId === pack.id;
 
               return (
                 <div
-                  key={pkg.id}
-                  className="relative flex flex-col rounded-xl border p-4 sm:p-5 text-center"
+                  key={pack.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedId(pack.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedId(pack.id);
+                    }
+                  }}
                   style={{
-                    borderColor: isRecommended
-                      ? "var(--accent, #B4FF00)"
-                      : isPopular
-                        ? "var(--accent, #B4FF00)"
-                        : "rgba(255,255,255,0.1)",
-                    background: isRecommended
-                      ? "rgba(180,255,0,0.08)"
-                      : isPopular
-                        ? "rgba(180,255,0,0.05)"
-                        : "rgba(255,255,255,0.03)",
-                    boxShadow: isRecommended
-                      ? "0 0 0 1px color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)"
-                      : undefined,
+                    border: selected
+                      ? "2px solid #B4FF00"
+                      : "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: 8,
+                    padding: "16px",
+                    cursor: "pointer",
+                    background: selected
+                      ? "rgba(180,255,0,0.06)"
+                      : "rgba(255,255,255,0.03)",
+                    position: "relative",
+                    transition: "all 0.2s",
                   }}
                 >
-                  {isRecommended && (
-                    <span
-                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap max-w-[calc(100%-1rem)] truncate"
+                  {pack.popular && (
+                    <div
                       style={{
-                        background: "var(--accent, #B4FF00)",
+                        position: "absolute",
+                        top: -10,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        background: "#B4FF00",
                         color: "#060608",
+                        fontSize: 10,
+                        fontWeight: 800,
+                        padding: "2px 10px",
+                        borderRadius: 20,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {t("recommended_for_action")}
-                    </span>
+                      Beliebt
+                    </div>
                   )}
-                  {isPopular && (
-                    <span
-                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap"
-                      style={{
-                        background: "var(--accent, #B4FF00)",
-                        color: "#060608",
-                      }}
-                    >
-                      {t("popular_badge")}
-                    </span>
-                  )}
-                  {isBest && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold whitespace-nowrap border border-white/15 bg-[#0f0f12] text-[#F0EFE8]">
-                      {t("best_deal_badge")}
-                    </span>
-                  )}
-
-                  <p
-                    className="mt-2 text-2xl sm:text-3xl font-bold text-[#F0EFE8]"
-                    style={{ fontFamily: "var(--font-bebas), sans-serif" }}
-                  >
-                    {pkg.credits}
-                  </p>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
-                    Credits
-                  </p>
-                  <p
-                    className="text-xl font-bold text-[var(--accent,#B4FF00)] mb-1"
-                    style={{ fontFamily: "var(--font-bebas), sans-serif" }}
-                  >
-                    €{formatEur(pkg.priceEur)}
-                  </p>
-                  <p className="text-[11px] text-white/45 mb-4">
-                    {t("per_credit", {
-                      cents: formatCentPerCredit(pkg.pricePerCredit),
-                    })}
-                  </p>
-
-                  <button
-                    type="button"
-                    disabled={checkoutBusy}
-                    onClick={() => void handleCheckout(priceId)}
-                    className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  <div
                     style={{
-                      background:
-                        isRecommended || isPopular
-                          ? "var(--accent, #B4FF00)"
-                          : "rgba(180,255,0,0.12)",
-                      color:
-                        isRecommended || isPopular
-                          ? "#060608"
-                          : "var(--accent, #B4FF00)",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#fff",
+                      marginBottom: 4,
                     }}
                   >
-                    {isLoading ? (
-                      <span className="inline-flex items-center justify-center gap-2">
-                        <Loader2 size={16} className="animate-spin" aria-hidden />
-                        {t("checkout_loading")}
-                      </span>
-                    ) : (
-                      t("buy_button")
-                    )}
-                  </button>
+                    {pack.label}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 900,
+                      color: "#B4FF00",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {pack.credits}
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "rgba(255,255,255,0.4)",
+                        fontWeight: 400,
+                        marginLeft: 4,
+                      }}
+                    >
+                      Credits
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.6)",
+                      marginTop: 6,
+                    }}
+                  >
+                    {pack.price}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "rgba(255,255,255,0.35)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {pack.description}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "rgba(255,255,255,0.25)",
+                      marginTop: 4,
+                    }}
+                  >
+                    {((pack.priceNumeric / pack.credits) * 100).toFixed(1)} ct /
+                    Credit
+                  </div>
                 </div>
               );
             })}
           </div>
 
-          <p className="mt-6 text-center text-xs text-white/45">
+          <button
+            type="button"
+            disabled={!selectedPack || checkoutBusy}
+            onClick={() => {
+              if (selectedPack) void handleCheckout(selectedPack);
+            }}
+            style={{
+              width: "100%",
+              padding: "13px",
+              borderRadius: 6,
+              border: "none",
+              background: selectedPack ? "#B4FF00" : "rgba(180,255,0,0.3)",
+              color: "#060608",
+              fontSize: 14,
+              fontWeight: 800,
+              cursor: selectedPack && !checkoutBusy ? "pointer" : "default",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              marginTop: 16,
+              opacity: checkoutBusy ? 0.7 : 1,
+            }}
+          >
+            {checkoutBusy ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <Loader2 size={16} className="animate-spin" aria-hidden />
+                {t("checkout_loading")}
+              </span>
+            ) : selectedPack ? (
+              `Jetzt kaufen — ${selectedPack.price} — zahlungspflichtig`
+            ) : (
+              "Paket auswählen"
+            )}
+          </button>
+
+          <p
+            style={{
+              fontSize: 11,
+              color: "rgba(255,255,255,0.3)",
+              textAlign: "center",
+              marginTop: 8,
+              lineHeight: 1.5,
+            }}
+          >
+            Einmalkauf · keine Abofalle · Credits verfallen nicht. MwSt.
+            inklusive.{" "}
+            <a
+              href="/widerruf"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "rgba(180,255,0,0.5)" }}
+            >
+              Widerrufsrecht
+            </a>
+          </p>
+
+          <p className="mt-4 text-center text-xs text-white/45">
             {t("upgrade_hint")}{" "}
             <Link
               href="/pricing"

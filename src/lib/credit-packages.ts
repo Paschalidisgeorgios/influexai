@@ -1,81 +1,103 @@
-export type CreditPackageId =
-  | "extra_100"
-  | "extra_300"
-  | "extra_700"
-  | "extra_1500";
+export type CreditPackageId = "small" | "medium" | "large" | "xl";
 
 export type CreditPackage = {
   id: CreditPackageId;
   label: string;
+  credits: number;
+  price: string;
+  priceNumeric: number;
+  envKey: string;
+  description: string;
+  popular: boolean;
+  /** @deprecated use priceNumeric */
   priceEur: number;
   priceCents: number;
-  credits: number;
   pricePerCredit: number;
+  /** @deprecated use envKey */
   stripePriceEnv: string;
-  popular?: boolean;
-  bestValue?: boolean;
 };
 
+function buildCreditPackage(
+  pack: Omit<
+    CreditPackage,
+    "priceEur" | "priceCents" | "pricePerCredit" | "stripePriceEnv"
+  >
+): CreditPackage {
+  return {
+    ...pack,
+    priceEur: pack.priceNumeric,
+    priceCents: Math.round(pack.priceNumeric * 100),
+    pricePerCredit: pack.priceNumeric / pack.credits,
+    stripePriceEnv: pack.envKey,
+  };
+}
+
 /** Pay-as-you-go credit top-ups */
-export const CREDIT_PACKAGES: CreditPackage[] = [
-  {
-    id: "extra_100",
-    label: "100 Credits",
-    priceEur: 5,
-    priceCents: 500,
-    credits: 100,
-    pricePerCredit: 0.05,
-    stripePriceEnv: "STRIPE_CREDITS_100",
-  },
-  {
-    id: "extra_300",
-    label: "300 Credits",
-    priceEur: 12,
-    priceCents: 1200,
-    credits: 300,
-    pricePerCredit: 0.04,
-    stripePriceEnv: "STRIPE_CREDITS_300",
-  },
-  {
-    id: "extra_700",
-    label: "700 Credits",
-    priceEur: 25,
-    priceCents: 2500,
-    credits: 700,
-    pricePerCredit: 0.036,
-    stripePriceEnv: "STRIPE_CREDITS_700",
+export const CREDIT_PACKS: CreditPackage[] = [
+  buildCreditPackage({
+    id: "small",
+    label: "Small",
+    credits: 50,
+    price: "5,00 €",
+    priceNumeric: 5.0,
+    envKey: "STRIPE_CREDITS_100",
+    description: "Für den Einstieg",
+    popular: false,
+  }),
+  buildCreditPackage({
+    id: "medium",
+    label: "Medium",
+    credits: 150,
+    price: "12,00 €",
+    priceNumeric: 12.0,
+    envKey: "STRIPE_CREDITS_300",
+    description: "Beliebteste Wahl",
     popular: true,
-  },
-  {
-    id: "extra_1500",
-    label: "1500 Credits",
-    priceEur: 45,
-    priceCents: 4500,
-    credits: 1500,
-    pricePerCredit: 0.03,
-    stripePriceEnv: "STRIPE_CREDITS_1500",
-    bestValue: true,
-  },
+  }),
+  buildCreditPackage({
+    id: "large",
+    label: "Large",
+    credits: 350,
+    price: "25,00 €",
+    priceNumeric: 25.0,
+    envKey: "STRIPE_CREDITS_700",
+    description: "Für aktive Creator",
+    popular: false,
+  }),
+  buildCreditPackage({
+    id: "xl",
+    label: "XL",
+    credits: 800,
+    price: "45,00 €",
+    priceNumeric: 45.0,
+    envKey: "STRIPE_CREDITS_1500",
+    description: "Maximum Power",
+    popular: false,
+  }),
 ];
 
-export const DEFAULT_CHECKOUT_PACKAGE: CreditPackageId = "extra_300";
+export const CREDIT_PACKAGES = CREDIT_PACKS;
+
+export const DEFAULT_CHECKOUT_PACKAGE: CreditPackageId = "medium";
 
 export function getPackageById(id: string): CreditPackage | undefined {
   return CREDIT_PACKAGES.find((p) => p.id === id);
 }
 
-export function getStripePriceIdForPackage(pkg: CreditPackage): string | undefined {
-  return process.env[pkg.stripePriceEnv]?.trim() || undefined;
+export function getStripePriceIdForPackage(
+  pkg: CreditPackage
+): string | undefined {
+  return process.env[pkg.envKey]?.trim() || undefined;
 }
 
 /** Smallest pack that covers the credit shortfall (by missing amount). */
 export function recommendCreditPackageId(missing: number): CreditPackageId {
-  if (missing < 50) return "extra_100";
-  if (missing < 250) return "extra_300";
-  if (missing < 650) return "extra_700";
-  return "extra_1500";
+  if (missing <= 50) return "small";
+  if (missing <= 150) return "medium";
+  if (missing <= 350) return "large";
+  return "xl";
 }
 
-export const CREDIT_CALCULATOR_TIERS = [100, 300, 700, 1500] as const;
+export const CREDIT_CALCULATOR_TIERS = [50, 150, 350, 800] as const;
 
-export const EXTRA_CREDIT_RATE_LABEL = "€0.04 / Credit";
+export const EXTRA_CREDIT_RATE_LABEL = "€0,08 / Credit";
