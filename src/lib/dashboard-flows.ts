@@ -16,6 +16,7 @@ import {
   Video,
   Film,
   Clapperboard,
+  Theater,
   Images,
   Brain,
   Home,
@@ -439,6 +440,13 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         badge: "NEU",
       },
       {
+        id: "live-portrait",
+        href: "/dashboard/live-portrait",
+        label: "Live Portrait",
+        icon: Theater,
+        badge: "NEU",
+      },
+      {
         id: "seedance",
         href: "/dashboard/seedance",
         label: "Bild zu Video",
@@ -515,6 +523,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   if (
     path.includes("ugc-video") ||
     path.includes("motion-transfer") ||
+    path.includes("live-portrait") ||
     path.includes("seedance") ||
     path.includes("live-creator") ||
     path.includes("ki-ich")

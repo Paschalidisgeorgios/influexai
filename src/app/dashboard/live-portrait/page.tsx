@@ -1,0 +1,441 @@
+"use client";
+
+import { useState, useRef } from "react";
+
+export default function LivePortraitPage() {
+  const [sourceImage, setSourceImage] = useState<string | null>(null);
+  const [sourceImageFile, setSourceImageFile] = useState<File | null>(null);
+  const [drivingVideo, setDrivingVideo] = useState<string | null>(null);
+  const [drivingVideoFile, setDrivingVideoFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
+
+  const imageRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
+
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleSubmit = async () => {
+    if (!sourceImageFile || !drivingVideoFile) {
+      setError("Bitte Foto und Driving-Video hochladen.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const imageBase64 = await toBase64(sourceImageFile);
+      const videoBase64 = await toBase64(drivingVideoFile);
+
+      const res = await fetch("/api/live-portrait", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64,
+          videoBase64,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Fehler beim Generieren.");
+        return;
+      }
+
+      setResult(data.videoUrl);
+      setCreditsLeft(data.creditsLeft);
+    } catch {
+      setError("Unbekannter Fehler. Bitte erneut versuchen.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        padding: "32px 24px",
+        maxWidth: 800,
+        margin: "0 auto",
+        fontFamily: "DM Sans, sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <div
+          style={{
+            fontSize: 10,
+            color: "#B4FF00",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            marginBottom: 8,
+          }}
+        >
+          Creator Studio
+        </div>
+        <h1
+          style={{
+            fontSize: 36,
+            fontWeight: 900,
+            color: "#fff",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            marginBottom: 8,
+          }}
+        >
+          LIVE PORTRAIT
+        </h1>
+        <p
+          style={{
+            fontSize: 14,
+            color: "rgba(255,255,255,0.5)",
+            lineHeight: 1.6,
+          }}
+        >
+          Bringe dein Foto zum Leben — übertrage Mimik, Lippensync und Bewegung
+          von einem Video auf dein Bild.
+        </p>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          marginBottom: 16,
+        }}
+      >
+        {/* Foto Upload */}
+        <div>
+          <div
+            style={{
+              fontSize: 10,
+              color: "rgba(180,255,0,0.6)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            SCHRITT 1 · DEIN FOTO
+          </div>
+          <div
+            onClick={() => imageRef.current?.click()}
+            style={{
+              border: sourceImage
+                ? "1px solid rgba(180,255,0,0.4)"
+                : "1px dashed rgba(255,255,255,0.2)",
+              borderRadius: 8,
+              height: 260,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              overflow: "hidden",
+              background: "rgba(255,255,255,0.02)",
+            }}
+          >
+            {sourceImage ? (
+              <img
+                src={sourceImage}
+                alt="Foto"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🤳</div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "rgba(255,255,255,0.5)",
+                    textAlign: "center",
+                    padding: "0 16px",
+                  }}
+                >
+                  Dein Foto hochladen
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(255,255,255,0.25)",
+                    marginTop: 6,
+                  }}
+                >
+                  JPG, PNG, WebP · Gesicht frontal
+                </div>
+              </>
+            )}
+          </div>
+          <input
+            ref={imageRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setSourceImageFile(file);
+              const reader = new FileReader();
+              reader.onload = (ev) =>
+                setSourceImage(ev.target?.result as string);
+              reader.readAsDataURL(file);
+            }}
+          />
+        </div>
+
+        {/* Driving Video */}
+        <div>
+          <div
+            style={{
+              fontSize: 10,
+              color: "rgba(180,255,0,0.6)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            SCHRITT 2 · BEWEGUNGS-VIDEO
+          </div>
+          <div
+            onClick={() => videoRef.current?.click()}
+            style={{
+              border: drivingVideo
+                ? "1px solid rgba(180,255,0,0.4)"
+                : "1px dashed rgba(255,255,255,0.2)",
+              borderRadius: 8,
+              height: 260,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              overflow: "hidden",
+              background: "rgba(255,255,255,0.02)",
+            }}
+          >
+            {drivingVideo ? (
+              <video
+                src={drivingVideo}
+                controls
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🎬</div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "rgba(255,255,255,0.5)",
+                    textAlign: "center",
+                    padding: "0 16px",
+                  }}
+                >
+                  Video mit deiner Bewegung
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(255,255,255,0.25)",
+                    marginTop: 6,
+                  }}
+                >
+                  MP4 · Kurzes Video · Gesicht sichtbar
+                </div>
+              </>
+            )}
+          </div>
+          <input
+            ref={videoRef}
+            type="file"
+            accept="video/mp4,video/quicktime"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              if (file.size > 50 * 1024 * 1024) {
+                setError("Video zu groß. Max. 50MB.");
+                return;
+              }
+              setDrivingVideoFile(file);
+              setDrivingVideo(URL.createObjectURL(file));
+              setError(null);
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Hinweis */}
+      <div
+        style={{
+          padding: "10px 14px",
+          borderRadius: 6,
+          border: "1px solid rgba(180,255,0,0.15)",
+          background: "rgba(180,255,0,0.04)",
+          fontSize: 12,
+          color: "rgba(255,255,255,0.5)",
+          marginBottom: 16,
+          lineHeight: 1.6,
+        }}
+      >
+        💡 Dein Foto wird zum Leben erweckt — Mimik, Lippenbewegung und
+        Kopfbewegung aus dem Video werden auf dein Bild übertragen. Kein
+        Deepfake — nur dein eigenes Material verwenden.
+      </div>
+
+      {/* Fehler */}
+      {error && (
+        <div
+          style={{
+            padding: "12px 16px",
+            borderRadius: 6,
+            border: "1px solid rgba(255,80,80,0.3)",
+            background: "rgba(255,80,80,0.06)",
+            color: "rgba(255,120,120,0.9)",
+            fontSize: 13,
+            marginBottom: 16,
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          <span>⚠️</span>
+          <div>{error}</div>
+        </div>
+      )}
+
+      {/* Button */}
+      <button
+        onClick={handleSubmit}
+        disabled={loading || !sourceImageFile || !drivingVideoFile}
+        style={{
+          width: "100%",
+          padding: "14px",
+          borderRadius: 6,
+          border: "none",
+          background:
+            loading || !sourceImageFile || !drivingVideoFile
+              ? "rgba(180,255,0,0.3)"
+              : "#B4FF00",
+          color: "#060608",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor:
+            loading || !sourceImageFile || !drivingVideoFile
+              ? "default"
+              : "pointer",
+          letterSpacing: "0.04em",
+          textTransform: "uppercase",
+        }}
+      >
+        {loading
+          ? "⏳ Live Portrait wird generiert..."
+          : "LIVE PORTRAIT ERSTELLEN — 5 CREDITS"}
+      </button>
+
+      {loading && (
+        <div
+          style={{
+            marginTop: 16,
+            padding: "16px",
+            borderRadius: 6,
+            border: "1px solid rgba(180,255,0,0.2)",
+            background: "rgba(180,255,0,0.04)",
+            fontSize: 13,
+            color: "rgba(255,255,255,0.6)",
+            textAlign: "center",
+            lineHeight: 1.6,
+          }}
+        >
+          <div
+            style={{
+              color: "#B4FF00",
+              fontWeight: 700,
+              marginBottom: 4,
+            }}
+          >
+            KI überträgt Mimik und Bewegung...
+          </div>
+          Dauert ca. 30–90 Sekunden. Bitte Seite nicht schließen.
+        </div>
+      )}
+
+      {/* Ergebnis */}
+      {result && (
+        <div
+          style={{
+            marginTop: 24,
+            border: "1px solid rgba(180,255,0,0.25)",
+            borderRadius: 8,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              padding: "10px 16px",
+              borderBottom: "1px solid rgba(255,255,255,0.07)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                color: "#B4FF00",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              ✓ LIVE PORTRAIT BEREIT
+            </span>
+            {creditsLeft !== null && (
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
+                {creditsLeft} Credits übrig
+              </span>
+            )}
+          </div>
+          <video src={result} controls style={{ width: "100%", display: "block" }} />
+          <div
+            style={{
+              padding: "10px 16px",
+              borderTop: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <a
+              href={result}
+              download="live-portrait.mp4"
+              style={{
+                padding: "6px 16px",
+                borderRadius: 4,
+                border: "none",
+                background: "#B4FF00",
+                color: "#060608",
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+                textDecoration: "none",
+                display: "inline-block",
+              }}
+            >
+              Video herunterladen
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
