@@ -183,12 +183,16 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
     return () => clearTimeout(tmr);
   }, [input, loadEstimate]);
 
+  const growTextarea = useCallback((el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, []);
+
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
-  }, [input]);
+    growTextarea(el);
+  }, [input, growTextarea]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -407,14 +411,19 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
       }}
     >
       <div
-        className={`relative rounded-2xl border border-white/[0.12] bg-white/[0.04] transition-colors focus-within:border-[var(--accent,#B4FF00)] ${
-          compact ? "p-3" : "p-5"
-        }`}
+        className="flex w-full flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.04] transition-colors focus-within:border-[rgba(180,255,0,0.4)]"
+        style={{ padding: "14px 14px 12px 16px" }}
       >
         <textarea
           ref={textareaRef}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+            growTextarea(e.currentTarget);
+          }}
+          onInput={(e) => {
+            growTextarea(e.currentTarget);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -423,38 +432,43 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
           }}
           placeholder={t("input_placeholder")}
           disabled={running}
-          rows={compact ? 2 : 3}
-          className={`w-full resize-none bg-transparent text-[#F0EFE8] leading-relaxed placeholder:text-white/30 outline-none ${
-            compact ? "min-h-[44px] text-sm pl-1 pr-12 pb-1" : "min-h-[72px] text-base pl-1 pr-14 pb-10"
+          rows={1}
+          className={`w-full resize-none overflow-hidden bg-transparent text-[#F0EFE8] leading-relaxed placeholder:text-white/30 outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            compact ? "text-sm" : "text-base"
           }`}
+          style={{ minHeight: 22, maxHeight: 120 }}
         />
-        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             disabled
             title={t("attach_soon")}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-white/35 cursor-not-allowed"
+            className="flex shrink-0 items-center justify-center rounded border border-white/[0.12] text-white/35 cursor-not-allowed"
+            style={{ width: 28, height: 28, borderRadius: 4 }}
             aria-label={t("attach_soon")}
           >
-            <Paperclip size={16} />
+            <Paperclip size={14} />
+          </button>
+          <div className="flex-1" aria-hidden />
+          <button
+            type="submit"
+            disabled={running || !input.trim()}
+            className="flex shrink-0 items-center justify-center rounded bg-[#B4FF00] text-[#060608] transition-opacity hover:brightness-105 disabled:cursor-not-allowed"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 4,
+              opacity: input.trim() && !running ? 1 : 0.3,
+            }}
+            aria-label={t("send")}
+          >
+            {running ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <ArrowUp size={16} strokeWidth={2.5} />
+            )}
           </button>
         </div>
-        <button
-          type="submit"
-          disabled={running || !input.trim()}
-          className={`absolute flex items-center justify-center rounded-xl bg-[var(--accent,#B4FF00)] text-[#060608] shadow-[0_0_20px_color-mix(in_srgb,var(--accent,#B4FF00)_30%,transparent)] disabled:opacity-35 hover:brightness-105 transition-all ${
-            compact
-              ? "right-2 bottom-2 h-9 w-9"
-              : "right-4 bottom-4 h-11 w-11 md:h-12 md:w-12"
-          }`}
-          aria-label={t("send")}
-        >
-          {running ? (
-            <Loader2 size={compact ? 18 : 22} className="animate-spin" />
-          ) : (
-            <ArrowUp size={compact ? 18 : 22} strokeWidth={2.5} />
-          )}
-        </button>
       </div>
       {creditHint && !compact && (
         <p className="mt-2 text-center text-xs text-white/50">{creditHint}</p>
@@ -463,7 +477,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
   );
 
   const quickActionChips = (
-    <div className="mt-6 flex w-full min-w-0 flex-wrap justify-center gap-2">
+    <div className="mt-4 flex w-full min-w-0 flex-wrap justify-center gap-2">
       {suggestedPrompts.map((chip) => (
         <button
           key={chip}

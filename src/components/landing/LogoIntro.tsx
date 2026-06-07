@@ -123,7 +123,7 @@ export function LogoIntro() {
           <img
             src={LOGO_SRC}
             alt="INFLUEXAI"
-            className="logo-intro-logo"
+            className="intro-logo"
             draggable={false}
           />
         </div>

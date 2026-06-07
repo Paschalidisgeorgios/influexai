@@ -1954,7 +1954,7 @@ header.site-header.site-header--scrolled {
 .logo-intro-root {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: 999999;
   pointer-events: auto;
   animation: logoIntroRootFade 15s ease forwards;
 }
@@ -2047,12 +2047,12 @@ header.site-header.site-header--scrolled {
   filter: drop-shadow(0 0 42px rgba(180, 255, 0, 0.12));
 }
 
-.logo-intro-logo {
-  display: block;
-  width: clamp(240px, 38vw, 560px);
-  max-width: min(92vw, 560px);
+.intro-logo {
+  width: min(70vw, 560px);
+  max-width: 560px;
   height: auto;
   object-fit: contain;
+  display: block;
   user-select: none;
 }
 
