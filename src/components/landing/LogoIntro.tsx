@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const INTRO_STORAGE_KEY = "influexai_intro_seen";
 const INTRO_DONE_EVENT = "influexai:intro-complete";
 const INTRO_REVEAL_EVENT = "influexai:intro-reveal";
-const LOGO_SRC = "/images/Logo-full.png";
+const LOGO_SRC = "/images/logo-intro.png";
 const INTRO_DURATION = 10000;
 const REVEAL_MS = 7500;
 const EXIT_DURATION = 600;
@@ -151,6 +151,7 @@ export function LogoIntro() {
 
   return (
     <div
+      className="logo-intro-root"
       style={{
         position: "fixed",
         inset: 0,
@@ -171,7 +172,10 @@ export function LogoIntro() {
           inset: 0,
           background:
             "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(180,255,0,0.05) 0%, transparent 70%)",
-          animation: "logoIntroGlowPulse 10s ease forwards",
+          animationName: "logoIntroGlowPulse",
+          animationDuration: "10s",
+          animationTimingFunction: "ease",
+          animationFillMode: "forwards",
           pointerEvents: "none",
           zIndex: 1,
         }}
@@ -184,17 +188,24 @@ export function LogoIntro() {
           left: "50%",
           transform: "translate(-50%, -50%)",
           zIndex: 10,
+          pointerEvents: "none",
         }}
       >
         <div
           style={{
             opacity: 0,
-            animation: "logoIntroLogo 10s ease forwards",
+            animationName: "logoIntroLogo",
+            animationDuration: "10s",
+            animationTimingFunction: "ease",
+            animationFillMode: "forwards",
+            animationDelay: "0s",
           }}
         >
           <img
-            src="/images/Logo-full.png"
+            src={LOGO_SRC}
             alt="INFLUEXAI"
+            width={340}
+            height={81}
             draggable={false}
             decoding="sync"
             fetchPriority="high"
@@ -219,7 +230,10 @@ export function LogoIntro() {
           boxShadow: "0 0 8px rgba(180,255,0,0.7)",
           transform: "scaleX(0)",
           transformOrigin: "center",
-          animation: "logoIntroLine 10s ease forwards",
+          animationName: "logoIntroLine",
+          animationDuration: "10s",
+          animationTimingFunction: "ease",
+          animationFillMode: "forwards",
           pointerEvents: "none",
           zIndex: 11,
         }}
@@ -236,7 +250,10 @@ export function LogoIntro() {
           boxShadow: "0 0 8px rgba(180,255,0,0.7)",
           transform: "scaleX(0)",
           transformOrigin: "center",
-          animation: "logoIntroLine 10s ease forwards",
+          animationName: "logoIntroLine",
+          animationDuration: "10s",
+          animationTimingFunction: "ease",
+          animationFillMode: "forwards",
           pointerEvents: "none",
           zIndex: 11,
         }}
@@ -248,7 +265,10 @@ export function LogoIntro() {
           inset: 0,
           background: "#060608",
           clipPath: "inset(0 0 0 0)",
-          animation: "logoIntroSplitTop 10s ease forwards",
+          animationName: "logoIntroSplitTop",
+          animationDuration: "10s",
+          animationTimingFunction: "ease",
+          animationFillMode: "forwards",
           pointerEvents: "none",
           zIndex: 5,
         }}
