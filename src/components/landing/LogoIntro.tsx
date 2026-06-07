@@ -1,25 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const INTRO_STORAGE_KEY = "influexai_intro_seen";
 const INTRO_DONE_EVENT = "influexai:intro-complete";
 const INTRO_REVEAL_EVENT = "influexai:intro-reveal";
 const LOGO_SRC = "/images/Logo-full.png";
-const INTRO_DURATION = 15000;
-const REVEAL_MS = 11500;
+const INTRO_DURATION = 10000;
+const REVEAL_MS = 7500;
 const EXIT_DURATION = 600;
-
-const OVERLAY_STYLE = {
-  position: "fixed" as const,
-  inset: 0,
-  zIndex: 999999,
-  background: "#060608",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  pointerEvents: "auto" as const,
-};
+const ANIM_DURATION = "10s ease forwards";
 
 function dispatchIntroEvent(name: string) {
   window.dispatchEvent(new CustomEvent(name));
@@ -34,30 +24,15 @@ function readIntroSeen(): boolean {
   }
 }
 
-function shouldShowIntroInitially(): boolean {
-  if (typeof window === "undefined") return false;
-
-  const params = new URLSearchParams(window.location.search);
-  const forceIntro = params.get("intro") === "1";
-  if (forceIntro) return true;
-
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return false;
-
-  return !readIntroSeen();
-}
-
 export function LogoIntro() {
-  const [showIntro, setShowIntro] = useState(shouldShowIntroInitially);
+  const [showIntro, setShowIntro] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const [manualSkip, setManualSkip] = useState(false);
   const finishCalledRef = useRef(false);
   const introTimerRef = useRef<number | null>(null);
   const revealTimerRef = useRef<number | null>(null);
   const exitTimerRef = useRef<number | null>(null);
-  const reducedMotionTimerRef = useRef<number | null>(null);
+  const deferredEventTimerRef = useRef<number | null>(null);
 
   const clearIntroTimers = useCallback(() => {
     if (introTimerRef.current) {
@@ -98,11 +73,12 @@ export function LogoIntro() {
   }, [clearIntroTimers, releaseIntroLock]);
 
   const handleSkip = useCallback(() => {
-    setManualSkip(true);
     finishIntro();
   }, [finishIntro]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setMounted(true);
+
     const params = new URLSearchParams(window.location.search);
     const forceIntro = params.get("intro") === "1";
 
@@ -123,11 +99,10 @@ export function LogoIntro() {
     ).matches;
 
     if (reducedMotion) {
-      setShowIntro(false);
-      reducedMotionTimerRef.current = window.setTimeout(() => {
+      deferredEventTimerRef.current = window.setTimeout(() => {
         dispatchIntroEvent(INTRO_REVEAL_EVENT);
         dispatchIntroEvent(INTRO_DONE_EVENT);
-        reducedMotionTimerRef.current = null;
+        deferredEventTimerRef.current = null;
       }, 50);
       return;
     }
@@ -139,13 +114,15 @@ export function LogoIntro() {
       return;
     }
 
-    setShowIntro(false);
-    dispatchIntroEvent(INTRO_REVEAL_EVENT);
-    dispatchIntroEvent(INTRO_DONE_EVENT);
+    deferredEventTimerRef.current = window.setTimeout(() => {
+      dispatchIntroEvent(INTRO_REVEAL_EVENT);
+      dispatchIntroEvent(INTRO_DONE_EVENT);
+      deferredEventTimerRef.current = null;
+    }, 50);
   }, []);
 
   useEffect(() => {
-    if (!showIntro || isExiting) return;
+    if (!mounted || !showIntro || isExiting) return;
 
     finishCalledRef.current = false;
 
@@ -160,65 +137,153 @@ export function LogoIntro() {
     return () => {
       clearIntroTimers();
     };
-  }, [showIntro, isExiting, finishIntro, clearIntroTimers]);
+  }, [mounted, showIntro, isExiting, finishIntro, clearIntroTimers]);
 
   useEffect(() => {
     return () => {
       if (exitTimerRef.current) {
         window.clearTimeout(exitTimerRef.current);
       }
-      if (reducedMotionTimerRef.current) {
-        window.clearTimeout(reducedMotionTimerRef.current);
+      if (deferredEventTimerRef.current) {
+        window.clearTimeout(deferredEventTimerRef.current);
       }
+      releaseIntroLock();
     };
-  }, []);
+  }, [releaseIntroLock]);
 
-  if (!showIntro) return null;
+  if (!mounted || !showIntro) return null;
 
   return (
     <div
-      className={[
-        "logo-intro-root",
-        manualSkip ? "logo-intro-root--skip" : "",
-        isExiting && !manualSkip ? "logo-intro-root--exit" : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      style={OVERLAY_STYLE}
       role="presentation"
       aria-hidden
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 999999,
+        background: "#060608",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        opacity: isExiting ? 0 : 1,
+        transition: isExiting ? `opacity ${EXIT_DURATION}ms ease` : undefined,
+        pointerEvents: isExiting ? "none" : "auto",
+      }}
     >
-      <div className="logo-intro-bg" aria-hidden>
-        <div className="logo-intro-bg-grid" />
-        <div className="logo-intro-glow" />
-      </div>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(180,255,0,0.05) 0%, transparent 70%)",
+          animation: `logoIntroGlowPulse ${ANIM_DURATION}`,
+          pointerEvents: "none",
+        }}
+      />
 
-      <div className="logo-intro-split logo-intro-split--top" aria-hidden />
-      <div className="logo-intro-split logo-intro-split--bottom" aria-hidden />
-
-      <div className="logo-intro-stage">
-        <div className="logo-intro-line logo-intro-line--top" aria-hidden />
-        <div className="logo-intro-logo-layer">
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 10,
+        }}
+      >
+        <div
+          style={{
+            animation: `logoIntroLogo ${ANIM_DURATION}`,
+            opacity: 0,
+          }}
+        >
           <img
             src={LOGO_SRC}
             alt="INFLUEXAI"
-            className="intro-logo"
             draggable={false}
             decoding="sync"
             fetchPriority="high"
+            style={{
+              display: "block",
+              width: "clamp(200px, 55vw, 340px)",
+              height: "auto",
+            }}
           />
         </div>
-        <div className="logo-intro-line logo-intro-line--bottom" aria-hidden />
       </div>
 
-      <div className="logo-intro-fade" aria-hidden />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "calc(50% - 52px)",
+          left: 0,
+          width: "100%",
+          height: "1.5px",
+          background: "#B4FF00",
+          boxShadow: "0 0 8px rgba(180,255,0,0.7)",
+          transform: "scaleX(0)",
+          transformOrigin: "center",
+          animation: `logoIntroLine ${ANIM_DURATION}`,
+          pointerEvents: "none",
+          zIndex: 11,
+        }}
+      />
+
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "calc(50% + 52px)",
+          left: 0,
+          width: "100%",
+          height: "1.5px",
+          background: "#B4FF00",
+          boxShadow: "0 0 8px rgba(180,255,0,0.7)",
+          transform: "scaleX(0)",
+          transformOrigin: "center",
+          animation: `logoIntroLine ${ANIM_DURATION}`,
+          pointerEvents: "none",
+          zIndex: 11,
+        }}
+      />
+
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "#060608",
+          clipPath: "inset(0 0 0 0)",
+          animation: `logoIntroSplitTop ${ANIM_DURATION}`,
+          pointerEvents: "none",
+          zIndex: 5,
+        }}
+      />
 
       <button
         type="button"
-        className="logo-intro-skip"
         onClick={handleSkip}
+        style={{
+          position: "absolute",
+          bottom: "max(20px, env(safe-area-inset-bottom, 20px))",
+          right: 20,
+          zIndex: 20,
+          minHeight: 44,
+          padding: "8px 16px",
+          borderRadius: 4,
+          border: "1px solid rgba(255,255,255,0.15)",
+          background: "transparent",
+          color: "rgba(255,255,255,0.4)",
+          fontSize: 11,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          cursor: "pointer",
+          fontFamily: "var(--font-dm), DM Sans, sans-serif",
+        }}
       >
-        Intro überspringen
+        Überspringen
       </button>
     </div>
   );
