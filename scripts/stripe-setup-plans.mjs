@@ -8,7 +8,7 @@
 const PLANS = [
   {
     id: "starter",
-    name: "InfluexAI Starter",
+    name: "InfluExAi Starter",
     monthlyEur: 9.99,
     yearlyPerMonthEur: 9.99,
     monthlyEnv: "STRIPE_PRICE_STARTER_MONTHLY",

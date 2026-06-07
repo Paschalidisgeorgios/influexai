@@ -42,14 +42,14 @@ Do **not** commit secret values. Set in `.env.local` (dev) and Vercel **Producti
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY` | Agency Starter monthly Price ID |
-| `NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY` | Agency Starter yearly Price ID |
-| `NEXT_PUBLIC_STRIPE_PRO_MONTHLY` | Pro monthly |
-| `NEXT_PUBLIC_STRIPE_PRO_YEARLY` | Pro yearly |
-| `NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY` | Business monthly |
-| `NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY` | Business yearly |
-| `NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY` | Agency Pro monthly |
-| `NEXT_PUBLIC_STRIPE_AGENCY_PRO_YEARLY` | Agency Pro yearly |
+| `NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY` | InfluExAi Starter monthly Price ID |
+| `NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY` | InfluExAi Starter yearly Price ID |
+| `NEXT_PUBLIC_STRIPE_PRO_MONTHLY` | InfluexAI Creator monthly |
+| `NEXT_PUBLIC_STRIPE_PRO_YEARLY` | InfluexAI Creator yearly |
+| `NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY` | InfluexAI Pro monthly |
+| `NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY` | InfluexAI Pro yearly |
+| `NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY` | InfluexAI Business monthly |
+| `NEXT_PUBLIC_STRIPE_AGENCY_PRO_YEARLY` | InfluexAI Business yearly |
 
 ## Stripe — credit packs (server only)
 

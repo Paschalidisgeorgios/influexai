@@ -139,10 +139,10 @@ export function getPlanDisplayName(plan: string | null | undefined): string {
   const id = normalizePlan(plan);
   if (id === "free") return "Free";
   const labels: Record<Exclude<SubscriptionPlanId, "free">, string> = {
-    starter: "Agency Starter",
-    creator: "Pro",
-    pro: "Business",
-    business: "Agency Pro",
+    starter: "InfluExAi Starter",
+    creator: "InfluexAI Creator",
+    pro: "InfluexAI Pro",
+    business: "InfluexAI Business",
   };
   return labels[id];
 }
