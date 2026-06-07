@@ -252,6 +252,36 @@ function HeroBackgroundMedia() {
   );
 }
 
+function readIntroSeenFromStorage(): boolean {
+  try {
+    const value = sessionStorage.getItem("influexai_intro_seen");
+    return value === "true" || value === "1";
+  } catch {
+    return false;
+  }
+}
+
+function shouldRevealHeroInitially(): boolean {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const forceIntro = params.get("intro") === "1";
+    if (forceIntro) return false;
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reducedMotion) return true;
+
+    if (readIntroSeenFromStorage()) return true;
+  } catch {
+    /* private mode */
+  }
+
+  return false;
+}
+
 export function HeroSection({
   variant: _variant = "a",
 }: {
@@ -262,7 +292,7 @@ export function HeroSection({
   const priceParams = getStarterPriceParams(locale);
   const [audience, setAudience] = useState<Audience>("creator");
   const [parallaxY, setParallaxY] = useState(0);
-  const [heroRevealed, setHeroRevealed] = useState(false);
+  const [heroRevealed, setHeroRevealed] = useState(shouldRevealHeroInitially);
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
     ? (rawRotating as string[])
@@ -272,19 +302,16 @@ export function HeroSection({
     const handleIntroReveal = () => setHeroRevealed(true);
     const handleIntroComplete = () => setHeroRevealed(true);
 
-    window.addEventListener(INTRO_REVEAL_EVENT, handleIntroReveal);
-    window.addEventListener(INTRO_DONE_EVENT, handleIntroComplete);
+    window.addEventListener(INTRO_REVEAL_EVENT, handleIntroReveal, {
+      once: true,
+    });
+    window.addEventListener(INTRO_DONE_EVENT, handleIntroComplete, {
+      once: true,
+    });
 
     const forceIntro =
       new URLSearchParams(window.location.search).get("intro") === "1";
-    const alreadySeen = (() => {
-      try {
-        const value = sessionStorage.getItem("influexai_intro_seen");
-        return value === "true" || value === "1";
-      } catch {
-        return false;
-      }
-    })();
+    const alreadySeen = readIntroSeenFromStorage();
     const introActive =
       document.documentElement.classList.contains("logo-intro-active");
 

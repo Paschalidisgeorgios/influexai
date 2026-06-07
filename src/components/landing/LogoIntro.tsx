@@ -34,14 +34,30 @@ function readIntroSeen(): boolean {
   }
 }
 
+function shouldShowIntroInitially(): boolean {
+  if (typeof window === "undefined") return false;
+
+  const params = new URLSearchParams(window.location.search);
+  const forceIntro = params.get("intro") === "1";
+  if (forceIntro) return true;
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  if (reducedMotion) return false;
+
+  return !readIntroSeen();
+}
+
 export function LogoIntro() {
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(shouldShowIntroInitially);
   const [isExiting, setIsExiting] = useState(false);
   const [manualSkip, setManualSkip] = useState(false);
   const finishCalledRef = useRef(false);
   const introTimerRef = useRef<number | null>(null);
   const revealTimerRef = useRef<number | null>(null);
   const exitTimerRef = useRef<number | null>(null);
+  const reducedMotionTimerRef = useRef<number | null>(null);
 
   const clearIntroTimers = useCallback(() => {
     if (introTimerRef.current) {
@@ -89,18 +105,34 @@ export function LogoIntro() {
   useLayoutEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forceIntro = params.get("intro") === "1";
+
+    if (forceIntro) {
+      try {
+        sessionStorage.removeItem(INTRO_STORAGE_KEY);
+      } catch {
+        /* private mode */
+      }
+      setShowIntro(true);
+      document.body.style.overflow = "hidden";
+      document.documentElement.classList.add("logo-intro-active");
+      return;
+    }
+
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (reducedMotion && !forceIntro) {
+    if (reducedMotion) {
       setShowIntro(false);
-      dispatchIntroEvent(INTRO_REVEAL_EVENT);
-      dispatchIntroEvent(INTRO_DONE_EVENT);
+      reducedMotionTimerRef.current = window.setTimeout(() => {
+        dispatchIntroEvent(INTRO_REVEAL_EVENT);
+        dispatchIntroEvent(INTRO_DONE_EVENT);
+        reducedMotionTimerRef.current = null;
+      }, 50);
       return;
     }
 
-    if (forceIntro || !readIntroSeen()) {
+    if (!readIntroSeen()) {
       setShowIntro(true);
       document.body.style.overflow = "hidden";
       document.documentElement.classList.add("logo-intro-active");
@@ -134,6 +166,9 @@ export function LogoIntro() {
     return () => {
       if (exitTimerRef.current) {
         window.clearTimeout(exitTimerRef.current);
+      }
+      if (reducedMotionTimerRef.current) {
+        window.clearTimeout(reducedMotionTimerRef.current);
       }
     };
   }, []);
