@@ -22,6 +22,7 @@ export function CookieBanner() {
     } catch {
       /* private mode */
     }
+    window.dispatchEvent(new Event("influexai_consent_accepted"));
     setVisible(false);
   };
 

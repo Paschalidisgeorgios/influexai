@@ -45,6 +45,11 @@ export default function CookiesPage() {
 
       <LegalSection title="Analyse-Cookies (nur mit Zustimmung)">
         <LegalParagraph>
+          Google Analytics wird nur nach Ihrer Zustimmung geladen. Sie können
+          Ihre Einwilligung jederzeit widerrufen, indem Sie Ihren Browser-Cache
+          leeren.
+        </LegalParagraph>
+        <LegalParagraph>
           Anonyme Nutzungsstatistiken zur Verbesserung der Plattform und der
           KI-Tools.
         </LegalParagraph>
