@@ -6,24 +6,12 @@ export const AGENCY_STRIPE_PRICE_ENV_KEYS: Record<
   Record<BillingInterval, readonly string[]>
 > = {
   starter: {
-    monthly: [
-      "STRIPE_AGENCY_STARTER_MONTHLY",
-      "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY",
-    ],
-    yearly: [
-      "STRIPE_AGENCY_STARTER_YEARLY",
-      "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY",
-    ],
+    monthly: ["STRIPE_AGENCY_STARTER_MONTHLY"],
+    yearly: ["STRIPE_AGENCY_STARTER_YEARLY"],
   },
   pro: {
-    monthly: [
-      "STRIPE_AGENCY_PRO_MONTHLY",
-      "NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY",
-    ],
-    yearly: [
-      "STRIPE_AGENCY_PRO_YEARLY",
-      "NEXT_PUBLIC_STRIPE_AGENCY_PRO_YEARLY",
-    ],
+    monthly: ["STRIPE_AGENCY_PRO_MONTHLY"],
+    yearly: ["STRIPE_AGENCY_PRO_YEARLY"],
   },
   enterprise: {
     monthly: [

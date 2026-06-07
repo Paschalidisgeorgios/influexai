@@ -151,7 +151,7 @@ src/app/api/credits/checkout/route.ts         — Dashboard Credits-Seite
 
 | Typ | Definition | Stripe |
 |-----|------------|--------|
-| **Agency Starter 7,99 €** | `subscription-plans.ts:28-35` | Abo `mode: subscription`, Env `NEXT_PUBLIC_STRIPE_AGENCY_STARTER_*` |
+| **InfluExAi Starter 9,99 €** | `subscription-plans.ts:28-35` | Abo `mode: subscription`, Env `NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_*` |
 | **Credit-Packs** | `credit-packages.ts:20-58` | Einmalkauf `mode: payment`, Env `STRIPE_CREDITS_*` |
 | **7,99 € Credits/Monat** | Starter: **50 Credits/Monat** bei Abo-Aktivierung (`webhook/route.ts:134-148`) |
 

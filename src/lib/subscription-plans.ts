@@ -31,16 +31,16 @@ export const SUBSCRIPTION_PLANS: Record<
     monthlyCredits: 50,
     monthlyPriceEur: 9.99,
     yearlyPricePerMonthEur: 9.99,
-    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY",
-    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY",
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_YEARLY",
   },
   creator: {
     id: "creator",
     monthlyCredits: 300,
     monthlyPriceEur: 49,
     yearlyPricePerMonthEur: 39,
-    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_PRO_MONTHLY",
-    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_PRO_YEARLY",
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_YEARLY",
     popular: true,
   },
   pro: {
@@ -48,16 +48,16 @@ export const SUBSCRIPTION_PLANS: Record<
     monthlyCredits: 800,
     monthlyPriceEur: 99,
     yearlyPricePerMonthEur: 79,
-    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY",
-    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY",
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_PRO_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_PRO_YEARLY",
   },
   business: {
     id: "business",
     monthlyCredits: 2500,
     monthlyPriceEur: 199,
     yearlyPricePerMonthEur: 159,
-    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY",
-    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_AGENCY_PRO_YEARLY",
+    stripeMonthlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_BUSINESS_MONTHLY",
+    stripeYearlyEnv: "NEXT_PUBLIC_STRIPE_INFLUEXAI_BUSINESS_YEARLY",
   },
 };
 
@@ -88,25 +88,35 @@ export const CLIENT_STRIPE_PRICE_IDS: Record<
 > = {
   starter: {
     monthly: readPublicPriceId(
-      process.env.NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY
     ),
     yearly: readPublicPriceId(
-      process.env.NEXT_PUBLIC_STRIPE_AGENCY_STARTER_YEARLY
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_YEARLY
     ),
   },
   creator: {
-    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY),
-    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY),
+    monthly: readPublicPriceId(
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_MONTHLY
+    ),
+    yearly: readPublicPriceId(
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_YEARLY
+    ),
   },
   pro: {
-    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY),
-    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY),
+    monthly: readPublicPriceId(
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_PRO_MONTHLY
+    ),
+    yearly: readPublicPriceId(
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_PRO_YEARLY
+    ),
   },
   business: {
     monthly: readPublicPriceId(
-      process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_BUSINESS_MONTHLY
     ),
-    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRO_YEARLY),
+    yearly: readPublicPriceId(
+      process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_BUSINESS_YEARLY
+    ),
   },
 };
 
