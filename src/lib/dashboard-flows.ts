@@ -367,6 +367,19 @@ export const NAV_GROUPS: {
         badge: "NEU",
       },
       {
+        id: "ki-agent",
+        href: "/dashboard/ki-agent",
+        label: "KI Agent",
+        icon: Bot,
+      },
+      {
+        id: "campaign-autopilot",
+        href: "/dashboard/campaign-autopilot",
+        label: "Campaign Autopilot",
+        icon: Rocket,
+        badge: "NEU",
+      },
+      {
         id: "upscaler",
         href: "/dashboard/upscaler",
         label: "HD Upscaler",
@@ -413,13 +426,6 @@ export const NAV_GROUPS: {
         href: "/dashboard/content-kalender",
         label: "Content Kalender",
         icon: Calendar,
-        badge: "NEU",
-      },
-      {
-        id: "campaign-autopilot",
-        href: "/dashboard/campaign-autopilot",
-        label: "Campaign Autopilot",
-        icon: Bot,
         badge: "NEU",
       },
       {

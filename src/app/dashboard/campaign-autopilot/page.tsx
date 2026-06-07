@@ -2,6 +2,6 @@
 
 import CampaignAutopilot from "@/components/dashboard/CampaignAutopilot";
 
-export default function CampaignAutopilotPage() {
+export default function Page() {
   return <CampaignAutopilot />;
 }

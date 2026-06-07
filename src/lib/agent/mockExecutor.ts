@@ -15,9 +15,9 @@ import {
   CampaignTone,
 } from "./types";
 import {
-  buildCampaignSteps,
   buildMockContentItems,
   CAMPAIGN_SPECS,
+  CAMPAIGN_STEPS,
   inferBrandDNA,
 } from "./campaignPlanner";
 import { detectIntent, routeToTools, STEP_LABELS } from "./router";
@@ -100,19 +100,19 @@ export function createCampaignExecution(
 ): CampaignExecution {
   const { dna } = inferBrandDNA(prompt);
   const spec = CAMPAIGN_SPECS[mode];
-  const steps = buildCampaignSteps().map((label, i) => ({
+  const steps = CAMPAIGN_STEPS.map((label, i) => ({
     id: `step-${i}`,
     label,
     status: "pending" as const,
   }));
 
-  // TODO: GUARD — Credits > 20 erfordert separate Bestätigung
-  // TODO: GUARD — Face Swap / Voice Cloning erfordert Consent
-  // TODO: GUARD — Veröffentlichung erfordert separate Bestätigung
-  // TODO: GUARD — Legal Sensitivity 'high' → manuelle Prüfung vor Output
+  // TODO: GUARD Credits >20 → separate Bestätigung
+  // TODO: GUARD Face/Voice/Avatar → Consent-Flow
+  // TODO: GUARD Publishing → separate Bestätigung
+  // TODO: GUARD Legal Sensitivity 'high' → manuelle Prüfung
 
   return {
-    id: newCampaignId(),
+    id: newExecutionId(),
     userId,
     prompt,
     mode,
@@ -142,8 +142,8 @@ export function buildCampaignResult(exec: CampaignExecution): CampaignResult {
   return {
     id: newCampaignId(),
     mode: exec.mode,
-    title: `${spec.days}-Tage Content-Paket`,
-    summary: `${items.length} Content-Items generiert.`,
+    title: `${spec.label} Content-Paket`,
+    summary: `${items.length} Content-Items für ${exec.platforms.join(", ")} generiert.`,
     brandDNA: dna,
     assumptionsMade: assumptions,
     items,

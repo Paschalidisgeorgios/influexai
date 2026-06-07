@@ -17,6 +17,7 @@ export const CAMPAIGN_SPECS: Record<
     ads: number;
     visualBriefings: number;
     estimatedCredits: number;
+    label: string;
   }
 > = {
   sprint: {
@@ -28,6 +29,7 @@ export const CAMPAIGN_SPECS: Record<
     ads: 0,
     visualBriefings: 2,
     estimatedCredits: 12,
+    label: "2–3 Tage",
   },
   weekly: {
     days: 7,
@@ -38,6 +40,7 @@ export const CAMPAIGN_SPECS: Record<
     ads: 1,
     visualBriefings: 3,
     estimatedCredits: 24,
+    label: "7 Tage",
   },
   monthly: {
     days: 30,
@@ -48,6 +51,7 @@ export const CAMPAIGN_SPECS: Record<
     ads: 4,
     visualBriefings: 10,
     estimatedCredits: 80,
+    label: "30 Tage",
   },
   product_launch: {
     days: 14,
@@ -58,25 +62,24 @@ export const CAMPAIGN_SPECS: Record<
     ads: 6,
     visualBriefings: 6,
     estimatedCredits: 48,
+    label: "Produktkampagne",
   },
 };
 
-export function buildCampaignSteps(): string[] {
-  return [
-    "Briefing verstehen",
-    "Brand-DNA laden",
-    "Zielgruppe analysieren",
-    "Themencluster erstellen",
-    "Content-Kalender planen",
-    "Hooks generieren",
-    "Scripts schreiben",
-    "Visual-Konzepte erstellen",
-    "Captions und Hashtags ergänzen",
-    "Qualität prüfen",
-    "Fehlerhafte Outputs verbessern",
-    "Content-Paket bereitstellen",
-  ];
-}
+export const CAMPAIGN_STEPS = [
+  "Briefing verstehen",
+  "Brand-DNA laden",
+  "Zielgruppe analysieren",
+  "Themencluster erstellen",
+  "Content-Kalender planen",
+  "Hooks generieren",
+  "Scripts schreiben",
+  "Visual-Konzepte erstellen",
+  "Captions und Hashtags ergänzen",
+  "Qualität prüfen",
+  "Fehlerhafte Outputs verbessern",
+  "Content-Paket bereitstellen",
+] as const;
 
 export function inferBrandDNA(prompt: string): {
   dna: Partial<BrandDNA>;
@@ -118,39 +121,40 @@ export function buildMockContentItems(
   mode: CampaignMode,
   platforms: CampaignPlatform[]
 ): ContentItem[] {
-  // TODO: echte KI-Generierung hier anbinden
+  // TODO: echte KI-Generierung anbinden
   const spec = CAMPAIGN_SPECS[mode];
-  const items: ContentItem[] = [];
   const platform = platforms[0] ?? "instagram";
+  const items: ContentItem[] = [];
   let day = 1;
 
-  for (let i = 0; i < spec.reels; i++) {
-    items.push({
-      id: `reel-${i}`,
-      type: "reel",
-      platform,
-      day: day++,
-      title: `Reel ${i + 1}`,
-      hook: "Hook wird generiert...",
-      caption: "Caption wird generiert...",
-      hashtags: ["#content", "#ai"],
-      cta: "Link in Bio",
-      status: "generated",
-      scores: { overallScore: 88, claimRisk: "low", legalRisk: "low" },
-    });
-  }
-  for (let i = 0; i < spec.posts; i++) {
-    items.push({
-      id: `post-${i}`,
-      type: "post",
-      platform,
-      day: day++,
-      title: `Post ${i + 1}`,
-      caption: "Caption wird generiert...",
-      hashtags: ["#content"],
-      status: "generated",
-      scores: { overallScore: 85, claimRisk: "low", legalRisk: "low" },
-    });
-  }
+  const makeItem = (
+    type: ContentItem["type"],
+    index: number
+  ): ContentItem => ({
+    id: `${type}-${index}-${Math.random().toString(36).slice(2)}`,
+    type,
+    platform,
+    day: day++,
+    title: `${type.charAt(0).toUpperCase() + type.slice(1)} ${index + 1}`,
+    hook: "Hook wird generiert...",
+    caption: "Caption wird generiert...",
+    hashtags: ["#content", "#ai", "#influexai"],
+    cta: "Link in Bio",
+    status: "generated",
+    scores: {
+      overallScore: 85 + Math.floor(Math.random() * 10),
+      claimRisk: "low",
+      legalRisk: "low",
+      brandFit: 88,
+      clarity: 84,
+    },
+  });
+
+  for (let i = 0; i < spec.reels; i++) items.push(makeItem("reel", i));
+  for (let i = 0; i < spec.carousels; i++) items.push(makeItem("carousel", i));
+  for (let i = 0; i < spec.stories; i++) items.push(makeItem("story", i));
+  for (let i = 0; i < spec.posts; i++) items.push(makeItem("post", i));
+  for (let i = 0; i < spec.ads; i++) items.push(makeItem("ad", i));
+
   return items;
 }

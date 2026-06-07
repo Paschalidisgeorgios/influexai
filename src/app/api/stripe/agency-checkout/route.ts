@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AGENCY_PLANS, getAgencyStripePriceId, type AgencyPlanId } from "@/lib/agency-plans";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
@@ -58,7 +56,7 @@ export async function POST(request: NextRequest) {
         },
       ];
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: lineItems,

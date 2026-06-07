@@ -3,10 +3,11 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
-  type KeyboardEvent,
   type FormEvent,
+  type KeyboardEvent,
   type ReactNode,
 } from "react";
 import type {
@@ -19,7 +20,7 @@ import type {
   ContentItem,
   ContentScores,
 } from "@/lib/agent/types";
-import { CAMPAIGN_SPECS } from "@/lib/agent/campaignPlanner";
+import { CAMPAIGN_SPECS, CAMPAIGN_STEPS } from "@/lib/agent/campaignPlanner";
 import {
   buildCampaignResult,
   createCampaignExecution,
@@ -62,13 +63,6 @@ const TONE_OPTIONS: { id: CampaignTone; label: string }[] = [
   { id: "bold", label: "Frech" },
 ];
 
-const PLATFORM_LABELS: Record<CampaignPlatform, string> = {
-  instagram: "Instagram",
-  tiktok: "TikTok",
-  youtube_shorts: "YouTube Shorts",
-  linkedin: "LinkedIn",
-};
-
 const TYPE_LABELS: Record<ContentItem["type"], string> = {
   reel: "Reel",
   carousel: "Carousel",
@@ -84,15 +78,32 @@ function chipStyle(active: boolean) {
     border: active
       ? "1px solid rgba(180,255,0,0.4)"
       : "1px solid rgba(255,255,255,0.1)",
-    background: active ? "rgba(180,255,0,0.1)" : "transparent",
-    color: active ? "#B4FF00" : "rgba(255,255,255,0.55)",
+    background: active ? "rgba(180,255,0,0.08)" : "rgba(255,255,255,0.04)",
+    color: active ? "#B4FF00" : "rgba(255,255,255,0.5)",
+    fontWeight: active ? 600 : 400,
   } as const;
 }
 
 function riskPillStyle(level: "low" | "medium" | "high" | undefined) {
-  if (level === "high") return { background: "#f97316", color: "#060608" };
-  if (level === "low") return { background: "#B4FF00", color: "#060608" };
-  return { background: "rgba(255,255,255,0.12)", color: "#F0EFE8" };
+  if (level === "high") {
+    return {
+      background: "rgba(255,140,0,0.15)",
+      border: "1px solid rgba(255,140,0,0.35)",
+      color: "#fdba74",
+    };
+  }
+  if (level === "low") {
+    return {
+      background: "rgba(180,255,0,0.1)",
+      border: "1px solid rgba(180,255,0,0.35)",
+      color: "#B4FF00",
+    };
+  }
+  return {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    color: "rgba(255,255,255,0.55)",
+  };
 }
 
 function ScoreBar({ label, value }: { label: string; value: number }) {
@@ -100,17 +111,18 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
     <div className="mb-2.5 last:mb-0">
       <div className="mb-1 flex items-center justify-between text-[10px]">
         <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
-        <span style={{ color: "#B4FF00" }}>{value}/100</span>
+        <span style={{ color: "#B4FF00" }}>{value}</span>
       </div>
       <div
         className="h-1 w-full overflow-hidden"
-        style={{ background: "rgba(255,255,255,0.07)" }}
+        style={{ background: "rgba(255,255,255,0.07)", borderRadius: 0 }}
       >
         <div
           className="h-full transition-[width] duration-300"
           style={{
             width: `${Math.min(100, Math.max(0, value))}%`,
             background: "#B4FF00",
+            borderRadius: 0,
           }}
         />
       </div>
@@ -159,12 +171,13 @@ export default function CampaignAutopilot() {
   const [tone, setTone] = useState<CampaignTone>("modern");
   const [execution, setExecution] = useState<CampaignExecution | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const estimatedCredits = CAMPAIGN_SPECS[mode].estimatedCredits;
+  const modeLabel = CAMPAIGN_SPECS[mode].label;
   const canStart =
     prompt.trim().length > 0 && platforms.length > 0 && phase !== "running";
 
@@ -175,7 +188,9 @@ export default function CampaignAutopilot() {
   }, []);
 
   const handleTextareaInput = (event: FormEvent<HTMLTextAreaElement>) => {
-    adjustTextareaHeight(event.currentTarget);
+    const el = event.currentTarget;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
 
   useEffect(() => {
@@ -188,6 +203,28 @@ export default function CampaignAutopilot() {
     };
   }, []);
 
+  useEffect(() => {
+    if (phase !== "running" || stepIdx < 11) return;
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    setExecution((prev) => {
+      if (!prev) return prev;
+      const result = buildCampaignResult(prev);
+      return {
+        ...prev,
+        status: "completed",
+        result,
+        usedCredits: result.usedCredits,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setPhase("done");
+  }, [phase, stepIdx]);
+
   const clearRunner = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -196,30 +233,20 @@ export default function CampaignAutopilot() {
   };
 
   const togglePlatform = (platform: CampaignPlatform) => {
-    setPlatforms((prev) =>
-      prev.includes(platform)
-        ? prev.filter((p) => p !== platform)
-        : [...prev, platform]
-    );
+    setPlatforms((prev) => {
+      if (prev.includes(platform)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((p) => p !== platform);
+      }
+      return [...prev, platform];
+    });
   };
 
   const handleAbort = () => {
     clearRunner();
-    setExecution((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        status: "cancelled",
-        steps: prev.steps.map((step) =>
-          step.status === "running"
-            ? { ...step, status: "skipped" as const }
-            : step
-        ),
-        updatedAt: new Date().toISOString(),
-      };
-    });
     setPhase("idle");
-    setStepIndex(0);
+    setExecution(null);
+    setStepIdx(0);
   };
 
   const handleStart = () => {
@@ -228,70 +255,27 @@ export default function CampaignAutopilot() {
 
     clearRunner();
 
-    const next = createCampaignExecution(
-      trimmed,
-      mode,
-      platforms,
-      goal,
-      tone
-    );
-    next.status = "running";
-    next.steps = next.steps.map((step, i) => ({
-      ...step,
-      status: i === 0 ? ("running" as const) : ("pending" as const),
-    }));
-
-    setExecution(next);
+    const exec = createCampaignExecution(trimmed, mode, platforms, goal, tone);
+    setExecution(exec);
     setPhase("running");
-    setStepIndex(0);
+    setStepIdx(0);
 
     intervalRef.current = setInterval(() => {
-      setStepIndex((prevIndex) => {
-        const current = prevIndex + 1;
-
-        if (current >= TOTAL_STEPS) {
-          clearRunner();
-          setExecution((prev) => {
-            if (!prev || prev.status === "cancelled") return prev;
-
-            const finalSteps = prev.steps.map((step) => ({
-              ...step,
-              status: "completed" as const,
-            }));
-            const result = buildCampaignResult({
-              ...prev,
-              steps: finalSteps,
-              status: "completed",
-            });
-
-            return {
-              ...prev,
-              steps: finalSteps,
-              status: "completed",
-              result,
-              usedCredits: result.usedCredits,
-              updatedAt: new Date().toISOString(),
-            };
-          });
-          setPhase("done");
-          return TOTAL_STEPS;
+      setStepIdx((prev) => {
+        if (prev >= 11) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 11;
         }
-
-        setExecution((prev) => {
-          if (!prev || prev.status === "cancelled") return prev;
-
-          const steps = prev.steps.map((step, i) => {
-            if (i < current) return { ...step, status: "completed" as const };
-            if (i === current) return { ...step, status: "running" as const };
-            return { ...step, status: "pending" as const };
-          });
-
-          return { ...prev, steps, updatedAt: new Date().toISOString() };
-        });
-
-        return current;
+        return prev + 1;
       });
     }, STEP_INTERVAL_MS);
+  };
+
+  const handleNewCampaign = () => {
+    clearRunner();
+    setPhase("idle");
+    setExecution(null);
+    setStepIdx(0);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -301,11 +285,12 @@ export default function CampaignAutopilot() {
     }
   };
 
-  const completedSteps =
-    execution?.steps.filter((s) => s.status === "completed").length ?? stepIndex;
-  const progressPct = (completedSteps / TOTAL_STEPS) * 100;
-  const showProgress = phase === "running" || phase === "done";
-  const result = execution?.result;
+  const result = useMemo((): CampaignResult | null => {
+    if (phase !== "done" || !execution) return null;
+    return execution.result ?? buildCampaignResult(execution);
+  }, [phase, execution]);
+
+  const progressPct = ((stepIdx + 1) / TOTAL_STEPS) * 100;
 
   return (
     <div
@@ -335,7 +320,7 @@ export default function CampaignAutopilot() {
 
       {/* Abschnitt 1 — Eingabe */}
       <div
-        className="mb-3 flex flex-col gap-2 transition-[border-color] duration-200 focus-within:border-[rgba(180,255,0,0.35)]"
+        className="mb-3 flex flex-col gap-1.5 transition-[border-color] duration-200 focus-within:border-[rgba(180,255,0,0.35)]"
         style={{
           background: "#0f0f12",
           border: "1px solid rgba(255,255,255,0.1)",
@@ -358,99 +343,143 @@ export default function CampaignAutopilot() {
             color: "rgba(255,255,255,0.88)",
             minHeight: 22,
             maxHeight: 120,
-            height: 22,
             caretColor: "#B4FF00",
             lineHeight: 1.45,
             margin: 0,
           }}
         />
+
+        <div className="flex items-center gap-[7px]">
+          <span
+            className="shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
+            style={{
+              borderRadius: 4,
+              background: "rgba(180,255,0,0.08)",
+              border: "1px solid rgba(180,255,0,0.4)",
+              color: "#B4FF00",
+            }}
+          >
+            {modeLabel}
+          </span>
+
+          <span className="flex-1" aria-hidden />
+
+          <span
+            className="shrink-0 text-[10px]"
+            style={{ color: "rgba(255,255,255,0.38)" }}
+          >
+            ~{estimatedCredits} Credits
+          </span>
+
+          <button
+            type="button"
+            disabled={phase === "running" || !canStart}
+            onClick={handleStart}
+            aria-label="Kampagne starten"
+            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed"
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 4,
+              background: "#B4FF00",
+              opacity: canStart ? 1 : 0.28,
+              pointerEvents: !canStart ? "none" : "auto",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <path
+                d="M2 7h10M8 3l4 4-4 4"
+                stroke="#060608"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <section className="mb-6 space-y-3">
-        <div className="space-y-2">
-          <ChipRow label="Modus">
-            {MODE_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={phase === "running"}
-                onClick={() => setMode(opt.id)}
-                className="px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:opacity-50"
-                style={chipStyle(mode === opt.id)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </ChipRow>
+      <section className="mb-4 space-y-2">
+        <ChipRow label="Modus">
+          {MODE_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={phase === "running"}
+              onClick={() => setMode(opt.id)}
+              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              style={chipStyle(mode === opt.id)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </ChipRow>
 
-          <ChipRow label="Plattform">
-            {PLATFORM_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={phase === "running"}
-                onClick={() => togglePlatform(opt.id)}
-                className="px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:opacity-50"
-                style={chipStyle(platforms.includes(opt.id))}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </ChipRow>
+        <ChipRow label="Plattform">
+          {PLATFORM_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={phase === "running"}
+              onClick={() => togglePlatform(opt.id)}
+              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              style={chipStyle(platforms.includes(opt.id))}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </ChipRow>
 
-          <ChipRow label="Ziel">
-            {GOAL_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={phase === "running"}
-                onClick={() => setGoal(opt.id)}
-                className="px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:opacity-50"
-                style={chipStyle(goal === opt.id)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </ChipRow>
+        <ChipRow label="Ziel">
+          {GOAL_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={phase === "running"}
+              onClick={() => setGoal(opt.id)}
+              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              style={chipStyle(goal === opt.id)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </ChipRow>
 
-          <ChipRow label="Ton">
-            {TONE_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={phase === "running"}
-                onClick={() => setTone(opt.id)}
-                className="px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:opacity-50"
-                style={chipStyle(tone === opt.id)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </ChipRow>
-        </div>
-
-        <button
-          type="button"
-          disabled={!canStart}
-          onClick={handleStart}
-          className="w-full py-2.5 text-[0.85rem] transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
-          style={{
-            background: "#B4FF00",
-            color: "#060608",
-            borderRadius: 4,
-            fontWeight: 800,
-          }}
-        >
-          Starten · ~{estimatedCredits} Credits
-        </button>
+        <ChipRow label="Ton">
+          {TONE_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={phase === "running"}
+              onClick={() => setTone(opt.id)}
+              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              style={chipStyle(tone === opt.id)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </ChipRow>
       </section>
 
+      <button
+        type="button"
+        disabled={!canStart}
+        onClick={handleStart}
+        className="mb-6 w-full py-2.5 transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
+        style={{
+          background: "#B4FF00",
+          color: "#060608",
+          borderRadius: 4,
+          fontWeight: 800,
+          fontSize: 13,
+        }}
+      >
+        Kampagne starten · ~{estimatedCredits} Credits
+      </button>
+
       {/* Abschnitt 2 — Progress */}
-      {showProgress && execution && (
-        <section
-          className="mb-6 transition-opacity duration-300"
-          style={{ opacity: 1 }}
-        >
+      {phase === "running" && (
+        <section className="mb-6">
           <div className="mb-3 flex items-center justify-between">
             <span
               className="text-[10px] font-bold uppercase tracking-[0.14em]"
@@ -462,43 +491,49 @@ export default function CampaignAutopilot() {
               AUSFÜHRUNG
             </span>
             <span className="text-[11px] font-semibold" style={{ color: "#B4FF00" }}>
-              {completedSteps} / {TOTAL_STEPS}
+              {stepIdx + 1} / {TOTAL_STEPS}
             </span>
           </div>
 
           <div
-            className="mb-4 h-1 w-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.07)" }}
+            className="mb-2 h-1 w-full overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.07)", borderRadius: 0 }}
           >
             <div
               className="h-full transition-[width] duration-[350ms] ease-out"
-              style={{ width: `${progressPct}%`, background: "#B4FF00" }}
+              style={{
+                width: `${progressPct}%`,
+                background: "#B4FF00",
+                borderRadius: 0,
+              }}
             />
           </div>
+
+          <p
+            className="mb-4 uppercase tracking-[0.08em]"
+            style={{ fontSize: 10, color: "rgba(180,255,0,0.75)" }}
+          >
+            {CAMPAIGN_STEPS[stepIdx]}
+          </p>
 
           <div
             className="mb-4 grid grid-cols-4 gap-1"
             style={{ borderRadius: 2 }}
           >
-            {execution.steps.map((step) => {
-              const isActive = step.status === "running";
-              const isDone = step.status === "completed";
-              const isFailed = step.status === "failed";
+            {CAMPAIGN_STEPS.map((label, index) => {
+              const isActive = index === stepIdx;
+              const isDone = index < stepIdx;
 
               return (
                 <div
-                  key={step.id}
+                  key={label}
                   className="flex min-h-[52px] flex-col justify-center px-2 py-1.5"
                   style={{
                     borderRadius: 2,
                     border: isActive
                       ? "1px solid rgba(180,255,0,0.35)"
                       : "1px solid rgba(255,255,255,0.06)",
-                    background: isActive
-                      ? "rgba(180,255,0,0.08)"
-                      : isDone
-                        ? "rgba(180,255,0,0.04)"
-                        : "transparent",
+                    background: isActive ? "rgba(180,255,0,0.08)" : "transparent",
                   }}
                 >
                   <div className="flex items-start justify-between gap-1">
@@ -509,27 +544,15 @@ export default function CampaignAutopilot() {
                           ? "#B4FF00"
                           : isDone
                             ? "rgba(180,255,0,0.45)"
-                            : isFailed
-                              ? "rgba(255,80,80,0.7)"
-                              : "rgba(255,255,255,0.28)",
+                            : "rgba(255,255,255,0.28)",
                       }}
                     >
-                      {step.label}
+                      {label}
                     </span>
                     {isDone && (
                       <span className="text-[9px]" style={{ color: "#B4FF00" }}>
                         ✓
                       </span>
-                    )}
-                    {isFailed && (
-                      <button
-                        type="button"
-                        onClick={handleStart}
-                        className="shrink-0 text-[9px] underline"
-                        style={{ color: "rgba(255,100,100,0.85)" }}
-                      >
-                        Retry
-                      </button>
                     )}
                   </div>
                 </div>
@@ -537,27 +560,25 @@ export default function CampaignAutopilot() {
             })}
           </div>
 
-          {phase === "running" && (
-            <button
-              type="button"
-              onClick={handleAbort}
-              className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(255,80,80,0.4)] hover:text-[rgba(255,100,100,0.7)]"
-              style={{
-                borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "rgba(255,255,255,0.38)",
-                background: "transparent",
-              }}
-            >
-              Abbrechen
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handleAbort}
+            className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(255,80,80,0.4)] hover:text-[rgba(255,100,100,0.7)]"
+            style={{
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.38)",
+              background: "transparent",
+            }}
+          >
+            Abbrechen
+          </button>
         </section>
       )}
 
       {/* Abschnitt 3 — Result */}
       {phase === "done" && result && (
-        <CampaignResultCard result={result} />
+        <CampaignResultCard result={result} onNewCampaign={handleNewCampaign} />
       )}
 
       <AiOutputDisclaimer className="mt-8" />
@@ -585,11 +606,27 @@ function ChipRow({
   );
 }
 
-function CampaignResultCard({ result }: { result: CampaignResult }) {
+function CampaignResultCard({
+  result,
+  onNewCampaign,
+}: {
+  result: CampaignResult;
+  onNewCampaign: () => void;
+}) {
   const scores: ContentScores = result.overallScores;
   const items = result.items;
+  const [showAllItems, setShowAllItems] = useState(false);
+  const visibleItems = showAllItems ? items : items.slice(0, 5);
   const highRisk =
     scores.claimRisk === "high" || scores.legalRisk === "high";
+
+  const overviewPills = [
+    { label: "Reels", count: countByType(items, "reel") },
+    { label: "Carousels", count: countByType(items, "carousel") },
+    { label: "Stories", count: countByType(items, "story") },
+    { label: "Posts", count: countByType(items, "post") },
+    { label: "Ads", count: countByType(items, "ad") },
+  ];
 
   return (
     <section
@@ -605,7 +642,7 @@ function CampaignResultCard({ result }: { result: CampaignResult }) {
         <div className="flex-1 p-4">
           <h2
             className="mb-1"
-            style={{ fontSize: 13, color: "#fff", fontWeight: 700 }}
+            style={{ fontSize: 14, color: "#fff", fontWeight: 700 }}
           >
             {result.title}
           </h2>
@@ -618,21 +655,22 @@ function CampaignResultCard({ result }: { result: CampaignResult }) {
 
           {result.assumptionsMade.length > 0 && (
             <div
-              className="mb-4 rounded-[4px] px-3 py-2.5"
+              className="mb-4 px-3 py-2.5"
               style={{
                 background: "rgba(180,255,0,0.06)",
                 border: "1px solid rgba(180,255,0,0.2)",
+                borderRadius: 2,
               }}
             >
               <p
-                className="mb-2 text-[10px] font-semibold"
-                style={{ color: "#B4FF00" }}
+                className="mb-2 text-[11px] font-semibold"
+                style={{ color: "rgba(180,255,0,0.8)" }}
               >
                 Agent hat folgende Annahmen getroffen:
               </p>
               <ul
-                className="m-0 list-disc pl-4 text-[10px] leading-[1.55]"
-                style={{ color: "rgba(255,255,255,0.65)" }}
+                className="m-0 list-disc pl-4 text-[11px] leading-[1.55]"
+                style={{ color: "rgba(180,255,0,0.8)" }}
               >
                 {result.assumptionsMade.map((item) => (
                   <li key={item}>{item}</li>
@@ -641,15 +679,100 @@ function CampaignResultCard({ result }: { result: CampaignResult }) {
             </div>
           )}
 
+          <div className="mb-4 flex flex-wrap gap-1.5">
+            {overviewPills.map((pill) => (
+              <span
+                key={pill.label}
+                className="px-2 py-0.5 text-[10px]"
+                style={{
+                  borderRadius: 4,
+                  background: "rgba(255,255,255,0.05)",
+                  color: "rgba(255,255,255,0.65)",
+                }}
+              >
+                {pill.label}: {pill.count}
+              </span>
+            ))}
+          </div>
+
+          <div className="mb-4 space-y-1">
+            {visibleItems.map((item) => {
+              const badge = itemStatusLabel(item);
+              const score = item.scores?.overallScore;
+              return (
+                <div
+                  key={item.id}
+                  className="flex flex-wrap items-center gap-2 px-2 py-1.5 text-[10px]"
+                  style={{
+                    borderRadius: 2,
+                    border: "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  <span
+                    className="shrink-0 px-1.5 py-0.5 font-semibold"
+                    style={{
+                      borderRadius: 4,
+                      background: "rgba(255,255,255,0.06)",
+                      color: "rgba(255,255,255,0.55)",
+                    }}
+                  >
+                    Tag {item.day ?? "—"}
+                  </span>
+                  <span
+                    className="shrink-0 px-1.5 py-0.5 font-semibold"
+                    style={{
+                      borderRadius: 4,
+                      background: "rgba(180,255,0,0.08)",
+                      border: "1px solid rgba(180,255,0,0.25)",
+                      color: "#B4FF00",
+                    }}
+                  >
+                    {TYPE_LABELS[item.type]}
+                  </span>
+                  <span
+                    className="min-w-0 flex-1 truncate"
+                    style={{ color: "rgba(255,255,255,0.75)" }}
+                  >
+                    {item.title}
+                  </span>
+                  {typeof score === "number" && (
+                    <span
+                      style={{
+                        color: score >= 85 ? "#B4FF00" : "rgba(255,255,255,0.45)",
+                      }}
+                    >
+                      {score}
+                    </span>
+                  )}
+                  <span
+                    className="shrink-0 px-1.5 py-0.5 text-[9px] font-semibold"
+                    style={{ borderRadius: 4, ...statusBadgeStyle(badge) }}
+                  >
+                    {badge}
+                  </span>
+                </div>
+              );
+            })}
+            {items.length > 5 && (
+              <button
+                type="button"
+                onClick={() => setShowAllItems((v) => !v)}
+                className="px-2 py-1 text-[10px] font-semibold transition-colors hover:text-[#B4FF00]"
+                style={{ color: "rgba(255,255,255,0.45)" }}
+              >
+                {showAllItems
+                  ? "Weniger anzeigen"
+                  : `+ ${items.length - 5} weitere Items`}
+              </button>
+            )}
+          </div>
+
           <div className="mb-4">
             {typeof scores.brandFit === "number" && (
               <ScoreBar label="Brand Fit" value={scores.brandFit} />
             )}
             {typeof scores.clarity === "number" && (
               <ScoreBar label="Clarity" value={scores.clarity} />
-            )}
-            {typeof scores.platformFit === "number" && (
-              <ScoreBar label="Platform Fit" value={scores.platformFit} />
             )}
             <div className="mt-3 flex flex-wrap gap-1.5">
               {scores.claimRisk && (
@@ -674,83 +797,27 @@ function CampaignResultCard({ result }: { result: CampaignResult }) {
                 className="mt-2 text-[10px] leading-[1.5]"
                 style={{ color: "#fdba74" }}
               >
-                Manuelle Prüfung empfohlen
+                Manuelle Prüfung
               </p>
             )}
           </div>
 
-          <div className="mb-4">
-            <p
-              className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em]"
-              style={{ color: "rgba(255,255,255,0.45)" }}
-            >
-              Content-Übersicht
-            </p>
-            <p
-              className="mb-3 text-[10px]"
-              style={{ color: "rgba(255,255,255,0.55)" }}
-            >
-              Reels: {countByType(items, "reel")} | Carousels:{" "}
-              {countByType(items, "carousel")} | Stories:{" "}
-              {countByType(items, "story")} | Posts: {countByType(items, "post")}
-            </p>
-            <div className="space-y-1">
-              {items.map((item) => {
-                const badge = itemStatusLabel(item);
-                return (
-                  <div
-                    key={item.id}
-                    className="flex flex-wrap items-center gap-2 px-2 py-1.5 text-[10px]"
-                    style={{
-                      borderRadius: 2,
-                      border: "1px solid rgba(255,255,255,0.06)",
-                    }}
-                  >
-                    <span style={{ color: "#B4FF00" }}>
-                      Tag {item.day ?? "—"}
-                    </span>
-                    <span style={{ color: "rgba(255,255,255,0.75)" }}>
-                      {item.title}
-                    </span>
-                    <span style={{ color: "rgba(255,255,255,0.45)" }}>
-                      {TYPE_LABELS[item.type]}
-                    </span>
-                    <span style={{ color: "rgba(255,255,255,0.45)" }}>
-                      {PLATFORM_LABELS[item.platform]}
-                    </span>
-                    <span
-                      className="ml-auto px-1.5 py-0.5 text-[9px] font-semibold"
-                      style={{ borderRadius: 4, ...statusBadgeStyle(badge) }}
-                    >
-                      {badge}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           <p
             className="mb-4 text-[10px]"
-            style={{ color: "rgba(180,255,0,0.65)" }}
+            style={{ color: "rgba(255,255,255,0.4)" }}
           >
             Verwendet: {result.usedCredits} Credits
           </p>
 
           <div className="mb-3 flex flex-wrap gap-2">
-            {[
-              "Mehr Varianten",
-              "Exportieren",
-              "In Kalender",
-              "Thumbnail erstellen",
-            ].map((label) => (
+            {["Mehr Varianten", "Exportieren", "In Kalender"].map((label) => (
               <button
                 key={label}
                 type="button"
                 className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
                 style={{
                   borderRadius: 4,
-                  border: "1px solid #B4FF00",
+                  border: "1px solid rgba(180,255,0,0.3)",
                   color: "#B4FF00",
                   background: "transparent",
                 }}
@@ -758,26 +825,36 @@ function CampaignResultCard({ result }: { result: CampaignResult }) {
                 {label}
               </button>
             ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              disabled
-              title="Erfordert separate Bestätigung"
-              className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-40"
+              onClick={onNewCampaign}
+              className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
               style={{
                 borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.45)",
+                border: "1px solid rgba(180,255,0,0.3)",
+                color: "#B4FF00",
                 background: "transparent",
               }}
             >
-              Veröffentlichen
+              Neue Kampagne
             </button>
-            {/* TODO: GUARD publishing */}
-            {/* TODO: GUARD öffentlich anzeigen */}
           </div>
+
+          <button
+            type="button"
+            disabled
+            title="Erfordert separate Bestätigung"
+            className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold"
+            style={{
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(255,255,255,0.25)",
+              background: "transparent",
+            }}
+          >
+            Veröffentlichen — Bestätigung erforderlich
+          </button>
+          {/* TODO: GUARD publishing */}
         </div>
       </div>
     </section>

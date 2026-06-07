@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import {
   isWhitelistedCreditPriceId,
   packageForStripePriceId,
 } from "@/lib/stripe-credit-prices";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 export async function POST(request: NextRequest) {
   let body: { priceId?: string };
@@ -38,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const session = await createCreditsCheckoutSession(
-      stripe,
+      getStripe(),
       supabase,
       user.id,
       pkg

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   CREDIT_PACKAGES,
@@ -9,8 +8,9 @@ import {
   type CreditPackage,
 } from "@/lib/credit-packages";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
+import { getStripe } from "@/lib/stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+export const dynamic = "force-dynamic";
 
 function resolvePackage(
   body: Record<string, unknown>
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const session = await createCreditsCheckoutSession(
-      stripe,
+      getStripe(),
       supabase,
       user.id,
       resolved.pkg

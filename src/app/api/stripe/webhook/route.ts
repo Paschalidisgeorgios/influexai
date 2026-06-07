@@ -1,5 +1,5 @@
+import type Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { logCreditTransaction } from "@/lib/activity-log";
 import { addCredits } from "@/lib/credits";
@@ -11,8 +11,7 @@ import {
   type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
 import { creditsForStripePriceId } from "@/lib/stripe-credit-prices";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
 
 async function handleAgencySubscription(
   supabaseAdmin: SupabaseClient,
@@ -271,7 +270,7 @@ async function resolveCreditPurchaseAmount(
   if (session.mode !== "payment") return 0;
 
   try {
-    const full = await stripe.checkout.sessions.retrieve(session.id, {
+    const full = await getStripe().checkout.sessions.retrieve(session.id, {
       expand: ["line_items.data.price"],
     });
     const priceId = full.line_items?.data[0]?.price?.id ?? "";
@@ -342,7 +341,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET

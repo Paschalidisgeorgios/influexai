@@ -138,7 +138,9 @@ export default function KiAgentPage() {
   }, []);
 
   const handleTextareaInput = (event: FormEvent<HTMLTextAreaElement>) => {
-    adjustTextareaHeight(event.currentTarget);
+    const el = event.currentTarget;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
 
   useEffect(() => {
@@ -349,7 +351,7 @@ export default function KiAgentPage() {
 
       {/* Command Bar */}
       <div
-        className="flex flex-col gap-2 transition-[border-color] duration-200 focus-within:border-[rgba(180,255,0,0.35)]"
+        className="flex flex-col gap-1.5 transition-[border-color] duration-200 focus-within:border-[rgba(180,255,0,0.35)]"
         style={{
           background: "#0f0f12",
           border: "1px solid rgba(255,255,255,0.1)",
@@ -372,7 +374,6 @@ export default function KiAgentPage() {
             color: "rgba(255,255,255,0.88)",
             minHeight: 22,
             maxHeight: 120,
-            height: 22,
             caretColor: "#B4FF00",
             lineHeight: 1.45,
             margin: 0,
@@ -424,11 +425,11 @@ export default function KiAgentPage() {
             Agent
           </span>
 
-          <span className="min-w-0 flex-1" />
+          <span className="flex-1" aria-hidden />
 
           <button
             type="button"
-            disabled={phase === "running" || !prompt.trim()}
+            disabled={phase === "running"}
             onClick={handleSubmit}
             aria-label="Senden"
             className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed"
@@ -437,7 +438,8 @@ export default function KiAgentPage() {
               height: 30,
               borderRadius: 4,
               background: "#B4FF00",
-              opacity: prompt.trim() ? 1 : 0.28,
+              opacity: prompt.trim() && phase !== "running" ? 1 : 0.28,
+              pointerEvents: !prompt.trim() || phase === "running" ? "none" : "auto",
             }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
