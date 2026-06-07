@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import type { AbVariant } from "@/lib/ab-tracking";
 import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
+import { AgentPreviewDemo } from "@/components/landing/AgentPreviewDemo";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
@@ -378,6 +379,12 @@ export function HeroSection({
 
         <SpringReveal delay={0.12}>
           <HeroTitle titles={rotatingTitles} />
+        </SpringReveal>
+
+        <SpringReveal delay={0.2}>
+          <div className="mb-8">
+            <AgentPreviewDemo />
+          </div>
         </SpringReveal>
 
         <SpringReveal delay={0.16}>
