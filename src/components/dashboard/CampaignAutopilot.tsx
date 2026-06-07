@@ -21,16 +21,12 @@ import type {
   ContentScores,
 } from "@/lib/agent/types";
 import { CAMPAIGN_SPECS, CAMPAIGN_STEPS } from "@/lib/agent/campaignPlanner";
-import {
-  buildCampaignResult,
-  createCampaignExecution,
-} from "@/lib/agent/mockExecutor";
 import { qualityDecision } from "@/lib/agent/qualityScoring";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
-import { createClient } from "@/lib/supabase/client";
-import { saveCampaignResult, saveFeedback } from "@/lib/agent/persistExecution";
+import { saveFeedback } from "@/lib/agent/persistExecution";
+import { openNoCreditsModal } from "@/lib/client-credits-ui";
 
 type Phase = "idle" | "running" | "done";
 
@@ -188,11 +184,11 @@ export default function CampaignAutopilot() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [stepIdx, setStepIdx] = useState(0);
   const [guard, setGuard] = useState<GuardState>(null);
-  const [userId, setUserId] = useState<string | undefined>();
+  const [startError, setStartError] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const savedCampaignRef = useRef<string | null>(null);
+  const pendingResultRef = useRef<CampaignResult | null>(null);
 
   const estimatedCredits = CAMPAIGN_SPECS[mode].estimatedCredits;
   const modeLabel = CAMPAIGN_SPECS[mode].label;
@@ -222,24 +218,6 @@ export default function CampaignAutopilot() {
   }, []);
 
   useEffect(() => {
-    void createClient()
-      .auth.getUser()
-      .then(({ data }) => setUserId(data.user?.id));
-  }, []);
-
-  useEffect(() => {
-    if (phase !== "done" || !execution?.result) return;
-    if (savedCampaignRef.current === execution.id) return;
-    savedCampaignRef.current = execution.id;
-    void saveCampaignResult(
-      execution.result,
-      userId,
-      execution.prompt,
-      execution.platforms
-    );
-  }, [phase, execution, userId]);
-
-  useEffect(() => {
     if (phase !== "running" || stepIdx < 11) return;
 
     if (intervalRef.current) {
@@ -247,14 +225,14 @@ export default function CampaignAutopilot() {
       intervalRef.current = null;
     }
 
+    const serverResult = pendingResultRef.current;
     setExecution((prev) => {
-      if (!prev) return prev;
-      const result = buildCampaignResult(prev);
+      if (!prev || !serverResult) return prev;
       return {
         ...prev,
         status: "completed",
-        result,
-        usedCredits: result.usedCredits,
+        result: serverResult,
+        usedCredits: serverResult.usedCredits,
         updatedAt: new Date().toISOString(),
       };
     });
@@ -285,14 +263,69 @@ export default function CampaignAutopilot() {
     setStepIdx(0);
   };
 
-  const handleStart = () => {
+  const handleStart = async () => {
     const trimmed = prompt.trim();
     if (!trimmed || platforms.length === 0 || phase === "running") return;
 
     clearRunner();
+    setStartError(null);
+    pendingResultRef.current = null;
 
-    const exec = createCampaignExecution(trimmed, mode, platforms, goal, tone);
-    setExecution(exec);
+    let data: {
+      execution: CampaignExecution;
+      result: CampaignResult;
+      usedCredits: number;
+      error?: string;
+      credits?: number;
+      required?: number;
+    };
+
+    try {
+      const res = await fetch("/api/agent/campaign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: trimmed,
+          mode,
+          platforms,
+          goal,
+          tone,
+        }),
+      });
+      data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 402) {
+          openNoCreditsModal({
+            required: data.required ?? estimatedCredits,
+            remaining: data.credits ?? 0,
+          });
+        }
+        setStartError(data.error ?? "Fehler beim Starten");
+        setPhase("idle");
+        return;
+      }
+    } catch {
+      setStartError("Netzwerkfehler. Bitte erneut versuchen.");
+      setPhase("idle");
+      return;
+    }
+
+    window.dispatchEvent(new Event("credits-updated"));
+    pendingResultRef.current = data.result;
+
+    const next: CampaignExecution = {
+      ...data.execution,
+      status: "running",
+      result: undefined,
+      usedCredits: 0,
+      steps: data.execution.steps.map((step, i) => ({
+        ...step,
+        status: i === 0 ? ("running" as const) : ("pending" as const),
+      })),
+    };
+
+    setExecution(next);
     setPhase("running");
     setStepIdx(0);
 
@@ -359,7 +392,8 @@ export default function CampaignAutopilot() {
     setPhase("idle");
     setExecution(null);
     setStepIdx(0);
-    savedCampaignRef.current = null;
+    pendingResultRef.current = null;
+    setStartError(null);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -371,7 +405,7 @@ export default function CampaignAutopilot() {
 
   const result = useMemo((): CampaignResult | null => {
     if (phase !== "done" || !execution) return null;
-    return execution.result ?? buildCampaignResult(execution);
+    return execution.result ?? null;
   }, [phase, execution]);
 
   const progressPct = ((stepIdx + 1) / TOTAL_STEPS) * 100;
@@ -560,6 +594,15 @@ export default function CampaignAutopilot() {
       >
         Kampagne starten · ~{estimatedCredits} Credits
       </button>
+
+      {startError && (
+        <p
+          className="mb-6 text-[12px]"
+          style={{ color: "rgba(255,100,100,0.85)" }}
+        >
+          {startError}
+        </p>
+      )}
 
       {/* Abschnitt 2 — Progress */}
       {phase === "running" && (

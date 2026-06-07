@@ -49,9 +49,11 @@ export async function saveCampaignResultServer(
       title: result.title,
       summary: result.summary,
     });
-    if (error) console.error("[saveCampaignResult]", error.message);
+    if (error) throw new Error(error.message);
   } catch (e) {
     console.error("[saveCampaignResult]", e);
+    if (e instanceof Error) throw e;
+    throw new Error("Speichern fehlgeschlagen");
   }
 }
 
