@@ -17,6 +17,9 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
+const INTRO_DONE_EVENT = "influexai-intro-complete";
+const INTRO_REVEAL_EVENT = "influexai-intro-reveal";
+
 type HeroMediaItem =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster: string };
@@ -266,19 +269,33 @@ export function HeroSection({
     : [];
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const forceIntro = params.get("intro") === "1";
-    let seen = false;
-    if (!forceIntro) {
+    const handleIntroReveal = () => setHeroRevealed(true);
+    const handleIntroComplete = () => setHeroRevealed(true);
+
+    window.addEventListener(INTRO_REVEAL_EVENT, handleIntroReveal);
+    window.addEventListener(INTRO_DONE_EVENT, handleIntroComplete);
+
+    const forceIntro =
+      new URLSearchParams(window.location.search).get("intro") === "1";
+    const alreadySeen = (() => {
       try {
-        seen = sessionStorage.getItem("influexai_intro_seen") === "1";
+        const value = sessionStorage.getItem("influexai_intro_seen");
+        return value === "true" || value === "1";
       } catch {
-        seen = false;
+        return false;
       }
-    }
-    if (seen) {
+    })();
+    const hasIntroActive =
+      document.documentElement.classList.contains("logo-intro-active");
+
+    if (!forceIntro && alreadySeen && !hasIntroActive) {
       setHeroRevealed(true);
     }
+
+    return () => {
+      window.removeEventListener(INTRO_REVEAL_EVENT, handleIntroReveal);
+      window.removeEventListener(INTRO_DONE_EVENT, handleIntroComplete);
+    };
   }, []);
 
   useEffect(() => {
@@ -286,18 +303,6 @@ export function HeroSection({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (heroRevealed) return;
-    const onReveal = () => setHeroRevealed(true);
-    const onIntroDone = () => setHeroRevealed(true);
-    window.addEventListener("influexai-intro-reveal", onReveal);
-    window.addEventListener("influexai-intro-complete", onIntroDone);
-    return () => {
-      window.removeEventListener("influexai-intro-reveal", onReveal);
-      window.removeEventListener("influexai-intro-complete", onIntroDone);
-    };
-  }, [heroRevealed]);
 
   return (
     <section

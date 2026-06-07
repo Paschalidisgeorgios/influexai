@@ -2,105 +2,126 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const INTRO_KEY = "influexai_intro_seen";
+const INTRO_STORAGE_KEY = "influexai_intro_seen";
 const INTRO_DONE_EVENT = "influexai-intro-complete";
 const INTRO_REVEAL_EVENT = "influexai-intro-reveal";
 const LOGO_SRC = "/images/Logo-full.png";
-const INTRO_MS = 15000;
+const INTRO_DURATION = 15000;
 const REVEAL_MS = 11500;
-const REDUCED_MS = 600;
+const EXIT_DURATION = 600;
 
-function finishIntro(setVisible: (v: boolean) => void) {
+function hasSeenIntro(): boolean {
   try {
-    sessionStorage.setItem(INTRO_KEY, "1");
+    const value = sessionStorage.getItem(INTRO_STORAGE_KEY);
+    return value === "true" || value === "1";
   } catch {
-    /* private mode */
+    return false;
   }
-  document.body.style.overflow = "";
-  document.body.classList.remove("logo-intro-active");
-  window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
-  window.dispatchEvent(new CustomEvent(INTRO_DONE_EVENT));
-  setVisible(false);
 }
 
 export function LogoIntro() {
-  const [visible, setVisible] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [skipping, setSkipping] = useState(false);
+  const finishCalledRef = useRef(false);
+  const introTimerRef = useRef<number | null>(null);
   const revealTimerRef = useRef<number | null>(null);
-  const completeTimerRef = useRef<number | null>(null);
+  const exitTimerRef = useRef<number | null>(null);
 
-  const clearTimers = useCallback(() => {
+  const clearIntroTimers = useCallback(() => {
+    if (introTimerRef.current) {
+      window.clearTimeout(introTimerRef.current);
+      introTimerRef.current = null;
+    }
     if (revealTimerRef.current) {
       window.clearTimeout(revealTimerRef.current);
       revealTimerRef.current = null;
     }
-    if (completeTimerRef.current) {
-      window.clearTimeout(completeTimerRef.current);
-      completeTimerRef.current = null;
-    }
   }, []);
 
+  const finishIntro = useCallback(() => {
+    if (finishCalledRef.current) return;
+    finishCalledRef.current = true;
+
+    clearIntroTimers();
+
+    try {
+      sessionStorage.setItem(INTRO_STORAGE_KEY, "true");
+    } catch {
+      /* private mode */
+    }
+
+    setIsExiting(true);
+
+    exitTimerRef.current = window.setTimeout(() => {
+      setShowIntro(false);
+      document.body.style.overflow = "";
+      document.documentElement.classList.remove("logo-intro-active");
+      window.dispatchEvent(new CustomEvent(INTRO_DONE_EVENT));
+      exitTimerRef.current = null;
+    }, EXIT_DURATION);
+  }, [clearIntroTimers]);
+
   const handleSkip = useCallback(() => {
-    clearTimers();
-    setSkipping(true);
-    window.setTimeout(() => finishIntro(setVisible), 280);
-  }, [clearTimers]);
+    finishIntro();
+  }, [finishIntro]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forceIntro = params.get("intro") === "1";
-
-    let seen = false;
-    if (!forceIntro) {
-      try {
-        seen = sessionStorage.getItem(INTRO_KEY) === "1";
-      } catch {
-        seen = false;
-      }
-    }
-
     const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(motionMq.matches);
 
-    if (seen) {
+    if (motionMq.matches && !forceIntro) {
       window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
       window.dispatchEvent(new CustomEvent(INTRO_DONE_EVENT));
       return;
     }
 
-    setVisible(true);
-    document.body.style.overflow = "hidden";
-    document.body.classList.add("logo-intro-active");
-
-    const duration = motionMq.matches ? REDUCED_MS : INTRO_MS;
-
-    if (motionMq.matches) {
-      window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
+    if (forceIntro || !hasSeenIntro()) {
+      setShowIntro(true);
     } else {
-      revealTimerRef.current = window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
-      }, REVEAL_MS);
+      window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
+      window.dispatchEvent(new CustomEvent(INTRO_DONE_EVENT));
     }
+  }, []);
 
-    completeTimerRef.current = window.setTimeout(
-      () => finishIntro(setVisible),
-      duration
-    );
+  useEffect(() => {
+    if (!showIntro) return;
+
+    finishCalledRef.current = false;
+    document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("logo-intro-active");
+
+    revealTimerRef.current = window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent(INTRO_REVEAL_EVENT));
+    }, REVEAL_MS);
+
+    introTimerRef.current = window.setTimeout(() => {
+      finishIntro();
+    }, INTRO_DURATION);
 
     return () => {
-      clearTimers();
+      clearIntroTimers();
     };
-  }, [clearTimers]);
+  }, [showIntro, finishIntro, clearIntroTimers]);
 
-  if (!visible) return null;
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) {
+        window.clearTimeout(exitTimerRef.current);
+      }
+    };
+  }, []);
+
+  if (!showIntro) return null;
 
   return (
     <div
       className={[
         "logo-intro-root",
         reducedMotion ? "logo-intro-root--reduced" : "",
-        skipping ? "logo-intro-root--skip" : "",
+        isExiting ? "logo-intro-root--skip" : "",
       ]
         .filter(Boolean)
         .join(" ")}

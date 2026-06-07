@@ -26,6 +26,17 @@ function isApi(request) {
   return url.pathname.startsWith("/api/");
 }
 
+function shouldCacheResponse(request, response) {
+  if (request.method !== "GET") return false;
+  if (!response || !response.ok || response.status !== 200) return false;
+  if (response.status === 206) return false;
+
+  const url = new URL(request.url);
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+
+  return true;
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     Promise.all([
@@ -71,7 +82,9 @@ async function navigationHandler(request) {
   try {
     const response = await fetch(request);
     const cache = await caches.open(SHELL_CACHE);
-    if (response.ok) cache.put(request, response.clone());
+    if (shouldCacheResponse(request, response)) {
+      cache.put(request, response.clone());
+    }
     return response;
   } catch {
     const cached = await caches.match(request);
@@ -99,7 +112,9 @@ async function staleWhileRevalidate(request) {
   const cached = await cache.match(request);
   const fetchPromise = fetch(request)
     .then((response) => {
-      if (response.ok) cache.put(request, response.clone());
+      if (shouldCacheResponse(request, response)) {
+        cache.put(request, response.clone());
+      }
       return response;
     })
     .catch(() => null);

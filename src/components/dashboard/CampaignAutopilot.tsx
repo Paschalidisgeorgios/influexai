@@ -374,6 +374,19 @@ export default function CampaignAutopilot() {
     );
   };
 
+  async function publishContent() {
+    if (!execution?.id) return;
+    try {
+      await fetch("/api/agent/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ executionId: execution.id }),
+      });
+    } catch (e) {
+      console.error("[publish]", e);
+    }
+  }
+
   const handlePublishRequest = (result: CampaignResult) => {
     const checks: GuardCheck[] = [{ action: "publish_public" }];
     if (
@@ -383,7 +396,7 @@ export default function CampaignAutopilot() {
       checks.push({ action: "legal_high" });
     }
     runWithGuards(checks, () => {
-      // TODO: GUARD publishing — API-Anbindung folgt
+      void publishContent();
     });
   };
 

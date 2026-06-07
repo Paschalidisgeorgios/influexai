@@ -172,14 +172,13 @@ export async function orchestrate(
           region: "DE",
         },
         authCookie
-      )) as { script?: string };
-      const scriptOutput = trendScriptToOutput(data.script ?? "");
+      )) as { script?: string; sources?: unknown[] };
       return {
         type: "script",
         title: "Script bereit",
-        summary: `Script für "${prompt.slice(0, 50)}..." generiert.`,
-        outputs: [scriptOutput],
-        scores: scoreOutput(scriptOutput, platform),
+        summary: "Script generiert.",
+        outputs: [{ script: data.script, sources: data.sources }],
+        scores: scoreOutput(data, platform),
         nextActions: [
           "mehr_varianten",
           "thumbnail_erstellen",
@@ -192,41 +191,36 @@ export async function orchestrate(
     case "product_ad": {
       const { productName, productDescription, audience } =
         inferProductAdFields(prompt, nische);
-      const data = (await callTool(
-        "/api/product-ad/script",
-        {
-          productName,
-          productDescription,
-          audience,
-          platform: mapToProductAdPlatform(platform),
-          style: "lifestyle",
-          language: "de",
-          ctaText: "Jetzt entdecken",
-        },
-        authCookie
-      )) as {
-        script?: {
-          hook?: string;
-          story?: string;
-          proof?: string;
-          cta?: string;
-        };
-      };
-      const script = data.script ?? {};
-      const adOutput = {
-        hook: script.hook ?? "",
-        body: [script.story, script.proof].filter(Boolean).join("\n\n"),
-        spot: script.story ?? "",
-        cta: script.cta ?? "",
-        hashtags: [] as string[],
-      };
+      const adPlatform = mapToProductAdPlatform(platform);
+      let adData: Record<string, unknown>;
+      try {
+        adData = (await callTool(
+          "/api/product-ad/script",
+          {
+            productName,
+            productDescription,
+            audience,
+            platform: adPlatform,
+            style: "lifestyle",
+            language: "de",
+            ctaText: "Jetzt entdecken",
+          },
+          authCookie
+        )) as Record<string, unknown>;
+      } catch {
+        adData = (await callTool(
+          "/api/ki-agent",
+          { messages: [{ role: "user", content: prompt }] },
+          authCookie
+        )) as Record<string, unknown>;
+      }
       return {
         type: "ad",
         title: "Ad Script bereit",
-        summary: `Reel-Ad für "${prompt.slice(0, 50)}..." generiert.`,
-        outputs: [adOutput],
-        scores: scoreOutput(adOutput, platform),
-        nextActions: ["mehr_varianten", "exportieren"],
+        summary: "Reel-Ad generiert.",
+        outputs: [adData],
+        scores: scoreOutput(adData, platform),
+        nextActions: ["mehr_varianten", "caption_schreiben", "exportieren"],
       };
     }
 
@@ -254,7 +248,7 @@ export async function orchestrate(
     }
 
     case "video_briefing": {
-      const [scriptRes, adRes] = await Promise.allSettled([
+      const [scriptRes, hooksRes] = await Promise.allSettled([
         callTool(
           "/api/trend-script",
           {
@@ -264,39 +258,22 @@ export async function orchestrate(
           },
           authCookie
         ),
-        callTool(
-          "/api/product-ad/script",
-          {
-            ...inferProductAdFields(prompt, nische),
-            platform: mapToProductAdPlatform(platform),
-            style: "lifestyle",
-            language: "de",
-            ctaText: "Jetzt entdecken",
-          },
-          authCookie
-        ),
+        callTool("/api/viral-hook", { input: prompt }, authCookie),
       ]);
 
       const scriptData =
         scriptRes.status === "fulfilled"
-          ? trendScriptToOutput(
-              ((scriptRes.value as { script?: string }).script ?? "") as string
-            )
+          ? {
+              script: (scriptRes.value as { script?: string }).script,
+              sources: (scriptRes.value as { sources?: unknown[] }).sources,
+            }
           : null;
-      const adData =
-        adRes.status === "fulfilled"
-          ? (() => {
-              const script = (adRes.value as { script?: Record<string, string> })
-                .script;
-              return {
-                hook: script?.hook ?? "",
-                body: [script?.story, script?.proof].filter(Boolean).join("\n\n"),
-                hashtags: [] as string[],
-              };
-            })()
+      const hooksData =
+        hooksRes.status === "fulfilled"
+          ? { hooks: (hooksRes.value as { hooks?: string[] }).hooks ?? [] }
           : null;
 
-      const outputs = [scriptData, adData].filter(Boolean);
+      const outputs = [scriptData, hooksData].filter(Boolean);
       if (!outputs.length) {
         throw new Error("Video-Briefing konnte nicht generiert werden.");
       }
@@ -304,7 +281,7 @@ export async function orchestrate(
       return {
         type: "video_briefing",
         title: "Video-Briefing bereit",
-        summary: "Script und Ad-Copy für Video generiert.",
+        summary: "Script und Hooks für Video generiert.",
         outputs,
         scores: scoreOutput(outputs[0] ?? {}, platform),
         nextActions: ["exportieren", "mehr_varianten"],

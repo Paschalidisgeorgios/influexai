@@ -7,11 +7,16 @@ import { flushGenerationQueue } from "@/lib/pwa/generation-queue";
 
 export function PwaBootstrap() {
   useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      !("serviceWorker" in navigator) ||
-      process.env.NODE_ENV !== "production"
-    ) {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      return;
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      void navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          void registration.unregister();
+        });
+      });
       return;
     }
 
@@ -24,7 +29,7 @@ export function PwaBootstrap() {
           reg.waiting.postMessage({ type: "SKIP_WAITING" });
         }
       } catch {
-        /* SW optional in dev */
+        /* SW optional */
       }
     };
 
