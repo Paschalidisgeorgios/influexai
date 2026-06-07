@@ -21,8 +21,6 @@ const OVERLAY_STYLE = {
   pointerEvents: "auto" as const,
 };
 
-type IntroPhase = "pending" | "active" | "off";
-
 function dispatchIntroEvent(name: string) {
   window.dispatchEvent(new CustomEvent(name));
 }
@@ -37,8 +35,9 @@ function readIntroSeen(): boolean {
 }
 
 export function LogoIntro() {
-  const [phase, setPhase] = useState<IntroPhase>("pending");
+  const [showIntro, setShowIntro] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [manualSkip, setManualSkip] = useState(false);
   const finishCalledRef = useRef(false);
   const introTimerRef = useRef<number | null>(null);
   const revealTimerRef = useRef<number | null>(null);
@@ -53,6 +52,11 @@ export function LogoIntro() {
       window.clearTimeout(revealTimerRef.current);
       revealTimerRef.current = null;
     }
+  }, []);
+
+  const releaseIntroLock = useCallback(() => {
+    document.body.style.overflow = "";
+    document.documentElement.classList.remove("logo-intro-active");
   }, []);
 
   const finishIntro = useCallback(() => {
@@ -70,15 +74,15 @@ export function LogoIntro() {
     setIsExiting(true);
 
     exitTimerRef.current = window.setTimeout(() => {
-      setPhase("off");
-      document.body.style.overflow = "";
-      document.documentElement.classList.remove("logo-intro-active");
+      setShowIntro(false);
+      releaseIntroLock();
       dispatchIntroEvent(INTRO_DONE_EVENT);
       exitTimerRef.current = null;
     }, EXIT_DURATION);
-  }, [clearIntroTimers]);
+  }, [clearIntroTimers, releaseIntroLock]);
 
   const handleSkip = useCallback(() => {
+    setManualSkip(true);
     finishIntro();
   }, [finishIntro]);
 
@@ -90,28 +94,28 @@ export function LogoIntro() {
     ).matches;
 
     if (reducedMotion && !forceIntro) {
-      setPhase("off");
+      setShowIntro(false);
       dispatchIntroEvent(INTRO_REVEAL_EVENT);
       dispatchIntroEvent(INTRO_DONE_EVENT);
       return;
     }
 
     if (forceIntro || !readIntroSeen()) {
-      setPhase("active");
+      setShowIntro(true);
+      document.body.style.overflow = "hidden";
+      document.documentElement.classList.add("logo-intro-active");
       return;
     }
 
-    setPhase("off");
+    setShowIntro(false);
     dispatchIntroEvent(INTRO_REVEAL_EVENT);
     dispatchIntroEvent(INTRO_DONE_EVENT);
   }, []);
 
   useEffect(() => {
-    if (phase !== "active") return;
+    if (!showIntro || isExiting) return;
 
     finishCalledRef.current = false;
-    document.body.style.overflow = "hidden";
-    document.documentElement.classList.add("logo-intro-active");
 
     revealTimerRef.current = window.setTimeout(() => {
       dispatchIntroEvent(INTRO_REVEAL_EVENT);
@@ -124,7 +128,7 @@ export function LogoIntro() {
     return () => {
       clearIntroTimers();
     };
-  }, [phase, finishIntro, clearIntroTimers]);
+  }, [showIntro, isExiting, finishIntro, clearIntroTimers]);
 
   useEffect(() => {
     return () => {
@@ -134,11 +138,15 @@ export function LogoIntro() {
     };
   }, []);
 
-  if (phase !== "active") return null;
+  if (!showIntro) return null;
 
   return (
     <div
-      className={["logo-intro-root", isExiting ? "logo-intro-root--skip" : ""]
+      className={[
+        "logo-intro-root",
+        manualSkip ? "logo-intro-root--skip" : "",
+        isExiting && !manualSkip ? "logo-intro-root--exit" : "",
+      ]
         .filter(Boolean)
         .join(" ")}
       style={OVERLAY_STYLE}
@@ -161,6 +169,8 @@ export function LogoIntro() {
             alt="INFLUEXAI"
             className="intro-logo"
             draggable={false}
+            decoding="sync"
+            fetchPriority="high"
           />
         </div>
         <div className="logo-intro-line logo-intro-line--bottom" aria-hidden />

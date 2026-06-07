@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
@@ -268,7 +268,7 @@ export function HeroSection({
     ? (rawRotating as string[])
     : [];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleIntroReveal = () => setHeroRevealed(true);
     const handleIntroComplete = () => setHeroRevealed(true);
 
