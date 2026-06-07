@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
@@ -8,6 +9,8 @@ import {
   VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
   VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
 } from "@/lib/viral-hook-extraktor";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

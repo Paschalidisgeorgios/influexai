@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 
+export const dynamic = "force-dynamic";
+
+
 const VALID_VARIANTS = new Set(["a", "b"]);
 const VALID_EVENTS = new Set(["view", "signup_click", "signup_complete"]);
 

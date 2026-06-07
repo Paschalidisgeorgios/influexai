@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   getStripePriceId,
@@ -7,6 +8,8 @@ import {
   type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
 import { getStripe } from "@/lib/stripe";
+
+export const dynamic = "force-dynamic";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";

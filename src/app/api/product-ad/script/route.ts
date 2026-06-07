@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   PRODUCT_AD_PLATFORMS,
@@ -13,6 +14,8 @@ import {
 } from "@/lib/product-ad-script";
 import { assertGatedFeature } from "@/lib/access.server";
 import { isValidLocale, type Locale } from "@/lib/locale";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

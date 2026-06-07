@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
@@ -10,6 +11,8 @@ import {
   type ViralScoreResult,
 } from "@/lib/viral-score";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

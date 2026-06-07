@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
@@ -16,6 +17,8 @@ import {
 import { assertGatedFeature } from "@/lib/access.server";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 300;
 

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getFalKey } from "@/lib/fal-image";
 import { hasEnoughCredits } from "@/lib/credits";
 import { runSeedanceGeneration } from "@/lib/seedance-generate";
 import { SEEDANCE_CREDIT_COST } from "@/lib/seedance-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 300;
 

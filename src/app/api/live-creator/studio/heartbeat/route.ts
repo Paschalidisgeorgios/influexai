@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits } from "@/lib/credits";
 import {
@@ -6,6 +7,8 @@ import {
   LIVE_CREATOR_LOW_CREDITS_WARNING,
 } from "@/lib/live-creator-config";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export async function POST() {
   const denied = await assertGatedFeature("live-creator");

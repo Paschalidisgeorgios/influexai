@@ -12,6 +12,7 @@ import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
+
 function resolvePackage(
   body: Record<string, unknown>
 ): { pkg: CreditPackage } | { error: string } {

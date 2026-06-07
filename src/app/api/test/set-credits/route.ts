@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
+
+export const dynamic = "force-dynamic";
 
 function isE2eTestApiEnabled() {
   return process.env.E2E_TEST_API === "1" || process.env.PLAYWRIGHT === "1";

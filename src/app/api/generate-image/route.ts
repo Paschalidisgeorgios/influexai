@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
@@ -22,6 +23,8 @@ import {
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
+
+export const dynamic = "force-dynamic";
 
 configureFalClient();
 

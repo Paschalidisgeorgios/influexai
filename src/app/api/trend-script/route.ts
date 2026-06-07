@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { addCredits, deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
@@ -12,6 +13,8 @@ import {
   TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
   trendVideosToSources,
 } from "@/lib/trend-script-tool";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 90;
 

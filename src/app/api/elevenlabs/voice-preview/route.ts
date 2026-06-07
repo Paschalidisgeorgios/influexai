@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   isValidElevenLabsVoiceId,
   resolveElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
+
+export const dynamic = "force-dynamic";
 
 const PREVIEW_TEXT = "Hallo, das ist eine kurze Vorschau meiner Stimme.";
 

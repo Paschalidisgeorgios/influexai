@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createAnthropicMessage, parseClaudeJson } from "@/lib/anthropic";
 import { scoreOutput } from "@/lib/agent-scoring";
 import type {
@@ -13,6 +14,8 @@ import type {
 } from "@/lib/agent-types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 120;
 

@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getFalKey } from "@/lib/fal-image";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 const TOKEN_EXPIRATION_SECONDS = 120;
 

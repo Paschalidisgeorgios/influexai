@@ -208,11 +208,12 @@ export async function orchestrate(
           authCookie
         )) as Record<string, unknown>;
       } catch {
-        adData = (await callTool(
+        const raw = (await callTool(
           "/api/ki-agent",
           { messages: [{ role: "user", content: prompt }] },
           authCookie
-        )) as Record<string, unknown>;
+        )) as { agentResponse?: Record<string, unknown> };
+        adData = raw.agentResponse ?? raw;
       }
       return {
         type: "ad",

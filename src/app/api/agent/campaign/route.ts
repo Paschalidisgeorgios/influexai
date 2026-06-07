@@ -22,6 +22,7 @@ import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
 export const maxDuration = 300;
 
 type RequestBody = {

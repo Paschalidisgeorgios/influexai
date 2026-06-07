@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import {
@@ -6,6 +7,8 @@ import {
   packageForStripePriceId,
 } from "@/lib/stripe-credit-prices";
 import { getStripe } from "@/lib/stripe";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   let body: { priceId?: string };

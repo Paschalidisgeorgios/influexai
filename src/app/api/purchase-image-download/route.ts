@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
@@ -7,6 +8,8 @@ import {
   updateGenerationResult,
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+
+export const dynamic = "force-dynamic";
 
 function protectedImageUrl(generationId: string) {
   return `/api/generated-image/${generationId}?variant=final`;

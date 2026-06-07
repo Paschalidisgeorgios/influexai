@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+
 import { runCompetitorAnalysis } from "@/lib/competitor-run";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

@@ -24,9 +24,10 @@ Erwartung:
 - claimRisk = low
 
 ## 4. Landingpage führt nichts aus
-- HeroAgentPreview: keine fetch()-Calls
+Erwartung:
+- AgentPreviewDemo: keine echten API-Calls
 - StickyUIDemo: nur Demo-Daten
-- LogoIntro: nur sessionStorage + Animation
+- Keine Credits auf Landingpage
 
 ## 5. Credits nur Dashboard
 - /api/agent/execute: Credits abbuchen ✅

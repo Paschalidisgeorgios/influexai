@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateUgcHookVariants } from "@/lib/ugc-hook-generator";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   const supabase = await createServerSupabaseClient();

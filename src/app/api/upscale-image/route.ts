@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { runImageUpscale } from "@/lib/upscale-image-api";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 120;
 

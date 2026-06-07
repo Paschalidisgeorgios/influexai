@@ -1,8 +1,11 @@
 import { cookies } from "next/headers";
+
 import { NextResponse } from "next/server";
 import { registerReferralOnSignup } from "@/app/actions/referral";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
+
+export const dynamic = "force-dynamic";
 
 /**
  * POST /api/referral/track

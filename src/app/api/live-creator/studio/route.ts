@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { hasEnoughCredits } from "@/lib/credits";
 import {
@@ -10,6 +11,8 @@ import {
 import { resolveUserKiIchCharacter } from "@/lib/live-creator-ki-ich";
 import { getFalKey } from "@/lib/fal-image";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();

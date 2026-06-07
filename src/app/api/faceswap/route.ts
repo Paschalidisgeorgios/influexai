@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { AkoolFaceswapError } from "@/lib/akool-errors";
@@ -21,6 +22,8 @@ import {
   ingestFinalAssetFromUrl,
   updateGenerationResult,
 } from "@/lib/generation-assets";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 300;
 

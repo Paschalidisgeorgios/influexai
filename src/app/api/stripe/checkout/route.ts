@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   DEFAULT_CHECKOUT_PACKAGE,
@@ -6,6 +7,8 @@ import {
 } from "@/lib/credit-packages";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import { getStripe } from "@/lib/stripe";
+
+export const dynamic = "force-dynamic";
 
 /** Legacy path — delegates to pay-as-you-go credit checkout. */
 export async function POST(request: NextRequest) {

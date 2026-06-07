@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
@@ -18,6 +19,8 @@ import {
   getOwnedGeneration,
 } from "@/lib/generation-assets";
 import { FAL_CREDITS } from "@/lib/fal-credits";
+
+export const dynamic = "force-dynamic";
 
 const CREDIT_COST = FAL_CREDITS.fluxPulid;
 

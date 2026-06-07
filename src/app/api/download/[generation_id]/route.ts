@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   downloadStorageObject,
   getOwnedGeneration,
 } from "@/lib/generation-assets";
+
+export const dynamic = "force-dynamic";
 
 function filenameForType(type: string, mimeType: string): string {
   if (mimeType.startsWith("video/")) {

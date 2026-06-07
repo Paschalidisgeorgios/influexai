@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
@@ -8,6 +9,8 @@ import {
 } from "@/lib/live-creator-config";
 import { fal } from "@fal-ai/client";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

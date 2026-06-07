@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { assertGatedFeature } from "@/lib/access.server";
 import { scrapeProductUrl } from "@/lib/scrape-product";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 30;
 

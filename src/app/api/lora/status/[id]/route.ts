@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   extractLoraFileUrl,
@@ -11,6 +12,8 @@ import {
   markLoraReady,
 } from "@/lib/lora-training-service";
 import type { LoraModelType } from "@/lib/lora-config";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,

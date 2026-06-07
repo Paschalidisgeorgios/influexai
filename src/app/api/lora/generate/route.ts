@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
@@ -10,6 +11,8 @@ import {
   updateGenerationResult,
 } from "@/lib/generation-assets";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 120;
 

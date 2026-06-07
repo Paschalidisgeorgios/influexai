@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { listAkoolVoices } from "@/lib/akool-ugc";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {

@@ -62,5 +62,4 @@ export default withSentryConfig(configWithIntl, {
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
   },
-  disableLogger: true,
 });

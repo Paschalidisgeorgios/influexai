@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+
 import { assertGatedFeature } from "@/lib/access.server";
 import {
   estimateAgentCredits,
@@ -6,6 +7,8 @@ import {
 } from "@/lib/agent/credits";
 import { runMasterAgentStream } from "@/lib/agent/run-agent";
 import type { AgentChatMessage, AgentStreamEvent } from "@/lib/agent/types";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 300;
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { fal } from "@fal-ai/client";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
@@ -11,6 +12,8 @@ import {
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { buildImagesZip } from "@/lib/lora-zip";
 import { assertGatedFeature } from "@/lib/access.server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

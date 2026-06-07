@@ -1,4 +1,5 @@
 import { MELODIA_SYSTEM_PROMPT } from "@/lib/melodia/system-prompt";
+
 import { buildMelodiaSystemPrompt } from "@/lib/melodia/page-context";
 import {
   streamMelodiaChat,
@@ -7,6 +8,8 @@ import {
 import { assertActivePlan } from "@/lib/access.server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
@@ -11,6 +12,8 @@ import {
   parseContentKalenderToolResult,
   type ContentKalenderEntry,
 } from "@/lib/content-kalender-tool";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 90;
 

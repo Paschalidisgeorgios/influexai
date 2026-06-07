@@ -78,7 +78,9 @@ export async function submitLoraTraining(options: {
 }): Promise<{ requestId: string; endpoint: string }> {
   configureFalClient();
   if (!getFalKey()) {
-    throw new Error("LoRA training is not configured (FAL_KEY missing).");
+    throw new Error(
+      "LoRA training is not configured (FAL_API_KEY or FAL_KEY missing)."
+    );
   }
 
   const endpoint = trainingFalEndpoint(options.type);

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { buildAbResults } from "@/lib/ab-stats";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { invalidateUserGenerations } from "@/lib/cache";
@@ -29,6 +30,8 @@ import {
   ingestFinalAssetFromUrl,
 } from "@/lib/generation-assets";
 import { isValidLocale, type Locale } from "@/lib/locale";
+
+export const dynamic = "force-dynamic";
 
 export const maxDuration = 300;
 
