@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
 import { getAdminChurnDashboard } from "@/app/actions/churn";
+import { requireAdmin } from "@/lib/admin";
 
 export async function GET() {
+  const admin = await requireAdmin();
+  if (!admin.ok) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: admin.error === "Nicht eingeloggt." ? 401 : 403 }
+    );
+  }
+
   const data = await getAdminChurnDashboard("all");
 
   if ("error" in data) {

@@ -1,6 +1,7 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { redirect } from "next/navigation";
+
+import { isAdminUser } from "@/lib/auth/admin";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function AdminLayout({
   children,
@@ -14,19 +15,7 @@ export default async function AdminLayout({
 
   if (!user) redirect("/auth/sign-in");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin, role")
-    .eq("id", user.id)
-    .single();
-
-  if (
-    !isPlatformAdminServer({
-      email: user.email,
-      is_admin: profile?.is_admin,
-      role: profile?.role,
-    })
-  ) {
+  if (!(await isAdminUser())) {
     redirect("/dashboard");
   }
 

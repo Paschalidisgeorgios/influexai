@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BarChart2, Home, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { isAdminUser } from "@/lib/access";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
 import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
@@ -99,6 +98,13 @@ export function DashboardSidebar() {
   const supabase = createClient();
 
   useEffect(() => {
+    fetch("/api/auth/is-admin")
+      .then((r) => r.json())
+      .then((d: { isAdmin?: boolean }) => setIsAdmin(Boolean(d.isAdmin)))
+      .catch(() => setIsAdmin(false));
+  }, []);
+
+  useEffect(() => {
     const loadCredits = async () => {
       const {
         data: { user },
@@ -106,19 +112,12 @@ export function DashboardSidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("credits, plan, is_admin, role")
+        .select("credits, plan")
         .eq("id", user.id)
         .single();
       if (data) {
         setCredits(data.credits);
         setMaxCredits(getPlanMonthlyCredits(data.plan));
-        setIsAdmin(
-          isAdminUser({
-            email: user.email,
-            is_admin: data.is_admin,
-            role: data.role,
-          })
-        );
       }
       const { data: tenant } = await supabase
         .from("tenants")
