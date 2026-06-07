@@ -175,6 +175,18 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     genTypes: ["motion-transfer"],
   },
   {
+    id: "live-portrait",
+    href: "/dashboard/live-portrait",
+    category: "create",
+    icon: Theater,
+    title: "Live Portrait",
+    tagline: "Mimik und Bewegung von Video auf dein Foto übertragen",
+    creditCost: 5,
+    creditLabel: "5 Credits",
+    badge: "NEU",
+    genTypes: ["live-portrait"],
+  },
+  {
     id: "niche-analyzer",
     href: "/dashboard/niche-analyzer",
     category: "analyze",
@@ -433,17 +445,17 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         badge: "NEU",
       },
       {
-        id: "motion-transfer",
-        href: "/dashboard/motion-transfer",
-        label: "Motion Transfer",
-        icon: Clapperboard,
-        badge: "NEU",
-      },
-      {
         id: "live-portrait",
         href: "/dashboard/live-portrait",
         label: "Live Portrait",
         icon: Theater,
+        badge: "NEU",
+      },
+      {
+        id: "motion-transfer",
+        href: "/dashboard/motion-transfer",
+        label: "Motion Transfer",
+        icon: Clapperboard,
         badge: "NEU",
       },
       {
