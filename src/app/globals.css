@@ -240,6 +240,22 @@ html[data-world="brand"] {
     line-height: 1.65;
     text-shadow: 0 1px 16px rgba(6, 6, 8, 0.85);
   }
+
+  .hero-copy {
+    padding: clamp(48px, 7vw, 88px) clamp(20px, 6vw, 64px) clamp(56px, 8vw, 96px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .hero-copy-hidden {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .hero-copy-revealed {
+    opacity: 1;
+    transform: translateY(var(--hero-parallax, 0px));
+    transition: opacity 0.8s ease, transform 0.1s linear;
+  }
 }
 
 ::-webkit-scrollbar {

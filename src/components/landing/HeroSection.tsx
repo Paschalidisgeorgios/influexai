@@ -263,10 +263,15 @@ export function HeroSection({
   const [audience, setAudience] = useState<Audience>("creator");
   const [parallaxY, setParallaxY] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
     ? (rawRotating as string[])
     : [];
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     try {
@@ -356,16 +361,14 @@ export function HeroSection({
 
       {/* Copy */}
       <div
-        className="relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden"
-        style={{
-          padding:
-            "clamp(48px,7vw,88px) clamp(20px,6vw,64px) clamp(56px,8vw,96px)",
-          opacity: revealed ? 1 : 0,
-          transform: revealed ? `translateY(${parallaxY}px)` : "translateY(8px)",
-          transition: revealed
-            ? "opacity 0.8s ease, transform 0.1s linear"
-            : "opacity 0.8s ease, transform 0.8s ease",
-        }}
+        className={`hero-copy relative z-10 mx-auto flex min-h-[min(100vh,920px)] w-full max-w-full flex-col justify-center overflow-x-hidden ${
+          revealed ? "hero-copy-revealed" : "hero-copy-hidden"
+        }`}
+        style={
+          mounted && revealed
+            ? ({ ["--hero-parallax" as string]: `${parallaxY}px` } as React.CSSProperties)
+            : undefined
+        }
       >
         <SpringReveal>
           <div className="flex items-center gap-2.5 mb-7">
