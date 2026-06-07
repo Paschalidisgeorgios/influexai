@@ -12,6 +12,9 @@ export default function MotionTransferPage() {
   const { credits, reload: reloadCredits } = useUserCredits();
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [sourceImageFile, setSourceImageFile] = useState<File | null>(null);
+  const [sourceType, setSourceType] = useState<"image" | "video">("image");
+  const [sourceVideo, setSourceVideo] = useState<string | null>(null);
+  const [sourceVideoFile, setSourceVideoFile] = useState<File | null>(null);
   const [referenceVideo, setReferenceVideo] = useState<string | null>(null);
   const [referenceVideoFile, setReferenceVideoFile] = useState<File | null>(
     null
@@ -22,6 +25,7 @@ export default function MotionTransferPage() {
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
 
   const imageRef = useRef<HTMLInputElement>(null);
+  const sourceVideoRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (file: File) => {
@@ -29,6 +33,20 @@ export default function MotionTransferPage() {
     const reader = new FileReader();
     reader.onload = (e) => setSourceImage(e.target?.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handleSourceVideoUpload = (file: File) => {
+    if (file.size > 100 * 1024 * 1024) {
+      setError("Video zu groß. Maximale Größe: 100MB.");
+      return;
+    }
+    if (!["video/mp4", "video/quicktime"].includes(file.type)) {
+      setError("Bitte MP4-Video verwenden.");
+      return;
+    }
+    setSourceVideoFile(file);
+    setSourceVideo(URL.createObjectURL(file));
+    setError(null);
   };
 
   const handleVideoUpload = (file: File) => {
@@ -46,8 +64,11 @@ export default function MotionTransferPage() {
   };
 
   const handleSubmit = async () => {
-    if (!sourceImageFile || !referenceVideoFile) {
-      setError("Bitte Bild und Referenz-Video hochladen.");
+    const hasSource =
+      sourceType === "image" ? !!sourceImageFile : !!sourceVideoFile;
+
+    if (!hasSource || !referenceVideoFile) {
+      setError("Bitte Quelle und Referenz-Video hochladen.");
       return;
     }
 
@@ -69,7 +90,10 @@ export default function MotionTransferPage() {
           reader.readAsDataURL(file);
         });
 
-      const imageBase64 = await toBase64(sourceImageFile);
+      const imageBase64 =
+        sourceType === "image"
+          ? await toBase64(sourceImageFile!)
+          : await toBase64(sourceVideoFile!);
       const videoBase64 = await toBase64(referenceVideoFile);
 
       const res = await fetch("/api/motion-transfer", {
@@ -78,6 +102,7 @@ export default function MotionTransferPage() {
         body: JSON.stringify({
           sourceImage: imageBase64,
           referenceVideo: videoBase64,
+          sourceIsVideo: sourceType === "video",
         }),
       });
 
@@ -177,79 +202,191 @@ export default function MotionTransferPage() {
               marginBottom: 8,
             }}
           >
-            SCHRITT 1 · QUELL-BILD
+            SCHRITT 1 · QUELLE
           </div>
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => imageRef.current?.click()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                imageRef.current?.click();
-              }
-            }}
-            style={{
-              border: sourceImage
-                ? "1px solid rgba(180,255,0,0.4)"
-                : "1px dashed rgba(255,255,255,0.2)",
-              borderRadius: 8,
-              height: 260,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              overflow: "hidden",
-              background: "rgba(255,255,255,0.02)",
-              position: "relative",
-            }}
-          >
-            {sourceImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={sourceImage}
-                alt="Quell-Bild"
+          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+            <button
+              type="button"
+              onClick={() => setSourceType("image")}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: sourceType === "image" ? "#B4FF00" : "transparent",
+                color:
+                  sourceType === "image" ? "#060608" : "rgba(255,255,255,0.5)",
+                fontSize: 11,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Bild
+            </button>
+            <button
+              type="button"
+              onClick={() => setSourceType("video")}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: sourceType === "video" ? "#B4FF00" : "transparent",
+                color:
+                  sourceType === "video" ? "#060608" : "rgba(255,255,255,0.5)",
+                fontSize: 11,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Eigenes Video
+            </button>
+          </div>
+          {sourceType === "image" ? (
+            <>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => imageRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    imageRef.current?.click();
+                  }
+                }}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  border: sourceImage
+                    ? "1px solid rgba(180,255,0,0.4)"
+                    : "1px dashed rgba(255,255,255,0.2)",
+                  borderRadius: 8,
+                  height: 260,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  background: "rgba(255,255,255,0.02)",
+                  position: "relative",
+                }}
+              >
+                {sourceImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={sourceImage}
+                    alt="Quell-Bild"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🖼️</div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "rgba(255,255,255,0.5)",
+                        textAlign: "center",
+                        padding: "0 16px",
+                      }}
+                    >
+                      Foto oder KI-Bild hochladen
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "rgba(255,255,255,0.25)",
+                        marginTop: 6,
+                      }}
+                    >
+                      JPG, PNG, WebP
+                    </div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={imageRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageUpload(file);
                 }}
               />
-            ) : (
-              <>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🖼️</div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.5)",
-                    textAlign: "center",
-                    padding: "0 16px",
-                  }}
-                >
-                  Foto oder KI-Bild hochladen
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "rgba(255,255,255,0.25)",
-                    marginTop: 6,
-                  }}
-                >
-                  JPG, PNG, WebP
-                </div>
-              </>
-            )}
-          </div>
-          <input
-            ref={imageRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImageUpload(file);
-            }}
-          />
+            </>
+          ) : (
+            <>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => sourceVideoRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    sourceVideoRef.current?.click();
+                  }
+                }}
+                style={{
+                  border: sourceVideo
+                    ? "1px solid rgba(180,255,0,0.4)"
+                    : "1px dashed rgba(255,255,255,0.2)",
+                  borderRadius: 8,
+                  height: 260,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  background: "rgba(255,255,255,0.02)",
+                }}
+              >
+                {sourceVideo ? (
+                  <video
+                    src={sourceVideo}
+                    controls
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🎥</div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "rgba(255,255,255,0.5)",
+                        textAlign: "center",
+                        padding: "0 16px",
+                      }}
+                    >
+                      Eigenes Video hochladen
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "rgba(255,255,255,0.25)",
+                        marginTop: 6,
+                      }}
+                    >
+                      MP4 · Dein Gesicht frontal sichtbar
+                    </div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={sourceVideoRef}
+                type="file"
+                accept="video/mp4,video/quicktime"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleSourceVideoUpload(file);
+                }}
+              />
+            </>
+          )}
         </div>
 
         <div>
@@ -375,21 +512,29 @@ export default function MotionTransferPage() {
       <button
         type="button"
         onClick={() => void handleSubmit()}
-        disabled={loading || !sourceImageFile || !referenceVideoFile}
+        disabled={
+          loading ||
+          (sourceType === "image" ? !sourceImageFile : !sourceVideoFile) ||
+          !referenceVideoFile
+        }
         style={{
           width: "100%",
           padding: "14px",
           borderRadius: 6,
           border: "none",
           background:
-            loading || !sourceImageFile || !referenceVideoFile
+            loading ||
+            (sourceType === "image" ? !sourceImageFile : !sourceVideoFile) ||
+            !referenceVideoFile
               ? "rgba(180,255,0,0.3)"
               : "#B4FF00",
           color: "#060608",
           fontSize: 14,
           fontWeight: 800,
           cursor:
-            loading || !sourceImageFile || !referenceVideoFile
+            loading ||
+            (sourceType === "image" ? !sourceImageFile : !sourceVideoFile) ||
+            !referenceVideoFile
               ? "default"
               : "pointer",
           letterSpacing: "0.04em",

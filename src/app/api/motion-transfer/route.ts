@@ -14,6 +14,7 @@ export const maxDuration = 300;
 type MotionTransferBody = {
   sourceImage?: string;
   referenceVideo?: string;
+  sourceIsVideo?: boolean;
 };
 
 export async function POST(request: NextRequest) {
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
   const result = await runMotionTransferGeneration(supabase, user.id, {
     sourceImage,
     referenceVideo,
+    sourceIsVideo: body.sourceIsVideo === true,
   });
 
   if (!result.ok) {

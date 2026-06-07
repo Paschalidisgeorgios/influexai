@@ -56,6 +56,35 @@ async function uploadDataUrlVideoToFal(dataUrl: string): Promise<string> {
   return fal.storage.upload(file);
 }
 
+async function extractFirstFrameFromVideo(videoUrl: string): Promise<string> {
+  const result = (await fal.subscribe("fal-ai/ffmpeg-api/extract-frame", {
+    input: {
+      video_url: videoUrl,
+      frame_type: "first",
+    },
+    logs: false,
+  })) as {
+    data?: {
+      images?: Array<{ url?: string }>;
+      image?: { url?: string };
+    };
+    images?: Array<{ url?: string }>;
+    image?: { url?: string };
+  };
+
+  const frameUrl =
+    result.data?.images?.[0]?.url ??
+    result.images?.[0]?.url ??
+    result.data?.image?.url ??
+    result.image?.url;
+
+  if (!frameUrl) {
+    throw new Error("Erster Frame konnte nicht extrahiert werden.");
+  }
+
+  return frameUrl;
+}
+
 async function resolveMediaUrl(
   value: string,
   kind: "image" | "video"
@@ -81,7 +110,11 @@ async function resolveMediaUrl(
 export async function runMotionTransferGeneration(
   supabase: SupabaseClient,
   userId: string,
-  params: { sourceImage: string; referenceVideo: string }
+  params: {
+    sourceImage: string;
+    referenceVideo: string;
+    sourceIsVideo?: boolean;
+  }
 ): Promise<MotionTransferResult> {
   if (!getFalKey()) {
     return { ok: false, error: "Video-Engine ist nicht konfiguriert." };
@@ -99,17 +132,25 @@ export async function runMotionTransferGeneration(
   try {
     configureFalClient();
 
-    const [imageUrl, videoUrl] = await Promise.all([
-      resolveMediaUrl(params.sourceImage, "image"),
-      resolveMediaUrl(params.referenceVideo, "video"),
-    ]);
+    const referenceVideoUrl = await resolveMediaUrl(
+      params.referenceVideo,
+      "video"
+    );
+
+    let imageUrl: string;
+    if (params.sourceIsVideo) {
+      const sourceVideoUrl = await resolveMediaUrl(params.sourceImage, "video");
+      imageUrl = await extractFirstFrameFromVideo(sourceVideoUrl);
+    } else {
+      imageUrl = await resolveMediaUrl(params.sourceImage, "image");
+    }
 
     let result: unknown;
     try {
       result = await fal.subscribe(MOTION_TRANSFER_MODEL, {
         input: {
           image_url: imageUrl,
-          video_url: videoUrl,
+          video_url: referenceVideoUrl,
           character_orientation: "video",
         },
         logs: false,
