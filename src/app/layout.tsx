@@ -149,6 +149,7 @@ export default async function RootLayout({
         <TenantBrandingStyles tenant={tenant} />
       </head>
       <body
+        suppressHydrationWarning
         className={`min-h-screen antialiased overflow-x-clip text-[#F0EFE8] ${isRTL ? "font-[family-name:var(--font-arabic)]" : ""}`}
         style={{
           background: "var(--background)",
