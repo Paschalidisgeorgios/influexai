@@ -47,6 +47,7 @@ export function CookieBanner() {
         background: "#0f0f12",
         borderTop: "1px solid rgba(180,255,0,0.2)",
         padding: "16px 24px",
+        paddingBottom: "max(16px, env(safe-area-inset-bottom, 0px))",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -63,8 +64,8 @@ export function CookieBanner() {
           color: "rgba(255,255,255,0.65)",
           lineHeight: 1.5,
           margin: 0,
+          minWidth: 0,
           flex: 1,
-          minWidth: 260,
         }}
       >
         Wir verwenden Cookies um die Plattform bereitzustellen und zu
@@ -82,7 +83,7 @@ export function CookieBanner() {
           type="button"
           onClick={decline}
           style={{
-            padding: "8px 16px",
+            padding: "10px 16px",
             borderRadius: 4,
             border: "1px solid rgba(255,255,255,0.15)",
             background: "transparent",
@@ -92,6 +93,7 @@ export function CookieBanner() {
             letterSpacing: "0.04em",
             cursor: "pointer",
             fontFamily: "inherit",
+            minHeight: 44,
             transition: "border-color 0.2s, color 0.2s",
           }}
           onMouseEnter={(e) => {
@@ -114,7 +116,7 @@ export function CookieBanner() {
           type="button"
           onClick={accept}
           style={{
-            padding: "8px 20px",
+            padding: "10px 20px",
             borderRadius: 4,
             border: "none",
             background: "#B4FF00",
@@ -124,6 +126,7 @@ export function CookieBanner() {
             letterSpacing: "0.04em",
             cursor: "pointer",
             fontFamily: "inherit",
+            minHeight: 44,
             transition: "opacity 0.2s",
           }}
           onMouseEnter={(e) => {

@@ -538,7 +538,7 @@ export default function CampaignAutopilot() {
 
   return (
     <div
-      className="mx-auto max-w-[920px] px-4 py-6 md:px-6 md:py-8"
+      className="mx-auto max-w-[920px] min-w-0 overflow-x-hidden px-4 py-6 md:px-6 md:py-8"
       style={{ fontFamily: "var(--font-dm), sans-serif" }}
     >
       <header className="mb-6">
@@ -620,10 +620,8 @@ export default function CampaignAutopilot() {
             disabled={phase === "running" || !canStart}
             onClick={handleStartRequest}
             aria-label="Kampagne starten"
-            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed"
+            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             style={{
-              width: 30,
-              height: 30,
               borderRadius: 4,
               background: "#B4FF00",
               opacity: canStart ? 1 : 0.28,
@@ -651,7 +649,7 @@ export default function CampaignAutopilot() {
               type="button"
               disabled={phase === "running"}
               onClick={() => setMode(opt.id)}
-              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              className="min-h-[44px] px-3 py-2 text-xs transition-colors disabled:opacity-50"
               style={chipStyle(mode === opt.id)}
             >
               {opt.label}
@@ -666,7 +664,7 @@ export default function CampaignAutopilot() {
               type="button"
               disabled={phase === "running"}
               onClick={() => togglePlatform(opt.id)}
-              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              className="min-h-[44px] px-3 py-2 text-xs transition-colors disabled:opacity-50"
               style={chipStyle(platforms.includes(opt.id))}
             >
               {opt.label}
@@ -681,7 +679,7 @@ export default function CampaignAutopilot() {
               type="button"
               disabled={phase === "running"}
               onClick={() => setGoal(opt.id)}
-              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              className="min-h-[44px] px-3 py-2 text-xs transition-colors disabled:opacity-50"
               style={chipStyle(goal === opt.id)}
             >
               {opt.label}
@@ -696,7 +694,7 @@ export default function CampaignAutopilot() {
               type="button"
               disabled={phase === "running"}
               onClick={() => setTone(opt.id)}
-              className="px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+              className="min-h-[44px] px-3 py-2 text-xs transition-colors disabled:opacity-50"
               style={chipStyle(tone === opt.id)}
             >
               {opt.label}
@@ -709,7 +707,7 @@ export default function CampaignAutopilot() {
         type="button"
         disabled={!canStart}
         onClick={handleStartRequest}
-        className="mb-6 w-full py-2.5 transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
+        className="mb-6 min-h-[44px] w-full py-3 transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
         style={{
           background: "#B4FF00",
           color: "#060608",
@@ -770,7 +768,7 @@ export default function CampaignAutopilot() {
           </p>
 
           <div
-            className="mb-4 grid grid-cols-4 gap-1"
+            className="mb-4 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4"
             style={{ borderRadius: 2 }}
           >
             {CAMPAIGN_STEPS.map((label, index) => {
@@ -791,7 +789,7 @@ export default function CampaignAutopilot() {
                 >
                   <div className="flex items-start justify-between gap-1">
                     <span
-                      className="text-[9px] leading-[1.35]"
+                      className="text-[11px] leading-[1.35] sm:text-xs"
                       style={{
                         color: isActive
                           ? "#B4FF00"
@@ -869,14 +867,14 @@ function ChipRow({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       <span
-        className="w-[72px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.06em]"
+        className="w-full shrink-0 text-xs font-semibold uppercase tracking-[0.06em] sm:w-[72px]"
         style={{ color: "rgba(255,255,255,0.38)" }}
       >
         {label}
       </span>
-      <div className="flex flex-wrap gap-2">{children}</div>
+      <div className="flex min-w-0 flex-wrap gap-2">{children}</div>
     </div>
   );
 }
@@ -920,7 +918,7 @@ function CampaignResultCard({
     >
       <div className="flex">
         <div className="w-[3px] shrink-0" style={{ background: "#B4FF00" }} />
-        <div className="flex-1 p-4">
+        <div className="flex-1 min-w-0 p-4">
           <h2
             className="mb-1"
             style={{ fontSize: 14, color: "#fff", fontWeight: 700 }}
@@ -983,7 +981,7 @@ function CampaignResultCard({
               return (
                 <div
                   key={item.id}
-                  className="flex flex-wrap items-center gap-2 px-2 py-1.5 text-[10px]"
+                  className="flex min-w-0 flex-wrap items-center gap-2 px-2 py-1.5 text-xs break-words"
                   style={{
                     borderRadius: 2,
                     border: "1px solid rgba(255,255,255,0.06)",

@@ -360,7 +360,7 @@ export function HeroSection({
       </div>
       {/* Base grid + interactive reveal */}
       <div
-        className="absolute inset-0 z-0 overflow-visible pointer-events-none"
+        className="absolute inset-0 z-0 overflow-hidden pointer-events-none md:overflow-visible"
         aria-hidden
       >
         <div
@@ -416,7 +416,7 @@ export function HeroSection({
                 key={a}
                 type="button"
                 onClick={() => setAudience(a)}
-                className="px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
+                className="min-h-[44px] px-4 py-2.5 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 border"
                 style={{
                   background: audience === a ? "var(--accent, #B4FF00)" : "transparent",
                   borderColor:

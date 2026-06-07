@@ -423,7 +423,7 @@ export default function KiAgentPage() {
 
   return (
     <div
-      className="mx-auto max-w-[860px] px-4 py-6 md:px-6 md:py-8"
+      className="mx-auto max-w-[860px] min-w-0 overflow-x-hidden px-4 py-6 md:px-6 md:py-8"
       style={{ fontFamily: "var(--font-dm), sans-serif" }}
     >
       <header className="mb-6">
@@ -478,15 +478,13 @@ export default function KiAgentPage() {
           }}
         />
 
-        <div className="flex items-center gap-[7px]">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <button
             type="button"
             aria-label="Tools"
             onClick={() => setShowToolPanel((v) => !v)}
-            className="flex shrink-0 items-center justify-center text-[15px] font-semibold leading-none transition-colors hover:text-[#B4FF00]"
+            className="flex shrink-0 items-center justify-center text-[15px] font-semibold leading-none transition-colors hover:text-[#B4FF00] min-h-[44px] min-w-[44px]"
             style={{
-              width: 26,
-              height: 26,
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.14)",
               color: "rgba(255,255,255,0.7)",
@@ -530,10 +528,8 @@ export default function KiAgentPage() {
             disabled={phase === "running"}
             onClick={handleSubmit}
             aria-label="Senden"
-            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed"
+            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             style={{
-              width: 30,
-              height: 30,
               borderRadius: 4,
               background: "#B4FF00",
               opacity: prompt.trim() && phase !== "running" ? 1 : 0.28,
@@ -590,7 +586,7 @@ export default function KiAgentPage() {
                 key={tool.id}
                 type="button"
                 onClick={() => setSelectedTool(tool.id)}
-                className="px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                className="min-h-[44px] px-3 py-2 text-xs font-semibold transition-colors"
                 style={{
                   borderRadius: 4,
                   border: active
@@ -649,7 +645,7 @@ export default function KiAgentPage() {
           </p>
 
           <div
-            className="mb-4 grid grid-cols-4 gap-1"
+            className="mb-4 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4"
             style={{ borderRadius: 2 }}
           >
             {execution?.steps.map((step) => {
@@ -675,7 +671,7 @@ export default function KiAgentPage() {
                 >
                   <div className="flex items-start justify-between gap-1">
                     <span
-                      className="text-[9px] leading-[1.35]"
+                      className="text-[11px] leading-[1.35] sm:text-xs"
                       style={{
                         color: isActive
                           ? "#B4FF00"

@@ -55,7 +55,7 @@ export function MobileBottomNav() {
               aria-hidden
             />
             <span
-              className={`text-[0.62rem] font-semibold ${
+              className={`text-xs font-semibold ${
                 active ? "text-[#B4FF00]" : "text-white/70"
               }`}
             >

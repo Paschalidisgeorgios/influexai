@@ -18,7 +18,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-[280px] h-[calc(100dvh-11rem-env(safe-area-inset-bottom,0px))] lg:h-[calc(100dvh-10.5rem)] w-full min-w-0 max-w-4xl mx-auto">
+    <div className="flex flex-col min-h-[280px] h-[calc(100dvh-11rem-env(safe-area-inset-bottom,0px))] lg:h-[calc(100dvh-10.5rem)] w-full min-w-0 max-w-4xl mx-auto overflow-x-hidden">
       <MasterAgentChat suggestedPrompts={suggestedPrompts} />
     </div>
   );

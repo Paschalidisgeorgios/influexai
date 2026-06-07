@@ -453,10 +453,8 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
           <button
             type="submit"
             disabled={running || !input.trim()}
-            className="flex shrink-0 items-center justify-center rounded bg-[#B4FF00] text-[#060608] transition-opacity hover:brightness-105 disabled:cursor-not-allowed"
+            className="flex shrink-0 items-center justify-center rounded bg-[#B4FF00] text-[#060608] transition-opacity hover:brightness-105 disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             style={{
-              width: 32,
-              height: 32,
               borderRadius: 4,
               opacity: input.trim() && !running ? 1 : 0.3,
             }}
@@ -484,7 +482,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
           type="button"
           disabled={running}
           onClick={() => void handleSubmit(chip)}
-          className="shrink-0 rounded-full border border-white/[0.15] px-4 py-2.5 text-[13px] font-medium text-white/65 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40"
+          className="shrink-0 rounded-full border border-white/[0.15] px-4 py-2.5 min-h-[44px] text-[13px] font-medium text-white/65 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40"
           style={{ borderWidth: "0.5px" }}
         >
           {chip}

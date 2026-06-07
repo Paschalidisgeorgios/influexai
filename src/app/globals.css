@@ -439,6 +439,8 @@ html[data-world="brand"] {
   }
   .landing-nav-menu-btn {
     color: rgba(6, 6, 8, 0.82);
+    min-width: 44px;
+    min-height: 44px;
   }
   .landing-nav-menu-btn:hover {
     background: rgba(6, 6, 8, 0.06);
@@ -1701,7 +1703,7 @@ html[data-world="brand"] {
   }
 
   .ai-content-stream__card-label {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .ai-content-stream__card-value {
@@ -2065,7 +2067,8 @@ header.site-header.site-header--scrolled {
 
 @media (max-width: 768px) {
   .intro-logo {
-    width: min(80vw, 320px);
+    width: clamp(200px, 70vw, 360px);
+    max-width: 360px;
   }
 }
 
@@ -2103,13 +2106,14 @@ header.site-header.site-header--scrolled {
   right: clamp(16px, 3vw, 28px);
   bottom: clamp(16px, 3vw, 28px);
   z-index: 10001;
-  padding: 8px 14px;
+  min-height: 44px;
+  padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 4px;
   background: rgba(6, 6, 8, 0.55);
   color: rgba(255, 255, 255, 0.42);
   font-family: var(--font-dm), sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -2118,6 +2122,12 @@ header.site-header.site-header--scrolled {
     color 0.2s ease,
     border-color 0.2s ease,
     background 0.2s ease;
+}
+
+@media (max-width: 767px) {
+  .logo-intro-skip {
+    bottom: max(5rem, calc(16px + env(safe-area-inset-bottom, 0px)));
+  }
 }
 
 .logo-intro-skip:hover {

@@ -13,7 +13,7 @@ function clamp(value: number, min: number, max: number) {
 function ToolBadge({ children }: { children: string }) {
   return (
     <span
-      className="inline-block rounded-[6px] px-2.5 py-1 text-[11px]"
+      className="inline-block rounded-[6px] px-2.5 py-1 text-xs"
       style={{
         background: "rgba(180,255,0,0.1)",
         border: "1px solid rgba(180,255,0,0.3)",

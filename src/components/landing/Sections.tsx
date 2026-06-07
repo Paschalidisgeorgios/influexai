@@ -390,7 +390,7 @@ export function LandingFooter() {
     <>
       <LandingPreFooterCta />
       <footer
-        className="px-[clamp(20px,6vw,64px)] pb-6 pt-10 md:pt-12"
+        className="px-[clamp(20px,6vw,64px)] pb-[calc(6rem+env(safe-area-inset-bottom,0px))] pt-10 md:pb-6 md:pt-12"
         style={{
           background: "var(--bg-1)",
           borderTop: "1px solid var(--border)",

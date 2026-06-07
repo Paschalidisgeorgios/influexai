@@ -118,14 +118,14 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           <div className="flex md:hidden items-center gap-2 shrink-0">
             <AcidMotionButton
               href="/auth/sign-up"
-              className="btn-acid !px-3 !py-2 text-[0.75rem] whitespace-nowrap"
+              className="btn-acid !px-3 !py-2.5 !min-h-[44px] text-[0.75rem] whitespace-nowrap"
             >
               {t("auth_signup")}
             </AcidMotionButton>
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="landing-nav-menu-btn w-9 h-9 flex items-center justify-center rounded-lg transition-all shrink-0 md:hidden"
+              className="landing-nav-menu-btn flex h-11 w-11 items-center justify-center rounded-lg transition-all shrink-0 md:hidden"
               aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
               aria-expanded={menuOpen}
             >
@@ -177,7 +177,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
               <button
                 type="button"
                 onClick={closeMenu}
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-[#F0EFE8] border border-white/10"
+                className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[#F0EFE8] border border-white/10"
                 aria-label="Schließen"
               >
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
