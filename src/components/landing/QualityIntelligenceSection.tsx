@@ -7,7 +7,7 @@ export function QualityIntelligenceSection() {
   return (
     <section
       id="quality-intelligence"
-      className="px-[clamp(20px,6vw,64px)] py-16 md:py-20"
+      className="px-[clamp(16px,5vw,64px)] py-12 md:py-16 lg:py-20"
       style={{ background: "var(--bg-1)" }}
       aria-label="Quality Intelligence"
     >

@@ -75,10 +75,10 @@ export function HeroTitle({ titles }: Props) {
 
   const minHeight =
     maxLines >= 3
-      ? "clamp(5.75rem, 28vw, 20rem)"
+      ? "clamp(4.5rem, 24vw, 20rem)"
       : maxLines >= 2
-        ? "clamp(3.75rem, 18vw, 14rem)"
-        : "clamp(2.5rem, 10vw, 7rem)";
+        ? "clamp(3rem, 16vw, 14rem)"
+        : "clamp(2.25rem, 9vw, 7rem)";
 
   return (
     <div

@@ -280,7 +280,7 @@ export function HeroSection({
   return (
     <section
       id="landing-hero-sentinel"
-      className="relative isolate min-h-[min(100vh,920px)] max-w-[100vw] overflow-x-clip"
+      className="relative isolate min-h-0 max-w-[100vw] overflow-x-clip md:min-h-[min(100dvh,920px)]"
     >
       {/* Mobile: dezentes Hintergrundbild (CSS, kein Video) */}
       <div
@@ -356,9 +356,9 @@ export function HeroSection({
             : undefined
         }
       >
-        <div className="grid min-h-[min(100vh,920px)] w-full grid-cols-1 items-center gap-10 overflow-x-hidden lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid w-full grid-cols-1 items-start gap-6 overflow-x-hidden pt-2 pb-10 md:min-h-[min(100dvh,920px)] md:items-center md:gap-10 md:pt-0 md:pb-0 lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
           {/* Column 1: Badge, Toggle, Headline, Subline, CTAs, Trust */}
-          <div className="flex min-w-0 max-w-[620px] flex-col gap-6 lg:gap-7">
+          <div className="flex min-w-0 max-w-[620px] flex-col gap-4 sm:gap-6 lg:gap-7">
             <SpringReveal>
               <div className="flex items-center gap-2.5">
                 <div
@@ -424,7 +424,7 @@ export function HeroSection({
               </p>
             </SpringReveal>
 
-            <div className="block lg:hidden">
+            <div className="mt-2 block w-full max-w-[520px] lg:hidden">
               <HeroWorkspaceDemo compact />
             </div>
           </div>

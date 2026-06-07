@@ -185,7 +185,7 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
 
   const growTextarea = useCallback((el: HTMLTextAreaElement) => {
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 96)}px`;
   }, []);
 
   useEffect(() => {
@@ -411,8 +411,10 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
       }}
     >
       <div
-        className="flex w-full flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.04] transition-colors focus-within:border-[rgba(180,255,0,0.4)]"
-        style={{ padding: "14px 14px 12px 16px" }}
+        className={`flex w-full flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.04] transition-colors focus-within:border-[rgba(180,255,0,0.4)] ${
+          compact ? "p-2.5" : "p-3 sm:p-3.5"
+        }`}
+        style={{ minHeight: compact ? undefined : undefined }}
       >
         <textarea
           ref={textareaRef}
@@ -433,37 +435,35 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
           placeholder={t("input_placeholder")}
           disabled={running}
           rows={1}
-          className={`w-full resize-none overflow-hidden bg-transparent text-[#F0EFE8] leading-relaxed placeholder:text-white/30 outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-            compact ? "text-sm" : "text-base"
+          className={`w-full resize-none overflow-hidden bg-transparent text-[#F0EFE8] leading-snug placeholder:text-white/40 outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            compact ? "text-sm" : "text-[18px] sm:text-base"
           }`}
-          style={{ minHeight: 22, maxHeight: 120 }}
+          style={{ minHeight: 24, maxHeight: 96 }}
         />
         <div className="flex items-center gap-2">
           <button
             type="button"
             disabled
             title={t("attach_soon")}
-            className="flex shrink-0 items-center justify-center rounded border border-white/[0.12] text-white/35 cursor-not-allowed"
-            style={{ width: 28, height: 28, borderRadius: 4 }}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] text-white/35 cursor-not-allowed sm:h-7 sm:w-7 sm:rounded"
             aria-label={t("attach_soon")}
           >
-            <Paperclip size={14} />
+            <Paperclip className="h-[18px] w-[18px] sm:h-3.5 sm:w-3.5" />
           </button>
           <div className="flex-1" aria-hidden />
           <button
             type="submit"
             disabled={running || !input.trim()}
-            className="flex shrink-0 items-center justify-center rounded bg-[#B4FF00] text-[#060608] transition-opacity hover:brightness-105 disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#B4FF00] text-[#060608] transition-opacity hover:brightness-105 disabled:cursor-not-allowed sm:h-11 sm:w-11 sm:min-h-[44px] sm:min-w-[44px]"
             style={{
-              borderRadius: 4,
               opacity: input.trim() && !running ? 1 : 0.3,
             }}
             aria-label={t("send")}
           >
             {running ? (
-              <Loader2 size={16} className="animate-spin" />
+              <Loader2 size={18} className="animate-spin sm:h-4 sm:w-4" />
             ) : (
-              <ArrowUp size={16} strokeWidth={2.5} />
+              <ArrowUp size={18} strokeWidth={2.5} className="sm:h-4 sm:w-4" />
             )}
           </button>
         </div>
@@ -475,17 +475,17 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
   );
 
   const quickActionChips = (
-    <div className="mt-4 flex w-full min-w-0 flex-wrap justify-center gap-2">
+    <div className="mt-3 grid w-full max-w-md grid-cols-2 gap-3 mx-auto min-w-0 sm:mt-4">
       {suggestedPrompts.map((chip) => (
         <button
           key={chip}
           type="button"
           disabled={running}
           onClick={() => void handleSubmit(chip)}
-          className="shrink-0 rounded-full border border-white/[0.15] px-4 py-2.5 min-h-[44px] text-[13px] font-medium text-white/65 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40"
+          className="flex h-12 min-h-0 items-center justify-center rounded-full border border-white/[0.15] px-3 text-[15px] font-medium leading-tight text-white/70 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40 sm:text-[13px]"
           style={{ borderWidth: "0.5px" }}
         >
-          {chip}
+          <span className="line-clamp-2 text-center">{chip}</span>
         </button>
       ))}
     </div>
@@ -495,9 +495,9 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
     <div className="flex flex-col h-full min-h-0 bg-[#060608]">
       <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
         {isEmpty ? (
-          <div className="relative flex min-h-full flex-col items-center justify-center px-2 py-8 md:py-12">
+          <div className="relative flex min-h-0 flex-col items-stretch justify-start px-1 pt-1 pb-3 md:min-h-full md:items-center md:justify-center md:px-2 md:py-12">
             <div
-              className="pointer-events-none absolute inset-x-0 top-1/3 h-64 opacity-100"
+              className="pointer-events-none absolute inset-x-0 top-1/4 h-48 opacity-100 md:top-1/3 md:h-64"
               style={{
                 background:
                   "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(180,255,0,0.06) 0%, transparent 70%)",
@@ -505,19 +505,19 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
               aria-hidden
             />
             <div className="relative w-full max-w-2xl">
-              <div className="mb-8 flex items-start gap-3">
+              <div className="mb-4 flex items-start gap-3 md:mb-8">
                 <span
-                  className="inline-grid shrink-0 place-items-center rounded-lg bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold text-lg"
-                  style={{ width: 32, height: 32, marginRight: 0 }}
+                  className="inline-grid shrink-0 place-items-center rounded-lg bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold text-base sm:text-lg"
+                  style={{ width: 28, height: 28 }}
                   aria-hidden
                 >
                   I
                 </span>
                 <div className="min-w-0 pt-0.5">
-                  <p className="text-base text-[#F0EFE8] font-medium">
+                  <p className="text-sm text-[#F0EFE8] font-medium sm:text-base">
                     {t(greetingKey(), { name: username || "…" })}
                   </p>
-                  <h1 className="mt-1 text-2xl md:text-3xl font-bold text-[#F0EFE8] leading-tight">
+                  <h1 className="mt-0.5 text-xl font-bold text-[#F0EFE8] leading-tight sm:mt-1 sm:text-2xl md:text-3xl">
                     {t("hero_headline")}
                   </h1>
                 </div>

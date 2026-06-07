@@ -246,6 +246,13 @@ html[data-world="brand"] {
     transition: opacity 0.8s ease, transform 0.8s ease;
   }
 
+  @media (max-width: 639px) {
+    .hero-copy {
+      padding: calc(var(--landing-nav-height, 5.75rem) + 8px) clamp(16px, 5vw, 20px)
+        clamp(32px, 6vw, 48px);
+    }
+  }
+
   .hero-copy-hidden {
     opacity: 0;
     transform: translateY(8px);
@@ -1836,6 +1843,16 @@ button {
 
   [data-dashboard] .credit-pack-card--popular {
     transform: none !important;
+  }
+
+  [data-dashboard] main {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 430px) {
+  [data-dashboard] .glass-card {
+    border-radius: 10px;
   }
 }
 

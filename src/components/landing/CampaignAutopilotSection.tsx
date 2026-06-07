@@ -7,7 +7,7 @@ export function CampaignAutopilotSection() {
   return (
     <section
       id="campaign-autopilot"
-      className="px-[clamp(20px,6vw,64px)] py-16 md:py-20"
+      className="px-[clamp(16px,5vw,64px)] py-12 md:py-16 lg:py-20"
       style={{ background: "#060608" }}
       aria-label="Campaign Autopilot"
     >

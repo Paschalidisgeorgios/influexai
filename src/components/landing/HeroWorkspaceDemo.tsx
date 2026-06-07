@@ -128,8 +128,8 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
   const stageStyle: CSSProperties = compact
     ? {
         width: "100%",
-        maxWidth: 520,
-        height: "clamp(420px, 55vh, 520px)",
+        maxWidth: "100%",
+        height: "clamp(360px, 52vh, 460px)",
       }
     : {
         width: "min(46vw, 620px)",

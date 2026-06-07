@@ -329,7 +329,7 @@ export function StackedDemoSection() {
 
       <section
         id="stacked-demo-mobile"
-        className="md:hidden px-[clamp(20px,6vw,64px)] py-12"
+        className="md:hidden px-[clamp(16px,5vw,64px)] py-10"
         style={{ background: "#060608" }}
       >
         <div className="mx-auto flex max-w-[640px] flex-col gap-6">
