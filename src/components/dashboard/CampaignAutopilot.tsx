@@ -29,6 +29,8 @@ import { qualityDecision } from "@/lib/agent/qualityScoring";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
+import { createClient } from "@/lib/supabase/client";
+import { saveCampaignResult } from "@/lib/agent/persistExecution";
 
 type Phase = "idle" | "running" | "done";
 
@@ -186,9 +188,11 @@ export default function CampaignAutopilot() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [stepIdx, setStepIdx] = useState(0);
   const [guard, setGuard] = useState<GuardState>(null);
+  const [userId, setUserId] = useState<string | undefined>();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const savedCampaignRef = useRef<string | null>(null);
 
   const estimatedCredits = CAMPAIGN_SPECS[mode].estimatedCredits;
   const modeLabel = CAMPAIGN_SPECS[mode].label;
@@ -216,6 +220,24 @@ export default function CampaignAutopilot() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    void createClient()
+      .auth.getUser()
+      .then(({ data }) => setUserId(data.user?.id));
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "done" || !execution?.result) return;
+    if (savedCampaignRef.current === execution.id) return;
+    savedCampaignRef.current = execution.id;
+    void saveCampaignResult(
+      execution.result,
+      userId,
+      execution.prompt,
+      execution.platforms
+    );
+  }, [phase, execution, userId]);
 
   useEffect(() => {
     if (phase !== "running" || stepIdx < 11) return;
@@ -337,6 +359,7 @@ export default function CampaignAutopilot() {
     setPhase("idle");
     setExecution(null);
     setStepIdx(0);
+    savedCampaignRef.current = null;
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {

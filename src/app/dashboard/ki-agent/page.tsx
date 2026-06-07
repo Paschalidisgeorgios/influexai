@@ -20,6 +20,7 @@ import {
   createExecution,
 } from "@/lib/agent/mockExecutor";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
+import { saveExecution, saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
@@ -144,6 +145,7 @@ export default function KiAgentPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepIndexRef = useRef(0);
   const lastPromptRef = useRef("");
+  const savedExecutionRef = useRef<string | null>(null);
 
   const adjustTextareaHeight = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -197,6 +199,13 @@ export default function KiAgentPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (phase !== "done" || !execution || execution.status !== "completed") return;
+    if (savedExecutionRef.current === execution.id) return;
+    savedExecutionRef.current = execution.id;
+    void saveExecution(execution);
+  }, [phase, execution]);
+
   const clearRunner = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -208,6 +217,8 @@ export default function KiAgentPage() {
     (trimmed: string) => {
       clearRunner();
       setCreditError(null);
+
+      savedExecutionRef.current = null;
 
       const next = createExecution(trimmed, userId);
       next.status = "running";
@@ -711,6 +722,9 @@ export default function KiAgentPage() {
         <ResultCard
           result={execution.result}
           usedCredits={execution.usedCredits}
+          executionId={execution.id}
+          tool={execution.selectedTools[0]}
+          intent={execution.intent}
           onPublish={() => handlePublishRequest(execution.result!)}
         />
       )}
@@ -738,10 +752,16 @@ function ResultCard({
   result,
   usedCredits,
   onPublish,
+  executionId,
+  tool,
+  intent,
 }: {
   result: AgentResult;
   usedCredits?: number;
   onPublish: () => void;
+  executionId?: string;
+  tool?: string;
+  intent?: string;
 }) {
   const scores: AgentScores = result.scores ?? {};
   const nextActions = result.nextActions ?? [];
@@ -776,6 +796,51 @@ function ResultCard({
               {usedCredits} Credits verwendet
             </p>
           )}
+
+          <div className="mb-4 flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Gefällt mir"
+              onClick={() =>
+                void saveFeedback({
+                  executionId,
+                  action: "liked",
+                  tool,
+                  intent,
+                  rating: 5,
+                })
+              }
+              className="px-2.5 py-1 text-[13px] transition-opacity hover:opacity-80"
+              style={{
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.04)",
+              }}
+            >
+              👍
+            </button>
+            <button
+              type="button"
+              aria-label="Gefällt mir nicht"
+              onClick={() =>
+                void saveFeedback({
+                  executionId,
+                  action: "disliked",
+                  tool,
+                  intent,
+                  rating: 1,
+                })
+              }
+              className="px-2.5 py-1 text-[13px] transition-opacity hover:opacity-80"
+              style={{
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.04)",
+              }}
+            >
+              👎
+            </button>
+          </div>
 
           <div className="mb-4">
             {typeof scores.hookScore === "number" && (
