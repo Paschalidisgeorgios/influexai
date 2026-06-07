@@ -35,7 +35,11 @@ export function WhiteLabelPageContent() {
     const data = await res.json();
     setCheckoutPlan(null);
     if (data.url) window.location.href = data.url;
-    else alert(data.error ?? "Checkout fehlgeschlagen");
+    else
+      alert(
+        data.error ??
+          "Dieser Plan ist aktuell nicht verfügbar. Bitte kontaktiere den Support."
+      );
   };
 
   return (

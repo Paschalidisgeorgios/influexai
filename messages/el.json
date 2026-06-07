@@ -150,7 +150,9 @@
     "signup_subtitle": "Ξεκίνα το creator ταξίδι σου με AI.",
     "signup_title": "Δημιουργία λογαριασμού",
     "terms_link": "Όρους",
-    "terms_text": "Με την εγγραφή αποδέχεσαι τους"
+    "terms_text": "Με την εγγραφή αποδέχεσαι τους",
+    "verify_email_body": "Σου στείλαμε σύνδεσμο στο",
+    "verify_email_title": "Επιβεβαίωσε το email σου"
   },
   "common": {
     "back": "Πίσω",
@@ -1045,7 +1047,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Κάθε πρωί 07:00 UTC: 3 ιδέες από τrends YouTube στη niche σου.",
     "daily_suggestions_email_label": "Καθημερινές ιδέες με email",
-    "growth_agent_title": "Creator Growth Agent"
+    "growth_agent_title": "Creator Growth Agent",
+    "deleteAccount": {
+      "title": "Μόνιμη διαγραφή λογαριασμού;",
+      "warning": "Αυτή η ενέργεια διαγράφει μόνιμα τον λογαριασμό, τα δεδομένα προφίλ και την πρόσβασή σου. Δεν μπορεί να αναιρεθεί.",
+      "subscription_hint": "Αν έχεις ενεργή συνδρομή, θα ακυρωθεί πριν τη διαγραφή του λογαριασμού.",
+      "agency_owner_block": "Επικοινώνησε με την υποστήριξη για διαγραφή λογαριασμού agency / white-label: {email}",
+      "confirm_label": "Πληκτρολόγησε {word} για επιβεβαίωση",
+      "confirm_button": "Μόνιμη διαγραφή λογαριασμού",
+      "cancel": "Ακύρωση",
+      "deleting": "Διαγραφή…",
+      "danger_button": "Διαγραφή λογαριασμού",
+      "danger_desc": "Η διαγραφή λογαριασμού αφαιρεί μόνιμα όλα τα δεδομένα και credits σου.",
+      "error_generic": "Ο λογαριασμός δεν διαγράφηκε. Δοκίμασε ξανά ή επικοινώνησε με {email}.",
+      "success_title": "Ο λογαριασμός σου διαγράφηκε.",
+      "success_redirect": "Μεταφορά στην αρχική…",
+      "dismiss": "Κλείσιμο"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Άμεσα διαθέσιμο",

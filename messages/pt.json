@@ -150,7 +150,9 @@
     "signup_subtitle": "Comece sua jornada de criador com IA.",
     "signup_title": "Criar conta",
     "terms_link": "Termos de Uso",
-    "terms_text": "Ao se cadastrar, você concorda com nossos"
+    "terms_text": "Ao se cadastrar, você concorda com nossos",
+    "verify_email_body": "Enviamos um link para",
+    "verify_email_title": "Confirme seu e-mail"
   },
   "common": {
     "back": "Voltar",
@@ -1045,7 +1047,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Todas as manhãs às 07:00 UTC: 3 ideias com base nas tendências do YouTube no teu nicho.",
     "daily_suggestions_email_label": "Ideias diárias por email",
-    "growth_agent_title": "Agente de Crescimento para Criadores"
+    "growth_agent_title": "Agente de Crescimento para Criadores",
+    "deleteAccount": {
+      "title": "Excluir conta permanentemente?",
+      "warning": "Esta ação exclui permanentemente sua conta, dados de perfil e acesso. Não pode ser desfeita.",
+      "subscription_hint": "Se você tiver uma assinatura ativa, ela será cancelada antes da exclusão da conta.",
+      "agency_owner_block": "Entre em contato com o suporte para excluir sua conta de agência / white-label: {email}",
+      "confirm_label": "Digite {word} para confirmar",
+      "confirm_button": "Excluir conta permanentemente",
+      "cancel": "Cancelar",
+      "deleting": "Excluindo…",
+      "danger_button": "Excluir conta",
+      "danger_desc": "Excluir a conta remove permanentemente todos os seus dados e créditos.",
+      "error_generic": "Não foi possível excluir a conta. Tente novamente ou contate {email}.",
+      "success_title": "Sua conta foi excluída.",
+      "success_redirect": "Redirecionando para a página inicial…",
+      "dismiss": "Fechar"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Disponível na hora",

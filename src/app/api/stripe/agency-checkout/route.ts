@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AGENCY_PLANS, getAgencyStripePriceId, type AgencyPlanId } from "@/lib/agency-plans";
+import {
+  AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE,
+  logMissingAgencyStripePriceId,
+} from "@/lib/stripe/prices";
 import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
@@ -42,22 +46,16 @@ export async function POST(request: NextRequest) {
 
   const interval = (body.interval ?? "monthly") as "monthly" | "yearly";
   const priceId = getAgencyStripePriceId(planId, interval);
-  const lineItems = priceId
-    ? [{ price: priceId, quantity: 1 }]
-    : [
-        {
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: `InfluexAI White-Label — ${plan.name}`,
-              description: `Bis zu ${plan.maxSeats} Client Seats · ${plan.creditsPool} Credits Pool`,
-            },
-            unit_amount: Math.round(plan.monthlyPriceEur * 100),
-            recurring: { interval: "month" as const },
-          },
-          quantity: 1,
-        },
-      ];
+
+  if (!priceId) {
+    logMissingAgencyStripePriceId(planId, interval);
+    return NextResponse.json(
+      { error: AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE },
+      { status: 503 }
+    );
+  }
+
+  const lineItems = [{ price: priceId, quantity: 1 }];
 
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",

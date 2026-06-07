@@ -8,11 +8,15 @@ import {
 } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
+import {
+  logAuthRedirect,
+  resolvePostAuthRedirect,
+} from "@/lib/auth-redirect";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const nextParam = searchParams.get("next");
 
   if (code) {
     const cookieStore = await cookies();
@@ -52,9 +56,32 @@ export async function GET(request: NextRequest) {
           await applyBetaOnSignup(user.id, betaCode);
         }
         void invokeWelcomeNurtureEmail(user.id);
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin, role")
+          .eq("id", user.id)
+          .single();
+
+        const target = resolvePostAuthRedirect(
+          {
+            email: user.email,
+            is_admin: profile?.is_admin,
+            role: profile?.role,
+          },
+          nextParam
+        );
+
+        logAuthRedirect({
+          userId: user.id,
+          role: profile?.role,
+          target,
+          source: "auth_callback",
+        });
+
+        return NextResponse.redirect(`${origin}${target}`);
       }
-      return NextResponse.redirect(`${origin}${next}`);
     }
   }
-  return NextResponse.redirect(`${origin}/login?error=auth_error`);
+  return NextResponse.redirect(`${origin}/auth/sign-in?error=auth_error`);
 }

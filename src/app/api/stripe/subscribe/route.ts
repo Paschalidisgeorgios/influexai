@@ -20,29 +20,9 @@ export async function POST(request: NextRequest) {
   const plan = body.plan as Exclude<SubscriptionPlanId, "free"> | undefined;
   const interval = (body.interval ?? "monthly") as BillingInterval;
 
-  const priceId =
-    priceIdFromBody ??
-    (plan ? getStripePriceId(plan, interval) : undefined);
-
-  if (!priceId) {
-    return NextResponse.json(
-      { error: "Stripe Price ID fehlt. Bitte NEXT_PUBLIC_STRIPE_* in .env setzen." },
-      { status: 503 }
-    );
-  }
-
   if (plan && !SUBSCRIPTION_PLANS[plan]) {
     return NextResponse.json({ error: "Ungültiger Plan" }, { status: 400 });
   }
-
-  const resolvedPlan =
-    plan ??
-    (Object.keys(SUBSCRIPTION_PLANS) as Exclude<SubscriptionPlanId, "free">[]).find(
-      (p) =>
-        getStripePriceId(p, "monthly") === priceId ||
-        getStripePriceId(p, "yearly") === priceId
-    ) ??
-    "starter";
 
   const supabase = await createServerSupabaseClient();
   const {
@@ -53,13 +33,49 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
+  const priceId =
+    priceIdFromBody ??
+    (plan ? getStripePriceId(plan, interval) : undefined);
+
+  const resolvedPlan =
+    plan ??
+    (Object.keys(SUBSCRIPTION_PLANS) as Exclude<SubscriptionPlanId, "free">[]).find(
+      (p) =>
+        getStripePriceId(p, "monthly") === priceId ||
+        getStripePriceId(p, "yearly") === priceId
+    ) ??
+    "starter";
+
+  if (!priceId) {
+    console.error("[checkout]", {
+      userId: user.id,
+      plan: resolvedPlan,
+      interval,
+      priceIdExists: false,
+    });
+    return NextResponse.json(
+      {
+        error:
+          "Dieser Plan ist aktuell nicht verfügbar. Bitte kontaktiere den Support.",
+      },
+      { status: 503 }
+    );
+  }
+
+  console.log("[checkout]", {
+    userId: user.id,
+    plan: resolvedPlan,
+    interval,
+    priceIdExists: true,
+  });
+
   const session = await getStripe().checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     allow_promotion_codes: true,
-    success_url: `${SITE_URL}/dashboard/credits?subscribed=${resolvedPlan}`,
-    cancel_url: `${SITE_URL}/pricing?canceled=true`,
+    success_url: `${SITE_URL}/dashboard/credits?subscribed=${resolvedPlan}&checkout=success`,
+    cancel_url: `${SITE_URL}/pricing?checkout=cancelled`,
     customer_email: user.email ?? undefined,
     metadata: {
       user_id: user.id,

@@ -150,7 +150,9 @@
     "signup_subtitle": "AI ile içerik üreticisi yolculuğuna başla.",
     "signup_title": "Hesap oluştur",
     "terms_link": "Şartlar",
-    "terms_text": "Kayıt olarak şunları kabul edersin:"
+    "terms_text": "Kayıt olarak şunları kabul edersin:",
+    "verify_email_body": "Doğrulama linkini şu adrese gönderdik:",
+    "verify_email_title": "E-postanı doğrula"
   },
   "common": {
     "back": "Geri",
@@ -1045,7 +1047,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Her sabah 07:00 UTC'de: nişindeki YouTube trendlerine göre 3 video fikri.",
     "daily_suggestions_email_label": "Günlük fikirler e-postayla",
-    "growth_agent_title": "Creator Büyüme Ajanı"
+    "growth_agent_title": "Creator Büyüme Ajanı",
+    "deleteAccount": {
+      "title": "Hesap kalıcı olarak silinsin mi?",
+      "warning": "Bu işlem hesabını, profil verilerini ve erişimini kalıcı olarak siler. Geri alınamaz.",
+      "subscription_hint": "Aktif bir aboneliğin varsa, hesap silinmeden önce iptal edilir.",
+      "agency_owner_block": "Ajans / white-label hesabını silmek için lütfen destek ile iletişime geç: {email}",
+      "confirm_label": "Onaylamak için {word} yaz",
+      "confirm_button": "Hesabı kalıcı olarak sil",
+      "cancel": "İptal",
+      "deleting": "Siliniyor…",
+      "danger_button": "Hesabı sil",
+      "danger_desc": "Hesap silme tüm verilerini ve kredilerini kalıcı olarak kaldırır.",
+      "error_generic": "Hesap silinemedi. Tekrar dene veya {email} ile iletişime geç.",
+      "success_title": "Hesabın silindi.",
+      "success_redirect": "Ana sayfaya yönlendiriliyorsun…",
+      "dismiss": "Kapat"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Anında kullanılabilir",

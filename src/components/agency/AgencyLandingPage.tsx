@@ -11,7 +11,6 @@ import { RevealUp } from "@/components/ui/ScrollReveal";
 import {
   AGENCY_PLAN_ORDER,
   AGENCY_PLANS,
-  getAgencyStripePriceId,
   type AgencyPlanId,
   type BillingInterval,
 } from "@/lib/agency-plans";
@@ -47,19 +46,12 @@ export function AgencyLandingPage() {
       return;
     }
 
-    const priceId = getAgencyStripePriceId(planId, interval);
-    if (!priceId) {
-      alert("Stripe Price ID fehlt.");
-      return;
-    }
-
     setLoading(`${planId}-${interval}`);
     try {
       const res = await fetch("/api/agency/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          priceId,
           plan: planId,
           billingInterval: interval,
           agencyName,
@@ -68,7 +60,11 @@ export function AgencyLandingPage() {
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else alert(data.error ?? "Checkout fehlgeschlagen.");
+      else
+        alert(
+          data.error ??
+            "Dieser Plan ist aktuell nicht verfügbar. Bitte kontaktiere den Support."
+        );
     } catch {
       alert("Checkout fehlgeschlagen.");
     }

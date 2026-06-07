@@ -150,7 +150,9 @@
     "signup_subtitle": "Comienza tu camino como creador con IA.",
     "signup_title": "Crear cuenta",
     "terms_link": "Términos y condiciones",
-    "terms_text": "Al registrarte, aceptas nuestros"
+    "terms_text": "Al registrarte, aceptas nuestros",
+    "verify_email_body": "Te hemos enviado un enlace a",
+    "verify_email_title": "Confirma tu correo"
   },
   "common": {
     "back": "Atrás",
@@ -1045,7 +1047,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Cada mañana a las 07:00 UTC: 3 ideas según tendencias de YouTube en tu nicho.",
     "daily_suggestions_email_label": "Ideas diarias por email",
-    "growth_agent_title": "Agente de Crecimiento para Creadores"
+    "growth_agent_title": "Agente de Crecimiento para Creadores",
+    "deleteAccount": {
+      "title": "¿Eliminar cuenta permanentemente?",
+      "warning": "Esta acción elimina permanentemente tu cuenta, datos de perfil y acceso. No se puede deshacer.",
+      "subscription_hint": "Si tienes una suscripción activa, se cancelará antes de eliminar la cuenta.",
+      "agency_owner_block": "Contacta con soporte para eliminar tu cuenta de agencia / white-label: {email}",
+      "confirm_label": "Escribe {word} para confirmar",
+      "confirm_button": "Eliminar cuenta permanentemente",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "danger_button": "Eliminar cuenta",
+      "danger_desc": "Eliminar la cuenta borra permanentemente todos tus datos y créditos.",
+      "error_generic": "No se pudo eliminar la cuenta. Inténtalo de nuevo o contacta {email}.",
+      "success_title": "Tu cuenta ha sido eliminada.",
+      "success_redirect": "Redirigiendo a la página de inicio…",
+      "dismiss": "Cerrar"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Disponible al instante",

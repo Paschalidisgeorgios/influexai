@@ -10,6 +10,7 @@ import { ObsidianShell } from "@/components/ui/ObsidianShell";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { AccountDeletedNotice } from "@/components/auth/AccountDeletedNotice";
 import {
   buildHreflangAlternates,
   getHomeSeo,
@@ -101,7 +102,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     appleWebApp: {
       capable: true,
-      statusBarStyle: "black-translucent",
+      statusBarStyle: "default",
       title: "InfluexAI",
     },
     other: {
@@ -111,7 +112,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#B4FF00",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f4ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#f4f4ef" },
+  ],
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -141,12 +145,10 @@ export default async function RootLayout({
     >
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#B4FF00" />
+        <meta name="theme-color" content="#f4f4ef" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#f4f4ef" media="(prefers-color-scheme: dark)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <TenantBrandingStyles tenant={tenant} />
       </head>
       <body
@@ -162,6 +164,7 @@ export default async function RootLayout({
             <ObsidianShell />
             <PwaBootstrap />
             {children}
+            <AccountDeletedNotice />
           </TenantProvider>
         </NextIntlClientProvider>
         <CookieBanner />

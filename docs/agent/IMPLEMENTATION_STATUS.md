@@ -22,7 +22,12 @@
 - ElevenLabs: Key vorhanden, COMING_SOON Flag
 - Akool/Live Creator: Key vorhanden, COMING_SOON Flag
 
-## ❌ Mock / TODO
+## Auth & Billing (2026-06)
+
+- Admin redirect bug fixed — see `docs/auth/AUTH_FLOW.md`
+- Confirmation email template: `docs/auth/email-confirmation-template.html` → paste in **Supabase Dashboard → Auth → Email Templates → Confirm signup**
+- Test plan: `docs/auth/AUTH_AND_BILLING_TEST_PLAN.md`
+
 - Visual QA: kein echtes Vision-Modell
 - Hard Constraint Parser: Types da, Parser fehlt
 - Prompt Builder mit Constraint Lock: fehlt

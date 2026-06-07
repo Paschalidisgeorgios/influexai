@@ -20,18 +20,7 @@ const LANDING_NAV_LINK =
   "nav-item relative inline-flex text-sm font-medium text-[#1a1a1a] px-3.5 py-1.5 rounded-lg transition-colors duration-150 hover:text-[#060608]";
 
 const HEADER_CLASS =
-  "sticky top-0 z-50 w-full max-w-[100vw] landing-nav-shell";
-
-const MOBILE_NAV_BAR_STYLES = `
-  @media (max-width: 767px) {
-    .landing-nav-bar--mobile {
-      background: rgba(6, 6, 8, 0.98) !important;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-  }
-`;
+  "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell";
 
 const MOBILE_DRAWER_STYLE = {
   background: "#0d0f0d",
@@ -83,14 +72,13 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: MOBILE_NAV_BAR_STYLES }} />
       <header className={HEADER_CLASS}>
         <nav className={navBarClass} aria-label="Hauptnavigation">
-          <Link href="/" className="flex items-center gap-2.5 no-underline shrink-0 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-[#B4FF00] flex items-center justify-center font-[family-name:var(--font-bebas)] text-lg text-[#060608] leading-none shrink-0">
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 no-underline">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B4FF00] font-[family-name:var(--font-bebas)] text-lg leading-none text-[#060608]">
               I
             </div>
-            <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#060608] truncate">
+            <span className="landing-nav-logo-text truncate font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#060608]">
               Influex<span className="text-[#5a7300]">AI</span>
             </span>
           </Link>
@@ -137,17 +125,17 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             </AcidMotionButton>
           </div>
 
-          <div className="flex md:hidden items-center gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-2 md:hidden">
             <AcidMotionButton
               href="/auth/sign-up"
-              className="btn-acid !px-3 !py-2.5 !min-h-[44px] text-[0.75rem] whitespace-nowrap"
+              className="btn-acid !min-h-10 !px-3 !py-2 text-[0.72rem] whitespace-nowrap"
             >
               {t("auth_signup")}
             </AcidMotionButton>
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="landing-nav-menu-btn flex h-11 w-11 items-center justify-center rounded-lg transition-all shrink-0 md:hidden"
+              className="landing-nav-menu-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-all md:hidden"
               aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
               aria-expanded={menuOpen}
             >
@@ -180,8 +168,6 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           </div>
         </nav>
       </header>
-
-      <div className="landing-nav-spacer" aria-hidden />
 
       {mounted && menuOpen ? (
         <div className="mobile-nav-overlay open" role="presentation">

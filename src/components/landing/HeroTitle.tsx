@@ -1,28 +1,62 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import {
+  parseHeroTitleSlides,
+  type HeroTitleInput,
+  type HeroTitleSlide,
+} from "@/data/heroRotatingTitles";
 
 const SLIDE_INTERVAL_MS = 3200;
-
-type TitleSlide = { lines: string[] };
+const ACCENT = "var(--accent, #B4FF00)";
+const WHITE = "#ffffff";
 
 type Props = {
-  titles: string[];
+  titles: HeroTitleInput[];
 };
 
-function parseSlides(raw: string[]): TitleSlide[] {
-  return raw
-    .map((title) => ({
-      lines: title
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean),
-    }))
-    .filter((slide) => slide.lines.length > 0);
+function accentLineIndex(slide: HeroTitleSlide): number {
+  if (slide.highlightWord) {
+    const idx = slide.lines.findIndex(
+      (line) =>
+        line.trim() === slide.highlightWord ||
+        line.trim().endsWith(` ${slide.highlightWord}`) ||
+        line.includes(slide.highlightWord ?? "")
+    );
+    if (idx >= 0) return idx;
+  }
+  if (slide.highlightLine != null) return slide.highlightLine;
+  return slide.lines.length - 1;
+}
+
+function renderLineContent(line: string, slide: HeroTitleSlide, lineIndex: number) {
+  const accentIdx = accentLineIndex(slide);
+  const isAccentLine = lineIndex === accentIdx;
+
+  if (!slide.highlightWord || !isAccentLine) {
+    return line;
+  }
+
+  const word = slide.highlightWord;
+  const idx = line.indexOf(word);
+  if (idx < 0) {
+    return line;
+  }
+
+  const before = line.slice(0, idx);
+  const after = line.slice(idx + word.length);
+
+  return (
+    <>
+      {before ? <span style={{ color: WHITE }}>{before}</span> : null}
+      <span style={{ color: ACCENT }}>{word}</span>
+      {after ? <span style={{ color: WHITE }}>{after}</span> : null}
+    </>
+  );
 }
 
 export function HeroTitle({ titles }: Props) {
-  const slides = useMemo(() => parseSlides(titles), [titles]);
+  const slides = useMemo(() => parseHeroTitleSlides(titles), [titles]);
   const slideCount = slides.length;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -60,7 +94,7 @@ export function HeroTitle({ titles }: Props) {
   const slide = slides[currentSlide];
   if (!slide) return null;
 
-  const accentIndex = slide.lines.length - 1;
+  const accentIdx = accentLineIndex(slide);
 
   const headingStyle = {
     fontFamily: "var(--heading-font)",
@@ -97,13 +131,15 @@ export function HeroTitle({ titles }: Props) {
               lineHeight: "var(--heading-leading, 0.88)",
               letterSpacing: "inherit",
               textTransform: "inherit",
-              color: i === accentIndex ? "var(--accent, #B4FF00)" : "#ffffff",
+              color: i === accentIdx && !slide.highlightWord ? ACCENT : WHITE,
               textShadow: "none",
               WebkitTextStroke: "0",
               marginBottom: 2,
             }}
           >
-            {line}
+            {slide.highlightWord && i === accentIdx
+              ? renderLineContent(line, slide, i)
+              : line}
           </span>
         ))}
       </h1>

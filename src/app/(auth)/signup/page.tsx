@@ -15,6 +15,7 @@ import {
   authInputClass,
   authLabelClass,
 } from "@/components/auth/auth-input-classes";
+import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import {
   getPasswordStrength,
   strengthBarColors,
@@ -116,10 +117,16 @@ function SignupPageInner() {
         ? localStorage.getItem(BETA_STORAGE_KEY)
         : null);
 
+    const redirectAfterConfirm =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/auth/callback?next=/dashboard`
+        : undefined;
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: redirectAfterConfirm,
         data: {
           full_name: name,
           ...(ref ? { referred_by: ref } : {}),
@@ -164,9 +171,24 @@ function SignupPageInner() {
       }
     }
 
-    if (data.session) {
+    if (data.session && data.user) {
       void trackAbEvent("signup_complete");
-      router.push("/dashboard");
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin, role")
+        .eq("id", data.user.id)
+        .single();
+
+      const target = resolvePostAuthRedirect(
+        {
+          email: data.user.email,
+          is_admin: profile?.is_admin,
+          role: profile?.role,
+        },
+        searchParams.get("redirect")
+      );
+
+      router.push(target);
       router.refresh();
       setLoading(false);
       return;
@@ -180,11 +202,17 @@ function SignupPageInner() {
   if (success) {
     return (
       <div className="w-full max-w-sm mx-auto text-center">
-        <div className="text-5xl mb-4">✅</div>
-        <h2 className="text-white text-2xl font-semibold mb-3">Fast fertig!</h2>
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 mb-5">
+          <span className="text-2xl" aria-hidden>
+            ✉
+          </span>
+        </div>
+        <h2 className="text-white text-2xl font-semibold mb-3">
+          {t("verify_email_title")}
+        </h2>
         <p className="text-white/80 text-sm leading-relaxed mb-6">
-          Wir haben dir eine Bestätigungs-E-Mail an{" "}
-          <strong className="text-white">{email}</strong> geschickt.
+          {t("verify_email_body")}{" "}
+          <strong className="text-white">{email}</strong>
           {betaCode && (
             <>
               <br />

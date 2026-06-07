@@ -204,24 +204,23 @@ export default function MelodiaWidget({ userName, currentPath }: Props) {
   );
 
   const orb = (size: "lg" | "sm") => {
-    const dim = size === "lg" ? 56 : 36;
-    const fontSize = size === "lg" ? 20 : 14;
+    const dim = size === "lg" ? 48 : 32;
+    const fontSize = size === "lg" ? 18 : 13;
+    const lgClass =
+      size === "lg"
+        ? "inline-grid place-items-center rounded-full bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold melodia-orb-pulse h-12 w-12 text-lg md:h-14 md:w-14 md:text-xl"
+        : "inline-grid shrink-0 place-items-center rounded-full bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold h-8 w-8 text-[13px]";
     return (
       <span
-        className={
+        className={lgClass}
+        style={
           size === "lg"
-            ? "inline-grid place-items-center rounded-full bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold melodia-orb-pulse"
-            : "inline-grid shrink-0 place-items-center rounded-full bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold"
+            ? {
+                boxShadow:
+                  "0 0 20px color-mix(in srgb, var(--accent, #B4FF00) 60%, transparent)",
+              }
+            : undefined
         }
-        style={{
-          width: dim,
-          height: dim,
-          fontSize,
-          boxShadow:
-            size === "lg"
-              ? "0 0 20px color-mix(in srgb, var(--accent, #B4FF00) 60%, transparent)"
-              : undefined,
-        }}
         aria-hidden
       >
         M
@@ -246,10 +245,12 @@ export default function MelodiaWidget({ userName, currentPath }: Props) {
         }
       `}</style>
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <div
+        className="melodia-widget-root pointer-events-none fixed z-40 flex flex-col items-end gap-3 max-md:bottom-[calc(88px+env(safe-area-inset-bottom,0px)+12px)] max-md:right-4 md:bottom-6 md:right-6"
+      >
         {open && (
           <div
-            className="flex w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[20px] border border-white/10 bg-[#0f0f12] shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+            className="pointer-events-auto flex w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[20px] border border-white/10 bg-[#0f0f12] shadow-[0_20px_60px_rgba(0,0,0,0.6)] max-md:max-h-[min(520px,calc(100dvh-160px-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]"
             style={{ height: 520 }}
             role="dialog"
             aria-label="Melodia Chat"
@@ -350,7 +351,7 @@ export default function MelodiaWidget({ userName, currentPath }: Props) {
             type="button"
             onClick={() => setOpen(true)}
             title="Melodia — Deine Assistentin"
-            className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent,#B4FF00)]"
+            className="pointer-events-auto rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent,#B4FF00)]"
             aria-label="Melodia — Deine Assistentin"
           >
             {orb("lg")}

@@ -14,6 +14,11 @@ import {
   REFERRAL_REF_MAX_AGE,
 } from "@/lib/referral-ref-cookie";
 import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
+import { isPlatformAdmin } from "@/lib/access";
+import {
+  logAuthRedirect,
+  resolvePostAuthRedirect,
+} from "@/lib/auth-redirect";
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
@@ -122,6 +127,10 @@ export async function middleware(request: NextRequest) {
   const isOnboarding =
     pathname === "/onboarding" || pathname.startsWith("/onboarding/");
   const isDashboard = pathname.startsWith("/dashboard");
+  const isAdminRoute =
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname.startsWith("/dashboard/admin");
   const isAuthPage =
     pathname === "/auth" ||
     pathname === "/auth/sign-in" ||
@@ -139,6 +148,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(
       new URL(`/auth/sign-in?redirect=${redirectParam}`, request.url)
     );
+  }
+
+  if (!user && isAdminRoute) {
+    const redirectParam = encodeURIComponent(pathname + search);
+    return NextResponse.redirect(
+      new URL(`/auth/sign-in?redirect=${redirectParam}`, request.url)
+    );
+  }
+
+  if (user && isAdminRoute) {
+    const { data: adminProfile } = await supabase
+      .from("profiles")
+      .select("is_admin, role")
+      .eq("id", user.id)
+      .single();
+
+    if (
+      !isPlatformAdmin({
+        email: user.email,
+        is_admin: adminProfile?.is_admin,
+        role: adminProfile?.role,
+      })
+    ) {
+      logAuthRedirect({
+        userId: user.id,
+        role: adminProfile?.role,
+        target: "/dashboard",
+        source: "middleware_admin_guard",
+      });
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
   }
 
   if (!user && isOnboarding) {
@@ -175,7 +215,30 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && (isAuthPage || isOnboarding)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin, role")
+      .eq("id", user.id)
+      .single();
+
+    const redirectParam = request.nextUrl.searchParams.get("redirect");
+    const target = resolvePostAuthRedirect(
+      {
+        email: user.email,
+        is_admin: profile?.is_admin,
+        role: profile?.role,
+      },
+      redirectParam
+    );
+
+    logAuthRedirect({
+      userId: user.id,
+      role: profile?.role,
+      target,
+      source: "middleware_auth_page",
+    });
+
+    return NextResponse.redirect(new URL(target, request.url));
   }
 
   // Legacy /white-label → agency marketing (guests) or dashboard (logged in)

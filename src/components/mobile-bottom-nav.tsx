@@ -13,7 +13,7 @@ export function MobileBottomNav() {
   return (
     <nav
       data-testid="mobile-bottom-nav"
-      className="flex md:hidden fixed bottom-0 left-0 right-0 z-50 items-stretch overflow-x-hidden bg-[#060608]/95 border-t border-[#B4FF00]/12 backdrop-blur-md"
+      className="flex md:hidden fixed bottom-0 left-0 right-0 z-50 items-stretch overflow-x-hidden bg-[rgba(6,6,8,0.92)] border-t border-[#B4FF00]/12 backdrop-blur-md"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         minHeight: "calc(72px + env(safe-area-inset-bottom, 0px))",

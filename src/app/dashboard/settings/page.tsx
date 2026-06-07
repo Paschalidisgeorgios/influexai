@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
@@ -22,6 +23,10 @@ export default function SettingsPage() {
     type: "ok" | "err";
     text: string;
   } | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [isAgencyOwner, setIsAgencyOwner] = useState(false);
+  const tDelete = useTranslations("settings.deleteAccount");
   const supabase = createClient();
 
   useEffect(() => {
@@ -32,14 +37,22 @@ export default function SettingsPage() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, email, daily_suggestions_email")
+        .select("full_name, email, daily_suggestions_email, stripe_subscription_id")
         .eq("id", user.id)
         .single();
       if (data) {
         setName(data.full_name ?? "");
         setEmail(data.email ?? "");
         setDailyIdeasEmail(data.daily_suggestions_email !== false);
+        setHasActiveSubscription(Boolean(data.stripe_subscription_id));
       }
+
+      const { data: tenant } = await supabase
+        .from("tenants")
+        .select("id")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+      setIsAgencyOwner(Boolean(tenant));
     };
     load();
   }, [supabase]);
@@ -410,9 +423,10 @@ export default function SettingsPage() {
                 lineHeight: 1.65,
               }}
             >
-              Konto löschen entfernt alle deine Daten und Credits permanent.
+              {tDelete("danger_desc")}
             </p>
             <button
+              type="button"
               style={{
                 padding: "11px",
                 borderRadius: 10,
@@ -424,14 +438,19 @@ export default function SettingsPage() {
                 fontSize: "0.875rem",
                 fontFamily: "var(--font-dm), sans-serif",
               }}
-              onClick={() =>
-                alert("Bitte kontaktiere uns: support@influexai.com")
-              }
+              onClick={() => setDeleteModalOpen(true)}
             >
-              Konto löschen
+              {tDelete("danger_button")}
             </button>
           </>
         )}
+
+        <DeleteAccountModal
+          open={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          hasActiveSubscription={hasActiveSubscription}
+          isAgencyOwner={isAgencyOwner}
+        />
       </div>
     </div>
   );

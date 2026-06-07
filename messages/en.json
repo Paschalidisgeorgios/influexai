@@ -157,7 +157,9 @@
     "signup_subtitle": "Start your creator journey with AI.",
     "signup_title": "Create account",
     "terms_link": "Terms",
-    "terms_text": "By signing up you agree to our"
+    "terms_text": "By signing up you agree to our",
+    "verify_email_body": "We sent a confirmation link to",
+    "verify_email_title": "Confirm your email"
   },
   "common": {
     "back": "Back",
@@ -1277,7 +1279,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Every morning at 07:00 UTC: 3 video ideas based on YouTube trends in your niche.",
     "daily_suggestions_email_label": "Daily ideas by email",
-    "growth_agent_title": "Creator Growth Agent"
+    "growth_agent_title": "Creator Growth Agent",
+    "deleteAccount": {
+      "title": "Permanently delete account?",
+      "warning": "This permanently deletes your account, profile data, and access. This cannot be undone.",
+      "subscription_hint": "If you have an active subscription, it will be canceled before your account is deleted.",
+      "agency_owner_block": "Please contact support to delete your agency / white-label account: {email}",
+      "confirm_label": "Type {word} to confirm",
+      "confirm_button": "Delete account permanently",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "danger_button": "Delete account",
+      "danger_desc": "Deleting your account permanently removes all your data and credits.",
+      "error_generic": "Account could not be deleted. Please try again or contact {email}.",
+      "success_title": "Your account has been deleted.",
+      "success_redirect": "Redirecting to the homepage…",
+      "dismiss": "Close"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Available instantly",

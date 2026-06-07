@@ -37,6 +37,7 @@
   --sidebar-w: 240px;
   --header-h: 56px;
   --landing-nav-height: 5.75rem;
+  --mobile-top-shell: rgba(244, 244, 239, 0.92);
   --r: 12px;
   --r-lg: 20px;
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -248,7 +249,7 @@ html[data-world="brand"] {
 
   @media (max-width: 639px) {
     .hero-copy {
-      padding: calc(var(--landing-nav-height, 5.75rem) + 8px) clamp(16px, 5vw, 20px)
+      padding: calc(64px + env(safe-area-inset-top, 0px) + 8px) clamp(16px, 5vw, 20px)
         clamp(32px, 6vw, 48px);
     }
   }
@@ -383,6 +384,72 @@ html[data-world="brand"] {
     transition:
       padding 0.3s ease,
       background 0.3s ease;
+  }
+  @media (max-width: 767px) {
+    .mobile-top-shell,
+    .landing-nav-shell {
+      padding: 0 clamp(16px, 4vw, 20px);
+      padding-top: env(safe-area-inset-top, 0px);
+      background: var(--mobile-top-shell);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(6, 6, 8, 0.08);
+    }
+    .landing-nav-bar,
+    .landing-nav-bar--mobile,
+    .landing-nav-bar.landing-nav-bar--scrolled,
+    .landing-nav-bar--mobile.landing-nav-bar--scrolled {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 10px 0 !important;
+      min-height: 64px;
+      max-height: 72px;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .landing-nav-bar .landing-nav-logo-text {
+      color: #060608 !important;
+    }
+    .landing-nav-bar .landing-nav-logo-text span {
+      color: #5a7300 !important;
+    }
+    .landing-nav-menu-btn {
+      color: rgba(6, 6, 8, 0.82) !important;
+      border: 1px solid rgba(6, 6, 8, 0.12);
+      background: rgba(6, 6, 8, 0.04);
+    }
+    .landing-nav-menu-btn:hover {
+      background: rgba(6, 6, 8, 0.07) !important;
+    }
+    .dashboard-mobile-top-shell {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding-top: env(safe-area-inset-top, 0px);
+      background: rgba(6, 6, 8, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .dashboard-mobile-top-shell::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: env(safe-area-inset-top, 0px);
+      background: var(--mobile-top-shell);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .dashboard-mobile-top-shell > * {
+      position: relative;
+      z-index: 1;
+    }
   }
   .landing-nav-shell--scrolled {
     padding-top: 8px;

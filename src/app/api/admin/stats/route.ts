@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isPlatformAdmin } from "@/lib/access";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +16,16 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, role")
     .eq("id", user.id)
     .single();
-  if (!profile?.is_admin)
+  if (
+    !isPlatformAdmin({
+      email: user.email,
+      is_admin: profile?.is_admin,
+      role: profile?.role,
+    })
+  )
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const supabaseAdmin = createClient(

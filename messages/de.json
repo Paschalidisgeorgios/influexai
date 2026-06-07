@@ -57,8 +57,8 @@
     "has_account": "Bereits registriert?",
     "login_button": "Jetzt anmelden",
     "login_link": "Anmelden →",
-    "login_subtitle": "Melde dich an um weiterzumachen.",
-    "login_title": "Willkommen zurück",
+    "login_subtitle": "Willkommen zurück — melde dich an, um weiterzuarbeiten.",
+    "login_title": "Einloggen",
     "name": "Dein Name",
     "no_account": "Noch kein Account?",
     "password": "Passwort",
@@ -68,10 +68,12 @@
     "password_weak": "Schwach",
     "signup_button": "Jetzt registrieren",
     "signup_link": "Jetzt registrieren →",
-    "signup_subtitle": "Starte deine Creator-Journey mit KI.",
+    "signup_subtitle": "Starte mit deinem Creator Studio.",
     "signup_title": "Konto erstellen",
     "terms_link": "AGB",
-    "terms_text": "Durch die Registrierung stimmst du unseren"
+    "terms_text": "Durch die Registrierung stimmst du unseren",
+    "verify_email_body": "Wir haben dir einen Link gesendet an",
+    "verify_email_title": "Bestätige deine E-Mail"
   },
   "common": {
     "back": "Zurück",
@@ -1160,7 +1162,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Jeden Morgen um 07:00 UTC: 3 Video-Ideen basierend auf YouTube-Trends in deiner Nische.",
     "daily_suggestions_email_label": "Tägliche Ideen per E-Mail",
-    "growth_agent_title": "Creator Growth Agent"
+    "growth_agent_title": "Creator Growth Agent",
+    "deleteAccount": {
+      "title": "Konto endgültig löschen?",
+      "warning": "Diese Aktion löscht dein Konto, deine Profildaten und deinen Zugriff dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden.",
+      "subscription_hint": "Falls du ein aktives Abo hast, wird es vor der Kontolöschung gekündigt.",
+      "agency_owner_block": "Bitte kontaktiere den Support, um dein Agency-/White-Label-Konto zu löschen: {email}",
+      "confirm_label": "Tippe {word} zur Bestätigung",
+      "confirm_button": "Konto endgültig löschen",
+      "cancel": "Abbrechen",
+      "deleting": "Wird gelöscht…",
+      "danger_button": "Konto löschen",
+      "danger_desc": "Konto löschen entfernt alle deine Daten und Credits permanent.",
+      "error_generic": "Konto konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere {email}.",
+      "success_title": "Dein Konto wurde gelöscht.",
+      "success_redirect": "Du wirst zur Startseite weitergeleitet…",
+      "dismiss": "Schließen"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Sofort verfügbar",

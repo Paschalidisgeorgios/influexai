@@ -106,7 +106,8 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
       : creditsBadgeStyle(100);
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 max-h-[72px] shrink-0 items-center justify-between gap-2 border-b border-white/[0.07] bg-[#060608]/85 px-4 sm:px-5 backdrop-blur-xl min-w-0 max-md:pt-[env(safe-area-inset-top,0px)]">
+    <header className="dashboard-mobile-top-shell md:sticky md:top-0 md:z-30 md:shrink-0 md:border-b md:border-white/[0.07] md:bg-[rgba(6,6,8,0.92)] md:pt-0 md:backdrop-blur-md min-w-0">
+      <div className="flex h-16 max-h-[64px] items-center justify-between gap-2 px-4 sm:h-[72px] sm:max-h-[72px] sm:px-5">
       <div className="flex min-w-0 items-center gap-1.5">
         <span className="hidden sm:inline text-sm font-medium text-white/65">Studio</span>
         <span className="hidden sm:inline text-[#2a2a2a]">›</span>
@@ -245,6 +246,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
             </>
           )}
         </div>
+      </div>
       </div>
     </header>
   );

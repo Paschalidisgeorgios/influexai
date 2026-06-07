@@ -357,6 +357,18 @@ export async function POST(request: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+    console.log("[stripe webhook]", {
+      eventType: event.type,
+      customerId:
+        typeof session.customer === "string"
+          ? session.customer
+          : session.customer?.id,
+      subscriptionId:
+        typeof session.subscription === "string"
+          ? session.subscription
+          : session.subscription?.id,
+      plan: session.metadata?.plan ?? session.metadata?.checkout_type,
+    });
 
     await handleAgencySubscription(supabaseAdmin, session);
     await handleAgencyCredits(supabaseAdmin, session);

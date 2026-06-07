@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
@@ -11,9 +11,11 @@ import {
   authInputClass,
   authLabelClass,
 } from "@/components/auth/auth-input-classes";
+import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 
-export default function LoginPage() {
+function LoginPageInner() {
   const t = useTranslations("auth");
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,10 +37,34 @@ export default function LoginPage() {
     });
     if (signInError) {
       setError(t("bad_credentials"));
-    } else {
-      router.push("/dashboard");
-      router.refresh();
+      setLoading(false);
+      return;
     }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    let target = "/dashboard";
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin, role")
+        .eq("id", user.id)
+        .single();
+
+      target = resolvePostAuthRedirect(
+        {
+          email: user.email,
+          is_admin: profile?.is_admin,
+          role: profile?.role,
+        },
+        searchParams.get("redirect")
+      );
+    }
+
+    router.push(target);
+    router.refresh();
     setLoading(false);
   };
 
@@ -123,5 +149,17 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full max-w-sm mx-auto text-white/70 text-sm">…</div>
+      }
+    >
+      <LoginPageInner />
+    </Suspense>
   );
 }

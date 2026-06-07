@@ -32,16 +32,24 @@ function normalizePlan(plan: string | null | undefined): PlanTier {
   return "free";
 }
 
-function isPrivilegedAccessUser(user: AccessUser): boolean {
+/**
+ * Platform admin panel access only.
+ * Agency tenant_role (owner/admin/member) is stored separately and must NOT grant /admin.
+ */
+export function isPlatformAdmin(user: AccessUser): boolean {
   if (isAdminEmail(user.email)) return true;
   if (user.is_admin === true) return true;
   const role = (user.role ?? "user").toLowerCase();
-  return role === "admin" || role === "owner";
+  return role === "admin";
 }
 
-/** Admin panel + server admin routes — email allowlist, profiles.is_admin, or role admin/owner. */
+/** @alias isPlatformAdmin */
 export function isAdminUser(user: AccessUser): boolean {
-  return isPrivilegedAccessUser(user);
+  return isPlatformAdmin(user);
+}
+
+function isPrivilegedAccessUser(user: AccessUser): boolean {
+  return isPlatformAdmin(user);
 }
 
 /** Credits are never required or deducted for admin emails. */

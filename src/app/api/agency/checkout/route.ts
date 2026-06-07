@@ -7,6 +7,10 @@ import {
   type AgencyPlanId,
   type BillingInterval,
 } from "@/lib/agency-plans";
+import {
+  AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE,
+  logMissingAgencyStripePriceId,
+} from "@/lib/stripe/prices";
 import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
@@ -37,8 +41,17 @@ export async function POST(request: NextRequest) {
   }
 
   if (!priceId) {
+    if (planId) {
+      logMissingAgencyStripePriceId(planId, interval);
+    }
+    console.error("[checkout]", {
+      plan: planId,
+      interval,
+      priceIdExists: false,
+      checkoutType: "agency",
+    });
     return NextResponse.json(
-      { error: "Stripe Price ID fehlt." },
+      { error: AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE },
       { status: 503 }
     );
   }
@@ -59,13 +72,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  console.log("[checkout]", {
+    userId: user.id,
+    plan: resolvedPlan,
+    interval,
+    priceIdExists: true,
+    checkoutType: "agency",
+  });
+
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],
     allow_promotion_codes: true,
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${SITE_URL}/dashboard/agency?success=true`,
-    cancel_url: `${SITE_URL}/agency?canceled=true`,
+    cancel_url: `${SITE_URL}/agency?checkout=cancelled`,
     customer_email: user.email ?? undefined,
     metadata: {
       checkout_type: "agency_subscription",

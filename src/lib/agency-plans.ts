@@ -81,23 +81,10 @@ export function agencyPlanLegacyPrice(plan: AgencyPlan): {
   };
 }
 
-export function getAgencyStripePriceId(
-  planId: AgencyPlanId,
-  interval: BillingInterval
-): string | undefined {
-  const plan = AGENCY_PLANS[planId];
-  const key =
-    interval === "yearly" ? plan.stripeYearlyEnv : plan.stripeMonthlyEnv;
-  return process.env[key];
-}
-
-export function planFromStripePriceId(priceId: string): AgencyPlanId | null {
-  for (const plan of Object.values(AGENCY_PLANS)) {
-    if (process.env[plan.stripeMonthlyEnv] === priceId) return plan.id;
-    if (process.env[plan.stripeYearlyEnv] === priceId) return plan.id;
-  }
-  return null;
-}
+export {
+  getAgencyStripePriceId,
+  planFromAgencyStripePriceId as planFromStripePriceId,
+} from "@/lib/stripe/prices";
 
 export const AGENCY_CREDITS_PACKAGES = [
   {

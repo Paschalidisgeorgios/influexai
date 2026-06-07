@@ -150,7 +150,9 @@
     "signup_subtitle": "Commence ton aventure créateur avec l'IA.",
     "signup_title": "Créer un compte",
     "terms_link": "CGU",
-    "terms_text": "En t'inscrivant, tu acceptes nos"
+    "terms_text": "En t'inscrivant, tu acceptes nos",
+    "verify_email_body": "Nous t'avons envoyé un lien à",
+    "verify_email_title": "Confirme ton e-mail"
   },
   "common": {
     "back": "Retour",
@@ -1045,7 +1047,23 @@
   "settings": {
     "daily_suggestions_email_desc": "Chaque matin à 07:00 UTC : 3 idées basées sur les tendances YouTube de ta niche.",
     "daily_suggestions_email_label": "Idées quotidiennes par email",
-    "growth_agent_title": "Agent de Croissance Creator"
+    "growth_agent_title": "Agent de Croissance Creator",
+    "deleteAccount": {
+      "title": "Supprimer le compte définitivement ?",
+      "warning": "Cette action supprime définitivement ton compte, tes données de profil et ton accès. Cette action est irréversible.",
+      "subscription_hint": "Si tu as un abonnement actif, il sera résilié avant la suppression du compte.",
+      "agency_owner_block": "Contacte le support pour supprimer ton compte agence / white-label : {email}",
+      "confirm_label": "Saisis {word} pour confirmer",
+      "confirm_button": "Supprimer le compte définitivement",
+      "cancel": "Annuler",
+      "deleting": "Suppression…",
+      "danger_button": "Supprimer le compte",
+      "danger_desc": "La suppression du compte efface définitivement toutes tes données et tes crédits.",
+      "error_generic": "Le compte n'a pas pu être supprimé. Réessaie ou contacte {email}.",
+      "success_title": "Ton compte a été supprimé.",
+      "success_redirect": "Redirection vers l'accueil…",
+      "dismiss": "Fermer"
+    }
   },
   "slideshow": {
     "slide1_badge": "⚡ 2 Credits · Disponible immédiatement",

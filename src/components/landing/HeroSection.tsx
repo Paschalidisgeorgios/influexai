@@ -8,6 +8,7 @@ import type { AbVariant } from "@/lib/ab-tracking";
 import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
 import { HeroWorkspaceDemo } from "@/components/landing/HeroWorkspaceDemo";
+import { EXTRA_HERO_ROTATING_TITLES } from "@/data/heroRotatingTitles";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
@@ -263,9 +264,10 @@ export function HeroSection({
   const [revealed] = useState(true);
   const [mounted, setMounted] = useState(false);
   const rawRotating = t.raw("rotating_titles");
-  const rotatingTitles = Array.isArray(rawRotating)
-    ? (rawRotating as string[])
-    : [];
+  const rotatingTitles = [
+    ...(Array.isArray(rawRotating) ? (rawRotating as string[]) : []),
+    ...EXTRA_HERO_ROTATING_TITLES,
+  ];
 
   useEffect(() => {
     setMounted(true);
