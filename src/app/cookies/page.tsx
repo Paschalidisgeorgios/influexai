@@ -56,6 +56,7 @@ export default function CookiesPage() {
             "Stripe (Zahlungsabwicklung und Betrugsschutz)",
             "Supabase (Datenbankverbindung und Auth)",
             "Vercel (Performance und Hosting)",
+            "Google Analytics (Nutzungsstatistiken — nur nach Zustimmung)",
           ]}
         />
       </LegalSection>
