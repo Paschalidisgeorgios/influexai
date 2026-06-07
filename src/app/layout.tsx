@@ -9,6 +9,7 @@ import { TenantProvider } from "@/components/tenant-provider";
 import { ObsidianShell } from "@/components/ui/ObsidianShell";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import { CookieBanner } from "@/components/ui/CookieBanner";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import {
   buildHreflangAlternates,
   getHomeSeo,
@@ -164,6 +165,7 @@ export default async function RootLayout({
           </TenantProvider>
         </NextIntlClientProvider>
         <CookieBanner />
+        <GoogleAnalytics />
       </body>
     </html>
   );
