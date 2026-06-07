@@ -1968,10 +1968,6 @@ header.site-header.site-header--scrolled {
   animation: logoIntroSkipFade 0.28s ease forwards;
 }
 
-.logo-intro-root--reduced {
-  animation: logoIntroReducedRoot 0.6s ease forwards;
-}
-
 .logo-intro-bg {
   position: absolute;
   inset: 0;
@@ -2125,22 +2121,6 @@ header.site-header.site-header--scrolled {
   background: rgba(6, 6, 8, 0.72);
 }
 
-.logo-intro-root--reduced .logo-intro-split,
-.logo-intro-root--reduced .logo-intro-line,
-.logo-intro-root--reduced .logo-intro-glow {
-  animation: none;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.logo-intro-root--reduced .logo-intro-logo-layer {
-  animation: logoIntroReducedLogo 0.6s ease forwards;
-}
-
-.logo-intro-root--reduced .logo-intro-fade {
-  animation: logoIntroReducedFade 0.6s ease forwards;
-}
-
 .logo-intro-root--skip .logo-intro-split,
 .logo-intro-root--skip .logo-intro-line,
 .logo-intro-root--skip .logo-intro-logo-layer,
@@ -2156,11 +2136,11 @@ header.site-header.site-header--scrolled {
     transform: translate(-50%, -50%) scale(0.82);
   }
   10% {
-    opacity: 0.38;
+    opacity: 0.42;
     transform: translate(-50%, -50%) scale(1);
   }
-  65% {
-    opacity: 0.28;
+  63% {
+    opacity: 0.3;
     transform: translate(-50%, -50%) scale(1.04);
   }
   100% {
@@ -2170,22 +2150,23 @@ header.site-header.site-header--scrolled {
 }
 
 @keyframes logoIntroLogo {
-  0% {
+  0%,
+  10% {
     opacity: 0;
     transform: scale(0.92);
     filter: blur(8px) drop-shadow(0 0 42px rgba(180, 255, 0, 0.12));
   }
-  18% {
+  26.7% {
     opacity: 1;
     transform: scale(1);
     filter: blur(0) drop-shadow(0 0 48px rgba(180, 255, 0, 0.18));
   }
-  65% {
+  63.3% {
     opacity: 1;
     transform: scale(1.012);
     filter: blur(0) drop-shadow(0 0 52px rgba(180, 255, 0, 0.16));
   }
-  86% {
+  86.7% {
     opacity: 1;
     transform: scale(1);
     filter: blur(0) drop-shadow(0 0 44px rgba(180, 255, 0, 0.14));
@@ -2199,7 +2180,7 @@ header.site-header.site-header--scrolled {
 
 @keyframes logoIntroLine {
   0%,
-  43% {
+  43.3% {
     opacity: 0;
     transform: scaleX(0);
   }
@@ -2207,19 +2188,19 @@ header.site-header.site-header--scrolled {
     opacity: 1;
     transform: scaleX(0);
   }
-  77% {
+  76.7% {
     opacity: 1;
     transform: scaleX(1);
   }
   100% {
-    opacity: 0.6;
+    opacity: 0.55;
     transform: scaleX(1);
   }
 }
 
 @keyframes logoIntroSplitTop {
   0%,
-  76% {
+  76.7% {
     transform: translateY(0);
   }
   90%,
@@ -2230,7 +2211,7 @@ header.site-header.site-header--scrolled {
 
 @keyframes logoIntroSplitBottom {
   0%,
-  76% {
+  76.7% {
     transform: translateY(0);
   }
   90%,
@@ -2241,7 +2222,7 @@ header.site-header.site-header--scrolled {
 
 @keyframes logoIntroRootFade {
   0%,
-  85% {
+  86.7% {
     opacity: 1;
   }
   100% {
@@ -2251,11 +2232,11 @@ header.site-header.site-header--scrolled {
 
 @keyframes logoIntroFadeLayer {
   0%,
-  85% {
+  76.7% {
     opacity: 0;
   }
-  92% {
-    opacity: 0.18;
+  90% {
+    opacity: 0.22;
   }
   100% {
     opacity: 0;
@@ -2265,50 +2246,6 @@ header.site-header.site-header--scrolled {
 @keyframes logoIntroSkipFade {
   to {
     opacity: 0;
-  }
-}
-
-@keyframes logoIntroReducedRoot {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes logoIntroReducedLogo {
-  0% {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  40% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.99);
-  }
-}
-
-@keyframes logoIntroReducedFade {
-  0%,
-  70% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .logo-intro-root:not(.logo-intro-root--skip) {
-    animation-duration: 0.6s;
-  }
-
-  .logo-intro-root:not(.logo-intro-root--skip) .logo-intro-logo-layer {
-    animation-duration: 0.6s;
   }
 }
 

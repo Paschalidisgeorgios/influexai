@@ -124,6 +124,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -134,7 +135,8 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
   const audioReady =
     audioSource === "own" ? !!recordedBlob : !!voiceId && scriptReady;
   const isGenerating = flowStep === "generating";
-  const canGenerate = photoReady && scriptReady && audioReady && !isGenerating;
+  const canGenerate =
+    photoReady && scriptReady && audioReady && consentAccepted && !isGenerating;
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -294,6 +296,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
           script: script.trim(),
           voiceId: audioSource === "elevenlabs" ? voiceId : undefined,
           audioDataUrl,
+          consentAccepted: true,
         }),
       });
       const data = await res.json();
@@ -326,6 +329,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     setError(null);
     setCreditsLeft(null);
     setAudioSource("own");
+    setConsentAccepted(false);
     setVoiceId(getDefaultVoiceIdForLocale(locale));
   };
 
@@ -684,6 +688,19 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
               <h2 className="text-white/80 text-xs uppercase tracking-wider font-bold">
                 Schritt 3 · Generieren
               </h2>
+              <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentAccepted}
+                  onChange={(e) => setConsentAccepted(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#B4FF00]"
+                />
+                <span className="text-sm text-white/75 leading-relaxed">
+                  Ich bestätige, dass ich nur eigenes oder lizenziertes
+                  Bildmaterial verwende und der Erstellung eines Talking-Avatar-Videos
+                  ausdrücklich zustimme.
+                </span>
+              </label>
               <button
                 type="button"
                 onClick={handleGenerate}

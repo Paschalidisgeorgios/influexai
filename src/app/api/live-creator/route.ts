@@ -137,13 +137,22 @@ export async function POST(request: NextRequest) {
     script,
     voiceId,
     audioDataUrl,
+    consentAccepted,
   } = body as {
     photoDataUrl?: string;
     audioSource?: "elevenlabs" | "own";
     script?: string;
     voiceId?: string;
     audioDataUrl?: string;
+    consentAccepted?: boolean;
   };
+
+  if (consentAccepted !== true) {
+    return NextResponse.json(
+      { error: "Consent erforderlich", code: "CONSENT_REQUIRED" },
+      { status: 403 }
+    );
+  }
 
   if (!photoDataUrl) {
     return NextResponse.json({ error: "Foto ist erforderlich" }, { status: 400 });

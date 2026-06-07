@@ -17,8 +17,8 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
-const INTRO_DONE_EVENT = "influexai-intro-complete";
-const INTRO_REVEAL_EVENT = "influexai-intro-reveal";
+const INTRO_DONE_EVENT = "influexai:intro-complete";
+const INTRO_REVEAL_EVENT = "influexai:intro-reveal";
 
 type HeroMediaItem =
   | { type: "image"; src: string; alt?: string }
@@ -285,10 +285,10 @@ export function HeroSection({
         return false;
       }
     })();
-    const hasIntroActive =
+    const introActive =
       document.documentElement.classList.contains("logo-intro-active");
 
-    if (!forceIntro && alreadySeen && !hasIntroActive) {
+    if (!forceIntro && alreadySeen && !introActive) {
       setHeroRevealed(true);
     }
 
