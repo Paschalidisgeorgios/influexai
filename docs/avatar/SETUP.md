@@ -2,35 +2,30 @@
 
 ## Aktueller Stand
 - ✅ Dashboard UI (Avatar Studio)
-- ✅ API Routes (`create-job`, `start-render`, `job/[id]`, callback)
+- ✅ API Routes (`create-job`, `start-render`, `job/[id]`)
 - ✅ Supabase Tabelle (`avatar_render_jobs`)
 - ✅ Credit Pricing (`estimateAvatarCredits`)
-- ✅ Types (`AvatarRenderJob` etc.)
-- ⚠️ RunPod Integration (vorbereitet, Mock-Modus aktiv)
-- ❌ Docker Worker (noch nicht gebaut)
-- ❌ FasterLivePortrait (lokal noch nicht getestet)
+- ✅ fal.ai Live Portrait (`fal-ai/live-portrait`) — synchroner Render
+- ❌ Untertitel / Branding / Voiceover (Post-Processing, später)
 
-## Aktivieren wenn RunPod bereit
+## Voraussetzungen
 
-1. RunPod Account + Guthaben
-2. Docker Worker bauen (`docs/avatar/RUNPOD_WORKER.md`)
-3. Endpoint erstellen
-4. In Vercel setzen:
-   ```
-   RUNPOD_API_KEY=...
-   RUNPOD_ENDPOINT_ID=...
-   ```
-5. `RUNPOD_WEBHOOK_SECRET` setzen
-6. Callback URL in RunPod eintragen:
-   ```
-   https://influexaicreator.com/api/avatar/runpod-callback
-   ```
+In `.env.local` und Vercel **Production**:
+
+```
+FAL_API_KEY=...   # oder FAL_KEY=
+```
+
+Optional: `NEXT_PUBLIC_APP_URL` für absolute URLs in E-Mails/Redirects.
 
 ## Testen
-1. Avatar Studio öffnen
-2. Testbild hochladen
-3. Test-Video hochladen (5–10 Sekunden)
-4. Optionen wählen
-5. Render starten
-6. RunPod Dashboard prüfen
-7. Ergebnis im Dashboard anzeigen
+
+1. Avatar Studio öffnen (`/dashboard/avatar-studio`)
+2. Testbild + Driving-Video hochladen (max. 30 Sek.)
+3. Optionen wählen, Einwilligung bestätigen
+4. Render starten — dauert ca. 30–90 Sekunden (synchron)
+5. Video wird angezeigt; Credits werden erst nach Erfolg abgebucht
+
+## Legacy
+
+RunPod-Integration wurde entfernt. Alte Doku: `docs/avatar/RUNPOD_WORKER.md` (veraltet).

@@ -16,22 +16,10 @@ import type {
   AvatarAspectRatio,
   AvatarDuration,
   AvatarRenderOptions,
-  AvatarRenderJobStatus,
   AvatarResolution,
 } from "@/lib/avatar/types";
 
 type Phase = "upload" | "options" | "consent" | "render";
-
-const STEPS: { id: AvatarRenderJobStatus; label: string }[] = [
-  { id: "queued", label: "Job gestartet" },
-  { id: "uploading", label: "Dateien werden hochgeladen" },
-  { id: "running", label: "Avatar wird animiert" },
-  { id: "quality_check", label: "Qualität wird geprüft" },
-  { id: "compositing", label: "Export wird vorbereitet" },
-  { id: "completed", label: "Fertig" },
-];
-
-const STATUS_ORDER: AvatarRenderJobStatus[] = STEPS.map((s) => s.id);
 
 async function getVideoDurationSeconds(file: File): Promise<number> {
   return new Promise((resolve, reject) => {
@@ -205,41 +193,6 @@ export default function AvatarStudioPage() {
     };
   }, [stopWebcam]);
 
-  useEffect(() => {
-    if (!jobId || jobStatus === "completed" || jobStatus === "failed") return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/avatar/job/${jobId}`);
-        const data = await res.json();
-        if (!res.ok) return;
-        const job = data.job as {
-          status: string;
-          final_output_url?: string;
-          raw_output_url?: string;
-          error?: string;
-        };
-        setJobStatus(job.status);
-        if (job.final_output_url) {
-          setResultUrl(job.final_output_url);
-        } else if (job.status === "completed" && job.raw_output_url) {
-          setResultUrl(job.raw_output_url);
-        }
-        if (job.error) setError(job.error);
-        if (job.status === "completed" || job.status === "failed") {
-          clearInterval(interval);
-          if (job.status === "completed") {
-            window.dispatchEvent(new Event("credits-updated"));
-          }
-        }
-      } catch {
-        /* keep polling */
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [jobId, jobStatus]);
-
   async function uploadFile(
     file: File,
     path: string
@@ -326,6 +279,7 @@ export default function AvatarStudioPage() {
 
       const newJobId = createData.job.id as string;
       setJobId(newJobId);
+      setJobStatus("running");
 
       const startRes = await fetch("/api/avatar/start-render", {
         method: "POST",
@@ -334,10 +288,14 @@ export default function AvatarStudioPage() {
       });
       const startData = await startRes.json();
       if (!startRes.ok) {
-        throw new Error(startData.error ?? "Render konnte nicht gestartet werden.");
+        throw new Error(startData.error ?? "Render fehlgeschlagen.");
       }
 
-      setJobStatus(startData.status ?? "running");
+      if (startData.videoUrl) {
+        setResultUrl(startData.videoUrl as string);
+      }
+      setJobStatus("completed");
+      window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
       setJobStatus("failed");
       setError(
@@ -365,9 +323,6 @@ export default function AvatarStudioPage() {
   };
 
   const canContinueUpload = !!sourceImageFile && !!drivingVideoFile;
-  const currentStepIndex = STATUS_ORDER.indexOf(
-    jobStatus as AvatarRenderJobStatus
-  );
 
   const primaryBtn = (enabled: boolean): CSSProperties => ({
     padding: "14px 24px",
@@ -408,10 +363,6 @@ export default function AvatarStudioPage() {
         @keyframes avatar-studio-rec-pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.35; }
-        }
-        @keyframes avatar-studio-step-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.15); }
         }
       `}</style>
 
@@ -1128,13 +1079,10 @@ export default function AvatarStudioPage() {
                   marginBottom: 8,
                 }}
               >
-                Render fehlgeschlagen
+                ✗ Render fehlgeschlagen — keine Credits abgebucht.
               </div>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 16 }}>
                 {error ?? "Ein unbekannter Fehler ist aufgetreten."}
-              </p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 16 }}>
-                Render fehlgeschlagen — keine Credits abgebucht.
               </p>
               <button type="button" style={primaryBtn(true)} onClick={resetAll}>
                 Erneut versuchen
@@ -1160,38 +1108,15 @@ export default function AvatarStudioPage() {
                   textTransform: "uppercase",
                 }}
               >
-                ✓ Avatar bereit
+                ✓ Avatar fertig — {estimateAvatarCredits(options)} Credits abgebucht.
               </div>
-              <p
-                style={{
-                  padding: "10px 16px",
-                  margin: 0,
-                  fontSize: 12,
-                  color: "rgba(255,255,255,0.55)",
-                  borderBottom: "1px solid rgba(255,255,255,0.07)",
-                }}
-              >
-                Render abgeschlossen — {estimateAvatarCredits(options)} Credits
-                abgebucht.
-              </p>
               {resultUrl ? (
                 <video
                   src={resultUrl}
                   controls
                   style={{ width: "100%", display: "block", background: "#000" }}
                 />
-              ) : (
-                <div
-                  style={{
-                    padding: 32,
-                    textAlign: "center",
-                    color: "rgba(255,255,255,0.5)",
-                    fontSize: 13,
-                  }}
-                >
-                  Render abgeschlossen — Video-URL folgt mit RunPod-Anbindung.
-                </div>
-              )}
+              ) : null}
               <div
                 style={{
                   padding: 16,
@@ -1223,62 +1148,29 @@ export default function AvatarStudioPage() {
               </div>
             </div>
           ) : (
-            <>
-              <div style={{ marginBottom: 24 }}>
-                {STEPS.map((step, index) => {
-                  const stepIndex = STATUS_ORDER.indexOf(step.id);
-                  const isDone =
-                    currentStepIndex > stepIndex ||
-                    (jobStatus === "completed" && step.id !== "completed");
-                  const isActive =
-                    jobStatus === step.id ||
-                    (currentStepIndex === -1 && step.id === "queued" && rendering);
-
-                  return (
-                    <div
-                      key={step.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                        padding: "10px 0",
-                        fontSize: 13,
-                        color: isDone
-                          ? "#B4FF00"
-                          : isActive
-                            ? "#fff"
-                            : "rgba(255,255,255,0.35)",
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 24,
-                          textAlign: "center",
-                          fontWeight: 700,
-                          animation: isActive
-                            ? "avatar-studio-step-pulse 1.2s infinite"
-                            : undefined,
-                        }}
-                      >
-                        {isDone ? "✓" : isActive ? "●" : "○"}
-                      </span>
-                      <span>{step.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              {rendering && (
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.5)",
-                    textAlign: "center",
-                  }}
-                >
-                  Bitte Seite nicht schließen…
-                </p>
-              )}
-            </>
+            <div
+              style={{
+                border: "1px solid rgba(180,255,0,0.2)",
+                borderRadius: 8,
+                padding: 32,
+                textAlign: "center",
+                background: "rgba(180,255,0,0.04)",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: "#fff",
+                  marginBottom: 12,
+                }}
+              >
+                ⏳ Avatar wird generiert...
+              </p>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>
+                Bitte warten (30–90 Sek.). Seite nicht schließen.
+              </p>
+            </div>
           )}
         </div>
       )}

@@ -1,3 +1,6 @@
+> ⚠️ **RunPod wurde durch fal.ai ersetzt.**  
+> Diese Doku ist veraltet.
+
 # RunPod Worker — Live Avatar Render
 
 ## Übersicht
