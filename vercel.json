@@ -34,6 +34,15 @@
     },
     "src/app/api/agent/route.ts": {
       "maxDuration": 300
+    },
+    "src/app/api/agent/campaign/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/agent/execute/route.ts": {
+      "maxDuration": 120
+    },
+    "src/app/api/agent/job/[id]/route.ts": {
+      "maxDuration": 300
     }
   }
 }

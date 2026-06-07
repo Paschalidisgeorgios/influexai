@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   buildCampaignResult,
   createCampaignExecution,
 } from "@/lib/agent/mockExecutor";
-import { needsJobQueue, runJobSync } from "@/lib/agent/jobQueue";
+import {
+  enqueueJob,
+  needsJobQueue,
+  updateJobStatus,
+} from "@/lib/agent/jobQueue";
 import { saveCampaignResultServer } from "@/lib/agent/persistExecution";
 import type {
   CampaignExecution,
@@ -17,6 +22,7 @@ import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 type RequestBody = {
   prompt?: string;
@@ -68,6 +74,51 @@ function completeCampaignExecution(exec: CampaignExecution): CampaignExecution {
     usedCredits: exec.estimatedCredits ?? 0,
     updatedAt: new Date().toISOString(),
   };
+}
+
+async function runJobAsync(
+  jobId: string,
+  execution: CampaignExecution,
+  supabase: SupabaseClient,
+  userId: string
+) {
+  try {
+    await updateJobStatus(supabase, jobId, "running");
+    const result = buildCampaignResult(execution);
+    // TODO: echte KI-Generierung pro Item
+    await saveCampaignResultServer(
+      supabase,
+      result,
+      userId,
+      execution.prompt,
+      execution.platforms
+    );
+
+    const estimatedCredits = execution.estimatedCredits ?? 0;
+    const deducted = await deductCredits(
+      supabase,
+      userId,
+      estimatedCredits,
+      "Campaign Autopilot",
+      {
+        generationType: "campaign-autopilot",
+        prompt: execution.prompt.slice(0, 200),
+      }
+    );
+
+    if (!deducted.success) {
+      throw new Error(deducted.error ?? "Credits abbuchen fehlgeschlagen.");
+    }
+
+    await updateJobStatus(supabase, jobId, "completed", {
+      ...result,
+      usedCredits: estimatedCredits,
+      remainingCredits: deducted.remainingCredits,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Fehler";
+    await updateJobStatus(supabase, jobId, "failed", undefined, msg);
+  }
 }
 
 export async function POST(request: Request) {
@@ -154,37 +205,40 @@ export async function POST(request: Request) {
     );
   }
 
-  const jobQueueWarning = needsJobQueue(
-    estimatedCredits,
-    exec.steps.length
-  );
-  if (jobQueueWarning) {
-    console.log("[campaign] Großer Job — synchron ausführen");
+  if (needsJobQueue(estimatedCredits)) {
+    const jobId = await enqueueJob(supabase, {
+      type: "campaign",
+      userId: user.id,
+      payload: {
+        prompt,
+        mode,
+        platforms,
+        goal,
+        tone,
+        executionId: exec.id,
+        estimatedCredits,
+      },
+      estimatedDuration: Math.ceil(estimatedCredits * 3),
+    });
+
+    after(() =>
+      runJobAsync(jobId, exec, supabase, user.id).catch((err) =>
+        console.error("[campaign job]", err)
+      )
+    );
+
+    return NextResponse.json({
+      jobId,
+      execution: exec,
+      status: "queued",
+      message: "Großer Job wurde in die Warteschlange gestellt.",
+      pollUrl: `/api/agent/job/${jobId}`,
+    });
   }
 
   let result: CampaignResult;
   try {
-    result = (await runJobSync(
-      {
-        id: exec.id,
-        type: "campaign",
-        userId: user.id,
-        payload: {
-          estimatedCredits,
-          prompt,
-          mode,
-          platforms,
-          goal,
-          tone,
-        },
-        status: "running",
-        createdAt: new Date().toISOString(),
-      },
-      async () => {
-        // TODO: echte KI-Generierung pro Item wenn Job Queue verfügbar
-        return buildCampaignResult(exec);
-      }
-    )) as CampaignResult;
+    result = buildCampaignResult(exec);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Kampagne fehlgeschlagen";
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -226,6 +280,5 @@ export async function POST(request: Request) {
     result,
     usedCredits: estimatedCredits,
     remainingCredits: deducted.remainingCredits,
-    ...(jobQueueWarning ? { jobQueueWarning: true } : {}),
   });
 }

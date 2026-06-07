@@ -22,6 +22,7 @@ import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 120;
 
 type ExecuteType = "agent" | "campaign";
 

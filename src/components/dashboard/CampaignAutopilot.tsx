@@ -185,9 +185,12 @@ export default function CampaignAutopilot() {
   const [stepIdx, setStepIdx] = useState(0);
   const [guard, setGuard] = useState<GuardState>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingResultRef = useRef<CampaignResult | null>(null);
 
   const estimatedCredits = CAMPAIGN_SPECS[mode].estimatedCredits;
@@ -214,6 +217,8 @@ export default function CampaignAutopilot() {
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      if (pollTimeoutRef.current) clearTimeout(pollTimeoutRef.current);
     };
   }, []);
 
@@ -246,6 +251,93 @@ export default function CampaignAutopilot() {
     }
   };
 
+  const clearPolling = useCallback(() => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startStepAnimation = useCallback(() => {
+    clearRunner();
+    setStepIdx(0);
+    intervalRef.current = setInterval(() => {
+      setStepIdx((prev) => {
+        if (prev >= 11) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 11;
+        }
+        return prev + 1;
+      });
+    }, STEP_INTERVAL_MS);
+  }, []);
+
+  const startPolling = useCallback(
+    (id: string) => {
+      clearPolling();
+
+      const pollOnce = async () => {
+        try {
+          const res = await fetch(`/api/agent/job/${id}`);
+          const { job } = (await res.json()) as {
+            job?: {
+              status?: string;
+              result?: CampaignResult & {
+                remainingCredits?: number;
+              };
+              error?: string;
+            };
+          };
+
+          if (job?.status === "completed" && job.result) {
+            clearPolling();
+            clearRunner();
+            pendingResultRef.current = job.result;
+            window.dispatchEvent(new Event("credits-updated"));
+            setExecution((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                status: "completed",
+                result: job.result,
+                usedCredits: job.result?.usedCredits ?? prev.estimatedCredits,
+                updatedAt: new Date().toISOString(),
+                steps: prev.steps.map((step) => ({
+                  ...step,
+                  status: "completed" as const,
+                })),
+              };
+            });
+            setPhase("done");
+            setJobId(null);
+          }
+
+          if (job?.status === "failed") {
+            clearPolling();
+            clearRunner();
+            setStartError(job.error ?? "Job fehlgeschlagen");
+            setPhase("idle");
+            setExecution(null);
+            setJobId(null);
+          }
+        } catch (e) {
+          console.error("[polling]", e);
+        }
+      };
+
+      void pollOnce();
+      pollIntervalRef.current = setInterval(() => {
+        void pollOnce();
+      }, 3000);
+      pollTimeoutRef.current = setTimeout(() => clearPolling(), 600000);
+    },
+    [clearPolling]
+  );
+
   const togglePlatform = (platform: CampaignPlatform) => {
     setPlatforms((prev) => {
       if (prev.includes(platform)) {
@@ -258,9 +350,11 @@ export default function CampaignAutopilot() {
 
   const handleAbort = () => {
     clearRunner();
+    clearPolling();
     setPhase("idle");
     setExecution(null);
     setStepIdx(0);
+    setJobId(null);
   };
 
   const handleStart = async () => {
@@ -268,13 +362,16 @@ export default function CampaignAutopilot() {
     if (!trimmed || platforms.length === 0 || phase === "running") return;
 
     clearRunner();
+    clearPolling();
     setStartError(null);
     pendingResultRef.current = null;
+    setJobId(null);
 
     let data: {
       execution: CampaignExecution;
-      result: CampaignResult;
-      usedCredits: number;
+      result?: CampaignResult;
+      usedCredits?: number;
+      jobId?: string;
       error?: string;
       credits?: number;
       required?: number;
@@ -312,6 +409,32 @@ export default function CampaignAutopilot() {
     }
 
     window.dispatchEvent(new Event("credits-updated"));
+
+    if (data.jobId) {
+      setJobId(data.jobId);
+      const next: CampaignExecution = {
+        ...data.execution,
+        status: "running",
+        result: undefined,
+        usedCredits: 0,
+        steps: data.execution.steps.map((step, i) => ({
+          ...step,
+          status: i === 0 ? ("running" as const) : ("pending" as const),
+        })),
+      };
+      setExecution(next);
+      setPhase("running");
+      startStepAnimation();
+      startPolling(data.jobId);
+      return;
+    }
+
+    if (!data.result) {
+      setStartError("Kein Kampagnen-Ergebnis erhalten.");
+      setPhase("idle");
+      return;
+    }
+
     pendingResultRef.current = data.result;
 
     const next: CampaignExecution = {
@@ -327,17 +450,7 @@ export default function CampaignAutopilot() {
 
     setExecution(next);
     setPhase("running");
-    setStepIdx(0);
-
-    intervalRef.current = setInterval(() => {
-      setStepIdx((prev) => {
-        if (prev >= 11) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          return 11;
-        }
-        return prev + 1;
-      });
-    }, STEP_INTERVAL_MS);
+    startStepAnimation();
   };
 
   const runWithGuards = useCallback(
