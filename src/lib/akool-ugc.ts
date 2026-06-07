@@ -136,6 +136,8 @@ export type CreateUgcVideoParams = {
   aspectRatio?: "9:16" | "16:9";
   /** Pre-rendered audio URL (ElevenLabs path); takes precedence over TTS fields */
   audioUrl?: string;
+  /** Custom / face-swapped still image for talking avatar element */
+  avatarImageUrl?: string;
 };
 
 /**
@@ -151,18 +153,23 @@ export async function createUgcTalkingAvatarVideo(
   const height = vertical ? 1920 : 1080;
   const avatarSize = vertical ? 1080 : 960;
 
-  const elements: Record<string, unknown>[] = [
-    {
-      type: "avatar",
-      avatar_id: params.avatar.avatar_id,
-      scale_x: 1,
-      scale_y: 1,
-      width: avatarSize,
-      height: avatarSize,
-      offset_x: width / 2,
-      offset_y: height / 2,
-    },
-  ];
+  const avatarElement: Record<string, unknown> = {
+    type: "avatar",
+    scale_x: 1,
+    scale_y: 1,
+    width: avatarSize,
+    height: avatarSize,
+    offset_x: width / 2,
+    offset_y: height / 2,
+  };
+
+  if (params.avatarImageUrl) {
+    avatarElement.url = params.avatarImageUrl;
+  } else {
+    avatarElement.avatar_id = params.avatar.avatar_id;
+  }
+
+  const elements: Record<string, unknown>[] = [avatarElement];
 
   if (params.audioUrl) {
     elements.push({ type: "audio", url: params.audioUrl });

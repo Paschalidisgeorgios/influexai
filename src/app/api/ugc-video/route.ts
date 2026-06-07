@@ -11,6 +11,12 @@ import {
   UGC_VIDEO_CREDIT_COST,
 } from "@/lib/akool-ugc";
 import {
+  createImageFaceswap,
+  createFaceswapPlus,
+  waitForFaceswapUrl,
+} from "@/lib/akool-faceswap";
+import { AkoolFaceswapError } from "@/lib/akool-errors";
+import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
@@ -23,6 +29,26 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const JOB_PROMPT_PREFIX = "ugc-video-job:";
+const CUSTOM_AVATAR_BASE_ID = "sonya_01";
+
+async function swapCustomFaceOntoAvatar(
+  customPhotoUrl: string,
+  avatarImageUrl: string
+): Promise<string> {
+  let job;
+  try {
+    job = await createFaceswapPlus({
+      sourceFaceUrl: customPhotoUrl,
+      targetMediaUrl: avatarImageUrl,
+    });
+  } catch {
+    job = await createImageFaceswap({
+      modifyImageUrl: avatarImageUrl,
+      targetFaceUrl: customPhotoUrl,
+    });
+  }
+  return waitForFaceswapUrl(job._id);
+}
 
 async function generationExistsForJob(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
@@ -135,10 +161,12 @@ export async function POST(request: NextRequest) {
     voiceId?: string;
     language?: string;
     aspectRatio?: "9:16" | "16:9";
+    customPhotoUrl?: string;
   };
 
   const script = body.script?.trim() ?? "";
   const avatarId = body.avatarId?.trim();
+  const customPhotoUrl = body.customPhotoUrl?.trim();
   const voiceSource = body.voiceSource ?? "akool";
   const voiceId = body.voiceId?.trim();
   const aspectRatio = body.aspectRatio ?? "9:16";
@@ -182,9 +210,28 @@ export async function POST(request: NextRequest) {
 
   try {
     const avatars = await listUgcAvatars(1, 100);
-    const avatar = avatars.find((a) => a.avatar_id === avatarId);
+    const lookupId =
+      customPhotoUrl && (!avatarId || avatarId === "custom")
+        ? CUSTOM_AVATAR_BASE_ID
+        : avatarId;
+    const avatar = avatars.find((a) => a.avatar_id === lookupId);
     if (!avatar) {
       return NextResponse.json({ error: "Avatar nicht gefunden" }, { status: 404 });
+    }
+
+    let avatarImageUrl: string | undefined;
+    if (customPhotoUrl) {
+      const targetImageUrl = avatar.thumbnail ?? avatar.url;
+      if (!targetImageUrl) {
+        return NextResponse.json(
+          { error: "Avatar-Vorschaubild nicht verfügbar" },
+          { status: 400 }
+        );
+      }
+      avatarImageUrl = await swapCustomFaceOntoAvatar(
+        customPhotoUrl,
+        targetImageUrl
+      );
     }
 
     let audioUrl: string | undefined;
@@ -228,6 +275,7 @@ export async function POST(request: NextRequest) {
       voiceId: akoolVoiceId ?? "",
       aspectRatio,
       audioUrl,
+      avatarImageUrl,
     });
 
     return NextResponse.json({
@@ -237,6 +285,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: unknown) {
     console.error("[ugc-video POST]", err);
+    if (err instanceof AkoolFaceswapError) {
+      return NextResponse.json(
+        { error: sanitizeUserMessage(err.userMessage) },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       {
         error: sanitizeUserMessage(

@@ -393,6 +393,34 @@ export function mapFaceswapStatus(status: number): {
 }
 
 /** V4 first; V3 + unified detect as fallback. */
+/** Poll Akool face-swap job until a result URL is ready (UGC custom photo). */
+export async function waitForFaceswapUrl(
+  jobId: string,
+  maxAttempts = 45,
+  intervalMs = 2000
+): Promise<string> {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const result = await getFaceswapResults(jobId);
+    if (result) {
+      const mapped = mapFaceswapStatus(result.faceswap_status);
+      if (mapped.status === "completed" && result.url) {
+        return result.url;
+      }
+      if (mapped.status === "failed") {
+        throw new AkoolFaceswapError(
+          "faceswap failed",
+          "Face Swap fehlgeschlagen. Bitte ein anderes Foto mit klarem Gesicht verwenden."
+        );
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  throw new AkoolFaceswapError(
+    "faceswap timeout",
+    "Face Swap dauert zu lange. Bitte erneut versuchen."
+  );
+}
+
 export async function startFaceswapJob(params: {
   mode: "image" | "video";
   sourceMediaUrl: string;

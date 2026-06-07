@@ -11,7 +11,9 @@ import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { GuardModal } from "@/components/dashboard/GuardModal";
 import { useUserCredits } from "@/hooks/use-user-credits";
+import { createClient } from "@/lib/supabase/client";
 
 const LiveCreatorVoicePicker = dynamic(
   () =>
@@ -28,6 +30,8 @@ const LiveCreatorVoicePicker = dynamic(
 
 const CREDIT_COST = 5;
 const MAX_SCRIPT = 500;
+const CUSTOM_AVATAR_ID = "custom";
+const CUSTOM_BASE_AVATAR_ID = "sonya_01";
 
 type UgcAvatar = {
   avatar_id: string;
@@ -93,6 +97,9 @@ export default function UgcVideoPage() {
   const [avatars, setAvatars] = useState<UgcAvatar[]>([]);
   const [akoolVoices, setAkoolVoices] = useState<AkoolVoice[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
+  const [customPhoto, setCustomPhoto] = useState<string | null>(null);
+  const [customPhotoFile, setCustomPhotoFile] = useState<File | null>(null);
+  const [consentGuardOpen, setConsentGuardOpen] = useState(false);
   const [selectedAkoolVoiceId, setSelectedAkoolVoiceId] = useState("");
   const [elevenVoiceId, setElevenVoiceId] = useState(() =>
     getDefaultVoiceIdForLocale(locale)
@@ -106,6 +113,7 @@ export default function UgcVideoPage() {
   const [progress, setProgress] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     Promise.all([
@@ -230,7 +238,36 @@ export default function UgcVideoPage() {
     }
   };
 
-  const createVideo = async () => {
+  async function uploadCustomPhoto(file: File): Promise<string> {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error("Nicht eingeloggt");
+    }
+
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/ugc-photos/${Date.now()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("ugc-assets")
+      .upload(path, file, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (error) throw new Error(error.message);
+
+    const { data } = supabase.storage.from("ugc-assets").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  const runCreateVideo = async () => {
+    if (selectedAvatarId === CUSTOM_AVATAR_ID && !customPhotoFile) {
+      setError("Bitte lade zuerst dein Foto hoch.");
+      return;
+    }
     if (!selectedAvatarId) {
       setError(t("error_no_avatar"));
       return;
@@ -251,11 +288,28 @@ export default function UgcVideoPage() {
     setStep("generating");
 
     try {
+      let photoUrl: string | undefined;
+
+      if (selectedAvatarId === CUSTOM_AVATAR_ID && customPhotoFile) {
+        try {
+          photoUrl = await uploadCustomPhoto(customPhotoFile);
+        } catch {
+          setError("Foto-Upload fehlgeschlagen");
+          setStep("input");
+          setSubmitting(false);
+          return;
+        }
+      }
+
       const res = await fetch("/api/ugc-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          avatarId: selectedAvatarId,
+          avatarId:
+            selectedAvatarId === CUSTOM_AVATAR_ID
+              ? CUSTOM_BASE_AVATAR_ID
+              : selectedAvatarId,
+          customPhotoUrl: photoUrl,
           script: script.trim(),
           voiceSource,
           voiceId:
@@ -290,6 +344,19 @@ export default function UgcVideoPage() {
         )
       );
     }
+  };
+
+  const createVideo = () => {
+    if (selectedAvatarId === CUSTOM_AVATAR_ID) {
+      if (!customPhotoFile) {
+        setError("Bitte lade zuerst dein Foto hoch.");
+        fileRef.current?.click();
+        return;
+      }
+      setConsentGuardOpen(true);
+      return;
+    }
+    void runCreateVideo();
   };
 
   const reset = () => {
@@ -515,6 +582,105 @@ export default function UgcVideoPage() {
               <p className="text-white/65 text-sm">{t("no_avatars")}</p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[520px] overflow-y-auto pr-1">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setCustomPhotoFile(file);
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                      setCustomPhoto(ev.target?.result as string);
+                      setSelectedAvatarId(CUSTOM_AVATAR_ID);
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    if (selectedAvatarId !== CUSTOM_AVATAR_ID || !customPhoto) {
+                      fileRef.current?.click();
+                    } else {
+                      setSelectedAvatarId(CUSTOM_AVATAR_ID);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (selectedAvatarId !== CUSTOM_AVATAR_ID || !customPhoto) {
+                        fileRef.current?.click();
+                      } else {
+                        setSelectedAvatarId(CUSTOM_AVATAR_ID);
+                      }
+                    }
+                  }}
+                  style={{
+                    border:
+                      selectedAvatarId === CUSTOM_AVATAR_ID
+                        ? "2px solid #B4FF00"
+                        : "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: 8,
+                    padding: 12,
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    minHeight: 180,
+                    background: "rgba(180,255,0,0.04)",
+                  }}
+                >
+                  {customPhoto ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={customPhoto}
+                      alt="Mein Foto"
+                      style={{
+                        width: "100%",
+                        height: 160,
+                        objectFit: "cover",
+                        borderRadius: 6,
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <div
+                        style={{
+                          fontSize: 28,
+                          color: "#B4FF00",
+                        }}
+                      >
+                        +
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "rgba(255,255,255,0.6)",
+                          textAlign: "center",
+                        }}
+                      >
+                        Mein Foto hochladen
+                      </div>
+                    </>
+                  )}
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color:
+                        selectedAvatarId === CUSTOM_AVATAR_ID
+                          ? "#B4FF00"
+                          : "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    Eigenes Gesicht
+                  </div>
+                </div>
                 {avatars.map((avatar) => {
                   const selected = selectedAvatarId === avatar.avatar_id;
                   return (
@@ -567,6 +733,19 @@ export default function UgcVideoPage() {
           </div>
         </div>
       )}
+
+      <GuardModal
+        isOpen={consentGuardOpen}
+        title="Einwilligung erforderlich"
+        description="Du verwendest dein eigenes Gesicht für einen KI-Avatar. Stelle sicher dass du die Rechte an dem verwendeten Foto hast und nur dein eigenes Bildmaterial verwendest."
+        variant="consent"
+        confirmLabel="Ich stimme zu — Video erstellen"
+        onConfirm={() => {
+          setConsentGuardOpen(false);
+          void runCreateVideo();
+        }}
+        onCancel={() => setConsentGuardOpen(false)}
+      />
     </div>
   );
 }
