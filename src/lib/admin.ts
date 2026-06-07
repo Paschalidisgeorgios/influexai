@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isAdminUser } from "@/lib/access";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 
 export async function requireAdmin(): Promise<
   { ok: true; userId: string } | { ok: false; error: string }
@@ -18,7 +18,7 @@ export async function requireAdmin(): Promise<
     .single();
 
   if (
-    !isAdminUser({
+    !isPlatformAdminServer({
       email: user.email,
       is_admin: profile?.is_admin,
       role: profile?.role,

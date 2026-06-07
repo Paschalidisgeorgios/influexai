@@ -159,7 +159,16 @@
     "terms_link": "Terms",
     "terms_text": "By signing up you agree to our",
     "verify_email_body": "We sent a confirmation link to",
-    "verify_email_title": "Confirm your email"
+    "verify_email_title": "Confirm your email",
+    "signup": {
+      "generic_error": "Registration failed. Please try again.",
+      "emailAlreadyExists": {
+        "title": "This email address is already registered.",
+        "description": "Sign in with this email or reset your password.",
+        "login": "Sign in",
+        "resetPassword": "Reset password"
+      }
+    }
   },
   "common": {
     "back": "Back",

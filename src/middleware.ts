@@ -14,11 +14,11 @@ import {
   REFERRAL_REF_MAX_AGE,
 } from "@/lib/referral-ref-cookie";
 import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
-import { isPlatformAdmin } from "@/lib/access";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import {
   logAuthRedirect,
   resolvePostAuthRedirect,
-} from "@/lib/auth-redirect";
+} from "@/lib/auth-redirect.server";
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
@@ -160,12 +160,12 @@ export async function middleware(request: NextRequest) {
   if (user && isAdminRoute) {
     const { data: adminProfile } = await supabase
       .from("profiles")
-      .select("is_admin, role")
+      .select("is_admin, role, plan")
       .eq("id", user.id)
       .single();
 
     if (
-      !isPlatformAdmin({
+      !isPlatformAdminServer({
         email: user.email,
         is_admin: adminProfile?.is_admin,
         role: adminProfile?.role,
@@ -217,7 +217,7 @@ export async function middleware(request: NextRequest) {
   if (user && (isAuthPage || isOnboarding)) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_admin, role")
+      .select("is_admin, role, plan")
       .eq("id", user.id)
       .single();
 
@@ -227,6 +227,7 @@ export async function middleware(request: NextRequest) {
         email: user.email,
         is_admin: profile?.is_admin,
         role: profile?.role,
+        plan: profile?.plan,
       },
       redirectParam
     );

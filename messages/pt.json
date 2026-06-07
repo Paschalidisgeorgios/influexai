@@ -152,7 +152,16 @@
     "terms_link": "Termos de Uso",
     "terms_text": "Ao se cadastrar, você concorda com nossos",
     "verify_email_body": "Enviamos um link para",
-    "verify_email_title": "Confirme seu e-mail"
+    "verify_email_title": "Confirme seu e-mail",
+    "signup": {
+      "generic_error": "Não foi possível concluir o cadastro. Tente novamente.",
+      "emailAlreadyExists": {
+        "title": "Este endereço de e-mail já está registrado.",
+        "description": "Entre com este e-mail ou redefina sua senha.",
+        "login": "Entrar",
+        "resetPassword": "Redefinir senha"
+      }
+    }
   },
   "common": {
     "back": "Voltar",

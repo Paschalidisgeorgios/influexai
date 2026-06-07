@@ -1,7 +1,13 @@
-import { isPlatformAdmin, type AccessUser } from "@/lib/access";
+import {
+  DEFAULT_ADMIN_EMAIL_ALLOWLIST,
+  isEmailInAdminAllowlist,
+} from "@/lib/admin-allowlist";
+import { hasActivePlan, type AccessUser } from "@/lib/access";
+import { checkPlatformAdmin } from "@/lib/platform-admin";
 
 const DEFAULT_USER_DESTINATION = "/dashboard";
 const DEFAULT_ADMIN_DESTINATION = "/admin";
+const NO_PLAN_DESTINATION = "/pricing";
 
 /** Paths users may return to after sign-in (never /admin). */
 const ALLOWED_POST_AUTH_PREFIXES = [
@@ -43,21 +49,31 @@ export function sanitizeAuthRedirect(
 
 export type PostAuthProfile = AccessUser & { email?: string | null };
 
+type AllowlistChecker = (email: string | null | undefined) => boolean;
+
 /**
- * After login / email confirmation: admins → /admin (unless safe deep link);
- * normal users → /dashboard (never /admin).
+ * After login / email confirmation: admins → /admin; users with plan → /dashboard;
+ * users without plan → /pricing. Never sends non-admins to /admin.
  */
 export function resolvePostAuthRedirect(
   profile: PostAuthProfile,
-  requestedPath?: string | null
+  requestedPath?: string | null,
+  isAllowlistedEmail: AllowlistChecker = (email) =>
+    isEmailInAdminAllowlist(email, DEFAULT_ADMIN_EMAIL_ALLOWLIST)
 ): string {
   const safe = sanitizeAuthRedirect(requestedPath);
 
-  if (isPlatformAdmin(profile)) {
+  if (checkPlatformAdmin(profile, isAllowlistedEmail)) {
     return safe ?? DEFAULT_ADMIN_DESTINATION;
   }
 
-  return safe ?? DEFAULT_USER_DESTINATION;
+  if (safe) return safe;
+
+  if (!hasActivePlan(profile)) {
+    return NO_PLAN_DESTINATION;
+  }
+
+  return DEFAULT_USER_DESTINATION;
 }
 
 export function logAuthRedirect(payload: {

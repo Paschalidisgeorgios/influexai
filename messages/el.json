@@ -152,7 +152,16 @@
     "terms_link": "Όρους",
     "terms_text": "Με την εγγραφή αποδέχεσαι τους",
     "verify_email_body": "Σου στείλαμε σύνδεσμο στο",
-    "verify_email_title": "Επιβεβαίωσε το email σου"
+    "verify_email_title": "Επιβεβαίωσε το email σου",
+    "signup": {
+      "generic_error": "Η εγγραφή απέτυχε. Δοκίμασε ξανά.",
+      "emailAlreadyExists": {
+        "title": "Αυτή η διεύθυνση email είναι ήδη καταχωρημένη.",
+        "description": "Συνδέσου με αυτό το email ή επανέφερε τον κωδικό σου.",
+        "login": "Σύνδεση",
+        "resetPassword": "Επαναφορά κωδικού"
+      }
+    }
   },
   "common": {
     "back": "Πίσω",

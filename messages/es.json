@@ -152,7 +152,16 @@
     "terms_link": "Términos y condiciones",
     "terms_text": "Al registrarte, aceptas nuestros",
     "verify_email_body": "Te hemos enviado un enlace a",
-    "verify_email_title": "Confirma tu correo"
+    "verify_email_title": "Confirma tu correo",
+    "signup": {
+      "generic_error": "No se pudo completar el registro. Inténtalo de nuevo.",
+      "emailAlreadyExists": {
+        "title": "Esta dirección de correo ya está registrada.",
+        "description": "Inicia sesión con este correo o restablece tu contraseña.",
+        "login": "Iniciar sesión",
+        "resetPassword": "Restablecer contraseña"
+      }
+    }
   },
   "common": {
     "back": "Atrás",

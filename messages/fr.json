@@ -152,7 +152,16 @@
     "terms_link": "CGU",
     "terms_text": "En t'inscrivant, tu acceptes nos",
     "verify_email_body": "Nous t'avons envoyé un lien à",
-    "verify_email_title": "Confirme ton e-mail"
+    "verify_email_title": "Confirme ton e-mail",
+    "signup": {
+      "generic_error": "Inscription impossible. Réessaie.",
+      "emailAlreadyExists": {
+        "title": "Cette adresse e-mail est déjà enregistrée.",
+        "description": "Connecte-toi avec cette adresse ou réinitialise ton mot de passe.",
+        "login": "Se connecter",
+        "resetPassword": "Réinitialiser le mot de passe"
+      }
+    }
   },
   "common": {
     "back": "Retour",

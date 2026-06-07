@@ -26,9 +26,9 @@ Central helper: `src/lib/auth-redirect.ts`
 
 | Event | Normal user | Platform admin |
 |-------|-------------|----------------|
-| Login | `/dashboard` (or safe `?redirect=` deep link) | `/admin` (or safe deep link) |
-| Email confirmed | `/dashboard` via callback | `/admin` |
-| Sign-up (instant session) | `/dashboard` | `/admin` |
+| Login | `/dashboard` (or safe `?redirect=` deep link); no plan → `/pricing` | `/admin` (or safe deep link) |
+| Email confirmed | `/dashboard` or `/pricing` via callback | `/admin` |
+| Sign-up (instant session) | `/dashboard` or `/pricing` | `/admin` |
 | Sign-up (email pending) | Verify screen → user clicks mail link | same |
 | Checkout success (plan) | `/dashboard/credits?subscribed=…&checkout=success` | same |
 | Checkout success (agency) | `/dashboard/agency?success=true` | same |
@@ -41,11 +41,13 @@ Central helper: `src/lib/auth-redirect.ts`
 
 ## Admin guard
 
-Platform admin **only** if:
+Platform admin **only** if (server: `isPlatformAdminServer` in `src/lib/platform-admin.server.ts`):
 
 - `profiles.is_admin === true`, or
 - `profiles.role === "admin"`, or
-- email in `ADMIN_EMAILS` (`src/lib/access.ts`)
+- email in `ADMIN_EMAIL_ALLOWLIST` env (comma-separated; case-insensitive exact match)
+
+Default allowlist when env unset: `paschalidis.georgio38@gmail.com` (`src/lib/admin-allowlist.ts`).
 
 **Not admin:**
 

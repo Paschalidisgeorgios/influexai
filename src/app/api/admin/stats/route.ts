@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isPlatformAdmin } from "@/lib/access";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export async function GET() {
     .eq("id", user.id)
     .single();
   if (
-    !isPlatformAdmin({
+    !isPlatformAdminServer({
       email: user.email,
       is_admin: profile?.is_admin,
       role: profile?.role,

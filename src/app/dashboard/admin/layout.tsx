@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isAdminUser } from "@/lib/access";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { redirect } from "next/navigation";
 
 export default async function DashboardAdminLayout({
@@ -21,7 +21,7 @@ export default async function DashboardAdminLayout({
     .single();
 
   if (
-    !isAdminUser({
+    !isPlatformAdminServer({
       email: user.email,
       is_admin: profile?.is_admin,
       role: profile?.role,

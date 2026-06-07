@@ -49,7 +49,7 @@ function LoginPageInner() {
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin, role")
+        .select("is_admin, role, plan")
         .eq("id", user.id)
         .single();
 
@@ -58,6 +58,7 @@ function LoginPageInner() {
           email: user.email,
           is_admin: profile?.is_admin,
           role: profile?.role,
+          plan: profile?.plan,
         },
         searchParams.get("redirect")
       );

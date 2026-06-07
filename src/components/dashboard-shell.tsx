@@ -88,7 +88,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <PoweredByFooter />
-        <LegalFooterLinks className="hidden md:block border-t border-white/[0.06] bg-[#060608]" />
+        <LegalFooterLinks className="border-t border-white/[0.06] bg-[#060608] pb-[calc(4px+env(safe-area-inset-bottom,0px))] md:pb-0" />
         <MobileBottomNav />
         <PostGenerationUpsell />
       </div>

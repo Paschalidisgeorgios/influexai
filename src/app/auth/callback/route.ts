@@ -11,7 +11,7 @@ import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
 import {
   logAuthRedirect,
   resolvePostAuthRedirect,
-} from "@/lib/auth-redirect";
+} from "@/lib/auth-redirect.server";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("is_admin, role")
+          .select("is_admin, role, plan")
           .eq("id", user.id)
           .single();
 
@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
             email: user.email,
             is_admin: profile?.is_admin,
             role: profile?.role,
+            plan: profile?.plan,
           },
           nextParam
         );

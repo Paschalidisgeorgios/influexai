@@ -20,6 +20,7 @@ import {
   getPasswordStrength,
   strengthBarColors,
 } from "@/lib/password-strength";
+import { isSignupEmailAlreadyRegistered } from "@/lib/signup-email-exists";
 
 const REFERRAL_STORAGE_KEY = "referral_code";
 const BETA_STORAGE_KEY = "beta_code";
@@ -32,6 +33,7 @@ function SignupPageInner() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [emailAlreadyExists, setEmailAlreadyExists] = useState(false);
   const [success, setSuccess] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [betaCode, setBetaCode] = useState<string | null>(null);
@@ -104,6 +106,7 @@ function SignupPageInner() {
     }
     setLoading(true);
     setError("");
+    setEmailAlreadyExists(false);
 
     const ref =
       referralCode ||
@@ -135,8 +138,20 @@ function SignupPageInner() {
       },
     });
 
+    if (
+      isSignupEmailAlreadyRegistered({
+        error: signUpError,
+        user: data.user,
+        session: data.session,
+      })
+    ) {
+      setEmailAlreadyExists(true);
+      setLoading(false);
+      return;
+    }
+
     if (signUpError) {
-      setError(signUpError.message);
+      setError(t("signup.generic_error"));
       setLoading(false);
       return;
     }
@@ -175,7 +190,7 @@ function SignupPageInner() {
       void trackAbEvent("signup_complete");
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin, role")
+        .select("is_admin, role, plan")
         .eq("id", data.user.id)
         .single();
 
@@ -184,6 +199,7 @@ function SignupPageInner() {
           email: data.user.email,
           is_admin: profile?.is_admin,
           role: profile?.role,
+          plan: profile?.plan,
         },
         searchParams.get("redirect")
       );
@@ -275,7 +291,35 @@ function SignupPageInner() {
         </div>
       )}
 
-      {error && (
+      {emailAlreadyExists && (
+        <div
+          className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/25"
+          role="alert"
+        >
+          <p className="text-[#F0EFE8] font-semibold text-sm mb-1.5">
+            {t("signup.emailAlreadyExists.title")}
+          </p>
+          <p className="text-white/70 text-sm leading-relaxed mb-4">
+            {t("signup.emailAlreadyExists.description")}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Link
+              href="/auth/sign-in"
+              className="flex-1 text-center py-2.5 rounded-lg bg-[#B4FF00] text-black text-sm font-semibold hover:bg-[#c8ff33] transition-colors"
+            >
+              {t("signup.emailAlreadyExists.login")}
+            </Link>
+            <Link
+              href="/forgot-password"
+              className="flex-1 text-center py-2.5 rounded-lg border border-white/15 bg-white/5 text-[#F0EFE8] text-sm font-semibold hover:border-[#B4FF00]/40 transition-colors"
+            >
+              {t("signup.emailAlreadyExists.resetPassword")}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {error && !emailAlreadyExists && (
         <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
           {error}
         </div>
@@ -301,7 +345,10 @@ function SignupPageInner() {
             type="email"
             data-testid="auth-email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailAlreadyExists) setEmailAlreadyExists(false);
+            }}
             placeholder="deine@email.com"
             className={authInputClass}
             autoComplete="email"

@@ -16,6 +16,12 @@ Do **not** commit secret values. Set in `.env.local` (dev) and Vercel **Producti
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key (client) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role (server/webhook only) |
 
+## Platform admin (server only)
+
+| Variable | Description |
+|----------|-------------|
+| `ADMIN_EMAIL_ALLOWLIST` | Comma-separated emails with platform `/admin` access (case-insensitive, trimmed). Example: `paschalidis.georgio38@gmail.com`. **Not** `NEXT_PUBLIC_*`. Set in Vercel **Production**. Falls back to the default in `src/lib/admin-allowlist.ts` when unset. |
+
 **Supabase Dashboard (not env):**
 
 - Site URL → production domain

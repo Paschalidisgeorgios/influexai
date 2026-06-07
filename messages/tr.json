@@ -152,7 +152,16 @@
     "terms_link": "Şartlar",
     "terms_text": "Kayıt olarak şunları kabul edersin:",
     "verify_email_body": "Doğrulama linkini şu adrese gönderdik:",
-    "verify_email_title": "E-postanı doğrula"
+    "verify_email_title": "E-postanı doğrula",
+    "signup": {
+      "generic_error": "Kayıt tamamlanamadı. Lütfen tekrar dene.",
+      "emailAlreadyExists": {
+        "title": "Bu e-posta adresi zaten kayıtlı.",
+        "description": "Bu e-posta ile giriş yap veya şifreni sıfırla.",
+        "login": "Giriş yap",
+        "resetPassword": "Şifreyi sıfırla"
+      }
+    }
   },
   "common": {
     "back": "Geri",

@@ -73,7 +73,16 @@
     "terms_link": "AGB",
     "terms_text": "Durch die Registrierung stimmst du unseren",
     "verify_email_body": "Wir haben dir einen Link gesendet an",
-    "verify_email_title": "Bestätige deine E-Mail"
+    "verify_email_title": "Bestätige deine E-Mail",
+    "signup": {
+      "generic_error": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+      "emailAlreadyExists": {
+        "title": "Diese E-Mail-Adresse ist bereits registriert.",
+        "description": "Melde dich mit dieser E-Mail an oder setze dein Passwort zurück.",
+        "login": "Einloggen",
+        "resetPassword": "Passwort zurücksetzen"
+      }
+    }
   },
   "common": {
     "back": "Zurück",

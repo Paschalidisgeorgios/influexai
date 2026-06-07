@@ -1,3 +1,9 @@
+import {
+  DEFAULT_ADMIN_EMAIL_ALLOWLIST,
+  isEmailInAdminAllowlist,
+} from "@/lib/admin-allowlist";
+import { checkPlatformAdmin } from "@/lib/platform-admin";
+
 export type PlanTier =
   | "free"
   | "starter"
@@ -5,12 +11,12 @@ export type PlanTier =
   | "pro"
   | "business";
 
-/** Hard-coded admin emails — credit bypass + plan access (server must verify via auth session). */
-export const ADMIN_EMAILS = ["paschalidisgeorgios38@gmail.com"] as const;
+/** @deprecated Use DEFAULT_ADMIN_EMAIL_ALLOWLIST or env `ADMIN_EMAIL_ALLOWLIST`. */
+export const ADMIN_EMAILS = DEFAULT_ADMIN_EMAIL_ALLOWLIST;
 
+/** Client-safe allowlist check (default emails only — server guards use env). */
 export function isAdminEmail(email?: string | null): boolean {
-  if (!email) return false;
-  return (ADMIN_EMAILS as readonly string[]).includes(email.toLowerCase());
+  return isEmailInAdminAllowlist(email, DEFAULT_ADMIN_EMAIL_ALLOWLIST);
 }
 
 export type AccessUser = {
@@ -33,14 +39,10 @@ function normalizePlan(plan: string | null | undefined): PlanTier {
 }
 
 /**
- * Platform admin panel access only.
- * Agency tenant_role (owner/admin/member) is stored separately and must NOT grant /admin.
+ * Platform admin for client UI hints only. Server routes must use `isPlatformAdminServer`.
  */
 export function isPlatformAdmin(user: AccessUser): boolean {
-  if (isAdminEmail(user.email)) return true;
-  if (user.is_admin === true) return true;
-  const role = (user.role ?? "user").toLowerCase();
-  return role === "admin";
+  return checkPlatformAdmin(user, isAdminEmail);
 }
 
 /** @alias isPlatformAdmin */
