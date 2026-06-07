@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { MasterAgentChat } from "@/components/agent/MasterAgentChat";
+import { DashboardCheckoutSuccess } from "@/components/credits/DashboardCheckoutSuccess";
 
 export default function DashboardPage() {
   const t = useTranslations("agent");
@@ -19,6 +20,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-1 flex-col min-h-0 w-full min-w-0 max-w-4xl mx-auto overflow-x-hidden">
+      <DashboardCheckoutSuccess />
       <MasterAgentChat suggestedPrompts={suggestedPrompts} />
     </div>
   );

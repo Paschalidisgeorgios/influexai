@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { CreditsWarningBanner } from "@/components/credits-warning-banner";
 import { ReengagementBanner } from "@/components/reengagement-banner";
@@ -76,9 +75,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <BuyCreditsProvider>
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <DashboardHeader credits={credits} />
+    <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      <DashboardHeader credits={credits} />
         <PlatformBanners isAdmin={isAdmin} />
         {creditsReady && credits !== null && !isCreditExempt && (
           <CreditsWarningBanner credits={credits} />
@@ -92,6 +90,5 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <MobileBottomNav />
         <PostGenerationUpsell />
       </div>
-    </BuyCreditsProvider>
   );
 }

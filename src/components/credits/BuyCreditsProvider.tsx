@@ -30,6 +30,7 @@ import {
 
 type BuyCreditsContextValue = {
   open: () => void;
+  openBuyModal: () => void;
   credits: number | null;
 };
 
@@ -40,6 +41,7 @@ export function useBuyCredits() {
   if (!ctx) {
     return {
       open: openBuyCreditsModal,
+      openBuyModal: openBuyCreditsModal,
       credits: null as number | null,
     };
   }
@@ -74,10 +76,12 @@ function CreditsToast({
   );
 }
 
-function stripCheckoutSuccessParams() {
+function stripCheckoutQueryParams() {
   if (typeof window === "undefined") return;
   const url = new URL(window.location.href);
   url.searchParams.delete("credits");
+  url.searchParams.delete("success");
+  url.searchParams.delete("canceled");
   url.searchParams.delete("session_id");
   url.searchParams.delete("amount");
   const next = `${url.pathname}${url.search}${url.hash}`;
@@ -151,9 +155,13 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
   const openModal = useCallback((opts?: { detail?: NoCreditsModalDetail }) => {
     if (opts?.detail) setModalDetail(opts.detail);
-    else setModalDetail(null);
+    else setModalDetail({ showPackages: true });
     setModalOpen(true);
   }, []);
+
+  const openBuyModal = useCallback(() => {
+    openModal({ detail: { showPackages: true } });
+  }, [openModal]);
 
   useEffect(() => {
     return onBuyCreditsRequest((detail) => {
@@ -206,7 +214,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     if (processedCheckoutRef.current === dedupeKey) return;
     processedCheckoutRef.current = dedupeKey;
 
-    stripCheckoutSuccessParams();
+    stripCheckoutQueryParams();
     setModalOpen(false);
     setModalDetail(null);
     setToast(t("checkout_success"));
@@ -214,12 +222,28 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     void refreshCreditsAfterCheckout(sessionId);
   }, [searchParams, refreshCreditsAfterCheckout, t]);
 
+  useEffect(() => {
+    if (searchParams.get("success") !== "true") return;
+    if (processedCheckoutRef.current === "success-true") return;
+    processedCheckoutRef.current = "success-true";
+
+    stripCheckoutQueryParams();
+    setModalOpen(false);
+    setModalDetail(null);
+    setToast(t("payment_success_pending"));
+
+    const sessionId = searchParams.get("session_id");
+    void refreshCreditsAfterCheckout(sessionId);
+    const reloadTimer = setTimeout(() => window.location.reload(), 3000);
+    return () => clearTimeout(reloadTimer);
+  }, [searchParams, refreshCreditsAfterCheckout, t]);
+
   const handleClose = () => {
     setModalOpen(false);
     setModalDetail(null);
   };
 
-  const showModal = modalOpen && hasPlan;
+  const showModal = modalOpen;
 
   const planInfo: NoCreditsModalPlanInfo | null = hasPlan
     ? {
@@ -231,7 +255,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <BuyCreditsContext.Provider
-      value={{ open: () => openModal(), credits }}
+      value={{ open: openBuyModal, openBuyModal, credits }}
     >
       {children}
       {showModal ? (

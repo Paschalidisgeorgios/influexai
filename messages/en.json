@@ -1407,6 +1407,7 @@
     "close": "Close",
     "checkout_error": "Checkout failed. Please try again.",
     "checkout_success": "✓ Credits topped up! You can continue now.",
+    "payment_success_pending": "Payment successful — credits will be added shortly.",
     "success_toast": "✓ {count} credits added successfully!",
     "low_banner": "Only {count} credits left",
     "urgent_banner": "Almost out of credits!",

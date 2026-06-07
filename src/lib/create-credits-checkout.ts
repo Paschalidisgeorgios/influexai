@@ -62,8 +62,8 @@ export async function createCreditsCheckoutSession(
         message: "Sicher bezahlen — Credits sofort verfügbar",
       },
     },
-    success_url: `${SITE_URL}/dashboard?credits=success&session_id={CHECKOUT_SESSION_ID}&amount=${pkg.credits}`,
-    cancel_url: `${SITE_URL}/dashboard`,
+    success_url: `${SITE_URL}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}&amount=${pkg.credits}`,
+    cancel_url: `${SITE_URL}/dashboard?canceled=true`,
     metadata: {
       userId,
       user_id: userId,

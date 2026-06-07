@@ -64,7 +64,7 @@ export function showUpgradePrompt(detail: UpgradePromptDetail) {
 }
 
 export function openBuyCreditsModal(detail?: NoCreditsModalDetail): void {
-  openNoCreditsModal(detail);
+  openNoCreditsModal({ showPackages: true, ...detail });
 }
 
 export function onBuyCreditsRequest(

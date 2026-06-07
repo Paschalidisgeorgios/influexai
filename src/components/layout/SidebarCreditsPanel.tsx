@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
-import { openBuyCreditsModal } from "@/lib/client-credits-ui";
+import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
 
 type CreditLevel = "ok" | "low" | "critical" | "empty";
 
@@ -32,6 +32,7 @@ export function SidebarCreditsPanel({
   isCreditExempt = false,
 }: Props) {
   const tNav = useTranslations("nav");
+  const { openBuyModal } = useBuyCredits();
   const level = isCreditExempt ? "ok" : creditLevel(credits, maxCredits);
   const percent = Math.min(100, Math.max(0, (credits / maxCredits) * 100));
   const color = barColor(level);
@@ -93,7 +94,7 @@ export function SidebarCreditsPanel({
       {!isCreditExempt && (
         <button
           type="button"
-          onClick={() => openBuyCreditsModal()}
+          onClick={() => openBuyModal()}
           className={`block w-full text-center py-1.5 rounded-lg bg-[var(--accent,#B4FF00)]/10 border border-[var(--accent,#B4FF00)]/20 text-[var(--accent,#B4FF00)] text-[0.72rem] font-bold cursor-pointer transition-colors hover:bg-[var(--accent,#B4FF00)]/15 ${
             level === "empty" ? "sidebar-topup-pulse" : ""
           }`}
