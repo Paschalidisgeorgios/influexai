@@ -53,8 +53,10 @@ export async function POST(request: NextRequest) {
 
   console.log("[checkout] priceId:", priceId ?? "(missing)");
   console.log("[checkout] env vars:", {
-    creatorMonthly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY,
+    agencyStarterMonthly: process.env.NEXT_PUBLIC_STRIPE_AGENCY_STARTER_MONTHLY,
     proMonthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY,
+    businessMonthly: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY,
+    agencyProMonthly: process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRO_MONTHLY,
     credits50: process.env.STRIPE_CREDITS_50,
     credits150: process.env.STRIPE_CREDITS_150,
   });
