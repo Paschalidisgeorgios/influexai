@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, type CSSProperties } from "react";
 
 export default function LivePortraitPage() {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
@@ -165,6 +165,22 @@ export default function LivePortraitPage() {
     setDrivingVideoPreview(null);
   };
 
+  const canSubmit =
+    !loading && !!sourceImageFile && !!drivingVideoFile;
+
+  const mediaBoxHeight = "h-[160px] sm:h-[200px]";
+
+  const toggleBtnStyle = (active: boolean): CSSProperties => ({
+    padding: "4px 12px",
+    borderRadius: 4,
+    border: active ? "1px solid #B4FF00" : "1px solid rgba(255,255,255,0.15)",
+    background: active ? "#B4FF00" : "transparent",
+    color: active ? "#060608" : "rgba(255,255,255,0.5)",
+    fontSize: 11,
+    cursor: "pointer",
+    fontFamily: "inherit",
+  });
+
   return (
     <div
       style={{
@@ -218,14 +234,7 @@ export default function LivePortraitPage() {
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 16,
-          marginBottom: 16,
-        }}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         {/* Foto Upload */}
         <div>
           <div
@@ -241,12 +250,12 @@ export default function LivePortraitPage() {
           </div>
           <div
             onClick={() => imageRef.current?.click()}
+            className={mediaBoxHeight}
             style={{
               border: sourceImage
                 ? "1px solid rgba(180,255,0,0.4)"
                 : "1px dashed rgba(255,255,255,0.2)",
               borderRadius: 8,
-              height: 260,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -264,7 +273,9 @@ export default function LivePortraitPage() {
               />
             ) : (
               <>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🤳</div>
+                <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.4 }}>
+                  ◻
+                </div>
                 <div
                   style={{
                     fontSize: 13,
@@ -325,17 +336,7 @@ export default function LivePortraitPage() {
                 setVideoMode("upload");
                 stopWebcam();
               }}
-              style={{
-                padding: "4px 12px",
-                borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.15)",
-                background: videoMode === "upload" ? "#B4FF00" : "transparent",
-                color:
-                  videoMode === "upload" ? "#060608" : "rgba(255,255,255,0.5)",
-                fontSize: 11,
-                cursor: "pointer",
-                fontFamily: "inherit",
-              }}
+              style={toggleBtnStyle(videoMode === "upload")}
             >
               Video hochladen
             </button>
@@ -345,19 +346,9 @@ export default function LivePortraitPage() {
                 setVideoMode("webcam");
                 void startWebcam();
               }}
-              style={{
-                padding: "4px 12px",
-                borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.15)",
-                background: videoMode === "webcam" ? "#B4FF00" : "transparent",
-                color:
-                  videoMode === "webcam" ? "#060608" : "rgba(255,255,255,0.5)",
-                fontSize: 11,
-                cursor: "pointer",
-                fontFamily: "inherit",
-              }}
+              style={toggleBtnStyle(videoMode === "webcam")}
             >
-              🎥 Webcam aufnehmen
+              Webcam aufnehmen
             </button>
           </div>
 
@@ -365,12 +356,12 @@ export default function LivePortraitPage() {
             <>
               <div
                 onClick={() => videoRef.current?.click()}
+                className={mediaBoxHeight}
                 style={{
                   border: drivingVideo
                     ? "1px solid rgba(180,255,0,0.4)"
                     : "1px dashed rgba(255,255,255,0.2)",
                   borderRadius: 8,
-                  height: 260,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -392,7 +383,9 @@ export default function LivePortraitPage() {
                   />
                 ) : (
                   <>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}>🎬</div>
+                    <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.4 }}>
+                      ▶
+                    </div>
                     <div
                       style={{
                         fontSize: 13,
@@ -435,10 +428,10 @@ export default function LivePortraitPage() {
             </>
           ) : drivingVideo ? (
             <div
+              className={mediaBoxHeight}
               style={{
                 border: "1px solid rgba(180,255,0,0.3)",
                 borderRadius: 8,
-                height: 260,
                 overflow: "hidden",
                 position: "relative",
                 background: "#000",
@@ -481,10 +474,10 @@ export default function LivePortraitPage() {
             </div>
           ) : (
             <div
+              className={mediaBoxHeight}
               style={{
                 border: "1px solid rgba(180,255,0,0.3)",
                 borderRadius: 8,
-                height: 260,
                 overflow: "hidden",
                 position: "relative",
                 background: "#000",
@@ -638,24 +631,21 @@ export default function LivePortraitPage() {
 
       {/* Button */}
       <button
+        type="button"
         onClick={handleSubmit}
-        disabled={loading || !sourceImageFile || !drivingVideoFile}
+        disabled={!canSubmit}
+        className="disabled:opacity-100"
         style={{
           width: "100%",
           padding: "14px",
           borderRadius: 6,
           border: "none",
-          background:
-            loading || !sourceImageFile || !drivingVideoFile
-              ? "rgba(180,255,0,0.3)"
-              : "#B4FF00",
+          background: canSubmit ? "#B4FF00" : "rgba(180,255,0,0.3)",
           color: "#060608",
+          opacity: 1,
           fontSize: 14,
           fontWeight: 800,
-          cursor:
-            loading || !sourceImageFile || !drivingVideoFile
-              ? "default"
-              : "pointer",
+          cursor: canSubmit ? "pointer" : "not-allowed",
           letterSpacing: "0.04em",
           textTransform: "uppercase",
         }}
