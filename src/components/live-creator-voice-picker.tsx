@@ -86,27 +86,12 @@ export function LiveCreatorVoicePicker({
       return;
     }
 
-    if (!voice.previewUrl) {
-      void playElevenLabsVoicePreview(
-        voice.id,
-        null,
-        audioRef,
-        (playing) => setPlayingId(playing ? voice.id : null)
-      );
-      return;
-    }
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-
-    const audio = new Audio(voice.previewUrl);
-    audioRef.current = audio;
-    setPlayingId(voice.id);
-    audio.onended = () => setPlayingId(null);
-    audio.onerror = () => setPlayingId(null);
-    void audio.play().catch(() => setPlayingId(null));
+    void playElevenLabsVoicePreview(
+      voice.id,
+      null,
+      audioRef,
+      (playing) => setPlayingId(playing ? voice.id : null)
+    );
   };
 
   if (loading) {

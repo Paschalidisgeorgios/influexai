@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Video } from "lucide-react";
+import { getElevenLabsVoices } from "@/app/actions/get-elevenlabs-voices";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
@@ -14,19 +14,6 @@ import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { createClient } from "@/lib/supabase/client";
-
-const LiveCreatorVoicePicker = dynamic(
-  () =>
-    import("@/components/live-creator-voice-picker").then(
-      (m) => m.LiveCreatorVoicePicker
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="text-sm text-white/65 py-2">Stimmen werden geladen…</p>
-    ),
-  }
-);
 
 const CREDIT_COST = 5;
 const MAX_SCRIPT = 500;
@@ -104,6 +91,9 @@ export default function UgcVideoPage() {
   const [elevenVoiceId, setElevenVoiceId] = useState(() =>
     getDefaultVoiceIdForLocale(locale)
   );
+  const [elevenVoices, setElevenVoices] = useState<ElevenLabsVoice[]>([]);
+  const [elevenVoicesLoading, setElevenVoicesLoading] = useState(true);
+  const [playingVoice, setPlayingVoice] = useState<string | null>(null);
   const [hookVariants, setHookVariants] = useState<string[]>([]);
   const [hooksLoading, setHooksLoading] = useState(false);
   const [avatarsLoading, setAvatarsLoading] = useState(true);
@@ -114,6 +104,7 @@ export default function UgcVideoPage() {
   const [tipIndex, setTipIndex] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -140,6 +131,30 @@ export default function UgcVideoPage() {
       .catch(() => setError(t("error_load")))
       .finally(() => setAvatarsLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    getElevenLabsVoices()
+      .then((result) => {
+        if (result.voices.length > 0) {
+          setElevenVoices(result.voices);
+          const current = result.voices.find((v) => v.id === elevenVoiceId);
+          if (!current) {
+            setElevenVoiceId(result.voices[0].id);
+          }
+        }
+      })
+      .finally(() => setElevenVoicesLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -237,6 +252,47 @@ export default function UgcVideoPage() {
       setSelectedAkoolVoiceId(avatar.voice_id);
     }
   };
+
+  async function playVoicePreview(voiceId: string) {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (playingVoice === voiceId) {
+      setPlayingVoice(null);
+      return;
+    }
+
+    try {
+      setPlayingVoice(voiceId);
+      const res = await fetch("/api/elevenlabs/voice-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          voiceId,
+          text: "Hallo, ich bin dein KI-Creator. Lass uns loslegen!",
+        }),
+      });
+
+      if (!res.ok) throw new Error("Vorschau nicht verfügbar");
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.play();
+      audio.onended = () => {
+        setPlayingVoice(null);
+        URL.revokeObjectURL(url);
+      };
+      audio.onerror = () => {
+        setPlayingVoice(null);
+        URL.revokeObjectURL(url);
+      };
+    } catch {
+      setPlayingVoice(null);
+    }
+  }
 
   async function uploadCustomPhoto(file: File): Promise<string> {
     const supabase = createClient();
@@ -535,13 +591,71 @@ export default function UgcVideoPage() {
                     </option>
                   ))}
                 </select>
+              ) : elevenVoicesLoading ? (
+                <p className="text-sm text-white/65 py-2">Stimmen werden geladen…</p>
               ) : (
-                <LiveCreatorVoicePicker
-                  selectedVoiceId={elevenVoiceId}
-                  onVoiceSelect={(voice: ElevenLabsVoice) =>
-                    setElevenVoiceId(voice.id)
-                  }
-                />
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {elevenVoices.map((voice) => {
+                    const selected = elevenVoiceId === voice.id;
+                    return (
+                      <div
+                        key={voice.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setElevenVoiceId(voice.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            setElevenVoiceId(voice.id);
+                          }
+                        }}
+                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                          selected
+                            ? "bg-[#B4FF00]/10 border border-[#B4FF00]"
+                            : "bg-white/5 border border-white/10 hover:border-white/30"
+                        }`}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className={`text-sm font-medium truncate ${
+                              selected ? "text-[#B4FF00]" : "text-white"
+                            }`}
+                          >
+                            {voice.name}
+                          </p>
+                          <p className="text-white/65 text-xs truncate">
+                            {voice.accent ?? voice.category}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void playVoicePreview(voice.id);
+                          }}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: "50%",
+                            border: "1px solid rgba(180,255,0,0.4)",
+                            background:
+                              playingVoice === voice.id ? "#B4FF00" : "transparent",
+                            color:
+                              playingVoice === voice.id ? "#060608" : "#B4FF00",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 12,
+                            flexShrink: 0,
+                          }}
+                          aria-label="Vorschau"
+                        >
+                          {playingVoice === voice.id ? "■" : "▶"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
 

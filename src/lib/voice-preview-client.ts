@@ -25,9 +25,14 @@ export async function playElevenLabsVoicePreview(
   }
 
   try {
-    const res = await fetch(
-      `/api/elevenlabs/voice-preview?voiceId=${encodeURIComponent(voiceId)}`
-    );
+    const res = await fetch("/api/elevenlabs/voice-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        voiceId,
+        text: "Hallo, ich bin dein KI-Creator. Lass uns loslegen!",
+      }),
+    });
     if (!res.ok) return false;
     const blob = await res.blob();
     const objectUrl = URL.createObjectURL(blob);
