@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 export default function LivePortraitPage() {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [sourceImageFile, setSourceImageFile] = useState<File | null>(null);
   const [drivingVideo, setDrivingVideo] = useState<string | null>(null);
   const [drivingVideoFile, setDrivingVideoFile] = useState<File | null>(null);
+  const [videoMode, setVideoMode] = useState<"upload" | "webcam">("upload");
+  const [recording, setRecording] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -14,6 +17,103 @@ export default function LivePortraitPage() {
 
   const imageRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const webcamRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const drivingVideoUrlRef = useRef<string | null>(null);
+
+  const setDrivingVideoPreview = useCallback((url: string | null) => {
+    if (drivingVideoUrlRef.current) {
+      URL.revokeObjectURL(drivingVideoUrlRef.current);
+      drivingVideoUrlRef.current = null;
+    }
+    if (url) drivingVideoUrlRef.current = url;
+    setDrivingVideo(url);
+  }, []);
+
+  const stopWebcam = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    if (webcamRef.current) {
+      webcamRef.current.srcObject = null;
+    }
+  }, []);
+
+  const startWebcam = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480, facingMode: "user" },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (webcamRef.current) {
+        webcamRef.current.srcObject = stream;
+        await webcamRef.current.play();
+      }
+    } catch {
+      setError("Kamera-Zugriff verweigert. Bitte Kamera erlauben.");
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    if (!streamRef.current) return;
+
+    setCountdown(3);
+    await new Promise<void>((resolve) => {
+      let c = 3;
+      const interval = setInterval(() => {
+        c--;
+        setCountdown(c);
+        if (c <= 0) {
+          clearInterval(interval);
+          setCountdown(null);
+          resolve();
+        }
+      }, 1000);
+    });
+
+    chunksRef.current = [];
+    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp8")
+      ? "video/webm;codecs=vp8"
+      : "video/webm";
+    const mr = new MediaRecorder(streamRef.current, { mimeType });
+    mr.ondataavailable = (e) => {
+      if (e.data.size > 0) chunksRef.current.push(e.data);
+    };
+    mr.onstop = () => {
+      const blob = new Blob(chunksRef.current, { type: mimeType });
+      const file = new File([blob], "webcam.webm", { type: mimeType });
+      setDrivingVideoFile(file);
+      setDrivingVideoPreview(URL.createObjectURL(blob));
+      setRecording(false);
+    };
+    mediaRecorderRef.current = mr;
+    mr.start();
+    setRecording(true);
+
+    setTimeout(() => {
+      if (mr.state === "recording") mr.stop();
+    }, 10000);
+  }, [setDrivingVideoPreview]);
+
+  useEffect(() => {
+    return () => {
+      stopWebcam();
+      if (mediaRecorderRef.current?.state === "recording") {
+        mediaRecorderRef.current.stop();
+      }
+      if (drivingVideoUrlRef.current) {
+        URL.revokeObjectURL(drivingVideoUrlRef.current);
+      }
+    };
+  }, [stopWebcam]);
 
   const toBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -60,6 +160,11 @@ export default function LivePortraitPage() {
     }
   };
 
+  const clearDrivingVideo = () => {
+    setDrivingVideoFile(null);
+    setDrivingVideoPreview(null);
+  };
+
   return (
     <div
       style={{
@@ -69,6 +174,13 @@ export default function LivePortraitPage() {
         fontFamily: "DM Sans, sans-serif",
       }}
     >
+      <style>{`
+        @keyframes live-portrait-rec-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.35; }
+        }
+      `}</style>
+
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
         <div
@@ -205,71 +317,284 @@ export default function LivePortraitPage() {
           >
             SCHRITT 2 · BEWEGUNGS-VIDEO
           </div>
-          <div
-            onClick={() => videoRef.current?.click()}
-            style={{
-              border: drivingVideo
-                ? "1px solid rgba(180,255,0,0.4)"
-                : "1px dashed rgba(255,255,255,0.2)",
-              borderRadius: 8,
-              height: 260,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              overflow: "hidden",
-              background: "rgba(255,255,255,0.02)",
-            }}
-          >
-            {drivingVideo ? (
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setVideoMode("upload");
+                stopWebcam();
+              }}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: videoMode === "upload" ? "#B4FF00" : "transparent",
+                color:
+                  videoMode === "upload" ? "#060608" : "rgba(255,255,255,0.5)",
+                fontSize: 11,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Video hochladen
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setVideoMode("webcam");
+                void startWebcam();
+              }}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: videoMode === "webcam" ? "#B4FF00" : "transparent",
+                color:
+                  videoMode === "webcam" ? "#060608" : "rgba(255,255,255,0.5)",
+                fontSize: 11,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              🎥 Webcam aufnehmen
+            </button>
+          </div>
+
+          {videoMode === "upload" ? (
+            <>
+              <div
+                onClick={() => videoRef.current?.click()}
+                style={{
+                  border: drivingVideo
+                    ? "1px solid rgba(180,255,0,0.4)"
+                    : "1px dashed rgba(255,255,255,0.2)",
+                  borderRadius: 8,
+                  height: 260,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  background: "rgba(255,255,255,0.02)",
+                }}
+              >
+                {drivingVideo ? (
+                  <video
+                    src={drivingVideo}
+                    controls
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🎬</div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "rgba(255,255,255,0.5)",
+                        textAlign: "center",
+                        padding: "0 16px",
+                      }}
+                    >
+                      Video mit deiner Bewegung
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "rgba(255,255,255,0.25)",
+                        marginTop: 6,
+                      }}
+                    >
+                      MP4 · Kurzes Video · Gesicht sichtbar
+                    </div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={videoRef}
+                type="file"
+                accept="video/mp4,video/quicktime"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 50 * 1024 * 1024) {
+                    setError("Video zu groß. Max. 50MB.");
+                    return;
+                  }
+                  setDrivingVideoFile(file);
+                  setDrivingVideoPreview(URL.createObjectURL(file));
+                  setError(null);
+                }}
+              />
+            </>
+          ) : drivingVideo ? (
+            <div
+              style={{
+                border: "1px solid rgba(180,255,0,0.3)",
+                borderRadius: 8,
+                height: 260,
+                overflow: "hidden",
+                position: "relative",
+                background: "#000",
+              }}
+            >
               <video
                 src={drivingVideo}
                 controls
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
               />
-            ) : (
-              <>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🎬</div>
-                <div
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={clearDrivingVideo}
                   style={{
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.5)",
-                    textAlign: "center",
-                    padding: "0 16px",
-                  }}
-                >
-                  Video mit deiner Bewegung
-                </div>
-                <div
-                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 20,
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    background: "rgba(0,0,0,0.7)",
+                    color: "rgba(255,255,255,0.7)",
                     fontSize: 11,
-                    color: "rgba(255,255,255,0.25)",
-                    marginTop: 6,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
                   }}
                 >
-                  MP4 · Kurzes Video · Gesicht sichtbar
+                  ↺ Neu aufnehmen
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                border: "1px solid rgba(180,255,0,0.3)",
+                borderRadius: 8,
+                height: 260,
+                overflow: "hidden",
+                position: "relative",
+                background: "#000",
+              }}
+            >
+              <video
+                ref={webcamRef}
+                muted
+                playsInline
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transform: "scaleX(-1)",
+                }}
+              />
+
+              {countdown !== null && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(0,0,0,0.5)",
+                    fontSize: 72,
+                    fontWeight: 900,
+                    color: "#B4FF00",
+                  }}
+                >
+                  {countdown}
                 </div>
-              </>
-            )}
-          </div>
-          <input
-            ref={videoRef}
-            type="file"
-            accept="video/mp4,video/quicktime"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              if (file.size > 50 * 1024 * 1024) {
-                setError("Video zu groß. Max. 50MB.");
-                return;
-              }
-              setDrivingVideoFile(file);
-              setDrivingVideo(URL.createObjectURL(file));
-              setError(null);
-            }}
-          />
+              )}
+
+              {recording && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 12,
+                    left: 12,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background: "rgba(0,0,0,0.7)",
+                    padding: "4px 10px",
+                    borderRadius: 20,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "#ff4444",
+                      animation: "live-portrait-rec-pulse 1s infinite",
+                    }}
+                  />
+                  <span style={{ fontSize: 11, color: "#fff" }}>REC</span>
+                </div>
+              )}
+
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                {!recording ? (
+                  <button
+                    type="button"
+                    onClick={() => void startRecording()}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: 20,
+                      border: "2px solid #B4FF00",
+                      background: "rgba(180,255,0,0.15)",
+                      color: "#B4FF00",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    ● Aufnahme starten (max. 10 Sek.)
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={stopRecording}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: 20,
+                      border: "2px solid #ff4444",
+                      background: "rgba(255,68,68,0.15)",
+                      color: "#ff4444",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    ■ Aufnahme stoppen
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
