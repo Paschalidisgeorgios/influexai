@@ -8,6 +8,7 @@ import { TenantBrandingStyles } from "@/components/tenant-branding-styles";
 import { TenantProvider } from "@/components/tenant-provider";
 import { ObsidianShell } from "@/components/ui/ObsidianShell";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
+import { CookieBanner } from "@/components/ui/CookieBanner";
 import {
   buildHreflangAlternates,
   getHomeSeo,
@@ -161,6 +162,7 @@ export default async function RootLayout({
             {children}
           </TenantProvider>
         </NextIntlClientProvider>
+        <CookieBanner />
       </body>
     </html>
   );
