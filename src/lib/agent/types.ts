@@ -285,3 +285,64 @@ export type CampaignExecution = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type SubjectGenderPresentation =
+  | "female"
+  | "male"
+  | "neutral"
+  | "unspecified";
+
+export type GenerationHardConstraints = {
+  subjectGenderPresentation?: SubjectGenderPresentation;
+  subjectCount?: number;
+  requiredSubject?: string[];
+  forbiddenSubject?: string[];
+  requiredStyle?: string[];
+  forbiddenStyle?: string[];
+  requiredFormat?: string;
+  forbiddenElements?: string[];
+  mustAvoidTextInImage?: boolean;
+  mustAvoidLogoInGeneratedImage?: boolean;
+  anatomyMustBeValid?: boolean;
+  faceMustBeClean?: boolean;
+  handsMustBeValid?: boolean;
+};
+
+export type GenerationRequirements = {
+  intent: AgentIntent;
+  outputType: "text" | "image" | "video" | "campaign" | "calendar";
+  topic?: string;
+  niche?: string;
+  platform?: string;
+  targetAudience?: string;
+  tone?: string;
+  hardConstraints: GenerationHardConstraints;
+  softPreferences: string[];
+};
+
+export type VisualQAReport = {
+  passed: boolean;
+  genderMatches?: boolean;
+  subjectCountMatches?: boolean;
+  anatomyOk?: boolean;
+  handsOk?: boolean;
+  faceOk?: boolean;
+  textOk?: boolean;
+  logoOk?: boolean;
+  formatOk?: boolean;
+  brandFit?: "low" | "medium" | "high";
+  issues: string[];
+  repairPrompt?: string;
+};
+
+export type OverlayInstructions = {
+  addLogoAsOverlay?: boolean;
+  addTextAsOverlay?: boolean;
+  text?: string;
+  position?:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "center";
+};
