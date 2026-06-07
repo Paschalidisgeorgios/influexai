@@ -21,8 +21,32 @@ import {
   readFileAsDataUrl,
   type FlashheadRealtimeResult,
 } from "@/lib/live-creator-webcam";
+import { createClient } from "@/lib/supabase/client";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+
+async function uploadCustomAvatar(file: File): Promise<string> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Nicht eingeloggt");
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${user.id}/live-creator/${Date.now()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("avatar-assets")
+    .upload(path, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from("avatar-assets").getPublicUrl(path);
+  return data.publicUrl;
+}
 
 type StudioPhase = "setup" | "connecting" | "live" | "ended";
 type StreamMode = "realtime" | "fallback";
@@ -46,6 +70,7 @@ export function LiveCreatorStudioInner() {
   const [streamMode, setStreamMode] = useState<StreamMode>("realtime");
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [customAvatarFile, setCustomAvatarFile] = useState<File | null>(null);
 
   const outputVideoRef = useRef<HTMLVideoElement>(null);
   const outputImageRef = useRef<HTMLImageElement>(null);
@@ -212,6 +237,7 @@ export function LiveCreatorStudioInner() {
     if (!file.type.startsWith("image/")) return;
     const dataUrl = await readFileAsDataUrl(file);
     setUploadPreview(dataUrl);
+    setCustomAvatarFile(file);
     setSelectedCharacterId("upload");
     localStorage.setItem(PREFERRED_LIVE_CHARACTER_KEY, "upload");
   };
@@ -387,7 +413,16 @@ export function LiveCreatorStudioInner() {
         setCredits(startData.credits);
       }
 
-      characterDataUrlRef.current = await loadImageAsDataUrl(character.imageUrl);
+      let sourceImageUrl = character.imageUrl;
+      if (selectedCharacterId === "upload" && customAvatarFile) {
+        try {
+          sourceImageUrl = await uploadCustomAvatar(customAvatarFile);
+        } catch {
+          throw new Error("Bild-Upload fehlgeschlagen. Erneut versuchen.");
+        }
+      }
+
+      characterDataUrlRef.current = await loadImageAsDataUrl(sourceImageUrl);
       await startWebcam();
 
       try {

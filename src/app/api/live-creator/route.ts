@@ -136,6 +136,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
     photoDataUrl,
+    customAvatarUrl,
     audioSource = "own",
     script,
     voiceId,
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
     consentAccepted,
   } = body as {
     photoDataUrl?: string;
+    customAvatarUrl?: string;
     audioSource?: "elevenlabs" | "own";
     script?: string;
     voiceId?: string;
@@ -157,7 +159,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!photoDataUrl) {
+  const trimmedCustomAvatarUrl = customAvatarUrl?.trim() ?? "";
+  const trimmedPhotoDataUrl = photoDataUrl?.trim() ?? "";
+
+  if (!trimmedCustomAvatarUrl && !trimmedPhotoDataUrl) {
     return NextResponse.json({ error: "Foto ist erforderlich" }, { status: 400 });
   }
 
@@ -227,10 +232,10 @@ export async function POST(request: NextRequest) {
 
   try {
     configureFalClient();
-    const [talkingPhotoUrl, akoolAudioUrl] = await Promise.all([
-      uploadDataUrlToFal(photoDataUrl),
-      uploadAudioDataUrlToFal(finalAudioDataUrl),
-    ]);
+    const akoolAudioUrl = await uploadAudioDataUrlToFal(finalAudioDataUrl);
+    const talkingPhotoUrl = trimmedCustomAvatarUrl
+      ? trimmedCustomAvatarUrl
+      : await uploadDataUrlToFal(trimmedPhotoDataUrl);
 
     const job = await createTalkingPhotoVideo({
       talking_photo_url: talkingPhotoUrl,

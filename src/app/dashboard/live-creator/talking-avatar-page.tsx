@@ -8,6 +8,30 @@ import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { useLocale } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
+
+async function uploadCustomAvatar(file: File): Promise<string> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Nicht eingeloggt");
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${user.id}/live-creator/${Date.now()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("avatar-assets")
+    .upload(path, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from("avatar-assets").getPublicUrl(path);
+  return data.publicUrl;
+}
 
 type FlowStep = "input" | "generating" | "result";
 type VideoStatus = "idle" | "processing" | "completed" | "failed";
@@ -109,6 +133,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
   const locale = useLocale();
   const [flowStep, setFlowStep] = useState<FlowStep>("input");
   const [photo, setPhoto] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [script, setScript] = useState("");
   const [audioSource, setAudioSource] = useState<AudioSource>("own");
   const [voiceId, setVoiceId] = useState<string>(() =>
@@ -140,6 +165,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
+    setPhotoFile(file);
     const reader = new FileReader();
     reader.onload = (e) => setPhoto(e.target?.result as string);
     reader.readAsDataURL(file);
@@ -287,11 +313,23 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
         audioDataUrl = await blobToDataUrl(recordedBlob);
       }
 
+      let customAvatarUrl: string | undefined;
+      if (photoFile) {
+        try {
+          customAvatarUrl = await uploadCustomAvatar(photoFile);
+        } catch {
+          setError("Bild-Upload fehlgeschlagen. Erneut versuchen.");
+          setFlowStep("input");
+          return;
+        }
+      }
+
       const res = await fetch("/api/live-creator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          photoDataUrl: photo,
+          photoDataUrl: customAvatarUrl ? undefined : photo,
+          customAvatarUrl,
           audioSource,
           script: script.trim(),
           voiceId: audioSource === "elevenlabs" ? voiceId : undefined,
@@ -321,6 +359,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     stopPolling();
     setFlowStep("input");
     setPhoto(null);
+    setPhotoFile(null);
     setScript("");
     clearRecording();
     setVideoUrl(null);
