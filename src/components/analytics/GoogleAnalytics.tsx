@@ -3,10 +3,9 @@
 import Script from "next/script";
 import { useEffect, useState } from "react";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-
 export function GoogleAnalytics() {
   const [consent, setConsent] = useState(false);
+  const GA_ID = "G-TPNGDKC46Q";
 
   useEffect(() => {
     const check = () => {
@@ -20,7 +19,7 @@ export function GoogleAnalytics() {
     return () => window.removeEventListener("storage", check);
   }, []);
 
-  if (!GA_ID || !consent) return null;
+  if (!consent) return null;
 
   return (
     <>
@@ -33,7 +32,7 @@ export function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${GA_ID}', {
+          gtag('config', 'G-TPNGDKC46Q', {
             page_path: window.location.pathname,
             anonymize_ip: true,
           });
