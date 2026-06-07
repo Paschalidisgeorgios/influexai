@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import {
   buildCampaignResult,
-  buildMockResult,
   createCampaignExecution,
   createExecution,
 } from "@/lib/agent/mockExecutor";
@@ -9,8 +8,10 @@ import {
   saveCampaignResultServer,
   saveExecutionServer,
 } from "@/lib/agent/persistExecution";
+import { orchestrate } from "@/lib/agent/toolOrchestrator";
 import type {
   AgentExecution,
+  AgentResult,
   CampaignExecution,
   CampaignGoal,
   CampaignMode,
@@ -62,22 +63,6 @@ const CAMPAIGN_TONES: CampaignTone[] = [
   "trustworthy",
   "bold",
 ];
-
-function completeAgentExecution(exec: AgentExecution): AgentExecution {
-  const completedSteps = exec.steps.map((step) => ({
-    ...step,
-    status: "completed" as const,
-  }));
-  const completed: AgentExecution = {
-    ...exec,
-    status: "completed",
-    steps: completedSteps,
-    usedCredits: exec.estimatedCredits ?? 0,
-    updatedAt: new Date().toISOString(),
-  };
-  completed.result = buildMockResult(completed);
-  return completed;
-}
 
 function completeCampaignExecution(exec: CampaignExecution): CampaignExecution {
   const completedSteps = exec.steps.map((step) => ({
@@ -218,6 +203,7 @@ export async function POST(request: Request) {
 
   const exec = createExecution(prompt, user.id);
   const estimatedCredits = exec.estimatedCredits ?? 0;
+  const authCookie = request.headers.get("cookie") ?? "";
 
   const creditCheck = await hasEnoughCredits(
     supabase,
@@ -235,6 +221,14 @@ export async function POST(request: Request) {
     );
   }
 
+  let result: AgentResult;
+  try {
+    result = await orchestrate(exec.intent, prompt, authCookie);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Fehler";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+
   const deducted = await deductCredits(supabase, user.id, estimatedCredits, "KI Agent", {
     generationType: "ki-agent",
     prompt: prompt.slice(0, 200),
@@ -246,8 +240,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const completedExec = completeAgentExecution(exec);
-  const result = completedExec.result!;
+  const completedSteps = exec.steps.map((step) => ({
+    ...step,
+    status: "completed" as const,
+  }));
+  const completedExec: AgentExecution = {
+    ...exec,
+    status: "completed",
+    steps: completedSteps,
+    result,
+    usedCredits: estimatedCredits,
+    updatedAt: new Date().toISOString(),
+  };
 
   await saveExecutionServer(supabase, completedExec);
 
