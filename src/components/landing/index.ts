@@ -1,4 +1,3 @@
-export { LogoIntro } from "./LogoIntro";
 export { StackedDemoSection } from "./StackedDemoSection";
 export { LandingToolsGridSection } from "./LandingToolsGridSection";
 export { InteractiveDemo } from "./InteractiveDemo";

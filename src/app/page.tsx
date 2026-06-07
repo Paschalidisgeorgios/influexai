@@ -19,7 +19,6 @@ import {
   LandingNav,
 } from "@/components/landing";
 import { AiContentStream } from "@/components/landing/AiContentStream";
-import { LogoIntro } from "@/components/landing/LogoIntro";
 import { StackedDemoSection } from "@/components/landing/StackedDemoSection";
 import { LandingToolsGridSection } from "@/components/landing/LandingToolsGridSection";
 import { LightSystem } from "@/components/LightSystem";
@@ -77,7 +76,6 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <LogoIntro />
       <LightSystem>
         <LandingNav />
         <main className="landing-root overflow-x-clip max-w-[100vw]">

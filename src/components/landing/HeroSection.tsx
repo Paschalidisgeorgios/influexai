@@ -17,9 +17,6 @@ const GridReveal = dynamic(
 
 type Audience = "creator" | "brand";
 
-const INTRO_DONE_EVENT = "influexai:intro-complete";
-const INTRO_REVEAL_EVENT = "influexai:intro-reveal";
-
 type HeroMediaItem =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster: string };
@@ -262,7 +259,7 @@ export function HeroSection({
   const priceParams = getStarterPriceParams(locale);
   const [audience, setAudience] = useState<Audience>("creator");
   const [parallaxY, setParallaxY] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const [revealed] = useState(true);
   const [mounted, setMounted] = useState(false);
   const rawRotating = t.raw("rotating_titles");
   const rotatingTitles = Array.isArray(rawRotating)
@@ -271,29 +268,6 @@ export function HeroSection({
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem("influexai_intro_seen")) {
-        setRevealed(true);
-        return;
-      }
-    } catch {
-      /* private mode */
-    }
-
-    const show = () => setRevealed(true);
-    window.addEventListener(INTRO_REVEAL_EVENT, show);
-    window.addEventListener(INTRO_DONE_EVENT, show);
-
-    const fallback = window.setTimeout(() => setRevealed(true), 11000);
-
-    return () => {
-      window.removeEventListener(INTRO_REVEAL_EVENT, show);
-      window.removeEventListener(INTRO_DONE_EVENT, show);
-      window.clearTimeout(fallback);
-    };
   }, []);
 
   useEffect(() => {
