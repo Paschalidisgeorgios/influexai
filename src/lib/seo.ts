@@ -119,6 +119,10 @@ export const SEO_STATIC_PATHS = [
   "/beta",
   "/dashboard/white-label",
   "/community",
+  "/impressum",
+  "/datenschutz",
+  "/agb",
+  "/cookies",
 ] as const;
 
 export function localizedUrl(path: string, lang: Locale | string): string {

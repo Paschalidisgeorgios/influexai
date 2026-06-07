@@ -9,6 +9,7 @@ import { ReengagementBanner } from "@/components/reengagement-banner";
 import { PostGenerationUpsell } from "@/components/post-generation-upsell";
 import { PlatformBanners } from "@/components/platform-banners";
 import { PoweredByFooter } from "@/components/tenant-provider";
+import { LegalFooterLinks } from "@/components/legal/LegalPageLayout";
 import { createClient } from "@/lib/supabase/client";
 import { isAdminUser, isCreditExemptEmail } from "@/lib/access";
 import { isClientCreditExempt, syncClientCreditExemptFromEmail } from "@/lib/client-credits-ui";
@@ -87,6 +88,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <PoweredByFooter />
+        <LegalFooterLinks className="hidden md:block border-t border-white/[0.06] bg-[#060608]" />
         <MobileBottomNav />
         <PostGenerationUpsell />
       </div>

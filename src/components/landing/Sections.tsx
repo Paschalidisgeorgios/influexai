@@ -379,6 +379,7 @@ const FOOTER_LINK_HREF: Partial<
   legal_imprint: "/impressum",
   legal_privacy: "/datenschutz",
   legal_terms: "/agb",
+  legal_cookies: "/cookies",
 };
 
 export function LandingFooter() {
@@ -468,6 +469,23 @@ export function LandingFooter() {
           <p className="text-[0.78rem]" style={{ color: "var(--grey)" }}>
             © 2025 InfluexAI
           </p>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {[
+              { href: "/datenschutz", label: "Datenschutz" },
+              { href: "/impressum", label: "Impressum" },
+              { href: "/agb", label: "AGB" },
+              { href: "/cookies", label: "Cookies" },
+            ].map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-[12px] no-underline transition-colors duration-150 hover:text-[#B4FF00] hover:underline"
+                style={{ color: "rgba(255,255,255,0.45)" }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
           <div className="flex gap-2">
             {["𝕏", "in", "▶"].map((icon) => (
               <a
