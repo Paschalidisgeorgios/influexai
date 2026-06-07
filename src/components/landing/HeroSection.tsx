@@ -7,7 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import type { AbVariant } from "@/lib/ab-tracking";
 import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
-import { AgentPreviewDemo } from "@/components/landing/AgentPreviewDemo";
+import { HeroWorkspaceDemo } from "@/components/landing/HeroWorkspaceDemo";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 
@@ -44,7 +44,7 @@ const HERO_VIDEO_1_INDEX = 1;
 const HERO_VIDEO_2_INDEX = 2;
 
 const HERO_MEDIA_MASK_HORIZONTAL =
-  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.8) 20%, black 32%, black 100%)";
+  "linear-gradient(to right, transparent 0%, black 35%, black 100%)";
 const HERO_MEDIA_MASK_VERTICAL =
   "linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)";
 const HERO_MEDIA_MASK_IMAGE = [
@@ -79,13 +79,13 @@ const HERO_MEDIA_CONTAINER_STYLE = {
   ...HERO_MEDIA_FRAME_STYLE,
   position: "absolute" as const,
   top: 0,
-  right: "-6vw",
+  right: "-10vw",
   bottom: 0,
-  width: "clamp(320px, 62vw, 900px)",
+  width: "48vw",
   height: "100%",
   overflow: "hidden" as const,
   pointerEvents: "none" as const,
-  zIndex: 3,
+  zIndex: 0,
 };
 
 const HERO_MEDIA_LAYER_STYLE = {
@@ -99,7 +99,7 @@ const HERO_MEDIA_OBJECT_STYLE = {
   width: "100%",
   height: "100%",
   objectFit: "cover" as const,
-  objectPosition: "center top",
+  objectPosition: "right center",
 };
 
 const HERO_MEDIA_FILTER = "brightness(1.04) saturate(1.08)";
@@ -204,10 +204,10 @@ function HeroBackgroundMedia() {
                       src={item.src}
                       alt=""
                       fill
-                      className="object-cover object-top"
-                      style={{ filter: HERO_MEDIA_FILTER }}
+                      className="object-cover object-right"
+                      style={{ filter: HERO_MEDIA_FILTER, objectPosition: "right center" }}
                       priority={index === 0}
-                      sizes="62vw"
+                      sizes="48vw"
                     />
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export function HeroSection({
   return (
     <section
       id="landing-hero-sentinel"
-      className="relative min-h-[min(100vh,920px)] overflow-x-clip max-w-[100vw]"
+      className="relative isolate min-h-[min(100vh,920px)] max-w-[100vw] overflow-x-clip"
     >
       {/* Mobile: dezentes Hintergrundbild (CSS, kein Video) */}
       <div
@@ -332,10 +332,22 @@ export function HeroSection({
         <GridReveal />
       </div>
 
+      {/* Layer 1: Model / video — decorative background, far right */}
       <HeroBackgroundMedia />
 
+      {/* Layer 2: Readability gradient over model area */}
       <div
-        className={`hero-copy relative z-10 mx-auto w-full max-w-7xl ${
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[55vw] md:block"
+        style={{
+          background:
+            "linear-gradient(to right, transparent 0%, rgba(6,6,8,0.38) 38%, rgba(6,6,8,0.78) 100%)",
+        }}
+        aria-hidden
+      />
+
+      {/* Layer 3: Hero content grid — text | agent preview | model spacer */}
+      <div
+        className={`hero-copy relative z-20 mx-auto w-full max-w-[1440px] ${
           revealed ? "hero-copy-revealed" : "hero-copy-hidden"
         }`}
         style={
@@ -344,9 +356,9 @@ export function HeroSection({
             : undefined
         }
       >
-        <div className="grid min-h-[min(100vh,920px)] w-full grid-cols-1 items-center gap-10 overflow-x-hidden lg:grid-cols-[minmax(0,1fr)_minmax(420px,540px)] lg:gap-14">
-          {/* Left: Badge, Toggle, Headline, Subline, CTAs, Trust */}
-          <div className="flex min-w-0 max-w-[680px] flex-col gap-6 lg:gap-7">
+        <div className="grid min-h-[min(100vh,920px)] w-full grid-cols-1 items-center gap-10 overflow-x-hidden lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
+          {/* Column 1: Badge, Toggle, Headline, Subline, CTAs, Trust */}
+          <div className="flex min-w-0 max-w-[620px] flex-col gap-6 lg:gap-7">
             <SpringReveal>
               <div className="flex items-center gap-2.5">
                 <div
@@ -413,16 +425,19 @@ export function HeroSection({
             </SpringReveal>
 
             <div className="block lg:hidden">
-              <AgentPreviewDemo compact />
+              <HeroWorkspaceDemo compact />
             </div>
           </div>
 
-          {/* Right: Agent Preview (desktop) */}
-          <div className="relative hidden w-full items-center justify-end lg:flex">
-            <SpringReveal delay={0.2} className="w-full max-w-[520px]">
-              <AgentPreviewDemo />
+          {/* Column 2: Cinematic AI Workspace — between copy and model */}
+          <div className="hidden min-w-0 items-start justify-start lg:flex">
+            <SpringReveal delay={0.2}>
+              <HeroWorkspaceDemo />
             </SpringReveal>
           </div>
+
+          {/* Column 3: Reserved for model background — no overlapping content */}
+          <div className="hidden min-w-0 lg:block" aria-hidden />
         </div>
       </div>
     </section>

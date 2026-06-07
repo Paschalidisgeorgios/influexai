@@ -32,6 +32,11 @@ const TICKER_KEYS = [
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
 
 const FAQ_ITEMS = [
+  { q: "q_agent1", a: "a_agent1" },
+  { q: "q_agent2", a: "a_agent2" },
+  { q: "q_agent3", a: "a_agent3" },
+  { q: "q_agent4", a: "a_agent4" },
+  { q: "q_agent5", a: "a_agent5" },
   { q: "q_sub1", a: "a_sub1" },
   { q: "q_sub2", a: "a_sub2" },
   { q: "q_sub3", a: "a_sub3" },
@@ -317,6 +322,42 @@ export function PricingSection() {
           </h2>
         </SpringReveal>
         <PricingPlans className="mx-auto max-w-[1200px]" />
+        <SpringReveal delay={0.08}>
+          <div
+            className="mx-auto mt-8 max-w-[720px] rounded-[12px] border p-5 text-left md:mt-10 md:p-6"
+            style={{
+              borderColor: "rgba(180,255,0,0.18)",
+              background: "rgba(255,255,255,0.02)",
+            }}
+          >
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-[#B4FF00]">
+              {t("credits_usage_kicker")}
+            </p>
+            <p className="mb-4 text-[0.88rem] leading-[1.6] text-white/75">
+              {t("credits_usage_desc")}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {(["credits_ex1", "credits_ex2", "credits_ex3", "credits_ex4", "credits_ex5"] as const).map(
+                (key) => (
+                  <span
+                    key={key}
+                    className="rounded-full px-3 py-1 text-[0.72rem] font-semibold"
+                    style={{
+                      background: "rgba(180,255,0,0.08)",
+                      border: "1px solid rgba(180,255,0,0.22)",
+                      color: "rgba(255,255,255,0.78)",
+                    }}
+                  >
+                    {t(key)}
+                  </span>
+                )
+              )}
+            </div>
+            <p className="mt-4 text-[0.78rem] leading-[1.6] text-white/55">
+              {t("credits_demo_note")}
+            </p>
+          </div>
+        </SpringReveal>
         <SpringReveal delay={0.1}>
           <div
             className="mx-auto mt-10 flex max-w-[960px] flex-col items-center justify-between gap-4 rounded-[14px] border p-5 text-left md:mt-12 md:flex-row md:p-6"

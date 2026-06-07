@@ -681,6 +681,16 @@
       "sub2": "Para marcas que quieren escalar."
     },
     "faq": {
+      "a_agent1": "Yes, in the dashboard. You enter a goal, the agent picks the right tools and creates outputs automatically.",
+      "a_agent2": "No. The landing page shows demos only. Real execution happens in the dashboard.",
+      "a_agent3": "The agent can review outputs, improve them, or create new variants. Critical workflows use quality gates.",
+      "a_agent4": "Credits are used for real generations and exports in the dashboard.",
+      "a_agent5": "Yes. Campaign Autopilot is designed for 2–3 day, 7 day, and 30 day content packages.",
+      "q_agent1": "Does the agent work automatically?",
+      "q_agent2": "Does the landing page run real actions?",
+      "q_agent3": "What if an output doesn't fit?",
+      "q_agent4": "What are credits used for?",
+      "q_agent5": "Can I create 7 or 30 days of content?",
       "a_sub1": "Sí. INFLUEXAI se ofrece como suscripción mensual o anual. Cada plan incluye Credits para nuestras herramientas de IA y módulos creator. Los planes mensuales se pueden cancelar cada mes.",
       "a_sub2": "Sí. Los planes mensuales se pueden cancelar cada mes. Con planes anuales, tu acceso continúa hasta el final del periodo de facturación pagado.",
       "a_sub3": "Los Credits son tu saldo de uso para generaciones de IA — por ejemplo scripts, hooks, videos, avatares, voz o herramientas de imagen. Cada función consume una cantidad diferente de Credits.",
@@ -831,7 +841,15 @@
       "yearly_discount": "−{percent}%",
       "cancel_anytime": "Cancela cuando quieras",
       "billed_yearly": "facturación anual (€{amount}/año)",
-      "credits_included": "Credits incluidos"
+      "credits_included": "Credits incluidos",
+      "credits_usage_kicker": "Credits in the dashboard",
+      "credits_usage_desc": "Credits are used for real agent executions — for example:",
+      "credits_ex1": "Scripts & hooks",
+      "credits_ex2": "Image ideas",
+      "credits_ex3": "Content calendar",
+      "credits_ex4": "Avatar workflows",
+      "credits_ex5": "Campaign packages",
+      "credits_demo_note": "Landing page demos use no credits. Credits are used in the dashboard for real generations and exports."
     },
     "ticker": {
       "i0": "InfluexAI LiveSwap™",

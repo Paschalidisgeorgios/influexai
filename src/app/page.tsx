@@ -21,6 +21,8 @@ import {
 import { AiContentStream } from "@/components/landing/AiContentStream";
 import { StackedDemoSection } from "@/components/landing/StackedDemoSection";
 import { LandingToolsGridSection } from "@/components/landing/LandingToolsGridSection";
+import { CampaignAutopilotSection } from "@/components/landing/CampaignAutopilotSection";
+import { QualityIntelligenceSection } from "@/components/landing/QualityIntelligenceSection";
 import { LightSystem } from "@/components/LightSystem";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
@@ -83,6 +85,8 @@ export default async function HomePage() {
           <AiContentStream />
           <StackedDemoSection />
           <LandingToolsGridSection />
+          <CampaignAutopilotSection />
+          <QualityIntelligenceSection />
           <TrustBarSection />
           <PricingSection />
           <FaqSection />

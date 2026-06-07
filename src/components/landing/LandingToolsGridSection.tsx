@@ -4,20 +4,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
+import { toolIntelligenceData } from "@/data/landingAgentDemos";
 import {
   LANDING_STUDIO_TOOLS,
   resolveLandingToolHref,
 } from "@/lib/landing-studio-tools";
 
+const AGENT_HINTS = Object.fromEntries(
+  toolIntelligenceData.map((entry) => [entry.toolId, entry.agentHint])
+) as Record<string, string>;
+
 function StudioToolCard({
   tool,
   title,
   description,
+  agentHint,
   comingSoonLabel,
 }: {
   tool: (typeof LANDING_STUDIO_TOOLS)[number];
   title: string;
   description: string;
+  agentHint: string;
   comingSoonLabel: string;
 }) {
   const href = resolveLandingToolHref(tool.href);
@@ -48,13 +55,19 @@ function StudioToolCard({
           </span>
         )}
       </div>
-      <div className="flex flex-col gap-1 p-3 md:p-3.5">
+      <div className="flex flex-col gap-1.5 p-3 md:p-3.5">
         <h4
           className={`tool-card-name transition-colors ${disabled ? "" : "group-hover:text-[#caffb0]"}`}
         >
           {title}
         </h4>
         <p className="tool-card-desc">{description}</p>
+        <p
+          className="text-[0.72rem] leading-[1.5]"
+          style={{ color: "rgba(180,255,0,0.55)" }}
+        >
+          {agentHint}
+        </p>
       </div>
     </>
   );
@@ -101,10 +114,11 @@ export function LandingToolsGridSection() {
               </h2>
             </div>
             <p
-              className="hidden max-w-[260px] text-right text-sm leading-[1.6] lg:block"
+              className="hidden max-w-[280px] text-right text-sm leading-[1.6] lg:block"
               style={{ color: "var(--wd)" }}
             >
-              {tTools("sidebar")}
+              Der Agent wählt Tools automatisch — du siehst hier, wofür jedes Modul
+              genutzt wird.
             </p>
           </div>
         </SpringReveal>
@@ -116,6 +130,7 @@ export function LandingToolsGridSection() {
                 tool={tool}
                 title={tTools(`${tool.id}_title`)}
                 description={tTools(`${tool.id}_desc`)}
+                agentHint={AGENT_HINTS[tool.id] ?? "Agent nutzt dieses Modul im Workflow."}
                 comingSoonLabel={tTools("coming_soon")}
               />
             </SpringReveal>

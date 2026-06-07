@@ -228,14 +228,15 @@ const SCENES: Scene[] = [
 ];
 
 const CARD_SHELL: CSSProperties = {
-  background: "rgba(6, 6, 8, 0.72)",
-  backdropFilter: "blur(18px)",
-  WebkitBackdropFilter: "blur(18px)",
-  border: "1px solid rgba(180,255,0,0.24)",
+  background: "rgba(6, 6, 8, 0.88)",
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border: "1px solid rgba(180,255,0,0.22)",
   borderRadius: 22,
   boxShadow:
-    "0 0 0 1px rgba(180,255,0,0.06), 0 24px 80px rgba(0,0,0,0.45), 0 0 48px rgba(180,255,0,0.08)",
+    "0 24px 80px rgba(0,0,0,0.55), 0 0 48px rgba(180,255,0,0.10)",
   padding: "clamp(18px, 3vw, 26px)",
+  overflow: "visible",
 };
 
 function revealStyle(
@@ -765,11 +766,11 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
 
   const shellHeight = compact
     ? "clamp(420px, 52vh, 520px)"
-    : "clamp(500px, 58vh, 640px)";
+    : "clamp(520px, 60vh, 650px)";
 
   return (
     <div
-      className="w-full max-w-[520px]"
+      className={`w-full ${compact ? "max-w-[520px]" : "max-w-[560px]"}`}
       style={{ fontFamily: "var(--font-dm, DM Sans), sans-serif" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -842,10 +843,10 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
         </div>
 
         <div
-          className="mb-4 flex gap-2 overflow-x-auto pb-1"
+          className={`mb-4 flex gap-2 ${compact ? "flex-nowrap overflow-x-auto pb-1" : "flex-wrap"}`}
           role="tablist"
           aria-label="Agent Tool Demos"
-          style={{ scrollbarWidth: "none" }}
+          style={compact ? { scrollbarWidth: "none" } : undefined}
         >
           {SCENES.map((s, index) => {
             const isActive = index === activeScene;
@@ -857,18 +858,19 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
                 aria-selected={isActive}
                 onClick={() => selectScene(index)}
                 style={{
-                  flexShrink: 0,
-                  padding: "6px 12px",
+                  flexShrink: compact ? 0 : undefined,
+                  padding: "5px 10px",
                   borderRadius: 999,
                   border: isActive
                     ? "1px solid #B4FF00"
                     : "1px solid rgba(255,255,255,0.10)",
                   background: isActive ? "#B4FF00" : "rgba(255,255,255,0.04)",
                   color: isActive ? "#060608" : "rgba(255,255,255,0.55)",
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: isActive ? 700 : 500,
                   cursor: "pointer",
                   fontFamily: "inherit",
+                  lineHeight: 1.3,
                   whiteSpace: "nowrap",
                 }}
               >
@@ -882,7 +884,7 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
           className="agent-preview-shell relative w-full overflow-hidden"
           style={{
             height: shellHeight,
-            minHeight: compact ? 420 : 500,
+            minHeight: compact ? 420 : 520,
           }}
         >
           {SCENES.map((s, index) => (
