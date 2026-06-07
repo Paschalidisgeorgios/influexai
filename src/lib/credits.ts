@@ -3,6 +3,7 @@ import { isCreditExemptEmail } from "@/lib/access";
 import { logCreditTransaction, logGeneration } from "@/lib/activity-log";
 import { invalidateUserCredits, invalidateUserGenerations } from "@/lib/cache";
 import { invokePushNotification } from "@/lib/push-notifications";
+import { createServiceSupabaseClient } from "@/lib/supabase/service";
 
 /**
  * Credit bypass for admin emails — verified via Supabase auth session (never trust client input).
@@ -79,9 +80,23 @@ async function invokeLowCreditEmail(
   }
 }
 
+async function readProfileCredits(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<number | null> {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", userId)
+    .single();
+
+  if (error || !profile) return null;
+  return profile.credits ?? 0;
+}
+
 /**
- * Deduct credits after a successful action. Checks balance, updates profile,
- * logs generation + transaction, and triggers low-credit email when a threshold is crossed.
+ * Deduct credits after a successful action. Uses atomic RPC (deduct_credits).
+ * Logs generation + transaction and triggers low-credit email when a threshold is crossed.
  */
 export async function deductCredits(
   supabase: SupabaseClient,
@@ -99,13 +114,7 @@ export async function deductCredits(
   }
 
   if (await isCreditExemptUser(supabase, userId)) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("credits")
-      .eq("id", userId)
-      .single();
-
-    const remainingCredits = profile?.credits ?? 0;
+    const remainingCredits = (await readProfileCredits(supabase, userId)) ?? 0;
     const generationType = meta?.generationType ?? action;
     const prompt = meta?.prompt ?? action;
 
@@ -121,13 +130,8 @@ export async function deductCredits(
     return { success: true, remainingCredits };
   }
 
-  const { data: profile, error: fetchError } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", userId)
-    .single();
-
-  if (fetchError || !profile) {
+  const balanceBefore = await readProfileCredits(supabase, userId);
+  if (balanceBefore === null) {
     return {
       success: false,
       remainingCredits: 0,
@@ -135,31 +139,33 @@ export async function deductCredits(
     };
   }
 
-  const previousCredits = profile.credits ?? 0;
-  if (previousCredits < amount) {
+  const { data: newBalance, error: rpcError } = await supabase.rpc(
+    "deduct_credits",
+    {
+      p_user_id: userId,
+      p_amount: amount,
+    }
+  );
+
+  if (rpcError) {
+    console.error("[deductCredits] RPC error:", rpcError);
     return {
       success: false,
-      remainingCredits: previousCredits,
-      error: "Nicht genug Credits.",
-    };
-  }
-
-  const remainingCredits = previousCredits - amount;
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ credits: remainingCredits })
-    .eq("id", userId);
-
-  if (updateError) {
-    console.error("deductCredits update:", updateError.message);
-    return {
-      success: false,
-      remainingCredits: previousCredits,
+      remainingCredits: balanceBefore,
       error: "Credits konnten nicht abgezogen werden.",
     };
   }
 
+  if (newBalance === null) {
+    return {
+      success: false,
+      remainingCredits: balanceBefore,
+      error: "Nicht genug Credits.",
+    };
+  }
+
+  const remainingCredits = newBalance;
+  const previousCredits = remainingCredits + amount;
   const generationType = meta?.generationType ?? action;
   const prompt = meta?.prompt ?? action;
 
@@ -198,7 +204,7 @@ export type AddCreditsResult = {
   error?: string;
 };
 
-/** Add credits (referrals, purchases, bonuses). Logs to credit_transactions only. */
+/** Add credits (referrals, purchases, bonuses). Uses atomic RPC (add_credits). */
 export async function addCredits(
   supabase: SupabaseClient,
   userId: string,
@@ -213,13 +219,8 @@ export async function addCredits(
     };
   }
 
-  const { data: profile, error: fetchError } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", userId)
-    .single();
-
-  if (fetchError || !profile) {
+  const balanceBefore = await readProfileCredits(supabase, userId);
+  if (balanceBefore === null) {
     return {
       success: false,
       remainingCredits: 0,
@@ -227,20 +228,35 @@ export async function addCredits(
     };
   }
 
-  const previousCredits = profile.credits ?? 0;
-  const remainingCredits = previousCredits + amount;
+  let rpcClient: SupabaseClient;
+  try {
+    rpcClient = createServiceSupabaseClient();
+  } catch {
+    rpcClient = supabase;
+  }
 
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ credits: remainingCredits })
-    .eq("id", userId);
+  const { data: newBalance, error: rpcError } = await rpcClient.rpc(
+    "add_credits",
+    {
+      p_user_id: userId,
+      p_amount: amount,
+    }
+  );
 
-  if (updateError) {
-    console.error("addCredits update:", updateError.message);
+  if (rpcError) {
+    console.error("[addCredits] RPC error:", rpcError);
     return {
       success: false,
-      remainingCredits: previousCredits,
+      remainingCredits: balanceBefore,
       error: "Credits konnten nicht gutgeschrieben werden.",
+    };
+  }
+
+  if (newBalance === null) {
+    return {
+      success: false,
+      remainingCredits: balanceBefore,
+      error: "Profil nicht gefunden.",
     };
   }
 
@@ -251,7 +267,7 @@ export async function addCredits(
 
   invalidateUserCredits(userId);
 
-  return { success: true, remainingCredits };
+  return { success: true, remainingCredits: newBalance };
 }
 
 /** Pre-flight check before expensive API calls. */
@@ -260,13 +276,7 @@ export async function hasEnoughCredits(
   userId: string,
   amount: number
 ): Promise<{ ok: boolean; credits: number }> {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", userId)
-    .single();
-
-  const credits = profile?.credits ?? 0;
+  const credits = (await readProfileCredits(supabase, userId)) ?? 0;
 
   if (await isCreditExemptUser(supabase, userId)) {
     return { ok: true, credits };

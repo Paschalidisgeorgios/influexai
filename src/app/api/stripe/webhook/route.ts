@@ -1,7 +1,6 @@
 import type Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { logCreditTransaction } from "@/lib/activity-log";
 import { addCredits } from "@/lib/credits";
 import { markReferralPurchased } from "@/app/actions/referral";
 import { AGENCY_PLANS, type AgencyPlanId } from "@/lib/agency-plans";
@@ -135,26 +134,37 @@ async function handlePlatformSubscription(
 
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("credits")
+    .select("id")
     .eq("id", userId)
     .single();
 
   if (!profile) return;
 
-  await supabaseAdmin
+  const { error: planError } = await supabaseAdmin
     .from("profiles")
     .update({
       plan,
-      credits: profile.credits + monthlyCredits,
       stripe_subscription_id: subscriptionId,
       stripe_customer_id: customerId,
     })
     .eq("id", userId);
 
-  await logCreditTransaction(supabaseAdmin, userId, {
-    amount: monthlyCredits,
-    description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan — +${monthlyCredits} Credits`,
-  });
+  if (planError) {
+    throw new Error(
+      `Platform subscription plan update failed: ${planError.message}`
+    );
+  }
+
+  const result = await addCredits(
+    supabaseAdmin,
+    userId,
+    monthlyCredits,
+    `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan — +${monthlyCredits} Credits`
+  );
+
+  if (!result.success) {
+    throw new Error(result.error ?? "Platform subscription addCredits failed");
+  }
 
   await markReferralPurchased(userId);
 }
@@ -175,7 +185,7 @@ async function handleSubscriptionRenewal(
 
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("id, plan, credits")
+    .select("id, plan")
     .eq("stripe_subscription_id", subscriptionId)
     .maybeSingle();
 
@@ -186,15 +196,16 @@ async function handleSubscriptionRenewal(
 
   const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits;
 
-  await supabaseAdmin
-    .from("profiles")
-    .update({ credits: profile.credits + monthlyCredits })
-    .eq("id", profile.id);
+  const result = await addCredits(
+    supabaseAdmin,
+    profile.id,
+    monthlyCredits,
+    `Plan-Verlängerung — +${monthlyCredits} Credits`
+  );
 
-  await logCreditTransaction(supabaseAdmin, profile.id, {
-    amount: monthlyCredits,
-    description: `Plan-Verlängerung — +${monthlyCredits} Credits`,
-  });
+  if (!result.success) {
+    throw new Error(result.error ?? "Subscription renewal addCredits failed");
+  }
 }
 
 async function handlePlatformSubscriptionChange(
@@ -312,22 +323,24 @@ async function handleCreditPackPurchase(
     `${credits} Credits gekauft`
   );
 
-  if (result.success) {
-    await markReferralPurchased(userId);
-
-    const amountCents = session.amount_total ?? 0;
-    await supabaseAdmin.from("stripe_payments").upsert(
-      {
-        user_id: userId,
-        amount_cents: amountCents,
-        currency: session.currency ?? "eur",
-        plan: session.metadata?.plan ?? "credits",
-        credits_amount: credits,
-        stripe_session_id: session.id,
-      },
-      { onConflict: "stripe_session_id" }
-    );
+  if (!result.success) {
+    throw new Error(result.error ?? "Credit pack purchase addCredits failed");
   }
+
+  await markReferralPurchased(userId);
+
+  const amountCents = session.amount_total ?? 0;
+  await supabaseAdmin.from("stripe_payments").upsert(
+    {
+      user_id: userId,
+      amount_cents: amountCents,
+      currency: session.currency ?? "eur",
+      plan: session.metadata?.plan ?? "credits",
+      credits_amount: credits,
+      stripe_session_id: session.id,
+    },
+    { onConflict: "stripe_session_id" }
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -355,57 +368,85 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    console.log("[stripe webhook]", {
-      eventType: event.type,
-      customerId:
-        typeof session.customer === "string"
-          ? session.customer
-          : session.customer?.id,
-      subscriptionId:
-        typeof session.subscription === "string"
-          ? session.subscription
-          : session.subscription?.id,
-      plan: session.metadata?.plan ?? session.metadata?.checkout_type,
-    });
+  const { data: existing } = await supabaseAdmin
+    .from("stripe_events")
+    .select("id")
+    .eq("id", event.id)
+    .maybeSingle();
 
-    await handleAgencySubscription(supabaseAdmin, session);
-    await handleAgencyCredits(supabaseAdmin, session);
-    await handlePlatformSubscription(supabaseAdmin, session);
-    await handleCreditPackPurchase(supabaseAdmin, session);
+  if (existing) {
+    console.log("[webhook] Event bereits verarbeitet:", event.id);
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
-  if (event.type === "invoice.paid") {
-    const invoice = event.data.object as Stripe.Invoice;
-    await handleSubscriptionRenewal(supabaseAdmin, invoice);
-  }
+  try {
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      console.log("[stripe webhook]", {
+        eventType: event.type,
+        customerId:
+          typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id,
+        subscriptionId:
+          typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription?.id,
+        plan: session.metadata?.plan ?? session.metadata?.checkout_type,
+      });
 
-  if (
-    event.type === "customer.subscription.deleted" ||
-    event.type === "customer.subscription.updated"
-  ) {
-    const sub = event.data.object as Stripe.Subscription;
-    const active = sub.status === "active" || sub.status === "trialing";
-
-    await handlePlatformSubscriptionChange(supabaseAdmin, sub);
-
-    const { data: tenant } = await supabaseAdmin
-      .from("tenants")
-      .select("id, owner_id")
-      .eq("stripe_subscription_id", sub.id)
-      .maybeSingle();
-
-    if (tenant) {
-      await supabaseAdmin
-        .from("tenants")
-        .update({
-          is_active: active,
-          deactivated_at: active ? null : new Date().toISOString(),
-        })
-        .eq("id", tenant.id);
+      await handleAgencySubscription(supabaseAdmin, session);
+      await handleAgencyCredits(supabaseAdmin, session);
+      await handlePlatformSubscription(supabaseAdmin, session);
+      await handleCreditPackPurchase(supabaseAdmin, session);
     }
-  }
 
-  return NextResponse.json({ received: true });
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handleSubscriptionRenewal(supabaseAdmin, invoice);
+    }
+
+    if (
+      event.type === "customer.subscription.deleted" ||
+      event.type === "customer.subscription.updated"
+    ) {
+      const sub = event.data.object as Stripe.Subscription;
+      const active = sub.status === "active" || sub.status === "trialing";
+
+      await handlePlatformSubscriptionChange(supabaseAdmin, sub);
+
+      const { data: tenant } = await supabaseAdmin
+        .from("tenants")
+        .select("id, owner_id")
+        .eq("stripe_subscription_id", sub.id)
+        .maybeSingle();
+
+      if (tenant) {
+        await supabaseAdmin
+          .from("tenants")
+          .update({
+            is_active: active,
+            deactivated_at: active ? null : new Date().toISOString(),
+          })
+          .eq("id", tenant.id);
+      }
+    }
+
+    const { error: markError } = await supabaseAdmin
+      .from("stripe_events")
+      .insert({ id: event.id, type: event.type });
+
+    if (markError) {
+      if (markError.code === "23505") {
+        console.log("[webhook] Event race duplicate:", event.id);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+      throw new Error(`stripe_events insert failed: ${markError.message}`);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error("[webhook] processing failed:", error);
+    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+  }
 }
