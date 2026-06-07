@@ -26,9 +26,22 @@ import {
   createCampaignExecution,
 } from "@/lib/agent/mockExecutor";
 import { qualityDecision } from "@/lib/agent/qualityScoring";
+import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { GuardModal } from "@/components/dashboard/GuardModal";
 
 type Phase = "idle" | "running" | "done";
+
+type GuardState = {
+  open: boolean;
+  action: () => void;
+  config: GuardConfig;
+} | null;
+
+type GuardCheck = {
+  action: string;
+  credits?: number;
+};
 
 const TOTAL_STEPS = 12;
 const STEP_INTERVAL_MS = 400;
@@ -172,6 +185,7 @@ export default function CampaignAutopilot() {
   const [execution, setExecution] = useState<CampaignExecution | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [stepIdx, setStepIdx] = useState(0);
+  const [guard, setGuard] = useState<GuardState>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -271,6 +285,53 @@ export default function CampaignAutopilot() {
     }, STEP_INTERVAL_MS);
   };
 
+  const runWithGuards = useCallback(
+    (checks: GuardCheck[], finalAction: () => void) => {
+      const runCheck = (index: number) => {
+        if (index >= checks.length) {
+          finalAction();
+          return;
+        }
+        const { action, credits } = checks[index];
+        const config = needsGuard(action, credits);
+        if (!config.required) {
+          runCheck(index + 1);
+          return;
+        }
+        setGuard({
+          open: true,
+          action: () => {
+            setGuard(null);
+            runCheck(index + 1);
+          },
+          config,
+        });
+      };
+      runCheck(0);
+    },
+    []
+  );
+
+  const handleStartRequest = () => {
+    runWithGuards(
+      [{ action: "campaign_start", credits: estimatedCredits }],
+      handleStart
+    );
+  };
+
+  const handlePublishRequest = (result: CampaignResult) => {
+    const checks: GuardCheck[] = [{ action: "publish_public" }];
+    if (
+      result.overallScores.legalRisk === "high" ||
+      result.overallScores.claimRisk === "high"
+    ) {
+      checks.push({ action: "legal_high" });
+    }
+    runWithGuards(checks, () => {
+      // TODO: GUARD publishing — API-Anbindung folgt
+    });
+  };
+
   const handleNewCampaign = () => {
     clearRunner();
     setPhase("idle");
@@ -281,7 +342,7 @@ export default function CampaignAutopilot() {
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      if (canStart) handleStart();
+      if (canStart) handleStartRequest();
     }
   };
 
@@ -374,7 +435,7 @@ export default function CampaignAutopilot() {
           <button
             type="button"
             disabled={phase === "running" || !canStart}
-            onClick={handleStart}
+            onClick={handleStartRequest}
             aria-label="Kampagne starten"
             className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed"
             style={{
@@ -464,7 +525,7 @@ export default function CampaignAutopilot() {
       <button
         type="button"
         disabled={!canStart}
-        onClick={handleStart}
+        onClick={handleStartRequest}
         className="mb-6 w-full py-2.5 transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
         style={{
           background: "#B4FF00",
@@ -578,7 +639,25 @@ export default function CampaignAutopilot() {
 
       {/* Abschnitt 3 — Result */}
       {phase === "done" && result && (
-        <CampaignResultCard result={result} onNewCampaign={handleNewCampaign} />
+        <CampaignResultCard
+          result={result}
+          onNewCampaign={handleNewCampaign}
+          onPublish={() => handlePublishRequest(result)}
+        />
+      )}
+
+      {guard?.open && (
+        <GuardModal
+          isOpen={guard.open}
+          title={guard.config.title}
+          description={guard.config.description}
+          confirmLabel={
+            guard.config.type === "consent" ? "Einwilligung bestätigen" : "Fortfahren"
+          }
+          variant={guard.config.type}
+          onConfirm={guard.action}
+          onCancel={() => setGuard(null)}
+        />
       )}
 
       <AiOutputDisclaimer className="mt-8" />
@@ -609,9 +688,11 @@ function ChipRow({
 function CampaignResultCard({
   result,
   onNewCampaign,
+  onPublish,
 }: {
   result: CampaignResult;
   onNewCampaign: () => void;
+  onPublish: () => void;
 }) {
   const scores: ContentScores = result.overallScores;
   const items = result.items;
@@ -842,19 +923,17 @@ function CampaignResultCard({
 
           <button
             type="button"
-            disabled
-            title="Erfordert separate Bestätigung"
-            className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold"
+            onClick={onPublish}
+            className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(180,255,0,0.45)] hover:text-[#B4FF00]"
             style={{
               borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.25)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.55)",
               background: "transparent",
             }}
           >
             Veröffentlichen — Bestätigung erforderlich
           </button>
-          {/* TODO: GUARD publishing */}
         </div>
       </div>
     </section>

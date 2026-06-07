@@ -281,10 +281,14 @@ export function HeroSection({
 
   useEffect(() => {
     if (heroRevealed) return;
+    const onReveal = () => setHeroRevealed(true);
     const onIntroDone = () => setHeroRevealed(true);
+    window.addEventListener("influexai-intro-reveal", onReveal);
     window.addEventListener("influexai-intro-complete", onIntroDone);
-    return () =>
+    return () => {
+      window.removeEventListener("influexai-intro-reveal", onReveal);
       window.removeEventListener("influexai-intro-complete", onIntroDone);
+    };
   }, [heroRevealed]);
 
   return (

@@ -1949,99 +1949,355 @@ header.site-header.site-header--scrolled {
   animation: interactiveDemoIn 200ms ease forwards;
 }
 
-.logo-intro-overlay {
+/* ── Cinematic Logo Intro (15s brand trailer) ── */
+
+.logo-intro-root {
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 10000;
+  pointer-events: auto;
+  animation: logoIntroRootFade 15s ease forwards;
+}
+
+.logo-intro-root--skip {
+  animation: logoIntroSkipFade 0.28s ease forwards;
+}
+
+.logo-intro-root--reduced {
+  animation: logoIntroReducedRoot 0.6s ease forwards;
+}
+
+.logo-intro-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   background: #060608;
-  animation: logoIntroOverlayOut 0.3s ease 1.5s forwards;
+  overflow: hidden;
 }
 
-.logo-intro-overlay--reduced {
-  animation: logoIntroOverlayOut 0.3s ease 0s forwards;
-}
-
-.logo-intro-inner {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.logo-intro-orbit-wrap {
-  position: relative;
-  width: 88px;
-  height: 88px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-intro-mark {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #b4ff00;
-  color: #060608;
-  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
-  font-size: 48px;
-  line-height: 1;
-  animation: logoIntroMarkIn 0.4s ease forwards;
-  opacity: 0;
-  transform: scale(0.85);
-}
-
-.logo-intro-orbit {
+.logo-intro-bg-grid {
   position: absolute;
   inset: 0;
-  border: 1.5px solid #b4ff00;
-  border-radius: 50%;
-  animation: logoIntroOrbitSpin 0.8s linear 0.3s forwards;
-  opacity: 0;
+  opacity: 0.045;
+  background-image:
+    linear-gradient(rgba(180, 255, 0, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 255, 0, 0.5) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 50%, #000 20%, transparent 100%);
 }
 
-.logo-intro-wordmark {
-  margin: 0;
-  color: #fff;
-  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
-  font-size: 32px;
-  letter-spacing: 0.15em;
-  animation: logoIntroWordmarkIn 0.5s ease 0.6s forwards;
-  opacity: 0;
-}
-
-.logo-intro-wipe {
+.logo-intro-glow {
   position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 120px;
-  height: 80px;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 640px);
+  height: min(48vw, 420px);
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
-    rgba(180, 255, 0, 0.08) 0%,
-    rgba(180, 255, 0, 0) 70%
+    rgba(180, 255, 0, 0.14) 0%,
+    rgba(180, 255, 0, 0.04) 42%,
+    transparent 72%
   );
-  animation: logoIntroWipe 0.6s ease 1s forwards;
-  transform: scale(0);
+  animation: logoIntroGlowPulse 15s ease forwards;
   pointer-events: none;
 }
 
-.logo-intro-overlay--reduced .logo-intro-mark,
-.logo-intro-overlay--reduced .logo-intro-orbit,
-.logo-intro-overlay--reduced .logo-intro-wordmark,
-.logo-intro-overlay--reduced .logo-intro-wipe {
+.logo-intro-split {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background: #060608;
+  animation-fill-mode: forwards;
+}
+
+.logo-intro-split--top {
+  top: 0;
+  height: 50%;
+  animation: logoIntroSplitTop 15s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+.logo-intro-split--bottom {
+  bottom: 0;
+  height: 50%;
+  animation: logoIntroSplitBottom 15s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+.logo-intro-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 3.5vh, 32px);
+  pointer-events: none;
+}
+
+.logo-intro-logo-layer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: logoIntroLogo 15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  filter: drop-shadow(0 0 42px rgba(180, 255, 0, 0.12));
+}
+
+.logo-intro-logo {
+  display: block;
+  width: clamp(240px, 38vw, 560px);
+  max-width: min(92vw, 560px);
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+}
+
+.logo-intro-line {
+  width: min(78vw, 920px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(180, 255, 0, 0.25) 8%,
+    #b4ff00 50%,
+    rgba(180, 255, 0, 0.25) 92%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 12px rgba(180, 255, 0, 0.35),
+    0 0 28px rgba(180, 255, 0, 0.12);
+  transform-origin: center;
+  animation: logoIntroLine 15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.logo-intro-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #060608;
+  opacity: 0;
+  pointer-events: none;
+  animation: logoIntroFadeLayer 15s ease forwards;
+}
+
+.logo-intro-skip {
+  position: fixed;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 10001;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(6, 6, 8, 0.55);
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-dm), sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.logo-intro-skip:hover {
+  color: rgba(180, 255, 0, 0.85);
+  border-color: rgba(180, 255, 0, 0.28);
+  background: rgba(6, 6, 8, 0.72);
+}
+
+.logo-intro-root--reduced .logo-intro-split,
+.logo-intro-root--reduced .logo-intro-line,
+.logo-intro-root--reduced .logo-intro-glow {
   animation: none;
-  opacity: 1;
-  transform: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.logo-intro-root--reduced .logo-intro-logo-layer {
+  animation: logoIntroReducedLogo 0.6s ease forwards;
+}
+
+.logo-intro-root--reduced .logo-intro-fade {
+  animation: logoIntroReducedFade 0.6s ease forwards;
+}
+
+.logo-intro-root--skip .logo-intro-split,
+.logo-intro-root--skip .logo-intro-line,
+.logo-intro-root--skip .logo-intro-logo-layer,
+.logo-intro-root--skip .logo-intro-glow {
+  animation: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+@keyframes logoIntroGlowPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+  10% {
+    opacity: 0.38;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  65% {
+    opacity: 0.28;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes logoIntroLogo {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(8px) drop-shadow(0 0 42px rgba(180, 255, 0, 0.12));
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) drop-shadow(0 0 48px rgba(180, 255, 0, 0.18));
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.012);
+    filter: blur(0) drop-shadow(0 0 52px rgba(180, 255, 0, 0.16));
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) drop-shadow(0 0 44px rgba(180, 255, 0, 0.14));
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(0) drop-shadow(0 0 24px rgba(180, 255, 0, 0.06));
+  }
+}
+
+@keyframes logoIntroLine {
+  0%,
+  43% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  44% {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+  77% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes logoIntroSplitTop {
+  0%,
+  76% {
+    transform: translateY(0);
+  }
+  90%,
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes logoIntroSplitBottom {
+  0%,
+  76% {
+    transform: translateY(0);
+  }
+  90%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes logoIntroRootFade {
+  0%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes logoIntroFadeLayer {
+  0%,
+  85% {
+    opacity: 0;
+  }
+  92% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes logoIntroSkipFade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes logoIntroReducedRoot {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes logoIntroReducedLogo {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+@keyframes logoIntroReducedFade {
+  0%,
+  70% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-intro-root:not(.logo-intro-root--skip) {
+    animation-duration: 0.6s;
+  }
+
+  .logo-intro-root:not(.logo-intro-root--skip) .logo-intro-logo-layer {
+    animation-duration: 0.6s;
+  }
 }
 
 @keyframes stackedStepCopyIn {
@@ -2060,46 +2316,5 @@ header.site-header.site-header--scrolled {
 @media (prefers-reduced-motion: reduce) {
   .stacked-step-copy-in {
     animation: none;
-  }
-}
-
-@keyframes logoIntroMarkIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes logoIntroOrbitSpin {
-  0% {
-    opacity: 0;
-    transform: rotate(0deg);
-  }
-  15% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes logoIntroWordmarkIn {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes logoIntroWipe {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-@keyframes logoIntroOverlayOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
   }
 }

@@ -19,11 +19,24 @@ import {
   buildMockResult,
   createExecution,
 } from "@/lib/agent/mockExecutor";
+import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
 
 type Phase = "idle" | "running" | "done";
+
+type GuardState = {
+  open: boolean;
+  action: () => void;
+  config: GuardConfig;
+} | null;
+
+type GuardCheck = {
+  action: string;
+  credits?: number;
+};
 
 type ToolOption = {
   id: AgentTool | "auto";
@@ -125,6 +138,7 @@ export default function KiAgentPage() {
   const [userId, setUserId] = useState<string | undefined>();
   const [userCredits, setUserCredits] = useState<number | null>(null);
   const [creditError, setCreditError] = useState<string | null>(null);
+  const [guard, setGuard] = useState<GuardState>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -192,11 +206,6 @@ export default function KiAgentPage() {
 
   const runExecution = useCallback(
     (trimmed: string) => {
-      // TODO: GUARD - Veröffentlichung erfordert separate Bestätigung
-      // TODO: GUARD - Face Swap, Voice Cloning erfordert Consent-Flow
-      // TODO: GUARD - Avatar aus echtem Gesicht erfordert Consent
-      // TODO: GUARD - Credits >20 erfordert Bestätigung
-
       clearRunner();
       setCreditError(null);
 
@@ -274,6 +283,67 @@ export default function KiAgentPage() {
     [userCredits, userId]
   );
 
+  const runWithGuards = useCallback(
+    (checks: GuardCheck[], finalAction: () => void) => {
+      const runCheck = (index: number) => {
+        if (index >= checks.length) {
+          finalAction();
+          return;
+        }
+        const { action, credits } = checks[index];
+        const config = needsGuard(action, credits);
+        if (!config.required) {
+          runCheck(index + 1);
+          return;
+        }
+        setGuard({
+          open: true,
+          action: () => {
+            setGuard(null);
+            runCheck(index + 1);
+          },
+          config,
+        });
+      };
+      runCheck(0);
+    },
+    []
+  );
+
+  const estimatedCredits =
+    execution?.estimatedCredits ?? (selectedTool === "auto" ? 2 : 2);
+
+  const buildStartGuardChecks = useCallback((): GuardCheck[] => {
+    const checks: GuardCheck[] = [];
+    if (selectedTool === "ki_ich") {
+      checks.push({ action: "avatar_from_face" });
+    }
+    if (selectedTool === "stimme_musik") {
+      checks.push({ action: "voice_cloning" });
+    }
+    if (selectedTool === "live_creator") {
+      checks.push({ action: "face_swap" });
+    }
+    checks.push({
+      action: "agent_run",
+      credits: estimatedCredits,
+    });
+    return checks;
+  }, [estimatedCredits, selectedTool]);
+
+  const handlePublishRequest = useCallback(
+    (result: AgentResult) => {
+      const checks: GuardCheck[] = [{ action: "publish_public" }];
+      if (result.scores?.riskLevel === "high") {
+        checks.push({ action: "legal_high" });
+      }
+      runWithGuards(checks, () => {
+        // TODO: GUARD publishing — API-Anbindung folgt
+      });
+    },
+    [runWithGuards]
+  );
+
   const handleAbort = () => {
     clearRunner();
     setExecution((prev) => {
@@ -295,10 +365,19 @@ export default function KiAgentPage() {
   const handleSubmit = useCallback(() => {
     const trimmed = prompt.trim();
     if (!trimmed || phase === "running") return;
-    setPrompt("");
-    requestAnimationFrame(() => adjustTextareaHeight(textareaRef.current));
-    runExecution(trimmed);
-  }, [adjustTextareaHeight, phase, prompt, runExecution]);
+    runWithGuards(buildStartGuardChecks(), () => {
+      setPrompt("");
+      requestAnimationFrame(() => adjustTextareaHeight(textareaRef.current));
+      runExecution(trimmed);
+    });
+  }, [
+    adjustTextareaHeight,
+    buildStartGuardChecks,
+    phase,
+    prompt,
+    runExecution,
+    runWithGuards,
+  ]);
 
   const handleRetry = () => {
     if (!lastPromptRef.current || phase === "running") return;
@@ -319,9 +398,6 @@ export default function KiAgentPage() {
   const activeStep = execution ? getActiveStep(execution.steps) : null;
   const showExecution = execution !== null;
   const executionVisible = phase === "running" || phase === "done" || execution?.status === "cancelled";
-  const estimatedCredits =
-    execution?.estimatedCredits ??
-    (selectedTool === "auto" ? 2 : 2);
 
   return (
     <div
@@ -632,7 +708,25 @@ export default function KiAgentPage() {
 
       {/* Result Card */}
       {phase === "done" && execution?.result && (
-        <ResultCard result={execution.result} usedCredits={execution.usedCredits} />
+        <ResultCard
+          result={execution.result}
+          usedCredits={execution.usedCredits}
+          onPublish={() => handlePublishRequest(execution.result!)}
+        />
+      )}
+
+      {guard?.open && (
+        <GuardModal
+          isOpen={guard.open}
+          title={guard.config.title}
+          description={guard.config.description}
+          confirmLabel={
+            guard.config.type === "consent" ? "Einwilligung bestätigen" : "Fortfahren"
+          }
+          variant={guard.config.type}
+          onConfirm={guard.action}
+          onCancel={() => setGuard(null)}
+        />
       )}
 
       <AiOutputDisclaimer className="mt-8" />
@@ -643,9 +737,11 @@ export default function KiAgentPage() {
 function ResultCard({
   result,
   usedCredits,
+  onPublish,
 }: {
   result: AgentResult;
   usedCredits?: number;
+  onPublish: () => void;
 }) {
   const scores: AgentScores = result.scores ?? {};
   const nextActions = result.nextActions ?? [];
@@ -744,6 +840,20 @@ function ResultCard({
               </button>
             ))}
           </div>
+
+          <button
+            type="button"
+            onClick={onPublish}
+            className="mt-3 px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(180,255,0,0.45)] hover:text-[#B4FF00]"
+            style={{
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.55)",
+              background: "transparent",
+            }}
+          >
+            Veröffentlichen — Bestätigung erforderlich
+          </button>
         </div>
       </div>
     </div>
