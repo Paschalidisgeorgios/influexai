@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, Home, Images, Star } from "lucide-react";
+import { BarChart2, Home, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isAdminUser } from "@/lib/access";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
-import { NAV_GROUPS } from "@/lib/dashboard-flows";
+import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
 import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
 import { SidebarCreditsPanel } from "@/components/layout/SidebarCreditsPanel";
@@ -18,7 +18,7 @@ type ExtraNavItem = {
   id: string;
   href: string;
   icon: typeof BarChart2;
-  labelKey: "analytics" | "gallery";
+  labelKey: "analytics";
 };
 
 const EXTRA_NAV: ExtraNavItem[] = [
@@ -27,12 +27,6 @@ const EXTRA_NAV: ExtraNavItem[] = [
     href: "/dashboard/analytics",
     labelKey: "analytics",
     icon: BarChart2,
-  },
-  {
-    id: "gallery",
-    href: "/dashboard/gallery",
-    labelKey: "gallery",
-    icon: Images,
   },
 ];
 
@@ -66,7 +60,7 @@ const AGENCY_NAV = [
 ];
 
 function navItemLabel(
-  item: (typeof NAV_GROUPS)[0]["items"][0],
+  item: NavItem,
   tNav: ReturnType<typeof useTranslations<"nav">>,
   tFlows: ReturnType<typeof useTranslations<"flows">>
 ): string {
@@ -75,18 +69,28 @@ function navItemLabel(
   if (item.labelKey === "script") return tFlows("script.title");
   if (item.labelKey === "thumbnail") return tFlows("thumbnail.title");
   if (item.labelKey === "image_generator") return tFlows("image_generator.title");
+  if (item.labelKey === "ugc_video") return tFlows("ugcVideo.title");
+  if (item.labelKey === "gallery") return tNav("gallery");
   if (item.labelKey === "remix") return tFlows("remix.title");
   if (item.labelKey === "viral_score") return tNav("viral_score");
   if (item.labelKey === "competitor") return tNav("competitor");
-  if (item.labelKey === "image_generator") return tNav("image_generator");
   return item.labelKey ?? item.id;
 }
 
+const DEFAULT_OPEN: Record<string, boolean> = {
+  agent: true,
+  text: false,
+  video: false,
+  bild: false,
+  analyze: false,
+  live: false,
+};
+
 export function DashboardSidebar() {
-  const tDash = useTranslations("dashboard");
   const tNav = useTranslations("nav");
   const tFlows = useTranslations("flows");
   const [collapsed, setCollapsed] = useState(false);
+  const [open, setOpen] = useState<Record<string, boolean>>(DEFAULT_OPEN);
   const [credits, setCredits] = useState<number | null>(null);
   const [maxCredits, setMaxCredits] = useState(500);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -138,6 +142,18 @@ export function DashboardSidebar() {
     };
   }, [supabase]);
 
+  useEffect(() => {
+    const keys = sidebarCategoryKeysForPath(pathname);
+    if (keys.length === 0) return;
+    setOpen((prev) => {
+      const next = { ...prev };
+      for (const key of keys) {
+        next[key] = true;
+      }
+      return next;
+    });
+  }, [pathname]);
+
   const linkClass = (active: boolean, disabled?: boolean) =>
     [
       "flex items-center gap-2.5 rounded-lg text-[0.875rem] font-medium transition-all min-h-[44px]",
@@ -148,6 +164,133 @@ export function DashboardSidebar() {
           ? "text-[#B4FF00] font-bold bg-[#B4FF00]/8 border-b-2 border-[#B4FF00]"
           : "text-white/75 hover:text-white/70 border-b-2 border-transparent",
     ].join(" ");
+
+  const renderNavItem = (item: NavItem) => {
+    const isActive = pathname === item.href;
+    const isComingSoon =
+      item.id === "live-creator" && LIVE_CREATOR_COMING_SOON;
+    const label = navItemLabel(item, tNav, tFlows);
+    const Icon = item.icon;
+    const inner = (
+      <>
+        <Icon
+          size={18}
+          strokeWidth={isActive ? 2.5 : 2}
+          className="shrink-0"
+          color={
+            isComingSoon
+              ? "rgba(240,239,232,0.25)"
+              : isActive
+                ? "#B4FF00"
+                : "rgba(255,255,255,0.75)"
+          }
+        />
+        {!collapsed && (
+          <>
+            <span className="truncate">{label}</span>
+            {item.badge && !isComingSoon && (
+              <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
+                {item.badge}
+              </span>
+            )}
+            {isComingSoon && (
+              <span className="ml-auto text-[0.58rem] text-white/65">Bald</span>
+            )}
+          </>
+        )}
+      </>
+    );
+
+    if (isComingSoon) {
+      return (
+        <span
+          key={item.id}
+          title={collapsed ? `${label} (bald)` : "Kommt bald"}
+          className={linkClass(false, true)}
+        >
+          {inner}
+        </span>
+      );
+    }
+
+    return (
+      <SidebarNavLink
+        key={item.id}
+        href={item.href}
+        active={isActive}
+        collapsed={collapsed}
+        title={collapsed ? label : undefined}
+        className={linkClass(isActive)}
+      >
+        {inner}
+      </SidebarNavLink>
+    );
+  };
+
+  const renderCollapseCategory = (
+    key: string,
+    label: string,
+    items: NavItem[],
+    showDivider: boolean
+  ) => {
+    if (collapsed) {
+      return items.map((item) => renderNavItem(item));
+    }
+
+    return (
+      <div
+        key={key}
+        style={{
+          borderTop: showDivider ? "1px solid rgba(255,255,255,0.06)" : undefined,
+          margin: showDivider ? "4px 0" : undefined,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen((p) => ({ ...p, [key]: !p[key] }))}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px 12px",
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            color: "rgba(255,255,255,0.4)",
+            fontSize: 10,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            fontFamily: "inherit",
+          }}
+        >
+          <span>{label}</span>
+          <span
+            style={{
+              fontSize: 10,
+              color: "rgba(180,255,0,0.5)",
+              transition: "transform 0.2s",
+              transform: open[key] ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          >
+            ▼
+          </span>
+        </button>
+        {open[key] && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              paddingBottom: 8,
+            }}
+          >
+            {items.map((item) => renderNavItem(item))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <aside
@@ -211,78 +354,18 @@ export function DashboardSidebar() {
 
         <div className="h-px bg-white/5 my-2 mx-1" />
 
-        {NAV_GROUPS.map((group) => (
-          <div key={group.labelKey} className="mb-2">
-            {!collapsed && (
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
-                {tDash(group.labelKey)}
-              </p>
-            )}
-            {group.items.map((item) => {
-              const isActive = pathname === item.href;
-              const isComingSoon =
-                item.id === "live-creator" && LIVE_CREATOR_COMING_SOON;
-              const label = navItemLabel(item, tNav, tFlows);
-              const Icon = item.icon;
-              const inner = (
-                <>
-                  <Icon
-                    size={18}
-                    strokeWidth={isActive ? 2.5 : 2}
-                    className="shrink-0"
-                    color={
-                      isComingSoon
-                        ? "rgba(240,239,232,0.25)"
-                        : isActive
-                          ? "#B4FF00"
-                          : "rgba(255,255,255,0.75)"
-                    }
-                  />
-                  {!collapsed && (
-                    <>
-                      <span className="truncate">{label}</span>
-                      {item.badge && !isComingSoon && (
-                        <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
-                      {isComingSoon && (
-                        <span className="ml-auto text-[0.58rem] text-white/65">
-                          Bald
-                        </span>
-                      )}
-                    </>
-                  )}
-                </>
-              );
+        {SIDEBAR_TOOL_CATEGORIES.map((category, index) =>
+          renderCollapseCategory(
+            category.key,
+            category.label,
+            category.items,
+            index > 0
+          )
+        )}
 
-              if (isComingSoon) {
-                return (
-                  <span
-                    key={item.id}
-                    title={collapsed ? `${label} (bald)` : "Kommt bald"}
-                    className={linkClass(false, true)}
-                  >
-                    {inner}
-                  </span>
-                );
-              }
-
-              return (
-                <SidebarNavLink
-                  key={item.id}
-                  href={item.href}
-                  active={isActive}
-                  collapsed={collapsed}
-                  title={collapsed ? label : undefined}
-                  className={linkClass(isActive)}
-                >
-                  {inner}
-                </SidebarNavLink>
-              );
-            })}
-          </div>
-        ))}
+        {NAV_GROUPS.map((group) =>
+          renderCollapseCategory(group.key, group.label, group.items, true)
+        )}
 
         <div className="h-px bg-white/5 my-2 mx-1" />
 

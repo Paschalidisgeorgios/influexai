@@ -353,32 +353,27 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
   },
 ];
 
-export const NAV_GROUPS: {
-  labelKey: string;
-  items: {
-    id: string;
-    href: string;
-    labelKey?: string;
-    label?: string;
-    icon: LucideIcon;
-    badge?: string;
-    comingSoon?: boolean;
-  }[];
-}[] = [
+export type NavItem = {
+  id: string;
+  href: string;
+  labelKey?: string;
+  label?: string;
+  icon: LucideIcon;
+  badge?: string;
+  comingSoon?: boolean;
+};
+
+export type SidebarCollapseCategory = {
+  key: string;
+  label: string;
+  items: NavItem[];
+};
+
+export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
   {
-    labelKey: "nav_group_create",
+    key: "agent",
+    label: "🤖 Agent",
     items: [
-      { id: "script", href: "/dashboard/script-generator", labelKey: "script", icon: FileText },
-      { id: "thumbnail", href: "/dashboard/thumbnail-concept", labelKey: "thumbnail", icon: Image },
-      { id: "produkt", href: "/dashboard/produkt", label: "Produkt-Werbung", icon: ShoppingBag },
-      { id: "ki-ich", href: "/dashboard/ki-ich", label: "Mein KI-Ich", icon: Sparkles },
-      {
-        id: "image-generator",
-        href: "/dashboard/image-generator",
-        labelKey: "image_generator",
-        icon: ImageGeneratorPhotoIcon,
-        badge: "NEU",
-      },
       {
         id: "ki-agent",
         href: "/dashboard/ki-agent",
@@ -392,18 +387,48 @@ export const NAV_GROUPS: {
         icon: Rocket,
         badge: "NEU",
       },
+    ],
+  },
+  {
+    key: "text",
+    label: "✍️ Text & Script",
+    items: [
       {
-        id: "upscaler",
-        href: "/dashboard/upscaler",
-        label: "HD Upscaler",
-        icon: ZoomIn,
-        badge: "NEU",
+        id: "script",
+        href: "/dashboard/script-generator",
+        labelKey: "script",
+        icon: FileText,
       },
       {
-        id: "seedance",
-        href: "/dashboard/seedance",
-        label: "Bild zu Video",
-        icon: Film,
+        id: "produkt",
+        href: "/dashboard/produkt",
+        label: "Produkt-Werbung",
+        icon: ShoppingBag,
+      },
+      {
+        id: "thumbnail",
+        href: "/dashboard/thumbnail-concept",
+        labelKey: "thumbnail",
+        icon: Image,
+      },
+      {
+        id: "viral-hook",
+        href: "/dashboard/viral-hook",
+        label: "Viral Hook Extraktor",
+        icon: Zap,
+        badge: "NEU",
+      },
+    ],
+  },
+  {
+    key: "video",
+    label: "🎬 Video & Avatar",
+    items: [
+      {
+        id: "ugc-video",
+        href: "/dashboard/ugc-video",
+        labelKey: "ugc_video",
+        icon: Video,
         badge: "NEU",
       },
       {
@@ -414,6 +439,46 @@ export const NAV_GROUPS: {
         badge: "NEU",
       },
       {
+        id: "seedance",
+        href: "/dashboard/seedance",
+        label: "Bild zu Video",
+        icon: Film,
+        badge: "NEU",
+      },
+      {
+        id: "live-creator",
+        href: "/dashboard/live-creator",
+        labelKey: "live_creator",
+        icon: Video,
+        badge: "LIVE",
+      },
+      {
+        id: "ki-ich",
+        href: "/dashboard/ki-ich",
+        label: "Mein KI-Ich",
+        icon: Sparkles,
+      },
+    ],
+  },
+  {
+    key: "bild",
+    label: "🖼️ Bild & Design",
+    items: [
+      {
+        id: "image-generator",
+        href: "/dashboard/image-generator",
+        labelKey: "image_generator",
+        icon: ImageGeneratorPhotoIcon,
+        badge: "NEU",
+      },
+      {
+        id: "upscaler",
+        href: "/dashboard/upscaler",
+        label: "HD Upscaler",
+        icon: ZoomIn,
+        badge: "NEU",
+      },
+      {
         id: "lora-training",
         href: "/dashboard/lora-training",
         label: "LoRA Training",
@@ -421,26 +486,80 @@ export const NAV_GROUPS: {
         badge: "NEU",
       },
       {
-        id: "ugc-video",
-        href: "/dashboard/ugc-video",
-        labelKey: "ugc_video",
-        icon: Video,
-        badge: "NEU",
+        id: "gallery",
+        href: "/dashboard/gallery",
+        labelKey: "gallery",
+        icon: Images,
       },
     ],
   },
+];
+
+export function sidebarCategoryKeysForPath(path: string): string[] {
+  const keys: string[] = [];
+  if (
+    path.includes("ki-agent") ||
+    path.includes("campaign-autopilot") ||
+    path === "/dashboard/agent"
+  ) {
+    keys.push("agent");
+  }
+  if (
+    path.includes("script-generator") ||
+    path.includes("thumbnail-concept") ||
+    path.includes("produkt") ||
+    path.includes("viral-hook")
+  ) {
+    keys.push("text");
+  }
+  if (
+    path.includes("ugc-video") ||
+    path.includes("motion-transfer") ||
+    path.includes("seedance") ||
+    path.includes("live-creator") ||
+    path.includes("ki-ich")
+  ) {
+    keys.push("video");
+  }
+  if (
+    path.includes("image-generator") ||
+    path.includes("upscaler") ||
+    path.includes("lora-training") ||
+    path.includes("/dashboard/gallery")
+  ) {
+    keys.push("bild");
+  }
+  if (
+    path.includes("niche-analyzer") ||
+    path.includes("outlier-detector") ||
+    path.includes("content-kalender") ||
+    path.includes("trend-to-script") ||
+    path.includes("competitor") ||
+    path.includes("viral-score") ||
+    path.includes("video-remix")
+  ) {
+    keys.push("analyze");
+  }
+  if (
+    path.includes("live-creator-new") ||
+    path.includes("/dashboard/voice")
+  ) {
+    keys.push("live");
+  }
+  return keys;
+}
+
+export const NAV_GROUPS: {
+  key: string;
+  label: string;
+  items: NavItem[];
+}[] = [
   {
-    labelKey: "nav_group_analyze",
+    key: "analyze",
+    label: "📊 Analyse",
     items: [
       { id: "niche", href: "/dashboard/niche-analyzer", label: "Niche Analyzer", icon: TrendingUp },
       { id: "outlier", href: "/dashboard/outlier-detector", label: "Outlier Detector", icon: Flame },
-      {
-        id: "viral-hook",
-        href: "/dashboard/viral-hook",
-        label: "Viral Hook Extraktor",
-        icon: Zap,
-        badge: "NEU",
-      },
       {
         id: "content-kalender",
         href: "/dashboard/content-kalender",
@@ -461,9 +580,9 @@ export const NAV_GROUPS: {
     ],
   },
   {
-    labelKey: "nav_group_live",
+    key: "live",
+    label: "🎙 Live & Audio",
     items: [
-      { id: "live-creator", href: "/dashboard/live-creator", labelKey: "live_creator", icon: Video, badge: "LIVE", comingSoon: false },
       { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace, badge: "NEU" },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
     ],
