@@ -76,25 +76,30 @@ const PLAN_RANK: Record<SubscriptionPlanId, number> = {
 };
 
 /** Client-safe price ID map (NEXT_PUBLIC_* inlined at build) */
+function readPublicPriceId(key: string | undefined): string | undefined {
+  const trimmed = key?.trim();
+  return trimmed || undefined;
+}
+
 export const CLIENT_STRIPE_PRICE_IDS: Record<
   Exclude<SubscriptionPlanId, "free">,
   Record<BillingInterval, string | undefined>
 > = {
   starter: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY,
-    yearly: process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY,
+    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY),
+    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_STARTER_YEARLY),
   },
   creator: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY,
-    yearly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_YEARLY,
+    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY),
+    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_CREATOR_YEARLY),
   },
   pro: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY,
-    yearly: process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY,
+    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY),
+    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY),
   },
   business: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY,
-    yearly: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY,
+    monthly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY),
+    yearly: readPublicPriceId(process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY),
   },
 };
 
@@ -141,7 +146,7 @@ export function getStripePriceId(
     interval === "yearly"
       ? config.stripeYearlyEnv.replace("NEXT_PUBLIC_STRIPE_", "STRIPE_PRICE_")
       : config.stripeMonthlyEnv.replace("NEXT_PUBLIC_STRIPE_", "STRIPE_PRICE_");
-  return process.env[legacyKey];
+  return readPublicPriceId(process.env[legacyKey]);
 }
 
 export function getClientStripePriceId(

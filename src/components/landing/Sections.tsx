@@ -8,6 +8,7 @@ import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { PoweredByFooter } from "@/components/tenant-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { useSubscriptionCheckout } from "@/hooks/useSubscriptionCheckout";
 import { getStarterPriceParams } from "@/lib/pricing";
 import {
   LANDING_SECTION_CLASS,
@@ -307,6 +308,7 @@ export function FaqSection() {
 export function PricingSection() {
   const t = useTranslations("landingPage.pricing");
   const tAgency = useTranslations("landingPage.agencyTeaser");
+  const { loading, handleSubscribe } = useSubscriptionCheckout("/#pricing");
 
   return (
     <section
@@ -321,7 +323,12 @@ export function PricingSection() {
             {t("headline")}
           </h2>
         </SpringReveal>
-        <PricingPlans className="mx-auto max-w-[1200px]" />
+        <PricingPlans
+          checkoutMode
+          onSubscribe={handleSubscribe}
+          subscribeLoading={loading}
+          className="mx-auto max-w-[1200px]"
+        />
         <SpringReveal delay={0.08}>
           <div
             className="mx-auto mt-8 max-w-[720px] rounded-[12px] border p-5 text-left md:mt-10 md:p-6"

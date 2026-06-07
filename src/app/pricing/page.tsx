@@ -1,57 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { CreditPacksSection } from "@/components/pricing/CreditPacksSection";
-import {
-  getClientStripePriceId,
-  type BillingInterval,
-  type SubscriptionPlanId,
-} from "@/lib/subscription-plans";
+import { useSubscriptionCheckout } from "@/hooks/useSubscriptionCheckout";
 
 export default function PricingPage() {
   const t = useTranslations("landingPage.pricing");
-  const [loading, setLoading] = useState<string | null>(null);
-
-  const handleSubscribe = async (
-    plan: string,
-    interval: BillingInterval,
-    priceId?: string
-  ) => {
-    const key = `${plan}-${interval}`;
-    setLoading(key);
-    try {
-      const resolvedPriceId =
-        priceId ??
-        getClientStripePriceId(
-          plan as Exclude<SubscriptionPlanId, "free">,
-          interval
-        );
-
-      const res = await fetch("/api/stripe/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          plan,
-          interval,
-          priceId: resolvedPriceId,
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else if (res.status === 401) {
-        window.location.href = `/auth/sign-in?redirect=${encodeURIComponent("/pricing")}`;
-      } else {
-        alert(data.error ?? "Checkout fehlgeschlagen.");
-      }
-    } catch {
-      alert("Fehler beim Checkout.");
-    }
-    setLoading(null);
-  };
+  const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
 
   return (
     <div className="min-h-screen bg-[#060608] text-[#F0EFE8] landing-root">

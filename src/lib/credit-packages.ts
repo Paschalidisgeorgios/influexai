@@ -87,7 +87,8 @@ export function getPackageById(id: string): CreditPackage | undefined {
 export function getStripePriceIdForPackage(
   pkg: CreditPackage
 ): string | undefined {
-  return process.env[pkg.envKey]?.trim() || undefined;
+  const value = process.env[pkg.envKey]?.trim();
+  return value || undefined;
 }
 
 /** Smallest pack that covers the credit shortfall (by missing amount). */

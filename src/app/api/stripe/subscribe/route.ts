@@ -14,9 +14,14 @@ export const dynamic = "force-dynamic";
 const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
 
+function trimPriceId(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed || undefined;
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const priceIdFromBody = body.priceId as string | undefined;
   const plan = body.plan as Exclude<SubscriptionPlanId, "free"> | undefined;
   const interval = (body.interval ?? "monthly") as BillingInterval;
 
@@ -33,9 +38,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const priceId =
-    priceIdFromBody ??
-    (plan ? getStripePriceId(plan, interval) : undefined);
+  const priceIdFromBody = trimPriceId(body.priceId);
+  const priceIdFromPlan = plan ? getStripePriceId(plan, interval) : undefined;
+  const priceId = priceIdFromPlan ?? priceIdFromBody;
 
   const resolvedPlan =
     plan ??
@@ -45,6 +50,14 @@ export async function POST(request: NextRequest) {
         getStripePriceId(p, "yearly") === priceId
     ) ??
     "starter";
+
+  console.log("[checkout] priceId:", priceId ?? "(missing)");
+  console.log("[checkout] env vars:", {
+    creatorMonthly: process.env.NEXT_PUBLIC_STRIPE_CREATOR_MONTHLY,
+    proMonthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY,
+    credits50: process.env.STRIPE_CREDITS_50,
+    credits150: process.env.STRIPE_CREDITS_150,
+  });
 
   if (!priceId) {
     console.error("[checkout]", {

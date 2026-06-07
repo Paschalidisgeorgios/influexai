@@ -10,7 +10,6 @@ import {
   SUBSCRIPTION_PLANS,
   YEARLY_DISCOUNT_PERCENT,
   formatPlanPrice,
-  getClientStripePriceId,
   type BillingInterval,
 } from "@/lib/subscription-plans";
 
@@ -52,11 +51,7 @@ function EuroPrice({ amount }: { amount: number }) {
 type PricingPlansProps = {
   /** When true, CTAs trigger subscription checkout (user must be logged in) */
   checkoutMode?: boolean;
-  onSubscribe?: (
-    plan: string,
-    interval: BillingInterval,
-    priceId?: string
-  ) => void;
+  onSubscribe?: (plan: string, interval: BillingInterval) => void;
   subscribeLoading?: string | null;
   className?: string;
 };
@@ -97,8 +92,7 @@ export function PricingPlans({
 
   const handleCta = (planKey: (typeof SUBSCRIPTION_PLAN_ORDER)[number]) => {
     if (checkoutMode && onSubscribe) {
-      const priceId = getClientStripePriceId(planKey, interval);
-      onSubscribe(planKey, interval, priceId);
+      onSubscribe(planKey, interval);
     }
   };
 
