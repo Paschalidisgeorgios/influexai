@@ -9,17 +9,14 @@ import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
 const NAV_LINKS = [
-  { key: "nav_brands" as const, href: "#brands" },
   { key: "nav_features" as const, href: "#features" },
-  { key: "nav_blog" as const, href: "/blog", external: true },
-  { key: "nav_guides" as const, href: "/guides", external: true },
-  { key: "nav_community" as const, href: "/community", external: true },
   { key: "nav_pricing" as const, href: "/pricing", external: true },
+  { key: "nav_brands" as const, href: "#brands" },
   { key: "nav_agency" as const, href: "/agency", external: true },
 ];
 
 const LANDING_NAV_LINK =
-  "nav-item relative inline-flex text-sm font-medium text-[#1a1a1a] px-3.5 py-1.5 rounded-lg transition-colors duration-150 hover:text-[#060608]";
+  "nav-item relative inline-flex items-center whitespace-nowrap text-[0.875rem] font-medium leading-none text-[#1a1a1a] px-3 py-1.5 rounded-lg transition-colors duration-150 hover:text-[#060608] hover:bg-black/[0.04]";
 
 const HEADER_CLASS =
   "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell";
@@ -131,7 +128,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-0 min-w-0 flex-1 justify-center">
+          <div className="hidden md:flex items-center gap-1 min-w-0 flex-1 justify-center">
             {agencyMode ? (
               <>
                 <Link href="/" className={LANDING_NAV_LINK}>
@@ -252,7 +249,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               className="landing-nav-menu-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-all md:hidden"
-              aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
+              aria-label={menuOpen ? t("menu_close") : t("menu_open")}
               aria-expanded={menuOpen}
             >
               <svg
@@ -290,7 +287,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           <button
             type="button"
             className="mobile-nav-backdrop"
-            aria-label="Menü schließen"
+            aria-label={t("menu_close")}
             onClick={closeMenu}
           />
           <div
@@ -301,13 +298,13 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
           >
             <div className="flex items-center justify-between mb-6">
               <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#F0EFE8]">
-                Menü
+                {t("menu_title")}
               </span>
               <button
                 type="button"
                 onClick={closeMenu}
                 className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[#F0EFE8] border border-white/10"
-                aria-label="Schließen"
+                aria-label={t("menu_close")}
               >
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="4" y1="4" x2="14" y2="14" />

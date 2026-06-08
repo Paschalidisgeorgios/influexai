@@ -496,6 +496,8 @@ const FOOTER_LINK_HREF: Partial<
   legal_cookies: "/cookies",
 };
 
+const SUPPORT_EMAIL = "info@influexaicreator.com";
+
 export function LandingFooter() {
   const t = useTranslations("footer");
   const tc = useTranslations("landingPage.footer_cols");
@@ -574,6 +576,31 @@ export function LandingFooter() {
               <LanguageSwitcher compact />
             </div>
           </div>
+        </div>
+        <div
+          className="mx-auto mb-6 max-w-[1160px] rounded-xl border px-4 py-3 sm:px-5"
+          style={{
+            borderColor: "var(--border)",
+            background: "rgba(255,255,255,0.02)",
+          }}
+        >
+          <ul
+            className="flex flex-col gap-1.5 text-[0.78rem] leading-relaxed sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-1.5"
+            style={{ color: "var(--grey)" }}
+          >
+            <li>{t("trust.operated_from_germany")}</li>
+            <li>{t("trust.secure_payments")}</li>
+            <li>
+              {t("trust.support")}{" "}
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="text-[var(--white)]/80 no-underline transition-colors hover:text-[var(--accent,#B4FF00)]"
+              >
+                {SUPPORT_EMAIL}
+              </a>
+            </li>
+            <li>{t("trust.cancel_anytime")}</li>
+          </ul>
         </div>
         <PoweredByFooter />
         <div
