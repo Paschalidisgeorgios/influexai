@@ -12,6 +12,68 @@ import {
 import { creditsForStripePriceId } from "@/lib/stripe-credit-prices";
 import { getStripe } from "@/lib/stripe";
 
+type ClaimCheckoutSessionData = {
+  checkout_type: string;
+  user_id?: string | null;
+  tenant_id?: string | null;
+  credits_granted?: number | null;
+};
+
+type ClaimInvoiceData = {
+  stripe_subscription_id?: string | null;
+  user_id?: string | null;
+  tenant_id?: string | null;
+  credits_granted?: number | null;
+};
+
+async function claimCheckoutSession(
+  supabaseAdmin: SupabaseClient,
+  sessionId: string,
+  data: ClaimCheckoutSessionData
+): Promise<{ claimed: boolean }> {
+  const { error } = await supabaseAdmin.from("processed_checkout_sessions").insert({
+    stripe_session_id: sessionId,
+    checkout_type: data.checkout_type,
+    user_id: data.user_id ?? null,
+    tenant_id: data.tenant_id ?? null,
+    credits_granted: data.credits_granted ?? null,
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      console.log("[webhook] checkout session bereits verarbeitet:", sessionId);
+      return { claimed: false };
+    }
+    throw new Error(`claimCheckoutSession failed: ${error.message}`);
+  }
+
+  return { claimed: true };
+}
+
+async function claimInvoice(
+  supabaseAdmin: SupabaseClient,
+  invoiceId: string,
+  data: ClaimInvoiceData
+): Promise<{ claimed: boolean }> {
+  const { error } = await supabaseAdmin.from("processed_stripe_invoices").insert({
+    stripe_invoice_id: invoiceId,
+    stripe_subscription_id: data.stripe_subscription_id ?? null,
+    user_id: data.user_id ?? null,
+    tenant_id: data.tenant_id ?? null,
+    credits_granted: data.credits_granted ?? null,
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      console.log("[webhook] invoice bereits verarbeitet:", invoiceId);
+      return { claimed: false };
+    }
+    throw new Error(`claimInvoice failed: ${error.message}`);
+  }
+
+  return { claimed: true };
+}
+
 async function handleAgencySubscription(
   supabaseAdmin: SupabaseClient,
   session: Stripe.Checkout.Session
@@ -26,6 +88,13 @@ async function handleAgencySubscription(
   const planConfig = AGENCY_PLANS[plan] ?? AGENCY_PLANS.starter;
 
   if (!ownerId) return;
+
+  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
+    checkout_type: "agency_subscription",
+    user_id: ownerId,
+    credits_granted: planConfig.creditsPool,
+  });
+  if (!claimed) return;
 
   const subscriptionId =
     typeof session.subscription === "string"
@@ -140,6 +209,13 @@ async function handlePlatformSubscription(
 
   if (!profile) return;
 
+  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
+    checkout_type: "platform_subscription",
+    user_id: userId,
+    credits_granted: monthlyCredits,
+  });
+  if (!claimed) return;
+
   const { error: planError } = await supabaseAdmin
     .from("profiles")
     .update({
@@ -195,6 +271,13 @@ async function handleSubscriptionRenewal(
   if (plan === "free" || !SUBSCRIPTION_PLANS[plan]) return;
 
   const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits;
+
+  const { claimed } = await claimInvoice(supabaseAdmin, invoice.id, {
+    stripe_subscription_id: subscriptionId,
+    user_id: profile.id,
+    credits_granted: monthlyCredits,
+  });
+  if (!claimed) return;
 
   const result = await addCredits(
     supabaseAdmin,
@@ -257,6 +340,13 @@ async function handleAgencyCredits(
 
   if (!tenant) return;
 
+  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
+    checkout_type: "agency_credits",
+    tenant_id: tenantId,
+    credits_granted: credits,
+  });
+  if (!claimed) return;
+
   await supabaseAdmin
     .from("tenants")
     .update({ credits_pool: (tenant.credits_pool ?? 0) + credits })
@@ -315,6 +405,13 @@ async function handleCreditPackPurchase(
 
   const credits = await resolveCreditPurchaseAmount(session);
   if (credits <= 0) return;
+
+  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
+    checkout_type: "credit_pack",
+    user_id: userId,
+    credits_granted: credits,
+  });
+  if (!claimed) return;
 
   const result = await addCredits(
     supabaseAdmin,
