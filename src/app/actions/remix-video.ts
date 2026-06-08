@@ -1,7 +1,7 @@
 "use server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
@@ -59,6 +59,15 @@ export async function remixVideo(
     return { success: false, error: "Bitte wähle einen Remix-Stil." };
   }
 
+  const access = await requireKiToolAccessForAction(CREDIT_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, CREDIT_COST);
+    }
+    return { success: false, error: access.error };
+  }
+  const { userId, supabase } = access;
+
   let originalLabel = "";
   let originalUrl: string | null = null;
   let videoId: string | null = null;
@@ -99,25 +108,11 @@ export async function remixVideo(
       : desc;
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { success: false, error: "Nicht eingeloggt." };
-  }
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, CREDIT_COST);
-  }
-
   if (isE2eMockGenerationsEnabled()) {
     const remixes = e2eMockRemixes(niche, remixStyle);
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Video Remix",
       { generationType: "video-remix", prompt: originalLabel.slice(0, 200) }
@@ -129,7 +124,7 @@ export async function remixVideo(
       };
     }
     const { error: saveError } = await supabase.from("remix_results").insert({
-      user_id: user.id,
+      user_id: userId,
       original_url: originalUrl,
       results: remixes,
     });
@@ -187,7 +182,7 @@ ${youtubeMetadataUsed ? "Metadaten: von YouTube Data API geladen." : "Metadaten:
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Video Remix",
       { generationType: "video-remix", prompt: originalLabel.slice(0, 200) }
@@ -201,7 +196,7 @@ ${youtubeMetadataUsed ? "Metadaten: von YouTube Data API geladen." : "Metadaten:
     }
 
     const { error: saveError } = await supabase.from("remix_results").insert({
-      user_id: user.id,
+      user_id: userId,
       original_url: originalUrl,
       results: remixes,
     });

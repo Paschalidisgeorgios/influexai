@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { withPlanGuard } from "@/lib/guards/apiGuard";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
   buildContentKalenderToolUserPrompt,
@@ -65,37 +64,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { success: false, error: "Nicht eingeloggt." },
-      { status: 401 }
-    );
-  }
-
-  const guardError = await withPlanGuard(user.id);
-  if (guardError) return guardError;
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    CONTENT_KALENDER_TOOL_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Nicht genug Credits.",
-        credits: creditCheck.credits,
-        required: CONTENT_KALENDER_TOOL_CREDIT_COST,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(CONTENT_KALENDER_TOOL_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   const claude = await createAnthropicMessage({
     system: CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
@@ -129,7 +100,7 @@ export async function POST(request: Request) {
 
   const deducted = await deductCredits(
     supabase,
-    user.id,
+    userId,
     CONTENT_KALENDER_TOOL_CREDIT_COST,
     "Content Kalender KI",
     {
@@ -154,7 +125,7 @@ export async function POST(request: Request) {
   }
 
   const { error: genErr } = await supabase.from("generations").insert({
-    user_id: user.id,
+    user_id: userId,
     type: "content-kalender-tool",
     prompt: promptSummary,
     credits_used: CONTENT_KALENDER_TOOL_CREDIT_COST,

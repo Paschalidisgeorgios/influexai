@@ -1,8 +1,8 @@
 "use server";
 
 import { getLocale } from "next-intl/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createAnthropicMessage,
@@ -43,20 +43,14 @@ export async function generateTrendScript(
     return { success: false, error: "Bitte gib deine Nische ein." };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Nicht eingeloggt." };
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    TREND_SCRIPT_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, TREND_SCRIPT_CREDIT_COST);
+  const access = await requireKiToolAccessForAction(TREND_SCRIPT_CREDIT_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, TREND_SCRIPT_CREDIT_COST);
+    }
+    return { success: false, error: access.error };
   }
+  const { userId, supabase } = access;
 
   await getLocale();
 
@@ -82,7 +76,7 @@ export async function generateTrendScript(
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       TREND_SCRIPT_CREDIT_COST,
       "Trend → Script",
       {

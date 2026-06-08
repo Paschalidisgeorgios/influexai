@@ -18,8 +18,8 @@ import type {
   CampaignResult,
   CampaignTone,
 } from "@/lib/agent/types";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -171,45 +171,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt." }, { status: 401 });
-  }
-
   const exec = createCampaignExecution(
     prompt,
     mode,
     platforms,
     goal,
-    tone,
-    user.id
+    tone
   );
   const estimatedCredits = exec.estimatedCredits ?? 0;
 
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    estimatedCredits
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        error: "Nicht genug Credits",
-        credits: creditCheck.credits,
-        required: estimatedCredits,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(estimatedCredits);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
+  const execWithUser = { ...exec, userId };
 
   if (needsJobQueue(estimatedCredits)) {
     const jobId = await enqueueJob(supabase, {
       type: "campaign",
-      userId: user.id,
+      userId,
       payload: {
         prompt,
         mode,
@@ -223,14 +202,14 @@ export async function POST(request: Request) {
     });
 
     after(() =>
-      runJobAsync(jobId, exec, supabase, user.id).catch((err) =>
+      runJobAsync(jobId, execWithUser, supabase, userId).catch((err) =>
         console.error("[campaign job]", err)
       )
     );
 
     return NextResponse.json({
       jobId,
-      execution: exec,
+      execution: execWithUser,
       status: "queued",
       message: "Großer Job wurde in die Warteschlange gestellt.",
       pollUrl: `/api/agent/job/${jobId}`,
@@ -239,14 +218,14 @@ export async function POST(request: Request) {
 
   let result: CampaignResult;
   try {
-    result = buildCampaignResult(exec);
+    result = buildCampaignResult(execWithUser);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Kampagne fehlgeschlagen";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
   try {
-    await saveCampaignResultServer(supabase, result, user.id, prompt, platforms);
+    await saveCampaignResultServer(supabase, result, userId, prompt, platforms);
   } catch (err: unknown) {
     const msg =
       err instanceof Error ? err.message : "Speichern fehlgeschlagen";
@@ -255,7 +234,7 @@ export async function POST(request: Request) {
 
   const deducted = await deductCredits(
     supabase,
-    user.id,
+    userId,
     estimatedCredits,
     "Campaign Autopilot",
     {
@@ -272,7 +251,7 @@ export async function POST(request: Request) {
   }
 
   const completedExec = completeCampaignExecution({
-    ...exec,
+    ...execWithUser,
     result,
   });
 

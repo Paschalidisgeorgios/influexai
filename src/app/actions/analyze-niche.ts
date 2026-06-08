@@ -1,7 +1,8 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   e2eMockNiches,
@@ -78,24 +79,19 @@ export async function analyzeNiche(
     return { success: false, error: "Bitte gib ein Thema ein." };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { success: false, error: "Nicht eingeloggt." };
+  const access = await requireKiToolAccessForAction(CREDIT_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, CREDIT_COST);
+    }
+    return { success: false, error: access.error };
   }
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, CREDIT_COST);
-  }
+  const { userId, supabase } = access;
 
   if (isE2eMockGenerationsEnabled()) {
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Niche Analyzer",
       { generationType: "niche-analyzer", prompt: topic.trim().slice(0, 200) }
@@ -151,7 +147,7 @@ Gib mir 5 profitable YouTube Nischen als JSON Array:
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Niche Analyzer",
       { generationType: "niche-analyzer", prompt: topic.trim() }

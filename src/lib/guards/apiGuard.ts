@@ -1,16 +1,10 @@
-import { NextResponse } from "next/server";
+/** @deprecated Use assertKiToolAccess / assertActivePlan from @/lib/access.server */
+import { assertActivePlan, assertKiToolAccess } from "@/lib/access.server";
 
-import { requireActivePlan } from "./requireActivePlan";
+export { assertKiToolAccess };
 
-export async function withPlanGuard(userId: string) {
-  const hasPlan = await requireActivePlan(userId);
-
-  if (!hasPlan) {
-    return NextResponse.json(
-      { error: "Kein aktives Paket. Bitte upgraden." },
-      { status: 403 }
-    );
-  }
-
-  return null;
+/** @deprecated Use assertActivePlan() or assertKiToolAccess(amount) instead. */
+export async function withPlanGuard(_userId?: string) {
+  void _userId;
+  return assertActivePlan();
 }

@@ -1,7 +1,7 @@
 "use server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
@@ -51,25 +51,20 @@ export async function detectOutliers(
 
   const lang = normalizeOutlierLanguage(language);
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { success: false, error: "Nicht eingeloggt." };
+  const access = await requireKiToolAccessForAction(CREDIT_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, CREDIT_COST);
+    }
+    return { success: false, error: access.error };
   }
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, CREDIT_COST);
-  }
+  const { userId, supabase } = access;
 
   if (isE2eMockGenerationsEnabled()) {
     const outliers = e2eMockOutliers(niche.trim(), lang);
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Outlier Detector",
       { generationType: "outlier-detector", prompt: niche.trim() }
@@ -81,7 +76,7 @@ export async function detectOutliers(
       };
     }
     const { error: saveError } = await supabase.from("outlier_results").insert({
-      user_id: user.id,
+      user_id: userId,
       niche: niche.trim(),
       results: outliers,
     });
@@ -133,7 +128,7 @@ export async function detectOutliers(
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       CREDIT_COST,
       "Outlier Detector",
       { generationType: "outlier-detector", prompt: niche.trim() }
@@ -147,7 +142,7 @@ export async function detectOutliers(
     }
 
     const { error: saveError } = await supabase.from("outlier_results").insert({
-      user_id: user.id,
+      user_id: userId,
       niche: niche.trim(),
       results: outliers,
     });

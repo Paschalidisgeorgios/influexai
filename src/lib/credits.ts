@@ -1,12 +1,15 @@
+import "server-only";
+
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { isCreditExemptEmail } from "@/lib/access";
 import { logCreditTransaction, logGeneration } from "@/lib/activity-log";
 import { invalidateUserCredits, invalidateUserGenerations } from "@/lib/cache";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { invokePushNotification } from "@/lib/push-notifications";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 
 /**
- * Credit bypass for admin emails — verified via Supabase auth session (never trust client input).
+ * Credit bypass for platform admins — session + profile verified (never trust client input).
+ * Uses the same admin rules as requireKiToolAccess / isPlatformAdminServer.
  */
 export async function isCreditExemptUser(
   supabase: SupabaseClient,
@@ -20,7 +23,17 @@ export async function isCreditExemptUser(
     return false;
   }
 
-  return isCreditExemptEmail(user.email);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin, role")
+    .eq("id", user.id)
+    .single();
+
+  return isPlatformAdminServer({
+    email: user.email,
+    is_admin: profile?.is_admin,
+    role: profile?.role,
+  });
 }
 
 export type DeductCreditsResult = {

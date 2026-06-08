@@ -12,9 +12,8 @@ import type {
   CreatorDNA,
   NextAction,
 } from "@/lib/agent-types";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { withPlanGuard } from "@/lib/guards/apiGuard";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -277,37 +276,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { success: false, error: "Nicht eingeloggt." },
-      { status: 401 }
-    );
-  }
-
-  const guardError = await withPlanGuard(user.id);
-  if (guardError) return guardError;
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    KI_AGENT_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Nicht genug Credits.",
-        credits: creditCheck.credits,
-        required: KI_AGENT_CREDIT_COST,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(KI_AGENT_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   const platform = resolvePlatform(body.creatorDNA);
   const userPrompt = buildUserPrompt(messages, body.creatorDNA);
@@ -330,7 +301,7 @@ export async function POST(request: Request) {
 
   const deducted = await deductCredits(
     supabase,
-    user.id,
+    userId,
     KI_AGENT_CREDIT_COST,
     "KI Agent",
     {
@@ -354,7 +325,7 @@ export async function POST(request: Request) {
   }
 
   const { error: genErr } = await supabase.from("generations").insert({
-    user_id: user.id,
+    user_id: userId,
     type: "ki-agent",
     prompt: promptSummary,
     credits_used: KI_AGENT_CREDIT_COST,

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
 import { getFalKey } from "@/lib/fal-image";
-import { hasEnoughCredits } from "@/lib/credits";
 import { runMotionTransferGeneration } from "@/lib/motion-transfer-generate";
 import { MOTION_TRANSFER_CREDIT_COST } from "@/lib/motion-transfer-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -42,28 +41,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const access = await assertKiToolAccess(MOTION_TRANSFER_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    MOTION_TRANSFER_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      { error: "Nicht genug Credits.", credits: creditCheck.credits },
-      { status: 402 }
-    );
-  }
-
-  const result = await runMotionTransferGeneration(supabase, user.id, {
+  const result = await runMotionTransferGeneration(supabase, userId, {
     sourceImage,
     referenceVideo,
     sourceIsVideo: body.sourceIsVideo === true,

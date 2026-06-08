@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
 import { getFalKey } from "@/lib/fal-image";
-import { hasEnoughCredits } from "@/lib/credits";
 import { runSeedanceGeneration } from "@/lib/seedance-generate";
 import { SEEDANCE_CREDIT_COST } from "@/lib/seedance-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -44,28 +43,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const access = await assertKiToolAccess(SEEDANCE_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    SEEDANCE_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      { error: "Nicht genug Credits", credits: creditCheck.credits },
-      { status: 402 }
-    );
-  }
-
-  const result = await runSeedanceGeneration(supabase, user.id, {
+  const result = await runSeedanceGeneration(supabase, userId, {
     imageUrl,
     prompt,
   });

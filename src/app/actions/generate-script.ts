@@ -2,7 +2,8 @@
 
 import { getLocale } from "next-intl/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { localeToPromptLanguage, type Locale } from "@/lib/locale";
 import {
@@ -177,21 +178,19 @@ export async function generateScript(
     };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Nicht eingeloggt." };
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, GENERATE_COST);
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, GENERATE_COST);
+  const access = await requireKiToolAccessForAction(GENERATE_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, GENERATE_COST);
+    }
+    return { success: false, error: access.error };
   }
+  const { userId, supabase } = access;
 
   if (isE2eMockGenerationsEnabled()) {
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       GENERATE_COST,
       "Script Generator",
       { generationType: "script-generator", prompt: topic.slice(0, 200) }
@@ -225,7 +224,7 @@ export async function generateScript(
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       GENERATE_COST,
       "Script Generator",
       { generationType: "script-generator", prompt: topic.slice(0, 200) }
@@ -260,25 +259,19 @@ export async function regenerateScript(
     };
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Nicht eingeloggt." };
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    REGENERATE_COST
-  );
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, REGENERATE_COST);
+  const access = await requireKiToolAccessForAction(REGENERATE_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, REGENERATE_COST);
+    }
+    return { success: false, error: access.error };
   }
+  const { userId, supabase } = access;
 
   if (isE2eMockGenerationsEnabled()) {
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       REGENERATE_COST,
       "Script Generator (Neu)",
       {
@@ -315,7 +308,7 @@ export async function regenerateScript(
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       REGENERATE_COST,
       "Script Generator (Neu)",
       {

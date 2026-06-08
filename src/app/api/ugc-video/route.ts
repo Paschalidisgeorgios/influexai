@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { assertKiToolAccess } from "@/lib/access.server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { deductCredits } from "@/lib/credits";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
   createUgcTalkingAvatarVideo,
@@ -72,13 +73,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "jobId required" }, { status: 400 });
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
+  const access = await assertKiToolAccess(0);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   try {
     const job = await getAkoolVideoResult(jobId);
@@ -95,7 +92,7 @@ export async function GET(request: NextRequest) {
 
     const alreadyCharged = await generationExistsForJob(
       supabase,
-      user.id,
+      userId,
       jobId
     );
 
@@ -103,7 +100,7 @@ export async function GET(request: NextRequest) {
     if (!alreadyCharged) {
       const deduction = await deductCredits(
         supabase,
-        user.id,
+        userId,
         UGC_VIDEO_CREDIT_COST,
         "UGC Video",
         {
@@ -119,7 +116,7 @@ export async function GET(request: NextRequest) {
       }
       creditsLeft = deduction.remainingCredits;
       notifyGenerationCompletePush(
-        user.id,
+        userId,
         "UGC Video",
         "/dashboard/ugc-video"
       );
@@ -127,7 +124,7 @@ export async function GET(request: NextRequest) {
       const { data: profile } = await supabase
         .from("profiles")
         .select("credits")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
       creditsLeft = profile?.credits ?? undefined;
     }
@@ -188,25 +185,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    UGC_VIDEO_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      { error: `Nicht genug Credits (${UGC_VIDEO_CREDIT_COST} benötigt)` },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(UGC_VIDEO_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
 
   try {
     const avatars = await listUgcAvatars(1, 100);
@@ -235,7 +215,7 @@ export async function POST(request: NextRequest) {
     }
 
     let audioUrl: string | undefined;
-    let akoolVoiceId = voiceId || avatar.voice_id;
+    const akoolVoiceId = voiceId || avatar.voice_id;
 
     if (voiceSource === "elevenlabs") {
       if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {

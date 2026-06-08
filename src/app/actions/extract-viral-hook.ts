@@ -1,8 +1,8 @@
 "use server";
 
 import { getLocale } from "next-intl/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createAnthropicMessage,
@@ -39,20 +39,14 @@ type Failure = {
 export async function extractViralHook(
   input: ExtractViralHookInput
 ): Promise<Success | Failure> {
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Nicht eingeloggt." };
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    VIRAL_HOOK_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return insufficientCreditsError(creditCheck.credits, VIRAL_HOOK_CREDIT_COST);
+  const access = await requireKiToolAccessForAction(VIRAL_HOOK_CREDIT_COST);
+  if (!access.ok) {
+    if (access.credits !== undefined) {
+      return insufficientCreditsError(access.credits, VIRAL_HOOK_CREDIT_COST);
+    }
+    return { success: false, error: access.error };
   }
+  const { userId, supabase } = access;
 
   let title = "";
   let description = "";
@@ -128,7 +122,7 @@ export async function extractViralHook(
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       VIRAL_HOOK_CREDIT_COST,
       "Viral Hook Extraktor",
       {

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { withPlanGuard } from "@/lib/guards/apiGuard";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
   buildViralHookExtractorUserPrompt,
@@ -41,37 +40,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { success: false, error: "Nicht eingeloggt." },
-      { status: 401 }
-    );
-  }
-
-  const guardError = await withPlanGuard(user.id);
-  if (guardError) return guardError;
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    VIRAL_HOOK_EXTRACTOR_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Nicht genug Credits.",
-        credits: creditCheck.credits,
-        required: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(VIRAL_HOOK_EXTRACTOR_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   const claude = await createAnthropicMessage({
     system: VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
@@ -101,7 +72,7 @@ export async function POST(request: Request) {
 
   const deducted = await deductCredits(
     supabase,
-    user.id,
+    userId,
     VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
     "Viral Hook Extraktor",
     {
@@ -126,7 +97,7 @@ export async function POST(request: Request) {
   }
 
   const { error: genErr } = await supabase.from("generations").insert({
-    user_id: user.id,
+    user_id: userId,
     type: "viral-hook-extraktor",
     prompt: promptSummary,
     credits_used: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,

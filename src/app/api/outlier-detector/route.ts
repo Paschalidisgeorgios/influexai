@@ -10,6 +10,7 @@ function httpStatusForDetectFailure(result: {
   required?: number;
 }): number {
   if (result.error === "Nicht eingeloggt.") return 401;
+  if (result.error === "Wähle einen Plan um zu starten.") return 403;
   if (
     result.error === "Nicht genug Credits." ||
     typeof result.credits === "number"

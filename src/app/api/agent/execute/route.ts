@@ -18,8 +18,8 @@ import type {
   CampaignPlatform,
   CampaignTone,
 } from "@/lib/agent/types";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -98,15 +98,6 @@ export async function POST(request: Request) {
 
   const type: ExecuteType = body.type === "campaign" ? "campaign" : "agent";
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt." }, { status: 401 });
-  }
-
   if (type === "campaign") {
     const mode = body.mode;
     const platforms = body.platforms;
@@ -146,30 +137,19 @@ export async function POST(request: Request) {
       mode,
       platforms,
       goal,
-      tone,
-      user.id
+      tone
     );
     const estimatedCredits = exec.estimatedCredits ?? 0;
 
-    const creditCheck = await hasEnoughCredits(
-      supabase,
-      user.id,
-      estimatedCredits
-    );
-    if (!creditCheck.ok) {
-      return NextResponse.json(
-        {
-          error: "Nicht genug Credits",
-          credits: creditCheck.credits,
-          required: estimatedCredits,
-        },
-        { status: 402 }
-      );
-    }
+    const access = await assertKiToolAccess(estimatedCredits);
+    if (access instanceof NextResponse) return access;
+    const { userId, supabase } = access;
+
+    const execWithUser = { ...exec, userId };
 
     const deducted = await deductCredits(
       supabase,
-      user.id,
+      userId,
       estimatedCredits,
       "Campaign Autopilot",
       {
@@ -184,13 +164,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const completedExec = completeCampaignExecution(exec);
+    const completedExec = completeCampaignExecution(execWithUser);
     const result = buildCampaignResult(completedExec);
 
     await saveCampaignResultServer(
       supabase,
       result,
-      user.id,
+      userId,
       prompt,
       platforms
     );
@@ -203,35 +183,25 @@ export async function POST(request: Request) {
     });
   }
 
-  const exec = createExecution(prompt, user.id);
+  const exec = createExecution(prompt);
   const estimatedCredits = exec.estimatedCredits ?? 0;
   const authCookie = request.headers.get("cookie") ?? "";
 
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    estimatedCredits
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        error: "Nicht genug Credits",
-        credits: creditCheck.credits,
-        required: estimatedCredits,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(estimatedCredits);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
+
+  const execWithUser = { ...exec, userId: userId };
 
   let result: AgentResult;
   try {
-    result = await orchestrate(exec.intent, prompt, authCookie);
+    result = await orchestrate(execWithUser.intent, prompt, authCookie);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Fehler";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
-  const deducted = await deductCredits(supabase, user.id, estimatedCredits, "KI Agent", {
+  const deducted = await deductCredits(supabase, userId, estimatedCredits, "KI Agent", {
     generationType: "ki-agent",
     prompt: prompt.slice(0, 200),
   });
@@ -242,12 +212,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const completedSteps = exec.steps.map((step) => ({
+  const completedSteps = execWithUser.steps.map((step) => ({
     ...step,
     status: "completed" as const,
   }));
   const completedExec: AgentExecution = {
-    ...exec,
+    ...execWithUser,
     status: "completed",
     steps: completedSteps,
     result,

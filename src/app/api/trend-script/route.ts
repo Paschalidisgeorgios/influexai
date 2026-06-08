@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { assertKiToolAccess } from "@/lib/access.server";
+import { addCredits, deductCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { addCredits, deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { withPlanGuard } from "@/lib/guards/apiGuard";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import { fetchTrendingVideos } from "@/lib/youtube";
 import {
@@ -73,37 +73,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { success: false, error: "Nicht eingeloggt." },
-      { status: 401 }
-    );
-  }
-
-  const guardError = await withPlanGuard(user.id);
-  if (guardError) return guardError;
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    TREND_SCRIPT_TOOL_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Nicht genug Credits.",
-        credits: creditCheck.credits,
-        required: TREND_SCRIPT_TOOL_CREDIT_COST,
-      },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(TREND_SCRIPT_TOOL_CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   let trends;
   try {
@@ -129,7 +101,7 @@ export async function POST(request: Request) {
 
   const deducted = await deductCredits(
     supabase,
-    user.id,
+    userId,
     TREND_SCRIPT_TOOL_CREDIT_COST,
     "Trend→Script",
     {
@@ -160,7 +132,7 @@ export async function POST(request: Request) {
   });
 
   if (!claude.ok) {
-    await refundTrendScriptCredits(supabase, user.id);
+    await refundTrendScriptCredits(supabase, userId);
     return NextResponse.json(
       { success: false, error: claude.error },
       { status: 503 }
@@ -172,7 +144,7 @@ export async function POST(request: Request) {
     script = parseTrendScriptToolResult(claude.text);
   } catch (e) {
     console.error("[trend-script] parse:", e);
-    await refundTrendScriptCredits(supabase, user.id);
+    await refundTrendScriptCredits(supabase, userId);
     return NextResponse.json(
       { success: false, error: "KI-Antwort konnte nicht gelesen werden." },
       { status: 500 }
@@ -180,7 +152,7 @@ export async function POST(request: Request) {
   }
 
   const { error: genErr } = await supabase.from("generations").insert({
-    user_id: user.id,
+    user_id: userId,
     type: "trend-script-tool",
     prompt: promptSummary,
     credits_used: TREND_SCRIPT_TOOL_CREDIT_COST,

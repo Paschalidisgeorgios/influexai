@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import {
   CATEGORY_PROMPTS,
   IMAGE_CATEGORY_KEYS,
@@ -85,22 +85,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, creditCost);
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      { error: "Nicht genug Credits" },
-      { status: 402 }
-    );
-  }
+  const access = await assertKiToolAccess(creditCost);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   const seed =
     typeof seedRaw === "number"
@@ -122,11 +109,11 @@ export async function POST(request: NextRequest) {
 
     const generationId = randomUUID();
     const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(user.id, generationId, falResult.url);
+      await ingestImageGeneratorAssets(userId, generationId, falResult.url);
 
     await createGenerationRecord(
       supabase,
-      user.id,
+      userId,
       "image",
       {
         paid: false,
@@ -149,13 +136,13 @@ export async function POST(request: NextRequest) {
       generationId
     );
 
-    await updateGenerationResult(supabase, generationId, user.id, {
+    await updateGenerationResult(supabase, generationId, userId, {
       credits_used: creditCost,
     });
 
     const deduction = await deductCredits(
       supabase,
-      user.id,
+      userId,
       creditCost,
       isVariation
         ? "Bild Generator — Variation"
@@ -198,7 +185,7 @@ export async function POST(request: NextRequest) {
       const parent = await getOwnedGeneration(
         supabase,
         parentGenerationId,
-        user.id
+        userId
       );
       if (parent?.asset?.previewPath) {
         response.parentImageUrl = protectedImageUrl(parentGenerationId, "preview");
