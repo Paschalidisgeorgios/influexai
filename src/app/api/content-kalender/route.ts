@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withPlanGuard } from "@/lib/guards/apiGuard";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
   buildContentKalenderToolUserPrompt,
@@ -75,6 +76,9 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
+
+  const guardError = await withPlanGuard(user.id);
+  if (guardError) return guardError;
 
   const creditCheck = await hasEnoughCredits(
     supabase,

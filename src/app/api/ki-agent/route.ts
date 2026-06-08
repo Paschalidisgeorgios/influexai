@@ -14,6 +14,7 @@ import type {
 } from "@/lib/agent-types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withPlanGuard } from "@/lib/guards/apiGuard";
 
 export const dynamic = "force-dynamic";
 
@@ -287,6 +288,9 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
+
+  const guardError = await withPlanGuard(user.id);
+  if (guardError) return guardError;
 
   const creditCheck = await hasEnoughCredits(
     supabase,
