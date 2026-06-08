@@ -32,7 +32,7 @@ function buildCreditPackage(
   };
 }
 
-/** Pay-as-you-go credit top-ups */
+/** One-time credit top-ups for users with an active plan */
 export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
     id: "small",

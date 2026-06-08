@@ -143,7 +143,7 @@ export function CreditPackagePicker({
                 fontFamily: "var(--font-dm), sans-serif",
               }}
             >
-              {loadingId === pkg.id ? "…" : t("buy_button")}
+              {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
             </button>
           </div>
         );

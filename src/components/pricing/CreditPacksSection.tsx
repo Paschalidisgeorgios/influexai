@@ -111,12 +111,16 @@ export function CreditPacksSection() {
                   cursor: loadingId ? "default" : "pointer",
                 }}
               >
-                {loadingId === pkg.id ? "…" : t("buy_button")}
+                {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
               </button>
             </motion.div>
           );
         })}
       </div>
+
+      <p className="mt-8 text-center text-xs text-white/55 max-w-2xl mx-auto leading-relaxed">
+        {t("pricing_footnote")}
+      </p>
     </section>
   );
 }
