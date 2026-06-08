@@ -236,15 +236,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         >
           {scene.toolLabel}
         </span>
-        <span
-          className="ml-1.5 inline-block rounded-[4px] px-1 py-0.5 text-[0.58rem] font-bold uppercase tracking-[0.05em]"
-          style={{
-            color: "rgba(255,255,255,0.45)",
-            border: "1px solid rgba(255,255,255,0.12)",
-          }}
-        >
-          {tl("demo")}
-        </span>
       </GlassPanel>
 
       <GlassPanel
@@ -329,16 +320,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         >
           {tl("output")}
         </div>
-        <p
-          style={{
-            fontSize: 9,
-            color: "rgba(255,255,255,0.42)",
-            marginBottom: 8,
-            letterSpacing: "0.04em",
-          }}
-        >
-          {tl("exampleOutput")}
-        </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {scene.outputs.map((out) => (
             <div key={out.label}>

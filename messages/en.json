@@ -1152,6 +1152,7 @@
     "demos": {
       "labels": {
         "demo": "Demo",
+        "demoExample": "Demo example",
         "exampleOutput": "Example output",
         "exampleScore": "Example score",
         "exampleResult": "This is an example result",
@@ -1209,13 +1210,13 @@
           "outputStory": "Understand budget, build equity, check subsidies — without exaggeration.",
           "outputCta": "Comment START — I'll send you the checklist.",
           "scores": {
-            "hook": "91 · demo",
-            "clarity": "88 · demo",
-            "risk": "Low (example)"
+            "hook": "91",
+            "clarity": "88",
+            "risk": "low"
           }
         },
         "product": {
-          "headline": "ADS WITHOUT A BLANK PAGE",
+          "headline": "PRODUCT ADS IN SECONDS",
           "description": "Add product data — the agent picks spot, caption and CTA as an example for reels & shorts.",
           "badge": "Product Advertising",
           "input": "Product: \"AI tax app for freelancers\"\nInstagram Reels",
@@ -1228,9 +1229,9 @@
           "outputSpot": "TaxMind recognizes receipts, categorizes expenses and prepares your bookkeeping with AI.",
           "outputCta": "Link in bio — try 14 days.",
           "scores": {
-            "hook": "89 · demo",
-            "clarity": "90 · demo",
-            "risk": "Low (example)"
+            "hook": "89",
+            "clarity": "90",
+            "risk": "low"
           }
         },
         "viral_hook": {
@@ -1249,9 +1250,9 @@
             "POV: You find out your favorite product isn't cruelty-free."
           ],
           "scores": {
-            "hook": "91 · demo",
-            "scroll_stop": "87 · demo",
-            "risk": "Low (example)"
+            "hook": "91",
+            "scroll_stop": "87",
+            "risk": "low"
           }
         },
         "content_kalender": {
@@ -1271,11 +1272,11 @@
             { "day": "Thu", "topic": "Compare: \"Savings vs ETF 2026\"", "format": "Reel 60s" },
             { "day": "Fri", "topic": "Community question: \"What's your savings goal?\"", "format": "Post" }
           ],
-          "calendarFooter": "Example · Best posting time: 6–8 PM · Platform fit: High (demo)",
+          "calendarFooter": "Best posting time: 6–8 PM · Platform fit: High",
           "scores": {
-            "plan": "92 · demo",
-            "platform": "High (example)",
-            "risk": "Low (example)"
+            "plan": "92",
+            "platform": "High",
+            "risk": "low"
           }
         },
         "avatar": {
@@ -1288,12 +1289,12 @@
             "Avatar concept with photo input (example)",
             "Consent note shown as demo"
           ],
-          "outputTitle": "Example: AI avatar concept",
+          "outputTitle": "AI avatar concept",
           "outputTags": ["Professional", "Studio BG", "Recognizable"],
           "scores": {
-            "consistency": "94 · demo",
-            "consent": "✓ (example)",
-            "risk": "Low (example)"
+            "consistency": "94",
+            "consent": "✓",
+            "risk": "low"
           }
         }
       },
@@ -1302,70 +1303,70 @@
           "toolLabel": "Content Calendar",
           "prompt": "Plan 7 days of content for a real estate company.",
           "agentSteps": ["Audience detected", "Topic clusters created", "Hooks optimized", "Calendar formatted"],
-          "agentSummary": "Example · Audience detected · Calendar ready",
+          "agentSummary": "Audience detected · Calendar ready",
           "outputs": [
             { "label": "Mon", "text": "Explain property value" },
             { "label": "Wed", "text": "Avoid selling mistakes" },
             { "label": "Fri", "text": "Owner CTA" }
           ],
-          "resultTitle": "Example: 7 days of content",
-          "resultSubtitle": "Example score · Hook 91",
-          "resultScore": "Risk check: example · Low",
-          "miniLabel": "Example · 7 posts · 3 formats"
+          "resultTitle": "7 days of content ready",
+          "resultSubtitle": "Hook 91",
+          "resultScore": "Low risk",
+          "miniLabel": "7 posts · 3 formats"
         },
         "hooks": {
           "toolLabel": "Viral Hook",
           "prompt": "Give me 5 strong hooks for my real estate page.",
           "agentSteps": ["Trend fit analyzed", "Hooks generated", "Clarity optimized", "Risk reviewed"],
-          "agentSummary": "Example · 5 hooks created · Risk check: example",
+          "agentSummary": "5 hooks created · Low risk",
           "outputs": [
             { "label": "Hook 1", "text": "This apartment sold in 4 hours." },
             { "label": "Hook 2", "text": "Most owners underestimate this mistake." },
             { "label": "Hook 3", "text": "Your home might be worth more than you think." }
           ],
-          "resultTitle": "Example: 5 hooks",
-          "resultSubtitle": "Example score · Hook 91",
-          "resultScore": "Risk check: example · Low",
-          "miniLabel": "Example · Platform fit: High"
+          "resultTitle": "5 hooks ready",
+          "resultSubtitle": "Hook 91",
+          "resultScore": "Low risk",
+          "miniLabel": "Platform fit: High"
         },
         "produkt": {
           "toolLabel": "Product Advertising",
           "prompt": "Write a reel ad for an AI tax app.",
           "agentSteps": ["Product analyzed", "Value proposition sharpened", "Spot copy created", "CTA added"],
-          "agentSummary": "Example · Tool: Product Advertising · Finance language softened",
+          "agentSummary": "Product Advertising · Finance language softened",
           "outputs": [
             { "label": "Spot", "text": "You're losing time on bookkeeping — because your receipts are still sorted manually." }
           ],
-          "resultTitle": "Example: ad script",
-          "resultSubtitle": "Demo score · Clarity 88",
-          "resultScore": "Risk check: example · Low",
-          "miniLabel": "Example · Reels · 15s"
+          "resultTitle": "Ad script ready",
+          "resultSubtitle": "Clarity 90",
+          "resultScore": "Low risk",
+          "miniLabel": "Reels · 15s"
         },
         "visual": {
           "toolLabel": "Image Generator",
           "prompt": "Create an ad visual for a sustainable beauty routine.",
           "agentSteps": ["Style defined", "Image prompt created", "Format chosen", "Quality gate prepared"],
-          "agentSummary": "Example · Image prompt created · Format 4:5",
+          "agentSummary": "Image prompt created · Format 4:5",
           "outputs": [
             { "label": "Briefing", "text": "Soft studio light · clean skin · sustainable editorial mood" }
           ],
-          "resultTitle": "Example: visual briefing",
-          "resultSubtitle": "Demo score · Brand fit: High",
-          "resultScore": "Risk check: example · Low",
-          "miniLabel": "Example · No text overlay"
+          "resultTitle": "Visual briefing ready",
+          "resultSubtitle": "Brand fit: High",
+          "resultScore": "Low risk",
+          "miniLabel": "No text overlay"
         },
         "avatar": {
           "toolLabel": "AI Self",
           "prompt": "Create my AI avatar in tech creator style.",
           "agentSteps": ["Photo checked", "Style chosen", "Consent confirmed", "Consistency secured"],
-          "agentSummary": "Example · AI avatar concept · Consent note",
+          "agentSummary": "AI avatar concept · Consent note",
           "outputs": [
             { "label": "Style", "text": "Tech creator · clean background · professional look" }
           ],
-          "resultTitle": "Example: AI avatar concept",
+          "resultTitle": "AI avatar concept",
           "resultSubtitle": "Avatar concept with photo input",
-          "resultScore": "Consent ✓ (example)",
-          "miniLabel": "Example · Reels · Ads · Brand"
+          "resultScore": "Consent ✓",
+          "miniLabel": "Reels · Ads · Brand"
         }
       },
       "activity": {

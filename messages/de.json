@@ -909,6 +909,7 @@
     "demos": {
       "labels": {
         "demo": "Demo",
+        "demoExample": "Demo-Beispiel",
         "exampleOutput": "Beispiel-Output",
         "exampleScore": "Beispiel-Bewertung",
         "exampleResult": "So könnte ein Ergebnis aussehen",
@@ -966,13 +967,13 @@
           "outputStory": "Budget verstehen, Eigenkapital aufbauen, Förderoptionen prüfen — ohne Übertreibungen.",
           "outputCta": "Kommentiere START — ich schick dir die Checkliste.",
           "scores": {
-            "hook": "91 · Demo",
-            "clarity": "88 · Demo",
-            "risk": "Niedrig (Beispiel)"
+            "hook": "91",
+            "clarity": "88",
+            "risk": "niedrig"
           }
         },
         "product": {
-          "headline": "ADS OHNE LEERES BLATT",
+          "headline": "PRODUKT-ADS IN SEKUNDEN",
           "description": "Produktdaten rein — der Agent wählt Spot, Caption und CTA als Beispiel für Reels & Shorts.",
           "badge": "Produkt Werbung",
           "input": "Produkt: \"KI-Steuer-App für Selbstständige\"\nInstagram Reels",
@@ -985,9 +986,9 @@
           "outputSpot": "TaxMind erkennt Belege, kategorisiert Ausgaben und bereitet deine Buchhaltung KI-gestützt vor.",
           "outputCta": "Link in Bio — 14 Tage testen.",
           "scores": {
-            "hook": "89 · Demo",
-            "clarity": "90 · Demo",
-            "risk": "Niedrig (Beispiel)"
+            "hook": "89",
+            "clarity": "90",
+            "risk": "niedrig"
           }
         },
         "viral_hook": {
@@ -1006,9 +1007,9 @@
             "POV: Du findest heraus, dass dein Lieblingsprodukt nicht cruelty-free ist."
           ],
           "scores": {
-            "hook": "91 · Demo",
-            "scroll_stop": "87 · Demo",
-            "risk": "Niedrig (Beispiel)"
+            "hook": "91",
+            "scroll_stop": "87",
+            "risk": "niedrig"
           }
         },
         "content_kalender": {
@@ -1028,11 +1029,11 @@
             { "day": "Do", "topic": "Vergleich: \"Tagesgeld vs. ETF 2026\"", "format": "Reel 60s" },
             { "day": "Fr", "topic": "Community-Frage: \"Was ist euer Sparziel?\"", "format": "Post" }
           ],
-          "calendarFooter": "Beispiel · Beste Posting-Zeit: 18:00–20:00 · Plattform-Fit: Hoch (Demo)",
+          "calendarFooter": "Beste Posting-Zeit: 18:00–20:00 · Plattform-Fit: Hoch",
           "scores": {
-            "plan": "92 · Demo",
-            "platform": "Hoch (Beispiel)",
-            "risk": "Niedrig (Beispiel)"
+            "plan": "92",
+            "platform": "Hoch",
+            "risk": "niedrig"
           }
         },
         "avatar": {
@@ -1045,12 +1046,12 @@
             "Avatar-Konzept mit Foto-Input (Beispiel)",
             "Consent-Hinweis als Demo gezeigt"
           ],
-          "outputTitle": "Beispiel: KI-Avatar-Konzept",
+          "outputTitle": "KI-Avatar-Konzept",
           "outputTags": ["Professional", "Studio BG", "Wiedererkennbar"],
           "scores": {
-            "consistency": "94 · Demo",
-            "consent": "✓ (Beispiel)",
-            "risk": "Niedrig (Beispiel)"
+            "consistency": "94",
+            "consent": "✓",
+            "risk": "niedrig"
           }
         }
       },
@@ -1059,70 +1060,70 @@
           "toolLabel": "Content Kalender",
           "prompt": "Plane mir 7 Tage Content für eine Immobilienfirma.",
           "agentSteps": ["Zielgruppe erkannt", "Themencluster erstellt", "Hooks optimiert", "Kalender formatiert"],
-          "agentSummary": "Beispiel · Zielgruppe erkannt · Kalender bereit",
+          "agentSummary": "Zielgruppe erkannt · Kalender bereit",
           "outputs": [
             { "label": "Mo", "text": "Immobilienwert erklären" },
             { "label": "Mi", "text": "Verkaufsfehler vermeiden" },
             { "label": "Fr", "text": "Eigentümer-CTA" }
           ],
-          "resultTitle": "Beispiel: 7 Tage Content",
-          "resultSubtitle": "Beispiel-Bewertung · Hook 91",
-          "resultScore": "Risiko-Check: Beispiel · Niedrig",
-          "miniLabel": "Beispiel · 7 Posts · 3 Formate"
+          "resultTitle": "7 Tage Content bereit",
+          "resultSubtitle": "Hook 91",
+          "resultScore": "Risiko niedrig",
+          "miniLabel": "7 Posts · 3 Formate"
         },
         "hooks": {
           "toolLabel": "Viral Hook",
           "prompt": "Gib mir 5 starke Hooks für meine Immobilien-Seite.",
           "agentSteps": ["Trend-Fit analysiert", "Hooks generiert", "Klarheit optimiert", "Risiko geprüft"],
-          "agentSummary": "Beispiel · 5 Hooks erstellt · Risiko-Check: Beispiel",
+          "agentSummary": "5 Hooks erstellt · Risiko niedrig",
           "outputs": [
             { "label": "Hook 1", "text": "Diese Wohnung war in 4 Stunden verkauft." },
             { "label": "Hook 2", "text": "Die meisten Eigentümer unterschätzen diesen Fehler." },
             { "label": "Hook 3", "text": "Deine Wohnung ist vielleicht mehr wert, als du denkst." }
           ],
-          "resultTitle": "Beispiel: 5 Hooks",
-          "resultSubtitle": "Beispiel-Bewertung · Hook 91",
-          "resultScore": "Risiko-Check: Beispiel · Niedrig",
-          "miniLabel": "Beispiel · Plattform-Fit: Hoch"
+          "resultTitle": "5 Hooks bereit",
+          "resultSubtitle": "Hook 91",
+          "resultScore": "Risiko niedrig",
+          "miniLabel": "Plattform-Fit: Hoch"
         },
         "produkt": {
           "toolLabel": "Produkt-Werbung",
           "prompt": "Schreib mir eine Reel-Ad für eine KI-Steuer-App.",
           "agentSteps": ["Produkt analysiert", "Nutzenversprechen geschärft", "Spot-Text erstellt", "CTA ergänzt"],
-          "agentSummary": "Beispiel · Tool: Produkt Werbung · Finance-Sprache entschärft",
+          "agentSummary": "Produkt Werbung · Finance-Sprache entschärft",
           "outputs": [
             { "label": "Spot", "text": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden." }
           ],
-          "resultTitle": "Beispiel: Ad Script",
-          "resultSubtitle": "Demo-Bewertung · Klarheit 88",
-          "resultScore": "Risiko-Check: Beispiel · Niedrig",
-          "miniLabel": "Beispiel · Reels · 15s"
+          "resultTitle": "Ad Script bereit",
+          "resultSubtitle": "Klarheit 90",
+          "resultScore": "Risiko niedrig",
+          "miniLabel": "Reels · 15s"
         },
         "visual": {
           "toolLabel": "Bild Generator",
           "prompt": "Erstelle ein Ad-Visual für eine nachhaltige Beauty-Routine.",
           "agentSteps": ["Stil definiert", "Bildprompt erstellt", "Format gewählt", "Quality Gate vorbereitet"],
-          "agentSummary": "Beispiel · Bildprompt erstellt · Format 4:5",
+          "agentSummary": "Bildprompt erstellt · Format 4:5",
           "outputs": [
             { "label": "Briefing", "text": "Soft studio light · clean skin · sustainable editorial mood" }
           ],
-          "resultTitle": "Beispiel: Visual Briefing",
-          "resultSubtitle": "Demo-Bewertung · Brand Fit: Hoch",
-          "resultScore": "Risiko-Check: Beispiel · Niedrig",
-          "miniLabel": "Beispiel · No text overlay"
+          "resultTitle": "Visual Briefing bereit",
+          "resultSubtitle": "Brand Fit: Hoch",
+          "resultScore": "Risiko niedrig",
+          "miniLabel": "No text overlay"
         },
         "avatar": {
           "toolLabel": "Mein KI-Ich",
           "prompt": "Erstelle meinen KI-Avatar im Tech-Creator-Stil.",
           "agentSteps": ["Foto geprüft", "Stil gewählt", "Consent bestätigt", "Konsistenz gesichert"],
-          "agentSummary": "Beispiel · KI-Avatar-Konzept · Consent-Hinweis",
+          "agentSummary": "KI-Avatar-Konzept · Consent-Hinweis",
           "outputs": [
             { "label": "Stil", "text": "Tech Creator · clean background · professional look" }
           ],
-          "resultTitle": "Beispiel: KI-Avatar-Konzept",
+          "resultTitle": "KI-Avatar-Konzept",
           "resultSubtitle": "Avatar-Konzept mit Foto-Input",
-          "resultScore": "Consent ✓ (Beispiel)",
-          "miniLabel": "Beispiel · Reels · Ads · Brand"
+          "resultScore": "Consent ✓",
+          "miniLabel": "Reels · Ads · Brand"
         }
       },
       "activity": {

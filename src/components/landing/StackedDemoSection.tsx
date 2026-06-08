@@ -39,7 +39,7 @@ function clamp(value: number, min: number, max: number) {
 function DemoBadge({ children }: { children: string }) {
   return (
     <span
-      className="mb-3 inline-block rounded-[6px] px-2 py-0.5 text-[0.66rem] font-bold uppercase tracking-[0.08em]"
+      className="mb-3 inline-block rounded-[6px] px-2 py-0.5 text-[0.66rem] font-medium tracking-[0.02em]"
       style={{
         background: "rgba(255,255,255,0.06)",
         border: "1px solid rgba(255,255,255,0.14)",
@@ -245,12 +245,10 @@ function WorkflowPanel({
   index: number;
   activeIndex: number;
   labels: {
-    demo: string;
+    demoExample: string;
     agentDecision: string;
     output: string;
-    exampleOutput: string;
     score: string;
-    exampleScore: string;
   };
 }) {
   const isActive = index === activeIndex;
@@ -269,7 +267,7 @@ function WorkflowPanel({
       }}
       aria-hidden={!isActive}
     >
-      <DemoBadge>{labels.demo}</DemoBadge>
+      <DemoBadge>{labels.demoExample}</DemoBadge>
       <div
         className="mb-3 rounded-[10px] p-3"
         style={{
@@ -298,12 +296,6 @@ function WorkflowPanel({
       >
         {labels.output}
       </p>
-      <p
-        className="mb-2 text-[0.66rem] font-medium"
-        style={{ color: "rgba(255,255,255,0.42)" }}
-      >
-        {labels.exampleOutput}
-      </p>
       <div
         className="min-h-0 flex-1 overflow-y-auto text-[0.82rem] leading-[1.6]"
         style={{ color: "rgba(255,255,255,0.85)" }}
@@ -317,12 +309,6 @@ function WorkflowPanel({
           style={{ color: "rgba(255,255,255,0.48)" }}
         >
           {labels.score}
-        </p>
-        <p
-          className="mb-2 text-[0.66rem] font-medium"
-          style={{ color: "rgba(255,255,255,0.42)" }}
-        >
-          {labels.exampleScore}
         </p>
         <ScoreRow scores={step.scores} />
       </div>
@@ -339,7 +325,7 @@ function StepCopy({
   step: DemoStep;
   index: number;
   activeIndex: number;
-  labels: { demo: string; input: string; exampleResult: string };
+  labels: { input: string };
 }) {
   const isActive = index === activeIndex;
 
@@ -353,7 +339,6 @@ function StepCopy({
       }}
       aria-hidden={!isActive}
     >
-      <DemoBadge>{labels.demo}</DemoBadge>
       <p
         className="mb-3 text-[0.72rem] font-bold tracking-[0.14em]"
         style={{ color: "#B4FF00", fontFamily: "var(--font-dm), sans-serif" }}
@@ -395,12 +380,6 @@ function StepCopy({
           {step.input}
         </div>
       </div>
-      <p
-        className="mb-3 text-[0.66rem]"
-        style={{ color: "rgba(255,255,255,0.42)" }}
-      >
-        {labels.exampleResult}
-      </p>
       <AgentPill>{step.badge}</AgentPill>
     </div>
   );
@@ -414,14 +393,11 @@ function MobileStepCard({
   step: DemoStep;
   index: number;
   labels: {
-    demo: string;
+    demoExample: string;
     input: string;
     agentDecision: string;
     output: string;
-    exampleOutput: string;
     score: string;
-    exampleScore: string;
-    exampleResult: string;
   };
 }) {
   return (
@@ -432,7 +408,7 @@ function MobileStepCard({
         border: "1px solid rgba(180,255,0,0.2)",
       }}
     >
-      <DemoBadge>{labels.demo}</DemoBadge>
+      <DemoBadge>{labels.demoExample}</DemoBadge>
       <p className="mb-2 text-[0.68rem] font-bold tracking-[0.12em] text-[#B4FF00]">
         {String(index + 1).padStart(2, "0")} / {String(STEP_COUNT).padStart(2, "0")}
       </p>
@@ -462,14 +438,16 @@ function MobileStepCard({
           ))}
         </ul>
       </div>
-      <p className="mb-2 text-[0.66rem] font-medium text-white/42">{labels.exampleOutput}</p>
+      <p
+        className="mb-2 text-[0.66rem] font-bold uppercase text-white/48"
+      >
+        {labels.output}
+      </p>
       <div className="mb-4 text-[0.82rem] leading-relaxed text-white/85">{step.output}</div>
       <div className="mb-4">
         <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/48">{labels.score}</p>
-        <p className="mb-2 text-[0.66rem] font-medium text-white/42">{labels.exampleScore}</p>
         <ScoreRow scores={step.scores} />
       </div>
-      <p className="mb-3 text-[0.66rem] text-white/42">{labels.exampleResult}</p>
       <AgentPill>{step.badge}</AgentPill>
     </article>
   );
@@ -484,14 +462,11 @@ export function StackedDemoSection() {
   const [isDesktop, setIsDesktop] = useState(false);
 
   const labels = {
-    demo: tl("demo"),
+    demoExample: tl("demoExample"),
     input: tl("input"),
     output: tl("output"),
     agentDecision: tl("agentDecision"),
     score: tl("score"),
-    exampleOutput: tl("exampleOutput"),
-    exampleScore: tl("exampleScore"),
-    exampleResult: tl("exampleResult"),
   };
 
   useEffect(() => {
