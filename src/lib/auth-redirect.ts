@@ -2,6 +2,11 @@ import {
   DEFAULT_ADMIN_EMAIL_ALLOWLIST,
   isEmailInAdminAllowlist,
 } from "@/lib/admin-allowlist";
+import {
+  isAgencyWorkspacePath,
+  resolveAgencyWorkspaceTarget,
+  type AgencyWorkspaceAccess,
+} from "@/lib/agency-access";
 import { hasActivePlan, type AccessUser } from "@/lib/access";
 import { checkPlatformAdmin } from "@/lib/platform-admin";
 
@@ -70,19 +75,37 @@ export function sanitizeAuthRedirect(
   return trimmed;
 }
 
-export type PostAuthProfile = AccessUser & { email?: string | null };
+export type PostAuthProfile = AccessUser & {
+  email?: string | null;
+  id?: string | null;
+};
 
 type AllowlistChecker = (email: string | null | undefined) => boolean;
 
+function resolveAgencyWorkspaceRedirect(
+  safe: string,
+  agencyAccess: AgencyWorkspaceAccess
+): string {
+  const normalized = normalizeRedirectPath(safe);
+  if (
+    normalized === "/dashboard/agency" &&
+    agencyAccess.hasAgencyPlanOnly
+  ) {
+    return "/dashboard/white-label";
+  }
+  return safe;
+}
+
 /**
- * After login / email confirmation: admins → /admin; users with plan → /dashboard;
- * users without plan → /pricing. Never sends non-admins to /admin.
+ * After login / email confirmation: admins → /admin; users with plan → requested or /dashboard;
+ * agency-only users → agency workspace; others without plan → /pricing.
  */
 export function resolvePostAuthRedirect(
   profile: PostAuthProfile,
   requestedPath?: string | null,
   isAllowlistedEmail: AllowlistChecker = (email) =>
-    isEmailInAdminAllowlist(email, DEFAULT_ADMIN_EMAIL_ALLOWLIST)
+    isEmailInAdminAllowlist(email, DEFAULT_ADMIN_EMAIL_ALLOWLIST),
+  agencyAccess?: AgencyWorkspaceAccess | null
 ): string {
   const safe = sanitizeAuthRedirect(requestedPath);
 
@@ -90,16 +113,34 @@ export function resolvePostAuthRedirect(
     return safe ?? DEFAULT_ADMIN_DESTINATION;
   }
 
-  if (!hasActivePlan(profile)) {
-    if (safe && !isPlanGatedRedirectPath(safe)) {
-      return safe;
+  if (hasActivePlan(profile)) {
+    if (safe) return safe;
+    return DEFAULT_USER_DESTINATION;
+  }
+
+  if (safe && isAgencyWorkspacePath(safe)) {
+    if (agencyAccess?.hasAgencyWorkspaceAccess) {
+      return resolveAgencyWorkspaceRedirect(safe, agencyAccess);
     }
     return NO_PLAN_DESTINATION;
   }
 
-  if (safe) return safe;
+  if (safe && isPlanGatedRedirectPath(safe)) {
+    if (agencyAccess?.hasAgencyWorkspaceAccess) {
+      return resolveAgencyWorkspaceTarget(agencyAccess);
+    }
+    return NO_PLAN_DESTINATION;
+  }
 
-  return DEFAULT_USER_DESTINATION;
+  if (safe) {
+    return safe;
+  }
+
+  if (agencyAccess?.hasAgencyWorkspaceAccess) {
+    return resolveAgencyWorkspaceTarget(agencyAccess);
+  }
+
+  return NO_PLAN_DESTINATION;
 }
 
 export function logAuthRedirect(payload: {

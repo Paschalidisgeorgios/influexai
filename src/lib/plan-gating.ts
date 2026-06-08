@@ -25,6 +25,7 @@ const OPEN_DASHBOARD_PATHS = new Set([
   "/dashboard/analytics",
   "/dashboard/referral",
   "/dashboard/agency",
+  "/dashboard/white-label",
 ]);
 
 function normalizePathname(pathname: string): string {

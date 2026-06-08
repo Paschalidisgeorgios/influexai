@@ -17,6 +17,10 @@ import {
 } from "@/components/auth/auth-input-classes";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import {
+  agencyWorkspaceAccessFromRows,
+  isTenantAccessibleForAgency,
+} from "@/lib/agency-access";
+import {
   getPasswordStrength,
   strengthBarColors,
 } from "@/lib/password-strength";
@@ -190,9 +194,20 @@ function SignupPageInner() {
       void trackAbEvent("signup_complete");
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin, role, plan")
+        .select("is_admin, role, plan, agency_plan")
         .eq("id", data.user.id)
         .single();
+
+      const { data: tenant } = await supabase
+        .from("tenants")
+        .select("is_active, deactivated_at")
+        .eq("owner_id", data.user.id)
+        .maybeSingle();
+
+      const agencyAccess = agencyWorkspaceAccessFromRows(
+        profile?.agency_plan,
+        tenant && isTenantAccessibleForAgency(tenant) ? tenant : null
+      );
 
       const target = resolvePostAuthRedirect(
         {
@@ -200,8 +215,11 @@ function SignupPageInner() {
           is_admin: profile?.is_admin,
           role: profile?.role,
           plan: profile?.plan,
+          id: data.user.id,
         },
-        searchParams.get("redirect")
+        searchParams.get("redirect"),
+        undefined,
+        agencyAccess
       );
 
       router.replace(target);

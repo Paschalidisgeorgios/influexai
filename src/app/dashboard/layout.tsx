@@ -1,5 +1,7 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { resolveAgencyOnlyDashboardAccess } from "@/lib/agency-access.server";
 import { hasActivePlan } from "@/lib/access";
 import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -39,7 +41,16 @@ export default async function DashboardLayout({
     !isPlatformAdminServer(accessUser) &&
     !hasActivePlan(accessUser)
   ) {
-    redirect("/pricing");
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") ?? "/dashboard";
+    const agencyDecision = await resolveAgencyOnlyDashboardAccess(
+      user.id,
+      pathname
+    );
+
+    if (agencyDecision.action === "redirect") {
+      redirect(agencyDecision.target);
+    }
   }
 
   return (

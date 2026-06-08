@@ -13,6 +13,7 @@ import {
   REFERRAL_REF_COOKIE,
   REFERRAL_REF_MAX_AGE,
 } from "@/lib/referral-ref-cookie";
+import { resolveAgencyOnlyDashboardAccess } from "@/lib/agency-access.server";
 import { hasActivePlan } from "@/lib/access";
 import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
 import { isPlatformAdminServer } from "@/lib/platform-admin.server";
@@ -71,6 +72,7 @@ export async function middleware(request: NextRequest) {
     requestHeaders.set("x-url-lang", langParam);
   }
   requestHeaders.set("x-tenant-host", hostname);
+  requestHeaders.set("x-pathname", pathname);
 
   // Platform "/" is always the marketing landing (src/app/page.tsx)
   if (pathname === "/" && isMainHost(hostname)) {
@@ -226,12 +228,13 @@ export async function middleware(request: NextRequest) {
       .single();
 
     const redirectParam = request.nextUrl.searchParams.get("redirect");
-    const target = resolvePostAuthRedirect(
+    const target = await resolvePostAuthRedirect(
       {
         email: user.email,
         is_admin: profile?.is_admin,
         role: profile?.role,
         plan: profile?.plan,
+        id: user.id,
       },
       redirectParam
     );
@@ -270,13 +273,22 @@ export async function middleware(request: NextRequest) {
       !isPlatformAdminServer(accessUser) &&
       !hasActivePlan(accessUser)
     ) {
-      logAuthRedirect({
-        userId: user.id,
-        role: profile?.role,
-        target: "/pricing",
-        source: "middleware_dashboard_plan",
-      });
-      return NextResponse.redirect(new URL("/pricing", request.url));
+      const agencyDecision = await resolveAgencyOnlyDashboardAccess(
+        user.id,
+        pathname
+      );
+
+      if (agencyDecision.action === "redirect") {
+        logAuthRedirect({
+          userId: user.id,
+          role: profile?.role,
+          target: agencyDecision.target,
+          source: "middleware_dashboard_agency",
+        });
+        return NextResponse.redirect(
+          new URL(agencyDecision.target, request.url)
+        );
+      }
     }
 
     const gate = getRouteGate(pathname);

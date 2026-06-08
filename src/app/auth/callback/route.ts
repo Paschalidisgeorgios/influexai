@@ -63,12 +63,13 @@ export async function GET(request: NextRequest) {
           .eq("id", user.id)
           .single();
 
-        const target = resolvePostAuthRedirect(
+        const target = await resolvePostAuthRedirect(
           {
             email: user.email,
             is_admin: profile?.is_admin,
             role: profile?.role,
             plan: profile?.plan,
+            id: user.id,
           },
           nextParam
         );

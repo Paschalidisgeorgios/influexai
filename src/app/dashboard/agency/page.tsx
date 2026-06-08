@@ -3,10 +3,16 @@ import { AgencyDashboard } from "@/components/agency/agency-dashboard";
 export default async function AgencyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ subscribed?: string; credits?: string }>;
+  searchParams: Promise<{
+    subscribed?: string;
+    credits?: string;
+    success?: string;
+  }>;
 }) {
   const sp = await searchParams;
-  return (
-    <AgencyDashboard subscribed={sp.subscribed === "1" || sp.credits === "1"} />
-  );
+  const checkoutSuccess =
+    sp.subscribed === "1" ||
+    sp.credits === "1" ||
+    sp.success === "true";
+  return <AgencyDashboard subscribed={checkoutSuccess} />;
 }
