@@ -82,11 +82,11 @@ function navItemLabel(
 
 const DEFAULT_OPEN: Record<string, boolean> = {
   agent: true,
-  text: false,
-  video: false,
-  bild: false,
-  analyze: false,
-  live: false,
+  text: true,
+  video: true,
+  bild: true,
+  analyze: true,
+  live: true,
 };
 
 export function DashboardSidebar() {
@@ -364,6 +364,12 @@ export function DashboardSidebar() {
         </SidebarNavLink>
 
         <div className="h-px bg-white/5 my-2 mx-1" />
+
+        {!collapsed && (
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
+            Tools
+          </p>
+        )}
 
         {SIDEBAR_TOOL_CATEGORIES.map((category, index) =>
           renderCollapseCategory(
