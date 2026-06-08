@@ -16,6 +16,28 @@ export function openImageInNewTab(url: string): void {
   window.open(trimmed, "_blank", "noopener,noreferrer");
 }
 
+export function openVideoInNewTab(url: string): void {
+  openImageInNewTab(url);
+}
+
+export function videoDownloadUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed.startsWith("/api/generated-video/")) {
+    return trimmed;
+  }
+  if (trimmed.includes("download=1")) {
+    return trimmed;
+  }
+  return `${trimmed}${trimmed.includes("?") ? "&" : "?"}download=1`;
+}
+
+export async function downloadVideoFromUrl(
+  url: string,
+  filename = "influexai-video.mp4"
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  return downloadImageFromUrl(videoDownloadUrl(url), filename);
+}
+
 export async function downloadImageFromUrl(
   url: string,
   filename = "influexai-bild.jpg"

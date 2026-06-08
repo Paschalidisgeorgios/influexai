@@ -46,7 +46,7 @@ export function resolveStorageMediaUrl(
   return getPublicUrl(bucket, trimmed);
 }
 
-function isImageGenerationType(type: string): boolean {
+export function isImageGenerationType(type: string): boolean {
   const t = type.toLowerCase();
   return (
     t.includes("ki-ich") ||
@@ -57,7 +57,7 @@ function isImageGenerationType(type: string): boolean {
   );
 }
 
-function isVideoGenerationType(type: string): boolean {
+export function isVideoGenerationType(type: string): boolean {
   const t = type.toLowerCase();
   return (
     t.includes("live-creator") ||
@@ -66,6 +66,10 @@ function isVideoGenerationType(type: string): boolean {
     t.includes("stimme") ||
     t === "product_ad" ||
     t === "seedance" ||
+    t === "motion-transfer" ||
+    t === "live-portrait" ||
+    t.includes("ugc-video") ||
+    t.includes("faceswap") ||
     (t.includes("video") && !t.includes("remix"))
   );
 }
@@ -144,17 +148,9 @@ export function resolveGenerationMediaUrls(params: {
   }
 
   if (isVideoGenerationType(type)) {
-    const t = type.toLowerCase();
-
     if (asset?.finalPath) {
-      videoUrl =
-        resolveStorageMediaUrl(asset.finalPath, getPublicUrl) ??
-        (t === "product_ad" || t === "seedance"
-          ? `/api/generated-video/${generationId}`
-          : null);
-    }
-
-    if (!videoUrl) {
+      videoUrl = `/api/generated-video/${generationId}`;
+    } else if (!videoUrl) {
       videoUrl = legacy.videoUrl;
     }
   }

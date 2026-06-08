@@ -11,34 +11,14 @@ import {
   type GalleryFilter,
   type GalleryItem,
 } from "@/lib/gallery-types";
-import { resolveGenerationMediaUrls } from "@/lib/gallery-media";
+import {
+  isImageGenerationType,
+  isVideoGenerationType,
+  resolveGenerationMediaUrls,
+} from "@/lib/gallery-media";
 
 /** Max rows fetched per table — avoids loading entire tables (504 on Vercel). */
 const GALLERY_DB_FETCH_LIMIT = 50;
-
-function isImageGenerationType(type: string): boolean {
-  const t = type.toLowerCase();
-  return (
-    t.includes("ki-ich") ||
-    t === "ki-ich" ||
-    t.includes("produkt") ||
-    t.includes("image-generator") ||
-    t === "image"
-  );
-}
-
-function isVideoGenerationType(type: string): boolean {
-  const t = type.toLowerCase();
-  return (
-    t.includes("live-creator") ||
-    t.includes("video-remix") ||
-    t.includes("voice") ||
-    t.includes("stimme") ||
-    t === "product_ad" ||
-    t === "seedance" ||
-    (t.includes("video") && !t.includes("remix"))
-  );
-}
 
 function normalizeScript(row: {
   id: string;
