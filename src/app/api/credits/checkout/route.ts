@@ -8,6 +8,7 @@ import {
   type CreditPackage,
 } from "@/lib/credit-packages";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
+import { assertPlatformPlanForCreditCheckout } from "@/lib/credit-checkout-guard.server";
 import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,15 @@ export async function POST(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, role, is_admin")
+    .eq("id", user.id)
+    .single();
+
+  const planDenied = assertPlatformPlanForCreditCheckout(user, profile);
+  if (planDenied) return planDenied;
 
   try {
     const session = await createCreditsCheckoutSession(

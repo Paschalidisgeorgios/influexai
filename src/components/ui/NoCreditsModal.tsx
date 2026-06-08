@@ -40,9 +40,11 @@ function formatEur(amount: number): string {
 function CheckoutErrorBanner({
   onRetry,
   retryDisabled,
+  message,
 }: {
   onRetry: () => void;
   retryDisabled: boolean;
+  message?: string | null;
 }) {
   const t = useTranslations("noCredits");
 
@@ -52,7 +54,7 @@ function CheckoutErrorBanner({
       className="mb-4 rounded-xl border border-[#ff6b7a]/35 bg-[#ff6b7a]/10 px-4 py-3"
     >
       <p className="text-sm text-[#ff6b7a] leading-relaxed">
-        {t("checkout_error_banner")}
+        {message ?? t("checkout_error_banner")}
       </p>
       <button
         type="button"
@@ -82,6 +84,9 @@ export function NoCreditsModal({
     null
   );
   const [checkoutFailed, setCheckoutFailed] = useState(false);
+  const [checkoutErrorMessage, setCheckoutErrorMessage] = useState<
+    string | null
+  >(null);
   const [lastFailedPackId, setLastFailedPackId] = useState<
     CreditPackageId | undefined
   >();
@@ -109,6 +114,7 @@ export function NoCreditsModal({
   useEffect(() => {
     if (!open) return;
     setCheckoutFailed(false);
+    setCheckoutErrorMessage(null);
     setLastFailedPackId(undefined);
     setLoadingPackId(null);
     setSelectedId(recommendedId);
@@ -123,6 +129,7 @@ export function NoCreditsModal({
 
     setLoadingPackId(pack.id);
     setCheckoutFailed(false);
+    setCheckoutErrorMessage(null);
     try {
       const res = await fetch("/api/stripe/credits-checkout", {
         method: "POST",
@@ -134,9 +141,11 @@ export function NoCreditsModal({
         window.location.href = data.url;
         return;
       }
+      setCheckoutErrorMessage(data.error ?? null);
       setLastFailedPackId(pack.id);
       setCheckoutFailed(true);
     } catch {
+      setCheckoutErrorMessage(null);
       setLastFailedPackId(pack.id);
       setCheckoutFailed(true);
     } finally {
@@ -297,6 +306,7 @@ export function NoCreditsModal({
             <CheckoutErrorBanner
               onRetry={retryCheckout}
               retryDisabled={checkoutBusy}
+              message={checkoutErrorMessage}
             />
           )}
 
