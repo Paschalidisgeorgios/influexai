@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { GalleryMediaItem } from "@/lib/gallery-media";
+import type { GalleryMediaItem } from "@/lib/gallery-media-client";
 import { downloadImageFromUrl } from "@/lib/image-result-actions";
 
 type GalleryLightboxProps = {

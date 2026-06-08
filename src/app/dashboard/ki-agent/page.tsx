@@ -62,8 +62,15 @@ const NEXT_ACTION_LABELS: Record<string, string> = {
   mehr_varianten: "Mehr Varianten",
   in_kalender_uebernehmen: "In Kalender übernehmen",
   thumbnail_erstellen: "Thumbnail erstellen",
-  exportieren: "Exportieren",
 };
+
+const UNAVAILABLE_NEXT_ACTIONS = new Set([
+  "exportieren",
+  "mehr_varianten",
+  "in_kalender_uebernehmen",
+  "thumbnail_erstellen",
+  "caption_schreiben",
+]);
 
 function fitPillStyle(level: "low" | "medium" | "high" | undefined) {
   if (level === "high") return { background: "#B4FF00", color: "#060608" };
@@ -508,7 +515,9 @@ function ResultCard({
   intent?: string;
 }) {
   const scores: AgentScores = result.scores ?? {};
-  const nextActions = result.nextActions ?? [];
+  const nextActions = (result.nextActions ?? []).filter(
+    (action) => !UNAVAILABLE_NEXT_ACTIONS.has(action)
+  );
 
   return (
     <div
@@ -643,40 +652,27 @@ function ResultCard({
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {nextActions.map((action) => (
-              <button
-                key={action}
-                type="button"
-                disabled
-                title="Noch nicht verfügbar"
-                className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
-                style={{
-                  borderRadius: 4,
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  color: "rgba(255,255,255,0.45)",
-                  background: "transparent",
-                }}
-              >
-                {NEXT_ACTION_LABELS[action] ?? action} (bald)
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            disabled
-            title="Noch nicht verfügbar"
-            className="mt-3 cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
-            style={{
-              borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.45)",
-              background: "transparent",
-            }}
-          >
-            Veröffentlichen — noch nicht verfügbar
-          </button>
+          {nextActions.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {nextActions.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  disabled
+                  title="Noch nicht verfügbar"
+                  className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
+                  style={{
+                    borderRadius: 4,
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: "rgba(255,255,255,0.45)",
+                    background: "transparent",
+                  }}
+                >
+                  {NEXT_ACTION_LABELS[action] ?? action} (bald)
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ import { GalleryCard } from "@/components/gallery/gallery-card";
 import { GalleryLightbox } from "@/components/gallery/gallery-lightbox";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
-import { collectGalleryMedia } from "@/lib/gallery-media";
+import { collectGalleryMedia } from "@/lib/gallery-media-client";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 

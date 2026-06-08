@@ -48,3 +48,20 @@ export async function downloadImageFromUrl(
 export function galleryImageHref(): string {
   return "/dashboard/gallery?filter=image";
 }
+
+export function downloadTextAsFile(
+  text: string,
+  filename = "influexai-text.txt"
+): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+
+  const blob = new Blob([trimmed], { type: "text/plain;charset=utf-8" });
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(objectUrl);
+  return true;
+}

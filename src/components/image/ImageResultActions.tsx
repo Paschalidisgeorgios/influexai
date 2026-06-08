@@ -159,14 +159,14 @@ export function ImageResultActions({
         <>
           <ActionButton
             variant={variant}
-            label={downloading ? "Lädt…" : "Herunterladen"}
+            label={downloading ? "Lädt…" : variant === "agent" ? "Bild herunterladen" : "Herunterladen"}
             onClick={() => void handleDownload()}
             disabled={downloading}
             primary={variant === "gallery"}
           />
           <ActionButton
             variant={variant}
-            label="In neuem Tab öffnen"
+            label={variant === "agent" ? "Bild öffnen" : "In neuem Tab öffnen"}
             onClick={() => openImageInNewTab(trimmedUrl)}
           />
         </>

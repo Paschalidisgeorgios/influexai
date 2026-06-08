@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { ImageResultActions } from "@/components/image/ImageResultActions";
+import { TextResultActions } from "@/components/image/TextResultActions";
 import type { AgentResult } from "@/lib/agent/types";
 
 const sectionLabelStyle = {
@@ -47,7 +48,7 @@ function CopyButton({ text }: { text: string }) {
         flexShrink: 0,
       }}
     >
-      {copied ? "✓ Kopiert" : "Kopieren"}
+      {copied ? "Kopiert" : "Text kopieren"}
     </button>
   );
 }
@@ -448,11 +449,58 @@ function VideoBriefingView({ outputs }: { outputs: unknown[] }) {
   );
 }
 
+function buildCombinedResultText(result: AgentResult): string {
+  const type = normalizeResultType(result.type);
+  const { outputs } = result;
+
+  if (type === "script" && outputs[0]) {
+    const obj = asRecord(outputs[0]);
+    if (!obj) return JSON.stringify(outputs[0], null, 2);
+    const hook = pickString(obj, "hook");
+    const story = pickString(obj, "story", "script", "body", "main");
+    const cta = pickString(obj, "cta", "caption");
+    const hashtags = pickHashtags(obj)
+      .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
+      .join(" ");
+    return [hook && `Hook:\n${hook}`, story && `Story:\n${story}`, cta && `CTA:\n${cta}`, hashtags && `Hashtags:\n${hashtags}`]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  if (type === "hooks") {
+    let hooks: string[] = [];
+    if (outputs.every((item) => typeof item === "string")) {
+      hooks = outputs as string[];
+    } else if (outputs[0] && typeof outputs[0] === "object") {
+      const obj = asRecord(outputs[0]);
+      if (obj?.variants && Array.isArray(obj.variants)) {
+        hooks = obj.variants.map((v) => String(v));
+      } else if (obj?.hooks && Array.isArray(obj.hooks)) {
+        hooks = obj.hooks.map((v) => String(v));
+      }
+    }
+    return hooks.map((hook, index) => `${index + 1}. ${hook}`).join("\n");
+  }
+
+  if (type === "ad" && outputs[0]) {
+    const obj = asRecord(outputs[0]);
+    if (!obj) return JSON.stringify(outputs[0], null, 2);
+    const hook = pickString(obj, "hook");
+    const spot = pickString(obj, "body", "spot", "spotText", "script");
+    return [hook && `Ad Hook:\n${hook}`, spot && `Spot-Text:\n${spot}`]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  return JSON.stringify(outputs, null, 2);
+}
+
 export function AgentResultOutputs({ result }: { result: AgentResult }) {
   const { outputs } = result;
   if (!outputs?.length) return null;
 
   const type = normalizeResultType(result.type);
+  const combinedText = buildCombinedResultText(result);
 
   return (
     <div
@@ -476,6 +524,13 @@ export function AgentResultOutputs({ result }: { result: AgentResult }) {
       {!["script", "hooks", "ad", "calendar", "image", "video_briefing", "content_package"].includes(
         type
       ) && <RawOutputView outputs={outputs} />}
+
+      {type !== "image" && (
+        <TextResultActions
+          text={combinedText}
+          downloadFilename={`influexai-${type}.txt`}
+        />
+      )}
     </div>
   );
 }

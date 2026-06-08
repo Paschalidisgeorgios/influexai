@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, Home, Star } from "lucide-react";
+import { BarChart2, Home, Images, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
@@ -361,6 +361,26 @@ export function DashboardSidebar() {
               </span>
             </>
           )}
+        </SidebarNavLink>
+
+        <SidebarNavLink
+          href="/dashboard/gallery"
+          active={pathname === "/dashboard/gallery"}
+          collapsed={collapsed}
+          title={collapsed ? tNav("gallery") : undefined}
+          className={linkClass(pathname === "/dashboard/gallery")}
+        >
+          <Images
+            size={18}
+            strokeWidth={pathname === "/dashboard/gallery" ? 2.5 : 2}
+            className="shrink-0"
+            color={
+              pathname === "/dashboard/gallery"
+                ? "#B4FF00"
+                : "rgba(255,255,255,0.75)"
+            }
+          />
+          {!collapsed && <span className="truncate">{tNav("gallery")}</span>}
         </SidebarNavLink>
 
         <div className="h-px bg-white/5 my-2 mx-1" />

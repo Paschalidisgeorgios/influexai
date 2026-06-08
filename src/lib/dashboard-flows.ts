@@ -524,12 +524,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         icon: Brain,
         badge: "NEU",
       },
-      {
-        id: "gallery",
-        href: "/dashboard/gallery",
-        labelKey: "gallery",
-        icon: Images,
-      },
     ],
   },
 ];
@@ -565,8 +559,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   if (
     path.includes("image-generator") ||
     path.includes("upscaler") ||
-    path.includes("lora-training") ||
-    path.includes("/dashboard/gallery")
+    path.includes("lora-training")
   ) {
     keys.push("bild");
   }
