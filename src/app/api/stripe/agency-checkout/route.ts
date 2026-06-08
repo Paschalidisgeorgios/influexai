@@ -1,84 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { AGENCY_PLANS, getAgencyStripePriceId, type AgencyPlanId } from "@/lib/agency-plans";
-import {
-  AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE,
-  logMissingAgencyStripePriceId,
-} from "@/lib/stripe/prices";
-import { getStripe } from "@/lib/stripe";
+import { POST as agencyCheckoutPost } from "@/app/api/agency/checkout/route";
+import { postViaDeprecatedRoute } from "@/lib/deprecated-api-route.server";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
-
+/** @deprecated Use POST /api/agency/checkout */
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const planId = body.plan as AgencyPlanId;
-  const agencyName = String(body.agencyName ?? "").trim();
-  const slug = String(body.slug ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "");
-
-  const plan = AGENCY_PLANS[planId];
-  if (!plan) {
-    return NextResponse.json({ error: "Ungültiger Plan" }, { status: 400 });
-  }
-  if (!agencyName || slug.length < 2) {
-    return NextResponse.json(
-      { error: "Agenturname und Subdomain (mind. 2 Zeichen) erforderlich." },
-      { status: 400 }
-    );
-  }
-
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json(
-      { error: "Bitte zuerst anmelden." },
-      { status: 401 }
-    );
-  }
-
-  const interval = (body.interval ?? "monthly") as "monthly" | "yearly";
-  const priceId = getAgencyStripePriceId(planId, interval);
-
-  if (!priceId) {
-    logMissingAgencyStripePriceId(planId, interval);
-    return NextResponse.json(
-      { error: AGENCY_CHECKOUT_UNAVAILABLE_MESSAGE },
-      { status: 503 }
-    );
-  }
-
-  const lineItems = [{ price: priceId, quantity: 1 }];
-
-  const session = await getStripe().checkout.sessions.create({
-    mode: "subscription",
-    payment_method_types: ["card"],
-    line_items: lineItems,
-    success_url: `${SITE_URL}/dashboard/agency?success=true`,
-    cancel_url: `${SITE_URL}/agency?canceled=1`,
-    metadata: {
-      checkout_type: "agency_subscription",
-      plan: planId,
-      agency_name: agencyName,
-      agency_slug: slug,
-      owner_id: user.id,
-    },
-    subscription_data: {
-      metadata: {
-        checkout_type: "agency_subscription",
-        plan: planId,
-        agency_slug: slug,
-        owner_id: user.id,
-      },
-    },
-  });
-
-  return NextResponse.json({ url: session.url });
+  return postViaDeprecatedRoute(
+    request,
+    agencyCheckoutPost,
+    "/api/agency/checkout"
+  );
 }
