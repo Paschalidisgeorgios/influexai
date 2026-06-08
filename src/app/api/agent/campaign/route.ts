@@ -19,6 +19,7 @@ import type {
   CampaignTone,
 } from "@/lib/agent/types";
 import { assertKiToolAccess } from "@/lib/access.server";
+import { CAMPAIGN_AUTOPILOT_IS_PREVIEW } from "@/lib/agent/campaignPlanner";
 import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
@@ -63,7 +64,10 @@ const CAMPAIGN_TONES: CampaignTone[] = [
   "bold",
 ];
 
-function completeCampaignExecution(exec: CampaignExecution): CampaignExecution {
+function completeCampaignExecution(
+  exec: CampaignExecution,
+  usedCredits?: number
+): CampaignExecution {
   const completedSteps = exec.steps.map((step) => ({
     ...step,
     status: "completed" as const,
@@ -72,7 +76,7 @@ function completeCampaignExecution(exec: CampaignExecution): CampaignExecution {
     ...exec,
     status: "completed",
     steps: completedSteps,
-    usedCredits: exec.estimatedCredits ?? 0,
+    usedCredits: usedCredits ?? exec.estimatedCredits ?? 0,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -96,25 +100,33 @@ async function runJobAsync(
     );
 
     const estimatedCredits = execution.estimatedCredits ?? 0;
-    const deducted = await deductCredits(
-      supabase,
-      userId,
-      estimatedCredits,
-      "Campaign Autopilot",
-      {
-        generationType: "campaign-autopilot",
-        prompt: execution.prompt.slice(0, 200),
-      }
-    );
+    let usedCredits = 0;
+    let remainingCredits: number | undefined;
 
-    if (!deducted.success) {
-      throw new Error(deducted.error ?? "Credits abbuchen fehlgeschlagen.");
+    if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW && estimatedCredits > 0) {
+      const deducted = await deductCredits(
+        supabase,
+        userId,
+        estimatedCredits,
+        "Campaign Autopilot",
+        {
+          generationType: "campaign-autopilot",
+          prompt: execution.prompt.slice(0, 200),
+        }
+      );
+
+      if (!deducted.success) {
+        throw new Error(deducted.error ?? "Credits abbuchen fehlgeschlagen.");
+      }
+
+      usedCredits = estimatedCredits;
+      remainingCredits = deducted.remainingCredits;
     }
 
     await updateJobStatus(supabase, jobId, "completed", {
       ...result,
-      usedCredits: estimatedCredits,
-      remainingCredits: deducted.remainingCredits,
+      usedCredits,
+      ...(remainingCredits !== undefined ? { remainingCredits } : {}),
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Fehler";
@@ -232,33 +244,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
-  const deducted = await deductCredits(
-    supabase,
-    userId,
-    estimatedCredits,
-    "Campaign Autopilot",
-    {
-      generationType: "campaign-autopilot",
-      prompt: prompt.slice(0, 200),
-    }
-  );
+  let usedCredits = 0;
+  let remainingCredits: number | undefined;
 
-  if (!deducted.success) {
-    return NextResponse.json(
-      { error: deducted.error ?? "Credits abbuchen fehlgeschlagen." },
-      { status: 500 }
+  if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW && estimatedCredits > 0) {
+    const deducted = await deductCredits(
+      supabase,
+      userId,
+      estimatedCredits,
+      "Campaign Autopilot",
+      {
+        generationType: "campaign-autopilot",
+        prompt: prompt.slice(0, 200),
+      }
     );
+
+    if (!deducted.success) {
+      return NextResponse.json(
+        { error: deducted.error ?? "Credits abbuchen fehlgeschlagen." },
+        { status: 500 }
+      );
+    }
+
+    usedCredits = estimatedCredits;
+    remainingCredits = deducted.remainingCredits;
   }
 
   const completedExec = completeCampaignExecution({
     ...execWithUser,
     result,
+    usedCredits,
   });
 
   return NextResponse.json({
     execution: completedExec,
     result,
-    usedCredits: estimatedCredits,
-    remainingCredits: deducted.remainingCredits,
+    usedCredits,
+    ...(remainingCredits !== undefined ? { remainingCredits } : {}),
   });
 }

@@ -23,6 +23,7 @@ import {
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
+import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -99,9 +100,11 @@ export async function POST(request: NextRequest) {
   const started = Date.now();
 
   try {
+    const prepared = await prepareImageGeneratorPrompts(trimmedPrompt, category);
+
     const falResult = await generateCategoryImage({
-      prompt: trimmedPrompt,
-      category,
+      prompt: prepared.enhancedPrompt,
+      category: prepared.category,
       imageSize,
       highRes,
       seed,
@@ -120,7 +123,7 @@ export async function POST(request: NextRequest) {
         downloadPaid: false,
         mode: "preview",
         assetKind: "image",
-        category,
+        category: prepared.category,
         model: falResult.model,
         width: width ?? falResult.width,
         height: height ?? falResult.height,
@@ -132,7 +135,7 @@ export async function POST(request: NextRequest) {
         sourcePath,
       },
       0,
-      trimmedPrompt.slice(0, 500),
+      prepared.userPrompt.slice(0, 500),
       generationId
     );
 
@@ -151,7 +154,7 @@ export async function POST(request: NextRequest) {
           : "Bild Generator — Standard",
       {
         generationType: "image",
-        prompt: trimmedPrompt.slice(0, 500),
+        prompt: prepared.userPrompt.slice(0, 500),
         skipGenerationLog: true,
       }
     );
@@ -171,8 +174,13 @@ export async function POST(request: NextRequest) {
       downloadPaid: false,
       creditsUsed: creditCost,
       creditsLeft: deduction.remainingCredits,
-      category,
-      categoryLabel: CATEGORY_PROMPTS[category].label,
+      category: prepared.category,
+      categoryLabel: CATEGORY_PROMPTS[prepared.category].label,
+      resolvedCategory: prepared.category,
+      promptEnhanced: prepared.promptEnhanced,
+      ...(prepared.promptEnhanced
+        ? { enhancedPrompt: prepared.enhancedPrompt }
+        : {}),
       model: falResult.model,
       width: width ?? falResult.width,
       height: height ?? falResult.height,

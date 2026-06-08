@@ -9,7 +9,7 @@ type Props = {
   tagline: string;
   creditLabel: string;
   icon: LucideIcon;
-  badge?: "NEU" | "SOON";
+  badge?: "NEU" | "SOON" | "Preview";
   disabled?: boolean;
   lockedLabel?: string;
   onClick: () => void;
@@ -63,6 +63,11 @@ export function FeatureCard({
         {badge === "SOON" && (
           <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-white/5 text-white/75">
             {tCommon("coming_soon")}
+          </span>
+        )}
+        {badge === "Preview" && (
+          <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-[#B4FF00]/10 border border-[#B4FF00]/30 text-[#B4FF00] tracking-wide">
+            Preview
           </span>
         )}
       </div>

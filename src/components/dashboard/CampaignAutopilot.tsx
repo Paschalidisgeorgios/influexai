@@ -297,7 +297,9 @@ export default function CampaignAutopilot() {
             clearPolling();
             clearRunner();
             pendingResultRef.current = job.result;
-            window.dispatchEvent(new Event("credits-updated"));
+            if ((job.result?.usedCredits ?? 0) > 0) {
+              window.dispatchEvent(new Event("credits-updated"));
+            }
             setExecution((prev) => {
               if (!prev) return prev;
               return {
@@ -408,7 +410,9 @@ export default function CampaignAutopilot() {
       return;
     }
 
-    window.dispatchEvent(new Event("credits-updated"));
+    if ((data.usedCredits ?? 0) > 0) {
+      window.dispatchEvent(new Event("credits-updated"));
+    }
 
     if (data.jobId) {
       setJobId(data.jobId);
@@ -487,32 +491,6 @@ export default function CampaignAutopilot() {
     );
   };
 
-  async function publishContent() {
-    if (!execution?.id) return;
-    try {
-      await fetch("/api/agent/publish", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ executionId: execution.id }),
-      });
-    } catch (e) {
-      console.error("[publish]", e);
-    }
-  }
-
-  const handlePublishRequest = (result: CampaignResult) => {
-    const checks: GuardCheck[] = [{ action: "publish_public" }];
-    if (
-      result.overallScores.legalRisk === "high" ||
-      result.overallScores.claimRisk === "high"
-    ) {
-      checks.push({ action: "legal_high" });
-    }
-    runWithGuards(checks, () => {
-      void publishContent();
-    });
-  };
-
   const handleNewCampaign = () => {
     clearRunner();
     setPhase("idle");
@@ -546,21 +524,50 @@ export default function CampaignAutopilot() {
           className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.14em]"
           style={{ color: "#B4FF00" }}
         >
-          Creator Studio
+          Creator Studio · Preview
         </p>
-        <h1
-          className="text-[clamp(2rem,4vw,2.75rem)] leading-none"
-          style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif" }}
-        >
-          CAMPAIGN AUTOPILOT
-        </h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1
+            className="text-[clamp(2rem,4vw,2.75rem)] leading-none"
+            style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif" }}
+          >
+            CAMPAIGN AUTOPILOT
+          </h1>
+          <span
+            className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+            style={{
+              borderRadius: 4,
+              background: "rgba(180,255,0,0.1)",
+              border: "1px solid rgba(180,255,0,0.45)",
+              color: "#B4FF00",
+            }}
+          >
+            Preview
+          </span>
+        </div>
         <p
           className="mt-2 text-[0.9rem] leading-[1.65]"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
-          Briefing eingeben — Agent plant, generiert und prüft dein Content-Paket.
+          Erstellt aktuell nur eine beispielhafte Kampagnenstruktur — noch kein
+          echter autonomer Kampagnen-Agent.
         </p>
       </header>
+
+      <div
+        className="mb-6 px-4 py-3 text-[12px] leading-[1.6]"
+        style={{
+          borderRadius: 4,
+          background: "rgba(180,255,0,0.06)",
+          border: "1px solid rgba(180,255,0,0.22)",
+          color: "rgba(255,255,255,0.72)",
+        }}
+      >
+        <strong style={{ color: "#B4FF00" }}>Demo / Preview:</strong> Keine
+        Live-Recherche, keine autonome Ausführung und{" "}
+        <strong style={{ color: "#B4FF00" }}>0 Credits</strong> für
+        Beispiel-Ergebnisse.
+      </div>
 
       {/* Abschnitt 1 — Eingabe */}
       <div
@@ -612,14 +619,14 @@ export default function CampaignAutopilot() {
             className="shrink-0 text-[10px]"
             style={{ color: "rgba(255,255,255,0.38)" }}
           >
-            ~{estimatedCredits} Credits
+            Preview · 0 Credits
           </span>
 
           <button
             type="button"
             disabled={phase === "running" || !canStart}
             onClick={handleStartRequest}
-            aria-label="Kampagne starten"
+            aria-label="Beispiel-Struktur starten"
             className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             style={{
               borderRadius: 4,
@@ -716,7 +723,7 @@ export default function CampaignAutopilot() {
           fontSize: 13,
         }}
       >
-        Kampagne starten · ~{estimatedCredits} Credits
+        Beispiel-Struktur anzeigen · 0 Credits
       </button>
 
       {startError && (
@@ -739,12 +746,20 @@ export default function CampaignAutopilot() {
                 fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               }}
             >
-              AUSFÜHRUNG
+              PREVIEW-AUSGABE
             </span>
             <span className="text-[11px] font-semibold" style={{ color: "#B4FF00" }}>
               {stepIdx + 1} / {TOTAL_STEPS}
             </span>
           </div>
+
+          <p
+            className="mb-3 text-[10px] leading-[1.5]"
+            style={{ color: "rgba(255,255,255,0.42)" }}
+          >
+            Simulierte Schritte zur Illustration — keine echte Recherche oder
+            KI-Generierung.
+          </p>
 
           <div
             className="mb-2 h-1 w-full overflow-hidden"
@@ -835,7 +850,6 @@ export default function CampaignAutopilot() {
             executionId={execution?.id}
             campaignMode={execution?.mode}
             onNewCampaign={handleNewCampaign}
-            onPublish={() => handlePublishRequest(result)}
           />
           <AiOutputDisclaimer className="mt-4" />
         </>
@@ -884,13 +898,11 @@ function CampaignResultCard({
   executionId,
   campaignMode,
   onNewCampaign,
-  onPublish,
 }: {
   result: CampaignResult;
   executionId?: string;
   campaignMode?: CampaignMode;
   onNewCampaign: () => void;
-  onPublish: () => void;
 }) {
   const scores: ContentScores = result.overallScores;
   const items = result.items;
@@ -945,7 +957,7 @@ function CampaignResultCard({
                 className="mb-2 text-[11px] font-semibold"
                 style={{ color: "rgba(180,255,0,0.8)" }}
               >
-                Agent hat folgende Annahmen getroffen:
+                Vereinfachte Demo-Annahmen:
               </p>
               <ul
                 className="m-0 list-disc pl-4 text-[11px] leading-[1.55]"
@@ -1082,10 +1094,11 @@ function CampaignResultCard({
           </div>
 
           <p
-            className="mb-4 text-[10px]"
+            className="mb-4 text-[10px] leading-[1.5]"
             style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            Verwendet: {result.usedCredits} Credits
+            Preview — 0 Credits verbraucht. Beispiel-Inhalte sind Platzhalter,
+            keine veröffentlichten oder recherchierten Ergebnisse.
           </p>
 
           <div className="mb-4 flex items-center gap-2">
@@ -1166,8 +1179,9 @@ function CampaignResultCard({
 
           <button
             type="button"
-            onClick={onPublish}
-            className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(180,255,0,0.45)] hover:text-[#B4FF00]"
+            disabled
+            title="In der Preview noch nicht verfügbar"
+            className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.12)",
@@ -1175,7 +1189,7 @@ function CampaignResultCard({
               background: "transparent",
             }}
           >
-            Veröffentlichen — Bestätigung erforderlich
+            Veröffentlichen (Preview — noch nicht verfügbar)
           </button>
         </div>
       </div>

@@ -6,6 +6,10 @@ import type {
   ContentItem,
 } from "./types";
 
+/** Mock executor only — no credit charges until a real campaign agent ships. */
+export const CAMPAIGN_AUTOPILOT_IS_PREVIEW = true;
+export const CAMPAIGN_PREVIEW_CREDITS = 0;
+
 export const CAMPAIGN_SPECS: Record<
   CampaignMode,
   {
@@ -28,7 +32,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 3,
     ads: 0,
     visualBriefings: 2,
-    estimatedCredits: 12,
+    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
     label: "2–3 Tage",
   },
   weekly: {
@@ -39,7 +43,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 5,
     ads: 1,
     visualBriefings: 3,
-    estimatedCredits: 24,
+    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
     label: "7 Tage",
   },
   monthly: {
@@ -50,7 +54,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 20,
     ads: 4,
     visualBriefings: 10,
-    estimatedCredits: 80,
+    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
     label: "30 Tage",
   },
   product_launch: {
@@ -61,24 +65,24 @@ export const CAMPAIGN_SPECS: Record<
     posts: 10,
     ads: 6,
     visualBriefings: 6,
-    estimatedCredits: 48,
+    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
     label: "Produktkampagne",
   },
 };
 
 export const CAMPAIGN_STEPS = [
-  "Briefing verstehen",
-  "Brand-DNA laden",
-  "Zielgruppe analysieren",
-  "Themencluster erstellen",
-  "Content-Kalender planen",
-  "Hooks generieren",
-  "Scripts schreiben",
-  "Visual-Konzepte erstellen",
-  "Captions und Hashtags ergänzen",
-  "Qualität prüfen",
-  "Fehlerhafte Outputs verbessern",
-  "Content-Paket bereitstellen",
+  "Briefing auswerten (Beispiel)",
+  "Brand-Kontext ableiten",
+  "Zielgruppe skizzieren",
+  "Themencluster vorschlagen",
+  "Content-Kalender entwerfen",
+  "Beispiel-Hooks formulieren",
+  "Beispiel-Scripts skizzieren",
+  "Visual-Ideen notieren",
+  "Beispiel-Captions ergänzen",
+  "Struktur prüfen (Demo)",
+  "Platzhalter anpassen",
+  "Beispiel-Paket bereitstellen",
 ] as const;
 
 export function inferBrandDNA(prompt: string): {
@@ -136,8 +140,8 @@ export function buildMockContentItems(
     platform,
     day: day++,
     title: `${type.charAt(0).toUpperCase() + type.slice(1)} ${index + 1}`,
-    hook: "Hook wird generiert...",
-    caption: "Caption wird generiert...",
+    hook: "Beispiel-Hook (Preview)",
+    caption: "Beispiel-Caption (Preview)",
     hashtags: ["#content", "#ai", "#influexai"],
     cta: "Link in Bio",
     status: "generated",

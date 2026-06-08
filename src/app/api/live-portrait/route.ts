@@ -3,7 +3,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { deductCredits } from "@/lib/credits";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { uploadDataUrlImageToFal } from "@/lib/upload-media-fal";
 
@@ -30,14 +31,6 @@ async function uploadDataUrlVideoToFal(dataUrl: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   if (!getFalKey()) {
     return NextResponse.json(
       { error: "Video-Engine ist nicht konfiguriert." },
@@ -45,20 +38,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", user.id)
-    .single();
+  let body: {
+    imageBase64?: string;
+    videoBase64?: string;
+    consentAccepted?: boolean;
+  };
 
-  if ((profile?.credits ?? 0) < CREDIT_COST) {
-    return NextResponse.json(
-      { error: "Nicht genug Credits." },
-      { status: 402 }
-    );
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
   }
 
-  const { imageBase64, videoBase64 } = await req.json();
+  const { imageBase64, videoBase64, consentAccepted } = body;
 
   if (!imageBase64 || !videoBase64) {
     return NextResponse.json(
@@ -66,6 +58,10 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+
+  const access = await assertKiToolAccess(CREDIT_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   try {
     configureFalClient();
@@ -94,16 +90,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await supabase
-      .from("profiles")
-      .update({
-        credits: (profile?.credits ?? 0) - CREDIT_COST,
-      })
-      .eq("id", user.id);
+    const deduction = await deductCredits(
+      supabase,
+      userId,
+      CREDIT_COST,
+      "Live Portrait",
+      {
+        generationType: "live-portrait",
+        prompt: "live-portrait",
+      }
+    );
+
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Nicht genug Credits." },
+        { status: 402 }
+      );
+    }
 
     return NextResponse.json({
       videoUrl,
-      creditsLeft: (profile?.credits ?? 0) - CREDIT_COST,
+      creditsLeft: deduction.remainingCredits,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Fehler";

@@ -676,8 +676,8 @@
     "format_4_3": "4:3",
     "format_9_16": "9:16",
     "format_label": "Format",
-    "generate_highres": "High-Res — 3 Credits",
-    "generate_standard": "Generate — 1 Credit",
+    "generate_highres": "High-Res — 8 Credits",
+    "generate_standard": "Generate — 5 Credits",
     "history_title": "Recent generations",
     "info_model": "Model: {model}",
     "info_resolution": "{w}×{h}px",
@@ -695,10 +695,10 @@
     "result_alt": "Generated image",
     "subtitle": "Acid Noir text-to-image — standard and high-res modes. Watermark until download unlocked.",
     "title": "Image Generator",
-    "upscale_button": "Upscale 2x — 2 Credits",
+    "upscale_button": "Upscale 2x — 4 Credits",
     "variation_a": "Version A",
     "variation_b": "Version B",
-    "variation_button": "Create variation — 1 Credit"
+    "variation_button": "Create variation — 5 Credits"
   },
   "upscalerPage": {
     "title": "HD Upscaler",

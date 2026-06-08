@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
@@ -15,6 +16,8 @@ import type {
   AgentScores,
   AgentTool,
 } from "@/lib/agent/types";
+import { detectIntent } from "@/lib/agent/router";
+import { estimateKiAgentOrchestrateCredits } from "@/lib/agent/ki-agent-orchestrate-credits";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
@@ -332,8 +335,14 @@ export default function KiAgentPage() {
     []
   );
 
+  const billingEstimate = useMemo(() => {
+    const trimmed = prompt.trim();
+    if (!trimmed) return null;
+    return estimateKiAgentOrchestrateCredits(detectIntent(trimmed));
+  }, [prompt]);
+
   const estimatedCredits =
-    execution?.estimatedCredits ?? (selectedTool === "auto" ? 2 : 2);
+    execution?.estimatedCredits ?? billingEstimate?.typical ?? 0;
 
   const buildStartGuardChecks = useCallback((): GuardCheck[] => {
     const checks: GuardCheck[] = [];
@@ -348,10 +357,10 @@ export default function KiAgentPage() {
     }
     checks.push({
       action: "agent_run",
-      credits: estimatedCredits,
+      credits: billingEstimate?.max ?? estimatedCredits,
     });
     return checks;
-  }, [estimatedCredits, selectedTool]);
+  }, [billingEstimate, estimatedCredits, selectedTool]);
 
   const handlePublishRequest = useCallback(
     (result: AgentResult) => {
@@ -549,10 +558,16 @@ export default function KiAgentPage() {
         </div>
       </div>
 
-      {phase === "idle" && prompt.trim() && (
-        <p className="mt-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.38)" }}>
-          ~{estimatedCredits} Credits
-        </p>
+      {phase === "idle" && prompt.trim() && billingEstimate && (
+        <div className="mt-1.5 space-y-1">
+          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.38)" }}>
+            Schätzung: {billingEstimate.label} — abhängig vom erkannten Tool
+          </p>
+          <p className="text-[10px] leading-[1.45]" style={{ color: "rgba(255,255,255,0.32)" }}>
+            Credits werden von den ausgeführten Tools abgezogen, keine separate
+            Agent-Gebühr.
+          </p>
+        </div>
       )}
 
       {creditError && (
@@ -802,9 +817,18 @@ function ResultCard({
 
           <AgentResultOutputs result={result} />
 
-          {usedCredits !== undefined && (
+          {usedCredits !== undefined && usedCredits > 0 && (
             <p className="mb-3 text-[10px]" style={{ color: "rgba(180,255,0,0.65)" }}>
               {usedCredits} Credits verwendet
+            </p>
+          )}
+          {usedCredits === 0 && (
+            <p
+              className="mb-3 text-[10px] leading-[1.45]"
+              style={{ color: "rgba(255,255,255,0.42)" }}
+            >
+              Credits von den ausgeführten Tools abgezogen — aktualisierter
+              Kontostand in der Sidebar.
             </p>
           )}
 

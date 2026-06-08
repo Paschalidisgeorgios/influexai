@@ -47,7 +47,7 @@ export type DashboardFlow = {
   tagline: string;
   creditCost: number | null;
   creditLabel: string;
-  badge?: "NEU" | "SOON";
+  badge?: "NEU" | "SOON" | "Preview";
   locked?: boolean;
   /** generation.type values counted for popularity */
   genTypes: string[];
@@ -120,8 +120,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     i18nKey: "loraTraining",
     title: "LoRA Training",
     tagline: "Trainiere dein eigenes KI-Modell",
-    creditCost: 40,
-    creditLabel: "ab 40 Credits",
+    creditCost: 10,
+    creditLabel: "ab 10 Credits",
     badge: "NEU",
     genTypes: ["lora_training", "lora_generation"],
   },
@@ -157,8 +157,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     icon: Film,
     title: "Bild zu Video",
     tagline: "Statisches Bild in bewegtes Video mit Sound verwandeln",
-    creditCost: 25,
-    creditLabel: "25 Credits",
+    creditCost: 40,
+    creditLabel: "40 Credits",
     badge: "NEU",
     genTypes: ["seedance", "image_to_video"],
   },
@@ -256,10 +256,10 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     category: "analyze",
     icon: Bot,
     title: "Campaign Autopilot",
-    tagline: "Kampagne planen — Reels, Posts & Ads in einem Lauf",
-    creditCost: 24,
-    creditLabel: "ab 12 Credits",
-    badge: "NEU",
+    tagline: "Beispiel-Kampagnenstruktur (Preview, kein autonomer Agent)",
+    creditCost: 0,
+    creditLabel: "Preview · 0 Credits",
+    badge: "Preview",
     genTypes: ["campaign-autopilot"],
   },
   {
@@ -321,8 +321,8 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     icon: Video,
     title: "Live Creator",
     tagline: "KI-Avatar live streamen — 9:16 Shorts mit Webcam",
-    creditCost: 1,
-    creditLabel: "1 Credit / Min",
+    creditCost: 2,
+    creditLabel: "2 Credits / Min",
     badge: "NEU",
     genTypes: ["live-creator"],
   },
@@ -410,7 +410,7 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/campaign-autopilot",
         label: "Campaign Autopilot",
         icon: Rocket,
-        badge: "NEU",
+        badge: "Preview",
       },
     ],
   },

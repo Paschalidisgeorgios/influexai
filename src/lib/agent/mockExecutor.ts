@@ -141,8 +141,8 @@ export function buildCampaignResult(exec: CampaignExecution): CampaignResult {
   return {
     id: newCampaignId(),
     mode: exec.mode,
-    title: `${spec.label} Content-Paket`,
-    summary: `${items.length} Content-Items für ${exec.platforms.join(", ")} generiert.`,
+    title: `Beispiel: ${spec.label} Content-Paket`,
+    summary: `${items.length} Beispiel-Content-Items für ${exec.platforms.join(", ")} (Preview — keine echte KI-Generierung).`,
     brandDNA: dna,
     assumptionsMade: assumptions,
     items,
@@ -155,7 +155,7 @@ export function buildCampaignResult(exec: CampaignExecution): CampaignResult {
       overallScore: 87,
     },
     estimatedCredits: spec.estimatedCredits,
-    usedCredits: spec.estimatedCredits,
+    usedCredits: 0,
     createdAt: new Date().toISOString(),
   };
 }

@@ -13,6 +13,7 @@ import {
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
+import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 
@@ -77,9 +78,11 @@ export async function runImageGeneratorGeneration(
   const started = Date.now();
 
   try {
+    const prepared = await prepareImageGeneratorPrompts(trimmedPrompt, category);
+
     const falResult = await generateCategoryImage({
-      prompt: trimmedPrompt,
-      category,
+      prompt: prepared.enhancedPrompt,
+      category: prepared.category,
       imageSize,
       highRes,
     });
@@ -93,7 +96,7 @@ export async function runImageGeneratorGeneration(
         downloadPaid: false,
         mode: "preview",
         assetKind: "image",
-        category,
+        category: prepared.category,
         model: falResult.model,
         width: falResult.width,
         height: falResult.height,
@@ -101,7 +104,7 @@ export async function runImageGeneratorGeneration(
         highRes,
       },
       0,
-      trimmedPrompt.slice(0, 500)
+      prepared.userPrompt.slice(0, 500)
     );
 
     const { previewPath, sourcePath, width, height } =
@@ -122,7 +125,7 @@ export async function runImageGeneratorGeneration(
       highRes ? "Bild Generator — High-Res" : "Bild Generator — Standard",
       {
         generationType: "image",
-        prompt: trimmedPrompt.slice(0, 500),
+        prompt: prepared.userPrompt.slice(0, 500),
         skipGenerationLog: true,
       }
     );
