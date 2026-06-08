@@ -30,13 +30,26 @@ export async function POST(request: NextRequest) {
   }
 
   let app = "fal-ai/flashhead";
+  let consentAccepted = false;
   try {
     const body = await request.json();
     if (typeof body?.app === "string" && body.app.trim()) {
       app = body.app.trim();
     }
+    consentAccepted = body?.consentAccepted === true;
   } catch {
     /* default app */
+  }
+
+  if (!consentAccepted) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
   }
 
   try {

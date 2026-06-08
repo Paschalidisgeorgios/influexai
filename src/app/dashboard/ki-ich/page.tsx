@@ -63,6 +63,7 @@ export default function KiIchPage() {
   );
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -93,6 +94,12 @@ export default function KiIchPage() {
     [avatarStyle.trim(), scene.trim()].filter(Boolean).join(", ");
 
   const callKiIch = async (mode: "preview" | "final") => {
+    if (!consentAccepted) {
+      throw new Error(
+        "Bitte bestätige die Einwilligung zur Nutzung deines Bildes."
+      );
+    }
+
     const res = await fetch("/api/ki-ich", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -101,6 +108,7 @@ export default function KiIchPage() {
         scene: buildScenePrompt(),
         mode,
         generationId: mode === "final" ? generationId : undefined,
+        consentAccepted: true,
       }),
     });
     const data = await res.json();
@@ -123,7 +131,7 @@ export default function KiIchPage() {
   };
 
   const handleGenerate = async () => {
-    if (!photo || !buildScenePrompt()) return;
+    if (!photo || !buildScenePrompt() || !consentAccepted) return;
     setError(null);
     setLoadingMode("preview");
     setStep("loading");
@@ -153,7 +161,7 @@ export default function KiIchPage() {
   };
 
   const handleGenerateHQ = async () => {
-    if (!photo || !buildScenePrompt() || !generationId) return;
+    if (!photo || !buildScenePrompt() || !generationId || !consentAccepted) return;
     setError(null);
     setUnlockLoading(true);
     setLoadingMode("final");
@@ -193,6 +201,7 @@ export default function KiIchPage() {
     setResultUrl(null);
     setGenerationId(null);
     setError(null);
+    setConsentAccepted(false);
   };
 
   return (
@@ -211,8 +220,28 @@ export default function KiIchPage() {
           📸 Mein KI-Ich
         </h1>
         <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
-          Foto hochladen → Szene wählen → InfluexAI Vision setzt dich hinein
+          Foto hochladen → Szene wählen → ein KI-Self-Szenenbild erstellen.
+          Kein vollständiges Influencer-Profil, keine automatische Content-Pipeline.
         </p>
+      </div>
+
+      <div
+        style={{
+          marginBottom: 20,
+          padding: "12px 14px",
+          borderRadius: 10,
+          background: "rgba(180,255,0,0.05)",
+          border: "1px solid rgba(180,255,0,0.18)",
+          fontSize: "0.78rem",
+          lineHeight: 1.55,
+          color: "rgba(255,255,255,0.72)",
+        }}
+      >
+        <strong style={{ color: "#B4FF00" }}>Was dieses Tool leistet:</strong>{" "}
+        Ein einzelnes KI-Bild mit deinem Gesicht in einer gewählten Szene
+        (Vorschau kostenlos, optional hochauflösend).{" "}
+        <strong style={{ color: "#B4FF00" }}>Nicht enthalten:</strong> dauerhafte
+        AI-Influencer-Persona, Serienproduktion oder Social-Automation.
       </div>
 
       {/* Progress */}
@@ -321,7 +350,7 @@ export default function KiIchPage() {
             Foto auswählen →
           </div>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.75rem", marginTop: 16 }}>
-            JPG, PNG, WEBP · Max. 10MB · Kostet 2 Credits
+            JPG, PNG, WEBP · Max. 10MB · Vorschau kostenlos
           </p>
           <input
             ref={fileRef}
@@ -377,7 +406,7 @@ export default function KiIchPage() {
                 {photoFile?.name ?? "Foto"}
               </div>
               <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)" }}>
-                Bereit zur Verarbeitung
+                Foto bereit — Einwilligung unten bestätigen
               </div>
             </div>
             <button
@@ -417,13 +446,13 @@ export default function KiIchPage() {
                 marginBottom: 10,
               }}
             >
-              Wie soll dein KI-Avatar aussehen?
+              Wie soll das Bild aussehen? (optional)
             </label>
             <textarea
               id="ki-avatar-style"
               value={avatarStyle}
               onChange={(e) => setAvatarStyle(e.target.value)}
-              placeholder="z.B. Professionelles Studio-Portrait, dunkler Hintergrund, dramatisches Licht, 4K"
+              placeholder="z.B. Natürliches Licht, lässiger Look, weicher Hintergrund…"
               rows={3}
               style={{
                 width: "100%",
@@ -548,26 +577,99 @@ export default function KiIchPage() {
             />
           </div>
 
+          <div
+            style={{
+              padding: 20,
+              borderRadius: 14,
+              background: "rgba(180,255,0,0.04)",
+              border: "1px solid rgba(180,255,0,0.22)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#B4FF00",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 10,
+              }}
+            >
+              Einwilligung erforderlich
+            </div>
+            <p
+              style={{
+                fontSize: "0.8rem",
+                color: "rgba(255,255,255,0.7)",
+                lineHeight: 1.6,
+                marginBottom: 14,
+              }}
+            >
+              Ich habe die Rechte und Einwilligung zur Nutzung dieses Bildes. Ich
+              lade kein Bild einer anderen Person ohne deren Zustimmung hoch. Ich
+              verstehe, dass daraus ein KI-generiertes Szenenbild entstehen kann.
+            </p>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 12,
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={consentAccepted}
+                onChange={(e) => setConsentAccepted(e.target.checked)}
+                style={{
+                  marginTop: 2,
+                  accentColor: "#B4FF00",
+                  width: 16,
+                  height: 16,
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "0.82rem",
+                  color: "rgba(255,255,255,0.85)",
+                  lineHeight: 1.5,
+                }}
+              >
+                Ich stimme zu und bestätige die Einwilligung.
+              </span>
+            </label>
+          </div>
+
           <button
             onClick={handleGenerate}
-            disabled={!buildScenePrompt().trim()}
+            disabled={!buildScenePrompt().trim() || !consentAccepted}
             style={{
               width: "100%",
               padding: "15px",
               borderRadius: 12,
               border: "none",
-              background: buildScenePrompt().trim() ? "#B4FF00" : "#2a2a2a",
-              color: buildScenePrompt().trim() ? "#060608" : "rgba(255,255,255,0.65)",
+              background:
+                buildScenePrompt().trim() && consentAccepted
+                  ? "#B4FF00"
+                  : "#2a2a2a",
+              color:
+                buildScenePrompt().trim() && consentAccepted
+                  ? "#060608"
+                  : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
-              cursor: buildScenePrompt().trim() ? "pointer" : "default",
+              cursor:
+                buildScenePrompt().trim() && consentAccepted
+                  ? "pointer"
+                  : "default",
             }}
           >
             VORSCHAU GENERIEREN → (kostenlos)
           </button>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.78rem", marginTop: 8 }}>
-            Schnelle Vorschau, danach optional hochauflösend (2 Credits).
+            Schnelle Vorschau, danach optional hochauflösend ({FAL_CREDITS.fluxPulid} Credits).
           </p>
           {error && (
             <p style={{ color: "#ff6b7a", fontSize: "0.85rem", marginTop: 8 }}>
@@ -595,15 +697,15 @@ export default function KiIchPage() {
       {step === "preview" && previewUrl && generationId && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem" }}>
-            Vorschau bereit — für beste Qualität ohne Farbartefakte auf der Haut
-            jetzt hochauflösend generieren.
+            Vorschau bereit — optional hochauflösend freischalten. Ein
+            Einzelszenenbild, kein dauerhaftes AI-Influencer-Profil.
           </p>
           <ProtectedGeneratedImage
             src={previewUrl}
             alt="Vorschau"
             locked
             generationId={generationId}
-            unlockHint="Hochauflösend freischalten — 2 Credits"
+            unlockHint={`Hochauflösend freischalten — ${FAL_CREDITS.fluxPulid} Credits`}
             unlockLabel="Jetzt freischalten"
             onUnlock={handleGenerateHQ}
             unlockLoading={unlockLoading}

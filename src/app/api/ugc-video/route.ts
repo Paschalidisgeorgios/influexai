@@ -159,6 +159,7 @@ export async function POST(request: NextRequest) {
     language?: string;
     aspectRatio?: "9:16" | "16:9";
     customPhotoUrl?: string;
+    consentAccepted?: boolean;
   };
 
   const script = body.script?.trim() ?? "";
@@ -176,6 +177,17 @@ export async function POST(request: NextRequest) {
   }
   if (script.length > 500) {
     return NextResponse.json({ error: "Maximal 500 Zeichen" }, { status: 400 });
+  }
+
+  if (customPhotoUrl && body.consentAccepted !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
   }
 
   if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {

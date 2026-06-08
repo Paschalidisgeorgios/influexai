@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     imageCount?: number;
     steps?: number;
     isStyle?: boolean;
+    consentAccepted?: boolean;
   };
 
   try {
@@ -70,6 +71,17 @@ export async function POST(request: NextRequest) {
   if (!/^[A-Z][A-Z0-9_]{2,19}$/.test(triggerWord)) {
     return NextResponse.json(
       { error: "Trigger word: 3–20 chars, uppercase letters/numbers/underscore" },
+      { status: 400 }
+    );
+  }
+
+  if (body.consentAccepted !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
       { status: 400 }
     );
   }

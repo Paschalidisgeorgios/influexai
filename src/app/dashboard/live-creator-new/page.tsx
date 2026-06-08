@@ -23,7 +23,8 @@ export default function LiveCreatorNewPage() {
           Live Creator
         </h1>
         <p className="text-white/80 text-sm">
-          Face Swap + Video — werde zu jedem Creator
+          Face Swap für eigene Videos und Fotos — nur mit Einwilligung aller
+          abgebildeten Personen
         </p>
       </header>
 

@@ -189,6 +189,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: sourceErr }, { status: 400 });
     }
 
+    if (form.get("consentAccepted") !== "true") {
+      return NextResponse.json(
+        {
+          error:
+            "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+          code: "CONSENT_REQUIRED",
+        },
+        { status: 400 }
+      );
+    }
+
     const source = sourceFile as File;
     const targetFace = targetFaceFile as File;
 

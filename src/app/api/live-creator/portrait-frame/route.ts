@@ -18,6 +18,7 @@ type PortraitFrameBody = {
   sourceImage?: string;
   drivingFrame?: string;
   drivingVideoDataUrl?: string;
+  consentAccepted?: boolean;
 };
 
 function extractFrameUrl(result: unknown): string | null {
@@ -60,7 +61,18 @@ export async function POST(request: NextRequest) {
   }
 
   const body = (await request.json()) as PortraitFrameBody;
-  const { sourceImage, drivingFrame, drivingVideoDataUrl } = body;
+  const { sourceImage, drivingFrame, drivingVideoDataUrl, consentAccepted } = body;
+
+  if (consentAccepted !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
+  }
 
   if (!sourceImage) {
     return NextResponse.json({ error: "sourceImage required" }, { status: 400 });

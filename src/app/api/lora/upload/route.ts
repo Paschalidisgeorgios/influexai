@@ -70,6 +70,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (formData.get("consentAccepted") !== "true") {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
+  }
+
   const sessionId = crypto.randomUUID();
   const service = createServiceSupabaseClient();
   const zipInputs: { filename: string; buffer: Buffer }[] = [];

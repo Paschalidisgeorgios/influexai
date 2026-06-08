@@ -40,17 +40,30 @@ export async function POST(request: NextRequest) {
     scene,
     mode: modeRaw,
     generationId: existingGenerationId,
+    consentAccepted,
   } = body as {
     imageUrl?: string;
     scene?: string;
     mode?: FalImageMode;
     generationId?: string;
+    consentAccepted?: boolean;
   };
 
   const mode: FalImageMode = modeRaw === "preview" ? "preview" : "final";
 
   if (!imageUrl || !scene) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
+  }
+
+  if (consentAccepted !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung zur Nutzung deines Bildes, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
   }
 
   if (!getFalKey()) {

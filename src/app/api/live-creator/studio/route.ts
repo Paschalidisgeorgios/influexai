@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { hasEnoughCredits } from "@/lib/credits";
@@ -57,9 +57,28 @@ export async function GET() {
   });
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const denied = await assertGatedFeature("live-creator");
   if (denied) return denied;
+
+  let consentAccepted = false;
+  try {
+    const body = await request.json();
+    consentAccepted = body?.consentAccepted === true;
+  } catch {
+    /* empty body */
+  }
+
+  if (!consentAccepted) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
+  }
 
   const supabase = await createServerSupabaseClient();
   const {

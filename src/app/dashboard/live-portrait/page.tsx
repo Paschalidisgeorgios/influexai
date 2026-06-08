@@ -14,6 +14,7 @@ export default function LivePortraitPage() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const imageRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
@@ -142,6 +143,7 @@ export default function LivePortraitPage() {
         body: JSON.stringify({
           imageBase64,
           videoBase64,
+          consentAccepted: true,
         }),
       });
 
@@ -166,7 +168,7 @@ export default function LivePortraitPage() {
   };
 
   const canSubmit =
-    !loading && !!sourceImageFile && !!drivingVideoFile;
+    !loading && !!sourceImageFile && !!drivingVideoFile && consentAccepted;
 
   const mediaBoxHeight = "h-[160px] sm:h-[200px]";
 
@@ -628,6 +630,45 @@ export default function LivePortraitPage() {
           <div>{error}</div>
         </div>
       )}
+
+      <label
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 12,
+          padding: 16,
+          marginBottom: 16,
+          borderRadius: 8,
+          border: "1px solid rgba(255,255,255,0.1)",
+          background: "rgba(255,255,255,0.03)",
+          cursor: "pointer",
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={consentAccepted}
+          onChange={(e) => setConsentAccepted(e.target.checked)}
+          style={{
+            marginTop: 2,
+            accentColor: "#B4FF00",
+            width: 16,
+            height: 16,
+            flexShrink: 0,
+          }}
+        />
+        <span
+          style={{
+            fontSize: 13,
+            color: "rgba(255,255,255,0.75)",
+            lineHeight: 1.6,
+          }}
+        >
+          Ich habe die Rechte und Einwilligung für das hochgeladene Foto und
+          Video. Ich verwende keine Inhalte anderer Personen ohne deren
+          Zustimmung. Ich verstehe, dass daraus ein KI-animiertes Video entstehen
+          kann.
+        </span>
+      </label>
 
       {/* Button */}
       <button

@@ -71,6 +71,7 @@ export function LiveCreatorStudioInner() {
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [customAvatarFile, setCustomAvatarFile] = useState<File | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const outputVideoRef = useRef<HTMLVideoElement>(null);
   const outputImageRef = useRef<HTMLImageElement>(null);
@@ -326,6 +327,7 @@ export function LiveCreatorStudioInner() {
           sourceImage: characterDataUrlRef.current,
           drivingFrame,
           drivingVideoDataUrl,
+          consentAccepted: true,
         }),
       });
       const data = await res.json();
@@ -362,7 +364,7 @@ export function LiveCreatorStudioInner() {
         const res = await fetch("/api/fal/realtime-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ app }),
+          body: JSON.stringify({ app, consentAccepted: true }),
         });
         if (!res.ok) {
           throw new Error("Realtime-Token fehlgeschlagen");
@@ -404,6 +406,8 @@ export function LiveCreatorStudioInner() {
     try {
       const startRes = await fetch("/api/live-creator/studio", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ consentAccepted: true }),
       });
       const startData = await startRes.json();
       if (!startRes.ok) {
@@ -453,6 +457,7 @@ export function LiveCreatorStudioInner() {
   };
 
   const canStart =
+    consentAccepted &&
     (selectedCharacterId === "upload" ? !!uploadPreview : !!selectedCharacterId) &&
     (credits === null || credits >= LIVE_CREATOR_CREDITS_PER_MINUTE);
 
@@ -613,6 +618,20 @@ export function LiveCreatorStudioInner() {
                   if (file) void handleUpload(file);
                 }}
               />
+              <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3 mb-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentAccepted}
+                  onChange={(e) => setConsentAccepted(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#B4FF00]"
+                />
+                <span className="text-xs text-white/75 leading-relaxed">
+                  Ich habe die Rechte und Einwilligung für das gewählte Bild und
+                  meine Webcam-Aufnahme. Ich verwende keine Inhalte anderer
+                  Personen ohne deren Zustimmung. Ich verstehe, dass daraus
+                  KI-animierte Inhalte entstehen können.
+                </span>
+              </label>
               <button
                 type="button"
                 disabled={!canStart}

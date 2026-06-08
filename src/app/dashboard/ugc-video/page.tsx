@@ -374,6 +374,7 @@ export default function UgcVideoPage() {
               : selectedAkoolVoiceId,
           language,
           aspectRatio: "9:16",
+          ...(photoUrl ? { consentAccepted: true } : {}),
         }),
       });
       const data = await res.json();
@@ -851,7 +852,7 @@ export default function UgcVideoPage() {
       <GuardModal
         isOpen={consentGuardOpen}
         title="Einwilligung erforderlich"
-        description="Du verwendest dein eigenes Gesicht für einen KI-Avatar. Stelle sicher dass du die Rechte an dem verwendeten Foto hast und nur dein eigenes Bildmaterial verwendest."
+        description="Du verwendest dein eigenes Gesicht für einen KI-Avatar. Stelle sicher, dass du die Rechte am Foto hast, keine fremden Personen ohne Zustimmung verwendest und verstehst, dass ein KI-generiertes Video entstehen kann."
         variant="consent"
         confirmLabel="Ich stimme zu — Video erstellen"
         onConfirm={() => {

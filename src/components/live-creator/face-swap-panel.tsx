@@ -52,6 +52,7 @@ export function FaceSwapPanel({
   const [dragTarget, setDragTarget] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const sourceInputRef = useRef<HTMLInputElement>(null);
   const targetInputRef = useRef<HTMLInputElement>(null);
@@ -62,7 +63,8 @@ export function FaceSwapPanel({
   const cameraStreamRef = useRef<MediaStream | null>(null);
 
   const credits = CREDITS[mode];
-  const canGenerate = !!sourceFile && !!targetFile && step === "input";
+  const canGenerate =
+    !!sourceFile && !!targetFile && consentAccepted && step === "input";
 
   const revokeSourcePreview = useCallback(() => {
     if (sourcePreview?.startsWith("blob:")) {
@@ -148,7 +150,7 @@ export function FaceSwapPanel({
   };
 
   const handleGenerate = async () => {
-    if (!sourceFile || !targetFile) return;
+    if (!sourceFile || !targetFile || !consentAccepted) return;
     setError(null);
     setStep("generating");
     setProgress(8);
@@ -161,6 +163,7 @@ export function FaceSwapPanel({
       form.append("mode", mode);
       form.append("source", sourceFile);
       form.append("targetFace", targetFile);
+      form.append("consentAccepted", "true");
 
       const res = await fetch("/api/faceswap", { method: "POST", body: form });
       const data = await res.json();
@@ -202,6 +205,7 @@ export function FaceSwapPanel({
     setGenerationId(null);
     setProgress(0);
     setError(null);
+    setConsentAccepted(false);
     closeCamera();
   };
 
@@ -493,6 +497,21 @@ export function FaceSwapPanel({
         setTarget,
         targetFile ? "✓ Gesicht" : undefined
       )}
+
+      <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={consentAccepted}
+          onChange={(e) => setConsentAccepted(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[#B4FF00]"
+        />
+        <span className="text-sm text-white/75 leading-relaxed">
+          Ich habe die Rechte und Einwilligung für alle hochgeladenen Bilder und
+          Videos. Ich verwende keine Inhalte anderer Personen ohne deren
+          Zustimmung. Ich verstehe, dass daraus KI-veränderte Inhalte entstehen
+          können.
+        </span>
+      </label>
 
       <button
         type="button"

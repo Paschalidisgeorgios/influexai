@@ -59,6 +59,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (consentAccepted !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
+  }
+
   const access = await assertKiToolAccess(CREDIT_COST);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;

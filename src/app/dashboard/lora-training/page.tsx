@@ -83,6 +83,7 @@ function LoraTrainingPageInner() {
   const [thumbUrls, setThumbUrls] = useState<Record<string, string>>({});
   const [useModalLora, setUseModalLora] = useState<LoraRow | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -186,6 +187,12 @@ function LoraTrainingPageInner() {
       setError(t("error_missing_fields"));
       return;
     }
+    if (!consentAccepted) {
+      setError(
+        "Bitte bestätige die Einwilligung, bevor das Training startet."
+      );
+      return;
+    }
 
     setError(null);
     setLoading(true);
@@ -196,6 +203,7 @@ function LoraTrainingPageInner() {
     try {
       const formData = new FormData();
       files.forEach((f) => formData.append("images", f));
+      formData.append("consentAccepted", "true");
 
       const uploadRes = await fetch("/api/lora/upload", {
         method: "POST",
@@ -217,6 +225,7 @@ function LoraTrainingPageInner() {
           imageCount: uploadData.imageCount,
           steps: trainingSteps,
           isStyle: trainType === "style" ? isStyle : false,
+          consentAccepted: true,
         }),
       });
       const trainData = await trainRes.json();
@@ -452,21 +461,68 @@ function LoraTrainingPageInner() {
             {t("cost_preview", { credits: creditCost })}
           </p>
 
+          <label
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 12,
+              padding: 16,
+              marginBottom: 16,
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.03)",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={consentAccepted}
+              onChange={(e) => setConsentAccepted(e.target.checked)}
+              style={{
+                marginTop: 2,
+                accentColor: "#B4FF00",
+                width: 16,
+                height: 16,
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontSize: "0.82rem",
+                color: "rgba(255,255,255,0.85)",
+                lineHeight: 1.5,
+              }}
+            >
+              Ich habe die Rechte und Einwilligung für alle Trainingsbilder. Ich
+              lade keine Bilder anderer Personen ohne deren Zustimmung hoch. Ich
+              verstehe, dass daraus ein KI-Trainingsmodell entstehen kann.
+            </span>
+          </label>
+
           <button
             type="button"
             onClick={startTraining}
-            disabled={loading || files.length < LORA_MIN_IMAGES}
+            disabled={loading || files.length < LORA_MIN_IMAGES || !consentAccepted}
             style={{
               width: "100%",
               padding: "15px",
               borderRadius: 12,
               border: "none",
-              background: files.length >= LORA_MIN_IMAGES ? "#B4FF00" : "#2a2a2a",
-              color: files.length >= LORA_MIN_IMAGES ? "#060608" : "rgba(255,255,255,0.65)",
+              background:
+                files.length >= LORA_MIN_IMAGES && consentAccepted
+                  ? "#B4FF00"
+                  : "#2a2a2a",
+              color:
+                files.length >= LORA_MIN_IMAGES && consentAccepted
+                  ? "#060608"
+                  : "rgba(255,255,255,0.65)",
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
-              cursor: files.length >= LORA_MIN_IMAGES ? "pointer" : "default",
+              cursor:
+                files.length >= LORA_MIN_IMAGES && consentAccepted
+                  ? "pointer"
+                  : "default",
               minHeight: 52,
               marginBottom: 8,
             }}

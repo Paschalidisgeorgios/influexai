@@ -30,6 +30,17 @@ export async function POST(request: NextRequest) {
   if (!audio || !name)
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
 
+  if (formData.get("consentAccepted") !== "true") {
+    return NextResponse.json(
+      {
+        error:
+          "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet.",
+        code: "CONSENT_REQUIRED",
+      },
+      { status: 400 }
+    );
+  }
+
   try {
     const elFormData = new FormData();
     elFormData.append("name", name);
