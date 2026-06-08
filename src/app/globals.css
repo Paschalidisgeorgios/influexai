@@ -412,8 +412,8 @@ html[data-world="brand"] {
     .landing-nav-bar .landing-nav-logo-text {
       color: #060608 !important;
     }
-    .landing-nav-bar .landing-nav-logo-text span {
-      color: #5a7300 !important;
+    .landing-nav-bar .landing-nav-logo-text .logo-ai {
+      color: #00ff66 !important;
     }
     .landing-nav-menu-btn {
       color: rgba(6, 6, 8, 0.82) !important;
@@ -2068,4 +2068,47 @@ header.site-header.site-header--scrolled {
   .stacked-step-copy-in {
     animation: none;
   }
+}
+
+/* Logo hover */
+.logo-wrapper {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.logo-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #00ff66;
+  opacity: 0.35;
+  transform: translateX(-101%);
+  z-index: 10;
+  pointer-events: none;
+  transition: none;
+}
+
+.logo-wrapper:hover::before {
+  transform: translateX(101%);
+  transition: transform 500ms ease-out;
+}
+
+/* AI Grün */
+.logo-ai {
+  color: #00ff66;
+}
+
+/* I Pulse */
+.logo-i {
+  display: inline-block;
+  transition:
+    transform 300ms ease,
+    text-shadow 300ms ease;
+}
+
+.logo-wrapper:hover .logo-i {
+  transform: scaleY(1.15);
+  text-shadow: 0 0 12px #00ff66;
 }
