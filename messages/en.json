@@ -1194,6 +1194,8 @@
     "profile": "Profile",
     "referral": "Invite friends",
     "settings_menu": "Settings",
+    "choose_plan": "Choose a plan",
+    "choose_plan_hint": "Choose a plan to use credits.",
     "top_up": "Top Up",
     "view_website": "View website",
     "viral_score": "Viral Score"

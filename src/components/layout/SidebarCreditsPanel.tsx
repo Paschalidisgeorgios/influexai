@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
@@ -8,6 +9,7 @@ type CreditLevel = "ok" | "low" | "critical" | "empty";
 
 function creditLevel(credits: number, maxCredits: number): CreditLevel {
   if (credits <= 0) return "empty";
+  if (maxCredits <= 0) return "ok";
   const pct = (credits / maxCredits) * 100;
   if (pct > 20) return "ok";
   if (pct >= 10) return "low";
@@ -26,6 +28,24 @@ type Props = {
   isCreditExempt?: boolean;
 };
 
+export function SidebarChoosePlanPanel() {
+  const tNav = useTranslations("nav");
+
+  return (
+    <div className="m-2 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06]">
+      <p className="text-[0.72rem] text-[rgba(255,255,255,0.65)] leading-relaxed mb-2.5">
+        {tNav("choose_plan_hint")}
+      </p>
+      <Link
+        href="/pricing"
+        className="block w-full text-center py-1.5 rounded-lg bg-[var(--accent,#B4FF00)]/10 border border-[var(--accent,#B4FF00)]/20 text-[var(--accent,#B4FF00)] text-[0.72rem] font-bold no-underline transition-colors hover:bg-[var(--accent,#B4FF00)]/15"
+      >
+        {tNav("choose_plan")} →
+      </Link>
+    </div>
+  );
+}
+
 export function SidebarCreditsPanel({
   credits,
   maxCredits,
@@ -34,7 +54,13 @@ export function SidebarCreditsPanel({
   const tNav = useTranslations("nav");
   const { openBuyModal } = useBuyCredits();
   const level = isCreditExempt ? "ok" : creditLevel(credits, maxCredits);
-  const percent = Math.min(100, Math.max(0, (credits / maxCredits) * 100));
+  const showCapacity = maxCredits > 0;
+  const percent =
+    maxCredits > 0
+      ? Math.min(100, Math.max(0, (credits / maxCredits) * 100))
+      : credits > 0
+        ? 100
+        : 0;
   const color = barColor(level);
 
   const hint = isCreditExempt
@@ -60,20 +86,24 @@ export function SidebarCreditsPanel({
         />
       </div>
 
-      <div className="h-1.5 bg-[#222228] rounded-full overflow-hidden mb-2">
-        <div
-          className="h-full rounded-full transition-[width,background-color] duration-500"
-          style={{
-            width: `${percent}%`,
-            background: color,
-            minWidth: level === "empty" ? 0 : credits > 0 ? "4px" : 0,
-          }}
-        />
-      </div>
+      {showCapacity && (
+        <>
+          <div className="h-1.5 bg-[#222228] rounded-full overflow-hidden mb-2">
+            <div
+              className="h-full rounded-full transition-[width,background-color] duration-500"
+              style={{
+                width: `${percent}%`,
+                background: color,
+                minWidth: level === "empty" ? 0 : credits > 0 ? "4px" : 0,
+              }}
+            />
+          </div>
 
-      <div className="text-[0.65rem] text-[rgba(255,255,255,0.65)] mb-2">
-        {tNav("credits_balance", { current: credits, max: maxCredits })}
-      </div>
+          <div className="text-[0.65rem] text-[rgba(255,255,255,0.65)] mb-2">
+            {tNav("credits_balance", { current: credits, max: maxCredits })}
+          </div>
+        </>
+      )}
 
       {hint && (
         <p

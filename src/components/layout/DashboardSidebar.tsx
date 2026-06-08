@@ -9,8 +9,12 @@ import { createClient } from "@/lib/supabase/client";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
 import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
+import { hasActivePlan } from "@/lib/access";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
-import { SidebarCreditsPanel } from "@/components/layout/SidebarCreditsPanel";
+import {
+  SidebarChoosePlanPanel,
+  SidebarCreditsPanel,
+} from "@/components/layout/SidebarCreditsPanel";
 import { TablerGift } from "@/components/icons/TablerGift";
 
 type ExtraNavItem = {
@@ -91,7 +95,8 @@ export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>(DEFAULT_OPEN);
   const [credits, setCredits] = useState<number | null>(null);
-  const [maxCredits, setMaxCredits] = useState(500);
+  const [maxCredits, setMaxCredits] = useState(0);
+  const [hasPlatformPlan, setHasPlatformPlan] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasAgency, setHasAgency] = useState(false);
   const pathname = usePathname();
@@ -112,12 +117,19 @@ export function DashboardSidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("credits, plan")
+        .select("credits, plan, role, is_admin")
         .eq("id", user.id)
         .single();
       if (data) {
-        setCredits(data.credits);
-        setMaxCredits(getPlanMonthlyCredits(data.plan));
+        setCredits(data.credits ?? 0);
+        const active = hasActivePlan({
+          plan: data.plan,
+          role: data.role,
+          is_admin: data.is_admin,
+          email: user.email,
+        });
+        setHasPlatformPlan(active);
+        setMaxCredits(active ? getPlanMonthlyCredits(data.plan) : 0);
       }
       const { data: tenant } = await supabase
         .from("tenants")
@@ -466,7 +478,10 @@ export function DashboardSidebar() {
           })}
       </nav>
 
-      {credits !== null && !collapsed && (
+      {credits !== null && !collapsed && !hasPlatformPlan && (
+        <SidebarChoosePlanPanel />
+      )}
+      {credits !== null && !collapsed && hasPlatformPlan && (
         <SidebarCreditsPanel credits={credits} maxCredits={maxCredits} />
       )}
 

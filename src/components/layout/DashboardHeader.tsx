@@ -10,6 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { hasActivePlan } from "@/lib/access";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
@@ -23,6 +24,8 @@ interface Profile {
   email: string | null;
   credits: number;
   plan: string;
+  role: string | null;
+  is_admin: boolean | null;
 }
 
 type DashboardHeaderProps = {
@@ -48,7 +51,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
 
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, email, credits, plan")
+      .select("full_name, email, credits, plan, role, is_admin")
       .eq("id", user.id)
       .single();
 
@@ -98,6 +101,14 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
   };
 
   const displayCredits = creditsProp ?? profile?.credits ?? null;
+  const hasPlatformPlan = profile
+    ? hasActivePlan({
+        plan: profile.plan,
+        role: profile.role,
+        is_admin: profile.is_admin,
+        email: profile.email,
+      })
+    : false;
   const creditColor =
     displayCredits !== null ? creditsDisplayColor(displayCredits) : "#B4FF00";
   const badgeStyle =
@@ -118,28 +129,38 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
 
       <div className="flex shrink-0 items-center gap-1 sm:gap-2.5">
         <LanguageSwitcher compact buttonClassName="max-md:min-h-9 max-md:px-1.5 max-md:py-1" />
-        <button
-          type="button"
-          onClick={() => openBuyCredits()}
-          className="flex max-h-11 min-h-9 cursor-pointer items-center gap-1 rounded-[9px] px-2 py-1 sm:min-h-[44px] sm:px-3.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
-          style={{
-            background: badgeStyle.background,
-            border: badgeStyle.border,
-          }}
-        >
-          <span
-            data-testid="credits-display"
-            className="text-[0.78rem] sm:text-[0.95rem] font-extrabold whitespace-nowrap"
-            style={{ color: creditColor }}
+        {hasPlatformPlan ? (
+          <button
+            type="button"
+            onClick={() => openBuyCredits()}
+            className="flex max-h-11 min-h-9 cursor-pointer items-center gap-1 rounded-[9px] px-2 py-1 sm:min-h-[44px] sm:px-3.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
+            style={{
+              background: badgeStyle.background,
+              border: badgeStyle.border,
+            }}
           >
-            ⚡{" "}
-            <AnimatedCredits
-              value={displayCredits}
+            <span
+              data-testid="credits-display"
+              className="text-[0.78rem] sm:text-[0.95rem] font-extrabold whitespace-nowrap"
               style={{ color: creditColor }}
-            />
-            <span className="hidden min-[380px]:inline"> {t("credits_label")}</span>
-          </span>
-        </button>
+            >
+              ⚡{" "}
+              <AnimatedCredits
+                value={displayCredits}
+                style={{ color: creditColor }}
+              />
+              <span className="hidden min-[380px]:inline"> {t("credits_label")}</span>
+            </span>
+          </button>
+        ) : profile ? (
+          <Link
+            href="/pricing"
+            data-testid="choose-plan-cta"
+            className="flex max-h-11 min-h-9 items-center rounded-[9px] border border-[#B4FF00]/25 bg-[#B4FF00]/10 px-2.5 py-1 text-[0.72rem] font-bold text-[#B4FF00] no-underline transition-colors hover:bg-[#B4FF00]/15 sm:min-h-[44px] sm:px-3.5 sm:text-[0.78rem]"
+          >
+            {tNav("choose_plan")}
+          </Link>
+        ) : null}
 
         {profile?.plan && profile.plan !== "free" && (
           <div className="hidden sm:block rounded-md border border-white/[0.09] bg-white/[0.05] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-white/65">

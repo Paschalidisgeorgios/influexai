@@ -154,7 +154,7 @@ export default function CreditsPage() {
         >
           <span>Verbleibend</span>
           <span>
-            {credits} / {stats?.capacity ?? 50}
+            {credits} / {stats?.capacity ?? 0}
           </span>
         </div>
         <div

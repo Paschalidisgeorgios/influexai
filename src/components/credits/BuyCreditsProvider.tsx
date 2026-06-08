@@ -100,7 +100,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   const [credits, setCredits] = useState<number | null>(null);
   const [hasPlan, setHasPlan] = useState(false);
   const [planName, setPlanName] = useState("Free");
-  const [planMonthlyCredits, setPlanMonthlyCredits] = useState(50);
+  const [planMonthlyCredits, setPlanMonthlyCredits] = useState(0);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetail, setModalDetail] = useState<NoCreditsModalDetail | null>(
@@ -160,15 +160,23 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const openBuyModal = useCallback(() => {
+    if (!hasPlan && !isClientCreditExempt()) {
+      window.location.assign("/pricing");
+      return;
+    }
     openModal({ detail: { showPackages: true } });
-  }, [openModal]);
+  }, [hasPlan, openModal]);
 
   useEffect(() => {
     return onBuyCreditsRequest((detail) => {
       if (isClientCreditExempt()) return;
+      if (!hasPlan) {
+        window.location.assign("/pricing");
+        return;
+      }
       openModal({ detail });
     });
-  }, [openModal]);
+  }, [openModal, hasPlan]);
 
   const refreshCreditsAfterCheckout = useCallback(
     async (sessionId: string | null) => {

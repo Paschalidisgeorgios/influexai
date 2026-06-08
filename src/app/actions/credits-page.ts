@@ -1,6 +1,8 @@
 "use server";
 
+import { hasActivePlan } from "@/lib/access";
 import { getCachedCredits } from "@/lib/cache";
+import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function getCreditsPageStats() {
@@ -14,7 +16,7 @@ export async function getCreditsPageStats() {
     getCachedCredits(user.id),
     supabase
       .from("profiles")
-      .select("credits, plan, created_at")
+      .select("credits, plan, created_at, role, is_admin")
       .eq("id", user.id)
       .single(),
   ]);
@@ -68,7 +70,18 @@ export async function getCreditsPageStats() {
   }
 
   const credits = cachedCredits ?? profile?.credits ?? 0;
-  const capacity = totalPurchased > 0 ? totalPurchased : Math.max(credits, 50);
+  const planActive = hasActivePlan({
+    plan: profile?.plan,
+    role: profile?.role,
+    is_admin: profile?.is_admin,
+    email: user.email,
+  });
+  const planCapacity = getPlanMonthlyCredits(profile?.plan);
+  const capacity = !planActive
+    ? 0
+    : totalPurchased > 0
+      ? totalPurchased
+      : Math.max(credits, planCapacity, 1);
 
   return {
     credits,
@@ -77,7 +90,10 @@ export async function getCreditsPageStats() {
     totalPurchased,
     hasPurchased,
     topFeatureType,
-    progressPercent: Math.min(100, Math.round((credits / capacity) * 100)),
+    progressPercent:
+      capacity > 0
+        ? Math.min(100, Math.round((credits / capacity) * 100))
+        : 0,
     capacity,
   };
 }

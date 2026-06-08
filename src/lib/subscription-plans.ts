@@ -141,7 +141,7 @@ export function planMeetsRequirement(
 
 export function getPlanMonthlyCredits(plan: string | null | undefined): number {
   const id = normalizePlan(plan);
-  if (id === "free") return 50;
+  if (id === "free") return 0;
   return SUBSCRIPTION_PLANS[id].monthlyCredits;
 }
 
