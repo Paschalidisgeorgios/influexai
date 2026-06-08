@@ -1,6 +1,7 @@
 "use client";
 
 import { LightFrame } from "@/components/LightFrame";
+import { ImageResultActions } from "@/components/image/ImageResultActions";
 import type { AgentOutputs } from "@/lib/agent/types";
 import { AgentRedirectCards } from "./AgentRedirectCards";
 import {
@@ -115,6 +116,11 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
             src={outputs.productPreview.imageUrl}
             alt={outputs.productPreview.productName}
           />
+          <ImageResultActions
+            imageUrl={outputs.productPreview.imageUrl}
+            generationId={outputs.productPreview.generationId}
+            downloadFilename={`influexai-${outputs.productPreview.productName.slice(0, 32).replace(/\s+/g, "-")}.jpg`}
+          />
         </ResultSection>
       )}
 
@@ -128,6 +134,11 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
           <AgentMediaImage
             src={outputs.image.imageUrl}
             alt="Generiertes Bild"
+          />
+          <ImageResultActions
+            imageUrl={outputs.image.imageUrl}
+            prompt={outputs.image.improvedPrompt ?? outputs.image.prompt}
+            generationId={outputs.image.generationId}
           />
         </ResultSection>
       )}

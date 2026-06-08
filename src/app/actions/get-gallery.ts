@@ -166,6 +166,7 @@ function normalizeGeneration(
       title: displayTitle,
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
+      prompt,
       imageUrl: media.imageUrl,
     };
   }

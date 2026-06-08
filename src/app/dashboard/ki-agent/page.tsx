@@ -259,19 +259,6 @@ export default function KiAgentPage() {
     ];
   }, [billingEstimate, estimatedCredits]);
 
-  const handlePublishRequest = useCallback(
-    (result: AgentResult) => {
-      const checks: GuardCheck[] = [{ action: "publish_public" }];
-      if (result.scores?.riskLevel === "high") {
-        checks.push({ action: "legal_high" });
-      }
-      runWithGuards(checks, () => {
-        // TODO: GUARD publishing — API-Anbindung folgt
-      });
-    },
-    [runWithGuards]
-  );
-
   const handleSubmit = useCallback(() => {
     const trimmed = prompt.trim();
     if (!trimmed || phase === "running") return;
@@ -484,7 +471,6 @@ export default function KiAgentPage() {
             executionId={execution.id}
             tool={execution.selectedTools[0]}
             intent={execution.intent}
-            onPublish={() => handlePublishRequest(execution.result!)}
           />
           <AiOutputDisclaimer className="mt-4" />
         </>
@@ -511,14 +497,12 @@ export default function KiAgentPage() {
 function ResultCard({
   result,
   usedCredits,
-  onPublish,
   executionId,
   tool,
   intent,
 }: {
   result: AgentResult;
   usedCredits?: number;
-  onPublish: () => void;
   executionId?: string;
   tool?: string;
   intent?: string;
@@ -664,31 +648,34 @@ function ResultCard({
               <button
                 key={action}
                 type="button"
-                className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
+                disabled
+                title="Noch nicht verfügbar"
+                className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
                 style={{
                   borderRadius: 4,
-                  border: "1px solid #B4FF00",
-                  color: "#B4FF00",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.45)",
                   background: "transparent",
                 }}
               >
-                {NEXT_ACTION_LABELS[action] ?? action}
+                {NEXT_ACTION_LABELS[action] ?? action} (bald)
               </button>
             ))}
           </div>
 
           <button
             type="button"
-            onClick={onPublish}
-            className="mt-3 px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(180,255,0,0.45)] hover:text-[#B4FF00]"
+            disabled
+            title="Noch nicht verfügbar"
+            className="mt-3 cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.55)",
+              color: "rgba(255,255,255,0.45)",
               background: "transparent",
             }}
           >
-            Veröffentlichen — Bestätigung erforderlich
+            Veröffentlichen — noch nicht verfügbar
           </button>
         </div>
       </div>

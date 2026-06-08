@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
+import { ImageResultActions } from "@/components/image/ImageResultActions";
 import type { GalleryItem } from "@/lib/gallery-types";
 import { countWords } from "@/lib/script-format";
 
@@ -690,8 +691,14 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             </p>
           </div>
           <ActionRow>
+            <ImageResultActions
+              variant="gallery"
+              embedded
+              imageUrl={item.imageUrl}
+              prompt={item.prompt}
+            />
             {item.imageUrl && onOpenMedia && (
-              <ActionBtn label="Öffnen" onClick={openMedia} primary />
+              <ActionBtn label="Vorschau" onClick={openMedia} primary />
             )}
             <ActionBtn label="Neu generieren" href="/dashboard/ki-ich" />
           </ActionRow>

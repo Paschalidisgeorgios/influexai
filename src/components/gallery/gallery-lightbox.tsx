@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { GalleryMediaItem } from "@/lib/gallery-media";
+import { downloadImageFromUrl } from "@/lib/image-result-actions";
 
 type GalleryLightboxProps = {
   items: GalleryMediaItem[];
@@ -162,15 +163,27 @@ export function GalleryLightbox({
           />
         )}
 
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex justify-end gap-2">
           <a
             href={current.src}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] no-underline hover:bg-[#B4FF00]/10"
+            className="rounded-lg border border-white/12 px-3 py-2 text-xs font-semibold text-[#F0EFE8] no-underline hover:border-[#B4FF00]/35"
           >
-            Neuer Tab
+            In neuem Tab öffnen
           </a>
+          <button
+            type="button"
+            onClick={() => {
+              void downloadImageFromUrl(
+                current.src,
+                current.kind === "video" ? "influexai-video.mp4" : "influexai-bild.jpg"
+              );
+            }}
+            className="rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] hover:bg-[#B4FF00]/10"
+          >
+            Herunterladen
+          </button>
         </div>
       </div>
     </div>

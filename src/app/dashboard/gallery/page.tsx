@@ -2,19 +2,39 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Images } from "lucide-react";
 import { getGallery, deleteGalleryItem } from "@/app/actions/get-gallery";
 import { GALLERY_PAGE_SIZE } from "@/lib/gallery-types";
 import { GalleryCard } from "@/components/gallery/gallery-card";
+import { GalleryLightbox } from "@/components/gallery/gallery-lightbox";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
+import { collectGalleryMedia } from "@/lib/gallery-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 
+const VALID_FILTERS = new Set<GalleryFilter>([
+  "all",
+  "script",
+  "image",
+  "video",
+  "niche",
+  "thumbnail",
+  "outlier",
+  "remix",
+]);
+
 export default function GalleryPage() {
   const t = useTranslations("gallery");
-  const [filter, setFilter] = useState<GalleryFilter>("all");
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get("filter");
+  const [filter, setFilter] = useState<GalleryFilter>(() =>
+    initialFilter && VALID_FILTERS.has(initialFilter as GalleryFilter)
+      ? (initialFilter as GalleryFilter)
+      : "all"
+  );
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [items, setItems] = useState<GalleryItem[]>([]);
@@ -24,6 +44,17 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const mediaItems = useMemo(() => collectGalleryMedia(items), [items]);
+
+  const openMedia = useCallback(
+    (item: GalleryItem) => {
+      const index = mediaItems.findIndex((entry) => entry.id === item.id);
+      if (index >= 0) setLightboxIndex(index);
+    },
+    [mediaItems]
+  );
 
   const filterTabs = useMemo(
     () =>
@@ -320,9 +351,19 @@ export default function GalleryPage() {
                 key={`${item._type}-${item.id}`}
                 item={item}
                 onDelete={handleDelete}
+                onOpenMedia={openMedia}
               />
             ))}
           </div>
+
+          {lightboxIndex != null && mediaItems.length > 0 && (
+            <GalleryLightbox
+              items={mediaItems}
+              index={lightboxIndex}
+              onClose={() => setLightboxIndex(null)}
+              onNavigate={setLightboxIndex}
+            />
+          )}
 
           <p
             style={{

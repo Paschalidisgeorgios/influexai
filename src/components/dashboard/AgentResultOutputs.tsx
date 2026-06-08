@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { ImageResultActions } from "@/components/image/ImageResultActions";
 import type { AgentResult } from "@/lib/agent/types";
 
 const sectionLabelStyle = {
@@ -295,6 +296,7 @@ function ImageOutputView({ data }: { data: unknown }) {
 
   const imageUrl = pickString(obj, "imageUrl", "url");
   const prompt = pickString(obj, "prompt", "improvedPrompt", "imagePrompt");
+  const generationId = pickString(obj, "generationId");
 
   if (imageUrl) {
     return (
@@ -315,6 +317,11 @@ function ImageOutputView({ data }: { data: unknown }) {
             {prompt}
           </p>
         ) : null}
+        <ImageResultActions
+          imageUrl={imageUrl}
+          prompt={prompt}
+          generationId={generationId}
+        />
       </div>
     );
   }
