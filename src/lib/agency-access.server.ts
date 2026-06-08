@@ -5,6 +5,7 @@ import {
   AGENCY_WORKSPACE_PREFIXES,
   agencyWorkspaceAccessFromRows,
   isAgencyWorkspacePath,
+  isDashboardSettingsPath,
   resolveAgencyWorkspaceTarget,
   type AgencyWorkspaceAccess,
 } from "@/lib/agency-access";
@@ -14,6 +15,7 @@ import { type Tenant } from "@/lib/tenant";
 export {
   AGENCY_WORKSPACE_PREFIXES,
   isAgencyWorkspacePath,
+  isDashboardSettingsPath,
   resolveAgencyWorkspaceTarget,
   type AgencyWorkspaceAccess,
 };
@@ -56,6 +58,10 @@ export async function resolveAgencyOnlyDashboardAccess(
   pathname: string,
   serviceClient?: SupabaseClient
 ): Promise<AgencyOnlyDashboardDecision> {
+  if (isDashboardSettingsPath(pathname)) {
+    return { action: "allow" };
+  }
+
   const access = await getAgencyWorkspaceAccess(userId, serviceClient);
 
   if (!access.hasAgencyWorkspaceAccess) {

@@ -5,6 +5,9 @@ export const AGENCY_WORKSPACE_PREFIXES = [
   "/dashboard/white-label",
 ] as const;
 
+/** Account settings — reachable without a platform plan (e.g. delete account). */
+export const DASHBOARD_SETTINGS_PREFIX = "/dashboard/settings";
+
 export type AgencyWorkspaceAccess = {
   hasAgencyWorkspaceAccess: boolean;
   hasActiveTenant: boolean;
@@ -21,6 +24,14 @@ export function isAgencyWorkspacePath(pathname: string): boolean {
   return AGENCY_WORKSPACE_PREFIXES.some(
     (prefix) =>
       normalized === prefix || normalized.startsWith(`${prefix}/`)
+  );
+}
+
+export function isDashboardSettingsPath(pathname: string): boolean {
+  const normalized = normalizePathname(pathname);
+  return (
+    normalized === DASHBOARD_SETTINGS_PREFIX ||
+    normalized.startsWith(`${DASHBOARD_SETTINGS_PREFIX}/`)
   );
 }
 

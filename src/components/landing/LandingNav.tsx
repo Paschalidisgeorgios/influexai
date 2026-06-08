@@ -208,6 +208,12 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                 >
                   {t("nav_pricing")}
                 </Link>
+                <Link
+                  href="/dashboard/settings"
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  {tNav("settings_menu")}
+                </Link>
                 <button
                   type="button"
                   onClick={() => void handleLogout()}
@@ -422,6 +428,13 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                     className="btn-ghost justify-center"
                   >
                     {t("nav_pricing")}
+                  </Link>
+                  <Link
+                    href="/dashboard/settings"
+                    onClick={closeMenu}
+                    className="btn-ghost justify-center"
+                  >
+                    {tNav("settings_menu")}
                   </Link>
                   <button
                     type="button"
