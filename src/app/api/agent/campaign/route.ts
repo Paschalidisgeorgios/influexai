@@ -64,6 +64,21 @@ const CAMPAIGN_TONES: CampaignTone[] = [
   "bold",
 ];
 
+const CAMPAIGN_PREVIEW_ERROR =
+  "Preview konnte nicht erstellt werden. Bitte versuche es erneut.";
+
+function sanitizeCampaignError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (
+    /invalid input syntax for type uuid|PGRST|postgres|violates|duplicate key/i.test(
+      msg
+    )
+  ) {
+    return CAMPAIGN_PREVIEW_ERROR;
+  }
+  return msg || CAMPAIGN_PREVIEW_ERROR;
+}
+
 function completeCampaignExecution(
   exec: CampaignExecution,
   usedCredits?: number
@@ -91,13 +106,15 @@ async function runJobAsync(
     await updateJobStatus(supabase, jobId, "running");
     const result = buildCampaignResult(execution);
     // TODO: echte KI-Generierung pro Item
-    await saveCampaignResultServer(
-      supabase,
-      result,
-      userId,
-      execution.prompt,
-      execution.platforms
-    );
+    if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
+      await saveCampaignResultServer(
+        supabase,
+        result,
+        userId,
+        execution.prompt,
+        execution.platforms
+      );
+    }
 
     const estimatedCredits = execution.estimatedCredits ?? 0;
     let usedCredits = 0;
@@ -129,7 +146,7 @@ async function runJobAsync(
       ...(remainingCredits !== undefined ? { remainingCredits } : {}),
     });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Fehler";
+    const msg = sanitizeCampaignError(err);
     await updateJobStatus(supabase, jobId, "failed", undefined, msg);
   }
 }
@@ -232,16 +249,21 @@ export async function POST(request: Request) {
   try {
     result = buildCampaignResult(execWithUser);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Kampagne fehlgeschlagen";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json(
+      { error: sanitizeCampaignError(err) },
+      { status: 500 }
+    );
   }
 
-  try {
-    await saveCampaignResultServer(supabase, result, userId, prompt, platforms);
-  } catch (err: unknown) {
-    const msg =
-      err instanceof Error ? err.message : "Speichern fehlgeschlagen";
-    return NextResponse.json({ error: msg }, { status: 500 });
+  if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
+    try {
+      await saveCampaignResultServer(supabase, result, userId, prompt, platforms);
+    } catch (err: unknown) {
+      return NextResponse.json(
+        { error: sanitizeCampaignError(err) },
+        { status: 500 }
+      );
+    }
   }
 
   let usedCredits = 0;

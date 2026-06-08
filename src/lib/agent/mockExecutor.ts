@@ -87,7 +87,7 @@ export function buildMockResult(execution: AgentExecution): AgentResult {
 }
 
 function newCampaignId() {
-  return Math.random().toString(36).slice(2);
+  return newExecutionId();
 }
 
 export function createCampaignExecution(

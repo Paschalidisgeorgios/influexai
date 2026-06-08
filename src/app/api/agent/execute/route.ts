@@ -179,13 +179,26 @@ export async function POST(request: Request) {
     const completedExec = completeCampaignExecution(execWithUser, usedCredits);
     const result = buildCampaignResult(completedExec);
 
-    await saveCampaignResultServer(
-      supabase,
-      result,
-      userId,
-      prompt,
-      platforms
-    );
+    if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
+      try {
+        await saveCampaignResultServer(
+          supabase,
+          result,
+          userId,
+          prompt,
+          platforms
+        );
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        const friendly =
+          /invalid input syntax for type uuid|PGRST|postgres|violates|duplicate key/i.test(
+            msg
+          )
+            ? "Preview konnte nicht erstellt werden. Bitte versuche es erneut."
+            : msg || "Preview konnte nicht erstellt werden. Bitte versuche es erneut.";
+        return NextResponse.json({ error: friendly }, { status: 500 });
+      }
+    }
 
     return NextResponse.json({
       execution: completedExec,
