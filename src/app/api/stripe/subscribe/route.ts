@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     allow_promotion_codes: true,
-    success_url: `${SITE_URL}/dashboard/credits?subscribed=${resolvedPlan}&checkout=success`,
+    success_url: `${SITE_URL}/checkout/success?type=subscription&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${SITE_URL}/pricing?checkout=cancelled`,
     customer_email: user.email ?? undefined,
     metadata: {

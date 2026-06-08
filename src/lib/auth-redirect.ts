@@ -26,6 +26,9 @@ const ALLOWED_POST_AUTH_PREFIXES = [
 
 const BLOCKED_REDIRECT_PREFIXES = ["/auth", "/login", "/signup"] as const;
 
+/** Exact post-auth targets outside prefix allowlist. */
+const ALLOWED_EXACT_REDIRECT_PATHS = ["/checkout/success"] as const;
+
 function normalizeRedirectPath(path: string): string {
   return path.split("?")[0]?.split("#")[0] ?? path;
 }
@@ -63,6 +66,21 @@ export function sanitizeAuthRedirect(
       (prefix) =>
         normalized === prefix || normalized.startsWith(`${prefix}/`)
     )
+  ) {
+    return null;
+  }
+
+  if (
+    ALLOWED_EXACT_REDIRECT_PATHS.some(
+      (exact) => normalized === exact
+    )
+  ) {
+    return trimmed;
+  }
+
+  if (
+    normalized === "/checkout" ||
+    normalized.startsWith("/checkout/")
   ) {
     return null;
   }
