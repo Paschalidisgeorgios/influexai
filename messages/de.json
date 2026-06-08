@@ -504,7 +504,13 @@
     "tagline": "Das KI Studio für virale Shorts.",
     "terms": "AGB",
     "blog": "Blog",
-    "guides": "Guides"
+    "guides": "Guides",
+    "trust": {
+      "operated_from_germany": "InfluexAI wird aus Deutschland betrieben.",
+      "secure_payments": "Sichere Zahlungen über Stripe.",
+      "support": "Support:",
+      "cancel_anytime": "Jederzeit im Dashboard kündbar."
+    }
   },
   "founding": {
     "kicker": "EARLY ACCESS · 2026",
@@ -612,14 +618,17 @@
   "landing": {
     "auth_login": "Anmelden",
     "auth_signup": "Jetzt starten",
-    "nav_brands": "Für Marken",
+    "nav_brands": "Marken",
     "nav_features": "Features",
     "nav_pricing": "Preise",
-    "nav_agency": "Für Agenturen",
+    "nav_agency": "Agenturen",
     "nav_home": "Startseite",
     "nav_blog": "Blog",
     "nav_guides": "Guides",
-    "nav_community": "Community"
+    "nav_community": "Community",
+    "menu_title": "Menü",
+    "menu_open": "Menü öffnen",
+    "menu_close": "Menü schließen"
   },
   "landingPage": {
     "brands": {
@@ -897,6 +906,287 @@
       "kicker": "Alle Module",
       "sidebar": "Klick auf ein Modul — direkt ins Dashboard. Alle Tools, eine Plattform."
     },
+    "demos": {
+      "labels": {
+        "demo": "Demo",
+        "exampleOutput": "Beispiel-Output",
+        "exampleScore": "Beispiel-Bewertung",
+        "exampleResult": "So könnte ein Ergebnis aussehen",
+        "input": "EINGABE",
+        "output": "ERGEBNIS",
+        "agentDecision": "AGENTEN-ENTSCHEIDUNG",
+        "score": "BEWERTUNG",
+        "prompt": "Prompt",
+        "riskCheck": "Risiko-Check",
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch",
+        "agentActivityStream": "Agenten-Aktivität",
+        "demoRunning": "Demo läuft",
+        "qualityCheck": "Qualitätscheck",
+        "preview": "Vorschau",
+        "agent": "Agent",
+        "hook": "Hook",
+        "story": "Story",
+        "cta": "CTA",
+        "spot": "Spot",
+        "agentWorkflow": "Demo-Workflow",
+        "exampleQualityCheck": "Beispielhafte Qualitätsprüfung",
+        "demoAgentWorks": "Demo: So arbeitet der KI-Agent",
+        "riskCheckExample": "Risiko-Check: Beispiel",
+        "demoScore": "Demo-Bewertung",
+        "exampleResultTitle": "Beispiel-Ergebnis",
+        "demoExampleCards": "Beispiel-Karten",
+        "scoreHook": "Hook",
+        "scoreClarity": "Klarheit",
+        "scoreRisk": "Risiko",
+        "scoreScrollStop": "Scroll-Stop",
+        "scorePlan": "Plan",
+        "scorePlatform": "Plattform",
+        "scoreConsistency": "Konsistenz",
+        "scoreConsent": "Consent"
+      },
+      "stackedSection": {
+        "kicker": "Demo-Workflow",
+        "headline1": "SIEH WIE DER",
+        "headline2": "KI-AGENT ARBEITET"
+      },
+      "stacked": {
+        "script": {
+          "headline": "SCRIPT IN SEKUNDEN",
+          "description": "Der Agent versteht Zielgruppe und Format — und liefert Hook, Story und CTA als Beispiel-Script.",
+          "badge": "Script Generator",
+          "input": "\"Erstelle ein TikTok-Script für Immobilien-Einsteiger.\"\nTikTok · 30s",
+          "agentDecisions": [
+            "Tool gewählt: Script Generator",
+            "Zielgruppe: Immobilien-Einsteiger",
+            "Risiko-Check: Beispiel — keine Finanzversprechen"
+          ],
+          "outputHook": "Die meisten glauben, Immobilien kaufen ist nur was für Reiche. Ich hab mit 25 angefangen — hier ist der Weg.",
+          "outputStory": "Budget verstehen, Eigenkapital aufbauen, Förderoptionen prüfen — ohne Übertreibungen.",
+          "outputCta": "Kommentiere START — ich schick dir die Checkliste.",
+          "scores": {
+            "hook": "91 · Demo",
+            "clarity": "88 · Demo",
+            "risk": "Niedrig (Beispiel)"
+          }
+        },
+        "product": {
+          "headline": "ADS OHNE LEERES BLATT",
+          "description": "Produktdaten rein — der Agent wählt Spot, Caption und CTA als Beispiel für Reels & Shorts.",
+          "badge": "Produkt Werbung",
+          "input": "Produkt: \"KI-Steuer-App für Selbstständige\"\nInstagram Reels",
+          "agentDecisions": [
+            "Tool gewählt: Produkt Werbung",
+            "Nutzenversprechen geschärft",
+            "Risiko-Check: Beispiel — Finance-Sprache entschärft"
+          ],
+          "outputHook": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden.",
+          "outputSpot": "TaxMind erkennt Belege, kategorisiert Ausgaben und bereitet deine Buchhaltung KI-gestützt vor.",
+          "outputCta": "Link in Bio — 14 Tage testen.",
+          "scores": {
+            "hook": "89 · Demo",
+            "clarity": "90 · Demo",
+            "risk": "Niedrig (Beispiel)"
+          }
+        },
+        "viral_hook": {
+          "headline": "HOOKS, DIE STOPPEN",
+          "description": "Der Agent bewertet Scroll-Stop, Klarheit und Zielgruppen-Fit — dann liefert Beispiel-Varianten.",
+          "badge": "Viral Hook Extraktor",
+          "input": "Thema: \"Nachhaltige Beauty-Routine unter 30€\"\nTikTok",
+          "agentDecisions": [
+            "Tool gewählt: Viral Hook Extraktor",
+            "Scroll-Stop analysiert (Beispiel)",
+            "5 Varianten als Demo erstellt"
+          ],
+          "outputItems": [
+            "Ich hab meine Beauty-Routine auf nachhaltig umgestellt — für unter 30€.",
+            "Warum gibst du 80€ für Gesichtscreme aus, wenn deine Routine einfacher funktionieren kann?",
+            "POV: Du findest heraus, dass dein Lieblingsprodukt nicht cruelty-free ist."
+          ],
+          "scores": {
+            "hook": "91 · Demo",
+            "scroll_stop": "87 · Demo",
+            "risk": "Niedrig (Beispiel)"
+          }
+        },
+        "content_kalender": {
+          "headline": "DEIN CONTENT-PLAN STEHT",
+          "description": "Der Agent plant nach Ziel, Frequenz und Plattform — als Beispiel-Kalender mit Posting-Zeiten.",
+          "badge": "Content Kalender KI",
+          "input": "Nische: Personal Finance / Geldanlage\nInstagram · 5×/Woche · 7 Tage",
+          "agentDecisions": [
+            "Tool gewählt: Content Kalender KI",
+            "Themencluster erstellt (Beispiel)",
+            "Posting-Zeiten als Demo optimiert"
+          ],
+          "calendarRows": [
+            { "day": "Mo", "topic": "ETF-Erklärvideo: \"Was ist der MSCI World?\"", "format": "Reel 30s" },
+            { "day": "Di", "topic": "Tipp: \"Sparrate berechnen in 2 Min\"", "format": "Carousel" },
+            { "day": "Mi", "topic": "Story: Meine Depot-Routine diese Woche", "format": "Story" },
+            { "day": "Do", "topic": "Vergleich: \"Tagesgeld vs. ETF 2026\"", "format": "Reel 60s" },
+            { "day": "Fr", "topic": "Community-Frage: \"Was ist euer Sparziel?\"", "format": "Post" }
+          ],
+          "calendarFooter": "Beispiel · Beste Posting-Zeit: 18:00–20:00 · Plattform-Fit: Hoch (Demo)",
+          "scores": {
+            "plan": "92 · Demo",
+            "platform": "Hoch (Beispiel)",
+            "risk": "Niedrig (Beispiel)"
+          }
+        },
+        "avatar": {
+          "headline": "DEIN KI-AVATAR BLEIBT WIEDERERKENNBAR",
+          "description": "Lade ein Foto hoch und erhalte ein Beispiel-Konzept für dein KI-Ich.",
+          "badge": "Mein KI-Ich",
+          "input": "1 Foto · Stil: Professional / Tech-Creator\nModern Office",
+          "agentDecisions": [
+            "Tool gewählt: Mein KI-Ich",
+            "Avatar-Konzept mit Foto-Input (Beispiel)",
+            "Consent-Hinweis als Demo gezeigt"
+          ],
+          "outputTitle": "Beispiel: KI-Avatar-Konzept",
+          "outputTags": ["Professional", "Studio BG", "Wiedererkennbar"],
+          "scores": {
+            "consistency": "94 · Demo",
+            "consent": "✓ (Beispiel)",
+            "risk": "Niedrig (Beispiel)"
+          }
+        }
+      },
+      "hero": {
+        "kalender": {
+          "toolLabel": "Content Kalender",
+          "prompt": "Plane mir 7 Tage Content für eine Immobilienfirma.",
+          "agentSteps": ["Zielgruppe erkannt", "Themencluster erstellt", "Hooks optimiert", "Kalender formatiert"],
+          "agentSummary": "Beispiel · Zielgruppe erkannt · Kalender bereit",
+          "outputs": [
+            { "label": "Mo", "text": "Immobilienwert erklären" },
+            { "label": "Mi", "text": "Verkaufsfehler vermeiden" },
+            { "label": "Fr", "text": "Eigentümer-CTA" }
+          ],
+          "resultTitle": "Beispiel: 7 Tage Content",
+          "resultSubtitle": "Beispiel-Bewertung · Hook 91",
+          "resultScore": "Risiko-Check: Beispiel · Niedrig",
+          "miniLabel": "Beispiel · 7 Posts · 3 Formate"
+        },
+        "hooks": {
+          "toolLabel": "Viral Hook",
+          "prompt": "Gib mir 5 starke Hooks für meine Immobilien-Seite.",
+          "agentSteps": ["Trend-Fit analysiert", "Hooks generiert", "Klarheit optimiert", "Risiko geprüft"],
+          "agentSummary": "Beispiel · 5 Hooks erstellt · Risiko-Check: Beispiel",
+          "outputs": [
+            { "label": "Hook 1", "text": "Diese Wohnung war in 4 Stunden verkauft." },
+            { "label": "Hook 2", "text": "Die meisten Eigentümer unterschätzen diesen Fehler." },
+            { "label": "Hook 3", "text": "Deine Wohnung ist vielleicht mehr wert, als du denkst." }
+          ],
+          "resultTitle": "Beispiel: 5 Hooks",
+          "resultSubtitle": "Beispiel-Bewertung · Hook 91",
+          "resultScore": "Risiko-Check: Beispiel · Niedrig",
+          "miniLabel": "Beispiel · Plattform-Fit: Hoch"
+        },
+        "produkt": {
+          "toolLabel": "Produkt-Werbung",
+          "prompt": "Schreib mir eine Reel-Ad für eine KI-Steuer-App.",
+          "agentSteps": ["Produkt analysiert", "Nutzenversprechen geschärft", "Spot-Text erstellt", "CTA ergänzt"],
+          "agentSummary": "Beispiel · Tool: Produkt Werbung · Finance-Sprache entschärft",
+          "outputs": [
+            { "label": "Spot", "text": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden." }
+          ],
+          "resultTitle": "Beispiel: Ad Script",
+          "resultSubtitle": "Demo-Bewertung · Klarheit 88",
+          "resultScore": "Risiko-Check: Beispiel · Niedrig",
+          "miniLabel": "Beispiel · Reels · 15s"
+        },
+        "visual": {
+          "toolLabel": "Bild Generator",
+          "prompt": "Erstelle ein Ad-Visual für eine nachhaltige Beauty-Routine.",
+          "agentSteps": ["Stil definiert", "Bildprompt erstellt", "Format gewählt", "Quality Gate vorbereitet"],
+          "agentSummary": "Beispiel · Bildprompt erstellt · Format 4:5",
+          "outputs": [
+            { "label": "Briefing", "text": "Soft studio light · clean skin · sustainable editorial mood" }
+          ],
+          "resultTitle": "Beispiel: Visual Briefing",
+          "resultSubtitle": "Demo-Bewertung · Brand Fit: Hoch",
+          "resultScore": "Risiko-Check: Beispiel · Niedrig",
+          "miniLabel": "Beispiel · No text overlay"
+        },
+        "avatar": {
+          "toolLabel": "Mein KI-Ich",
+          "prompt": "Erstelle meinen KI-Avatar im Tech-Creator-Stil.",
+          "agentSteps": ["Foto geprüft", "Stil gewählt", "Consent bestätigt", "Konsistenz gesichert"],
+          "agentSummary": "Beispiel · KI-Avatar-Konzept · Consent-Hinweis",
+          "outputs": [
+            { "label": "Stil", "text": "Tech Creator · clean background · professional look" }
+          ],
+          "resultTitle": "Beispiel: KI-Avatar-Konzept",
+          "resultSubtitle": "Avatar-Konzept mit Foto-Input",
+          "resultScore": "Consent ✓ (Beispiel)",
+          "miniLabel": "Beispiel · Reels · Ads · Brand"
+        }
+      },
+      "activity": {
+        "a1": { "action": "Zielgruppe erkannt", "context": "Immobilien · Eigentümer · Demo", "badge": "✓" },
+        "a2": { "action": "Beispiel-Score berechnet", "context": "Script · TikTok", "badge": "91" },
+        "a3": { "action": "Script optimiert (Beispiel)", "context": "Hook → Story → CTA", "badge": "✓" },
+        "a4": { "action": "Bildprompt erstellt", "context": "Beauty · 4:5 · Demo", "badge": "✓" },
+        "a5": { "action": "Risiko-Check: Beispiel", "context": "Finance-Sprache", "badge": "Niedrig" },
+        "a6": { "action": "Content-Kalender (Beispiel)", "context": "7 Tage · 3 Formate", "badge": "✓" },
+        "a7": { "action": "Branding Overlay vorbereitet", "context": "Markenfarben · Demo", "badge": "✓" },
+        "a8": { "action": "Caption gekürzt (Beispiel)", "context": "Instagram · DE", "badge": "✓" },
+        "a9": { "action": "CTA verbessert (Beispiel)", "context": "Reel-Ad · Produkt", "badge": "88" },
+        "a10": { "action": "Plattform-Fit (Beispiel)", "context": "TikTok · Reels", "badge": "Hoch" },
+        "a11": { "action": "Beispiel-Bewertung", "context": "Kontrast · Lesbarkeit", "badge": "91" },
+        "a12": { "action": "KI-Avatar-Konzept (Beispiel)", "context": "Mein KI-Ich · Demo", "badge": "✓" }
+      },
+      "campaignSection": {
+        "kicker": "Campaign Autopilot · Demo",
+        "headline1": "EIN BRIEFING.",
+        "headline2": "EIN CONTENT-PAKET.",
+        "description": "Beispiel-Karten: Der Agent plant 2–3 Tage, 7 Tage oder 30 Tage Content — mit Scripts, Hooks, Captions und Kalender.",
+        "workflowLabel": "Demo-Workflow"
+      },
+      "campaign": {
+        "sprint": {
+          "title": "Sprint Content",
+          "subtitle": "2–3 Tage Content",
+          "deliverables": ["3–5 Posts", "3 Hooks", "3 Captions", "1 Mini-Kalender"],
+          "workflowSteps": ["Briefing verstehen", "Zielgruppe erkennen", "Inhalte planen", "Qualität prüfen (Beispiel)"]
+        },
+        "weekly": {
+          "title": "Weekly Content",
+          "subtitle": "7 Tage Content",
+          "deliverables": ["5–7 Posts", "3 Reels", "2 Carousels", "Posting-Zeiten"],
+          "workflowSteps": ["Briefing verstehen", "Zielgruppe erkennen", "Inhalte planen", "Qualität prüfen (Beispiel)"]
+        },
+        "monthly": {
+          "title": "Monthly Campaign",
+          "subtitle": "30 Tage Content",
+          "deliverables": ["20–30 Ideen", "8–12 Reels", "Captions", "Visual-Briefings"],
+          "workflowSteps": ["Briefing verstehen", "Zielgruppe erkennen", "Inhalte planen", "Qualität prüfen (Beispiel)"]
+        }
+      },
+      "qualitySection": {
+        "kicker": "Qualitätscheck · Beispiel",
+        "headline1": "QUALITÄT,",
+        "headline2": "BEVOR DU EXPORTIERST.",
+        "description": "Beispielhafte Qualitätsprüfung — so könnte ein Check vor dem Export aussehen."
+      },
+      "quality": {
+        "text": {
+          "title": "Text Check · Beispiel",
+          "items": ["Keine falschen Versprechen", "CTA klar", "Tonalität passend", "Risiko-Check: Beispiel · Niedrig"]
+        },
+        "visual": {
+          "title": "Visual Check · Beispiel",
+          "items": ["Keine kaputten Hände/Finger", "Kein falsches Logo", "Text nicht von KI verzerrt", "Format korrekt"]
+        },
+        "brand": {
+          "title": "Brand Check · Beispiel",
+          "items": ["Markenstimme", "Zielgruppe", "Plattform-Fit (Beispiel)", "Wiederholungen vermeiden"]
+        }
+      }
+    },
     "footer_cols": {
       "company": "Unternehmen",
       "company_about": "Über uns",
@@ -994,7 +1284,7 @@
       "pro_cta": "Pro starten",
       "pro_desc": "Für professionelle Creator & Streamer.",
       "pro_f1": "Alles aus InfluexAI Creator",
-      "pro_f2": "Live Creator (unlimitiert)",
+      "pro_f2": "Live Creator inklusive",
       "pro_f3": "Musik-Studio",
       "pro_f4": "KI-Ich: 50 Bilder + Videos",
       "pro_f5": "Viral Score Engine",
@@ -1204,12 +1494,12 @@
     "slide4_badge": "🎯 1 Credit · 4 Konzepte",
     "slide4_description": "CTR-optimierte Thumbnail-Konzepte mit exaktem Layout, Farbpalette und Text-Overlays — ready zum Umsetzen.",
     "slide4_heading": "Thumbnails die geklickt werden",
-    "slide5_badge": "👥 Für alle User zugänglich",
-    "slide5_description": "Tausche dich aus, teile Fortschritte und wachse mit Gleichgesinnten — die Community startet bald.",
-    "slide5_heading": "Creator-Community",
-    "community_benefit_1": "Tausche dich aus mit anderen Creatorn",
-    "community_benefit_2": "Teile deine Erfolge",
-    "community_benefit_3": "Wöchentliche Video-Ideen",
+    "slide5_badge": "🪞 Live-Tool",
+    "slide5_description": "Lade ein Foto hoch und erhalte ein Beispiel-Konzept für dein KI-Ich — für Reels, Ads und Brand-Content.",
+    "slide5_heading": "Mein KI-Ich",
+    "ki_ich_benefit_1": "KI-Avatar aus Foto",
+    "ki_ich_benefit_2": "Wiedererkennbarer Look",
+    "ki_ich_benefit_3": "Reels · Ads · Brand",
     "social_proof": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "imageGenerator": {

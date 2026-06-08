@@ -589,7 +589,13 @@
     "tagline": "The AI studio for viral shorts.",
     "terms": "Terms of Service",
     "blog": "Blog",
-    "guides": "Guides"
+    "guides": "Guides",
+    "trust": {
+      "operated_from_germany": "InfluexAI is operated from Germany.",
+      "secure_payments": "Secure payments via Stripe.",
+      "support": "Support:",
+      "cancel_anytime": "Cancel anytime from your dashboard."
+    }
   },
   "gallery": {
     "count": "{count} creations",
@@ -722,14 +728,17 @@
   "landing": {
     "auth_login": "Sign in",
     "auth_signup": "Get started",
-    "nav_agency": "For agencies",
-    "nav_brands": "For brands",
+    "nav_agency": "Agencies",
+    "nav_brands": "Brands",
     "nav_features": "Features",
     "nav_home": "Home",
     "nav_pricing": "Pricing",
     "nav_blog": "Blog",
     "nav_guides": "Guides",
-    "nav_community": "Community"
+    "nav_community": "Community",
+    "menu_title": "Menu",
+    "menu_open": "Open menu",
+    "menu_close": "Close menu"
   },
   "landingPage": {
     "agencyTeaser": {
@@ -913,7 +922,7 @@
       "pro_cta": "Start Pro",
       "pro_desc": "For professional creators & streamers.",
       "pro_f1": "Everything in InfluexAI Creator",
-      "pro_f2": "Live Creator (unlimited)",
+      "pro_f2": "Live Creator included",
       "pro_f3": "Music Studio",
       "pro_f4": "My AI Self: 50 images + videos",
       "pro_f5": "Viral Score Engine",
@@ -1139,6 +1148,287 @@
       "headline2": "One Studio.",
       "kicker": "All Modules",
       "sidebar": "Click a module — straight to the dashboard. All tools, one platform."
+    },
+    "demos": {
+      "labels": {
+        "demo": "Demo",
+        "exampleOutput": "Example output",
+        "exampleScore": "Example score",
+        "exampleResult": "This is an example result",
+        "input": "INPUT",
+        "output": "OUTPUT",
+        "agentDecision": "AGENT DECISION",
+        "score": "SCORE",
+        "prompt": "Prompt",
+        "riskCheck": "Risk Check",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "agentActivityStream": "Agent Activity Stream",
+        "demoRunning": "Demo running",
+        "qualityCheck": "Quality Check",
+        "preview": "Preview",
+        "agent": "Agent",
+        "hook": "Hook",
+        "story": "Story",
+        "cta": "CTA",
+        "spot": "Spot",
+        "agentWorkflow": "Demo workflow",
+        "exampleQualityCheck": "Example quality check",
+        "demoAgentWorks": "Demo: how the AI agent works",
+        "riskCheckExample": "Risk check: example",
+        "demoScore": "Demo score",
+        "exampleResultTitle": "Example result",
+        "demoExampleCards": "Example cards",
+        "scoreHook": "Hook",
+        "scoreClarity": "Clarity",
+        "scoreRisk": "Risk",
+        "scoreScrollStop": "Scroll-stop",
+        "scorePlan": "Plan",
+        "scorePlatform": "Platform",
+        "scoreConsistency": "Consistency",
+        "scoreConsent": "Consent"
+      },
+      "stackedSection": {
+        "kicker": "Demo workflow",
+        "headline1": "SEE HOW THE",
+        "headline2": "AI AGENT WORKS"
+      },
+      "stacked": {
+        "script": {
+          "headline": "SCRIPTS IN SECONDS",
+          "description": "The agent understands audience and format — and delivers hook, story and CTA as an example script.",
+          "badge": "Script Generator",
+          "input": "\"Create a TikTok script for real estate beginners.\"\nTikTok · 30s",
+          "agentDecisions": [
+            "Tool selected: Script Generator",
+            "Audience: real estate beginners",
+            "Risk check: example — no financial promises"
+          ],
+          "outputHook": "Most people think buying property is only for the rich. I started at 25 — here's how.",
+          "outputStory": "Understand budget, build equity, check subsidies — without exaggeration.",
+          "outputCta": "Comment START — I'll send you the checklist.",
+          "scores": {
+            "hook": "91 · demo",
+            "clarity": "88 · demo",
+            "risk": "Low (example)"
+          }
+        },
+        "product": {
+          "headline": "ADS WITHOUT A BLANK PAGE",
+          "description": "Add product data — the agent picks spot, caption and CTA as an example for reels & shorts.",
+          "badge": "Product Advertising",
+          "input": "Product: \"AI tax app for freelancers\"\nInstagram Reels",
+          "agentDecisions": [
+            "Tool selected: Product Advertising",
+            "Value proposition sharpened",
+            "Risk check: example — finance language softened"
+          ],
+          "outputHook": "You're losing time on bookkeeping — because your receipts are still sorted manually.",
+          "outputSpot": "TaxMind recognizes receipts, categorizes expenses and prepares your bookkeeping with AI.",
+          "outputCta": "Link in bio — try 14 days.",
+          "scores": {
+            "hook": "89 · demo",
+            "clarity": "90 · demo",
+            "risk": "Low (example)"
+          }
+        },
+        "viral_hook": {
+          "headline": "HOOKS THAT STOP THE SCROLL",
+          "description": "The agent evaluates scroll-stop, clarity and audience fit — then delivers example variants.",
+          "badge": "Viral Hook Extractor",
+          "input": "Topic: \"Sustainable beauty routine under €30\"\nTikTok",
+          "agentDecisions": [
+            "Tool selected: Viral Hook Extractor",
+            "Scroll-stop analyzed (example)",
+            "5 variants created as demo"
+          ],
+          "outputItems": [
+            "I switched my beauty routine to sustainable — for under €30.",
+            "Why spend €80 on face cream when a simpler routine can work?",
+            "POV: You find out your favorite product isn't cruelty-free."
+          ],
+          "scores": {
+            "hook": "91 · demo",
+            "scroll_stop": "87 · demo",
+            "risk": "Low (example)"
+          }
+        },
+        "content_kalender": {
+          "headline": "YOUR CONTENT PLAN IS READY",
+          "description": "The agent plans by goal, frequency and platform — as an example calendar with posting times.",
+          "badge": "Content Calendar AI",
+          "input": "Niche: personal finance / investing\nInstagram · 5×/week · 7 days",
+          "agentDecisions": [
+            "Tool selected: Content Calendar AI",
+            "Topic clusters created (example)",
+            "Posting times optimized as demo"
+          ],
+          "calendarRows": [
+            { "day": "Mon", "topic": "ETF explainer: \"What is MSCI World?\"", "format": "Reel 30s" },
+            { "day": "Tue", "topic": "Tip: \"Calculate savings rate in 2 min\"", "format": "Carousel" },
+            { "day": "Wed", "topic": "Story: My portfolio routine this week", "format": "Story" },
+            { "day": "Thu", "topic": "Compare: \"Savings vs ETF 2026\"", "format": "Reel 60s" },
+            { "day": "Fri", "topic": "Community question: \"What's your savings goal?\"", "format": "Post" }
+          ],
+          "calendarFooter": "Example · Best posting time: 6–8 PM · Platform fit: High (demo)",
+          "scores": {
+            "plan": "92 · demo",
+            "platform": "High (example)",
+            "risk": "Low (example)"
+          }
+        },
+        "avatar": {
+          "headline": "KEEP YOUR AI AVATAR CONSISTENT",
+          "description": "Upload a photo and get an example concept for your AI self.",
+          "badge": "AI Self",
+          "input": "1 photo · Style: Professional / Tech Creator\nModern office",
+          "agentDecisions": [
+            "Tool selected: AI Self",
+            "Avatar concept with photo input (example)",
+            "Consent note shown as demo"
+          ],
+          "outputTitle": "Example: AI avatar concept",
+          "outputTags": ["Professional", "Studio BG", "Recognizable"],
+          "scores": {
+            "consistency": "94 · demo",
+            "consent": "✓ (example)",
+            "risk": "Low (example)"
+          }
+        }
+      },
+      "hero": {
+        "kalender": {
+          "toolLabel": "Content Calendar",
+          "prompt": "Plan 7 days of content for a real estate company.",
+          "agentSteps": ["Audience detected", "Topic clusters created", "Hooks optimized", "Calendar formatted"],
+          "agentSummary": "Example · Audience detected · Calendar ready",
+          "outputs": [
+            { "label": "Mon", "text": "Explain property value" },
+            { "label": "Wed", "text": "Avoid selling mistakes" },
+            { "label": "Fri", "text": "Owner CTA" }
+          ],
+          "resultTitle": "Example: 7 days of content",
+          "resultSubtitle": "Example score · Hook 91",
+          "resultScore": "Risk check: example · Low",
+          "miniLabel": "Example · 7 posts · 3 formats"
+        },
+        "hooks": {
+          "toolLabel": "Viral Hook",
+          "prompt": "Give me 5 strong hooks for my real estate page.",
+          "agentSteps": ["Trend fit analyzed", "Hooks generated", "Clarity optimized", "Risk reviewed"],
+          "agentSummary": "Example · 5 hooks created · Risk check: example",
+          "outputs": [
+            { "label": "Hook 1", "text": "This apartment sold in 4 hours." },
+            { "label": "Hook 2", "text": "Most owners underestimate this mistake." },
+            { "label": "Hook 3", "text": "Your home might be worth more than you think." }
+          ],
+          "resultTitle": "Example: 5 hooks",
+          "resultSubtitle": "Example score · Hook 91",
+          "resultScore": "Risk check: example · Low",
+          "miniLabel": "Example · Platform fit: High"
+        },
+        "produkt": {
+          "toolLabel": "Product Advertising",
+          "prompt": "Write a reel ad for an AI tax app.",
+          "agentSteps": ["Product analyzed", "Value proposition sharpened", "Spot copy created", "CTA added"],
+          "agentSummary": "Example · Tool: Product Advertising · Finance language softened",
+          "outputs": [
+            { "label": "Spot", "text": "You're losing time on bookkeeping — because your receipts are still sorted manually." }
+          ],
+          "resultTitle": "Example: ad script",
+          "resultSubtitle": "Demo score · Clarity 88",
+          "resultScore": "Risk check: example · Low",
+          "miniLabel": "Example · Reels · 15s"
+        },
+        "visual": {
+          "toolLabel": "Image Generator",
+          "prompt": "Create an ad visual for a sustainable beauty routine.",
+          "agentSteps": ["Style defined", "Image prompt created", "Format chosen", "Quality gate prepared"],
+          "agentSummary": "Example · Image prompt created · Format 4:5",
+          "outputs": [
+            { "label": "Briefing", "text": "Soft studio light · clean skin · sustainable editorial mood" }
+          ],
+          "resultTitle": "Example: visual briefing",
+          "resultSubtitle": "Demo score · Brand fit: High",
+          "resultScore": "Risk check: example · Low",
+          "miniLabel": "Example · No text overlay"
+        },
+        "avatar": {
+          "toolLabel": "AI Self",
+          "prompt": "Create my AI avatar in tech creator style.",
+          "agentSteps": ["Photo checked", "Style chosen", "Consent confirmed", "Consistency secured"],
+          "agentSummary": "Example · AI avatar concept · Consent note",
+          "outputs": [
+            { "label": "Style", "text": "Tech creator · clean background · professional look" }
+          ],
+          "resultTitle": "Example: AI avatar concept",
+          "resultSubtitle": "Avatar concept with photo input",
+          "resultScore": "Consent ✓ (example)",
+          "miniLabel": "Example · Reels · Ads · Brand"
+        }
+      },
+      "activity": {
+        "a1": { "action": "Audience detected", "context": "Real estate · owners · demo", "badge": "✓" },
+        "a2": { "action": "Example score calculated", "context": "Script · TikTok", "badge": "91" },
+        "a3": { "action": "Script optimized (example)", "context": "Hook → Story → CTA", "badge": "✓" },
+        "a4": { "action": "Image prompt created", "context": "Beauty · 4:5 · demo", "badge": "✓" },
+        "a5": { "action": "Risk check: example", "context": "Finance language", "badge": "Low" },
+        "a6": { "action": "Content calendar (example)", "context": "7 days · 3 formats", "badge": "✓" },
+        "a7": { "action": "Branding overlay prepared", "context": "Brand colors · demo", "badge": "✓" },
+        "a8": { "action": "Caption shortened (example)", "context": "Instagram · EN", "badge": "✓" },
+        "a9": { "action": "CTA improved (example)", "context": "Reel ad · product", "badge": "88" },
+        "a10": { "action": "Platform fit (example)", "context": "TikTok · Reels", "badge": "High" },
+        "a11": { "action": "Example score", "context": "Contrast · readability", "badge": "91" },
+        "a12": { "action": "AI avatar concept (example)", "context": "AI Self · demo", "badge": "✓" }
+      },
+      "campaignSection": {
+        "kicker": "Campaign Autopilot · Demo",
+        "headline1": "ONE BRIEF.",
+        "headline2": "ONE CONTENT PACKAGE.",
+        "description": "Example cards: the agent plans 2–3 days, 7 days or 30 days of content — with scripts, hooks, captions and calendar.",
+        "workflowLabel": "Demo workflow"
+      },
+      "campaign": {
+        "sprint": {
+          "title": "Sprint Content",
+          "subtitle": "2–3 days of content",
+          "deliverables": ["3–5 posts", "3 hooks", "3 captions", "1 mini calendar"],
+          "workflowSteps": ["Understand briefing", "Detect audience", "Plan content", "Quality check (example)"]
+        },
+        "weekly": {
+          "title": "Weekly Content",
+          "subtitle": "7 days of content",
+          "deliverables": ["5–7 posts", "3 reels", "2 carousels", "Posting times"],
+          "workflowSteps": ["Understand briefing", "Detect audience", "Plan content", "Quality check (example)"]
+        },
+        "monthly": {
+          "title": "Monthly Campaign",
+          "subtitle": "30 days of content",
+          "deliverables": ["20–30 ideas", "8–12 reels", "Captions", "Visual briefings"],
+          "workflowSteps": ["Understand briefing", "Detect audience", "Plan content", "Quality check (example)"]
+        }
+      },
+      "qualitySection": {
+        "kicker": "Quality Check · Example",
+        "headline1": "QUALITY,",
+        "headline2": "BEFORE YOU EXPORT.",
+        "description": "Example quality check — this is what a pre-export review could look like."
+      },
+      "quality": {
+        "text": {
+          "title": "Text Check · Example",
+          "items": ["No false promises", "Clear CTA", "Matching tone", "Risk check: example · Low"]
+        },
+        "visual": {
+          "title": "Visual Check · Example",
+          "items": ["No broken hands/fingers", "No wrong logo", "Text not distorted by AI", "Correct format"]
+        },
+        "brand": {
+          "title": "Brand Check · Example",
+          "items": ["Brand voice", "Target audience", "Platform fit (example)", "Avoid repetition"]
+        }
+      }
     }
   },
   "language": {
@@ -1321,12 +1611,12 @@
     "slide4_badge": "🎯 1 Credit · 4 concepts",
     "slide4_description": "CTR-optimized thumbnail concepts with layout, colors and text overlays — ready to use.",
     "slide4_heading": "Thumbnails that get clicks",
-    "slide5_badge": "👥 Accessible to all users",
-    "slide5_description": "Connect with like-minded creators, share progress and grow together — community launching soon.",
-    "slide5_heading": "Creator community",
-    "community_benefit_1": "Connect with other creators",
-    "community_benefit_2": "Share your wins",
-    "community_benefit_3": "Weekly video ideas",
+    "slide5_badge": "🪞 Live tool",
+    "slide5_description": "Upload a photo and get an example concept for your AI self — for reels, ads and brand content.",
+    "slide5_heading": "AI Self",
+    "ki_ich_benefit_1": "AI avatar from photo",
+    "ki_ich_benefit_2": "Recognizable look",
+    "ki_ich_benefit_3": "Reels · Ads · Brand",
     "social_proof": "Fresh start in 2026 — be one of the first creators"
   },
   "blog": {

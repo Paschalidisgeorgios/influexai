@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { heroScenes } from "@/data/landingAgentDemos";
+import { useTranslations } from "next-intl";
+import { HERO_SCENE_IDS, type HeroSceneId } from "@/data/landingAgentDemos";
 
 const PHASE_MS = 1100;
-const SCENE_COUNT = heroScenes.length;
+const SCENE_COUNT = HERO_SCENE_IDS.length;
 const TRANSITION_MS = 320;
-
-const SCENES = heroScenes;
 
 const GLASS: CSSProperties = {
   background: "rgba(6, 6, 8, 0.72)",
@@ -17,6 +16,19 @@ const GLASS: CSSProperties = {
   borderRadius: 20,
   boxShadow:
     "0 0 0 1px rgba(180,255,0,0.05), 0 20px 60px rgba(0,0,0,0.45), 0 0 32px rgba(180,255,0,0.06)",
+};
+
+type HeroSceneData = {
+  id: HeroSceneId;
+  toolLabel: string;
+  prompt: string;
+  agentSteps: string[];
+  agentSummary: string;
+  outputs: { label: string; text: string }[];
+  resultTitle: string;
+  resultSubtitle: string;
+  resultScore?: string;
+  miniLabel: string;
 };
 
 function panelMotion(
@@ -63,13 +75,38 @@ function GlassPanel({
   );
 }
 
+function useHeroScenes(): HeroSceneData[] {
+  const t = useTranslations("landingPage.demos.hero");
+
+  return HERO_SCENE_IDS.map((id) => {
+    const agentSteps = t.raw(`${id}.agentSteps`) as string[];
+    const outputs = t.raw(`${id}.outputs`) as { label: string; text: string }[];
+    const resultScore = t(`${id}.resultScore`);
+
+    return {
+      id,
+      toolLabel: t(`${id}.toolLabel`),
+      prompt: t(`${id}.prompt`),
+      agentSteps,
+      agentSummary: t(`${id}.agentSummary`),
+      outputs,
+      resultTitle: t(`${id}.resultTitle`),
+      resultSubtitle: t(`${id}.resultSubtitle`),
+      resultScore: resultScore || undefined,
+      miniLabel: t(`${id}.miniLabel`),
+    };
+  });
+}
+
 export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
+  const tl = useTranslations("landingPage.demos.labels");
+  const scenes = useHeroScenes();
   const [activeScene, setActiveScene] = useState(0);
   const [phase, setPhase] = useState(0);
   const [agentStepIdx, setAgentStepIdx] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  const scene = SCENES[activeScene];
+  const scene = scenes[activeScene];
   const staticPhase = reducedMotion ? 5 : phase;
 
   useEffect(() => {
@@ -136,6 +173,13 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         height: "clamp(520px, 62vh, 680px)",
       };
 
+  const labelStyle: CSSProperties = {
+    fontSize: 10,
+    letterSpacing: "0.1em",
+    fontWeight: 700,
+    textTransform: "uppercase",
+  };
+
   return (
     <div
       className="relative mx-auto lg:mx-0"
@@ -144,9 +188,8 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         fontFamily: "var(--font-dm, DM Sans), sans-serif",
       }}
       aria-live="polite"
-      aria-label="InfluexAI Agent Workspace Demo"
+      aria-label={tl("demoAgentWorks")}
     >
-      {/* Status pill */}
       <GlassPanel
         visible={showStatus}
         animate={animate}
@@ -157,10 +200,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
             display: "flex",
             alignItems: "center",
             gap: 8,
-            fontSize: 9,
-            letterSpacing: "0.12em",
-            fontWeight: 700,
-            textTransform: "uppercase",
+            ...labelStyle,
             color: "#B4FF00",
           }}
         >
@@ -173,11 +213,10 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
               boxShadow: "0 0 8px rgba(180,255,0,0.6)",
             }}
           />
-          InfluexAI Agent · Auto Running
+          InfluexAI Agent · {tl("demoRunning")}
         </div>
       </GlassPanel>
 
-      {/* Tool label */}
       <GlassPanel
         visible={showStatus}
         animate={animate}
@@ -191,15 +230,23 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         <span
           style={{
             fontSize: 10,
-            color: "rgba(255,255,255,0.65)",
+            color: "rgba(255,255,255,0.72)",
             fontWeight: 600,
           }}
         >
           {scene.toolLabel}
         </span>
+        <span
+          className="ml-1.5 inline-block rounded-[4px] px-1 py-0.5 text-[0.58rem] font-bold uppercase tracking-[0.05em]"
+          style={{
+            color: "rgba(255,255,255,0.45)",
+            border: "1px solid rgba(255,255,255,0.12)",
+          }}
+        >
+          {tl("demo")}
+        </span>
       </GlassPanel>
 
-      {/* Prompt panel — center */}
       <GlassPanel
         visible={showPrompt}
         animate={animate}
@@ -212,15 +259,12 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
       >
         <div
           style={{
-            fontSize: 9,
-            color: "rgba(180,255,0,0.7)",
-            letterSpacing: "0.1em",
-            fontWeight: 700,
-            textTransform: "uppercase",
+            ...labelStyle,
+            color: "rgba(180,255,0,0.75)",
             marginBottom: 8,
           }}
         >
-          Prompt
+          {tl("prompt")}
         </div>
         <div
           style={{
@@ -233,7 +277,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         </div>
       </GlassPanel>
 
-      {/* Agent thinking */}
       <GlassPanel
         visible={showAgent}
         animate={animate}
@@ -246,14 +289,12 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
       >
         <div
           style={{
-            fontSize: 9,
-            color: "rgba(255,255,255,0.4)",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
+            ...labelStyle,
+            color: "rgba(255,255,255,0.48)",
             marginBottom: 6,
           }}
         >
-          Agent
+          {tl("agent")}
         </div>
         <div
           style={{
@@ -269,7 +310,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         </div>
       </GlassPanel>
 
-      {/* Output cards — left stack */}
       <GlassPanel
         visible={showOutputs}
         animate={animate}
@@ -282,23 +322,30 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
       >
         <div
           style={{
-            fontSize: 9,
-            color: "rgba(180,255,0,0.65)",
-            letterSpacing: "0.1em",
-            fontWeight: 700,
-            textTransform: "uppercase",
+            ...labelStyle,
+            color: "rgba(180,255,0,0.72)",
             marginBottom: 10,
           }}
         >
-          Output
+          {tl("output")}
         </div>
+        <p
+          style={{
+            fontSize: 9,
+            color: "rgba(255,255,255,0.42)",
+            marginBottom: 8,
+            letterSpacing: "0.04em",
+          }}
+        >
+          {tl("exampleOutput")}
+        </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {scene.outputs.map((out) => (
             <div key={out.label}>
               <div
                 style={{
-                  fontSize: 9,
-                  color: "rgba(255,255,255,0.38)",
+                  fontSize: 10,
+                  color: "rgba(255,255,255,0.45)",
                   marginBottom: 2,
                 }}
               >
@@ -318,7 +365,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         </div>
       </GlassPanel>
 
-      {/* Result card — top right */}
       <GlassPanel
         visible={showResult}
         animate={animate}
@@ -342,7 +388,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         >
           ✓ {scene.resultTitle}
         </div>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)" }}>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.68)" }}>
           {scene.resultSubtitle}
         </div>
         {scene.resultScore ? (
@@ -351,7 +397,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
               marginTop: 6,
               fontSize: 10,
               fontWeight: 600,
-              color: "rgba(180,255,0,0.75)",
+              color: "rgba(180,255,0,0.8)",
               letterSpacing: "0.04em",
             }}
           >
@@ -360,7 +406,6 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         ) : null}
       </GlassPanel>
 
-      {/* Mini preview — bottom right */}
       <GlassPanel
         visible={showResult}
         animate={animate}
@@ -373,21 +418,18 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
       >
         <div
           style={{
-            fontSize: 9,
-            color: "rgba(180,255,0,0.6)",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
+            ...labelStyle,
+            color: "rgba(180,255,0,0.65)",
             marginBottom: 4,
           }}
         >
-          Preview
+          {tl("preview")}
         </div>
         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>
           {scene.miniLabel}
         </div>
       </GlassPanel>
 
-      {/* Scene dots */}
       <div
         style={{
           position: "absolute",
@@ -400,7 +442,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
         }}
         aria-hidden
       >
-        {SCENES.map((s, i) => (
+        {scenes.map((s, i) => (
           <span
             key={s.id}
             style={{

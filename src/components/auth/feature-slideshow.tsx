@@ -145,15 +145,24 @@ function ThumbnailVisual() {
   );
 }
 
-function CommunityVisual() {
+function KiIchVisual() {
   const t = useTranslations("slideshow");
   const benefits = [
-    t("community_benefit_1"),
-    t("community_benefit_2"),
-    t("community_benefit_3"),
+    t("ki_ich_benefit_1"),
+    t("ki_ich_benefit_2"),
+    t("ki_ich_benefit_3"),
   ];
   return (
     <div className="bg-white/5 rounded-xl border border-white/10 p-5 max-w-sm">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-16 h-16 rounded-full bg-white/10 border-2 border-dashed border-[#B4FF00]/40 flex items-center justify-center">
+          <span className="text-xl">📷</span>
+        </div>
+        <div>
+          <div className="h-4 w-28 bg-white/80 rounded mb-1" />
+          <div className="h-3 w-20 bg-white/40 rounded" />
+        </div>
+      </div>
       <div className="space-y-3">
         {benefits.map((text) => (
           <div key={text} className="flex items-center gap-3">
@@ -171,7 +180,7 @@ const SLIDE_VISUALS = [
   NicheVisual,
   OutlierVisual,
   ThumbnailVisual,
-  CommunityVisual,
+  KiIchVisual,
 ] as const;
 
 export function FeatureSlideshow() {

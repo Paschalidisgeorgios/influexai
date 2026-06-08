@@ -11,6 +11,7 @@ export type LandingStudioTool = {
 const ROUTE_EXISTS = new Set([
   "/dashboard/thumbnail-concept",
   "/dashboard/ki-ich",
+  "/dashboard/ki-agent",
   "/dashboard/image-generator",
   "/tools/viral-hook-extraktor",
   "/tools/content-kalender",
@@ -21,18 +22,19 @@ const ROUTE_EXISTS = new Set([
   "/dashboard/produkt",
   "/dashboard/agent",
   "/dashboard/stimme",
+  "/dashboard/stimme-musik",
   "/dashboard/voice",
 ]);
 
 export const LANDING_STUDIO_TOOLS: LandingStudioTool[] = [
   {
     id: "script",
-    href: "/tools/script-generator",
+    href: "/dashboard/script-generator",
     image: "/images/examples/script.jpg",
   },
   {
     id: "product",
-    href: "/tools/produkt-werbung",
+    href: "/dashboard/produkt",
     image: "/images/examples/product.jpg",
   },
   {
@@ -74,13 +76,11 @@ export const LANDING_STUDIO_TOOLS: LandingStudioTool[] = [
     id: "voice",
     href: "/dashboard/stimme-musik",
     image: "/images/examples/voice.jpg",
-    comingSoon: true,
   },
   {
     id: "live",
     href: "/dashboard/live-creator",
     image: "/images/examples/live.jpg",
-    comingSoon: true,
   },
   {
     id: "lora",
