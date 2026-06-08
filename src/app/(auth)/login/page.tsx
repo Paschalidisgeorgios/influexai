@@ -64,7 +64,7 @@ function LoginPageInner() {
       );
     }
 
-    router.push(target);
+    router.replace(target);
     router.refresh();
     setLoading(false);
   };

@@ -122,7 +122,7 @@ function SignupPageInner() {
 
     const redirectAfterConfirm =
       typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback?next=/dashboard`
+        ? `${window.location.origin}/auth/callback`
         : undefined;
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -204,7 +204,7 @@ function SignupPageInner() {
         searchParams.get("redirect")
       );
 
-      router.push(target);
+      router.replace(target);
       router.refresh();
       setLoading(false);
       return;

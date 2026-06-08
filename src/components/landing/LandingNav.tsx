@@ -78,7 +78,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.assign("/");
+    window.location.replace("/");
   };
 
   useEffect(() => {

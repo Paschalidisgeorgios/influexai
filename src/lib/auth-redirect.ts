@@ -19,8 +19,22 @@ const ALLOWED_POST_AUTH_PREFIXES = [
   "/community",
 ] as const;
 
+const BLOCKED_REDIRECT_PREFIXES = ["/auth", "/login", "/signup"] as const;
+
+function normalizeRedirectPath(path: string): string {
+  return path.split("?")[0]?.split("#")[0] ?? path;
+}
+
+/** Dashboard paths require an active plan (admins exempt). */
+export function isPlanGatedRedirectPath(path: string): boolean {
+  const normalized = normalizeRedirectPath(path);
+  return (
+    normalized === "/dashboard" || normalized.startsWith("/dashboard/")
+  );
+}
+
 /**
- * Validates post-auth redirect targets. Blocks admin routes and open redirects.
+ * Validates post-auth redirect targets. Blocks admin routes, auth loops, and open redirects.
  */
 export function sanitizeAuthRedirect(
   path: string | null | undefined
@@ -30,11 +44,20 @@ export function sanitizeAuthRedirect(
   if (!trimmed.startsWith("/") || trimmed.startsWith("//")) return null;
   if (trimmed.includes("\\") || trimmed.includes("@")) return null;
 
-  const normalized = trimmed.split("?")[0]?.split("#")[0] ?? trimmed;
+  const normalized = normalizeRedirectPath(trimmed);
   if (
     normalized === "/admin" ||
     normalized.startsWith("/admin/") ||
     normalized.startsWith("/dashboard/admin")
+  ) {
+    return null;
+  }
+
+  if (
+    BLOCKED_REDIRECT_PREFIXES.some(
+      (prefix) =>
+        normalized === prefix || normalized.startsWith(`${prefix}/`)
+    )
   ) {
     return null;
   }
@@ -67,11 +90,14 @@ export function resolvePostAuthRedirect(
     return safe ?? DEFAULT_ADMIN_DESTINATION;
   }
 
-  if (safe) return safe;
-
   if (!hasActivePlan(profile)) {
+    if (safe && !isPlanGatedRedirectPath(safe)) {
+      return safe;
+    }
     return NO_PLAN_DESTINATION;
   }
+
+  if (safe) return safe;
 
   return DEFAULT_USER_DESTINATION;
 }

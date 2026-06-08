@@ -77,7 +77,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
   const handleLogout = async () => {
     setShowMenu(false);
     await supabase.auth.signOut();
-    window.location.assign("/auth/sign-in");
+    window.location.replace("/");
   };
 
   const initials = profile?.full_name

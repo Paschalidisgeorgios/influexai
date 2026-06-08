@@ -13,6 +13,7 @@ import {
   REFERRAL_REF_COOKIE,
   REFERRAL_REF_MAX_AGE,
 } from "@/lib/referral-ref-cookie";
+import { hasActivePlan } from "@/lib/access";
 import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
 import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import {
@@ -252,16 +253,35 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && isDashboard) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan, role, is_admin")
+      .eq("id", user.id)
+      .single();
+
+    const accessUser = {
+      email: user.email,
+      plan: profile?.plan,
+      role: profile?.role,
+      is_admin: profile?.is_admin,
+    };
+
+    if (
+      !isPlatformAdminServer(accessUser) &&
+      !hasActivePlan(accessUser)
+    ) {
+      logAuthRedirect({
+        userId: user.id,
+        role: profile?.role,
+        target: "/pricing",
+        source: "middleware_dashboard_plan",
+      });
+      return NextResponse.redirect(new URL("/pricing", request.url));
+    }
+
     const gate = getRouteGate(pathname);
-    if (gate) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("plan, role, is_admin")
-        .eq("id", user.id)
-        .single();
-      if (!isRouteAllowed(pathname, profile ?? { plan: "free" })) {
-        requestHeaders.set("x-plan-upgrade-required", gate.minPlan);
-      }
+    if (gate && !isRouteAllowed(pathname, profile ?? { plan: "free" })) {
+      requestHeaders.set("x-plan-upgrade-required", gate.minPlan);
     }
   }
 
