@@ -78,11 +78,8 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B4FF00] font-[family-name:var(--font-bebas)] text-lg leading-none text-[#060608]">
               I
             </div>
-            <span className="logo-wrapper landing-nav-logo-text truncate font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#060608]">
-              <span>INFLUEX</span>
-              <span className="logo-ai">
-                A<span className="logo-i">I</span>
-              </span>
+            <span className="landing-nav-logo-text truncate font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#060608]">
+              Influex<span className="text-[#5a7300]">AI</span>
             </span>
           </Link>
 
