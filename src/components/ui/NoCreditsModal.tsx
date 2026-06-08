@@ -131,7 +131,7 @@ export function NoCreditsModal({
     setCheckoutFailed(false);
     setCheckoutErrorMessage(null);
     try {
-      const res = await fetch("/api/stripe/credits-checkout", {
+      const res = await fetch("/api/credits/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ packageId: pack.id }),

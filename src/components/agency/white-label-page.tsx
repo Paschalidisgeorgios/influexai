@@ -27,10 +27,15 @@ export function WhiteLabelPageContent() {
     }
 
     setCheckoutPlan(planId);
-    const res = await fetch("/api/stripe/agency-checkout", {
+    const res = await fetch("/api/agency/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan: planId, agencyName, slug }),
+      body: JSON.stringify({
+        plan: planId,
+        agencyName,
+        slug,
+        billingInterval: "monthly",
+      }),
     });
     const data = await res.json();
     setCheckoutPlan(null);
