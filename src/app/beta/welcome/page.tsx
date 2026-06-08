@@ -11,8 +11,8 @@ function WelcomeInner() {
   const [copied, setCopied] = useState(false);
 
   const signupUrl = code
-    ? `${SITE_URL}/signup?beta=${encodeURIComponent(code)}`
-    : `${SITE_URL}/signup`;
+    ? `${SITE_URL}/auth/sign-up?beta=${encodeURIComponent(code)}`
+    : `${SITE_URL}/auth/sign-up`;
 
   const shareText = encodeURIComponent(
     `Ich habe einen Beta-Platz bei InfluexAI gesichert — nur 100 Spots! ${SITE_URL}/beta`

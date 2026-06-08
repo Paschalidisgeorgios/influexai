@@ -191,7 +191,7 @@ export function BetaPageClient({ initialStats }: Props) {
           Influex<span style={{ color: "#B4FF00" }}>AI</span>
         </a>
         <a
-          href="/login"
+          href="/auth/sign-in"
           style={{
             color: "rgba(255,255,255,0.65)",
             fontSize: "0.85rem",

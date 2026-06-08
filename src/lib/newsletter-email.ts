@@ -50,7 +50,7 @@ export async function sendNewsletterConfirmEmail(
 }
 
 export async function sendNewsletterWelcomeEmail(to: string): Promise<boolean> {
-  const signupUrl = `${SEO_BASE_URL}/signup?source=newsletter`;
+  const signupUrl = `${SEO_BASE_URL}/auth/sign-up?source=newsletter`;
 
   const html = `<!DOCTYPE html><html lang="de"><body style="margin:0;background:#0a0a0a;font-family:Arial,sans-serif;">
 <table width="100%"><tr><td align="center" style="padding:32px 16px;">

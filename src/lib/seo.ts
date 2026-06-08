@@ -119,6 +119,7 @@ export const SEO_STATIC_PATHS = [
   "/beta",
   "/dashboard/white-label",
   "/community",
+  "/pricing",
   "/impressum",
   "/datenschutz",
   "/agb",

@@ -63,7 +63,7 @@ export function GuideAuthorBox() {
         Scripts, Nischen und Konzepte zu erstellen — datenbasiert und praxisnah.
       </p>
       <Link
-        href="/signup"
+        href="/auth/sign-up"
         className="mt-4 inline-flex text-sm text-[#B4FF00] hover:underline"
       >
         Kostenlos testen →

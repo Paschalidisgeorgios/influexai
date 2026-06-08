@@ -337,7 +337,7 @@ export function PostCard({
             </div>
           ) : (
             <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)" }}>
-              <a href="/login" style={{ color: "#B4FF00" }}>
+              <a href="/auth/sign-in" style={{ color: "#B4FF00" }}>
                 Melde dich an
               </a>{" "}
               um zu antworten.

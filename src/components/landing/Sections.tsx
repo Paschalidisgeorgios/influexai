@@ -308,7 +308,7 @@ export function FaqSection() {
 export function PricingSection() {
   const t = useTranslations("landingPage.pricing");
   const tAgency = useTranslations("landingPage.agencyTeaser");
-  const { loading, handleSubscribe } = useSubscriptionCheckout("/#pricing");
+  const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
 
   return (
     <section
@@ -487,6 +487,7 @@ const FOOTER_COLS = [
 const FOOTER_LINK_HREF: Partial<
   Record<(typeof FOOTER_COLS)[number]["links"][number], string>
 > = {
+  product_pricing: "/pricing",
   company_blog: "/blog",
   company_guides: "/guides",
   legal_imprint: "/impressum",

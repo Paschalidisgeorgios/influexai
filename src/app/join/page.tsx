@@ -37,7 +37,7 @@ function JoinContent() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      router.push(`/login?redirect=/join?token=${token}`);
+      router.push(`/auth/sign-in?redirect=${encodeURIComponent(`/join?token=${token}`)}`);
       return;
     }
 
@@ -123,14 +123,14 @@ function JoinContent() {
 
         <p style={{ textAlign: "center", fontSize: "0.85rem" }}>
           <Link
-            href={`/signup?redirect=/join?token=${token}`}
+            href={`/auth/sign-up?redirect=${encodeURIComponent(`/join?token=${token}`)}`}
             style={{ color: accent }}
           >
             Konto erstellen
           </Link>
           {" · "}
           <Link
-            href={`/login?redirect=/join?token=${token}`}
+            href={`/auth/sign-in?redirect=${encodeURIComponent(`/join?token=${token}`)}`}
             style={{ color: accent }}
           >
             Anmelden

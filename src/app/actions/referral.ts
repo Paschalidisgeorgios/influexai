@@ -305,7 +305,7 @@ export async function getReferralDashboard(
   return {
     referralCode: code,
     referralLink: `${SITE_URL}?ref=${user.id}`,
-    signupLink: `${SITE_URL}/signup?ref=${code}`,
+    signupLink: `${SITE_URL}/auth/sign-up?ref=${code}`,
     stats: {
       signedUp: total,
       purchased: totalPurchased,

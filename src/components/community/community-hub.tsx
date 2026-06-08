@@ -24,10 +24,11 @@ type Initial = Awaited<ReturnType<typeof getCommunityInitial>>;
 type Props = {
   isLoggedIn: boolean;
   userId: string | null;
+  memberHomeHref?: string | null;
   initial: Initial;
 };
 
-export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
+export function CommunityHub({ isLoggedIn, userId, memberHomeHref, initial }: Props) {
   const [view, setView] = useState<View>("feed");
   const [filter, setFilter] = useState<CommunityFeedFilter>("all");
   const [posts, setPosts] = useState<CommunityPost[]>(initial.posts);
@@ -107,9 +108,9 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
           Influex<span style={{ color: "#B4FF00" }}>AI</span> Community
         </Link>
         <div style={{ display: "flex", gap: 8 }}>
-          {isLoggedIn ? (
+          {isLoggedIn && memberHomeHref ? (
             <Link
-              href="/dashboard"
+              href={memberHomeHref}
               style={{
                 padding: "8px 14px",
                 borderRadius: 8,
@@ -120,11 +121,12 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
                 textDecoration: "none",
               }}
             >
-              Dashboard
+              {memberHomeHref === "/dashboard" ? "Dashboard" : "Preise"}
             </Link>
-          ) : (
+          ) : null}
+          {!isLoggedIn ? (
             <Link
-              href="/login"
+              href="/auth/sign-in"
               style={{
                 padding: "8px 14px",
                 borderRadius: 8,
@@ -137,7 +139,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
             >
               Anmelden
             </Link>
-          )}
+          ) : null}
         </div>
       </header>
 
@@ -246,7 +248,7 @@ export function CommunityHub({ isLoggedIn, userId, initial }: Props) {
                 }}
               >
                 <Link
-                  href="/login"
+                  href="/auth/sign-in"
                   style={{ color: "#B4FF00", fontWeight: 700 }}
                 >
                   Melde dich an

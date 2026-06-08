@@ -41,13 +41,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   entries.push({
-    url: localizedUrl("/login", defaultLocale),
+    url: localizedUrl("/auth/sign-in", defaultLocale),
     lastModified,
     changeFrequency: "yearly",
     priority: 0.4,
   });
   entries.push({
-    url: localizedUrl("/signup", defaultLocale),
+    url: localizedUrl("/auth/sign-up", defaultLocale),
     lastModified,
     changeFrequency: "yearly",
     priority: 0.5,

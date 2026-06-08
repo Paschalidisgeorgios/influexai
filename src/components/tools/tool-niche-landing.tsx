@@ -23,7 +23,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
   const meta = generatePageMetadata(feature, niche)!;
   const benefits = getBenefitsForCombo(feature, niche);
   const related = getRelatedFeatures(feature, niche);
-  const signupHref = `/signup?source=tools-${feature}-${niche}`;
+  const signupHref = `/auth/sign-up?source=tools-${feature}-${niche}`;
 
   return (
     <main className="min-h-screen bg-[#060608] text-white">

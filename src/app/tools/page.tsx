@@ -27,7 +27,7 @@ export default function ToolsIndexPage() {
             InfluexAI
           </Link>
           <Link
-            href="/signup"
+            href="/auth/sign-up"
             className="rounded-lg bg-[#B4FF00] px-4 py-2 text-sm font-semibold text-black hover:bg-[#c8ff33]"
           >
             Starten

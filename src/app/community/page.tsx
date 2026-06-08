@@ -1,3 +1,5 @@
+import { hasActivePlan } from "@/lib/access";
+import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { getCommunityInitial } from "@/app/actions/community";
 import { getCommunityPageData } from "@/app/actions/community-creations";
 import { CommunityPageHub } from "@/components/community/community-page-hub";
@@ -19,6 +21,25 @@ export default async function CommunityPage() {
 
   const userId = user?.id ?? null;
 
+  let memberHomeHref: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan, role, is_admin")
+      .eq("id", user.id)
+      .single();
+    const accessUser = {
+      email: user.email,
+      plan: profile?.plan,
+      role: profile?.role,
+      is_admin: profile?.is_admin,
+    };
+    memberHomeHref =
+      hasActivePlan(accessUser) || isPlatformAdminServer(accessUser)
+        ? "/dashboard"
+        : "/pricing";
+  }
+
   const [creationData, socialInitial] = await Promise.all([
     getCommunityPageData(userId),
     getCommunityInitial(userId),
@@ -28,6 +49,7 @@ export default async function CommunityPage() {
     <CommunityPageHub
       isLoggedIn={!!user}
       userId={userId}
+      memberHomeHref={memberHomeHref}
       creationData={creationData}
       socialInitial={socialInitial}
     />

@@ -6,7 +6,7 @@ export async function sendBetaWelcomeEmail(
   firstName: string
 ): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
-  const signupUrl = `${SITE_URL}/signup?beta=${encodeURIComponent(code)}`;
+  const signupUrl = `${SITE_URL}/auth/sign-up?beta=${encodeURIComponent(code)}`;
 
   if (!apiKey) {
     console.log("[beta-email] RESEND_API_KEY not set — skipped:", { to, code });

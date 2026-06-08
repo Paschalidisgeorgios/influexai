@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { createClient } from "@/lib/supabase/client";
+import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
 const NAV_LINKS = [
   { key: "nav_brands" as const, href: "#brands" },
@@ -12,7 +14,7 @@ const NAV_LINKS = [
   { key: "nav_blog" as const, href: "/blog", external: true },
   { key: "nav_guides" as const, href: "/guides", external: true },
   { key: "nav_community" as const, href: "/community", external: true },
-  { key: "nav_pricing" as const, href: "#pricing" },
+  { key: "nav_pricing" as const, href: "/pricing", external: true },
   { key: "nav_agency" as const, href: "/agency", external: true },
 ];
 
@@ -34,13 +36,55 @@ const MOBILE_LINK_STYLE = {
 
 export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const t = useTranslations("landing");
+  const tNav = useTranslations("nav");
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [navSession, setNavSession] = useState<{
+    user: boolean;
+    hasPlan: boolean;
+    isAdmin: boolean;
+  }>({ user: false, hasPlan: false, isAdmin: false });
+  const supabase = createClient();
+
+  const loadNavSession = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setNavSession({ user: false, hasPlan: false, isAdmin: false });
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan, role, is_admin")
+      .eq("id", user.id)
+      .single();
+
+    const accessUser = {
+      email: user.email,
+      plan: profile?.plan,
+      role: profile?.role,
+      is_admin: profile?.is_admin,
+    };
+
+    setNavSession({
+      user: true,
+      hasPlan: hasActivePlan(accessUser),
+      isAdmin: isPlatformAdmin(accessUser),
+    });
+  }, [supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.assign("/");
+  };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    void loadNavSession();
+  }, [loadNavSession]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -65,6 +109,10 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   }, [menuOpen, mounted]);
 
   const closeMenu = () => setMenuOpen(false);
+
+  const showGuestAuth = mounted && !navSession.user;
+  const showMemberNav = mounted && navSession.user && (navSession.hasPlan || navSession.isAdmin);
+  const showNoPlanNav = mounted && navSession.user && !navSession.hasPlan && !navSession.isAdmin;
 
   const navBarClass = `landing-nav-bar landing-nav-bar--mobile${
     mounted && scrolled ? " landing-nav-bar--scrolled" : ""
@@ -110,28 +158,90 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
 
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
             <LanguageSwitcher compact lightToolbar buttonClassName="landing-nav-lang-btn" />
-            <a
-              href="/auth/sign-in"
-              className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
-            >
-              {t("auth_login")}
-            </a>
-            <AcidMotionButton
-              href="/auth/sign-up"
-              className="btn-acid"
-              style={{ padding: "9px 18px", fontSize: "0.85rem" }}
-            >
-              {t("auth_signup")}
-            </AcidMotionButton>
+            {showGuestAuth ? (
+              <>
+                <Link
+                  href="/auth/sign-in"
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  {t("auth_login")}
+                </Link>
+                <AcidMotionButton
+                  href="/auth/sign-up"
+                  className="btn-acid"
+                  style={{ padding: "9px 18px", fontSize: "0.85rem" }}
+                >
+                  {t("auth_signup")}
+                </AcidMotionButton>
+              </>
+            ) : null}
+            {showMemberNav ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  Dashboard
+                </Link>
+                {navSession.isAdmin ? (
+                  <Link
+                    href="/admin"
+                    className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  {tNav("logout")}
+                </button>
+              </>
+            ) : null}
+            {showNoPlanNav ? (
+              <>
+                <Link
+                  href="/pricing"
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  {t("nav_pricing")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  className="landing-nav-auth-link text-sm font-medium px-3 py-2 transition-colors duration-150"
+                >
+                  {tNav("logout")}
+                </button>
+              </>
+            ) : null}
           </div>
 
           <div className="flex shrink-0 items-center gap-2 md:hidden">
-            <AcidMotionButton
-              href="/auth/sign-up"
-              className="btn-acid !min-h-10 !px-3 !py-2 text-[0.72rem] whitespace-nowrap"
-            >
-              {t("auth_signup")}
-            </AcidMotionButton>
+            {showGuestAuth ? (
+              <AcidMotionButton
+                href="/auth/sign-up"
+                className="btn-acid !min-h-10 !px-3 !py-2 text-[0.72rem] whitespace-nowrap"
+              >
+                {t("auth_signup")}
+              </AcidMotionButton>
+            ) : showMemberNav ? (
+              <Link
+                href="/dashboard"
+                className="landing-nav-auth-link text-xs font-medium px-2 py-2"
+              >
+                Dashboard
+              </Link>
+            ) : showNoPlanNav ? (
+              <Link
+                href="/pricing"
+                className="landing-nav-auth-link text-xs font-medium px-2 py-2"
+              >
+                {t("nav_pricing")}
+              </Link>
+            ) : null}
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
@@ -256,20 +366,75 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             </div>
 
             <div className="flex flex-col gap-3">
-              <a
-                href="/auth/sign-in"
-                onClick={closeMenu}
-                className="btn-ghost justify-center"
-              >
-                {t("auth_login")}
-              </a>
-              <AcidMotionButton
-                href="/auth/sign-up"
-                onClick={closeMenu}
-                className="btn-acid justify-center"
-              >
-                {t("auth_signup")} →
-              </AcidMotionButton>
+              {showGuestAuth ? (
+                <>
+                  <Link
+                    href="/auth/sign-in"
+                    onClick={closeMenu}
+                    className="btn-ghost justify-center"
+                  >
+                    {t("auth_login")}
+                  </Link>
+                  <AcidMotionButton
+                    href="/auth/sign-up"
+                    onClick={closeMenu}
+                    className="btn-acid justify-center"
+                  >
+                    {t("auth_signup")} →
+                  </AcidMotionButton>
+                </>
+              ) : null}
+              {showMemberNav ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    onClick={closeMenu}
+                    className="btn-ghost justify-center"
+                  >
+                    Dashboard
+                  </Link>
+                  {navSession.isAdmin ? (
+                    <Link
+                      href="/admin"
+                      onClick={closeMenu}
+                      className="btn-ghost justify-center"
+                    >
+                      Admin
+                    </Link>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      void handleLogout();
+                    }}
+                    className="btn-ghost justify-center"
+                  >
+                    {tNav("logout")}
+                  </button>
+                </>
+              ) : null}
+              {showNoPlanNav ? (
+                <>
+                  <Link
+                    href="/pricing"
+                    onClick={closeMenu}
+                    className="btn-ghost justify-center"
+                  >
+                    {t("nav_pricing")}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      void handleLogout();
+                    }}
+                    className="btn-ghost justify-center"
+                  >
+                    {tNav("logout")}
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
         </div>

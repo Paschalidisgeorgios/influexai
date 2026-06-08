@@ -18,6 +18,7 @@ type SocialInitial = Awaited<ReturnType<typeof getCommunityInitial>>;
 type Props = {
   isLoggedIn: boolean;
   userId: string | null;
+  memberHomeHref?: string | null;
   creationData: CreationData;
   socialInitial: SocialInitial;
 };
@@ -25,6 +26,7 @@ type Props = {
 export function CommunityPageHub({
   isLoggedIn,
   userId,
+  memberHomeHref,
   creationData,
   socialInitial,
 }: Props) {
@@ -113,6 +115,7 @@ export function CommunityPageHub({
             <CommunityHub
               isLoggedIn={isLoggedIn}
               userId={userId}
+              memberHomeHref={memberHomeHref}
               initial={socialInitial}
             />
           </div>

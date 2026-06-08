@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
       )}
 
       <p className="text-center text-white/70 text-sm mt-8">
-        <Link href="/login" className="text-[#B4FF00] hover:underline">
+        <Link href="/auth/sign-in" className="text-[#B4FF00] hover:underline">
           {t("login_link")}
         </Link>
       </p>

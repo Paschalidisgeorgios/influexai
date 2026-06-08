@@ -121,7 +121,7 @@ export function ChallengeBanner({
           </>
         ) : (
           <a
-            href="/login"
+            href="/auth/sign-in"
             style={{
               padding: "10px 18px",
               borderRadius: 10,

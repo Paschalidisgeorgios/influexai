@@ -205,7 +205,7 @@ function ContentKalenderPageInner() {
             {error}
             {error.includes("einloggen") && (
               <Link
-                href="/login"
+                href="/auth/sign-in"
                 style={{ display: "block", marginTop: 8, color: "#B4FF00" }}
               >
                 Zum Login →

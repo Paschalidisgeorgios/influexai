@@ -38,14 +38,17 @@ export async function middleware(request: NextRequest) {
   }
 
   // Legacy auth URLs → canonical /auth/sign-in|sign-up
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/anmelden") {
     return NextResponse.redirect(new URL("/auth/sign-in" + search, request.url));
   }
-  if (pathname === "/signup") {
+  if (pathname === "/signup" || pathname === "/registrierung") {
     return NextResponse.redirect(new URL("/auth/sign-up" + search, request.url));
   }
-  if (pathname === "/auth" && search === "") {
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  if (pathname === "/preise") {
+    return NextResponse.redirect(new URL("/pricing" + search, request.url));
+  }
+  if (pathname === "/auth") {
+    return NextResponse.redirect(new URL("/auth/sign-in" + search, request.url));
   }
 
   // Legacy /white-label → public agency landing (logged-in users → dashboard WL)
