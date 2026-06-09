@@ -35,6 +35,11 @@ const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
     src: "/videos/landing/feature-2.mp4",
     poster: "/images/landing/feature-1.png",
   },
+  {
+    type: "video",
+    src: "/videos/landing/feature-3.mp4",
+    poster: "/images/landing/feature-3.png",
+  },
 ];
 
 const HERO_MEDIA_CROSSFADE_MS = 800;
@@ -43,6 +48,7 @@ const HERO_IMAGE_DURATION_MS = 6000;
 const HERO_IMAGE_INDEX = 0;
 const HERO_VIDEO_1_INDEX = 1;
 const HERO_VIDEO_2_INDEX = 2;
+const HERO_VIDEO_3_INDEX = 3;
 
 const HERO_MEDIA_MASK_HORIZONTAL =
   "linear-gradient(to right, transparent 0%, black 35%, black 100%)";
@@ -114,8 +120,16 @@ function prepVideoAtStart(video: HTMLVideoElement) {
 function HeroBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
+  const videoRef3 = useRef<HTMLVideoElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(HERO_IMAGE_INDEX);
   const [imageCycle, setImageCycle] = useState(0);
+
+  const getVideoRef = (index: number) => {
+    if (index === HERO_VIDEO_1_INDEX) return videoRef1;
+    if (index === HERO_VIDEO_2_INDEX) return videoRef2;
+    if (index === HERO_VIDEO_3_INDEX) return videoRef3;
+    return null;
+  };
 
   useEffect(() => {
     if (activeIndex !== HERO_IMAGE_INDEX) return;
@@ -130,32 +144,34 @@ function HeroBackgroundMedia() {
   }, [activeIndex]);
 
   useEffect(() => {
-    if (videoRef1.current) {
-      videoRef1.current.load();
-    }
-    if (videoRef2.current) {
-      videoRef2.current.load();
-    }
+    videoRef1.current?.load();
+    videoRef2.current?.load();
+    videoRef3.current?.load();
   }, []);
 
   useEffect(() => {
     const v1 = videoRef1.current;
     const v2 = videoRef2.current;
+    const v3 = videoRef3.current;
 
     if (activeIndex === HERO_VIDEO_1_INDEX && v1) {
       void v1.play().catch(() => {});
       v2?.pause();
+      v3?.pause();
     } else if (activeIndex === HERO_VIDEO_2_INDEX && v2) {
       v2.currentTime = 0;
       void v2.play().catch(() => {});
-      if (v1) {
-        prepVideoAtStart(v1);
-      }
+      if (v1) prepVideoAtStart(v1);
+      v3?.pause();
+    } else if (activeIndex === HERO_VIDEO_3_INDEX && v3) {
+      v3.currentTime = 0;
+      void v3.play().catch(() => {});
+      if (v1) prepVideoAtStart(v1);
+      v2?.pause();
     } else if (activeIndex === HERO_IMAGE_INDEX) {
       v2?.pause();
-      if (v1) {
-        prepVideoAtStart(v1);
-      }
+      v3?.pause();
+      if (v1) prepVideoAtStart(v1);
     }
   }, [activeIndex]);
 
@@ -164,8 +180,19 @@ function HeroBackgroundMedia() {
   };
 
   const handleVideo2Ended = () => {
+    setActiveIndex(HERO_VIDEO_3_INDEX);
+  };
+
+  const handleVideo3Ended = () => {
     setImageCycle((c) => c + 1);
     setActiveIndex(HERO_IMAGE_INDEX);
+  };
+
+  const getVideoEndedHandler = (index: number) => {
+    if (index === HERO_VIDEO_1_INDEX) return handleVideo1Ended;
+    if (index === HERO_VIDEO_2_INDEX) return handleVideo2Ended;
+    if (index === HERO_VIDEO_3_INDEX) return handleVideo3Ended;
+    return undefined;
   };
 
   return (
@@ -221,17 +248,13 @@ function HeroBackgroundMedia() {
                   }}
                 >
                   <video
-                    ref={index === HERO_VIDEO_1_INDEX ? videoRef1 : videoRef2}
+                    ref={getVideoRef(index)}
                     src={item.src}
                     poster={item.poster}
                     muted
                     playsInline
                     preload="auto"
-                    onEnded={
-                      index === HERO_VIDEO_1_INDEX
-                        ? handleVideo1Ended
-                        : handleVideo2Ended
-                    }
+                    onEnded={getVideoEndedHandler(index)}
                     style={{
                       filter: HERO_MEDIA_FILTER,
                       ...HERO_MEDIA_OBJECT_STYLE,
