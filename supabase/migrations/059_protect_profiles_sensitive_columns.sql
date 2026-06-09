@@ -24,9 +24,16 @@ begin
     return new;
   end if;
 
-  -- Authorized billing RPC (deduct_credits) may adjust credits only.
+  -- Block credit inflation for all non-privileged roles (including forged billing GUC).
+  if new.credits is distinct from old.credits and new.credits > old.credits then
+    raise exception 'profiles.credits cannot be increased by users'
+      using errcode = '42501';
+  end if;
+
+  -- deduct_credits may lower credits only (never increase) via scoped billing GUC.
   if coalesce(current_setting('app.profile_billing_update', true), '') = '1'
-     and new.credits is distinct from old.credits then
+     and new.credits is distinct from old.credits
+     and new.credits <= old.credits then
     return new;
   end if;
 
@@ -136,46 +143,50 @@ create trigger protect_profiles_sensitive_columns
 do $$
 declare
   col text;
-  sensitive_cols constant text[] := array[
-    'tenant_id',
-    'tenant_role',
-    'credits',
-    'plan',
-    'stripe_customer_id',
-    'stripe_subscription_id',
-    'agency_plan',
-    'agency_credits',
-    'role',
-    'is_admin',
-    'referral_code',
-    'referred_by',
-    'is_beta',
-    'beta_code',
-    'email_sequence_day',
-    'last_nurture_email_at',
-    'is_churned',
-    'nurture_unsubscribed'
+  harmless_cols constant text[] := array[
+    'full_name',
+    'avatar_url',
+    'username',
+    'bio',
+    'is_public',
+    'youtube_url',
+    'tiktok_url',
+    'instagram_url',
+    'onboarding_completed',
+    'channel_name',
+    'creator_niche',
+    'niche',
+    'subscriber_count',
+    'creator_goal',
+    'push_token',
+    'notification_preferences',
+    'daily_suggestions_email',
+    'creator_dna',
+    'last_active_at'
   ];
+  grant_cols text;
 begin
-  foreach col in array sensitive_cols
-  loop
-    if exists (
-      select 1
-      from information_schema.columns
-      where table_schema = 'public'
-        and table_name = 'profiles'
-        and column_name = col
-    ) then
-      execute format(
-        'revoke update (%I) on table public.profiles from anon, authenticated',
-        col
-      );
-    end if;
-  end loop;
+  -- Table-level revoke: column REVOKE alone is unreliable when UPDATE ON TABLE exists.
+  revoke update on table public.profiles from anon, authenticated;
+
+  select string_agg(format('%I', c.column_name), ', ' order by c.column_name)
+  into grant_cols
+  from unnest(harmless_cols) as hc(col_name)
+  join information_schema.columns c
+    on c.table_schema = 'public'
+   and c.table_name = 'profiles'
+   and c.column_name = hc.col_name;
+
+  if grant_cols is not null and grant_cols <> '' then
+    execute format(
+      'grant update (%s) on table public.profiles to authenticated',
+      grant_cols
+    );
+  end if;
 end;
 $$;
 
--- deduct_credits runs as authenticated; trigger bypass is scoped to credits only.
+-- deduct_credits runs as authenticated; trigger bypass allows credit decrease only.
 create or replace function public.deduct_credits(
   p_user_id uuid,
   p_amount int

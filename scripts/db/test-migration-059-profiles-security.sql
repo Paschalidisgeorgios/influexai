@@ -167,12 +167,20 @@ where n.nspname = 'public'
 -- EXPECTED: zero rows.
 
 
--- 1h) Column UPDATE privileges revoked for authenticated (sample: credits)
+-- 1h) UPDATE privileges for authenticated (sample: credits vs full_name)
+-- Migration 059 uses table-level REVOKE + explicit GRANT on harmless columns only.
+-- Do NOT rely on column REVOKE alone when GRANT UPDATE ON TABLE exists (Supabase default).
+-- Primary enforcement: trigger + privileged grant model; has_column_privilege is informational.
 select
   has_column_privilege('authenticated', 'public.profiles', 'credits', 'UPDATE') as auth_can_update_credits,
-  has_column_privilege('authenticated', 'public.profiles', 'full_name', 'UPDATE') as auth_can_update_full_name;
+  has_column_privilege('authenticated', 'public.profiles', 'full_name', 'UPDATE') as auth_can_update_full_name,
+  has_table_privilege('authenticated', 'public.profiles', 'UPDATE') as auth_can_update_table;
 
--- EXPECTED: auth_can_update_credits = false; auth_can_update_full_name = true.
+-- EXPECTED after 059:
+--   auth_can_update_credits = false
+--   auth_can_update_full_name = true
+--   auth_can_update_table = false (no blanket table UPDATE grant)
+-- If auth_can_update_table = true, verify trigger still blocks sensitive columns (Sections 3 + 5).
 
 
 -- 1i) Baseline snapshot — save output before mutating tests
@@ -378,31 +386,43 @@ where id = '<TEST_USER_ID>'::uuid;
 
 
 -- =============================================================================
--- SECTION 5 — GUC bypass attack (authenticated context)
+-- SECTION 5 — GUC bypass attack (authenticated context) — P0
 -- =============================================================================
--- Simulates a user trying to forge the billing bypass flag then inflate credits.
--- Defense-in-depth: REVOKE UPDATE (credits) should block before trigger runs.
+-- Simulates forged billing GUC + direct credits UPDATE (SQL injection / psql attack).
+--
+-- P0 requirement (staging 2026-06-09): forged GUC must NOT allow credit inflation.
+-- Trigger blocks NEW.credits > OLD.credits for non-service_role regardless of GUC.
 --
 -- Run as authenticated (NOT postgres superuser):
 --
+-- TEST P0-A — forged GUC + credit inflation (must FAIL)
+--   reset role;
+--   set local role authenticated;
+--   select set_config('request.jwt.claim.role', 'authenticated', true);
+--   select set_config('request.jwt.claim.sub', '<TEST_USER_ID>', true);
 --   select set_config('app.profile_billing_update', '1', true);
 --   update public.profiles
 --     set credits = credits + 999
 --     where id = '<TEST_USER_ID>'::uuid;
 --
 -- EXPECTED: FAILURE — one of:
---   - permission denied for column credits (preferred — REVOKE layer)
---   - ERROR 42501 profiles.credits cannot be changed directly (trigger layer)
+--   - permission denied for column credits (grant model)
+--   - ERROR 42501 profiles.credits cannot be increased by users (trigger)
+--   - ERROR 42501 profiles.credits cannot be changed directly (trigger fallback)
 -- MUST NOT succeed with increased credits.
 --
--- After test, verify balance unchanged:
+-- After P0-A, verify balance unchanged:
 --   select credits from public.profiles where id = '<TEST_USER_ID>'::uuid;
 --
+-- TEST P0-B — deduct_credits still works after GUC forgery attempt
+-- Prerequisites: restore credits to known value (e.g. 100) via service_role; authenticated context:
+--   select public.deduct_credits('<TEST_USER_ID>'::uuid, 1);
+-- EXPECTED: integer — balance decreased by 1 (e.g. 99). Not NULL.
+--
 -- LIMITATIONS:
---   - postgres superuser bypasses REVOKE — this test is invalid as superuser.
---   - Supabase REST clients cannot run arbitrary set_config; this simulates psql/SQL injection.
---   - If this test passes (blocked) under authenticated role, GUC bypass is not exploitable
---     via direct UPDATE for authenticated users.
+--   - postgres superuser bypasses REVOKE — invalid test context.
+--   - Supabase REST/PostgREST clients cannot run arbitrary set_config; simulates SQL injection.
+--   - Section 9 P0 sign-off requires P0-A blocked AND P0-B success.
 
 
 -- =============================================================================
@@ -493,7 +513,7 @@ where id = '<TEST_USER_ID>'::uuid;
 --   stripe_customer_id = <baseline or null>,
 --   stripe_subscription_id = <baseline or null>,
 --   agency_plan = <baseline or null>,
---   agency_credits = <baseline>,
+--   agency_credits = coalesce(<baseline agency_credits>, 0),
 --   is_admin = <baseline>,
 --   nurture_unsubscribed = <baseline>
 -- where id = '<TEST_USER_ID>'::uuid;
@@ -543,7 +563,11 @@ where id = '<TEST_USER_ID>'::uuid;
 -- [ ] S4 add_credits service_role success
 -- [ ] S5 add_credits authenticated denied (optional)
 --
--- GUC attack
+-- GUC attack (P0 — staging sign-off blocked until green)
+-- [ ] P0-A forged GUC + credits +999 blocked; balance unchanged
+-- [ ] P0-B deduct_credits still reduces balance after P0-A
+--
+-- GUC attack (legacy checklist)
 -- [ ] Section 5 — set_config + credits UPDATE blocked under authenticated
 --
 -- Agency / service paths

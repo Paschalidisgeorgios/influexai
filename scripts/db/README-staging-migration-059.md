@@ -243,6 +243,35 @@ Production apply methods (future — not in this doc's scope):
 
 ---
 
+## 8.1 Staging P0 — forged billing GUC (2026-06-09)
+
+Initial staging run on `influexai-staging` (`jvjm...lpxh`) found **P0**:
+
+- `set_config('app.profile_billing_update', '1')` as authenticated
+- then `UPDATE profiles SET credits = credits + 999`
+- **Result:** credits inflated (100 → 1099)
+
+**Root cause:** Trigger allowed any credits change with forged GUC; column REVOKE alone was unreliable with `GRANT UPDATE ON profiles`.
+
+**Fix in migration 059 (security branch):**
+
+| Requirement | Fix |
+|-------------|-----|
+| Forged GUC must not allow credit **increase** | Trigger rejects `NEW.credits > OLD.credits` for non-service roles |
+| `deduct_credits` must still work | GUC bypass allows **decrease only** (`NEW.credits <= OLD.credits`) |
+| `add_credits` / Stripe webhooks | Unchanged — `service_role` / `supabase_admin` bypass at trigger top |
+| Harmless profile updates | Table `REVOKE UPDATE` + explicit `GRANT UPDATE (harmless columns)` |
+
+**Production remains blocked** until staging re-test Sections 1–9 are **100% green**, including:
+
+- [ ] P0-A: forged GUC + `credits + 999` blocked, balance unchanged
+- [ ] P0-B: `deduct_credits` still deducts after P0-A attempt
+- [ ] S4: `add_credits` via service_role still works
+
+Do **not** run `db push` on Production until this checklist passes on staging.
+
+---
+
 ## 8. Command plan (DO NOT RUN until staging confirmed)
 
 Copy this checklist; check each box manually before running the next command.
@@ -332,35 +361,24 @@ supabase db push --linked    # when linked to Production
 
 ## 11. Current environment status
 
-Last audit: **2026-06-03** (security worktree prep — no migration executed)
+Last audit: **2026-06-09** (P0 GUC fix committed — staging re-test pending)
 
 | Check | Status |
 |-------|--------|
 | Worktree | `C:\Projekte\influexai-security-059` |
 | Branch | `fix/security-profiles-migration-059` |
-| HEAD | `9f87fe0` (test script `b113a93`; app baseline `1f70415` on `origin/main` / `origin/master`) |
-| Working tree | clean |
-| Local Supabase (Docker/WSL2) | **blocked** — not available |
-| `supabase/.temp/project-ref` | **absent** — not linked to any cloud project |
-| Worktree linked to Supabase cloud | **No** |
-| Linked project type | **unknown** (no link file) |
-| Production link excluded | **Yes** — no cloud link; Production not targeted by CLI in this session |
-| `supabase login` (automation shell) | **missing** — run `supabase login` in operator terminal before link |
-| Staging project `influexai-staging` | **pending** — create/link per §3.6; confirm Healthy in Dashboard |
-| Migration 059 applied on staging | **No** |
-| Test script green | **pending** |
+| Staging linked | `jvjm...lpxh` (when `supabase/.temp/project-ref` present) |
+| Migration 059 P0 fix | **committed** — awaiting staging re-test |
+| Staging test (pre-fix) | **FAIL** — GUC credit inflation |
 | Production DB / SQL / `db push` | **No** — not touched |
-| Push to `main` / `master` | **No** |
-| Deploy | **No** |
+| Production migration | **Blocked** until staging re-test green |
+| Agency-WIP deploy | **Blocked** until Production 059 live |
 
-### Next operator steps (staging only)
+### Next operator steps (staging re-test after P0 fix)
 
-1. `supabase login` in terminal used for migration work
-2. `supabase projects list` — confirm staging project name + masked ref (§3.6)
-3. Dashboard: staging project **Healthy**
-4. `supabase link --project-ref <STAGING_PROJECT_REF>` — **not** Production ref
-5. Verify `supabase\.temp\project-ref` matches staging masked ref
-6. Seed minimal test data (§4)
-7. `supabase db push` **only** after manual staging ref confirmation (§8)
-8. Run `scripts/db/test-migration-059-profiles-security.sql` Sections 1–9 on staging
-9. Sign off §6 before any Production scheduling (§7)
+1. Confirm linked ref = staging `jvjm...lpxh` (not Production)
+2. Re-apply migration 059 SQL on staging (replace trigger + privilege block)
+3. Seed test users (§4)
+4. Run `scripts/db/test-migration-059-profiles-security.sql` Sections 1–9
+5. **P0 gate:** Section 5 P0-A + P0-B must pass
+6. Sign off §6 before any Production scheduling (§7)
