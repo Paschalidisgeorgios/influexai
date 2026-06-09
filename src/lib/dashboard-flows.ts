@@ -47,7 +47,7 @@ export type DashboardFlow = {
   tagline: string;
   creditCost: number | null;
   creditLabel: string;
-  badge?: "NEU" | "SOON" | "Preview";
+  badge?: "NEU" | "SOON" | "Preview" | "Premium";
   locked?: boolean;
   /** generation.type values counted for popularity */
   genTypes: string[];
@@ -161,6 +161,18 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     creditLabel: "40 Credits",
     badge: "NEU",
     genTypes: ["seedance", "image_to_video"],
+  },
+  {
+    id: "kling25-i2v",
+    href: "/dashboard/seedance?model=kling25_turbo_pro",
+    category: "create",
+    icon: Film,
+    title: "Kling 2.5 Turbo Pro",
+    tagline: "Premium Image-to-Video — cineastische Motion aus Referenzbild",
+    creditCost: 40,
+    creditLabel: "40 Credits",
+    badge: "Premium",
+    genTypes: ["kling25", "image_to_video"],
   },
   {
     id: "motion-transfer",
@@ -483,6 +495,13 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         label: "Bild zu Video",
         icon: Film,
         badge: "NEU",
+      },
+      {
+        id: "kling25-i2v",
+        href: "/dashboard/seedance?model=kling25_turbo_pro",
+        label: "Kling 2.5 Turbo Pro",
+        icon: Film,
+        badge: "Premium",
       },
       {
         id: "live-creator",

@@ -9,7 +9,7 @@ type Props = {
   tagline: string;
   creditLabel: string;
   icon: LucideIcon;
-  badge?: "NEU" | "SOON" | "Preview";
+  badge?: "NEU" | "SOON" | "Preview" | "Premium";
   disabled?: boolean;
   lockedLabel?: string;
   onClick: () => void;

@@ -3,10 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Film, Link2, Upload } from "lucide-react";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
-import { SEEDANCE_CREDIT_COST, SEEDANCE_UI_NAME } from "@/lib/seedance-config";
+import {
+  getImageToVideoModel,
+  IMAGE_TO_VIDEO_MODELS,
+  parseImageToVideoModelId,
+  pickLocalizedText,
+  type ImageToVideoModelId,
+} from "@/lib/image-to-video-models";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { createClient } from "@/lib/supabase/client";
@@ -28,8 +35,15 @@ type GalleryImage = {
 
 export default function SeedancePage() {
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const { credits, reload: reloadCredits } = useUserCredits();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [selectedModelId, setSelectedModelId] = useState<ImageToVideoModelId>(() =>
+    parseImageToVideoModelId(searchParams.get("model"))
+  );
+  const selectedModel = getImageToVideoModel(selectedModelId);
+  const creditCost = selectedModel.creditCost;
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -95,6 +109,10 @@ export default function SeedancePage() {
   useEffect(() => {
     loadGalleryImages();
   }, [loadGalleryImages]);
+
+  useEffect(() => {
+    setSelectedModelId(parseImageToVideoModelId(searchParams.get("model")));
+  }, [searchParams]);
 
   useEffect(() => {
     const generation = searchParams.get("generation");
@@ -171,6 +189,14 @@ export default function SeedancePage() {
   };
 
   const runGenerate = async () => {
+    if (!selectedModel.providerEnabled) {
+      setError(
+        locale === "de"
+          ? "Kling 2.5 Turbo Pro ist registriert — Provider-Anbindung folgt. Bitte vorerst Seedance nutzen."
+          : "Kling 2.5 Turbo Pro is registered — provider wiring follows. Please use Seedance for now."
+      );
+      return;
+    }
     if (!imageUrl?.trim()) {
       setError("Bitte lade zuerst ein Bild hoch oder wähle eines aus der Gallery.");
       return;
@@ -200,7 +226,7 @@ export default function SeedancePage() {
         handleApiInsufficientCredits(
           res.status,
           data as { error?: string; credits?: number },
-          SEEDANCE_CREDIT_COST
+          creditCost
         )
       ) {
         stopTimers();
@@ -229,7 +255,11 @@ export default function SeedancePage() {
   };
 
   const hasImage = Boolean(imageUrl?.trim());
-  const canGenerate = hasImage && prompt.trim().length > 0 && !generating;
+  const canGenerate =
+    selectedModel.providerEnabled &&
+    hasImage &&
+    prompt.trim().length > 0 &&
+    !generating;
 
   return (
     <div className="mx-auto max-w-[1280px]">
@@ -237,17 +267,71 @@ export default function SeedancePage() {
         <div className="mb-2 flex items-center gap-3">
           <Film size={32} color="#B4FF00" strokeWidth={2.2} />
           <h1 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
-            {SEEDANCE_UI_NAME}
+            {selectedModel.label}
           </h1>
+          {selectedModel.badge && (
+            <span className="rounded-md border border-[#B4FF00]/35 bg-[#B4FF00]/10 px-2 py-0.5 text-xs font-semibold text-[#B4FF00]">
+              {selectedModel.badge}
+            </span>
+          )}
         </div>
         <p className="text-[0.95rem] leading-relaxed text-[rgba(255,255,255,0.65)]">
-          Wandle dein Bild in ein bewegtes Video — mit KI-generiertem Sound.
+          {pickLocalizedText(locale, selectedModel.description)}
           {credits != null && (
             <span className="ml-2 text-[#B4FF00]">
-              · {SEEDANCE_CREDIT_COST} Credits pro Video
+              · {creditCost} Credits pro Video
             </span>
           )}
         </p>
+        <p className="mt-2 text-sm text-zinc-400">
+          {pickLocalizedText(locale, selectedModel.subline)}
+        </p>
+      </div>
+
+      <div className="mb-8">
+        <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">Video-Modell</p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          {IMAGE_TO_VIDEO_MODELS.map((model) => {
+            const active = model.id === selectedModelId;
+            return (
+              <button
+                key={model.id}
+                type="button"
+                onClick={() => {
+                  setSelectedModelId(model.id);
+                  setError(null);
+                }}
+                className={`min-h-[44px] rounded-xl border px-4 py-3 text-left transition-colors ${
+                  active
+                    ? "border-[#B4FF00]/50 bg-[#B4FF00]/10"
+                    : "border-white/12 bg-white/[0.02] hover:border-white/20"
+                }`}
+              >
+                <span className="block text-sm font-semibold text-zinc-100">
+                  {model.label}
+                  {model.badge ? (
+                    <span className="ml-2 text-xs font-medium text-[#B4FF00]">
+                      {model.badge}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="mt-1 block text-xs text-zinc-400">
+                  {pickLocalizedText(locale, model.subline)} · {model.creditCost} Credits
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+          {pickLocalizedText(locale, selectedModel.safetyHint)}
+        </p>
+        {!selectedModel.providerEnabled && (
+          <p className="mt-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-sm text-amber-100/90">
+            {locale === "de"
+              ? "Dieses Modell ist registriert und in der Tool-Registry vorbereitet. Die Provider-Anbindung wird separat freigeschaltet — es werden keine Credits verbraucht."
+              : "This model is registered and prepared in the tool registry. Provider wiring will be enabled separately — no credits are consumed."}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10">

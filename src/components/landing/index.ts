@@ -1,3 +1,4 @@
+export { LandingValueSection } from "./LandingValueSection";
 export { StackedDemoSection } from "./StackedDemoSection";
 export { LandingProofSection } from "./LandingProofSection";
 export { LandingToolsGridSection } from "./LandingToolsGridSection";

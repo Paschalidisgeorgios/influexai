@@ -9,9 +9,8 @@ import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
 const NAV_LINKS = [
-  { key: "nav_features" as const, href: "#features" },
+  { key: "nav_features" as const, href: "#value" },
   { key: "nav_pricing" as const, href: "/pricing", external: true },
-  { key: "nav_brands" as const, href: "#brands" },
   { key: "nav_agency" as const, href: "/agency", external: true },
 ];
 

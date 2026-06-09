@@ -8,6 +8,11 @@ import { LORA_STEPS_MIN } from "@/lib/lora-config";
 import { MOTION_TRANSFER_CREDIT_COST } from "@/lib/motion-transfer-config";
 import { PRODUCT_AD_CREDITS } from "@/lib/product-ad-config";
 import { SEEDANCE_CREDIT_COST } from "@/lib/seedance-config";
+import {
+  KLING_25_CREDIT_COST,
+  KLING_25_PROVIDER,
+  KLING_25_TURBO_PRO_IMAGE_TO_VIDEO_MODEL,
+} from "@/lib/kling25-config";
 import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 import { VIRAL_SCORE_CREDIT_COST } from "@/lib/viral-score";
@@ -71,6 +76,9 @@ export type AgentToolRegistryItem = {
   autoRunAllowed: boolean;
   confirmationRequiredReason?: string;
   notes?: string[];
+  provider?: string;
+  modelId?: string;
+  inputTypes?: string[];
 };
 
 const LORA_MIN_CREDITS = calcLoraCredits(LORA_STEPS_MIN);
@@ -390,6 +398,50 @@ export const AGENT_TOOL_REGISTRY: readonly AgentToolRegistryItem[] = [
     confirmationRequiredReason:
       "Hohe Provider-Kosten (40 Credits). UGC-Flow verlangt explizite Video-Bestätigung.",
     notes: ["Master Agent: auto after UGC confirm question only."],
+  },
+  {
+    id: "kling25_i2v",
+    label: "Kling 2.5 Turbo Pro",
+    category: "video",
+    status: "beta",
+    route: "/dashboard/seedance?model=kling25_turbo_pro",
+    provider: KLING_25_PROVIDER,
+    modelId: KLING_25_TURBO_PRO_IMAGE_TO_VIDEO_MODEL,
+    description:
+      "Premium Image-to-Video für flüssige, cineastische Motion aus einem Referenzbild.",
+    canDo: [
+      "Image-to-Video mit Referenzbild",
+      "Premium Motion aus Prompt",
+      "Dashboard-Vorbereitung",
+    ],
+    cannotDo: [
+      "Text-to-Video ohne Referenzbild",
+      "Autonom ohne Upload",
+      "Provider-Ausführung vor Freigabe",
+    ],
+    requiredInputs: ["imageUrl", "motionPrompt"],
+    optionalInputs: ["duration"],
+    inputTypes: ["imageUrl", "motionPrompt"],
+    outputType: "video",
+    creditCost: {
+      type: "fixed",
+      min: KLING_25_CREDIT_COST,
+      max: KLING_25_CREDIT_COST,
+      note: "Premium tier above Seedance (40 Credits).",
+    },
+    requiresConsent: false,
+    requiresUpload: true,
+    hasProviderCost: true,
+    hasRealResearch: false,
+    executionMode: "confirm_required",
+    riskLevel: "high",
+    autoRunAllowed: false,
+    confirmationRequiredReason:
+      "Premium Provider-Kosten (40 Credits). Provider-Anbindung folgt — nur Registry/UI vorbereitet.",
+    notes: [
+      "Image-to-video only. Text-to-video model registered but not enabled.",
+      "Provider jobs disabled until KLING_25_PROVIDER_ENABLED.",
+    ],
   },
   {
     id: "live_portrait",

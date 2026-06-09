@@ -1387,6 +1387,12 @@
         }
       }
     },
+    "value": {
+      "headline": "Plane zuerst. Erstelle danach.",
+      "body": "Beschreibe dein Ziel und nutze die Plan-Vorschau, bevor Credits verbraucht werden. So siehst du zuerst den passenden Workflow und entscheidest danach, was wirklich generiert werden soll.",
+      "cta_primary": "Kostenlos planen",
+      "cta_secondary": "Preise ansehen"
+    },
     "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "language": {

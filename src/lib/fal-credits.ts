@@ -1,7 +1,9 @@
 /** InfluexAI credit costs aligned with fal.ai API pricing. */
 export const FAL_CREDITS = {
-  /** Kling image-to-video (~20s) */
+  /** Kling image-to-video (~20s) — product ad v1.6 pro */
   klingVideo: 75,
+  /** Kling 2.5 Turbo Pro image-to-video (premium tier) */
+  kling25TurboProVideo: 40,
   /** Seedance image-to-video (5s @ ~$0.2419/s) */
   seedanceVideo: 40,
   /** Flux Pro text-to-image */

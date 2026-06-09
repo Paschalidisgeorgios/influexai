@@ -56,3 +56,9 @@ export async function generateKlingProductVideo(
 }
 
 export { parseFalError as parseFalVideoError };
+
+export {
+  KLING_25_TURBO_PRO_IMAGE_TO_VIDEO_MODEL,
+  KLING_25_TURBO_PRO_TEXT_TO_VIDEO_MODEL,
+  KLING_25_TEXT_TO_VIDEO_ENABLED,
+} from "@/lib/kling25-config";

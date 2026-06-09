@@ -17,6 +17,7 @@ const TOOL_DASHBOARD_ROUTES: Record<string, string> = {
   ki_ich: "/dashboard/ki-ich",
   ugc_video: "/dashboard/ugc-video",
   seedance: "/dashboard/seedance",
+  kling25_i2v: "/dashboard/seedance?model=kling25_turbo_pro",
   live_creator: "/dashboard/live-creator",
   lora_training: "/dashboard/lora-training",
   produkt_werbung: "/dashboard/produkt",

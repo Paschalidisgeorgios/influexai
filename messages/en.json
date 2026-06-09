@@ -821,6 +821,12 @@
         }
       }
     },
+    "value": {
+      "headline": "Plan first. Create after.",
+      "body": "Describe your goal and use the plan preview before credits are used. You see the right workflow first and decide afterwards what should be generated.",
+      "cta_primary": "Plan for free",
+      "cta_secondary": "View pricing"
+    },
     "launchBanner": "Fresh start in 2026 — be one of the first creators",
     "brands": {
       "ex1_cat": "Beauty Brand",

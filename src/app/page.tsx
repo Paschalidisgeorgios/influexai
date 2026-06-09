@@ -18,12 +18,7 @@ import {
   LandingFooter,
   LandingNav,
 } from "@/components/landing";
-import { AiContentStream } from "@/components/landing/AiContentStream";
-import { StackedDemoSection } from "@/components/landing/StackedDemoSection";
-import { LandingProofSection } from "@/components/landing/LandingProofSection";
-import { LandingToolsGridSection } from "@/components/landing/LandingToolsGridSection";
-import { CampaignAutopilotSection } from "@/components/landing/CampaignAutopilotSection";
-import { QualityIntelligenceSection } from "@/components/landing/QualityIntelligenceSection";
+import { LandingValueSection } from "@/components/landing/LandingValueSection";
 import { LightSystem } from "@/components/LightSystem";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
@@ -83,12 +78,7 @@ export default async function HomePage() {
         <LandingNav />
         <main className="landing-root overflow-x-clip max-w-[100vw]">
           <HeroSection variant={variant} />
-          <LandingProofSection />
-          <AiContentStream />
-          <StackedDemoSection />
-          <LandingToolsGridSection />
-          <CampaignAutopilotSection />
-          <QualityIntelligenceSection />
+          <LandingValueSection />
           <TrustBarSection />
           <PricingSection />
           <FaqSection />
