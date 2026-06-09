@@ -154,7 +154,7 @@ export function BetaPageClient({ initialStats }: Props) {
     },
     {
       q: "Brauche ich eine Kreditkarte?",
-      a: "Nur wenn du Credits kaufst — kein Abo. Credits ab €4,99, einmaliger Kauf via Stripe.",
+      a: "InfluexAI ist ein monatliches Abo mit inkludierten Credits. Der Starter-Plan beginnt ab €9,99/Monat. Zusätzliche Credits kannst du bei aktivem Plan nachladen — Zahlung via Stripe.",
     },
   ];
 

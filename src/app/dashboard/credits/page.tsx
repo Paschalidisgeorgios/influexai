@@ -182,6 +182,40 @@ export default function CreditsPage() {
         </div>
       </div>
 
+      <div
+        style={{
+          marginBottom: 24,
+          padding: "16px 18px",
+          borderRadius: 14,
+          background: "rgba(180,255,0,0.04)",
+          border: "1px solid rgba(180,255,0,0.15)",
+        }}
+      >
+        <p
+          style={{
+            margin: "0 0 6px",
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            color: "#B4FF00",
+          }}
+        >
+          {tBuy("credit_outcome_title")}
+        </p>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.86rem",
+            color: "rgba(255,255,255,0.72)",
+            lineHeight: 1.55,
+            maxWidth: 560,
+          }}
+        >
+          {tBuy("credit_outcome_body")}
+        </p>
+      </div>
+
       <CreditCalculator topFeatureType={stats?.topFeatureType} />
 
       <div

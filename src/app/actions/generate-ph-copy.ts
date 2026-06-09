@@ -80,7 +80,7 @@ JSON Format:
     {"angle": "Benefit angle", "text": "max 60 Zeichen"},
     {"angle": "Curiosity angle", "text": "max 60 Zeichen"}
   ],
-  "description": "250 Wörter ProductHunt Beschreibung: Problem → Solution → Features → CTA. Ende mit: Credits ab €4,99 — kein Abo",
+  "description": "250 Wörter ProductHunt Beschreibung: Problem → Solution → Features → CTA. Ende mit: Starter-Plan ab €9,99 — monatlich kündbar",
   "makerComment": "Persönlicher Maker Comment vom Founder: Ich habe InfluexAI gebaut weil..., Was anders ist, PH-Angebot, Bitte um Feedback",
   "firstReplyTemplate": "Danke-Template für erste Kommentare mit Platzhalter {personalized element}",
   "twitterThread": ["Tweet 1: Wir sind live auf ProductHunt", "Tweet 2: 3 Bullet Points was InfluexAI macht", "Tweet 3: Special PRODUCTHUNT Code 20% mehr Credits"]

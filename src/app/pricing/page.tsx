@@ -22,6 +22,16 @@ export default function PricingPage() {
           <p className="text-[0.95rem] max-w-xl mx-auto mb-4 text-white/80 subtitle">
             {t("page_subtitle")}
           </p>
+          <div
+            className="mx-auto mb-8 max-w-2xl rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left"
+          >
+            <p className="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]">
+              {t("credit_outcome_title")}
+            </p>
+            <p className="text-[0.88rem] leading-relaxed text-white/75">
+              {t("credit_outcome_body")}
+            </p>
+          </div>
           <PricingPlans
             checkoutMode
             onSubscribe={handleSubscribe}
