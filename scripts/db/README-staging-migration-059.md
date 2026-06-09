@@ -85,6 +85,32 @@ Staging DB should match Production **pre-059** schema:
 - Synthetic emails only (`security-test-059+…@example.test`)
 - No Production user UUIDs copied unless anonymized test clones
 
+### 3.6 Staging project identification (before any link)
+
+Confirm **all** of the following in Supabase Dashboard and `supabase projects list` before `supabase link`:
+
+| Check | Requirement |
+|-------|-------------|
+| Project name | Dedicated staging name (e.g. `influexai-staging`) — **not** the live app project |
+| Dashboard status | Project shows **Healthy** (if Unhealthy → stop; staging not ready) |
+| Project ref | 20-char ref stored only in `.env.staging.local` / password manager — **never** commit |
+| Ref verification | Masked ref in ops notes must match list output (e.g. `vjmq…jlpxh`) and **must not** match the Production app ref |
+| API URL | Staging `https://<ref>.supabase.co` — different hostname from Production app env |
+| Keys | Separate anon + service_role keys from Dashboard → Settings → API |
+
+After link, verify without logging full ref in chat/logs:
+
+```powershell
+# Local check only — compare masked ref to staging notes
+Get-Content supabase\.temp\project-ref
+```
+
+If ref matches Production app project → **unlink immediately**, do not run `db push`.
+
+### 3.7 Local Supabase blocked (this environment)
+
+Docker Desktop and WSL2 are **not** installed on the primary dev machine. `supabase status` against local stack will fail. **Cloud staging is mandatory** for Migration 059 validation until local stack is available.
+
 ---
 
 ## 4. Minimal test data
@@ -225,7 +251,7 @@ Copy this checklist; check each box manually before running the next command.
 [ ] I created or identified a SEPARATE Supabase staging project
 [ ] I verified STAGING_PROJECT_REF is NOT the Production app project
 [ ] I am in worktree: C:\Projekte\influexai-security-059
-[ ] Branch: fix/security-profiles-migration-059 @ b113a93 or later
+[ ] Branch: fix/security-profiles-migration-059 @ `b113a93` or later (includes this README at `9f87fe0+`)
 [ ] supabase login completed
 [ ] .env.staging.local created (gitignored) with staging keys only
 
@@ -304,12 +330,37 @@ supabase db push --linked    # when linked to Production
 
 ---
 
-## 11. Current environment status (template — update when executing)
+## 11. Current environment status
+
+Last audit: **2026-06-03** (security worktree prep — no migration executed)
 
 | Check | Status |
 |-------|--------|
-| Worktree linked to Supabase cloud | _pending_ |
-| Production link excluded | _pending_ |
-| Migration 059 applied on staging | _pending_ |
-| Test script green | _pending_ |
-| Production touched | **Must remain No** |
+| Worktree | `C:\Projekte\influexai-security-059` |
+| Branch | `fix/security-profiles-migration-059` |
+| HEAD | `9f87fe0` (test script `b113a93`; app baseline `1f70415` on `origin/main` / `origin/master`) |
+| Working tree | clean |
+| Local Supabase (Docker/WSL2) | **blocked** — not available |
+| `supabase/.temp/project-ref` | **absent** — not linked to any cloud project |
+| Worktree linked to Supabase cloud | **No** |
+| Linked project type | **unknown** (no link file) |
+| Production link excluded | **Yes** — no cloud link; Production not targeted by CLI in this session |
+| `supabase login` (automation shell) | **missing** — run `supabase login` in operator terminal before link |
+| Staging project `influexai-staging` | **pending** — create/link per §3.6; confirm Healthy in Dashboard |
+| Migration 059 applied on staging | **No** |
+| Test script green | **pending** |
+| Production DB / SQL / `db push` | **No** — not touched |
+| Push to `main` / `master` | **No** |
+| Deploy | **No** |
+
+### Next operator steps (staging only)
+
+1. `supabase login` in terminal used for migration work
+2. `supabase projects list` — confirm staging project name + masked ref (§3.6)
+3. Dashboard: staging project **Healthy**
+4. `supabase link --project-ref <STAGING_PROJECT_REF>` — **not** Production ref
+5. Verify `supabase\.temp\project-ref` matches staging masked ref
+6. Seed minimal test data (§4)
+7. `supabase db push` **only** after manual staging ref confirmation (§8)
+8. Run `scripts/db/test-migration-059-profiles-security.sql` Sections 1–9 on staging
+9. Sign off §6 before any Production scheduling (§7)
