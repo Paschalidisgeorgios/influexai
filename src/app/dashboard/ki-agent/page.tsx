@@ -22,10 +22,14 @@ import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
 import { AgentPlanPreviewCard } from "@/components/dashboard/AgentPlanPreviewCard";
+import { AgentPlannerBlockedCard } from "@/components/dashboard/AgentPlannerBlockedCard";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
-import type { AgentPlanPreviewResponse } from "@/lib/agent/plan-preview-types";
+import type {
+  AgentPlanPreviewResponse,
+  AgentPlannerBlockedResponse,
+} from "@/lib/agent/plan-preview-types";
 
 type Phase = "idle" | "running" | "done";
 
@@ -122,6 +126,8 @@ export default function KiAgentPage() {
   );
   const [planPreviewLoading, setPlanPreviewLoading] = useState(false);
   const [planPreviewError, setPlanPreviewError] = useState<string | null>(null);
+  const [plannerBlocked, setPlannerBlocked] =
+    useState<AgentPlannerBlockedResponse | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -175,17 +181,19 @@ export default function KiAgentPage() {
       setCreditError(null);
       setPlanPreview(null);
       setPlanPreviewError(null);
+      setPlannerBlocked(null);
       setExecution(null);
       setPhase("running");
 
       let data: {
-        execution: AgentExecution;
-        result: AgentResult;
-        usedCredits: number;
+        execution?: AgentExecution;
+        result?: AgentResult;
+        usedCredits?: number;
         remainingCredits?: number;
         error?: string;
         credits?: number;
         required?: number;
+        blockedByPlanner?: boolean;
       };
 
       try {
@@ -207,6 +215,18 @@ export default function KiAgentPage() {
           setPhase("idle");
           return;
         }
+
+        if (data.blockedByPlanner) {
+          setPlannerBlocked(data as AgentPlannerBlockedResponse);
+          setPhase("idle");
+          return;
+        }
+
+        if (!data.execution || !data.result) {
+          setCreditError("Ausführung fehlgeschlagen.");
+          setPhase("idle");
+          return;
+        }
       } catch {
         setCreditError("Netzwerkfehler. Bitte erneut versuchen.");
         setPhase("idle");
@@ -222,7 +242,7 @@ export default function KiAgentPage() {
         ...data.execution,
         status: "completed",
         result: data.result,
-        usedCredits: data.usedCredits,
+        usedCredits: data.usedCredits ?? 0,
         updatedAt: new Date().toISOString(),
       });
       setPhase("done");
@@ -236,6 +256,7 @@ export default function KiAgentPage() {
 
     setPlanPreviewLoading(true);
     setPlanPreviewError(null);
+    setPlannerBlocked(null);
 
     try {
       const res = await fetch("/api/agent/plan-preview", {
@@ -473,6 +494,8 @@ export default function KiAgentPage() {
       )}
 
       {planPreview && <AgentPlanPreviewCard preview={planPreview} />}
+
+      {plannerBlocked && <AgentPlannerBlockedCard blocked={plannerBlocked} />}
 
       {creditError && (
         <p className="mt-2 text-[11px]" style={{ color: "#ff6b7a" }}>

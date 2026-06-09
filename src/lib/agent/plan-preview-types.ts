@@ -50,3 +50,15 @@ export type AgentPlanPreviewResponse = {
 export type AgentPlanPreviewErrorResponse = {
   error: string;
 };
+
+export type AgentPlannerBlockedResponse = {
+  blockedByPlanner: true;
+  plannerDecision: AgentPlannerDecision;
+  message: string;
+  clarificationQuestion?: string;
+  confirmationMessage?: string;
+  selectedTools: AgentPlanPreviewStep[];
+  warnings: string[];
+  dryRun: false;
+  executionAllowed: false;
+};
