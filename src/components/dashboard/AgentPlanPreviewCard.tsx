@@ -45,11 +45,11 @@ const DECISION_HEADLINE: Record<AgentPlannerDecision, string> = {
 
 const DECISION_BODY: Record<AgentPlannerDecision, string> = {
   execute_auto:
-    "Dieses Tool kann ausgeführt werden, wenn du auf Senden klickst. Die Plan-Vorschau startet nichts automatisch.",
+    "Dieses Tool kann ausgeführt werden, wenn du auf Ausführen klickst. Die Plan-Vorschau startet nichts automatisch.",
   ask_clarifying_question:
     "Bevor etwas ausgeführt wird, braucht der Agent noch eine Entscheidung von dir.",
   confirm_cost:
-    "Dieses Tool kann Credits verbrauchen. Bitte bestätige die Ausführung über Senden, wenn du fortfahren möchtest.",
+    "Dieses Tool kann Credits verbrauchen. Bitte bestätige die Ausführung über Ausführen, wenn du fortfahren möchtest.",
   require_consent:
     "Dieses Tool verarbeitet Bild, Stimme oder Identität. Es braucht vorher deine Einwilligung.",
   redirect_to_tool:
@@ -63,7 +63,7 @@ const DECISION_BODY: Record<AgentPlannerDecision, string> = {
 };
 
 const STEP_DECISION_LABEL: Record<AgentPlannerDecision, string> = {
-  execute_auto: "Auto-fähig (via Senden)",
+  execute_auto: "Direkt ausführbar",
   ask_clarifying_question: "Rückfrage",
   confirm_cost: "Kosten bestätigen",
   require_consent: "Einwilligung",
@@ -212,7 +212,7 @@ export function AgentPlanPreviewCard({
           Plan-Vorschau
         </span>
         <span className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-          Noch keine Ausführung · keine Credits verbraucht
+          Keine Credits in der Vorschau · noch keine Ausführung
         </span>
       </div>
 

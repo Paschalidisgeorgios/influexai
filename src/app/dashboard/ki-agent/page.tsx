@@ -374,8 +374,8 @@ export default function KiAgentPage() {
           className="mt-2 text-[0.9rem] leading-[1.65]"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
-          Beschreibe deine Aufgabe — der Assistent erkennt automatisch, welches
-          Tool passt, und führt es aus.
+          Beschreibe dein Ziel — der Agent erkennt das passende Tool und führt
+          es nach deiner Bestätigung aus.
         </p>
       </header>
 
@@ -383,9 +383,10 @@ export default function KiAgentPage() {
         className="mb-4 text-[0.78rem] leading-[1.55]"
         style={{ color: "rgba(255,255,255,0.45)" }}
       >
-        Keine manuelle Tool-Auswahl: Die Zuordnung erfolgt automatisch anhand
-        deines Prompts (Keyword-Erkennung). Credits werden von den ausgeführten
-        Tools abgezogen — keine separate Agent-Gebühr.
+        <strong className="font-semibold text-white/55">Plan-Vorschau</strong>{" "}
+        ist kostenlos und startet keine Generierung. Mit{" "}
+        <strong className="font-semibold text-white/55">Ausführen</strong>{" "}
+        startest du die echte Tool-Ausführung (Credits werden abgezogen).
       </p>
 
       {/* Command Bar */}
@@ -438,7 +439,8 @@ export default function KiAgentPage() {
             type="button"
             disabled={phase === "running" || planPreviewLoading || !prompt.trim()}
             onClick={() => void fetchPlanPreview()}
-            className="shrink-0 min-h-[44px] px-3 py-2 text-[11px] sm:text-xs font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            title="Keine Credits · keine Ausführung"
+            className="flex shrink-0 min-h-[44px] flex-col items-center justify-center px-3 py-1.5 text-[11px] sm:text-xs font-semibold leading-tight transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.14)",
@@ -446,15 +448,24 @@ export default function KiAgentPage() {
               background: "transparent",
             }}
           >
-            {planPreviewLoading ? "Plan…" : "Plan-Vorschau"}
+            <span>{planPreviewLoading ? "Plan…" : "Plan-Vorschau"}</span>
+            {!planPreviewLoading && (
+              <span
+                className="text-[9px] font-normal"
+                style={{ color: "rgba(255,255,255,0.42)" }}
+              >
+                Kostenlos prüfen
+              </span>
+            )}
           </button>
 
           <button
             type="button"
             disabled={phase === "running"}
             onClick={handleSubmit}
-            aria-label="Senden"
-            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
+            aria-label="Ausführen"
+            title="Echte Ausführung — Credits werden abgezogen"
+            className="flex shrink-0 items-center justify-center gap-1.5 transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px] px-3 sm:px-3.5"
             style={{
               borderRadius: 4,
               background: "#B4FF00",
@@ -462,6 +473,9 @@ export default function KiAgentPage() {
               pointerEvents: !prompt.trim() || phase === "running" ? "none" : "auto",
             }}
           >
+            <span className="hidden text-[11px] font-bold sm:inline" style={{ color: "#060608" }}>
+              Ausführen
+            </span>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
                 d="M2 7h10M8 3l4 4-4 4"
@@ -474,6 +488,13 @@ export default function KiAgentPage() {
           </button>
         </div>
       </div>
+
+      <p
+        className="mt-1.5 text-center text-[10px] leading-[1.45] sm:text-[11px]"
+        style={{ color: "rgba(255,255,255,0.38)" }}
+      >
+        Plan-Vorschau ist kostenlos und startet keine Generierung.
+      </p>
 
       {phase === "idle" && prompt.trim() && billingEstimate && (
         <div className="mt-1.5 space-y-1">

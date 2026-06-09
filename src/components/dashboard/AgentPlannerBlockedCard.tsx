@@ -112,7 +112,7 @@ export function AgentPlannerBlockedCard({
       style={{
         borderRadius: 4,
         background: "#0f0f12",
-        border: "1px solid rgba(255,107,122,0.35)",
+        border: "1px solid rgba(96,165,250,0.28)",
       }}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -120,12 +120,12 @@ export function AgentPlannerBlockedCard({
           className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
           style={{
             borderRadius: 3,
-            background: "rgba(255,107,122,0.12)",
-            color: "#ff8a96",
-            border: "1px solid rgba(255,107,122,0.35)",
+            background: "rgba(96,165,250,0.12)",
+            color: "#93c5fd",
+            border: "1px solid rgba(96,165,250,0.3)",
           }}
         >
-          Ausführung gestoppt
+          Entscheidung nötig
         </span>
         <span className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
           Es wurden keine Credits verbraucht.
@@ -140,8 +140,15 @@ export function AgentPlannerBlockedCard({
       </div>
 
       <p
-        className="mt-3 text-[0.82rem] leading-[1.5]"
-        style={{ color: "rgba(255,255,255,0.82)" }}
+        className="mt-3 text-[0.82rem] font-medium leading-[1.5]"
+        style={{ color: "#F0EFE8" }}
+      >
+        Ich brauche noch eine Entscheidung von dir.
+      </p>
+
+      <p
+        className="mt-1.5 text-[0.82rem] leading-[1.5]"
+        style={{ color: "rgba(255,255,255,0.72)" }}
       >
         {blocked.message}
       </p>
@@ -150,21 +157,28 @@ export function AgentPlannerBlockedCard({
         <div
           className="mt-3 rounded p-3"
           style={{
-            background: "rgba(96,165,250,0.08)",
-            border: "1px solid rgba(96,165,250,0.25)",
+            background: "rgba(96,165,250,0.1)",
+            border: "1px solid rgba(96,165,250,0.35)",
           }}
         >
           <p
             className="text-[10px] font-bold uppercase tracking-[0.1em]"
             style={{ color: "#93c5fd" }}
           >
-            Rückfrage
+            Deine Rückfrage
           </p>
           <p
             className="mt-1.5 text-[0.85rem] font-medium leading-[1.5]"
             style={{ color: "#F0EFE8" }}
           >
             {blocked.clarificationQuestion}
+          </p>
+          <p
+            className="mt-2 text-[11px] leading-[1.45]"
+            style={{ color: "rgba(255,255,255,0.55)" }}
+          >
+            Antworte im Prompt oben und tippe erneut auf Plan-Vorschau oder
+            Ausführen.
           </p>
         </div>
       )}

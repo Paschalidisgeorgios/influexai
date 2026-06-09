@@ -520,6 +520,9 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
                   <h1 className="mt-0.5 text-xl font-bold text-[#F0EFE8] leading-tight sm:mt-1 sm:text-2xl md:text-3xl">
                     {t("hero_headline")}
                   </h1>
+                  <p className="mt-2 text-sm leading-relaxed text-white/55 sm:text-[0.9rem]">
+                    {t("hero_subline")}
+                  </p>
                 </div>
               </div>
               {renderInputForm(false)}
