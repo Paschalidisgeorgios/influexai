@@ -57,6 +57,58 @@ export const PLANNER_V0_SCENARIOS: PlannerScenario[] = [
     notes:
       "Research signal prefers hasRealResearch tools; expect trend_script and research warning if LLM tool picked.",
   },
+  {
+    name: "TikTok video fitness coach briefing",
+    prompt: "Erstelle ein TikTok Video für eine Fitness Coachin",
+    expectedDecision: "ask_clarifying_question",
+    expectedPrimaryToolId: "script_generator",
+    notes:
+      "Ambiguous video create → ask script vs. finished KI-video; script_generator as briefing option.",
+  },
+  {
+    name: "TikTok script fitness coach explicit",
+    prompt: "Schreib mir ein TikTok Script für eine Fitness Coachin",
+    expectedDecision: "execute_auto",
+    expectedPrimaryToolId: "script_generator",
+    notes: "Explicit TikTok Script → script_generator auto-eligible.",
+  },
+  {
+    name: "Reel script coaching offer",
+    prompt: "Schreib mir ein Reel Script für ein Coaching-Angebot",
+    expectedDecision: "execute_auto",
+    expectedPrimaryToolId: "script_generator",
+    notes: "Reel script + coaching → script_generator.",
+  },
+  {
+    name: "Finished UGC with own photo",
+    prompt: "Erstelle ein fertiges UGC Video mit meinem Foto",
+    expectedDecision: "redirect_to_tool",
+    expectedPrimaryToolId: "ugc_video",
+    notes:
+      "Explicit finished UGC → ugc_video redirect_only; not ambiguous.",
+  },
+  {
+    name: "YouTube Short weight loss ambiguous",
+    prompt: "Mach ein YouTube Short über Abnehmen",
+    expectedDecision: "ask_clarifying_question",
+    expectedPrimaryToolId: "script_generator",
+    notes: "Short without Script keyword → clarifying question.",
+  },
+  {
+    name: "YouTube Short script explicit",
+    prompt: "Schreib mir ein YouTube Short Script über Abnehmen",
+    expectedDecision: "execute_auto",
+    expectedPrimaryToolId: "script_generator",
+    notes: "Explicit YouTube Short Script → script_generator.",
+  },
+  {
+    name: "TikTok trends research fitness coaches",
+    prompt: "Recherchiere aktuelle TikTok Trends für Fitness Coaches",
+    expectedDecision: "execute_auto",
+    expectedPrimaryToolId: "trend_script",
+    notes:
+      "Research + TikTok trends → trend_script (hasRealResearch); may include LLM warning on secondary tools.",
+  },
 ];
 
 export function runPlannerScenarioChecks(): {

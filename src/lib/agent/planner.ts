@@ -75,13 +75,25 @@ const PROMPT_SIGNALS: PromptSignal[] = [
     priority: 10,
   },
   {
+    toolIds: ["ugc_video", "seedance", "ki_ich"],
+    pattern:
+      /fertig(es|es)?\s+(ki.?)?video|video\s+generier(en|n)|avatar\s+video|lip.?sync|sprechend(es|en)?\s+video|animate/i,
+    priority: 11,
+  },
+  {
+    toolIds: ["ugc_video"],
+    pattern: /ugc\s+video|fertiges?\s+ugc|ugc.?ad/i,
+    priority: 10,
+  },
+  {
     toolIds: ["face_swap"],
     pattern: /face.?swap|gesicht.?tausch|gesicht.?ersetzen/i,
     priority: 10,
   },
   {
     toolIds: ["ki_ich"],
-    pattern: /mein.?ki.?ich|ki.?ich|ai.?self|mein.?gesicht|avatar.?selfie/i,
+    pattern:
+      /mein.?ki.?ich|ki.?ich|ai.?self|mein.?gesicht|avatar.?selfie|mit\s+(meinem|eigenem)\s+(foto|bild|gesicht)/i,
     priority: 9,
   },
   {
@@ -95,8 +107,27 @@ const PROMPT_SIGNALS: PromptSignal[] = [
     priority: 8,
   },
   {
+    toolIds: ["trend_script"],
+    pattern:
+      /tiktok.?trends?|reel.?trends?|short.?trends?|trends?\s+für|aktuelle.*tiktok|recherchier(e|en)?.*trends?/i,
+    priority: 8,
+  },
+  {
+    toolIds: ["script_generator", "viral_hook"],
+    pattern:
+      /tiktok\s+video|reel\s+video|youtube\s+short|content\s+video|video\s+script|video.?idee|video.?briefing|hook\s*\+\s*script|coaching.?angebot|fitness\s+coach(in)?|coach(in)?\s+für/i,
+    priority: 8,
+  },
+  {
+    toolIds: ["script_generator"],
+    pattern:
+      /tiktok|reels?|\bshorts?\b|youtube\s+short|video\s+erstellen|video\s+für|mach\s+(ein|mir)?\s*(ein|e)?\s*(tiktok|reel|short|video)/i,
+    priority: 7,
+  },
+  {
     toolIds: ["viral_hook"],
-    pattern: /hook|hooks|scroll.?stopper|tiktok.?hook|viral.?hook/i,
+    pattern:
+      /hook|hooks|scroll.?stopper|tiktok.?hook|viral.?hook|erste\s+sekunden|scroll.?stop/i,
     priority: 8,
   },
   {
@@ -188,7 +219,20 @@ const PROMPT_SIGNALS: PromptSignal[] = [
 ];
 
 const RESEARCH_PROMPT =
-  /aktuelle|live.?daten|recherche|research|echte.?daten|was.?trendet|trend.?daten/i;
+  /aktuelle|live.?daten|recherche|research|echte.?daten|was.?trendet|trend.?daten|recherchier/i;
+
+const FINISHED_VIDEO_HINT =
+  /fertig(es|es)?\s+(ki.?)?video|video\s+generier(en|n)|avatar\s+video|lip.?sync|sprechend(es|en)?\s+video|ugc\s+video|mit\s+(meinem|eigenem)\s+(foto|bild|gesicht)|ki.?video\s+generier|stimme|voice.?clone|face.?swap/i;
+
+/** Clear text/script intent — allows auto-oriented script tool planning. */
+const EXPLICIT_SCRIPT_HINT =
+  /script|skript|reel\s+script|tiktok\s+script|youtube\s+short\s+script|shorts?\s+script|\bhook\b|hooks|ablauf|caption|voiceover\s*text|voiceover|briefing|video.?briefing|video.?idee|story|cta|\btext\b/i;
+
+const PLATFORM_VIDEO_HINT =
+  /tiktok|reels?|\bshorts?\b|youtube\s+short|\bvideo\b/i;
+
+const AMBIGUOUS_VIDEO_CREATE_HINT =
+  /(?:tiktok|reel|reels|short|shorts|youtube\s+short|content)\s+video|content\s+video|(?:erstelle|erstellen|mach|machen|create|make|plan).{0,40}(?:tiktok|reel|short|youtube\s+short|\bvideo\b)|(?:tiktok|reel|short|youtube\s+short).{0,20}(?:erstellen|machen|video)/i;
 
 const UPLOAD_HINT =
   /upload|hochladen|angehängt|anbei|dieses.?foto|dieses.?bild|datei|selfie/i;
@@ -223,10 +267,124 @@ export function findCandidateToolsForPrompt(
     .map(([id]) => getAgentToolById(id))
     .filter((tool): tool is AgentToolRegistryItem => Boolean(tool));
 
-  if (!wantsResearch) return ranked;
+  if (!wantsResearch) return rerankVideoBriefingCandidates(normalized, ranked);
 
   const withResearch = ranked.filter((tool) => tool.hasRealResearch);
-  return withResearch.length > 0 ? withResearch : ranked;
+  const researchRanked =
+    withResearch.length > 0 ? withResearch : ranked;
+  return rerankVideoBriefingCandidates(normalized, researchRanked);
+}
+
+const SCRIPT_ORIENTED_VIDEO_TOOLS = new Set([
+  "script_generator",
+  "trend_script",
+  "viral_hook",
+]);
+
+const RENDER_VIDEO_TOOLS = new Set([
+  "ugc_video",
+  "seedance",
+  "ki_ich",
+  "face_swap",
+  "produkt_werbung",
+  "live_creator",
+]);
+
+/** Prefer script tools for platform video briefings; render tools when explicitly requested. */
+function rerankVideoBriefingCandidates(
+  normalized: string,
+  ranked: AgentToolRegistryItem[]
+): AgentToolRegistryItem[] {
+  if (ranked.length === 0) return ranked;
+
+  const wantsFinishedVideo = FINISHED_VIDEO_HINT.test(normalized);
+  const wantsPlatformVideo = PLATFORM_VIDEO_HINT.test(normalized);
+
+  if (wantsFinishedVideo) {
+    const renderFirst = ranked.filter((t) => RENDER_VIDEO_TOOLS.has(t.id));
+    const rest = ranked.filter((t) => !RENDER_VIDEO_TOOLS.has(t.id));
+    return renderFirst.length > 0 ? [...renderFirst, ...rest] : ranked;
+  }
+
+  if (wantsPlatformVideo && !isAmbiguousVideoRequest(normalized)) {
+    const scriptFirst = ranked.filter((t) => SCRIPT_ORIENTED_VIDEO_TOOLS.has(t.id));
+    const rest = ranked.filter((t) => !SCRIPT_ORIENTED_VIDEO_TOOLS.has(t.id));
+    return scriptFirst.length > 0 ? [...scriptFirst, ...rest] : ranked;
+  }
+
+  return ranked;
+}
+
+/** Platform video create without explicit script or finished-render intent. */
+export function isAmbiguousVideoRequest(normalized: string): boolean {
+  if (FINISHED_VIDEO_HINT.test(normalized)) return false;
+  if (EXPLICIT_SCRIPT_HINT.test(normalized)) return false;
+  if (/kampagne|campaign|autopilot|komplette/i.test(normalized)) return false;
+  if (RESEARCH_PROMPT.test(normalized) && /trends?/i.test(normalized)) return false;
+  if (!PLATFORM_VIDEO_HINT.test(normalized)) return false;
+  return AMBIGUOUS_VIDEO_CREATE_HINT.test(normalized);
+}
+
+function buildVideoFormatClarifyingQuestion(locale: "de" | "en"): string {
+  if (locale === "en") {
+    return "Do you want a script/briefing for the video, or should a finished AI video be generated?";
+  }
+  return "Möchtest du ein Script/Briefing für das Video oder soll ein fertiges KI-Video erzeugt werden?";
+}
+
+function buildAmbiguousVideoPlan(input: AgentPlannerInput): AgentPlannerResult {
+  const locale = input.locale ?? "de";
+  const selectedTools: AgentPlannerStep[] = [];
+
+  const scriptTool = getAgentToolById("script_generator");
+  const ugcTool = getAgentToolById("ugc_video");
+
+  if (scriptTool) {
+    selectedTools.push({
+      toolId: scriptTool.id,
+      label: scriptTool.label,
+      decision: "ask_clarifying_question",
+      reason:
+        "Option Script/Briefing — Format unklar, Nutzerentscheidung nötig (kein Auto-Run).",
+      estimatedCredits: creditsFromTool(scriptTool),
+      requiredInputs: [...scriptTool.requiredInputs],
+      requiresConsent: scriptTool.requiresConsent,
+      requiresUpload: scriptTool.requiresUpload,
+      riskLevel: scriptTool.riskLevel,
+    });
+  }
+
+  if (ugcTool) {
+    selectedTools.push({
+      toolId: ugcTool.id,
+      label: ugcTool.label,
+      decision: "redirect_to_tool",
+      reason:
+        "Option fertiges KI-Video — Dashboard/Upload, kein autonomer Provider-Run.",
+      estimatedCredits: creditsFromTool(ugcTool),
+      requiredInputs: [...ugcTool.requiredInputs],
+      requiresConsent: ugcTool.requiresConsent,
+      requiresUpload: ugcTool.requiresUpload,
+      riskLevel: ugcTool.riskLevel,
+    });
+  }
+
+  const estimatedTotalCredits = estimatePlannerCredits(selectedTools);
+  const warnings = collectCreditWarnings(input, estimatedTotalCredits);
+
+  const summary =
+    locale === "en"
+      ? "Video request is ambiguous — clarifying script/briefing vs. finished AI video."
+      : "Video-Anfrage ist mehrdeutig — Rückfrage Script/Briefing vs. fertiges KI-Video.";
+
+  return {
+    decision: "ask_clarifying_question",
+    summary,
+    clarificationQuestion: buildVideoFormatClarifyingQuestion(locale),
+    selectedTools,
+    estimatedTotalCredits,
+    warnings,
+  };
 }
 
 export function requiresConfirmationForTool(
@@ -469,6 +627,28 @@ export function estimatePlannerCredits(steps: AgentPlannerStep[]): {
   };
 }
 
+function shouldIncludeSecondaryStep(
+  primary: AgentPlannerStep,
+  secondary: AgentPlannerStep
+): boolean {
+  const protectPrimary = [
+    "execute_auto",
+    "redirect_to_tool",
+    "confirm_cost",
+  ] as const;
+
+  if (
+    (secondary.decision === "ask_clarifying_question" ||
+      secondary.decision === "require_consent" ||
+      secondary.decision === "confirm_cost") &&
+    protectPrimary.includes(primary.decision as (typeof protectPrimary)[number])
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
 function buildPlannerStep(
   tool: AgentToolRegistryItem,
   input: AgentPlannerInput
@@ -488,6 +668,23 @@ function buildPlannerStep(
     requiresUpload: tool.requiresUpload,
     riskLevel: tool.riskLevel,
   };
+}
+
+function collectVideoBriefingWarnings(prompt: string): string[] {
+  const normalized = normalizePlannerPrompt(prompt).toLowerCase();
+  const warnings: string[] = [];
+
+  if (
+    FINISHED_VIDEO_HINT.test(normalized) &&
+    !UPLOAD_HINT.test(normalized) &&
+    /ugc|produkt|avatar|ki.?ich|gesicht|foto|bild/i.test(normalized)
+  ) {
+    warnings.push(
+      "Für echte Video-Generierung (UGC/Avatar) fehlt vermutlich ein Upload — Weiterleitung ins Dashboard statt autonomer Run."
+    );
+  }
+
+  return warnings;
 }
 
 function collectResearchWarnings(
@@ -642,6 +839,14 @@ export function planAgentTask(input: AgentPlannerInput): AgentPlannerResult {
     };
   }
 
+  const normalizedPrompt = prompt.toLowerCase();
+  if (
+    !input.preferredToolId &&
+    isAmbiguousVideoRequest(normalizedPrompt)
+  ) {
+    return buildAmbiguousVideoPlan(input);
+  }
+
   const primary = candidates[0];
   const secondary = candidates.slice(1, 3);
   const selectedTools = [buildPlannerStep(primary, input)];
@@ -651,10 +856,13 @@ export function planAgentTask(input: AgentPlannerInput): AgentPlannerResult {
       tool.id !== primary.id &&
       !selectedTools.some((s) => s.toolId === tool.id)
     ) {
-      selectedTools.push(buildPlannerStep(tool, input));
+      const step = buildPlannerStep(tool, input);
+      if (!shouldIncludeSecondaryStep(selectedTools[0], step)) continue;
+      selectedTools.push(step);
     }
   }
 
+  warnings.push(...collectVideoBriefingWarnings(prompt));
   warnings.push(...collectResearchWarnings(prompt, selectedTools));
 
   const estimatedTotalCredits = estimatePlannerCredits(selectedTools);
