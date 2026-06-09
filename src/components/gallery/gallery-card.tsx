@@ -288,7 +288,8 @@ function ActionBtn({
   primary?: boolean;
 }) {
   const style = {
-    padding: "7px 12px",
+    padding: "8px 12px",
+    minHeight: 44,
     borderRadius: 8,
     fontSize: "0.78rem",
     fontWeight: 600,

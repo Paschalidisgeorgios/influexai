@@ -630,7 +630,7 @@ export const MOBILE_QUICK_NAV = [
     icon: PlusCircle,
     labelKey: "quick_create" as const,
   },
-  { href: "/dashboard/agent", icon: Star, labelKey: "quick_agent" as const },
+  { href: "/dashboard/ki-agent", icon: Star, labelKey: "quick_agent" as const },
   { href: "/dashboard/gallery", icon: Images, labelKey: "quick_gallery" as const },
   { href: "/dashboard/settings", icon: User, labelKey: "nav_settings" as const },
 ];

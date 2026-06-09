@@ -91,8 +91,9 @@ export default function CreditsPage() {
 
       {/* Header */}
       <div
+        className="credits-balance-card"
         style={{
-          padding: 28,
+          padding: "clamp(16px, 4vw, 28px)",
           borderRadius: 18,
           marginBottom: 24,
           background: "#0f0f12",
@@ -315,7 +316,7 @@ export default function CreditsPage() {
               data-testid="pricing-card"
               className={isPopular ? "credit-pack-card credit-pack-card--popular" : "credit-pack-card"}
               style={{
-                padding: isPopular ? 28 : 24,
+                padding: isPopular ? "clamp(20px, 4vw, 28px)" : "clamp(16px, 3.5vw, 24px)",
                 borderRadius: 18,
                 border: isPopular
                   ? "2px solid rgba(180,255,0,0.5)"
@@ -416,6 +417,7 @@ export default function CreditsPage() {
                 disabled={loading === pkg.id}
                 style={{
                   width: "100%",
+                  minHeight: 44,
                   padding: "12px",
                   borderRadius: 10,
                   border: "none",
@@ -540,6 +542,7 @@ export default function CreditsPage() {
                   disabled={!!loading}
                   style={{
                     padding: "12px",
+                    minHeight: 44,
                     borderRadius: 10,
                     border: pkg.popular
                       ? "none"

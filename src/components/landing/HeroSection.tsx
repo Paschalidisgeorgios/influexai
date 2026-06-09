@@ -358,7 +358,7 @@ export function HeroSection({
             : undefined
         }
       >
-        <div className="grid w-full grid-cols-1 items-start gap-6 overflow-x-hidden pt-2 pb-10 md:min-h-[min(100dvh,920px)] md:items-center md:gap-10 md:pt-0 md:pb-0 lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid w-full grid-cols-1 items-start gap-5 overflow-x-hidden pt-1 pb-8 sm:gap-6 sm:pt-2 sm:pb-10 md:min-h-[min(100dvh,920px)] md:items-center md:gap-10 md:pt-0 md:pb-0 lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
           {/* Column 1: Badge, Toggle, Headline, Subline, CTAs, Trust */}
           <div className="flex min-w-0 max-w-[620px] flex-col gap-4 sm:gap-6 lg:gap-7">
             <SpringReveal>
@@ -421,12 +421,12 @@ export function HeroSection({
             </SpringReveal>
 
             <SpringReveal delay={0.24}>
-              <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
+              <p className="text-[0.82rem] sm:text-[0.85rem] leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
                 {t("trust_line", priceParams)}
               </p>
             </SpringReveal>
 
-            <div className="mt-2 block w-full max-w-[520px] lg:hidden">
+            <div className="mt-1 block w-full max-w-[520px] lg:hidden">
               <HeroWorkspaceDemo compact />
             </div>
           </div>

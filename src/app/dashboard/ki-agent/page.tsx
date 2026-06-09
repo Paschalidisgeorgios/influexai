@@ -419,9 +419,9 @@ export default function KiAgentPage() {
           }}
         />
 
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-2.5">
           <span
-            className="shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
+            className="hidden min-[360px]:inline shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
             style={{
               borderRadius: 4,
               background: "rgba(180,255,0,0.12)",
@@ -438,7 +438,7 @@ export default function KiAgentPage() {
             type="button"
             disabled={phase === "running" || planPreviewLoading || !prompt.trim()}
             onClick={() => void fetchPlanPreview()}
-            className="shrink-0 px-2.5 py-1 text-[11px] font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            className="shrink-0 min-h-[44px] px-3 py-2 text-[11px] sm:text-xs font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.14)",
@@ -477,10 +477,10 @@ export default function KiAgentPage() {
 
       {phase === "idle" && prompt.trim() && billingEstimate && (
         <div className="mt-1.5 space-y-1">
-          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.38)" }}>
+          <p className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.38)" }}>
             Schätzung: {billingEstimate.label} — abhängig vom erkannten Tool
           </p>
-          <p className="text-[10px] leading-[1.45]" style={{ color: "rgba(255,255,255,0.32)" }}>
+          <p className="text-[11px] sm:text-xs leading-[1.45]" style={{ color: "rgba(255,255,255,0.32)" }}>
             Credits werden von den ausgeführten Tools abgezogen, keine separate
             Agent-Gebühr.
           </p>

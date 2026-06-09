@@ -156,7 +156,7 @@ export default function GalleryPage() {
   const { pulling, refreshing } = usePullToRefresh(refreshGallery);
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 48 }}>
+    <div className="min-w-0 max-w-full overflow-x-hidden" style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 48 }}>
       {(pulling || refreshing) && (
         <div
           className="fixed top-14 left-0 right-0 z-40 flex justify-center pointer-events-none md:hidden"
@@ -191,9 +191,9 @@ export default function GalleryPage() {
         >
           <div>
             <h1
+              className="text-[clamp(1.75rem,7vw,2.5rem)]"
               style={{
                 fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "2.5rem",
                 color: "#F0EFE8",
                 lineHeight: 1.1,
                 marginBottom: 4,
@@ -275,13 +275,7 @@ export default function GalleryPage() {
       )}
 
       {loading ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 16,
-          }}
-        >
+        <div className="gallery-grid grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-[220px] rounded-[14px]" />
           ))}

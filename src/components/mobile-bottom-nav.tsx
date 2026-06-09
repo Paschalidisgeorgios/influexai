@@ -24,7 +24,9 @@ export function MobileBottomNav() {
         const active =
           item.href === "/dashboard"
             ? pathname === "/dashboard"
-            : pathname.startsWith(item.href);
+            : item.href === "/dashboard/ki-agent"
+              ? pathname === "/dashboard/ki-agent" || pathname === "/dashboard/agent"
+              : pathname.startsWith(item.href);
         const Icon = item.icon;
         const label =
           item.labelKey === "quick_agent"

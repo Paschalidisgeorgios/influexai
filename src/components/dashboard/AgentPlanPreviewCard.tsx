@@ -192,7 +192,7 @@ export function AgentPlanPreviewCard({
 
   return (
     <div
-      className="mt-4 p-4"
+      className="mt-4 min-w-0 overflow-hidden p-4 sm:p-4"
       style={{
         borderRadius: 4,
         background: "#0f0f12",
@@ -211,7 +211,7 @@ export function AgentPlanPreviewCard({
         >
           Plan-Vorschau
         </span>
-        <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+        <span className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
           Noch keine Ausführung · keine Credits verbraucht
         </span>
       </div>

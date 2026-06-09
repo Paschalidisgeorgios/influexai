@@ -122,7 +122,7 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
       <div className="flex min-w-0 items-center gap-1.5">
         <span className="hidden sm:inline text-sm font-medium text-white/65">Studio</span>
         <span className="hidden sm:inline text-[#2a2a2a]">›</span>
-        <span className="truncate text-[1.25rem] font-semibold leading-none text-[#F0EFE8] sm:text-sm sm:font-semibold">
+        <span className="truncate text-sm font-semibold leading-none text-[#F0EFE8]">
           Dashboard
         </span>
       </div>

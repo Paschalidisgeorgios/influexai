@@ -168,7 +168,7 @@ export function GalleryLightbox({
           />
         )}
 
-        <div className="mt-3 flex justify-end gap-2">
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
           <button
             type="button"
             onClick={() => {
@@ -178,7 +178,7 @@ export function GalleryLightbox({
                 openImageInNewTab(current.src);
               }
             }}
-            className="rounded-lg border border-white/12 px-3 py-2 text-xs font-semibold text-[#F0EFE8] hover:border-[#B4FF00]/35"
+            className="min-h-[44px] rounded-lg border border-white/12 px-3 py-2 text-xs font-semibold text-[#F0EFE8] hover:border-[#B4FF00]/35"
           >
             {current.kind === "video" ? "Video öffnen" : "In neuem Tab öffnen"}
           </button>
@@ -191,7 +191,7 @@ export function GalleryLightbox({
                 void downloadImageFromUrl(current.src);
               }
             }}
-            className="rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] hover:bg-[#B4FF00]/10"
+            className="min-h-[44px] rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] hover:bg-[#B4FF00]/10"
           >
             {current.kind === "video" ? "Video herunterladen" : "Herunterladen"}
           </button>
