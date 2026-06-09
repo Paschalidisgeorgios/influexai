@@ -463,9 +463,9 @@ export default function KiAgentPage() {
             type="button"
             disabled={phase === "running"}
             onClick={handleSubmit}
-            aria-label="Ausführen"
+            aria-label="Ausführen — echte Ausführung, Credits werden abgezogen"
             title="Echte Ausführung — Credits werden abgezogen"
-            className="flex shrink-0 items-center justify-center gap-1.5 transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px] px-3 sm:px-3.5"
+            className="flex shrink-0 min-h-[44px] flex-col items-center justify-center px-3 py-1.5 text-[11px] sm:text-xs font-semibold leading-tight transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               borderRadius: 4,
               background: "#B4FF00",
@@ -473,18 +473,15 @@ export default function KiAgentPage() {
               pointerEvents: !prompt.trim() || phase === "running" ? "none" : "auto",
             }}
           >
-            <span className="hidden text-[11px] font-bold sm:inline" style={{ color: "#060608" }}>
+            <span className="font-bold" style={{ color: "#060608" }}>
               Ausführen
             </span>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path
-                d="M2 7h10M8 3l4 4-4 4"
-                stroke="#060608"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <span
+              className="text-[9px] font-normal"
+              style={{ color: "rgba(6,6,8,0.55)" }}
+            >
+              Credits nutzen
+            </span>
           </button>
         </div>
       </div>
