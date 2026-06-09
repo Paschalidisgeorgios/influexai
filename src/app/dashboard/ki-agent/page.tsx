@@ -24,6 +24,7 @@ import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
+import type { AgentPlanPreviewResponse } from "@/lib/agent/plan-preview-types";
 
 type Phase = "idle" | "running" | "done";
 
@@ -115,6 +116,11 @@ export default function KiAgentPage() {
   const [userCredits, setUserCredits] = useState<number | null>(null);
   const [creditError, setCreditError] = useState<string | null>(null);
   const [guard, setGuard] = useState<GuardState>(null);
+  const [planPreview, setPlanPreview] = useState<AgentPlanPreviewResponse | null>(
+    null
+  );
+  const [planPreviewLoading, setPlanPreviewLoading] = useState(false);
+  const [planPreviewError, setPlanPreviewError] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -166,6 +172,8 @@ export default function KiAgentPage() {
   const runExecution = useCallback(
     async (trimmed: string) => {
       setCreditError(null);
+      setPlanPreview(null);
+      setPlanPreviewError(null);
       setExecution(null);
       setPhase("running");
 
@@ -220,6 +228,38 @@ export default function KiAgentPage() {
     },
     [userCredits]
   );
+
+  const fetchPlanPreview = useCallback(async () => {
+    const trimmed = prompt.trim();
+    if (!trimmed || phase === "running") return;
+
+    setPlanPreviewLoading(true);
+    setPlanPreviewError(null);
+
+    try {
+      const res = await fetch("/api/agent/plan-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: trimmed, locale: "de" }),
+      });
+      const data = (await res.json()) as AgentPlanPreviewResponse & {
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setPlanPreview(null);
+        setPlanPreviewError(data.error ?? "Plan-Vorschau fehlgeschlagen.");
+        return;
+      }
+
+      setPlanPreview(data);
+    } catch {
+      setPlanPreview(null);
+      setPlanPreviewError("Netzwerkfehler bei der Plan-Vorschau.");
+    } finally {
+      setPlanPreviewLoading(false);
+    }
+  }, [phase, prompt]);
 
   const runWithGuards = useCallback(
     (checks: GuardCheck[], finalAction: () => void) => {
@@ -374,6 +414,21 @@ export default function KiAgentPage() {
 
           <button
             type="button"
+            disabled={phase === "running" || planPreviewLoading || !prompt.trim()}
+            onClick={() => void fetchPlanPreview()}
+            className="shrink-0 px-2.5 py-1 text-[11px] font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            style={{
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.14)",
+              color: "rgba(255,255,255,0.75)",
+              background: "transparent",
+            }}
+          >
+            {planPreviewLoading ? "Plan…" : "Plan-Vorschau"}
+          </button>
+
+          <button
+            type="button"
             disabled={phase === "running"}
             onClick={handleSubmit}
             aria-label="Senden"
@@ -407,6 +462,86 @@ export default function KiAgentPage() {
             Credits werden von den ausgeführten Tools abgezogen, keine separate
             Agent-Gebühr.
           </p>
+        </div>
+      )}
+
+      {planPreviewError && (
+        <p className="mt-2 text-[11px]" style={{ color: "#ff6b7a" }}>
+          {planPreviewError}
+        </p>
+      )}
+
+      {planPreview && (
+        <div
+          className="mt-4 p-4"
+          style={{
+            borderRadius: 4,
+            background: "#0f0f12",
+            border: "1px solid rgba(180,255,0,0.2)",
+          }}
+        >
+          <p
+            className="text-[10px] font-bold uppercase tracking-[0.14em]"
+            style={{
+              color: "#B4FF00",
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            }}
+          >
+            Agent Plan Preview
+          </p>
+          <p
+            className="mt-2 text-[0.82rem] leading-[1.5]"
+            style={{ color: "rgba(255,255,255,0.82)" }}
+          >
+            {planPreview.summary}
+          </p>
+          <p
+            className="mt-2 text-[10px]"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
+            Intent: {planPreview.detectedIntent} · Entscheidung:{" "}
+            {planPreview.plannerDecision} · Confidence:{" "}
+            {Math.round(planPreview.confidence * 100)}% · Keine Ausführung
+          </p>
+          {planPreview.plannedSteps.length > 0 && (
+            <ul className="mt-3 space-y-2">
+              {planPreview.plannedSteps.map((step) => (
+                <li
+                  key={step.toolId}
+                  className="text-[0.78rem] leading-[1.45]"
+                  style={{ color: "rgba(255,255,255,0.72)" }}
+                >
+                  <span style={{ color: "#B4FF00" }}>{step.label}</span>
+                  {" — "}
+                  {step.decision}
+                  {step.estimatedCredits?.min != null && (
+                    <>
+                      {" "}
+                      (~{step.estimatedCredits.min}
+                      {step.estimatedCredits.max != null &&
+                      step.estimatedCredits.max !== step.estimatedCredits.min
+                        ? `–${step.estimatedCredits.max}`
+                        : ""}{" "}
+                      Credits Preview)
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          {planPreview.warnings.length > 0 && (
+            <ul className="mt-3 space-y-1">
+              {planPreview.warnings.map((warning) => (
+                <li
+                  key={warning}
+                  className="text-[10px] leading-[1.45]"
+                  style={{ color: "rgba(255,200,80,0.9)" }}
+                >
+                  {warning}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
