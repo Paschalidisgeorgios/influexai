@@ -15,21 +15,6 @@ import {
   LANDING_SECTION_COMPACT_CLASS,
 } from "./section-styles";
 
-const TICKER_KEYS = [
-  "i0",
-  "i1",
-  "i2",
-  "i3",
-  "i4",
-  "i5",
-  "i6",
-  "i7",
-  "i8",
-  "i9",
-  "i10",
-  "i11",
-] as const;
-
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
 
 const FAQ_ITEMS = [
@@ -48,45 +33,36 @@ const FAQ_ITEMS = [
   { q: "q6", a: "a6" },
 ] as const;
 
-/** Kompakte Trust-Bar: Launch-Hinweis + Ticker in max. 80px */
+const TRUST_SIGNAL_KEYS = ["trust_1", "trust_2", "trust_3", "trust_4"] as const;
+
+/** Trust-Bar: ehrliche Signale statt abstrakter Feature-Ticker */
 export function TrustBarSection() {
   const t = useTranslations("landingPage");
-  const tTicker = useTranslations("landingPage.ticker");
-  const tickerItems = TICKER_KEYS.map((k) => tTicker(k));
-  const marquee = [
-    { id: "launch", text: t("launchBanner"), highlight: true },
-    ...tickerItems.map((text, i) => ({ id: `t-${i}`, text, highlight: false })),
-    ...tickerItems.map((text, i) => ({ id: `t2-${i}`, text, highlight: false })),
-  ];
+  const tProof = useTranslations("landingPage.proof");
 
   return (
     <div
-      className="trust-bar max-h-[80px] overflow-hidden overflow-x-hidden max-w-full border-y border-[var(--border)]"
+      className="trust-bar overflow-x-hidden max-w-full border-y border-[var(--border)]"
       style={{ background: "var(--bg-1)" }}
-      aria-label={t("launchBanner")}
+      aria-label={tProof("trust_bar_label")}
     >
-      <div className="ticker-wrap trust-bar__ticker border-0 py-2.5">
-        <div className="ticker-inner gap-8">
-          {marquee.map((item) => (
-            <div key={item.id} className="ticker-item text-[0.72rem]">
-              {item.highlight ? (
-                <>
-                  <span aria-hidden className="text-[var(--accent,#B4FF00)]">
-                    ⚡
-                  </span>
-                  <span style={{ color: "rgba(255,255,255,0.72)" }}>
-                    {item.text}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="ticker-dot" aria-hidden />
-                  {item.text}
-                </>
+      <div className="mx-auto max-w-[1160px] px-[clamp(16px,5vw,64px)] py-3 md:py-3.5">
+        <p className="mb-2 text-center text-[0.68rem] leading-snug text-white/45">
+          {t("launchBanner")}
+        </p>
+        <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.72rem] leading-snug text-white/68 sm:gap-x-4">
+          {TRUST_SIGNAL_KEYS.map((key, i) => (
+            <li key={key} className="flex items-center gap-3">
+              {i > 0 && (
+                <span
+                  className="hidden h-1 w-1 shrink-0 rounded-full bg-white/25 sm:inline-block"
+                  aria-hidden
+                />
               )}
-            </div>
+              <span>{tProof(key)}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

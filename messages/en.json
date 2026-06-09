@@ -772,6 +772,55 @@
       "p3_title": "Product ads for brands",
       "p3_text": "URL or photo → video with voice and script in under 90 seconds."
     },
+    "proof": {
+      "kicker": "Real demos",
+      "headline": "What you can create with InfluexAI",
+      "intro": "Turn one idea into concrete assets:",
+      "bullet_1": "TikTok and Reels scripts",
+      "bullet_2": "Image ideas and creator visuals",
+      "bullet_3": "Product ads",
+      "bullet_4": "Content plans",
+      "bullet_5": "Campaign variants",
+      "demo_label": "Example workflows",
+      "preview_note": "Plan preview does not start generation",
+      "trust_bar_label": "Trust and transparency",
+      "trust_1": "Plan preview without credits",
+      "trust_2": "Secure Stripe checkout",
+      "trust_3": "GDPR-aware",
+      "trust_4": "Transparent credits",
+      "pricing_bridge": "Start with a plan from {price} and try the free plan preview first.",
+      "cta_choose_plan": "Choose plan",
+      "cta_free_plan": "Plan for free",
+      "cta_dashboard": "Open dashboard",
+      "cta_workflow": "View workflow",
+      "cards": {
+        "tiktok_script": {
+          "title": "TikTok Script",
+          "benefit": "Hook, story and CTA for shorts — ready to record.",
+          "prompt": "Create a TikTok script for a fitness coach"
+        },
+        "product_ad": {
+          "title": "Product Ad",
+          "benefit": "Product ad with spot, caption and CTA for Reels.",
+          "prompt": "Create a product ad for a perfume"
+        },
+        "content_plan": {
+          "title": "7-Day Content Plan",
+          "benefit": "Topics, formats and hooks for a week of content.",
+          "prompt": "Plan 7 days of content for a local restaurant"
+        },
+        "creator_visual": {
+          "title": "Creator Visual",
+          "benefit": "Image ideas and scenes for your AI creator look.",
+          "prompt": "Create a creator visual for fitness Reels"
+        },
+        "video_motion": {
+          "title": "Video Motion",
+          "benefit": "Video concepts and motion ideas from one prompt.",
+          "prompt": "Create a TikTok video concept for a fitness coach"
+        }
+      }
+    },
     "launchBanner": "Fresh start in 2026 — be one of the first creators",
     "brands": {
       "ex1_cat": "Beauty Brand",

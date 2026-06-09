@@ -20,6 +20,7 @@ import {
 } from "@/components/landing";
 import { AiContentStream } from "@/components/landing/AiContentStream";
 import { StackedDemoSection } from "@/components/landing/StackedDemoSection";
+import { LandingProofSection } from "@/components/landing/LandingProofSection";
 import { LandingToolsGridSection } from "@/components/landing/LandingToolsGridSection";
 import { CampaignAutopilotSection } from "@/components/landing/CampaignAutopilotSection";
 import { QualityIntelligenceSection } from "@/components/landing/QualityIntelligenceSection";
@@ -82,6 +83,7 @@ export default async function HomePage() {
         <LandingNav />
         <main className="landing-root overflow-x-clip max-w-[100vw]">
           <HeroSection variant={variant} />
+          <LandingProofSection />
           <AiContentStream />
           <StackedDemoSection />
           <LandingToolsGridSection />

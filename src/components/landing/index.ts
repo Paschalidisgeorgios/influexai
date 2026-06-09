@@ -1,4 +1,5 @@
 export { StackedDemoSection } from "./StackedDemoSection";
+export { LandingProofSection } from "./LandingProofSection";
 export { LandingToolsGridSection } from "./LandingToolsGridSection";
 export { InteractiveDemo } from "./InteractiveDemo";
 export { LandingNav } from "./LandingNav";

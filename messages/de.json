@@ -1338,6 +1338,55 @@
       "p3_title": "Produkt-Ads für Marken",
       "p3_text": "URL oder Foto → Video mit Stimme und Script in unter 90 Sekunden."
     },
+    "proof": {
+      "kicker": "Echte Demos",
+      "headline": "Was du mit InfluexAI erstellen kannst",
+      "intro": "Aus einer Idee entstehen konkrete Assets:",
+      "bullet_1": "TikTok- und Reels-Scripts",
+      "bullet_2": "Bildideen und Creator-Visuals",
+      "bullet_3": "Produktwerbung",
+      "bullet_4": "Content-Pläne",
+      "bullet_5": "Kampagnen-Varianten",
+      "demo_label": "Beispiel-Workflows",
+      "preview_note": "Plan-Vorschau startet keine Generierung",
+      "trust_bar_label": "Vertrauen und Transparenz",
+      "trust_1": "Plan-Vorschau ohne Credits",
+      "trust_2": "Sichere Stripe-Zahlung",
+      "trust_3": "DSGVO-bewusst",
+      "trust_4": "Credits transparent",
+      "pricing_bridge": "Starte mit einem Plan ab €{price} und teste zuerst die kostenlose Plan-Vorschau.",
+      "cta_choose_plan": "Plan wählen",
+      "cta_free_plan": "Kostenlos planen",
+      "cta_dashboard": "Dashboard öffnen",
+      "cta_workflow": "Workflow ansehen",
+      "cards": {
+        "tiktok_script": {
+          "title": "TikTok Script",
+          "benefit": "Hook, Story und CTA für Shorts — ready zum Aufnehmen.",
+          "prompt": "Erstelle ein TikTok Script für eine Fitness Coachin"
+        },
+        "product_ad": {
+          "title": "Product Ad",
+          "benefit": "Produktwerbung mit Spot, Caption und CTA für Reels.",
+          "prompt": "Erstelle eine Produktwerbung für ein Parfum"
+        },
+        "content_plan": {
+          "title": "7-Tage Content-Plan",
+          "benefit": "Themen, Formate und Hooks für eine Woche Content.",
+          "prompt": "Plane 7 Tage Content für ein lokales Restaurant"
+        },
+        "creator_visual": {
+          "title": "Creator Visual",
+          "benefit": "Bildideen und Szenen für deinen KI-Creator-Look.",
+          "prompt": "Erstelle ein Creator-Visual für Fitness-Reels"
+        },
+        "video_motion": {
+          "title": "Video Motion",
+          "benefit": "Video-Konzepte und Motion-Ideen aus einem Prompt.",
+          "prompt": "Erstelle ein TikTok Video-Konzept für eine Fitness Coachin"
+        }
+      }
+    },
     "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator"
   },
   "language": {
