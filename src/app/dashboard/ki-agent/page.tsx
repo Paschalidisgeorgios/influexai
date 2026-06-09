@@ -21,6 +21,7 @@ import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
+import { AgentPlanPreviewCard } from "@/components/dashboard/AgentPlanPreviewCard";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
@@ -471,79 +472,7 @@ export default function KiAgentPage() {
         </p>
       )}
 
-      {planPreview && (
-        <div
-          className="mt-4 p-4"
-          style={{
-            borderRadius: 4,
-            background: "#0f0f12",
-            border: "1px solid rgba(180,255,0,0.2)",
-          }}
-        >
-          <p
-            className="text-[10px] font-bold uppercase tracking-[0.14em]"
-            style={{
-              color: "#B4FF00",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            }}
-          >
-            Agent Plan Preview
-          </p>
-          <p
-            className="mt-2 text-[0.82rem] leading-[1.5]"
-            style={{ color: "rgba(255,255,255,0.82)" }}
-          >
-            {planPreview.summary}
-          </p>
-          <p
-            className="mt-2 text-[10px]"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
-            Intent: {planPreview.detectedIntent} · Entscheidung:{" "}
-            {planPreview.plannerDecision} · Confidence:{" "}
-            {Math.round(planPreview.confidence * 100)}% · Keine Ausführung
-          </p>
-          {planPreview.plannedSteps.length > 0 && (
-            <ul className="mt-3 space-y-2">
-              {planPreview.plannedSteps.map((step) => (
-                <li
-                  key={step.toolId}
-                  className="text-[0.78rem] leading-[1.45]"
-                  style={{ color: "rgba(255,255,255,0.72)" }}
-                >
-                  <span style={{ color: "#B4FF00" }}>{step.label}</span>
-                  {" — "}
-                  {step.decision}
-                  {step.estimatedCredits?.min != null && (
-                    <>
-                      {" "}
-                      (~{step.estimatedCredits.min}
-                      {step.estimatedCredits.max != null &&
-                      step.estimatedCredits.max !== step.estimatedCredits.min
-                        ? `–${step.estimatedCredits.max}`
-                        : ""}{" "}
-                      Credits Preview)
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {planPreview.warnings.length > 0 && (
-            <ul className="mt-3 space-y-1">
-              {planPreview.warnings.map((warning) => (
-                <li
-                  key={warning}
-                  className="text-[10px] leading-[1.45]"
-                  style={{ color: "rgba(255,200,80,0.9)" }}
-                >
-                  {warning}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      {planPreview && <AgentPlanPreviewCard preview={planPreview} />}
 
       {creditError && (
         <p className="mt-2 text-[11px]" style={{ color: "#ff6b7a" }}>
