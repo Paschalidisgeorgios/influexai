@@ -129,6 +129,21 @@
     "timeline_viral": "Viral Score",
     "welcome_subtitle": "Describe your video goal in plain language. The agent plans and runs all tools automatically.",
     "welcome_title": "What do you want to create?",
+    "quick_win_title": "Start with a free plan preview",
+    "quick_win_body": "Describe your goal. InfluexAI shows the right workflow before credits are used.",
+    "example_prompt_1": "Create a TikTok script for a fitness coach",
+    "example_prompt_2": "Plan 7 days of content for a local restaurant",
+    "example_prompt_3": "Create a product ad for a perfume",
+    "cta_plan_preview": "Start plan preview",
+    "cta_ki_agent": "Open KI Agent",
+    "cta_free_plan": "Plan for free",
+    "featured_prompts_label": "Popular examples",
+    "group_quick_start": "Quick start",
+    "group_creator": "Creator content",
+    "group_product": "Product & ads",
+    "group_analyze": "Analysis & planning",
+    "plan_preview_routing_hint": "Free plan preview in KI Agent. Running here uses credits.",
+    "execute_hint": "Direct execution — credits are deducted",
     "workflow_desc": "The agent automatically executes these steps when you describe a complete video goal."
   },
   "auth": {
@@ -1726,7 +1741,8 @@
     "trust_footer_one_time": "One-time top-up — does not start a new subscription",
     "trust_footer_plan": "Tool access requires an active plan",
     "trust_footer_instant": "Available immediately after payment",
-    "trust_footer_stripe": "Secure payment with Stripe"
+    "trust_footer_stripe": "Secure payment with Stripe",
+    "low_credit_plan_hint": "You can still use free plan previews. Generations require credits."
   },
   "founding": {
     "kicker": "EARLY ACCESS · 2026",

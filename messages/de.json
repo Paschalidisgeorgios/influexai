@@ -43,7 +43,22 @@
     "timeline_live": "Live Creator",
     "workflow_desc": "Der Agent führt diese Schritte automatisch aus, wenn du ein vollständiges Video-Ziel beschreibst.",
     "welcome_subtitle": "Beschreibe dein Video-Ziel in natürlicher Sprache. Der Agent plant und nutzt alle Tools automatisch.",
-    "welcome_title": "Was möchtest du erstellen?"
+    "welcome_title": "Was möchtest du erstellen?",
+    "quick_win_title": "Starte mit einer kostenlosen Plan-Vorschau",
+    "quick_win_body": "Beschreibe dein Ziel. InfluexAI zeigt dir den passenden Workflow, bevor Credits verbraucht werden.",
+    "example_prompt_1": "Erstelle ein TikTok Script für eine Fitness Coachin",
+    "example_prompt_2": "Plane 7 Tage Content für ein lokales Restaurant",
+    "example_prompt_3": "Erstelle eine Produktwerbung für ein Parfum",
+    "cta_plan_preview": "Plan-Vorschau starten",
+    "cta_ki_agent": "Mit KI-Agent öffnen",
+    "cta_free_plan": "Kostenlos planen",
+    "featured_prompts_label": "Beliebte Beispiele",
+    "group_quick_start": "Schnell starten",
+    "group_creator": "Creator Content",
+    "group_product": "Produkt & Werbung",
+    "group_analyze": "Analyse & Planung",
+    "plan_preview_routing_hint": "Kostenlose Plan-Vorschau im KI-Agent. Ausführung hier verbraucht Credits.",
+    "execute_hint": "Direkte Ausführung — Credits werden abgezogen"
   },
   "auth": {
     "bad_credentials": "Falsche E-Mail oder falsches Passwort.",
@@ -1735,6 +1750,7 @@
     "trust_footer_one_time": "Einmalige Aufladung — startet kein neues Abo",
     "trust_footer_plan": "Tool-Zugang erfordert einen aktiven Plan",
     "trust_footer_instant": "Sofort nach Zahlung verfügbar",
-    "trust_footer_stripe": "Sicher bezahlen mit Stripe"
+    "trust_footer_stripe": "Sicher bezahlen mit Stripe",
+    "low_credit_plan_hint": "Du kannst weiterhin kostenlos Plan-Vorschauen nutzen. Für Generierungen brauchst du Credits."
   }
 }

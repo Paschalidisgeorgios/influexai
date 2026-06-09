@@ -9,6 +9,7 @@ import {
   type KeyboardEvent,
   type FormEvent,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import type {
   AgentExecution,
   AgentResult,
@@ -115,6 +116,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 }
 
 export default function KiAgentPage() {
+  const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState("");
   const [execution, setExecution] = useState<AgentExecution | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -142,6 +144,11 @@ export default function KiAgentPage() {
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("prompt")?.trim();
+    if (fromUrl) setPrompt(fromUrl);
+  }, [searchParams]);
 
   useEffect(() => {
     adjustTextareaHeight(textareaRef.current);
