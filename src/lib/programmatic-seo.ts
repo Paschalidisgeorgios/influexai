@@ -1,3 +1,5 @@
+import { formatStarterFromPrice } from "@/lib/pricing";
+
 export type FeatureKey =
   | "script-generator"
   | "niche-analyzer"
@@ -603,7 +605,7 @@ export function generatePageMetadata(
 
   return {
     title: `${f.nameDe} für ${n.nameDe} Creator | InfluexAI`,
-    description: `Erstelle ${n.nameDe} Content mit dem KI ${f.nameDe}. ${n.examples.slice(0, 2).join(", ")} und mehr. Credits ab €4,99 — sofort loslegen.`,
+    description: `Erstelle ${n.nameDe} Content mit dem KI ${f.nameDe}. ${n.examples.slice(0, 2).join(", ")} und mehr. Starter-Plan ab €${formatStarterFromPrice("de")}. Credits flexibel nutzen.`,
     h1: `${f.nameDe} für ${n.nameDe} YouTube Creator`,
     heroText: `Erstelle ${n.emoji} ${n.nameDe} Content 10× schneller mit KI`,
     keywords: `${f.nameDe.toLowerCase()} ${n.nameDe.toLowerCase()}, youtube shorts ${n.name}, ki content tools ${n.name}`,

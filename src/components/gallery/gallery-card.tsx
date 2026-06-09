@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { ThumbnailPreview } from "@/components/thumbnail-preview";
+import { ImageResultActions } from "@/components/image/ImageResultActions";
+import { VideoResultActions } from "@/components/image/VideoResultActions";
 import type { GalleryItem } from "@/lib/gallery-types";
 import { countWords } from "@/lib/script-format";
 
@@ -286,7 +288,8 @@ function ActionBtn({
   primary?: boolean;
 }) {
   const style = {
-    padding: "7px 12px",
+    padding: "8px 12px",
+    minHeight: 44,
     borderRadius: 8,
     fontSize: "0.78rem",
     fontWeight: 600,
@@ -336,23 +339,66 @@ function GalleryImagePreview({ src }: { src: string | null | undefined }) {
   );
 }
 
-function GalleryVideoPreview({ src }: { src: string | null | undefined }) {
+function GalleryVideoPreview({
+  src,
+  onUnavailable,
+}: {
+  src: string | null | undefined;
+  onUnavailable?: () => void;
+}) {
   const [failed, setFailed] = useState(false);
 
-  if (!src || failed) {
-    return <span style={{ fontSize: "2rem" }}>▶</span>;
+  if (!src) {
+    return (
+      <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.55)" }}>
+        Video noch nicht verfügbar
+      </span>
+    );
+  }
+
+  if (failed) {
+    return (
+      <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.55)" }}>
+        Video-Vorschau nicht verfügbar
+      </span>
+    );
   }
 
   return (
     <video
       src={src}
-      preload="none"
+      preload="metadata"
       playsInline
       muted
       style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      onError={() => setFailed(true)}
+      onError={() => {
+        setFailed(true);
+        onUnavailable?.();
+      }}
     />
   );
+}
+
+function videoRegenerateHref(generationType?: string | null): string {
+  const t = generationType?.toLowerCase() ?? "";
+  if (t.includes("live-creator")) return "/dashboard/live-creator";
+  if (t === "seedance") return "/dashboard/seedance";
+  if (t === "motion-transfer") return "/dashboard/motion-transfer";
+  if (t.includes("ugc-video")) return "/dashboard/ugc-video";
+  if (t.includes("live-portrait")) return "/dashboard/live-portrait";
+  if (t === "product_ad" || t.includes("produkt")) return "/dashboard/produkt";
+  return "/dashboard/produkt";
+}
+
+function videoTypeLabel(generationType?: string | null): string {
+  const t = generationType?.toLowerCase() ?? "";
+  if (t.includes("live-creator")) return "Live Creator";
+  if (t === "seedance") return "Bild zu Video";
+  if (t === "motion-transfer") return "Motion Transfer";
+  if (t.includes("ugc-video")) return "UGC Video";
+  if (t === "product_ad") return "Produkt-Werbung";
+  if (t.includes("live-portrait")) return "Live Portrait";
+  return "Video";
 }
 
 export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
@@ -690,8 +736,14 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             </p>
           </div>
           <ActionRow>
+            <ImageResultActions
+              variant="gallery"
+              embedded
+              imageUrl={item.imageUrl}
+              prompt={item.prompt}
+            />
             {item.imageUrl && onOpenMedia && (
-              <ActionBtn label="Öffnen" onClick={openMedia} primary />
+              <ActionBtn label="Vorschau" onClick={openMedia} primary />
             )}
             <ActionBtn label="Neu generieren" href="/dashboard/ki-ich" />
           </ActionRow>
@@ -700,12 +752,14 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
   }
 
   if (item._type === "video") {
-    const isLive = item.generationType?.includes("live-creator");
+    const hasVideo = Boolean(item.videoUrl?.trim());
+    const badgeLabel = videoTypeLabel(item.generationType);
+
     return (
       <article style={cardStyle}>
           <CardHeader
             item={item}
-            badge={{ emoji: "🎬", label: isLive ? "Live Creator" : "Video" }}
+            badge={{ emoji: "🎬", label: badgeLabel }}
             onDelete={handleDelete}
             canDelete={canDelete}
           />
@@ -713,13 +767,13 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             <button
               type="button"
               onClick={openMedia}
-              disabled={!item.videoUrl || !onOpenMedia}
+              disabled={!hasVideo || !onOpenMedia}
               style={{
                 width: "100%",
                 padding: 0,
                 border: "none",
                 background: "transparent",
-                cursor: item.videoUrl && onOpenMedia ? "pointer" : "default",
+                cursor: hasVideo && onOpenMedia ? "pointer" : "default",
                 textAlign: "left",
               }}
             >
@@ -737,7 +791,7 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
                 }}
               >
                 <GalleryVideoPreview src={item.videoUrl} />
-                {item.videoUrl && (
+                {hasVideo && onOpenMedia && (
                   <span
                     style={{
                       position: "absolute",
@@ -750,6 +804,7 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
                       fontSize: "2rem",
                       pointerEvents: "none",
                     }}
+                    aria-hidden
                   >
                     ▶
                   </span>
@@ -768,19 +823,30 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             >
               {item.title}
             </p>
+            {!hasVideo && (
+              <p
+                style={{
+                  fontSize: "0.72rem",
+                  color: "rgba(255,255,255,0.55)",
+                  marginTop: 6,
+                }}
+              >
+                Quelle fehlt — Video kann nicht abgespielt werden.
+              </p>
+            )}
           </div>
           <ActionRow>
-            {item.videoUrl ? (
-              <>
-                {onOpenMedia && (
-                  <ActionBtn label="Abspielen" onClick={openMedia} primary />
-                )}
-                <ActionBtn label="Download" href={item.videoUrl} />
-              </>
+            {hasVideo ? (
+              <VideoResultActions
+                variant="gallery"
+                embedded
+                videoUrl={item.videoUrl}
+                onPlay={onOpenMedia ? openMedia : undefined}
+              />
             ) : (
               <ActionBtn
                 label="Neu generieren"
-                href={isLive ? "/dashboard/live-creator" : "/dashboard/produkt"}
+                href={videoRegenerateHref(item.generationType)}
                 primary
               />
             )}

@@ -47,7 +47,7 @@ export type DashboardFlow = {
   tagline: string;
   creditCost: number | null;
   creditLabel: string;
-  badge?: "NEU" | "SOON" | "Preview";
+  badge?: "NEU" | "SOON" | "Preview" | "Premium";
   locked?: boolean;
   /** generation.type values counted for popularity */
   genTypes: string[];
@@ -161,6 +161,18 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     creditLabel: "40 Credits",
     badge: "NEU",
     genTypes: ["seedance", "image_to_video"],
+  },
+  {
+    id: "kling25-i2v",
+    href: "/dashboard/seedance?model=kling25_turbo_pro",
+    category: "create",
+    icon: Film,
+    title: "Kling 2.5 Turbo Pro",
+    tagline: "Premium Image-to-Video — cineastische Motion aus Referenzbild",
+    creditCost: 40,
+    creditLabel: "40 Credits",
+    badge: "Premium",
+    genTypes: ["kling25", "image_to_video"],
   },
   {
     id: "motion-transfer",
@@ -474,6 +486,13 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         icon: Film,
       },
       {
+        id: "kling25-i2v",
+        href: "/dashboard/seedance?model=kling25_turbo_pro",
+        label: "Kling 2.5 Turbo Pro",
+        icon: Film,
+        badge: "Premium",
+      },
+      {
         id: "live-creator",
         href: "/dashboard/live-creator",
         labelKey: "live_creator",
@@ -510,12 +529,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         label: "LoRA Training",
         icon: Brain,
       },
-      {
-        id: "gallery",
-        href: "/dashboard/gallery",
-        labelKey: "gallery",
-        icon: Images,
-      },
     ],
   },
 ];
@@ -551,8 +564,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   if (
     path.includes("image-generator") ||
     path.includes("upscaler") ||
-    path.includes("lora-training") ||
-    path.includes("/dashboard/gallery")
+    path.includes("lora-training")
   ) {
     keys.push("bild");
   }
@@ -621,7 +633,7 @@ export const MOBILE_QUICK_NAV = [
     icon: PlusCircle,
     labelKey: "quick_create" as const,
   },
-  { href: "/dashboard/agent", icon: Star, labelKey: "quick_agent" as const },
+  { href: "/dashboard/ki-agent", icon: Star, labelKey: "quick_agent" as const },
   { href: "/dashboard/gallery", icon: Images, labelKey: "quick_gallery" as const },
   { href: "/dashboard/settings", icon: User, labelKey: "nav_settings" as const },
 ];

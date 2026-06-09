@@ -84,6 +84,16 @@ export function LowCreditsSidebar({
       >
         {t("top_up")}
       </button>
+      <p
+        style={{
+          marginTop: 8,
+          fontSize: "0.62rem",
+          lineHeight: 1.45,
+          color: "rgba(255,255,255,0.45)",
+        }}
+      >
+        {t("low_credit_plan_hint")}
+      </p>
     </div>
   );
 }

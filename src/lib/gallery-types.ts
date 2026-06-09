@@ -39,6 +39,7 @@ export type GalleryItem = {
   remixes?: RemixConcept[];
   originalUrl?: string | null;
   generationType?: string;
+  prompt?: string;
   imageUrl?: string | null;
   videoUrl?: string | null;
 };

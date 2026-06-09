@@ -1,6 +1,8 @@
 "use client";
 
 import { LightFrame } from "@/components/LightFrame";
+import { ImageResultActions } from "@/components/image/ImageResultActions";
+import { TextResultActions } from "@/components/image/TextResultActions";
 import type { AgentOutputs } from "@/lib/agent/types";
 import { AgentRedirectCards } from "./AgentRedirectCards";
 import {
@@ -17,6 +19,30 @@ type Props = {
   saving?: boolean;
   saved?: boolean;
 };
+
+function extractScriptText(data: unknown): string {
+  if (typeof data === "string") return data;
+  if (data && typeof data === "object") {
+    const s = data as { script?: string; hookVariants?: string[] };
+    const parts: string[] = [];
+    if (Array.isArray(s.hookVariants) && s.hookVariants.length > 0) {
+      parts.push(
+        "Hook-Varianten:\n" +
+          s.hookVariants.map((hook, index) => `${index + 1}. ${hook}`).join("\n")
+      );
+    }
+    if (typeof s.script === "string" && s.script.trim()) {
+      parts.push(s.script);
+    }
+    if (parts.length > 0) return parts.join("\n\n");
+  }
+  return JSON.stringify(data, null, 2);
+}
+
+function extractJsonText(data: unknown): string {
+  if (typeof data === "string") return data;
+  return JSON.stringify(data, null, 2);
+}
 
 function ResultSection({
   title,
@@ -115,6 +141,11 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
             src={outputs.productPreview.imageUrl}
             alt={outputs.productPreview.productName}
           />
+          <ImageResultActions
+            imageUrl={outputs.productPreview.imageUrl}
+            generationId={outputs.productPreview.generationId}
+            downloadFilename={`influexai-${outputs.productPreview.productName.slice(0, 32).replace(/\s+/g, "-")}.jpg`}
+          />
         </ResultSection>
       )}
 
@@ -128,6 +159,11 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
           <AgentMediaImage
             src={outputs.image.imageUrl}
             alt="Generiertes Bild"
+          />
+          <ImageResultActions
+            imageUrl={outputs.image.imageUrl}
+            prompt={outputs.image.improvedPrompt ?? outputs.image.prompt}
+            generationId={outputs.image.generationId}
           />
         </ResultSection>
       )}
@@ -144,36 +180,60 @@ export function AgentResultCard({ outputs, onSave, saving, saved }: Props) {
       {outputs.script != null && (
         <ResultSection title="Script">
           <AgentScriptResult data={outputs.script} />
+          <TextResultActions
+            text={extractScriptText(outputs.script)}
+            downloadFilename="influexai-script.txt"
+          />
         </ResultSection>
       )}
 
       {outputs.viralScore != null && (
         <ResultSection title="Viral Score">
           <AgentViralScoreResult data={outputs.viralScore} />
+          <TextResultActions
+            text={extractJsonText(outputs.viralScore)}
+            downloadFilename="influexai-viral-score.txt"
+          />
         </ResultSection>
       )}
 
       {outputs.niche != null && (
         <ResultSection title="Nischen-Analyse">
           <AgentNicheResult data={outputs.niche} />
+          <TextResultActions
+            text={extractJsonText(outputs.niche)}
+            downloadFilename="influexai-niche.txt"
+          />
         </ResultSection>
       )}
 
       {outputs.thumbnail != null && (
         <ResultSection title="Thumbnail-Konzept">
           <AgentThumbnailResult data={outputs.thumbnail} />
+          <TextResultActions
+            text={extractJsonText(outputs.thumbnail)}
+            downloadFilename="influexai-thumbnail.txt"
+          />
         </ResultSection>
       )}
 
       {outputs.outliers != null && (
         <ResultSection title="Outlier">
           <AgentGenericJsonResult data={outputs.outliers} />
+          <TextResultActions
+            text={extractJsonText(outputs.outliers)}
+            downloadFilename="influexai-outlier.txt"
+          />
         </ResultSection>
       )}
 
       {outputs.competitor != null && (
         <ResultSection title="Konkurrenz-Analyse">
           <AgentGenericJsonResult data={outputs.competitor} />
+          <TextResultActions
+            text={extractJsonText(outputs.competitor)}
+            downloadFilename="influexai-competitor.txt"
+          />
         </ResultSection>
       )}
 

@@ -1,4 +1,5 @@
 const SITE = "https://influexaicreator.com";
+const PRICING_URL = `${SITE}/pricing`;
 const CREDITS_URL = `${SITE}/dashboard/credits`;
 
 function layout(body: string, unsubscribeUrl: string): string {
@@ -39,14 +40,14 @@ export function welcomeEmail(
   const body = `
 <p style="margin:0 0 16px;font-size:17px;color:#e8e8e8;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">willkommen bei <strong style="color:#B4FF00;">InfluexAI</strong> — dein KI Creator Studio für virale Shorts.</p>
-<p style="margin:0 0 16px;">Dein Account ist bereit. Kaufe jetzt deine ersten Credits und erstelle deinen ersten viralen Short.</p>
+<p style="margin:0 0 16px;">Dein Account ist bereit. Wähle einen Plan und erstelle deinen ersten viralen Short.</p>
 <p style="margin:0 0 12px;font-weight:bold;color:#B4FF00;">Die 3 besten Features zum Start:</p>
 <ul style="margin:0 0 20px;padding-left:20px;color:#c8c8c8;">
   <li style="margin-bottom:8px;"><strong>Niche Analyzer</strong> — profitable Nischen finden</li>
   <li style="margin-bottom:8px;"><strong>Script Generator</strong> — virale Scripts in Minuten</li>
   <li style="margin-bottom:8px;"><strong>Outlier Detector</strong> — Videos finden, die 10× viral gingen</li>
 </ul>
-${cta(CREDITS_URL, "Credits kaufen — ab €4,99 →")}
+${cta(PRICING_URL, "Plan wählen — Starter ab €9,99 →")}
 <p style="margin:24px 0 0;font-size:13px;color:#888;font-style:italic;">PS: Antwort auf diese Mail — ich lese alles persönlich.</p>`;
   return {
     subject: `🚀 Willkommen bei InfluexAI, ${firstName}!`,
@@ -61,8 +62,8 @@ export function activationEmail(
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">dein KI Studio wartet — starte jetzt.</p>
-<p style="margin:0 0 16px;color:#c8c8c8;">Du hast noch keine Credits gekauft. Hier geht es direkt zum Shop:</p>
-${cta(CREDITS_URL, "Jetzt starten →")}`;
+<p style="margin:0 0 16px;color:#c8c8c8;">Du hast noch keinen aktiven Plan. Hier geht es zu den Preisen:</p>
+${cta(PRICING_URL, "Jetzt starten →")}`;
   return {
     subject: "Dein KI Studio wartet — starte jetzt",
     html: layout(body, unsubscribeUrl),
@@ -76,7 +77,7 @@ export function featureDiscoveryEmail(
 ): { subject: string; html: string } {
   const zeroCreditsPs =
     remainingCredits <= 0
-      ? `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: Du hast noch keine Credits — ab €4,99 kannst du sofort loslegen.</p>`
+      ? `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: Du brauchst einen aktiven Plan — <a href="${PRICING_URL}" style="color:#B4FF00;">Starter ab €9,99</a>.</p>`
       : "";
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
@@ -105,7 +106,7 @@ export function retentionEmail(
   const createdLine =
     generationCount > 0
       ? `Du hast schon <strong style="color:#B4FF00;">${generationCount} Creation${generationCount === 1 ? "" : "s"}</strong> — stark! Dein Studio wartet auf den nächsten Hit.`
-      : "Dein KI Creator Studio ist bereit — kaufe Credits um loszulegen.";
+      : "Dein KI Creator Studio ist bereit — wähle einen Plan um loszulegen.";
   const body = `
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">dein KI Creator Studio wartet auf dich.</p>
@@ -127,13 +128,13 @@ export function upgradeEmail(
 <p style="margin:0 0 16px;">Hey ${firstName},</p>
 <p style="margin:0 0 16px;">Creator, die viral gehen, machen das täglich 🎯</p>
 <p style="margin:0 0 16px;color:#c8c8c8;">Die erfolgreichsten Creator nutzen InfluexAI jeden Tag — Nischen, Scripts, Outliers, Ads. Konstante Output = konstantes Wachstum.</p>
-<p style="margin:0 0 12px;">Du hast noch <strong>${remainingCredits} Credits</strong>. Mit einem Paket bist du für Wochen versorgt:</p>
+<p style="margin:0 0 12px;">Du hast noch <strong>${remainingCredits} Credits</strong>. Mit mehr monatlichen Credits bist du für Wochen versorgt:</p>
 <ul style="margin:0 0 20px;padding-left:20px;color:#c8c8c8;">
-  <li style="margin-bottom:6px;">Starter — €4,99 · 50 Credits</li>
-  <li style="margin-bottom:6px;">Creator — €9,99 · 120 Credits (empfohlen)</li>
-  <li style="margin-bottom:6px;">Pro — €19,99 · 300 Credits</li>
+  <li style="margin-bottom:6px;">Starter — €9,99/Monat · 50 Credits</li>
+  <li style="margin-bottom:6px;">Creator — €49/Monat · 300 Credits (empfohlen)</li>
+  <li style="margin-bottom:6px;">Pro — €99/Monat · 800 Credits</li>
 </ul>
-${cta(CREDITS_URL, "Credits kaufen und durchstarten →")}`;
+${cta(PRICING_URL, "Plan upgraden →")}`;
   return {
     subject: "Creator die viral gehen, machen das täglich 🎯",
     html: layout(body, unsubscribeUrl),
@@ -159,7 +160,7 @@ ${cta(`${SITE}/dashboard`, "Schau mal rein →")}
 ${
   credits > 0
     ? `<p style="margin:20px 0 0;font-size:13px;color:#888;font-style:italic;">PS: Du hast noch <strong style="color:#B4FF00;">${credits} Credits</strong> — lass sie nicht verfallen.</p>`
-    : `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: Credits ab €4,99 — <a href="${CREDITS_URL}" style="color:#B4FF00;">zum Shop</a>.</p>`
+    : `<p style="margin:20px 0 0;font-size:13px;color:#888;">PS: <a href="${PRICING_URL}" style="color:#B4FF00;">Starter-Plan ab €9,99</a> — monatlich kündbar.</p>`
 }`;
   return {
     subject: "Dein InfluexAI Studio wartet auf dich 👀",
@@ -173,12 +174,12 @@ export function winbackCriticalEmail(
 ): { subject: string; html: string } {
   const body = `
 <p style="margin:0 0 16px;font-size:17px;color:#e8e8e8;">Hey ${firstName},</p>
-<p style="margin:0 0 16px;">wir vermissen dich — komm zurück und hol dir Credits für dein nächstes virales Video.</p>
+<p style="margin:0 0 16px;">wir vermissen dich — komm zurück und starte mit einem Plan für dein nächstes virales Video.</p>
 <p style="margin:0 0 20px;color:#c8c8c8;">Ein Outlier-Scan oder ein frisches Script dauert nur wenige Minuten.</p>
-${cta(CREDITS_URL, "Credits kaufen — ab €4,99 →")}
+${cta(PRICING_URL, "Plan wählen — Starter ab €9,99 →")}
 <p style="margin:24px 0 0;font-size:13px;color:#666;">— Das InfluexAI Team</p>`;
   return {
-    subject: "Dein KI Studio wartet — Credits ab €4,99",
+    subject: "Dein KI Studio wartet — Starter-Plan ab €9,99",
     html: layout(body, unsubscribeUrl),
   };
 }

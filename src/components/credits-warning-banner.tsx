@@ -115,6 +115,17 @@ export function CreditsWarningBanner({ credits, isAdmin = false }: Props) {
         {tier === "critical"
           ? t("urgent_banner")
           : t("low_banner", { count: credits })}
+        <span
+          style={{
+            display: "block",
+            marginTop: 4,
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            color: "rgba(255,255,255,0.65)",
+          }}
+        >
+          {t("low_credit_plan_hint")}
+        </span>
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <button

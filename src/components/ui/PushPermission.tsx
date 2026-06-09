@@ -125,7 +125,7 @@ export function PushPermission() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 z-[200] mx-auto max-w-md lg:left-auto lg:right-6"
+      className="fixed bottom-[calc(80px+env(safe-area-inset-bottom,0px))] left-4 right-4 z-[200] mx-auto max-w-md md:bottom-4 lg:left-auto lg:right-6"
       role="region"
       aria-label="Push-Benachrichtigungen"
     >

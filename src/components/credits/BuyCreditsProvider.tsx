@@ -63,7 +63,7 @@ function CreditsToast({
   return (
     <div
       role="status"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] px-5 py-3.5 rounded-xl font-bold text-sm shadow-lg"
+      className="fixed bottom-[calc(88px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[300] max-w-[min(92vw,360px)] px-5 py-3.5 rounded-xl font-bold text-sm shadow-lg text-center md:bottom-6 md:max-w-none"
       style={{
         background: "var(--accent, #B4FF00)",
         color: "#060608",

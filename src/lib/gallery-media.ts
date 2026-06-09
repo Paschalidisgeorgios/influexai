@@ -46,7 +46,7 @@ export function resolveStorageMediaUrl(
   return getPublicUrl(bucket, trimmed);
 }
 
-function isImageGenerationType(type: string): boolean {
+export function isImageGenerationType(type: string): boolean {
   const t = type.toLowerCase();
   return (
     t.includes("ki-ich") ||
@@ -57,7 +57,7 @@ function isImageGenerationType(type: string): boolean {
   );
 }
 
-function isVideoGenerationType(type: string): boolean {
+export function isVideoGenerationType(type: string): boolean {
   const t = type.toLowerCase();
   return (
     t.includes("live-creator") ||
@@ -66,6 +66,10 @@ function isVideoGenerationType(type: string): boolean {
     t.includes("stimme") ||
     t === "product_ad" ||
     t === "seedance" ||
+    t === "motion-transfer" ||
+    t === "live-portrait" ||
+    t.includes("ugc-video") ||
+    t.includes("faceswap") ||
     (t.includes("video") && !t.includes("remix"))
   );
 }
@@ -144,17 +148,9 @@ export function resolveGenerationMediaUrls(params: {
   }
 
   if (isVideoGenerationType(type)) {
-    const t = type.toLowerCase();
-
     if (asset?.finalPath) {
-      videoUrl =
-        resolveStorageMediaUrl(asset.finalPath, getPublicUrl) ??
-        (t === "product_ad" || t === "seedance"
-          ? `/api/generated-video/${generationId}`
-          : null);
-    }
-
-    if (!videoUrl) {
+      videoUrl = `/api/generated-video/${generationId}`;
+    } else if (!videoUrl) {
       videoUrl = legacy.videoUrl;
     }
   }
@@ -165,42 +161,9 @@ export function resolveGenerationMediaUrls(params: {
   return { imageUrl, videoUrl };
 }
 
-export type GalleryMediaItem = {
-  id: string;
-  itemType: GalleryItem["_type"];
-  kind: "image" | "video";
-  src: string;
-  title: string;
-};
-
-export function galleryItemMediaKey(item: GalleryItem): string {
-  return `${item._type}-${item.id}`;
-}
-
-export function galleryItemToMedia(item: GalleryItem): GalleryMediaItem | null {
-  if (item._type === "image" && item.imageUrl) {
-    return {
-      id: item.id,
-      itemType: item._type,
-      kind: "image",
-      src: item.imageUrl,
-      title: item.title,
-    };
-  }
-  if (item._type === "video" && item.videoUrl) {
-    return {
-      id: item.id,
-      itemType: item._type,
-      kind: "video",
-      src: item.videoUrl,
-      title: item.title,
-    };
-  }
-  return null;
-}
-
-export function collectGalleryMedia(items: GalleryItem[]): GalleryMediaItem[] {
-  return items
-    .map(galleryItemToMedia)
-    .filter((entry): entry is GalleryMediaItem => entry !== null);
-}
+export type { GalleryMediaItem } from "@/lib/gallery-media-client";
+export {
+  collectGalleryMedia,
+  galleryItemMediaKey,
+  galleryItemToMedia,
+} from "@/lib/gallery-media-client";

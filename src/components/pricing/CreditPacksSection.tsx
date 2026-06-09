@@ -49,9 +49,9 @@ export function CreditPacksSection() {
       </div>
 
       <div
-        className="grid gap-4 max-w-5xl mx-auto"
+        className="grid gap-4 max-w-5xl mx-auto px-0 sm:px-0"
         style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 168px), 1fr))",
         }}
       >
         {CREDIT_PACKAGES.map((pkg) => {
@@ -103,7 +103,7 @@ export function CreditPacksSection() {
                 type="button"
                 disabled={loadingId !== null}
                 onClick={() => void handleCheckout(pkg.id)}
-                className="mt-auto w-full py-2.5 rounded-lg text-sm font-bold disabled:opacity-60"
+                className="mt-auto w-full min-h-[44px] py-2.5 rounded-lg text-sm font-bold disabled:opacity-60"
                 style={{
                   background: isPopular ? "#B4FF00" : "rgba(180,255,0,0.12)",
                   color: isPopular ? "#060608" : "#B4FF00",
@@ -111,12 +111,16 @@ export function CreditPacksSection() {
                   cursor: loadingId ? "default" : "pointer",
                 }}
               >
-                {loadingId === pkg.id ? "…" : t("buy_button")}
+                {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
               </button>
             </motion.div>
           );
         })}
       </div>
+
+      <p className="mt-8 text-center text-xs text-white/55 max-w-2xl mx-auto leading-relaxed">
+        {t("pricing_footnote")}
+      </p>
     </section>
   );
 }

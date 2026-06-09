@@ -155,7 +155,7 @@ export function BuyCreditsModal({
                   color: isPopular ? "#060608" : "#B4FF00",
                 }}
               >
-                {isLoading ? "…" : t("buy_button")}
+                {isLoading ? "…" : t("top_up_button", { count: pkg.credits })}
               </span>
             </motion.button>
           );
@@ -167,7 +167,7 @@ export function BuyCreditsModal({
       )}
 
       <div className="flex flex-wrap justify-center gap-4 mt-6 text-xs text-[rgba(255,255,255,0.65)]">
-        {[t("trust_instant"), t("trust_no_sub"), t("trust_no_expire")].map(
+        {[t("trust_instant"), t("trust_plan_required"), t("trust_no_expire")].map(
           (line) => (
             <span key={line} className="text-[#B4FF00]">
               ✓ {line}

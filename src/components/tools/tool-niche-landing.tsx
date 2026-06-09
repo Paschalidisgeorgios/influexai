@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FAQSection } from "@/components/faq-section";
+import { formatStarterFromPrice } from "@/lib/pricing";
 import { getToolFaqs } from "@/lib/guides/tool-faqs";
 import {
   FEATURES,
@@ -24,6 +25,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
   const benefits = getBenefitsForCombo(feature, niche);
   const related = getRelatedFeatures(feature, niche);
   const signupHref = `/auth/sign-up?source=tools-${feature}-${niche}`;
+  const starterPrice = formatStarterFromPrice("de");
 
   return (
     <main className="min-h-screen bg-[#060608] text-white">
@@ -61,7 +63,7 @@ export function ToolNicheLanding({ feature, niche }: Props) {
               href={signupHref}
               className="rounded-xl bg-[#B4FF00] px-8 py-3.5 text-sm font-semibold text-black hover:bg-[#c8ff33] active:scale-[0.98]"
             >
-              Jetzt starten — Credits ab €4,99
+              Jetzt starten — Starter-Plan ab €{starterPrice}
             </Link>
             <Link
               href={f.route}
@@ -153,7 +155,8 @@ export function ToolNicheLanding({ feature, niche }: Props) {
             Jetzt {f.nameDe} für {n.nameDe} ausprobieren
           </h2>
           <p className="mt-3 text-white/80">
-            Credits ab €4,99. Kein Abo-Zwang. Sofort im Dashboard nutzen.
+            Starter-Plan ab €{starterPrice}. Credits flexibel nutzen. Sofort im
+            Dashboard starten.
           </p>
           <Link
             href={signupHref}

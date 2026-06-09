@@ -15,6 +15,7 @@ type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
 
 export default function CreditsPage() {
   const t = useTranslations("credits");
+  const tBuy = useTranslations("buyCredits");
   const searchParams = useSearchParams();
   const preselect = searchParams.get("package") as CreditPackageId | null;
 
@@ -90,8 +91,9 @@ export default function CreditsPage() {
 
       {/* Header */}
       <div
+        className="credits-balance-card"
         style={{
-          padding: 28,
+          padding: "clamp(16px, 4vw, 28px)",
           borderRadius: 18,
           marginBottom: 24,
           background: "#0f0f12",
@@ -178,6 +180,40 @@ export default function CreditsPage() {
             }}
           />
         </div>
+      </div>
+
+      <div
+        style={{
+          marginBottom: 24,
+          padding: "16px 18px",
+          borderRadius: 14,
+          background: "rgba(180,255,0,0.04)",
+          border: "1px solid rgba(180,255,0,0.15)",
+        }}
+      >
+        <p
+          style={{
+            margin: "0 0 6px",
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            color: "#B4FF00",
+          }}
+        >
+          {tBuy("credit_outcome_title")}
+        </p>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.86rem",
+            color: "rgba(255,255,255,0.72)",
+            lineHeight: 1.55,
+            maxWidth: 560,
+          }}
+        >
+          {tBuy("credit_outcome_body")}
+        </p>
       </div>
 
       <CreditCalculator topFeatureType={stats?.topFeatureType} />
@@ -269,17 +305,28 @@ export default function CreditsPage() {
         </div>
       </div>
 
-      <div
-        style={{
-          fontSize: "0.75rem",
-          fontWeight: 700,
-          color: "rgba(255,255,255,0.65)",
-          textTransform: "uppercase",
-          letterSpacing: "0.08em",
-          marginBottom: 14,
-        }}
-      >
-        Pakete wählen
+      <div style={{ marginBottom: 20 }}>
+        <h2
+          style={{
+            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontSize: "1.75rem",
+            color: "#F0EFE8",
+            margin: "0 0 8px",
+          }}
+        >
+          {tBuy("pricing_title")}
+        </h2>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.88rem",
+            color: "rgba(255,255,255,0.65)",
+            lineHeight: 1.55,
+            maxWidth: 560,
+          }}
+        >
+          {tBuy("pricing_subtitle")}
+        </p>
       </div>
 
       <div
@@ -303,7 +350,7 @@ export default function CreditsPage() {
               data-testid="pricing-card"
               className={isPopular ? "credit-pack-card credit-pack-card--popular" : "credit-pack-card"}
               style={{
-                padding: isPopular ? 28 : 24,
+                padding: isPopular ? "clamp(20px, 4vw, 28px)" : "clamp(16px, 3.5vw, 24px)",
                 borderRadius: 18,
                 border: isPopular
                   ? "2px solid rgba(180,255,0,0.5)"
@@ -404,6 +451,7 @@ export default function CreditsPage() {
                 disabled={loading === pkg.id}
                 style={{
                   width: "100%",
+                  minHeight: 44,
                   padding: "12px",
                   borderRadius: 10,
                   border: "none",
@@ -420,7 +468,9 @@ export default function CreditsPage() {
                   fontFamily: "var(--font-dm), sans-serif",
                 }}
               >
-                {loading === pkg.id ? "Wird geladen…" : `Jetzt kaufen →`}
+                {loading === pkg.id
+                  ? "Wird geladen…"
+                  : tBuy("top_up_button", { count: pkg.credits })}
               </button>
             </div>
           );
@@ -440,11 +490,11 @@ export default function CreditsPage() {
         }}
       >
         {[
-          "Credits verfallen nicht — nutze sie wann du willst",
-          "Einmaliger Kauf — kein Abo, keine versteckten Kosten",
-          "Sofort nach Zahlung verfügbar",
-          "Sicher bezahlen mit Stripe",
-          "Server in Frankfurt 🇩🇪",
+          tBuy("trust_footer_no_expire"),
+          tBuy("trust_footer_one_time"),
+          tBuy("trust_footer_plan"),
+          tBuy("trust_footer_instant"),
+          tBuy("trust_footer_stripe"),
         ].map((line, i) => (
           <span
             key={line}
@@ -462,6 +512,21 @@ export default function CreditsPage() {
           </span>
         ))}
       </div>
+
+      <p
+        style={{
+          marginTop: 16,
+          fontSize: 12,
+          color: "rgba(255,255,255,0.5)",
+          textAlign: "center",
+          lineHeight: 1.55,
+          maxWidth: 640,
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        {tBuy("pricing_footnote")}
+      </p>
 
       {showBlock && (
         <div
@@ -511,6 +576,7 @@ export default function CreditsPage() {
                   disabled={!!loading}
                   style={{
                     padding: "12px",
+                    minHeight: 44,
                     borderRadius: 10,
                     border: pkg.popular
                       ? "none"

@@ -9,9 +9,9 @@ import {
   type KeyboardEvent,
   type FormEvent,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import type {
   AgentExecution,
-  AgentExecutionStep,
   AgentResult,
   AgentScores,
   AgentTool,
@@ -22,9 +22,15 @@ import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
+import { AgentPlanPreviewCard } from "@/components/dashboard/AgentPlanPreviewCard";
+import { AgentPlannerBlockedCard } from "@/components/dashboard/AgentPlannerBlockedCard";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { createClient } from "@/lib/supabase/client";
 import { openNoCreditsModal } from "@/lib/client-credits-ui";
+import type {
+  AgentPlanPreviewResponse,
+  AgentPlannerBlockedResponse,
+} from "@/lib/agent/plan-preview-types";
 
 type Phase = "idle" | "running" | "done";
 
@@ -39,39 +45,39 @@ type GuardCheck = {
   credits?: number;
 };
 
-type ToolOption = {
-  id: AgentTool | "auto";
-  label: string;
+const DETECTED_TOOL_LABELS: Record<AgentTool, string> = {
+  script_generator: "Script Generator",
+  produkt_werbung: "Produkt Werbung",
+  viral_hook_extraktor: "Viral Hook",
+  content_kalender: "Content Kalender",
+  image_generator: "Bild Generator",
+  ki_ich: "KI Avatar",
+  trend_script: "Trend Script",
+  thumbnail_concept: "Thumbnail",
+  stimme_musik: "Stimme & Musik",
+  live_creator: "Live Creator",
+  lora_training: "LoRA Training",
+  ki_agent: "KI Agent",
 };
 
-const TOOL_OPTIONS: ToolOption[] = [
-  { id: "auto", label: "Auto" },
-  { id: "script_generator", label: "Script Generator" },
-  { id: "produkt_werbung", label: "Produkt Werbung" },
-  { id: "viral_hook_extraktor", label: "Viral Hook" },
-  { id: "content_kalender", label: "Content Kalender" },
-  { id: "image_generator", label: "Bild Generator" },
-  { id: "ki_ich", label: "KI Avatar" },
-  { id: "trend_script", label: "Trend Script" },
-  { id: "thumbnail_concept", label: "Thumbnail" },
-  { id: "stimme_musik", label: "Stimme & Musik" },
-  { id: "live_creator", label: "Live Creator" },
-  { id: "lora_training", label: "LoRA Training" },
-];
-
-const TOOL_LABEL_BY_ID: Record<AgentTool | "auto", string> = Object.fromEntries(
-  TOOL_OPTIONS.map((t) => [t.id, t.label])
-) as Record<AgentTool | "auto", string>;
+function formatDetectedTools(tools: AgentTool[] | undefined): string {
+  if (!tools?.length) return "Automatisch erkannt";
+  return tools.map((tool) => DETECTED_TOOL_LABELS[tool] ?? tool).join(", ");
+}
 
 const NEXT_ACTION_LABELS: Record<string, string> = {
   mehr_varianten: "Mehr Varianten",
   in_kalender_uebernehmen: "In Kalender übernehmen",
   thumbnail_erstellen: "Thumbnail erstellen",
-  exportieren: "Exportieren",
 };
 
-const STEP_INTERVAL_MS = 320;
-const TOTAL_STEPS = 12;
+const UNAVAILABLE_NEXT_ACTIONS = new Set([
+  "exportieren",
+  "mehr_varianten",
+  "in_kalender_uebernehmen",
+  "thumbnail_erstellen",
+  "caption_schreiben",
+]);
 
 function fitPillStyle(level: "low" | "medium" | "high" | undefined) {
   if (level === "high") return { background: "#B4FF00", color: "#060608" };
@@ -109,41 +115,23 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   );
 }
 
-function getCompletedCount(steps: AgentExecutionStep[]) {
-  return steps.filter((s) => s.status === "completed").length;
-}
-
-function getActiveStep(steps: AgentExecutionStep[]) {
-  return steps.find((s) => s.status === "running") ?? steps.find((s) => s.status === "pending");
-}
-
-function getActiveToolLabel(
-  selectedTool: AgentTool | "auto",
-  execution: AgentExecution | null
-): string {
-  if (execution?.selectedTools[0]) {
-    return TOOL_LABEL_BY_ID[execution.selectedTools[0]] ?? execution.selectedTools[0];
-  }
-  if (selectedTool !== "auto") {
-    return TOOL_LABEL_BY_ID[selectedTool];
-  }
-  return "Auto";
-}
-
 export default function KiAgentPage() {
+  const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState("");
   const [execution, setExecution] = useState<AgentExecution | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
-  const [showToolPanel, setShowToolPanel] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<AgentTool | "auto">("auto");
   const [userCredits, setUserCredits] = useState<number | null>(null);
   const [creditError, setCreditError] = useState<string | null>(null);
   const [guard, setGuard] = useState<GuardState>(null);
+  const [planPreview, setPlanPreview] = useState<AgentPlanPreviewResponse | null>(
+    null
+  );
+  const [planPreviewLoading, setPlanPreviewLoading] = useState(false);
+  const [planPreviewError, setPlanPreviewError] = useState<string | null>(null);
+  const [plannerBlocked, setPlannerBlocked] =
+    useState<AgentPlannerBlockedResponse | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const stepIndexRef = useRef(0);
-  const lastPromptRef = useRef("");
 
   const adjustTextareaHeight = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -156,6 +144,11 @@ export default function KiAgentPage() {
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("prompt")?.trim();
+    if (fromUrl) setPrompt(fromUrl);
+  }, [searchParams]);
 
   useEffect(() => {
     adjustTextareaHeight(textareaRef.current);
@@ -190,32 +183,24 @@ export default function KiAgentPage() {
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  const clearRunner = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
   const runExecution = useCallback(
     async (trimmed: string) => {
-      clearRunner();
       setCreditError(null);
+      setPlanPreview(null);
+      setPlanPreviewError(null);
+      setPlannerBlocked(null);
+      setExecution(null);
+      setPhase("running");
 
       let data: {
-        execution: AgentExecution;
-        result: AgentResult;
-        usedCredits: number;
+        execution?: AgentExecution;
+        result?: AgentResult;
+        usedCredits?: number;
         remainingCredits?: number;
         error?: string;
         credits?: number;
         required?: number;
+        blockedByPlanner?: boolean;
       };
 
       try {
@@ -234,10 +219,24 @@ export default function KiAgentPage() {
             });
           }
           setCreditError(data.error ?? "Ausführung fehlgeschlagen.");
+          setPhase("idle");
+          return;
+        }
+
+        if (data.blockedByPlanner) {
+          setPlannerBlocked(data as AgentPlannerBlockedResponse);
+          setPhase("idle");
+          return;
+        }
+
+        if (!data.execution || !data.result) {
+          setCreditError("Ausführung fehlgeschlagen.");
+          setPhase("idle");
           return;
         }
       } catch {
         setCreditError("Netzwerkfehler. Bitte erneut versuchen.");
+        setPhase("idle");
         return;
       }
 
@@ -246,67 +245,50 @@ export default function KiAgentPage() {
       }
       window.dispatchEvent(new Event("credits-updated"));
 
-      const serverResult = data.result;
-      const usedCredits = data.usedCredits;
-
-      const next: AgentExecution = {
+      setExecution({
         ...data.execution,
-        status: "running",
-        result: undefined,
-        usedCredits: 0,
-        steps: data.execution.steps.map((step, i) => ({
-          ...step,
-          status: i === 0 ? ("running" as const) : ("pending" as const),
-        })),
-      };
-
-      lastPromptRef.current = trimmed;
-      stepIndexRef.current = 0;
-      setExecution(next);
-      setPhase("running");
-
-      intervalRef.current = setInterval(() => {
-        stepIndexRef.current += 1;
-        const current = stepIndexRef.current;
-
-        if (current >= TOTAL_STEPS) {
-          clearRunner();
-          setExecution((prev) => {
-            if (!prev || prev.status === "cancelled") return prev;
-
-            const finalSteps = prev.steps.map((step) => ({
-              ...step,
-              status: "completed" as const,
-            }));
-
-            return {
-              ...prev,
-              steps: finalSteps,
-              status: "completed",
-              result: serverResult,
-              usedCredits,
-              updatedAt: new Date().toISOString(),
-            };
-          });
-          setPhase("done");
-          return;
-        }
-
-        setExecution((prev) => {
-          if (!prev || prev.status === "cancelled") return prev;
-
-          const steps = prev.steps.map((step, i) => {
-            if (i < current) return { ...step, status: "completed" as const };
-            if (i === current) return { ...step, status: "running" as const };
-            return { ...step, status: "pending" as const };
-          });
-
-          return { ...prev, steps, updatedAt: new Date().toISOString() };
-        });
-      }, STEP_INTERVAL_MS);
+        status: "completed",
+        result: data.result,
+        usedCredits: data.usedCredits ?? 0,
+        updatedAt: new Date().toISOString(),
+      });
+      setPhase("done");
     },
     [userCredits]
   );
+
+  const fetchPlanPreview = useCallback(async () => {
+    const trimmed = prompt.trim();
+    if (!trimmed || phase === "running") return;
+
+    setPlanPreviewLoading(true);
+    setPlanPreviewError(null);
+    setPlannerBlocked(null);
+
+    try {
+      const res = await fetch("/api/agent/plan-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: trimmed, locale: "de" }),
+      });
+      const data = (await res.json()) as AgentPlanPreviewResponse & {
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setPlanPreview(null);
+        setPlanPreviewError(data.error ?? "Plan-Vorschau fehlgeschlagen.");
+        return;
+      }
+
+      setPlanPreview(data);
+    } catch {
+      setPlanPreview(null);
+      setPlanPreviewError("Netzwerkfehler bei der Plan-Vorschau.");
+    } finally {
+      setPlanPreviewLoading(false);
+    }
+  }, [phase, prompt]);
 
   const runWithGuards = useCallback(
     (checks: GuardCheck[], finalAction: () => void) => {
@@ -345,53 +327,13 @@ export default function KiAgentPage() {
     execution?.estimatedCredits ?? billingEstimate?.typical ?? 0;
 
   const buildStartGuardChecks = useCallback((): GuardCheck[] => {
-    const checks: GuardCheck[] = [];
-    if (selectedTool === "ki_ich") {
-      checks.push({ action: "avatar_from_face" });
-    }
-    if (selectedTool === "stimme_musik") {
-      checks.push({ action: "voice_cloning" });
-    }
-    if (selectedTool === "live_creator") {
-      checks.push({ action: "face_swap" });
-    }
-    checks.push({
-      action: "agent_run",
-      credits: billingEstimate?.max ?? estimatedCredits,
-    });
-    return checks;
-  }, [billingEstimate, estimatedCredits, selectedTool]);
-
-  const handlePublishRequest = useCallback(
-    (result: AgentResult) => {
-      const checks: GuardCheck[] = [{ action: "publish_public" }];
-      if (result.scores?.riskLevel === "high") {
-        checks.push({ action: "legal_high" });
-      }
-      runWithGuards(checks, () => {
-        // TODO: GUARD publishing — API-Anbindung folgt
-      });
-    },
-    [runWithGuards]
-  );
-
-  const handleAbort = () => {
-    clearRunner();
-    setExecution((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        status: "cancelled",
-        steps: prev.steps.map((step) =>
-          step.status === "running"
-            ? { ...step, status: "skipped" as const }
-            : step
-        ),
-        updatedAt: new Date().toISOString(),
-      };
-    });
-    setPhase("idle");
-  };
+    return [
+      {
+        action: "agent_run",
+        credits: billingEstimate?.max ?? estimatedCredits,
+      },
+    ];
+  }, [billingEstimate, estimatedCredits]);
 
   const handleSubmit = useCallback(() => {
     const trimmed = prompt.trim();
@@ -410,25 +352,12 @@ export default function KiAgentPage() {
     runWithGuards,
   ]);
 
-  const handleRetry = () => {
-    if (!lastPromptRef.current || phase === "running") return;
-    setExecution(null);
-    setPhase("idle");
-    runExecution(lastPromptRef.current);
-  };
-
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSubmit();
     }
   };
-
-  const completedSteps = execution ? getCompletedCount(execution.steps) : 0;
-  const progressPct = (completedSteps / TOTAL_STEPS) * 100;
-  const activeStep = execution ? getActiveStep(execution.steps) : null;
-  const showExecution = execution !== null;
-  const executionVisible = phase === "running" || phase === "done" || execution?.status === "cancelled";
 
   return (
     <div
@@ -452,9 +381,20 @@ export default function KiAgentPage() {
           className="mt-2 text-[0.9rem] leading-[1.65]"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
-          Intent erkennen, Tools orchestrieren, Ergebnis mit Scores liefern.
+          Beschreibe dein Ziel — der Agent erkennt das passende Tool und führt
+          es nach deiner Bestätigung aus.
         </p>
       </header>
+
+      <p
+        className="mb-4 text-[0.78rem] leading-[1.55]"
+        style={{ color: "rgba(255,255,255,0.45)" }}
+      >
+        <strong className="font-semibold text-white/55">Plan-Vorschau</strong>{" "}
+        ist kostenlos und startet keine Generierung. Mit{" "}
+        <strong className="font-semibold text-white/55">Ausführen</strong>{" "}
+        startest du die echte Tool-Ausführung (Credits werden abgezogen).
+      </p>
 
       {/* Command Bar */}
       <div
@@ -487,24 +427,9 @@ export default function KiAgentPage() {
           }}
         />
 
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <button
-            type="button"
-            aria-label="Tools"
-            onClick={() => setShowToolPanel((v) => !v)}
-            className="flex shrink-0 items-center justify-center text-[15px] font-semibold leading-none transition-colors hover:text-[#B4FF00] min-h-[44px] min-w-[44px]"
-            style={{
-              borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.14)",
-              color: "rgba(255,255,255,0.7)",
-              background: "transparent",
-            }}
-          >
-            +
-          </button>
-
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-2.5">
           <span
-            className="shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
+            className="hidden min-[360px]:inline shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
             style={{
               borderRadius: 4,
               background: "rgba(180,255,0,0.12)",
@@ -512,32 +437,42 @@ export default function KiAgentPage() {
               color: "#B4FF00",
             }}
           >
-            {getActiveToolLabel(selectedTool, execution)}
-          </span>
-
-          <span
-            className="flex shrink-0 items-center gap-1.5 px-2 py-0.5 text-[11px] font-semibold leading-none"
-            style={{
-              borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.65)",
-            }}
-          >
-            <span
-              className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
-              style={{ background: "#B4FF00" }}
-            />
-            Agent
+            Auto-Erkennung
           </span>
 
           <span className="flex-1" aria-hidden />
 
           <button
             type="button"
+            disabled={phase === "running" || planPreviewLoading || !prompt.trim()}
+            onClick={() => void fetchPlanPreview()}
+            title="Keine Credits · keine Ausführung"
+            className="flex shrink-0 min-h-[44px] flex-col items-center justify-center px-3 py-1.5 text-[11px] sm:text-xs font-semibold leading-tight transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            style={{
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.14)",
+              color: "rgba(255,255,255,0.75)",
+              background: "transparent",
+            }}
+          >
+            <span>{planPreviewLoading ? "Plan…" : "Plan-Vorschau"}</span>
+            {!planPreviewLoading && (
+              <span
+                className="text-[9px] font-normal"
+                style={{ color: "rgba(255,255,255,0.42)" }}
+              >
+                Kostenlos prüfen
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
             disabled={phase === "running"}
             onClick={handleSubmit}
-            aria-label="Senden"
-            className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
+            aria-label="Ausführen — echte Ausführung, Credits werden abgezogen"
+            title="Echte Ausführung — Credits werden abgezogen"
+            className="flex shrink-0 min-h-[44px] flex-col items-center justify-center px-3 py-1.5 text-[11px] sm:text-xs font-semibold leading-tight transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               borderRadius: 4,
               background: "#B4FF00",
@@ -545,30 +480,47 @@ export default function KiAgentPage() {
               pointerEvents: !prompt.trim() || phase === "running" ? "none" : "auto",
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path
-                d="M2 7h10M8 3l4 4-4 4"
-                stroke="#060608"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <span className="font-bold" style={{ color: "#060608" }}>
+              Ausführen
+            </span>
+            <span
+              className="text-[9px] font-normal"
+              style={{ color: "rgba(6,6,8,0.55)" }}
+            >
+              Credits nutzen
+            </span>
           </button>
         </div>
       </div>
 
+      <p
+        className="mt-1.5 text-center text-[10px] leading-[1.45] sm:text-[11px]"
+        style={{ color: "rgba(255,255,255,0.38)" }}
+      >
+        Plan-Vorschau ist kostenlos und startet keine Generierung.
+      </p>
+
       {phase === "idle" && prompt.trim() && billingEstimate && (
         <div className="mt-1.5 space-y-1">
-          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.38)" }}>
+          <p className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.38)" }}>
             Schätzung: {billingEstimate.label} — abhängig vom erkannten Tool
           </p>
-          <p className="text-[10px] leading-[1.45]" style={{ color: "rgba(255,255,255,0.32)" }}>
+          <p className="text-[11px] sm:text-xs leading-[1.45]" style={{ color: "rgba(255,255,255,0.32)" }}>
             Credits werden von den ausgeführten Tools abgezogen, keine separate
             Agent-Gebühr.
           </p>
         </div>
       )}
+
+      {planPreviewError && (
+        <p className="mt-2 text-[11px]" style={{ color: "#ff6b7a" }}>
+          {planPreviewError}
+        </p>
+      )}
+
+      {planPreview && <AgentPlanPreviewCard preview={planPreview} />}
+
+      {plannerBlocked && <AgentPlannerBlockedCard blocked={plannerBlocked} />}
 
       {creditError && (
         <p className="mt-2 text-[11px]" style={{ color: "#ff6b7a" }}>
@@ -576,167 +528,57 @@ export default function KiAgentPage() {
         </p>
       )}
 
-      {/* Tool Panel */}
-      <div
-        className="overflow-hidden transition-[opacity,max-height] duration-300 ease-out"
-        style={{
-          opacity: showToolPanel ? 1 : 0,
-          maxHeight: showToolPanel ? 220 : 0,
-          marginTop: showToolPanel ? 10 : 0,
-          pointerEvents: showToolPanel ? "auto" : "none",
-        }}
-      >
+      {phase === "running" && (
         <div
-          className="flex flex-wrap gap-1.5 p-3"
+          className="mt-6 p-4"
           style={{
             borderRadius: 4,
             background: "#0f0f12",
             border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
-          {TOOL_OPTIONS.map((tool) => {
-            const active = selectedTool === tool.id;
-            return (
-              <button
-                key={tool.id}
-                type="button"
-                onClick={() => setSelectedTool(tool.id)}
-                className="min-h-[44px] px-3 py-2 text-xs font-semibold transition-colors"
-                style={{
-                  borderRadius: 4,
-                  border: active
-                    ? "1px solid rgba(180,255,0,0.45)"
-                    : "1px solid rgba(255,255,255,0.1)",
-                  background: active ? "rgba(180,255,0,0.1)" : "transparent",
-                  color: active ? "#B4FF00" : "rgba(255,255,255,0.55)",
-                }}
-              >
-                {tool.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Execution Area */}
-      {showExecution && (
-        <div
-          className="mt-6 transition-opacity duration-300 ease-out"
-          style={{
-            opacity: executionVisible ? 1 : 0,
-            pointerEvents: executionVisible ? "auto" : "none",
-          }}
-        >
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <span
-              className="text-[10px] font-bold uppercase tracking-[0.14em]"
-              style={{
-                color: "rgba(255,255,255,0.45)",
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              }}
-            >
-              AUSFÜHRUNG
-            </span>
-            <span className="text-[11px] font-semibold" style={{ color: "#B4FF00" }}>
-              {completedSteps} / {TOTAL_STEPS}
-            </span>
-          </div>
-
+          <p
+            className="text-[10px] font-bold uppercase tracking-[0.14em]"
+            style={{
+              color: "rgba(255,255,255,0.45)",
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            }}
+          >
+            Ladezustand
+          </p>
+          <p
+            className="mt-3 text-[0.85rem] font-medium"
+            style={{ color: "rgba(255,255,255,0.82)" }}
+          >
+            Aufgabe wird analysiert, passendes Tool wird ausgewählt und
+            ausgeführt…
+          </p>
+          <p
+            className="mt-2 text-[0.72rem] leading-[1.5]"
+            style={{ color: "rgba(255,255,255,0.42)" }}
+          >
+            Keine autonome Planung oder Recherche — automatische Tool-Zuordnung
+            per Keyword-Erkennung.
+          </p>
           <div
-            className="mb-3 h-1 w-full overflow-hidden"
+            className="mt-4 h-1 w-full overflow-hidden"
             style={{ background: "rgba(255,255,255,0.07)" }}
           >
             <div
-              className="h-full transition-[width] duration-[350ms] ease-out"
-              style={{ width: `${progressPct}%`, background: "#B4FF00" }}
+              className="h-full w-1/3 animate-pulse"
+              style={{ background: "#B4FF00" }}
             />
           </div>
-
-          <p
-            className="mb-3 uppercase tracking-[0.08em]"
-            style={{ fontSize: 10, color: "rgba(180,255,0,0.75)" }}
-          >
-            {activeStep?.label ?? "—"}
-          </p>
-
-          <div
-            className="mb-4 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4"
-            style={{ borderRadius: 2 }}
-          >
-            {execution?.steps.map((step) => {
-              const isActive = step.status === "running";
-              const isDone = step.status === "completed";
-              const isFailed = step.status === "failed";
-
-              return (
-                <div
-                  key={step.id}
-                  className="flex min-h-[52px] flex-col justify-center px-2 py-1.5"
-                  style={{
-                    borderRadius: 2,
-                    border: isActive
-                      ? "1px solid rgba(180,255,0,0.35)"
-                      : "1px solid rgba(255,255,255,0.06)",
-                    background: isActive
-                      ? "rgba(180,255,0,0.08)"
-                      : isDone
-                        ? "rgba(180,255,0,0.04)"
-                        : "transparent",
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-1">
-                    <span
-                      className="text-[11px] leading-[1.35] sm:text-xs"
-                      style={{
-                        color: isActive
-                          ? "#B4FF00"
-                          : isDone
-                            ? "rgba(180,255,0,0.45)"
-                            : isFailed
-                              ? "rgba(255,80,80,0.7)"
-                              : "rgba(255,255,255,0.28)",
-                      }}
-                    >
-                      {step.label}
-                    </span>
-                    {isFailed && (
-                      <button
-                        type="button"
-                        onClick={handleRetry}
-                        className="shrink-0 text-[9px] underline"
-                        style={{ color: "rgba(255,100,100,0.85)" }}
-                      >
-                        Retry
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {phase === "running" && (
-            <button
-              type="button"
-              onClick={handleAbort}
-              className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(255,80,80,0.4)] hover:text-[rgba(255,100,100,0.7)]"
-              style={{
-                borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "rgba(255,255,255,0.38)",
-                background: "transparent",
-              }}
-            >
-              Abbrechen
-            </button>
-          )}
-
-          {execution?.status === "cancelled" && (
-            <p className="mt-2 text-[11px]" style={{ color: "rgba(255,255,255,0.45)" }}>
-              Ausführung abgebrochen.
-            </p>
-          )}
         </div>
+      )}
+
+      {phase === "done" && execution && (
+        <p
+          className="mt-4 text-[11px] font-semibold"
+          style={{ color: "rgba(180,255,0,0.85)" }}
+        >
+          Genutztes Tool: {formatDetectedTools(execution.selectedTools)}
+        </p>
       )}
 
       {/* Result Card */}
@@ -748,7 +590,6 @@ export default function KiAgentPage() {
             executionId={execution.id}
             tool={execution.selectedTools[0]}
             intent={execution.intent}
-            onPublish={() => handlePublishRequest(execution.result!)}
           />
           <AiOutputDisclaimer className="mt-4" />
         </>
@@ -775,20 +616,20 @@ export default function KiAgentPage() {
 function ResultCard({
   result,
   usedCredits,
-  onPublish,
   executionId,
   tool,
   intent,
 }: {
   result: AgentResult;
   usedCredits?: number;
-  onPublish: () => void;
   executionId?: string;
   tool?: string;
   intent?: string;
 }) {
   const scores: AgentScores = result.scores ?? {};
-  const nextActions = result.nextActions ?? [];
+  const nextActions = (result.nextActions ?? []).filter(
+    (action) => !UNAVAILABLE_NEXT_ACTIONS.has(action)
+  );
 
   return (
     <div
@@ -923,37 +764,27 @@ function ResultCard({
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {nextActions.map((action) => (
-              <button
-                key={action}
-                type="button"
-                className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
-                style={{
-                  borderRadius: 4,
-                  border: "1px solid #B4FF00",
-                  color: "#B4FF00",
-                  background: "transparent",
-                }}
-              >
-                {NEXT_ACTION_LABELS[action] ?? action}
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={onPublish}
-            className="mt-3 px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(180,255,0,0.45)] hover:text-[#B4FF00]"
-            style={{
-              borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.55)",
-              background: "transparent",
-            }}
-          >
-            Veröffentlichen — Bestätigung erforderlich
-          </button>
+          {nextActions.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {nextActions.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  disabled
+                  title="Noch nicht verfügbar"
+                  className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
+                  style={{
+                    borderRadius: 4,
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: "rgba(255,255,255,0.45)",
+                    background: "transparent",
+                  }}
+                >
+                  {NEXT_ACTION_LABELS[action] ?? action} (bald)
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

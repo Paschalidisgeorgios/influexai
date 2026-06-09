@@ -21,6 +21,11 @@ import type {
 } from "@/lib/agent/types";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { CAMPAIGN_AUTOPILOT_IS_PREVIEW } from "@/lib/agent/campaignPlanner";
+import {
+  buildPlannerBlockedPayload,
+  evaluatePlannerGuard,
+  isBlockingPlannerDecision,
+} from "@/lib/agent/planner-guard";
 import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
@@ -208,13 +213,32 @@ export async function POST(request: Request) {
     });
   }
 
-  const exec = createExecution(prompt);
-  const billingEstimate = estimateKiAgentOrchestrateCredits(exec.intent);
   const authCookie = request.headers.get("cookie") ?? "";
 
-  const access = await assertKiToolAccess(billingEstimate.max);
+  const access = await assertKiToolAccess(0);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
+
+  let availableCredits: number | undefined;
+  const { data: profileBefore } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", userId)
+    .maybeSingle();
+  if (typeof profileBefore?.credits === "number") {
+    availableCredits = profileBefore.credits;
+  }
+
+  const plan = evaluatePlannerGuard(prompt, availableCredits);
+  if (isBlockingPlannerDecision(plan.decision)) {
+    return NextResponse.json(buildPlannerBlockedPayload(plan));
+  }
+
+  const exec = createExecution(prompt);
+  const billingEstimate = estimateKiAgentOrchestrateCredits(exec.intent);
+
+  const creditAccess = await assertKiToolAccess(billingEstimate.max);
+  if (creditAccess instanceof NextResponse) return creditAccess;
 
   const execWithUser = {
     ...exec,

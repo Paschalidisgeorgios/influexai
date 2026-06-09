@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { GalleryMediaItem } from "@/lib/gallery-media";
+import type { GalleryMediaItem } from "@/lib/gallery-media-client";
+import {
+  downloadImageFromUrl,
+  downloadVideoFromUrl,
+  openImageInNewTab,
+  openVideoInNewTab,
+} from "@/lib/image-result-actions";
 
 type GalleryLightboxProps = {
   items: GalleryMediaItem[];
@@ -162,15 +168,33 @@ export function GalleryLightbox({
           />
         )}
 
-        <div className="mt-3 flex justify-end">
-          <a
-            href={current.src}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] no-underline hover:bg-[#B4FF00]/10"
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (current.kind === "video") {
+                openVideoInNewTab(current.src);
+              } else {
+                openImageInNewTab(current.src);
+              }
+            }}
+            className="min-h-[44px] rounded-lg border border-white/12 px-3 py-2 text-xs font-semibold text-[#F0EFE8] hover:border-[#B4FF00]/35"
           >
-            Neuer Tab
-          </a>
+            {current.kind === "video" ? "Video öffnen" : "In neuem Tab öffnen"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (current.kind === "video") {
+                void downloadVideoFromUrl(current.src);
+              } else {
+                void downloadImageFromUrl(current.src);
+              }
+            }}
+            className="min-h-[44px] rounded-lg border border-[#B4FF00]/35 px-3 py-2 text-xs font-semibold text-[#B4FF00] hover:bg-[#B4FF00]/10"
+          >
+            {current.kind === "video" ? "Video herunterladen" : "Herunterladen"}
+          </button>
         </div>
       </div>
     </div>

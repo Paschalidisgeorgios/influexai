@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowUp, Loader2, Paperclip } from "lucide-react";
 import { saveAgentRun } from "@/app/actions/save-agent-run";
@@ -32,8 +33,16 @@ type Estimate = {
   label: string;
 };
 
+type ChipGroup = {
+  label: string;
+  chips: string[];
+};
+
 type Props = {
-  suggestedPrompts: string[];
+  /** @deprecated use chipGroups */
+  suggestedPrompts?: string[];
+  featuredPrompts?: string[];
+  chipGroups?: ChipGroup[];
 };
 
 function greetingKey(): "greeting_morning" | "greeting_day" | "greeting_evening" {
@@ -113,7 +122,11 @@ function hasGalleryMedia(outputs: AgentOutputs): boolean {
   );
 }
 
-export function MasterAgentChat({ suggestedPrompts }: Props) {
+export function MasterAgentChat({
+  suggestedPrompts = [],
+  featuredPrompts = [],
+  chipGroups = [],
+}: Props) {
   const t = useTranslations("agent");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -471,23 +484,84 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
       {creditHint && !compact && (
         <p className="mt-2 text-center text-xs text-white/50">{creditHint}</p>
       )}
+      {!compact && isEmpty && (
+        <p className="mt-1.5 text-center text-[10px] leading-snug text-white/38 sm:text-[11px]">
+          {t("plan_preview_routing_hint")}
+        </p>
+      )}
     </form>
   );
 
-  const quickActionChips = (
-    <div className="mt-3 grid w-full max-w-md grid-cols-2 gap-3 mx-auto min-w-0 sm:mt-4">
-      {suggestedPrompts.map((chip) => (
-        <button
-          key={chip}
-          type="button"
-          disabled={running}
-          onClick={() => void handleSubmit(chip)}
-          className="flex h-12 min-h-0 items-center justify-center rounded-full border border-white/[0.15] px-3 text-[15px] font-medium leading-tight text-white/70 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40 sm:text-[13px]"
-          style={{ borderWidth: "0.5px" }}
-        >
-          <span className="line-clamp-2 text-center">{chip}</span>
-        </button>
+  const resolvedChipGroups: ChipGroup[] =
+    chipGroups.length > 0
+      ? chipGroups
+      : suggestedPrompts.length > 0
+        ? [{ label: t("group_quick_start"), chips: suggestedPrompts }]
+        : [];
+
+  const kiAgentHref = (prompt?: string) =>
+    prompt
+      ? `/dashboard/ki-agent?prompt=${encodeURIComponent(prompt)}`
+      : "/dashboard/ki-agent";
+
+  const quickActionChips = resolvedChipGroups.length > 0 && (
+    <div className="mt-4 w-full max-w-md mx-auto min-w-0 space-y-3 sm:mt-5">
+      {resolvedChipGroups.map((group) => (
+        <div key={group.label}>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white/40">
+            {group.label}
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+            {group.chips.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                disabled={running}
+                onClick={() => void handleSubmit(chip)}
+                title={t("execute_hint")}
+                className="flex h-12 min-h-[44px] items-center justify-center rounded-full border border-white/[0.15] px-3 text-[14px] font-medium leading-tight text-white/70 hover:border-[var(--accent,#B4FF00)]/35 hover:text-[var(--accent,#B4FF00)] transition-colors disabled:opacity-40 sm:text-[13px]"
+                style={{ borderWidth: "0.5px" }}
+              >
+                <span className="line-clamp-2 text-center">{chip}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       ))}
+      <p className="text-center text-[10px] text-white/35">{t("execute_hint")}</p>
+    </div>
+  );
+
+  const featuredPromptSection = featuredPrompts.length > 0 && (
+    <div className="mt-4 w-full min-w-0">
+      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[#B4FF00]/70">
+        {t("featured_prompts_label")}
+      </p>
+      <div className="flex flex-col gap-2">
+        {featuredPrompts.map((prompt) => (
+          <Link
+            key={prompt}
+            href={kiAgentHref(prompt)}
+            className="block rounded-lg border border-white/[0.1] bg-white/[0.03] px-3 py-2.5 text-left text-[13px] leading-snug text-white/75 transition-colors hover:border-[#B4FF00]/30 hover:text-[#F0EFE8] sm:text-sm"
+          >
+            {prompt}
+          </Link>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link
+          href={kiAgentHref()}
+          className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-[#B4FF00] px-4 py-2 text-[12px] font-bold text-[#060608] transition-opacity hover:brightness-105 sm:text-[13px]"
+        >
+          {t("cta_plan_preview")}
+        </Link>
+        <Link
+          href={kiAgentHref()}
+          className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-white/[0.14] px-4 py-2 text-[12px] font-semibold text-white/75 transition-colors hover:border-[#B4FF00]/35 hover:text-[#B4FF00] sm:text-[13px]"
+        >
+          {t("cta_ki_agent")}
+        </Link>
+      </div>
     </div>
   );
 
@@ -520,9 +594,31 @@ export function MasterAgentChat({ suggestedPrompts }: Props) {
                   <h1 className="mt-0.5 text-xl font-bold text-[#F0EFE8] leading-tight sm:mt-1 sm:text-2xl md:text-3xl">
                     {t("hero_headline")}
                   </h1>
+                  <p className="mt-2 text-sm leading-relaxed text-white/55 sm:text-[0.9rem]">
+                    {t("hero_subline")}
+                  </p>
                 </div>
               </div>
+
+              <div
+                className="mb-4 rounded-xl border border-[#B4FF00]/20 bg-[#B4FF00]/[0.04] px-4 py-3"
+              >
+                <p className="text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]">
+                  {t("quick_win_title")}
+                </p>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-white/70 sm:text-sm">
+                  {t("quick_win_body")}
+                </p>
+                <Link
+                  href={kiAgentHref()}
+                  className="mt-3 inline-flex min-h-[44px] items-center text-[12px] font-bold text-[#B4FF00] underline-offset-2 hover:underline sm:text-[13px]"
+                >
+                  {t("cta_free_plan")} →
+                </Link>
+              </div>
+
               {renderInputForm(false)}
+              {featuredPromptSection}
               {quickActionChips}
             </div>
           </div>
