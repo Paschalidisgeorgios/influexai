@@ -153,7 +153,8 @@ export function ToolNicheLanding({ feature, niche }: Props) {
             Jetzt {f.nameDe} für {n.nameDe} ausprobieren
           </h2>
           <p className="mt-3 text-white/80">
-            Credits ab €4,99. Kein Abo-Zwang. Sofort im Dashboard nutzen.
+            Credits ab €4,99. Plan aktivieren, Credits flexibel nutzen. Sofort im
+            Dashboard nutzen.
           </p>
           <Link
             href={signupHref}
