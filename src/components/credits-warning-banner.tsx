@@ -10,19 +10,20 @@ import { openBuyCreditsModal } from "@/lib/client-credits-ui";
 type BannerTier = "low" | "critical";
 
 function getTier(credits: number): BannerTier | null {
-  if (credits === 0) return null;
+  if (credits >= 10) return null;
+  if (credits === 0) return "critical";
   if (credits < 5) return "critical";
-  if (credits < 20) return "low";
-  return null;
+  return "low";
 }
 
 const DISMISS_KEY = "influexai_credits_banner_dismissed";
 
 type Props = {
   credits: number;
+  isAdmin?: boolean;
 };
 
-export function CreditsWarningBanner({ credits }: Props) {
+export function CreditsWarningBanner({ credits, isAdmin = false }: Props) {
   const t = useTranslations("buyCredits");
   const tier = getTier(credits);
   const [dismissedTier, setDismissedTier] = useState<string | null>(null);
@@ -56,6 +57,7 @@ export function CreditsWarningBanner({ credits }: Props) {
     }
   }, [tier]);
 
+  if (isAdmin) return null;
   if (creditExempt === null || creditExempt) return null;
   if (!tier) return null;
   if (dismissedTier === tier) return null;

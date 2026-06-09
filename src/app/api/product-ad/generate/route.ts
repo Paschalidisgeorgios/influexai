@@ -18,6 +18,7 @@ import {
   scriptToDisplayText,
   type ProductAdScript,
 } from "@/lib/product-ad-script";
+import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
 import { generateKlingProductVideo, parseFalVideoError } from "@/lib/fal-video";
 import {
   configureFalClient,
@@ -114,26 +115,36 @@ async function runSingleGeneration(
     falImageUrl =
       params.falImageUrl ?? (await resolveImageUrl(params.imageUrl));
   } else {
-    const [scriptResult, resolvedImageUrl] = await Promise.all([
-      generateProductAdScript({
-        productName: params.productName,
-        productDescription: params.productDescription,
-        audience: params.audience,
-        platform: params.platform,
-        style: params.style,
-        language: params.language,
-        ctaText: params.ctaText,
-        variationFocus: params.variationFocus,
+    const scriptInput = {
+      productName: params.productName,
+      productDescription: params.productDescription,
+      audience: params.audience,
+      platform: params.platform,
+      style: params.style,
+      language: params.language,
+      ctaText: params.ctaText,
+      variationFocus: params.variationFocus,
+    };
+
+    const [picked, resolvedImageUrl] = await Promise.all([
+      selectOutputWithQualityRetry({
+        toolName: "product-ad",
+        userGoal: `${params.productName} · ${params.audience} · ${params.platform}`,
+        toOutputText: scriptToDisplayText,
+        generate: async (retryHint) => {
+          const scriptResult = await generateProductAdScript(scriptInput, retryHint);
+          if (!scriptResult.ok) {
+            throw new Error(scriptResult.error);
+          }
+          return scriptResult.script;
+        },
       }),
       params.falImageUrl
         ? Promise.resolve(params.falImageUrl)
         : resolveImageUrl(params.imageUrl),
     ]);
 
-    if (!scriptResult.ok) {
-      throw new Error(scriptResult.error);
-    }
-    script = scriptResult.script;
+    script = picked.value;
     falImageUrl = resolvedImageUrl;
   }
 

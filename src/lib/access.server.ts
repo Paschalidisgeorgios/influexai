@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { hasActivePlan, type AccessUser, type PlanTier } from "@/lib/access";
+import { getAgencyWorkspaceAccess } from "@/lib/agency-access.server";
 import { hasEnoughCredits } from "@/lib/credits";
 import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -84,16 +85,19 @@ async function resolveAuthenticatedAccess(): Promise<
   }
 
   if (!hasActivePlan(accessUser)) {
-    return {
-      ok: false,
-      status: 403,
-      body: featureAccessErrorBody({
+    const agencyAccess = await getAgencyWorkspaceAccess(user.id);
+    if (!agencyAccess.hasActiveTenantMembership) {
+      return {
         ok: false,
         status: 403,
-        error: NO_PLAN_ERROR,
-        requiredPlan: "starter",
-      }),
-    };
+        body: featureAccessErrorBody({
+          ok: false,
+          status: 403,
+          error: NO_PLAN_ERROR,
+          requiredPlan: "starter",
+        }),
+      };
+    }
   }
 
   return {

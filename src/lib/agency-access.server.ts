@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   AGENCY_WORKSPACE_PREFIXES,
   agencyWorkspaceAccessFromRows,
+  hasActiveTenantMembershipFromRows,
   isAgencyWorkspacePath,
   isDashboardSettingsPath,
   resolveAgencyWorkspaceTarget,
@@ -32,20 +33,46 @@ export async function getAgencyWorkspaceAccess(
 
   const { data: profile } = await service
     .from("profiles")
-    .select("agency_plan")
+    .select("agency_plan, tenant_id")
     .eq("id", userId)
     .maybeSingle();
 
-  const { data: tenantRow } = await service
+  const { data: ownedTenantRow } = await service
     .from("tenants")
     .select(TENANT_SELECT)
     .eq("owner_id", userId)
     .maybeSingle();
 
-  return agencyWorkspaceAccessFromRows(
+  const base = agencyWorkspaceAccessFromRows(
     profile?.agency_plan,
-    tenantRow as Tenant | null
+    ownedTenantRow as Tenant | null
   );
+
+  let membershipTenant: { is_active: boolean; deactivated_at: string | null } | null =
+    (ownedTenantRow as Tenant | null) ?? null;
+
+  if (profile?.tenant_id) {
+    if (ownedTenantRow?.id === profile.tenant_id) {
+      membershipTenant = ownedTenantRow as Tenant;
+    } else {
+      const { data: memberTenant } = await service
+        .from("tenants")
+        .select("id, is_active, deactivated_at")
+        .eq("id", profile.tenant_id)
+        .maybeSingle();
+      membershipTenant = memberTenant;
+    }
+  }
+
+  const hasActiveTenantMembership = hasActiveTenantMembershipFromRows(
+    profile?.tenant_id,
+    membershipTenant
+  );
+
+  return {
+    ...base,
+    hasActiveTenantMembership,
+  };
 }
 
 export type AgencyOnlyDashboardDecision =
@@ -63,6 +90,10 @@ export async function resolveAgencyOnlyDashboardAccess(
   }
 
   const access = await getAgencyWorkspaceAccess(userId, serviceClient);
+
+  if (access.hasActiveTenantMembership) {
+    return { action: "allow" };
+  }
 
   if (!access.hasAgencyWorkspaceAccess) {
     return { action: "redirect", target: "/pricing" };

@@ -4,6 +4,7 @@ import { assertKiToolAccess } from "@/lib/access.server";
 import { addCredits, deductCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
 import { fetchTrendingVideos } from "@/lib/youtube";
 import {
   buildTrendScriptToolUserPrompt,
@@ -125,28 +126,40 @@ export async function POST(request: Request) {
     );
   }
 
-  const claude = await createAnthropicMessage({
-    system: TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
-    user: buildTrendScriptToolUserPrompt({ thema, plattform, trends }),
-    maxTokens: 4096,
-  });
+  const trendParams = { thema, plattform, trends };
 
-  if (!claude.ok) {
-    await refundTrendScriptCredits(supabase, userId);
-    return NextResponse.json(
-      { success: false, error: claude.error },
-      { status: 503 }
-    );
+  async function generateScript(retryHint?: string): Promise<string> {
+    const claude = await createAnthropicMessage({
+      system: TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
+      user: buildTrendScriptToolUserPrompt(trendParams, retryHint),
+      maxTokens: 4096,
+    });
+
+    if (!claude.ok) {
+      throw new Error(claude.error);
+    }
+
+    return parseTrendScriptToolResult(claude.text);
   }
 
   let script: string;
   try {
-    script = parseTrendScriptToolResult(claude.text);
+    const picked = await selectOutputWithQualityRetry({
+      toolName: "trend-script",
+      userGoal: `${thema} · ${plattform}`,
+      toOutputText: (value) => value,
+      generate: generateScript,
+    });
+    script = picked.value;
   } catch (e) {
-    console.error("[trend-script] parse:", e);
+    console.error("[trend-script] generate:", e);
     await refundTrendScriptCredits(supabase, userId);
     return NextResponse.json(
-      { success: false, error: "KI-Antwort konnte nicht gelesen werden." },
+      {
+        success: false,
+        error:
+          e instanceof Error ? e.message : "KI-Antwort konnte nicht gelesen werden.",
+      },
       { status: 500 }
     );
   }

@@ -6,6 +6,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import { runCompetitorAnalysis } from "@/lib/competitor-run";
 import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
+import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { runProductAdPreviewGeneration } from "@/lib/product-ad-preview-run";
 import { runSeedanceGeneration } from "@/lib/seedance-generate";
 import {
@@ -292,9 +293,15 @@ export async function executeAgentTool(
       }
 
       const userPrompt = String(input.prompt ?? "");
+      const enhanced = await enhanceImagePromptForAgent(userPrompt, "creator");
       const result = await runImageGeneratorGeneration(supabase, user.id, {
         prompt: userPrompt,
         category: "creator",
+        preEnhanced: {
+          enhancedPrompt: enhanced.prompt,
+          negativePrompt: enhanced.negative_prompt,
+          category: "creator",
+        },
       });
 
       if (!result.ok) {

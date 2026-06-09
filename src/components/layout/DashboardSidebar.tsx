@@ -4,16 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, Home, Star } from "lucide-react";
+import { BarChart2, ChevronDown, Home, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { LIVE_CREATOR_COMING_SOON } from "@/lib/feature-flags";
 import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
-import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
 import { hasActivePlan } from "@/lib/access";
+import { hasActiveTenantMembershipFromRows } from "@/lib/agency-access";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
 import {
   SidebarChoosePlanPanel,
-  SidebarCreditsPanel,
 } from "@/components/layout/SidebarCreditsPanel";
 import { TablerGift } from "@/components/icons/TablerGift";
 
@@ -95,8 +94,8 @@ export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>(DEFAULT_OPEN);
   const [credits, setCredits] = useState<number | null>(null);
-  const [maxCredits, setMaxCredits] = useState(0);
   const [hasPlatformPlan, setHasPlatformPlan] = useState(false);
+  const [hasTenantToolAccess, setHasTenantToolAccess] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasAgency, setHasAgency] = useState(false);
   const pathname = usePathname();
@@ -117,7 +116,7 @@ export function DashboardSidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("credits, plan, role, is_admin")
+        .select("credits, plan, role, is_admin, tenant_id")
         .eq("id", user.id)
         .single();
       if (data) {
@@ -129,7 +128,20 @@ export function DashboardSidebar() {
           email: user.email,
         });
         setHasPlatformPlan(active);
-        setMaxCredits(active ? getPlanMonthlyCredits(data.plan) : 0);
+
+        let tenantMembership = false;
+        if (data.tenant_id) {
+          const { data: tenant } = await supabase
+            .from("tenants")
+            .select("is_active, deactivated_at")
+            .eq("id", data.tenant_id)
+            .maybeSingle();
+          tenantMembership = hasActiveTenantMembershipFromRows(
+            data.tenant_id,
+            tenant
+          );
+        }
+        setHasTenantToolAccess(tenantMembership);
       }
       const { data: tenant } = await supabase
         .from("tenants")
@@ -164,6 +176,8 @@ export function DashboardSidebar() {
       return next;
     });
   }, [pathname]);
+
+  const canUseKiTools = hasPlatformPlan || hasTenantToolAccess;
 
   const linkClass = (active: boolean, disabled?: boolean) =>
     [
@@ -276,16 +290,14 @@ export function DashboardSidebar() {
           }}
         >
           <span>{label}</span>
-          <span
+          <ChevronDown
+            size={14}
+            strokeWidth={2}
+            className="shrink-0 text-zinc-500 transition-transform duration-200"
             style={{
-              fontSize: 10,
-              color: "rgba(180,255,0,0.5)",
-              transition: "transform 0.2s",
               transform: open[key] ? "rotate(180deg)" : "rotate(0deg)",
             }}
-          >
-            ▼
-          </span>
+          />
         </button>
         {open[key] && (
           <div
@@ -325,60 +337,64 @@ export function DashboardSidebar() {
       </Link>
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
-        <SidebarNavLink
-          href="/dashboard"
-          active={pathname === "/dashboard" || pathname === "/dashboard/agent"}
-          collapsed={collapsed}
-          title={collapsed ? tNav("agent") : undefined}
-          className={linkClass(
-            pathname === "/dashboard" || pathname === "/dashboard/agent"
-          )}
-        >
-          <Star
-            size={18}
-            strokeWidth={
+        {canUseKiTools && (
+          <SidebarNavLink
+            href="/dashboard"
+            active={pathname === "/dashboard" || pathname === "/dashboard/agent"}
+            collapsed={collapsed}
+            title={collapsed ? tNav("agent") : undefined}
+            className={linkClass(
               pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? 2.5
-                : 2
-            }
-            className="shrink-0"
-            color={
-              pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? "#B4FF00"
-                : "rgba(255,255,255,0.75)"
-            }
-            fill={
-              pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? "#B4FF00"
-                : "transparent"
-            }
-          />
-          {!collapsed && (
-            <>
-              <span className="truncate">{tNav("agent")}</span>
-              <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
-                NEU
-              </span>
-            </>
-          )}
-        </SidebarNavLink>
-
-        <div className="h-px bg-white/5 my-2 mx-1" />
-
-        {SIDEBAR_TOOL_CATEGORIES.map((category, index) =>
-          renderCollapseCategory(
-            category.key,
-            category.label,
-            category.items,
-            index > 0
-          )
+            )}
+          >
+            <Star
+              size={18}
+              strokeWidth={
+                pathname === "/dashboard" || pathname === "/dashboard/agent"
+                  ? 2.5
+                  : 2
+              }
+              className="shrink-0"
+              color={
+                pathname === "/dashboard" || pathname === "/dashboard/agent"
+                  ? "#B4FF00"
+                  : "rgba(255,255,255,0.75)"
+              }
+              fill={
+                pathname === "/dashboard" || pathname === "/dashboard/agent"
+                  ? "#B4FF00"
+                  : "transparent"
+              }
+            />
+            {!collapsed && (
+              <>
+                <span className="truncate">{tNav("agent")}</span>
+                <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
+                  NEU
+                </span>
+              </>
+            )}
+          </SidebarNavLink>
         )}
 
-        {NAV_GROUPS.map((group) =>
-          renderCollapseCategory(group.key, group.label, group.items, true)
-        )}
+        {canUseKiTools && <div className="h-px bg-white/5 my-2 mx-1" />}
 
-        <div className="h-px bg-white/5 my-2 mx-1" />
+        {canUseKiTools &&
+          SIDEBAR_TOOL_CATEGORIES.map((category, index) =>
+            renderCollapseCategory(
+              category.key,
+              category.label,
+              category.items,
+              index > 0
+            )
+          )}
+
+        {canUseKiTools &&
+          NAV_GROUPS.map((group) =>
+            renderCollapseCategory(group.key, group.label, group.items, true)
+          )}
+
+        {canUseKiTools && <div className="h-px bg-white/5 my-2 mx-1" />}
 
         {!collapsed && (
           <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
@@ -439,7 +455,17 @@ export function DashboardSidebar() {
           );
         })}
 
-        {isAdmin && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
+        {isAdmin && !collapsed && (
+          <>
+            <div className="h-px bg-white/5 my-2 mx-1" />
+            <p
+              className="px-2.5 py-1.5 text-[0.62rem] font-bold uppercase tracking-[0.14em]"
+              style={{ color: "#E0A951" }}
+            >
+              Admin
+            </p>
+          </>
+        )}
         {isAdmin &&
           ADMIN_NAV.map((item) => {
             const isActive = pathname === item.href;
@@ -450,7 +476,9 @@ export function DashboardSidebar() {
                 active={isActive}
                 collapsed={collapsed}
                 title={collapsed ? item.label : undefined}
-                className={`${linkClass(isActive)} !text-[#ff6b7a]/70 !border-b-0`}
+                className={`${linkClass(isActive)} !border-b-0 ${
+                  isActive ? "!text-[#E0A951]" : "!text-[#E0A951]/75"
+                } hover:!text-[#E0A951]`}
               >
                 <span className="text-[0.95rem] shrink-0">{item.icon}</span>
                 {!collapsed && item.label}
@@ -478,11 +506,8 @@ export function DashboardSidebar() {
           })}
       </nav>
 
-      {credits !== null && !collapsed && !hasPlatformPlan && (
+      {credits !== null && !collapsed && !canUseKiTools && (
         <SidebarChoosePlanPanel />
-      )}
-      {credits !== null && !collapsed && hasPlatformPlan && (
-        <SidebarCreditsPanel credits={credits} maxCredits={maxCredits} />
       )}
 
       <SidebarNavLink

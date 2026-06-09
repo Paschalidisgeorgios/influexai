@@ -58,14 +58,17 @@ function frequencyLabel(frequency: ContentKalenderFrequency): string {
   );
 }
 
-export function buildContentKalenderToolUserPrompt(params: {
-  nische: string;
-  plattform: string;
-  frequenz: ContentKalenderFrequency;
-}): string {
+export function buildContentKalenderToolUserPrompt(
+  params: {
+    nische: string;
+    plattform: string;
+    frequenz: ContentKalenderFrequency;
+  },
+  qualityRetryHint?: string
+): string {
   const count = entryCountForFrequency(params.frequenz);
 
-  return `Erstelle einen 4-Wochen Content-Kalender.
+  const base = `Erstelle einen 4-Wochen Content-Kalender.
 
 Nische: ${params.nische}
 Plattform: ${params.plattform}
@@ -79,6 +82,7 @@ JSON:
     { "tag": "Mo W1", "idee": "...", "format": "Reel" }
   ]
 }`;
+  return qualityRetryHint ? `${base}\n\n${qualityRetryHint}` : base;
 }
 
 export function parseContentKalenderToolResult(

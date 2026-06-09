@@ -50,9 +50,17 @@ export async function generateCategoryImage(options: {
   imageSize: FalImageSize;
   highRes: boolean;
   seed?: number;
+  /** When set, sent to fal.ai as-is (skips buildCategoryPrompt). */
+  falPrompt?: string;
+  negativePrompt?: string;
 }): Promise<CategoryImageResult> {
-  const fullPrompt = buildCategoryPrompt(options.category, options.prompt);
-  const negativePrompt = buildCategoryNegativePrompt(options.category);
+  const fullPrompt =
+    options.falPrompt ?? buildCategoryPrompt(options.category, options.prompt);
+  const negativePrompt =
+    options.negativePrompt ?? buildCategoryNegativePrompt(options.category);
+
+  console.log("[image-gen] fal prompt:", fullPrompt);
+  console.log("[image-gen] fal negative_prompt:", negativePrompt);
 
   if (options.highRes) {
     const proInput = {

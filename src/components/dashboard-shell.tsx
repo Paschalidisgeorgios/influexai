@@ -78,8 +78,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
       <DashboardHeader credits={credits} />
         <PlatformBanners isAdmin={isAdmin} />
-        {creditsReady && credits !== null && !isCreditExempt && (
-          <CreditsWarningBanner credits={credits} />
+        {creditsReady && credits !== null && !isCreditExempt && !isAdmin && (
+          <CreditsWarningBanner credits={credits} isAdmin={isAdmin} />
         )}
         <main className="relative z-[1] flex flex-col flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden px-4 py-2 sm:p-4 md:p-5 pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-0 box-border">
           <ReengagementBanner />

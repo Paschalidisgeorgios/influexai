@@ -13,8 +13,11 @@ Jeder Hook max. 15 Wörter, direkt sprechbar, ohne Anführungszeichen.
 Antworte in der Sprache der User-Eingabe.
 ${CLAUDE_JSON_SYSTEM_RULE}`;
 
-export function buildViralHookExtractorUserPrompt(input: string): string {
-  return `Generiere 6–8 virale Hooks für dieses Thema / diese Nische / dieses Transkript:
+export function buildViralHookExtractorUserPrompt(
+  input: string,
+  qualityRetryHint?: string
+): string {
+  const base = `Generiere 6–8 virale Hooks für dieses Thema / diese Nische / dieses Transkript:
 
 ${input.trim()}
 
@@ -22,6 +25,7 @@ JSON:
 {
   "hooks": ["Hook 1", "Hook 2", "Hook 3"]
 }`;
+  return qualityRetryHint ? `${base}\n\n${qualityRetryHint}` : base;
 }
 
 export function parseViralHookExtractorResult(raw: string): string[] {

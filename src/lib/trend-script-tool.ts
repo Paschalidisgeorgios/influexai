@@ -56,14 +56,17 @@ export function formatViewsCompact(views: number): string {
   return String(views);
 }
 
-export function buildTrendScriptToolUserPrompt(params: {
-  thema: string;
-  plattform: string;
-  trends: TrendVideo[];
-}): string {
+export function buildTrendScriptToolUserPrompt(
+  params: {
+    thema: string;
+    plattform: string;
+    trends: TrendVideo[];
+  },
+  qualityRetryHint?: string
+): string {
   const research = formatTrendResearchBlock(params.trends);
 
-  return `Schreibe ein vollständiges Short-Form Video-Script basierend auf aktuellen Trends.
+  const base = `Schreibe ein vollständiges Short-Form Video-Script basierend auf aktuellen Trends.
 
 Thema / Nische: ${params.thema}
 Plattform: ${params.plattform}
@@ -77,6 +80,7 @@ JSON:
 {
   "script": "Vollständiges Script mit [HOOK], [MAIN], [CTA]"
 }`;
+  return qualityRetryHint ? `${base}\n\n${qualityRetryHint}` : base;
 }
 
 export function parseTrendScriptToolResult(raw: string): string {

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { hasActivePlan, type AccessUser } from "@/lib/access";
+import { hasKiToolEntitlement, type AccessUser } from "@/lib/access";
+import { hasActiveTenantMembershipFromRows } from "@/lib/agency-access";
 import { routeRequiresPlan } from "@/lib/plan-gating";
 import { NoPlanModal } from "./NoPlanModal";
 
@@ -16,6 +17,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   });
   const [blocked, setBlocked] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [hasTenantToolAccess, setHasTenantToolAccess] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -27,7 +29,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
         if (!user) return;
         const { data } = await supabase
           .from("profiles")
-          .select("plan, role, is_admin")
+          .select("plan, role, is_admin, tenant_id")
           .eq("id", user.id)
           .single();
         if (data) {
@@ -37,6 +39,20 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
             is_admin: data.is_admin ?? false,
             email: user.email,
           });
+
+          let tenantMembership = false;
+          if (data.tenant_id) {
+            const { data: tenant } = await supabase
+              .from("tenants")
+              .select("is_active, deactivated_at")
+              .eq("id", data.tenant_id)
+              .maybeSingle();
+            tenantMembership = hasActiveTenantMembershipFromRows(
+              data.tenant_id,
+              tenant
+            );
+          }
+          setHasTenantToolAccess(tenantMembership);
         }
       } finally {
         setProfileLoaded(true);
@@ -53,8 +69,11 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const needsPlan = routeRequiresPlan(pathname);
-    setBlocked(needsPlan && !hasActivePlan(accessUser));
-  }, [pathname, accessUser, profileLoaded]);
+    setBlocked(
+      needsPlan &&
+        !hasKiToolEntitlement(accessUser, hasTenantToolAccess)
+    );
+  }, [pathname, accessUser, profileLoaded, hasTenantToolAccess]);
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">

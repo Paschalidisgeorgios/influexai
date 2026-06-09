@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
   buildViralHookExtractorUserPrompt,
   parseViralHookExtractorResult,
@@ -44,26 +45,37 @@ export async function POST(request: Request) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  const claude = await createAnthropicMessage({
-    system: VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
-    user: buildViralHookExtractorUserPrompt(input),
-    maxTokens: 1536,
-  });
+  async function generateHooks(retryHint?: string): Promise<string[]> {
+    const claude = await createAnthropicMessage({
+      system: VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
+      user: buildViralHookExtractorUserPrompt(input, retryHint),
+      maxTokens: 1536,
+    });
 
-  if (!claude.ok) {
-    return NextResponse.json(
-      { success: false, error: claude.error },
-      { status: 503 }
-    );
+    if (!claude.ok) {
+      throw new Error(claude.error);
+    }
+
+    return parseViralHookExtractorResult(claude.text);
   }
 
   let hooks: string[];
   try {
-    hooks = parseViralHookExtractorResult(claude.text);
+    const picked = await selectOutputWithQualityRetry({
+      toolName: "viral-hook",
+      userGoal: input,
+      toOutputText: (items) => items.join("\n"),
+      generate: generateHooks,
+    });
+    hooks = picked.value;
   } catch (e) {
-    console.error("[viral-hook] parse:", e);
+    console.error("[viral-hook] generate:", e);
     return NextResponse.json(
-      { success: false, error: "KI-Antwort konnte nicht gelesen werden." },
+      {
+        success: false,
+        error:
+          e instanceof Error ? e.message : "KI-Antwort konnte nicht gelesen werden.",
+      },
       { status: 500 }
     );
   }

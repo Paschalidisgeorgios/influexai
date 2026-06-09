@@ -47,6 +47,9 @@ export async function POST(request: NextRequest) {
     seed: seedRaw,
     variation: variationRaw,
     parentGenerationId,
+    falPrompt,
+    negativePrompt: negativePromptRaw,
+    skipPromptEnhancement,
   } = body as {
     prompt?: string;
     category?: string;
@@ -55,6 +58,9 @@ export async function POST(request: NextRequest) {
     seed?: number;
     variation?: boolean;
     parentGenerationId?: string;
+    falPrompt?: string;
+    negativePrompt?: string;
+    skipPromptEnhancement?: boolean;
   };
 
   const trimmedPrompt = prompt?.trim() ?? "";
@@ -100,10 +106,26 @@ export async function POST(request: NextRequest) {
   const started = Date.now();
 
   try {
-    const prepared = await prepareImageGeneratorPrompts(trimmedPrompt, category);
+    const prepared =
+      skipPromptEnhancement === true &&
+      typeof falPrompt === "string" &&
+      falPrompt.trim()
+        ? {
+            userPrompt: trimmedPrompt,
+            enhancedPrompt: falPrompt.trim(),
+            negativePrompt:
+              typeof negativePromptRaw === "string" && negativePromptRaw.trim()
+                ? negativePromptRaw.trim()
+                : "deformed, extra limbs, duplicate objects, text, watermark, low quality",
+            category,
+            promptEnhanced: true,
+          }
+        : await prepareImageGeneratorPrompts(trimmedPrompt, category);
 
     const falResult = await generateCategoryImage({
       prompt: prepared.enhancedPrompt,
+      falPrompt: prepared.enhancedPrompt,
+      negativePrompt: prepared.negativePrompt,
       category: prepared.category,
       imageSize,
       highRes,

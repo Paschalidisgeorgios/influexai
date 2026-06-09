@@ -45,6 +45,12 @@ export async function runImageGeneratorGeneration(
     category?: string;
     aspectRatio?: FalImageSize;
     highRes?: boolean;
+    /** Skip pipeline when agent already enhanced the prompt. */
+    preEnhanced?: {
+      enhancedPrompt: string;
+      negativePrompt: string;
+      category?: ImageCategoryKey;
+    };
   }
 ): Promise<ImageGeneratorRunResult> {
   const trimmedPrompt = params.prompt.trim();
@@ -78,10 +84,20 @@ export async function runImageGeneratorGeneration(
   const started = Date.now();
 
   try {
-    const prepared = await prepareImageGeneratorPrompts(trimmedPrompt, category);
+    const prepared = params.preEnhanced
+      ? {
+          userPrompt: trimmedPrompt,
+          enhancedPrompt: params.preEnhanced.enhancedPrompt,
+          negativePrompt: params.preEnhanced.negativePrompt,
+          category: params.preEnhanced.category ?? category,
+          promptEnhanced: true,
+        }
+      : await prepareImageGeneratorPrompts(trimmedPrompt, category);
 
     const falResult = await generateCategoryImage({
       prompt: prepared.enhancedPrompt,
+      falPrompt: prepared.enhancedPrompt,
+      negativePrompt: prepared.negativePrompt,
       category: prepared.category,
       imageSize,
       highRes,

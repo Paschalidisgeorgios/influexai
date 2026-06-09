@@ -2,7 +2,7 @@ import {
   CATEGORY_PROMPTS,
   type ImageCategoryKey,
 } from "@/lib/generation-config";
-import { improveImagePrompt } from "@/lib/improve-image-prompt";
+import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
 
 const CATEGORY_PATTERNS: { category: ImageCategoryKey; pattern: RegExp }[] = [
   {
@@ -77,6 +77,7 @@ export function resolveImageCategory(
 export type PreparedImageGeneratorPrompts = {
   userPrompt: string;
   enhancedPrompt: string;
+  negativePrompt: string;
   category: ImageCategoryKey;
   promptEnhanced: boolean;
 };
@@ -87,11 +88,14 @@ export async function prepareImageGeneratorPrompts(
 ): Promise<PreparedImageGeneratorPrompts> {
   const trimmed = userPrompt.trim();
   const category = resolveImageCategory(trimmed, selectedCategory);
-  const enhancedPrompt = await improveImagePrompt(trimmed, category);
+  const style = CATEGORY_PROMPTS[category].label;
+  const { prompt: enhancedPrompt, negative_prompt: negativePrompt } =
+    await enhanceImagePrompt(trimmed, style);
 
   return {
     userPrompt: trimmed,
     enhancedPrompt,
+    negativePrompt,
     category,
     promptEnhanced: enhancedPrompt !== trimmed,
   };

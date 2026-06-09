@@ -22,6 +22,7 @@ import {
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
+import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
 import {
   buildViralScoreUserPrompt,
   parseViralScoreResult,
@@ -372,9 +373,12 @@ export async function apiGenerateImage(
     prompt,
     async () => {
       const supabase = createServiceSupabaseClient();
+      const prepared = await prepareImageGeneratorPrompts(prompt, category);
       const falResult = await generateCategoryImage({
-        prompt,
-        category,
+        prompt: prepared.enhancedPrompt,
+        falPrompt: prepared.enhancedPrompt,
+        negativePrompt: prepared.negativePrompt,
+        category: prepared.category,
         imageSize,
         highRes,
       });

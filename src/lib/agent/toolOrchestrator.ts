@@ -2,6 +2,7 @@ import { parseScriptBlocks } from "@/lib/script-format";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
 import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
+import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import type { AgentIntent, AgentResult, AgentScores } from "./types";
 
 type ToolErrorBody = { error?: string; success?: boolean };
@@ -343,9 +344,16 @@ export async function orchestrate(
     }
 
     case "image_generation": {
+      const enhanced = await enhanceImagePromptForAgent(prompt, "creator");
       const data = (await callTool(
         "/api/generate-image",
-        { prompt, category: "creator" },
+        {
+          prompt,
+          category: "creator",
+          falPrompt: enhanced.prompt,
+          negativePrompt: enhanced.negative_prompt,
+          skipPromptEnhancement: true,
+        },
         authCookie
       )) as { imageUrl?: string; generationId?: string; prompt?: string };
       return {

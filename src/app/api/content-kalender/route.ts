@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
   buildContentKalenderToolUserPrompt,
   CONTENT_KALENDER_PLATFORMS,
@@ -11,6 +12,7 @@ import {
   isValidContentKalenderFrequency,
   parseContentKalenderToolResult,
   type ContentKalenderEntry,
+  type ContentKalenderFrequency,
 } from "@/lib/content-kalender-tool";
 
 export const dynamic = "force-dynamic";
@@ -68,30 +70,40 @@ export async function POST(request: Request) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  const claude = await createAnthropicMessage({
-    system: CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
-    user: buildContentKalenderToolUserPrompt({
-      nische,
-      plattform,
-      frequenz,
-    }),
-    maxTokens: 4096,
-  });
+  const kalenderParams = { nische, plattform, frequenz: frequenz as ContentKalenderFrequency };
 
-  if (!claude.ok) {
-    return NextResponse.json(
-      { success: false, error: claude.error },
-      { status: 503 }
-    );
+  async function generateEntries(retryHint?: string): Promise<ContentKalenderEntry[]> {
+    const claude = await createAnthropicMessage({
+      system: CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
+      user: buildContentKalenderToolUserPrompt(kalenderParams, retryHint),
+      maxTokens: 4096,
+    });
+
+    if (!claude.ok) {
+      throw new Error(claude.error);
+    }
+
+    return parseContentKalenderToolResult(claude.text);
   }
 
   let entries: ContentKalenderEntry[];
   try {
-    entries = parseContentKalenderToolResult(claude.text);
+    const picked = await selectOutputWithQualityRetry({
+      toolName: "content-kalender",
+      userGoal: `${nische} · ${plattform} · ${frequenz}`,
+      toOutputText: (items) =>
+        items.map((e) => `${e.tag}: ${e.idee} (${e.format})`).join("\n"),
+      generate: generateEntries,
+    });
+    entries = picked.value;
   } catch (e) {
-    console.error("[content-kalender] parse:", e);
+    console.error("[content-kalender] generate:", e);
     return NextResponse.json(
-      { success: false, error: "KI-Antwort konnte nicht gelesen werden." },
+      {
+        success: false,
+        error:
+          e instanceof Error ? e.message : "KI-Antwort konnte nicht gelesen werden.",
+      },
       { status: 500 }
     );
   }

@@ -12,6 +12,8 @@ export type AgencyWorkspaceAccess = {
   hasAgencyWorkspaceAccess: boolean;
   hasActiveTenant: boolean;
   hasAgencyPlanOnly: boolean;
+  /** Active tenant member or owner — may use KI tools with profile credits (no platform plan). */
+  hasActiveTenantMembership: boolean;
 };
 
 function normalizePathname(pathname: string): string {
@@ -80,5 +82,15 @@ export function agencyWorkspaceAccessFromRows(
     hasAgencyWorkspaceAccess,
     hasActiveTenant,
     hasAgencyPlanOnly: hasAgencyPlan && !hasActiveTenant,
+    hasActiveTenantMembership: hasActiveTenant,
   };
+}
+
+/** Client-safe: profile linked to an accessible tenant (member or owner). */
+export function hasActiveTenantMembershipFromRows(
+  tenantId: string | null | undefined,
+  tenant: { is_active: boolean; deactivated_at: string | null } | null | undefined
+): boolean {
+  if (!tenantId || !tenant) return false;
+  return isTenantAccessibleForAgency(tenant);
 }

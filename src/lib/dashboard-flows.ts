@@ -397,18 +397,12 @@ export type SidebarCollapseCategory = {
 export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
   {
     key: "agent",
-    label: "🤖 Agent",
+    label: "Agent",
     items: [
-      {
-        id: "ki-agent",
-        href: "/dashboard/ki-agent",
-        label: "KI Agent",
-        icon: Bot,
-      },
       {
         id: "campaign-autopilot",
         href: "/dashboard/campaign-autopilot",
-        label: "Campaign Autopilot",
+        label: "Autopilot",
         icon: Rocket,
         badge: "Preview",
       },
@@ -416,7 +410,7 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
   },
   {
     key: "text",
-    label: "✍️ Text & Script",
+    label: "Text & Script",
     items: [
       {
         id: "script",
@@ -439,15 +433,14 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
       {
         id: "viral-hook",
         href: "/dashboard/viral-hook",
-        label: "Viral Hook Extraktor",
+        label: "Viral Hooks",
         icon: Zap,
-        badge: "NEU",
       },
     ],
   },
   {
     key: "video",
-    label: "🎬 Video & Avatar",
+    label: "Video & Avatar",
     items: [
       {
         id: "ugc-video",
@@ -461,28 +454,24 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/live-portrait",
         label: "Live Portrait",
         icon: Theater,
-        badge: "NEU",
       },
       {
         id: "avatar-studio",
         href: "/dashboard/avatar-studio",
         label: "Avatar Studio",
         icon: Sparkles,
-        badge: "NEU",
       },
       {
         id: "motion-transfer",
         href: "/dashboard/motion-transfer",
         label: "Motion Transfer",
         icon: Clapperboard,
-        badge: "NEU",
       },
       {
         id: "seedance",
         href: "/dashboard/seedance",
         label: "Bild zu Video",
         icon: Film,
-        badge: "NEU",
       },
       {
         id: "live-creator",
@@ -501,28 +490,25 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
   },
   {
     key: "bild",
-    label: "🖼️ Bild & Design",
+    label: "Bild & Design",
     items: [
       {
         id: "image-generator",
         href: "/dashboard/image-generator",
         labelKey: "image_generator",
         icon: ImageGeneratorPhotoIcon,
-        badge: "NEU",
       },
       {
         id: "upscaler",
         href: "/dashboard/upscaler",
         label: "HD Upscaler",
         icon: ZoomIn,
-        badge: "NEU",
       },
       {
         id: "lora-training",
         href: "/dashboard/lora-training",
         label: "LoRA Training",
         icon: Brain,
-        badge: "NEU",
       },
       {
         id: "gallery",
@@ -597,34 +583,32 @@ export const NAV_GROUPS: {
 }[] = [
   {
     key: "analyze",
-    label: "📊 Analyse",
+    label: "Analyse",
     items: [
       { id: "niche", href: "/dashboard/niche-analyzer", label: "Niche Analyzer", icon: TrendingUp },
       { id: "outlier", href: "/dashboard/outlier-detector", label: "Outlier Detector", icon: Flame },
       {
         id: "content-kalender",
         href: "/dashboard/content-kalender",
-        label: "Content Kalender",
+        label: "Kalender",
         icon: Calendar,
-        badge: "NEU",
       },
       {
         id: "trend-to-script",
         href: "/dashboard/trend-to-script",
         label: "Trend → Script",
         icon: Rocket,
-        badge: "NEU",
       },
-      { id: "competitor", href: "/dashboard/competitor", labelKey: "competitor", icon: CompetitorSpyIcon, badge: "NEU" },
-      { id: "viral-score", href: "/dashboard/viral-score", labelKey: "viral_score", icon: ChartBar, badge: "NEU" },
+      { id: "competitor", href: "/dashboard/competitor", label: "Konkurrenz", icon: CompetitorSpyIcon },
+      { id: "viral-score", href: "/dashboard/viral-score", labelKey: "viral_score", icon: ChartBar },
       { id: "remix", href: "/dashboard/video-remix", labelKey: "remix", icon: Repeat2 },
     ],
   },
   {
     key: "live",
-    label: "🎙 Live & Audio",
+    label: "Live & Audio",
     items: [
-      { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace, badge: "NEU" },
+      { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
     ],
   },

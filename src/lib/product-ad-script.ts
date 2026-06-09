@@ -43,7 +43,8 @@ function buildVariationHint(focus?: ProductAdVariationFocus): string {
 }
 
 export async function generateProductAdScript(
-  input: ProductAdScriptInput
+  input: ProductAdScriptInput,
+  qualityRetryHint?: string
 ): Promise<{ ok: true; script: ProductAdScript } | { ok: false; error: string }> {
   const lang = localeToPromptLanguage[input.language] ?? "English";
   const platformGuide = PLATFORM_GUIDES[input.platform];
@@ -79,7 +80,7 @@ Respond as JSON only:
   "proof": "...",
   "cta": "...",
   "visual_style": "detailed visual brief for image-to-video model"
-}`;
+}${qualityRetryHint ? `\n\n${qualityRetryHint}` : ""}`;
 
   const claude = await createAnthropicMessage({
     system: systemPrompt,

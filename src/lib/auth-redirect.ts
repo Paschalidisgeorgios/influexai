@@ -144,6 +144,9 @@ export function resolvePostAuthRedirect(
   }
 
   if (safe && isPlanGatedRedirectPath(safe)) {
+    if (agencyAccess?.hasActiveTenantMembership) {
+      return safe;
+    }
     if (agencyAccess?.hasAgencyWorkspaceAccess) {
       return resolveAgencyWorkspaceTarget(agencyAccess);
     }

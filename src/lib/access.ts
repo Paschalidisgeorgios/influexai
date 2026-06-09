@@ -65,6 +65,14 @@ export function hasActivePlan(user: AccessUser): boolean {
   return normalizePlan(user.plan) !== "free";
 }
 
+/** Platform plan or active agency tenant membership (member/owner). */
+export function hasKiToolEntitlement(
+  user: AccessUser,
+  hasActiveTenantMembership = false
+): boolean {
+  return hasActivePlan(user) || hasActiveTenantMembership;
+}
+
 /**
  * Zwei-Stufen-Zugang: Admin/Owner oder aktiver Plan → true.
  * `requiredPlan` wird ignoriert (kein Tier-Gating mehr).
