@@ -18,7 +18,7 @@ const LANDING_NAV_LINK =
   "nav-item relative inline-flex items-center whitespace-nowrap text-[0.875rem] font-medium leading-none text-[#1a1a1a] px-3 py-1.5 rounded-lg transition-colors duration-150 hover:text-[#060608] hover:bg-black/[0.04]";
 
 const HEADER_CLASS =
-  "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell";
+  "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell bg-[#EFEFEA]/95 backdrop-blur-md";
 
 const MOBILE_DRAWER_STYLE = {
   background: "#0d0f0d",
@@ -110,7 +110,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const showMemberNav = mounted && navSession.user && (navSession.hasPlan || navSession.isAdmin);
   const showNoPlanNav = mounted && navSession.user && !navSession.hasPlan && !navSession.isAdmin;
 
-  const navBarClass = `landing-nav-bar landing-nav-bar--mobile${
+  const navBarClass = `landing-nav-bar landing-nav-bar--mobile !bg-[#EFEFEA]/95 !backdrop-blur-md${
     mounted && scrolled ? " landing-nav-bar--scrolled" : ""
   }`;
 

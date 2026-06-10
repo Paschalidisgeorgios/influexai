@@ -416,7 +416,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/campaign-autopilot",
         label: "Autopilot",
         icon: Rocket,
-        badge: "Preview",
       },
     ],
   },
@@ -462,62 +461,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         badge: "NEU",
       },
       {
-        id: "live-portrait",
-        href: "/dashboard/live-portrait",
-        label: "Live Portrait",
-        icon: Theater,
-      },
-      {
-        id: "avatar-studio",
-        href: "/dashboard/avatar-studio",
-        label: "Avatar Studio",
-        icon: Sparkles,
-      },
-      {
-        id: "motion-transfer",
-        href: "/dashboard/motion-transfer",
-        label: "Motion Transfer",
-        icon: Clapperboard,
-      },
-      {
-        id: "seedance",
-        href: "/dashboard/seedance",
-        label: "Bild zu Video",
-        icon: Film,
-      },
-      {
-        id: "kling25-i2v",
-        href: "/dashboard/seedance?model=kling25_turbo_pro",
-        label: "Kling 2.5 Turbo Pro",
-        icon: Film,
-        badge: "Premium",
-      },
-      {
-        id: "live-creator",
-        href: "/dashboard/live-creator",
-        labelKey: "live_creator",
-        icon: Video,
-        badge: "LIVE",
-      },
-      {
-        id: "ki-ich",
-        href: "/dashboard/ki-ich",
-        label: "Mein KI-Ich",
-        icon: Sparkles,
-      },
-    ],
-  },
-  {
-    key: "bild",
-    label: "Bild & Design",
-    items: [
-      {
-        id: "image-generator",
-        href: "/dashboard/image-generator",
-        labelKey: "image_generator",
-        icon: ImageGeneratorPhotoIcon,
-      },
-      {
         id: "upscaler",
         href: "/dashboard/upscaler",
         label: "HD Upscaler",
@@ -552,21 +495,10 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   }
   if (
     path.includes("ugc-video") ||
-    path.includes("motion-transfer") ||
-    path.includes("live-portrait") ||
-    path.includes("avatar-studio") ||
-    path.includes("seedance") ||
-    path.includes("live-creator") ||
-    path.includes("ki-ich")
-  ) {
-    keys.push("video");
-  }
-  if (
-    path.includes("image-generator") ||
     path.includes("upscaler") ||
     path.includes("lora-training")
   ) {
-    keys.push("bild");
+    keys.push("video");
   }
   if (
     path.includes("niche-analyzer") ||
@@ -608,7 +540,7 @@ export const NAV_GROUPS: {
       {
         id: "trend-to-script",
         href: "/dashboard/trend-to-script",
-        label: "Trend → Script",
+        label: "Trend-Script",
         icon: Rocket,
       },
       { id: "competitor", href: "/dashboard/competitor", label: "Konkurrenz", icon: CompetitorSpyIcon },

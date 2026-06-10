@@ -432,22 +432,11 @@ function LandingPreFooterCta() {
 const FOOTER_COLS = [
   {
     col: "product",
-    links: [
-      "product_features",
-      "product_pricing",
-      "product_changelog",
-      "product_api",
-    ],
+    links: ["product_pricing"],
   },
   {
     col: "company",
-    links: [
-      "company_about",
-      "company_blog",
-      "company_guides",
-      "company_careers",
-      "company_press",
-    ],
+    links: ["company_blog", "company_guides"],
   },
   {
     col: "legal",
@@ -514,10 +503,7 @@ export function LandingFooter() {
           </div>
           {FOOTER_COLS.map(({ col, links }) => (
             <div key={col}>
-              <h5
-                className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em]"
-                style={{ color: "rgba(255,255,255,0.25)" }}
-              >
+              <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-neutral-400">
                 {tc(col)}
               </h5>
               <div className="flex flex-col gap-2">
@@ -535,10 +521,7 @@ export function LandingFooter() {
             </div>
           ))}
           <div>
-            <h5
-              className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em]"
-              style={{ color: "rgba(255,255,255,0.25)" }}
-            >
+            <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-neutral-400">
               {t("partner")}
             </h5>
             <a
@@ -584,7 +567,7 @@ export function LandingFooter() {
           style={{ borderTop: "1px solid var(--border)" }}
         >
           <p className="text-[0.78rem]" style={{ color: "var(--grey)" }}>
-            © 2025 InfluexAI
+            © {new Date().getFullYear()} InfluexAI
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             {[

@@ -9,7 +9,9 @@ import { AdminApiTab } from "@/components/admin/api-tab";
 interface Stats {
   totalUsers: number;
   freeUsers: number;
+  starterUsers: number;
   creatorUsers: number;
+  proUsers: number;
   businessUsers: number;
   totalCredits: number;
 }
@@ -55,9 +57,17 @@ export default function AdminPage() {
 
   const planColor: Record<string, string> = {
     free: "rgba(255,255,255,0.65)",
+    starter: "#a78bfa",
     creator: "#B4FF00",
+    pro: "#f59e0b",
     business: "#06b6d4",
   };
+
+  const estimatedMonthlyRevenue =
+    (stats?.starterUsers ?? 0) * 9.99 +
+    (stats?.creatorUsers ?? 0) * 49 +
+    (stats?.proUsers ?? 0) * 99 +
+    (stats?.businessUsers ?? 0) * 199;
 
   if (loading)
     return (
@@ -190,7 +200,7 @@ export default function AdminPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(5, 1fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
               gap: 12,
               marginBottom: 32,
             }}
@@ -209,10 +219,22 @@ export default function AdminPage() {
                 icon: "🆓",
               },
               {
+                label: "Starter Plan",
+                value: stats?.starterUsers ?? 0,
+                color: "#a78bfa",
+                icon: "🌱",
+              },
+              {
                 label: "Creator Plan",
                 value: stats?.creatorUsers ?? 0,
                 color: "#B4FF00",
                 icon: "⭐",
+              },
+              {
+                label: "Pro Plan",
+                value: stats?.proUsers ?? 0,
+                color: "#f59e0b",
+                icon: "🚀",
               },
               {
                 label: "Business Plan",
@@ -301,15 +323,16 @@ export default function AdminPage() {
                 }}
               >
                 €
-                {(
-                  (stats?.creatorUsers ?? 0) * 39 +
-                  (stats?.businessUsers ?? 0) * 99
-                ).toLocaleString()}
+                {estimatedMonthlyRevenue.toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
             <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.65)" }}>
-              {stats?.creatorUsers} × €39 Creator + {stats?.businessUsers} × €99
-              Business
+              {stats?.starterUsers ?? 0} × €9,99 Starter + {stats?.creatorUsers ?? 0}{" "}
+              × €49 Creator + {stats?.proUsers ?? 0} × €99 Pro +{" "}
+              {stats?.businessUsers ?? 0} × €199 Business
             </div>
           </div>
 

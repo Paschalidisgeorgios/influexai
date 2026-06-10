@@ -399,15 +399,15 @@ html[data-world="brand"] {
     .landing-nav-bar--mobile,
     .landing-nav-bar.landing-nav-bar--scrolled,
     .landing-nav-bar--mobile.landing-nav-bar--scrolled {
-      background: transparent !important;
+      background: rgba(239, 239, 234, 0.95) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
       border: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
       padding: 10px 0 !important;
       min-height: 64px;
       max-height: 72px;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
     }
     .landing-nav-bar .landing-nav-logo-text {
       color: #060608 !important;

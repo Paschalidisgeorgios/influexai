@@ -27,6 +27,7 @@ export async function GET() {
 
   const totalUsers = users?.length ?? 0;
   const freeUsers = users?.filter((u) => u.plan === "free").length ?? 0;
+  const starterUsers = users?.filter((u) => u.plan === "starter").length ?? 0;
   const creatorUsers = users?.filter((u) => u.plan === "creator").length ?? 0;
   const proUsers = users?.filter((u) => u.plan === "pro").length ?? 0;
   const businessUsers = users?.filter((u) => u.plan === "business").length ?? 0;
@@ -34,7 +35,15 @@ export async function GET() {
     users?.reduce((sum, u) => sum + (u.credits ?? 0), 0) ?? 0;
 
   return NextResponse.json({
-    stats: { totalUsers, freeUsers, creatorUsers, businessUsers, totalCredits },
+    stats: {
+      totalUsers,
+      freeUsers,
+      starterUsers,
+      creatorUsers,
+      proUsers,
+      businessUsers,
+      totalCredits,
+    },
     users: users ?? [],
   });
 }
