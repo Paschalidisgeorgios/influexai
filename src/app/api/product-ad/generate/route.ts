@@ -18,7 +18,7 @@ import {
   scriptToDisplayText,
   type ProductAdScript,
 } from "@/lib/product-ad-script";
-import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import { generateKlingProductVideo, parseFalVideoError } from "@/lib/fal-video";
 import {
   configureFalClient,
@@ -127,7 +127,7 @@ async function runSingleGeneration(
     };
 
     const [picked, resolvedImageUrl] = await Promise.all([
-      selectOutputWithQualityRetry({
+      runWithQualityRetry({
         toolName: "product-ad",
         userGoal: `${params.productName} · ${params.audience} · ${params.platform}`,
         toOutputText: scriptToDisplayText,

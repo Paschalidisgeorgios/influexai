@@ -60,9 +60,20 @@ export function anthropicUserErrorFromStatus(status: number, body?: string): str
   return "KI-Anfrage fehlgeschlagen. Bitte später erneut versuchen.";
 }
 
+export type AnthropicContentBlock =
+  | { type: "text"; text: string }
+  | {
+      type: "image";
+      source: {
+        type: "base64";
+        media_type: "image/jpeg" | "image/png" | "image/webp" | "image/gif";
+        data: string;
+      };
+    };
+
 export type AnthropicMessageParams = {
   system: string;
-  user: string;
+  user: string | AnthropicContentBlock[];
   maxTokens?: number;
   model?: string;
 };
@@ -93,7 +104,15 @@ export async function createAnthropicMessage(
         model: params.model ?? ANTHROPIC_MODEL,
         max_tokens: params.maxTokens ?? 4096,
         system: params.system,
-        messages: [{ role: "user", content: params.user }],
+        messages: [
+          {
+            role: "user",
+            content:
+              typeof params.user === "string"
+                ? params.user
+                : params.user,
+          },
+        ],
       }),
     });
 

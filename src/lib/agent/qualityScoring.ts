@@ -112,6 +112,9 @@ export function buildQualityRetryHint(weaknesses: string[]): string {
   return `Der vorherige Versuch hatte diese Schwächen: ${list}. Behebe sie vollständig. Sei konkreter, idiomatischer und plattformgerechter.`;
 }
 
+/** Shared quality gate: score + max 1 retry when score < 70. */
+export { selectOutputWithQualityRetry as runWithQualityRetry };
+
 export async function selectOutputWithQualityRetry<T>(params: {
   toolName: string;
   userGoal: string;

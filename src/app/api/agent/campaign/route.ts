@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { executeRealCampaign } from "@/lib/agent/campaignExecutor";
 import {
-  buildCampaignResult,
   createCampaignExecution,
 } from "@/lib/agent/mockExecutor";
 import {
@@ -20,7 +20,6 @@ import type {
 } from "@/lib/agent/types";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { CAMPAIGN_AUTOPILOT_IS_PREVIEW } from "@/lib/agent/campaignPlanner";
-import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -104,8 +103,13 @@ async function runJobAsync(
 ) {
   try {
     await updateJobStatus(supabase, jobId, "running");
-    const result = buildCampaignResult(execution);
-    // TODO: echte KI-Generierung pro Item
+    const result = await executeRealCampaign({
+      exec: execution,
+      supabase,
+      userId,
+      jobId,
+    });
+
     if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
       await saveCampaignResultServer(
         supabase,
@@ -116,34 +120,9 @@ async function runJobAsync(
       );
     }
 
-    const estimatedCredits = execution.estimatedCredits ?? 0;
-    let usedCredits = 0;
-    let remainingCredits: number | undefined;
-
-    if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW && estimatedCredits > 0) {
-      const deducted = await deductCredits(
-        supabase,
-        userId,
-        estimatedCredits,
-        "Campaign Autopilot",
-        {
-          generationType: "campaign-autopilot",
-          prompt: execution.prompt.slice(0, 200),
-        }
-      );
-
-      if (!deducted.success) {
-        throw new Error(deducted.error ?? "Credits abbuchen fehlgeschlagen.");
-      }
-
-      usedCredits = estimatedCredits;
-      remainingCredits = deducted.remainingCredits;
-    }
-
     await updateJobStatus(supabase, jobId, "completed", {
       ...result,
-      usedCredits,
-      ...(remainingCredits !== undefined ? { remainingCredits } : {}),
+      usedCredits: result.usedCredits,
     });
   } catch (err) {
     const msg = sanitizeCampaignError(err);
@@ -247,7 +226,11 @@ export async function POST(request: Request) {
 
   let result: CampaignResult;
   try {
-    result = buildCampaignResult(execWithUser);
+    result = await executeRealCampaign({
+      exec: execWithUser,
+      supabase,
+      userId,
+    });
   } catch (err: unknown) {
     return NextResponse.json(
       { error: sanitizeCampaignError(err) },
@@ -266,31 +249,7 @@ export async function POST(request: Request) {
     }
   }
 
-  let usedCredits = 0;
-  let remainingCredits: number | undefined;
-
-  if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW && estimatedCredits > 0) {
-    const deducted = await deductCredits(
-      supabase,
-      userId,
-      estimatedCredits,
-      "Campaign Autopilot",
-      {
-        generationType: "campaign-autopilot",
-        prompt: prompt.slice(0, 200),
-      }
-    );
-
-    if (!deducted.success) {
-      return NextResponse.json(
-        { error: deducted.error ?? "Credits abbuchen fehlgeschlagen." },
-        { status: 500 }
-      );
-    }
-
-    usedCredits = estimatedCredits;
-    remainingCredits = deducted.remainingCredits;
-  }
+  const usedCredits = result.usedCredits;
 
   const completedExec = completeCampaignExecution({
     ...execWithUser,
@@ -302,6 +261,5 @@ export async function POST(request: Request) {
     execution: completedExec,
     result,
     usedCredits,
-    ...(remainingCredits !== undefined ? { remainingCredits } : {}),
   });
 }

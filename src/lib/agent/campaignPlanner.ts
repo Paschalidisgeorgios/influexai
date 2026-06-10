@@ -6,8 +6,9 @@ import type {
   ContentItem,
 } from "./types";
 
-/** Mock executor only — no credit charges until a real campaign agent ships. */
-export const CAMPAIGN_AUTOPILOT_IS_PREVIEW = true;
+/** Real campaign execution — credits charged per tool run. */
+export const CAMPAIGN_AUTOPILOT_IS_PREVIEW = false;
+
 export const CAMPAIGN_PREVIEW_CREDITS = 0;
 
 export const CAMPAIGN_SPECS: Record<
@@ -32,7 +33,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 3,
     ads: 0,
     visualBriefings: 2,
-    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
+    estimatedCredits: 38,
     label: "2–3 Tage",
   },
   weekly: {
@@ -43,7 +44,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 5,
     ads: 1,
     visualBriefings: 3,
-    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
+    estimatedCredits: 81,
     label: "7 Tage",
   },
   monthly: {
@@ -54,7 +55,7 @@ export const CAMPAIGN_SPECS: Record<
     posts: 20,
     ads: 4,
     visualBriefings: 10,
-    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
+    estimatedCredits: 293,
     label: "30 Tage",
   },
   product_launch: {
@@ -65,24 +66,24 @@ export const CAMPAIGN_SPECS: Record<
     posts: 10,
     ads: 6,
     visualBriefings: 6,
-    estimatedCredits: CAMPAIGN_PREVIEW_CREDITS,
+    estimatedCredits: 197,
     label: "Produktkampagne",
   },
 };
 
 export const CAMPAIGN_STEPS = [
-  "Briefing auswerten (Beispiel)",
+  "Briefing auswerten",
   "Brand-Kontext ableiten",
-  "Zielgruppe skizzieren",
-  "Themencluster vorschlagen",
-  "Content-Kalender entwerfen",
-  "Beispiel-Hooks formulieren",
-  "Beispiel-Scripts skizzieren",
-  "Visual-Ideen notieren",
-  "Beispiel-Captions ergänzen",
-  "Struktur prüfen (Demo)",
-  "Platzhalter anpassen",
-  "Beispiel-Paket bereitstellen",
+  "Kampagnenplan erstellen",
+  "Content-Kalender generieren",
+  "Hooks formulieren",
+  "Scripts schreiben",
+  "Visuals erstellen",
+  "Qualität prüfen",
+  "Captions ergänzen",
+  "Struktur finalisieren",
+  "Credits abrechnen",
+  "Kampagnenpaket bereitstellen",
 ] as const;
 
 export function inferBrandDNA(prompt: string): {

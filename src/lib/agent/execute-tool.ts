@@ -299,6 +299,13 @@ export async function executeAgentTool(
         styleId,
         platform,
       });
+      console.log("[agent-image]", {
+        styleId: enhanced.styleId,
+        platform: enhanced.platform,
+        model: "flux",
+        source: "execute-tool",
+      });
+
       const result = await runImageGeneratorGeneration(supabase, user.id, {
         prompt: userPrompt,
         category: "creator",

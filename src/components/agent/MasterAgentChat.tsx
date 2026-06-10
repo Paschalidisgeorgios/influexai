@@ -13,6 +13,7 @@ import {
   buildIntentToolUrl,
   INTENT_TOOL_LABELS,
 } from "@/lib/agent/intent-tool-navigation";
+import { parseOpenToolMarkers } from "@/lib/agent/open-tool-marker";
 import type { IntentToolId } from "@/lib/agent/intentRouter";
 import { useTypewriterPlaceholder } from "@/hooks/useTypewriterPlaceholder";
 import { AgentResultCard } from "./AgentResultCard";
@@ -738,11 +739,30 @@ export function MasterAgentChat({
                           <AgentWorkingStatus tool={activeTool} />
                         </div>
                       ) : null}
-                      {m.content ? (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {m.content}
-                        </p>
-                      ) : isActiveAssistant && !activeTool ? (
+                      {m.content ? (() => {
+                        const { cleanText, markers } = parseOpenToolMarkers(
+                          m.content
+                        );
+                        return (
+                          <>
+                            {cleanText ? (
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                {cleanText}
+                              </p>
+                            ) : null}
+                            {markers.map((marker) => (
+                              <button
+                                key={`${marker.tool}-${marker.href}`}
+                                type="button"
+                                onClick={() => router.push(marker.href)}
+                                className="mt-3 flex min-h-[44px] w-full items-center justify-center rounded-lg border border-[#B4FF00]/35 bg-[#B4FF00]/10 px-4 py-2 text-sm font-semibold text-[#B4FF00] transition-colors hover:bg-[#B4FF00]/15"
+                              >
+                                {marker.label}
+                              </button>
+                            ))}
+                          </>
+                        );
+                      })() : isActiveAssistant && !activeTool ? (
                         <AgentTypingIndicator label={t("thinking")} />
                       ) : null}
                       {m.steps && m.steps.length > 0 && (

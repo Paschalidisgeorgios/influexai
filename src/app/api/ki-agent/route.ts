@@ -14,6 +14,16 @@ import type {
 } from "@/lib/agent-types";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import {
+  extractCreatorFactsFromChat,
+  formatCreatorProfileForPrompt,
+  getCreatorProfile,
+  updateCreatorProfile,
+} from "@/lib/agent/creatorMemory";
+import {
+  STUDIO_GUIDE_INSTRUCTIONS,
+  STUDIO_KNOWLEDGE,
+} from "@/lib/agent/studioKnowledge";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +65,15 @@ Antworte AUSSCHLIESSLICH als valides JSON ohne Markdown-Backticks:
   },
   "nextActions": []
 }`;
+
+function buildKiAgentSystemPrompt(creatorContext: string): string {
+  return `${SYSTEM_PROMPT}
+
+${STUDIO_GUIDE_INSTRUCTIONS}
+
+${STUDIO_KNOWLEDGE}
+${creatorContext ? `\n${creatorContext}` : ""}`;
+}
 
 type RequestBody = {
   messages?: ChatMessage[];
@@ -280,11 +299,15 @@ export async function POST(request: Request) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  const platform = resolvePlatform(body.creatorDNA);
+  const dbProfile = await getCreatorProfile(supabase, userId);
+  const creatorContext = formatCreatorProfileForPrompt(dbProfile);
+  const platform =
+    dbProfile?.plattformen?.join(", ") ??
+    resolvePlatform(body.creatorDNA);
   const userPrompt = buildUserPrompt(messages, body.creatorDNA);
 
   const claude = await createAnthropicMessage({
-    system: SYSTEM_PROMPT,
+    system: buildKiAgentSystemPrompt(creatorContext),
     user: userPrompt,
     maxTokens: 4096,
   });
@@ -335,6 +358,15 @@ export async function POST(request: Request) {
   if (genErr) {
     console.error("[ki-agent] generations insert:", genErr.message);
   }
+
+  void extractCreatorFactsFromChat(
+    lastUser.content,
+    agentResponse.summary || JSON.stringify(agentResponse.output)
+  ).then(async (partial) => {
+    if (Object.keys(partial).length > 0) {
+      await updateCreatorProfile(supabase, userId, partial);
+    }
+  });
 
   return NextResponse.json({
     success: true,

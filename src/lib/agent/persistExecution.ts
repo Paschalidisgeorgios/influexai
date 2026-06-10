@@ -1,6 +1,62 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import type { AgentExecution, CampaignPlatform, CampaignResult } from "./types";
+import type {
+  AgentExecution,
+  AgentTextToolRun,
+  CampaignPlatform,
+  CampaignResult,
+} from "./types";
+
+export async function saveTextToolRunServer(
+  supabase: SupabaseClient,
+  params: {
+    userId: string;
+    parentExecutionId: string;
+    prompt: string;
+    run: AgentTextToolRun;
+  }
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("agent_executions").insert({
+      user_id: params.userId,
+      prompt: params.prompt,
+      intent: params.run.tool,
+      selected_tools: [params.run.tool],
+      status: "completed",
+      steps: [],
+      result: {
+        tool: params.run.tool,
+        input: params.run.input,
+        output: params.run.output,
+        qualityScore: params.run.qualityScore,
+        retried: params.run.retried,
+        parentExecutionId: params.parentExecutionId,
+      },
+      estimated_credits: 0,
+      used_credits: 0,
+    });
+    if (error) console.error("[persistExecution] tool run:", error.message);
+  } catch (e) {
+    console.error("[persistExecution] tool run:", e);
+  }
+}
+
+export async function saveTextToolRunsServer(
+  supabase: SupabaseClient,
+  userId: string,
+  parentExecutionId: string,
+  prompt: string,
+  toolRuns: AgentTextToolRun[]
+): Promise<void> {
+  for (const run of toolRuns) {
+    await saveTextToolRunServer(supabase, {
+      userId,
+      parentExecutionId,
+      prompt,
+      run,
+    });
+  }
+}
 
 export async function saveExecutionServer(
   supabase: SupabaseClient,

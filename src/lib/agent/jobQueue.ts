@@ -50,6 +50,29 @@ export async function enqueueJob(
   return data.id as string;
 }
 
+export async function updateJobProgress(
+  supabase: SupabaseClient,
+  jobId: string,
+  progress: {
+    steps: unknown[];
+    currentStep: number;
+    itemsCount?: number;
+  }
+): Promise<void> {
+  const { error } = await supabase
+    .from("agent_jobs")
+    .update({
+      status: "running",
+      result: { progress },
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", jobId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 export async function updateJobStatus(
   supabase: SupabaseClient,
   jobId: string,

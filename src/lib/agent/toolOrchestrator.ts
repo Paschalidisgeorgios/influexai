@@ -1,9 +1,11 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { parseScriptBlocks } from "@/lib/script-format";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
 import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
+import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
 import {
   runContentKalenderTextTool,
   runProductAdTextTool,
@@ -12,40 +14,10 @@ import {
 } from "@/lib/agent/text-tool-runners";
 import type { AgentIntent, AgentResult, AgentScores, AgentTextToolRun } from "./types";
 
-type ToolErrorBody = { error?: string; success?: boolean };
-
-async function callTool(
-  route: string,
-  body: Record<string, unknown>,
-  authCookie: string
-): Promise<unknown> {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const res = await fetch(`${base}${route}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: authCookie,
-    },
-    body: JSON.stringify(body),
-  });
-
-  const data = (await res.json().catch(() => ({}))) as ToolErrorBody &
-    Record<string, unknown>;
-
-  if (!res.ok) {
-    throw new Error(
-      typeof data.error === "string" ? data.error : `${route} fehlgeschlagen`
-    );
-  }
-
-  if (data.success === false) {
-    throw new Error(
-      typeof data.error === "string" ? data.error : `${route} fehlgeschlagen`
-    );
-  }
-
-  return data;
-}
+type OrchestrateContext = {
+  supabase: SupabaseClient;
+  userId: string;
+};
 
 function detectPlatform(prompt: string): string {
   if (/tiktok/i.test(prompt)) return "TikTok";
@@ -153,7 +125,7 @@ function inferProductAdFields(prompt: string, nische: string) {
 export async function orchestrate(
   intent: AgentIntent,
   prompt: string,
-  authCookie: string
+  ctx: OrchestrateContext
 ): Promise<AgentResult> {
   const platform = detectPlatform(prompt);
   const nische = detectNische(prompt);
@@ -334,33 +306,49 @@ export async function orchestrate(
     }
 
     case "image_generation": {
-      const { styleId, platform } = inferImageStyleAndPlatform(prompt);
+      const { styleId, platform: imagePlatform } =
+        inferImageStyleAndPlatform(prompt);
       const enhanced = await enhanceImagePromptForAgent(prompt, {
         styleId,
-        platform,
+        platform: imagePlatform,
       });
-      const data = (await callTool(
-        "/api/generate-image",
-        {
-          prompt,
-          category: "creator",
-          falPrompt: enhanced.prompt,
+
+      console.log("[agent-image]", {
+        styleId: enhanced.styleId,
+        platform: enhanced.platform,
+        model: "flux",
+        source: "toolOrchestrator",
+      });
+
+      const result = await runImageGeneratorGeneration(ctx.supabase, ctx.userId, {
+        prompt,
+        category: "creator",
+        styleId: enhanced.styleId,
+        platform: enhanced.platform,
+        preEnhanced: {
+          enhancedPrompt: enhanced.prompt,
           negativePrompt: enhanced.negative_prompt,
-          skipPromptEnhancement: true,
+          category: "creator",
           styleId: enhanced.styleId,
           platform: enhanced.platform,
         },
-        authCookie
-      )) as { imageUrl?: string; generationId?: string; prompt?: string };
+      });
+
+      if (!result.ok) {
+        throw new Error(result.error);
+      }
+
       return {
         type: "image",
         title: "Bild-Konzept bereit",
         summary: `Visual für "${prompt.slice(0, 50)}..." generiert.`,
         outputs: [
           {
-            imageUrl: data.imageUrl,
-            generationId: data.generationId,
+            imageUrl: result.imageUrl,
+            generationId: result.generationId,
             prompt,
+            styleId: enhanced.styleId,
+            platform: enhanced.platform,
           },
         ],
         scores: { platformFit: "high", riskLevel: "low" },

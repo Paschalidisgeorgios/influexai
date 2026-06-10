@@ -26,6 +26,16 @@ export default function SettingsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [isAgencyOwner, setIsAgencyOwner] = useState(false);
+  const [creatorNische, setCreatorNische] = useState("");
+  const [creatorZielgruppe, setCreatorZielgruppe] = useState("");
+  const [creatorTonalitaet, setCreatorTonalitaet] = useState("");
+  const [creatorPlattformen, setCreatorPlattformen] = useState("");
+  const [creatorProdukte, setCreatorProdukte] = useState("");
+  const [savingCreatorMemory, setSavingCreatorMemory] = useState(false);
+  const [msgCreatorMemory, setMsgCreatorMemory] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
   const tDelete = useTranslations("settings.deleteAccount");
   const supabase = createClient();
 
@@ -53,9 +63,86 @@ export default function SettingsPage() {
         .eq("owner_id", user.id)
         .maybeSingle();
       setIsAgencyOwner(Boolean(tenant));
+
+      const { data: creatorProfile } = await supabase
+        .from("creator_profiles")
+        .select("nische, zielgruppe, tonalitaet, plattformen, produkte")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (creatorProfile) {
+        setCreatorNische(creatorProfile.nische ?? "");
+        setCreatorZielgruppe(creatorProfile.zielgruppe ?? "");
+        setCreatorTonalitaet(creatorProfile.tonalitaet ?? "");
+        setCreatorPlattformen((creatorProfile.plattformen ?? []).join(", "));
+        setCreatorProdukte((creatorProfile.produkte ?? []).join(", "));
+      }
     };
     load();
   }, [supabase]);
+
+  const saveCreatorMemory = async () => {
+    setSavingCreatorMemory(true);
+    setMsgCreatorMemory(null);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const plattformen = creatorPlattformen
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const produkte = creatorProdukte
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const { error } = await supabase.from("creator_profiles").upsert({
+      user_id: user.id,
+      nische: creatorNische.trim() || null,
+      zielgruppe: creatorZielgruppe.trim() || null,
+      tonalitaet: creatorTonalitaet.trim() || null,
+      plattformen,
+      produkte,
+      updated_at: new Date().toISOString(),
+    });
+
+    setMsgCreatorMemory(
+      error
+        ? { type: "err", text: "Speichern fehlgeschlagen." }
+        : { type: "ok", text: "Studio-Gedächtnis gespeichert! ✓" }
+    );
+    setSavingCreatorMemory(false);
+  };
+
+  const resetCreatorMemory = async () => {
+    setSavingCreatorMemory(true);
+    setMsgCreatorMemory(null);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("creator_profiles")
+      .delete()
+      .eq("user_id", user.id);
+
+    if (!error) {
+      setCreatorNische("");
+      setCreatorZielgruppe("");
+      setCreatorTonalitaet("");
+      setCreatorPlattformen("");
+      setCreatorProdukte("");
+    }
+
+    setMsgCreatorMemory(
+      error
+        ? { type: "err", text: "Zurücksetzen fehlgeschlagen." }
+        : { type: "ok", text: "Gedächtnis zurückgesetzt." }
+    );
+    setSavingCreatorMemory(false);
+  };
 
   const saveName = async () => {
     if (!name.trim()) return;
@@ -314,6 +401,131 @@ export default function SettingsPage() {
                 }}
               />
             </label>
+          </>
+        )}
+
+        {card(
+          <>
+            <h2
+              style={{
+                fontFamily: "var(--font-bebas), sans-serif",
+                fontSize: "1.2rem",
+                letterSpacing: "0.02em",
+                color: "#F0EFE8",
+              }}
+            >
+              Was dein Studio über dich weiß
+            </h2>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.88rem",
+                color: "rgba(255,255,255,0.65)",
+                lineHeight: 1.5,
+              }}
+            >
+              Der KI Agent merkt sich hier deine Nische, Produkte und
+              Plattformen — du kannst alles jederzeit anpassen.
+            </p>
+            <div>
+              {label("Nische")}
+              <input
+                value={creatorNische}
+                onChange={(e) => setCreatorNische(e.target.value)}
+                placeholder="z. B. Fitness, Immobilien"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              {label("Zielgruppe")}
+              <input
+                value={creatorZielgruppe}
+                onChange={(e) => setCreatorZielgruppe(e.target.value)}
+                placeholder="z. B. Berufstätige 25–40"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              {label("Tonalität")}
+              <input
+                value={creatorTonalitaet}
+                onChange={(e) => setCreatorTonalitaet(e.target.value)}
+                placeholder="z. B. locker, direkt, vertrauensvoll"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              {label("Plattformen (kommagetrennt)")}
+              <input
+                value={creatorPlattformen}
+                onChange={(e) => setCreatorPlattformen(e.target.value)}
+                placeholder="TikTok, Instagram, YouTube"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              {label("Produkte (kommagetrennt)")}
+              <input
+                value={creatorProdukte}
+                onChange={(e) => setCreatorProdukte(e.target.value)}
+                placeholder="Kurse, Coaching, physische Produkte"
+                style={inputStyle}
+              />
+            </div>
+            {msgCreatorMemory && (
+              <div
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 9,
+                  fontSize: "0.85rem",
+                  background:
+                    msgCreatorMemory.type === "ok"
+                      ? "rgba(180,255,0,0.08)"
+                      : "rgba(255,71,87,0.08)",
+                  border: `1px solid ${msgCreatorMemory.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
+                  color:
+                    msgCreatorMemory.type === "ok" ? "#B4FF00" : "#ff6b7a",
+                }}
+              >
+                {msgCreatorMemory.text}
+              </div>
+            )}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => void saveCreatorMemory()}
+                disabled={savingCreatorMemory}
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: savingCreatorMemory ? "#2a2a2a" : "#B4FF00",
+                  color: savingCreatorMemory ? "rgba(255,255,255,0.65)" : "#060608",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  cursor: savingCreatorMemory ? "default" : "pointer",
+                }}
+              >
+                Speichern
+              </button>
+              <button
+                type="button"
+                onClick={() => void resetCreatorMemory()}
+                disabled={savingCreatorMemory}
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  background: "transparent",
+                  color: "#F0EFE8",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  cursor: savingCreatorMemory ? "default" : "pointer",
+                }}
+              >
+                Gedächtnis zurücksetzen
+              </button>
+            </div>
           </>
         )}
 

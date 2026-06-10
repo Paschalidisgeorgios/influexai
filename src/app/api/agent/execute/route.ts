@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
+import { executeRealCampaign } from "@/lib/agent/campaignExecutor";
 import {
-  buildCampaignResult,
   createCampaignExecution,
   createExecution,
 } from "@/lib/agent/mockExecutor";
 import {
   saveCampaignResultServer,
   saveExecutionServer,
+  saveTextToolRunsServer,
 } from "@/lib/agent/persistExecution";
 import { orchestrate } from "@/lib/agent/toolOrchestrator";
 import { estimateKiAgentOrchestrateCredits } from "@/lib/agent/ki-agent-orchestrate-credits";
@@ -157,32 +158,19 @@ export async function POST(request: Request) {
 
     const execWithUser = { ...exec, userId };
 
-    let usedCredits = 0;
-    let remainingCredits: number | undefined;
+    const completedExec = completeCampaignExecution(execWithUser, 0);
 
-    if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW && estimatedCredits > 0) {
-      const deducted = await deductCredits(
+    let result;
+    try {
+      result = await executeRealCampaign({
+        exec: completedExec,
         supabase,
         userId,
-        estimatedCredits,
-        "Campaign Autopilot",
-        {
-          generationType: "campaign-autopilot",
-          prompt: prompt.slice(0, 200),
-        }
-      );
-      if (!deducted.success) {
-        return NextResponse.json(
-          { error: deducted.error ?? "Credits abbuchen fehlgeschlagen." },
-          { status: 500 }
-        );
-      }
-      usedCredits = estimatedCredits;
-      remainingCredits = deducted.remainingCredits;
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json({ error: msg }, { status: 500 });
     }
-
-    const completedExec = completeCampaignExecution(execWithUser, usedCredits);
-    const result = buildCampaignResult(completedExec);
 
     if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
       try {
@@ -199,21 +187,24 @@ export async function POST(request: Request) {
           /invalid input syntax for type uuid|PGRST|postgres|violates|duplicate key/i.test(
             msg
           )
-            ? "Preview konnte nicht erstellt werden. Bitte versuche es erneut."
-            : msg || "Preview konnte nicht erstellt werden. Bitte versuche es erneut.";
+            ? "Kampagne konnte nicht gespeichert werden. Bitte erneut versuchen."
+            : msg || "Kampagne konnte nicht gespeichert werden.";
         return NextResponse.json({ error: friendly }, { status: 500 });
       }
     }
 
+    const finalExec = completeCampaignExecution(
+      { ...execWithUser, result },
+      result.usedCredits
+    );
+
     return NextResponse.json({
-      execution: completedExec,
+      execution: finalExec,
       result,
-      usedCredits,
-      ...(remainingCredits !== undefined ? { remainingCredits } : {}),
+      usedCredits: result.usedCredits,
     });
   }
 
-  const authCookie = request.headers.get("cookie") ?? "";
 
   const access = await assertKiToolAccess(0);
   if (access instanceof NextResponse) return access;
@@ -248,7 +239,10 @@ export async function POST(request: Request) {
 
   let result: AgentResult;
   try {
-    result = await orchestrate(execWithUser.intent, prompt, authCookie);
+    result = await orchestrate(execWithUser.intent, prompt, {
+      supabase,
+      userId,
+    });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Fehler";
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -274,6 +268,16 @@ export async function POST(request: Request) {
   };
 
   await saveExecutionServer(supabase, completedExec);
+
+  if (result.toolRuns?.length) {
+    await saveTextToolRunsServer(
+      supabase,
+      userId,
+      completedExec.id,
+      prompt,
+      result.toolRuns
+    );
+  }
 
   return NextResponse.json({
     execution: completedExec,

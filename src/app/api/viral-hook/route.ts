@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
   buildViralHookExtractorUserPrompt,
   parseViralHookExtractorResult,
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
 
   let hooks: string[];
   try {
-    const picked = await selectOutputWithQualityRetry({
+    const picked = await runWithQualityRetry({
       toolName: "viral-hook",
       userGoal: input,
       toOutputText: (items) => items.join("\n"),

@@ -1,5 +1,5 @@
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import type { AgentTextToolRun } from "@/lib/agent/types";
 import {
   buildContentKalenderToolUserPrompt,
@@ -35,7 +35,7 @@ export async function runViralHookTextTool(
   input: string
 ): Promise<AgentTextToolRun<string[]>> {
   const trimmed = input.trim();
-  const picked = await selectOutputWithQualityRetry<string[]>({
+  const picked = await runWithQualityRetry<string[]>({
     toolName: "viral-hook",
     userGoal: trimmed,
     toOutputText: (items) => items.join("\n"),
@@ -65,7 +65,7 @@ export async function runContentKalenderTextTool(params: {
   frequenz: ContentKalenderFrequency;
 }): Promise<AgentTextToolRun<ContentKalenderEntry[]>> {
   const userGoal = `${params.nische} · ${params.plattform} · ${params.frequenz}`;
-  const picked = await selectOutputWithQualityRetry<ContentKalenderEntry[]>({
+  const picked = await runWithQualityRetry<ContentKalenderEntry[]>({
     toolName: "content-kalender",
     userGoal,
     toOutputText: (items) =>
@@ -107,7 +107,7 @@ export async function runTrendScriptTextTool(params: {
   const sources = trendVideosToSources(trends);
   const trendParams = { thema, plattform: params.plattform, trends };
 
-  const picked = await selectOutputWithQualityRetry<string>({
+  const picked = await runWithQualityRetry<string>({
     toolName: "trend-script",
     userGoal: `${thema} · ${params.plattform}`,
     toOutputText: (value) => value,
@@ -136,7 +136,7 @@ export async function runProductAdTextTool(
 ): Promise<
   AgentTextToolRun<{ script: ProductAdScript; scriptText: string }>
 > {
-  const picked = await selectOutputWithQualityRetry<ProductAdScript>({
+  const picked = await runWithQualityRetry<ProductAdScript>({
     toolName: "product-ad",
     userGoal: `${params.productName} · ${params.audience} · ${params.platform}`,
     toOutputText: scriptToDisplayText,

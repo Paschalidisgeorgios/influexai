@@ -4,7 +4,7 @@ import { assertKiToolAccess } from "@/lib/access.server";
 import { addCredits, deductCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import { fetchTrendingVideos } from "@/lib/youtube";
 import {
   buildTrendScriptToolUserPrompt,
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
 
   let script: string;
   try {
-    const picked = await selectOutputWithQualityRetry({
+    const picked = await runWithQualityRetry({
       toolName: "trend-script",
       userGoal: `${thema} · ${plattform}`,
       toOutputText: (value) => value,

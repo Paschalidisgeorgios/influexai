@@ -2,6 +2,16 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { buildFlowSystemAppend } from "./flows";
 import { MASTER_AGENT_SYSTEM_PROMPT } from "./tools-definition";
 import {
+  STUDIO_GUIDE_INSTRUCTIONS,
+  STUDIO_KNOWLEDGE,
+} from "./studioKnowledge";
+import {
+  extractCreatorFactsFromChat,
+  formatCreatorProfileForPrompt,
+  getCreatorProfile,
+  updateCreatorProfile,
+} from "./creatorMemory";
+import {
   runAnthropicAgentTurn,
   type AnthropicMessageParam,
 } from "./anthropic-agent";
@@ -67,9 +77,16 @@ export async function* runMasterAgentStream(
   let lastCreditsLeft: number | undefined;
   let finalSummary = "";
 
+  const creatorProfile = await getCreatorProfile(supabase, user.id);
+  const creatorContext = formatCreatorProfileForPrompt(creatorProfile);
+  const studioGuideBlock = `\n\n${STUDIO_GUIDE_INSTRUCTIONS}\n\n${STUDIO_KNOWLEDGE}${
+    creatorContext ? `\n\n${creatorContext}` : ""
+  }`;
+
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     const flowAppend = buildFlowSystemAppend(history, userMessage);
-    const systemPrompt = MASTER_AGENT_SYSTEM_PROMPT + flowAppend;
+    const systemPrompt =
+      MASTER_AGENT_SYSTEM_PROMPT + studioGuideBlock + flowAppend;
 
     const turn = await runAnthropicAgentTurn(systemPrompt, messages);
 
@@ -98,6 +115,13 @@ export async function* runMasterAgentStream(
           totalUsed: totalCreditsUsed,
         };
       }
+      void extractCreatorFactsFromChat(userMessage, finalSummary).then(
+        async (partial) => {
+          if (Object.keys(partial).length > 0) {
+            await updateCreatorProfile(supabase, user.id, partial);
+          }
+        }
+      );
       return;
     }
 

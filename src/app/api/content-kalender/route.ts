@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { selectOutputWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
   buildContentKalenderToolUserPrompt,
   CONTENT_KALENDER_PLATFORMS,
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
   let entries: ContentKalenderEntry[];
   try {
-    const picked = await selectOutputWithQualityRetry({
+    const picked = await runWithQualityRetry({
       toolName: "content-kalender",
       userGoal: `${nische} · ${plattform} · ${frequenz}`,
       toOutputText: (items) =>
