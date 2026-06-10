@@ -61,12 +61,22 @@ export async function POST(request: NextRequest) {
   }
   if (character.status !== "training_set_ready" && character.status !== "training") {
     return NextResponse.json(
-      { error: "Trainingsset muss vollständig sein (20/20)." },
+      { error: "Fotos müssen vollständig sein, bevor der Charakter lernen kann." },
       { status: 400 }
     );
   }
-  if (!character.character_set_id) {
+
+  const isUploaded = character.source === "uploaded";
+
+  if (!isUploaded && !character.character_set_id) {
     return NextResponse.json({ error: "character_set_id fehlt." }, { status: 400 });
+  }
+
+  if (isUploaded && !character.upload_zip_url) {
+    return NextResponse.json(
+      { error: "Upload-Daten fehlen — bitte Fotos erneut hochladen." },
+      { status: 400 }
+    );
   }
 
   if (character.lora_id && character.status === "training") {
@@ -78,32 +88,46 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const generationIds = await listTrainingSetGenerationIds(
-    supabase,
-    userId,
-    character.character_set_id
-  );
-
-  if (generationIds.length < 10) {
-    return NextResponse.json(
-      {
-        error: `Nur ${generationIds.length} Trainingsbilder gefunden — mindestens 10 erforderlich.`,
-      },
-      { status: 400 }
-    );
-  }
-
-  const sessionId = crypto.randomUUID();
+  const sessionId =
+    (isUploaded && character.upload_session_id) || crypto.randomUUID();
   const suffix = characterId.replace(/-/g, "").slice(0, 4).toUpperCase();
   const triggerWord = `${KI_INFLUENCER_DEFAULT_TRIGGER}_${suffix}`;
 
   try {
-    const { zipUrl, thumbnailPath, imageCount } = await buildLoraZipFromGenerationIds(
-      supabase,
-      userId,
-      generationIds,
-      sessionId
-    );
+    let zipUrl: string;
+    let thumbnailPath: string;
+    let imageCount: number;
+
+    if (isUploaded) {
+      zipUrl = character.upload_zip_url!;
+      thumbnailPath = character.casting_image_url ?? "";
+      imageCount = character.upload_image_count ?? 10;
+    } else {
+      const generationIds = await listTrainingSetGenerationIds(
+        supabase,
+        userId,
+        character.character_set_id!
+      );
+
+      if (generationIds.length < 10) {
+        return NextResponse.json(
+          {
+            error: `Nur ${generationIds.length} Trainingsbilder gefunden — mindestens 10 erforderlich.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      const built = await buildLoraZipFromGenerationIds(
+        supabase,
+        userId,
+        generationIds,
+        sessionId
+      );
+      zipUrl = built.zipUrl;
+      thumbnailPath = built.thumbnailPath;
+      imageCount = built.imageCount;
+    }
 
     const { data: loraRow, error: insertErr } = await supabase
       .from("lora_models")

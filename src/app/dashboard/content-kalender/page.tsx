@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Calendar } from "lucide-react";
 import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import {
@@ -17,6 +17,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = CONTENT_CALENDAR_CREDIT_COST;
@@ -74,6 +75,7 @@ const inputStyle = {
 
 function ContentKalenderPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("input");
   const [niche, setNiche] = useState("");
   const [platform, setPlatform] = useState(PLATFORMS[3]);
@@ -90,6 +92,13 @@ function ContentKalenderPageInner() {
     () => (result ? calendarToExportText(result) : ""),
     [result]
   );
+
+  useEffect(() => {
+    const nische = getSafeSearchParam(searchParams, "nische");
+    const plattform = getSafeSearchParam(searchParams, "plattform");
+    if (nische) setNiche(nische);
+    if (plattform && PLATFORMS.includes(plattform)) setPlatform(plattform);
+  }, [searchParams]);
 
   const runGenerate = async () => {
     setError(null);

@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Rocket } from "lucide-react";
 import { generateTrendScript } from "@/app/actions/generate-trend-script";
 import {
@@ -15,6 +15,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = TREND_SCRIPT_CREDIT_COST;
@@ -68,6 +69,7 @@ const inputStyle = {
 
 function TrendToScriptPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("input");
   const [trend, setTrend] = useState("");
   const [niche, setNiche] = useState("");
@@ -79,6 +81,11 @@ function TrendToScriptPageInner() {
   const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
+
+  useEffect(() => {
+    const thema = getSafeSearchParam(searchParams, "thema");
+    if (thema) setTrend(thema);
+  }, [searchParams]);
 
   const runGenerate = async () => {
     setError(null);

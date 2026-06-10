@@ -4,12 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Video } from "lucide-react";
 import { getElevenLabsVoices } from "@/app/actions/get-elevenlabs-voices";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { GuardModal } from "@/components/dashboard/GuardModal";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -75,6 +77,7 @@ function fieldStyle() {
 export default function UgcVideoPage() {
   const t = useTranslations("flows.ugcVideo");
   const locale = useLocale();
+  const searchParams = useSearchParams();
   const { credits, reload: reloadCredits } = useUserCredits();
 
   const [step, setStep] = useState<FlowStep>("input");
@@ -105,6 +108,11 @@ export default function UgcVideoPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const produkt = getSafeSearchParam(searchParams, "produkt");
+    if (produkt) setScript(produkt);
+  }, [searchParams]);
 
   useEffect(() => {
     Promise.all([

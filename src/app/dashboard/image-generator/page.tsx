@@ -20,9 +20,11 @@ import {
   IMAGE_STYLE_PRESETS,
   PLATFORM_FORMATS,
   platformToFalImageSize,
+  resolveImageStyleId,
   type ImagePlatformId,
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import {
   IMAGE_GEN_CREDITS,
@@ -94,6 +96,14 @@ export default function ImageGeneratorPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerationMeta | null>(null);
   const [variation, setVariation] = useState<GenerationMeta | null>(null);
+
+  useEffect(() => {
+    const promptParam = getSafeSearchParam(searchParams, "prompt");
+    const styleParam = searchParams.get("styleId");
+    if (promptParam) setPrompt(promptParam);
+    if (styleParam) setStyleId(resolveImageStyleId(styleParam));
+  }, [searchParams]);
+
   const [compare, setCompare] = useState<{
     originalUrl: string;
     upscaledUrl: string;

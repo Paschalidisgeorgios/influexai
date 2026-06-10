@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Zap } from "lucide-react";
 import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import {
@@ -15,6 +15,7 @@ import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 
 const CREDIT_COST = VIRAL_HOOK_CREDIT_COST;
@@ -60,6 +61,7 @@ const inputStyle = {
 
 function ViralHookPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("input");
   const [mode, setMode] = useState<InputMode>("url");
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -71,6 +73,14 @@ function ViralHookPageInner() {
   const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
   const { credits } = useUserCredits();
   const { generate } = useOptimisticGeneration();
+
+  useEffect(() => {
+    const input = getSafeSearchParam(searchParams, "input");
+    if (input) {
+      setMode("manual");
+      setManualDescription(input);
+    }
+  }, [searchParams]);
 
   const runExtract = async () => {
     setError(null);

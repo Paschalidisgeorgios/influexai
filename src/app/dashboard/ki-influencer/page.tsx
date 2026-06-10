@@ -27,14 +27,25 @@ import {
   KI_INFLUENCER_TRAINING_SET_SIZE,
   KI_INFLUENCER_WIZARD_STEPS,
 } from "@/lib/ki-influencer-config";
-import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
+import { LORA_GENERATION_CREDIT, LORA_MAX_FILE_BYTES, LORA_MIN_IMAGES } from "@/lib/lora-config";
 
 type WizardStep = 0 | 1 | 2 | 3;
+type PathMode = null | "generated" | "uploaded";
+
+const UPLOAD_MAX_PHOTOS = 20;
+const ALLOWED_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+const UPLOAD_TIPS = [
+  "Nur EINE Person auf allen Fotos",
+  "Verschiedene Blickwinkel und Gesichtsausdrücke",
+  "Gutes Licht, scharfes Gesicht",
+  "Keine Sonnenbrillen oder verdeckte Gesichter",
+] as const;
 
 const DESCRIPTION_EXAMPLES = [
   "28-jährige Fitness-Influencerin, lange rotblonde Haare, grüne Augen, sportlich-natürlicher Look, Nische: Fitness & Ernährung",
   "32-jähriger Tech-Creator, kurze dunkle Haare, Brille, moderner Casual-Style, Nische: Gadgets & KI",
-  "25-jährige Beauty- und Fashion-Influencerin, lange braune Haare, eleganter Look, Nische: Mode & Make-up",
+  "25-jährige Beauty-Influencerin, lange braune Haare, eleganter Look, Nische: Mode & Make-up",
 ] as const;
 
 const DESCRIPTION_EXAMPLE_LABELS = [
@@ -70,12 +81,20 @@ function InfoTip({ text }: { text: string }) {
 }
 
 export default function KiInfluencerPage() {
+  const [pathMode, setPathMode] = useState<PathMode>(null);
   const [step, setStep] = useState<WizardStep>(0);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [characterId, setCharacterId] = useState<string | null>(null);
   const [castingImageUrl, setCastingImageUrl] = useState<string | null>(null);
   const [castingConfirmed, setCastingConfirmed] = useState(false);
+
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadPreviews, setUploadPreviews] = useState<string[]>([]);
+  const [uploadConsent, setUploadConsent] = useState(false);
+  const [uploadRightsConsent, setUploadRightsConsent] = useState(false);
+  const [uploadDragOver, setUploadDragOver] = useState(false);
+  const uploadFileRef = useRef<HTMLInputElement>(null);
 
   const [trainingProgress, setTrainingProgress] = useState(0);
   const [trainingSetRunning, setTrainingSetRunning] = useState(false);
@@ -97,6 +116,82 @@ export default function KiInfluencerPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loraTrainCredits = calcLoraCredits(KI_INFLUENCER_LORA_STEPS);
+
+  const addUploadFiles = (incoming: FileList | File[]) => {
+    const next: File[] = [];
+    for (const file of Array.from(incoming)) {
+      if (!ALLOWED_UPLOAD_TYPES.has(file.type)) continue;
+      if (file.size > LORA_MAX_FILE_BYTES) continue;
+      next.push(file);
+    }
+    if (next.length === 0) return;
+    setUploadFiles((prev) => {
+      const merged = [...prev, ...next].slice(0, UPLOAD_MAX_PHOTOS);
+      setUploadPreviews((old) => {
+        old.forEach((url) => URL.revokeObjectURL(url));
+        return merged.map((f) => URL.createObjectURL(f));
+      });
+      return merged;
+    });
+  };
+
+  const submitUploadedPhotos = async () => {
+    if (!name.trim() || uploadFiles.length < LORA_MIN_IMAGES) return;
+    if (!uploadConsent || !uploadRightsConsent) {
+      setError("Bitte bestätige beide Checkboxen, bevor es weitergeht.");
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      for (const file of uploadFiles) {
+        formData.append("images", file);
+      }
+      formData.append("consentAccepted", "true");
+
+      const uploadRes = await fetch("/api/lora/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = (await uploadRes.json()) as {
+        error?: string;
+        sessionId?: string;
+        zipUrl?: string;
+        thumbnailPath?: string;
+        imageCount?: number;
+      };
+      if (!uploadRes.ok) {
+        throw new Error(uploadData.error ?? "Upload fehlgeschlagen.");
+      }
+
+      const createRes = await fetch("/api/ki-influencer/create-from-upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          sessionId: uploadData.sessionId,
+          zipUrl: uploadData.zipUrl,
+          thumbnailPath: uploadData.thumbnailPath,
+          imageCount: uploadData.imageCount,
+        }),
+      });
+      const createData = (await createRes.json()) as KiInfluencerApiErrorBody & {
+        characterId?: string;
+      };
+      if (!createRes.ok) {
+        throw new Error(kiInfluencerUserMessage(createData));
+      }
+      if (createData.characterId) {
+        setCharacterId(createData.characterId);
+        setStep(2);
+      }
+    } catch (err) {
+      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pollTrainingStatus = useCallback((id: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
@@ -301,6 +396,147 @@ export default function KiInfluencerPage() {
         </p>
       </div>
 
+      {error && <p className="mb-4 text-sm text-[#ff6b7a]">{error}</p>}
+
+      {pathMode === null && (
+        <div className="mb-8 grid gap-4 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setPathMode("generated")}
+            className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-[#060608] p-6 text-left transition-colors hover:border-[#B4FF00]/40"
+          >
+            <span className="text-lg font-semibold text-[#F0EFE8]">
+              Neuen Charakter erstellen
+            </span>
+            <span className="text-sm text-[rgba(255,255,255,0.65)]">
+              Wir erfinden gemeinsam eine virtuelle Person
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPathMode("uploaded")}
+            className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-[#060608] p-6 text-left transition-colors hover:border-[#B4FF00]/40"
+          >
+            <span className="text-lg font-semibold text-[#F0EFE8]">
+              Eigene Fotos verwenden
+            </span>
+            <span className="text-sm text-[rgba(255,255,255,0.65)]">
+              Du hast schon Fotos einer Person (z.B. von dir)? Lade sie hoch.
+            </span>
+          </button>
+        </div>
+      )}
+
+      {pathMode === "uploaded" && step < 2 && (
+        <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-semibold text-[#F0EFE8]">Name</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="z.B. Melodia"
+              className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
+            />
+          </label>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-[rgba(255,255,255,0.65)]">
+            {UPLOAD_TIPS.map((tip) => (
+              <li key={tip}>{tip}</li>
+            ))}
+          </ul>
+          <div
+            role="button"
+            tabIndex={0}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setUploadDragOver(true);
+            }}
+            onDragLeave={() => setUploadDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setUploadDragOver(false);
+              if (e.dataTransfer.files.length) addUploadFiles(e.dataTransfer.files);
+            }}
+            onClick={() => uploadFileRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") uploadFileRef.current?.click();
+            }}
+            className={`cursor-pointer rounded-xl border-2 border-dashed px-4 py-10 text-center transition-colors ${
+              uploadDragOver
+                ? "border-[#B4FF00]/50 bg-[#B4FF00]/5"
+                : "border-white/15 bg-white/[0.02]"
+            }`}
+          >
+            <p className="text-sm font-semibold text-[#F0EFE8]">
+              Fotos hierher ziehen oder klicken
+            </p>
+            <p className="mt-1 text-xs text-white/45">JPG, PNG, WEBP · max. 10 MB pro Foto</p>
+            <input
+              ref={uploadFileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.length) addUploadFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </div>
+          {uploadPreviews.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+              {uploadPreviews.map((src) => (
+                <div
+                  key={src}
+                  className="relative aspect-square overflow-hidden rounded-lg border border-white/10"
+                >
+                  <Image src={src} alt="" fill unoptimized className="object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-sm text-[#B4FF00]">
+            {uploadFiles.length} von mindestens {LORA_MIN_IMAGES} Fotos
+          </p>
+          <label className="flex items-start gap-3 text-sm text-[rgba(255,255,255,0.75)]">
+            <input
+              type="checkbox"
+              checked={uploadRightsConsent}
+              onChange={(e) => setUploadRightsConsent(e.target.checked)}
+              className="mt-1"
+            />
+            <span>
+              Ich bestätige, dass ich alle Rechte an diesen Fotos habe und die abgebildete
+              Person (falls nicht ich selbst) eingewilligt hat.
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm text-[rgba(255,255,255,0.75)]">
+            <input
+              type="checkbox"
+              checked={uploadConsent}
+              onChange={(e) => setUploadConsent(e.target.checked)}
+              className="mt-1"
+            />
+            <span>Fotos werden nur für dein Training verwendet.</span>
+          </label>
+          <button
+            type="button"
+            disabled={
+              loading ||
+              !name.trim() ||
+              uploadFiles.length < LORA_MIN_IMAGES ||
+              !uploadConsent ||
+              !uploadRightsConsent
+            }
+            onClick={() => void submitUploadedPhotos()}
+            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+          >
+            {loading ? "Lade hoch…" : "Weiter zum Gesicht lernen"}
+          </button>
+        </div>
+      )}
+
+      {pathMode !== null && (pathMode === "generated" || step >= 2) && (
+        <>
       <ol className="mb-8 flex flex-wrap gap-2">
         {KI_INFLUENCER_WIZARD_STEPS.map((s, i) => {
           const active = step === i;
@@ -322,9 +558,7 @@ export default function KiInfluencerPage() {
         })}
       </ol>
 
-      {error && <p className="mb-4 text-sm text-[#ff6b7a]">{error}</p>}
-
-      {step === 0 && (
+      {step === 0 && pathMode === "generated" && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
           <h2 className="text-lg font-semibold text-[#F0EFE8]">
             Erstelle deine virtuelle Person
@@ -411,7 +645,7 @@ export default function KiInfluencerPage() {
         </div>
       )}
 
-      {step === 1 && (
+      {step === 1 && pathMode === "generated" && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
           <p className="text-sm text-[rgba(255,255,255,0.65)]">
             Wir erstellen jetzt 20 Fotos deines Charakters aus verschiedenen Blickwinkeln.
@@ -594,6 +828,8 @@ export default function KiInfluencerPage() {
           )}
           <AiOutputDisclaimer />
         </div>
+      )}
+        </>
       )}
     </div>
   );

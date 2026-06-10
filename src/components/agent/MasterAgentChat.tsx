@@ -1,13 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowUp, Loader2, Paperclip } from "lucide-react";
 import { saveAgentRun } from "@/app/actions/save-agent-run";
 import { notifyGenerationsUpdated, handleApiPlanRequired, openBuyCreditsModal } from "@/lib/client-credits-ui";
 import { formatStarterFromPrice } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/client";
+import {
+  buildIntentToolUrl,
+  INTENT_TOOL_LABELS,
+} from "@/lib/agent/intent-tool-navigation";
+import type { IntentToolId } from "@/lib/agent/intentRouter";
+import { useTypewriterPlaceholder } from "@/hooks/useTypewriterPlaceholder";
 import { AgentResultCard } from "./AgentResultCard";
 import { AgentToolTimeline, AgentToolStepCards } from "./AgentToolTimeline";
 import { AgentTypingIndicator } from "./AgentTypingIndicator";
@@ -45,11 +52,16 @@ type Props = {
   chipGroups?: ChipGroup[];
 };
 
-function greetingKey(): "greeting_morning" | "greeting_day" | "greeting_evening" {
+function greetingKey():
+  | "greeting_morning"
+  | "greeting_day"
+  | "greeting_evening"
+  | "greeting_night" {
   const hour = new Date().getHours();
-  if (hour < 12) return "greeting_morning";
-  if (hour < 18) return "greeting_day";
-  return "greeting_evening";
+  if (hour >= 5 && hour < 11) return "greeting_morning";
+  if (hour >= 11 && hour < 18) return "greeting_day";
+  if (hour >= 18 && hour < 22) return "greeting_evening";
+  return "greeting_night";
 }
 
 const TIMELINE_TOOLS: AgentToolName[] = [
@@ -128,8 +140,11 @@ export function MasterAgentChat({
   chipGroups = [],
 }: Props) {
   const t = useTranslations("agent");
+  const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
+  const [routingToast, setRoutingToast] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
@@ -143,6 +158,39 @@ export function MasterAgentChat({
   const scrollRef = useRef<HTMLDivElement>(null);
   const assistantIdRef = useRef<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  const typewriterExamples = useMemo(
+    () => [
+      t("typewriter_example_1"),
+      t("typewriter_example_2"),
+      t("typewriter_example_3"),
+      t("typewriter_example_4"),
+      t("typewriter_example_5"),
+    ],
+    [t]
+  );
+
+  const isEmpty = messages.length === 0;
+  const typewriterText = useTypewriterPlaceholder({
+    examples: typewriterExamples,
+    enabled: isEmpty && !input.trim() && !inputFocused && !prefersReducedMotion,
+  });
+
+  const inputPlaceholder =
+    inputFocused || input.trim() || prefersReducedMotion
+      ? t("input_placeholder_focused")
+      : typewriterText || t("input_placeholder_focused");
+
+  useEffect(() => {
+    if (!routingToast) return;
+    const tmr = window.setTimeout(() => setRoutingToast(null), 4000);
+    return () => window.clearTimeout(tmr);
+  }, [routingToast]);
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -198,7 +246,7 @@ export function MasterAgentChat({
 
   const growTextarea = useCallback((el: HTMLTextAreaElement) => {
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 96)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, []);
 
   useEffect(() => {
@@ -249,6 +297,39 @@ export function MasterAgentChat({
   const handleSubmit = async (text?: string) => {
     const msg = (text ?? input).trim();
     if (!msg || running) return;
+
+    try {
+      const intentRes = await fetch("/api/agent/intent-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: msg }),
+      });
+      if (intentRes.ok) {
+        const intent = (await intentRes.json()) as {
+          tool: IntentToolId;
+          prefill: Record<string, string>;
+          confidence: number;
+        };
+        console.log(
+          "[intent-router]",
+          msg.slice(0, 50),
+          intent.tool,
+          intent.confidence
+        );
+        if (intent.confidence >= 0.7 && intent.tool !== "ki-agent") {
+          setInput("");
+          setRoutingToast(
+            t("intent_toast", {
+              tool: INTENT_TOOL_LABELS[intent.tool] ?? intent.tool,
+            })
+          );
+          router.push(buildIntentToolUrl(intent.tool, intent.prefill ?? {}));
+          return;
+        }
+      }
+    } catch {
+      /* fall through to agent */
+    }
 
     setInput("");
     textareaRef.current?.focus();
@@ -408,7 +489,6 @@ export function MasterAgentChat({
   const lastAssistant = [...messages]
     .reverse()
     .find((m) => m.role === "assistant");
-  const isEmpty = messages.length === 0;
   const creditHint = estimate
     ? t("credit_confirm", { credits: estimate.typical })
     : input.trim()
@@ -425,9 +505,9 @@ export function MasterAgentChat({
     >
       <div
         className={`flex w-full flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.04] transition-colors focus-within:border-[rgba(180,255,0,0.4)] ${
-          compact ? "p-2.5" : "p-3 sm:p-3.5"
+          compact ? "p-2.5" : "p-4 sm:p-5"
         }`}
-        style={{ minHeight: compact ? undefined : undefined }}
+        style={{ minHeight: compact ? undefined : 96 }}
       >
         <textarea
           ref={textareaRef}
@@ -439,19 +519,21 @@ export function MasterAgentChat({
           onInput={(e) => {
             growTextarea(e.currentTarget);
           }}
+          onFocus={() => setInputFocused(true)}
+          onBlur={() => setInputFocused(false)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               void handleSubmit();
             }
           }}
-          placeholder={t("input_placeholder")}
+          placeholder={inputPlaceholder}
           disabled={running}
           rows={1}
-          className={`w-full resize-none overflow-hidden bg-transparent text-[#F0EFE8] leading-snug placeholder:text-white/40 outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-            compact ? "text-sm" : "text-[18px] sm:text-base"
+          className={`w-full resize-none overflow-hidden bg-transparent text-[#F0EFE8] leading-relaxed placeholder:text-white/40 outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            compact ? "text-sm" : "text-lg"
           }`}
-          style={{ minHeight: 24, maxHeight: 96 }}
+          style={{ minHeight: compact ? 24 : 96, maxHeight: compact ? 96 : 160 }}
         />
         <div className="flex items-center gap-2">
           <button
@@ -567,6 +649,11 @@ export function MasterAgentChat({
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-[#060608]">
+      {routingToast && (
+        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-[#B4FF00]/30 bg-[#0f0f12] px-4 py-3 text-sm font-medium text-[#F0EFE8] shadow-lg">
+          {routingToast}
+        </div>
+      )}
       <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
         {isEmpty ? (
           <div className="relative flex min-h-0 flex-col items-stretch justify-start px-1 pt-1 pb-3 md:min-h-full md:items-center md:justify-center md:px-2 md:py-12">

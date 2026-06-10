@@ -417,6 +417,7 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/ki-influencer",
         label: "KI-Influencer",
         icon: UserRound,
+        badge: "NEU",
       },
       {
         id: "campaign-autopilot",
@@ -465,7 +466,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/ugc-video",
         labelKey: "ugc_video",
         icon: Video,
-        badge: "NEU",
       },
       {
         id: "image-generator",

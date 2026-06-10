@@ -1,14 +1,20 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { CharacterStatus } from "@/lib/ki-influencer-config";
 
+export type CharacterSource = "generated" | "uploaded";
+
 export type CharacterRow = {
   id: string;
   user_id: string;
   name: string;
   description: string | null;
+  source: CharacterSource;
   casting_generation_id: string | null;
   casting_image_url: string | null;
   character_set_id: string | null;
+  upload_session_id: string | null;
+  upload_zip_url: string | null;
+  upload_image_count: number | null;
   lora_id: string | null;
   lora_ref: string | null;
   trigger_word: string | null;
