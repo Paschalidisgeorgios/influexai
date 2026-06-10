@@ -25,7 +25,7 @@ export const IMAGE_STYLE_PRESETS: readonly ImageStylePreset[] = [
     id: "authentic",
     labelDE: "Authentisch / UGC",
     descriptor:
-      "candid amateur photography, shot on a modern smartphone, natural uneven lighting, realistic skin with visible texture and pores, no retouching, slight motion imperfection, believable everyday moment, muted true-to-life colors",
+      "natural lifestyle photography, shot on a modern smartphone in good daylight, tack sharp focus on the subject, crisp details, realistic skin with visible natural texture, no retouching, true-to-life colors, clean composition, authentic everyday moment",
   },
   {
     id: "editorial",
@@ -37,7 +37,7 @@ export const IMAGE_STYLE_PRESETS: readonly ImageStylePreset[] = [
     id: "cinematic",
     labelDE: "Cinematisch",
     descriptor:
-      "cinematic still frame, anamorphic lens look, shallow depth of field, dramatic motivated lighting, film grain, teal-orange color grade kept subtle",
+      "cinematic still frame, anamorphic lens look, shallow depth of field, dramatic motivated lighting, very subtle fine film grain, teal-orange color grade kept subtle",
   },
   {
     id: "product",

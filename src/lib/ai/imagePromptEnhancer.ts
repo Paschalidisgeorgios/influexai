@@ -10,6 +10,8 @@ import {
 
 const IMAGE_PROMPT_ENHANCER_MODEL = "claude-sonnet-4-5-20250929";
 
+const SHARPNESS_RULE = `The image must always be sharp and in focus: include 'tack sharp focus, crisp details' for every style. Never describe motion blur, haze, soft focus, or out-of-focus subjects unless the user explicitly asks for it.`;
+
 const ANTI_GLOSS_RULE = `Never use terms like 4k, 8k, ultra HD, masterpiece, hyperrealistic — they create artificial gloss. Describe a real photograph instead. For people: always preserve natural skin texture, avoid flawless airbrushed skin.`;
 
 function buildEnhancerSystem(styleId: ImageStyleId): string {
@@ -21,8 +23,9 @@ function buildEnhancerSystem(styleId: ImageStyleId): string {
 4. Write a negative prompt that excludes common artifacts: deformed hands, extra fingers, extra limbs, duplicate objects, phones or props not requested, text, watermark, logo, low quality, blurry, oversaturated, cartoonish (unless requested), child-like features when an adult is described.
 5. Never add objects, people or props the user did not ask for.
 6. Phrase quality requirements POSITIVELY inside the main prompt instead of relying on the negative prompt: e.g. 'natural relaxed hands', 'clean composition with only the described subject and setting', 'anatomically correct'. Never mention unwanted objects by name in the prompt.
-7. ${ANTI_GLOSS_RULE}
-8. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
+7. ${SHARPNESS_RULE}
+8. ${ANTI_GLOSS_RULE}
+9. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
 }
 
 const FALLBACK_NEGATIVE_PROMPT =
