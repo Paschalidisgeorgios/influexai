@@ -417,7 +417,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/ki-influencer",
         label: "KI-Influencer",
         icon: UserRound,
-        badge: "NEU",
       },
       {
         id: "campaign-autopilot",
@@ -466,6 +465,43 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/ugc-video",
         labelKey: "ugc_video",
         icon: Video,
+        badge: "NEU",
+      },
+      {
+        id: "image-generator",
+        href: "/dashboard/image-generator",
+        label: "Bild Generator",
+        icon: ImageGeneratorPhotoIcon,
+      },
+      {
+        id: "ki-ich",
+        href: "/dashboard/ki-ich",
+        label: "Mein KI-Ich",
+        icon: Sparkles,
+      },
+      {
+        id: "seedance",
+        href: "/dashboard/seedance",
+        label: "Bild zu Video",
+        icon: Film,
+      },
+      {
+        id: "motion-transfer",
+        href: "/dashboard/motion-transfer",
+        label: "Motion Transfer",
+        icon: Clapperboard,
+      },
+      {
+        id: "live-portrait",
+        href: "/dashboard/live-portrait",
+        label: "Live Portrait",
+        icon: Theater,
+      },
+      {
+        id: "avatar-studio",
+        href: "/dashboard/avatar-studio",
+        label: "Avatar Studio",
+        icon: Sparkles,
       },
       {
         id: "upscaler",
@@ -503,6 +539,12 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   }
   if (
     path.includes("ugc-video") ||
+    path.includes("image-generator") ||
+    path.includes("ki-ich") ||
+    path.includes("seedance") ||
+    path.includes("motion-transfer") ||
+    path.includes("live-portrait") ||
+    path.includes("avatar-studio") ||
     path.includes("upscaler") ||
     path.includes("lora-training")
   ) {
@@ -521,6 +563,8 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   }
   if (
     path.includes("live-creator-new") ||
+    path.includes("live-creator") ||
+    path.includes("voice-agent") ||
     path.includes("/dashboard/voice")
   ) {
     keys.push("live");
@@ -560,8 +604,10 @@ export const NAV_GROUPS: {
     key: "live",
     label: "Live & Audio",
     items: [
+      { id: "live-creator", href: "/dashboard/live-creator", label: "Live Creator", icon: Video },
       { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
+      { id: "voice-agent", href: "/dashboard/voice-agent", label: "Voice Agent", icon: Bot },
     ],
   },
 ];
