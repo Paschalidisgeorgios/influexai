@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
-import { assertKiToolAccess } from "@/lib/access.server";
 import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
-import { deductCredits } from "@/lib/credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
 import {
   createGenerationRecord,
@@ -12,6 +10,13 @@ import {
 } from "@/lib/generation-assets";
 import { configureFalClient, getFalKey, logFalAiError } from "@/lib/fal-image";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import {
+  assertKiInfluencerAccess,
+  deductKiInfluencerCredits,
+  kiInfluencerErrorResponse,
+  logKiInfluencerError,
+  mapSupabaseWriteError,
+} from "@/lib/ki-influencer-api";
 import {
   generationStoragePublicUrl,
 } from "@/lib/ki-influencer-lora-upload";
@@ -48,9 +53,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const access = await assertKiToolAccess(confirmCasting ? 0 : creditCost);
+  const access = await assertKiInfluencerAccess(confirmCasting ? 0 : creditCost);
   if (access instanceof NextResponse) return access;
-  const { userId, supabase } = access;
+  const { userId, supabase, isAdmin } = access;
 
   let characterId = body.characterId?.trim() ?? "";
 
@@ -75,10 +80,10 @@ export async function POST(request: NextRequest) {
       .select("id")
       .single();
     if (error || !data?.id) {
-      return NextResponse.json(
-        { error: "Charakter konnte nicht angelegt werden." },
-        { status: 500 }
-      );
+      if (error) {
+        return mapSupabaseWriteError("character insert", error);
+      }
+      return kiInfluencerErrorResponse("generation_failed", 500);
     }
     characterId = data.id as string;
   }
@@ -165,26 +170,29 @@ export async function POST(request: NextRequest) {
     );
 
     await updateGenerationResult(supabase, generationId, userId, {
-      credits_used: creditCost,
+      credits_used: isAdmin ? 0 : creditCost,
     });
 
-    const deduction = await deductCredits(
+    const deduction = await deductKiInfluencerCredits(
       supabase,
       userId,
       creditCost,
       "KI-Influencer — Casting",
       {
-        generationType: "image",
-        prompt: castingBrief.slice(0, 500),
-        skipGenerationLog: true,
+        isAdmin,
+        meta: {
+          generationType: "image",
+          prompt: castingBrief.slice(0, 500),
+          skipGenerationLog: true,
+        },
       }
     );
 
     if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
-      );
+      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+        credits: deduction.remainingCredits,
+        required: creditCost,
+      });
     }
 
     await updateCharacter(supabase, characterId, userId, {
@@ -202,13 +210,14 @@ export async function POST(request: NextRequest) {
       imageUrl: protectedImageUrl(generationId),
       castingImageUrl,
       enhancedPrompt: enhanced.prompt,
-      creditsUsed: creditCost,
+      creditsUsed: isAdmin ? 0 : creditCost,
       creditsLeft: deduction.remainingCredits,
       generationTimeMs: Date.now() - started,
     });
   } catch (error) {
     logFalAiError(error);
-    const msg = error instanceof Error ? error.message : "Casting fehlgeschlagen";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    logKiInfluencerError("casting generation", error);
+    const detail = error instanceof Error ? error.message : undefined;
+    return kiInfluencerErrorResponse("generation_failed", 500, detail);
   }
 }

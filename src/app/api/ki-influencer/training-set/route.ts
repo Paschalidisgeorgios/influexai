@@ -1,13 +1,10 @@
 import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
-import { assertKiToolAccess } from "@/lib/access.server";
 import { generateCharacterImage } from "@/lib/character-image-fal";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
   createGenerationRecord,
   ingestImageGeneratorAssets,
-  updateGenerationResult,
 } from "@/lib/generation-assets";
 import { configureFalClient, getFalKey, logFalAiError } from "@/lib/fal-image";
 import { getOwnedCharacter, updateCharacter } from "@/lib/ki-influencer-db";
@@ -16,6 +13,12 @@ import {
   KI_INFLUENCER_TRAINING_SET_SIZE,
   KI_INFLUENCER_TRAINING_VARIATIONS,
 } from "@/lib/ki-influencer-config";
+import {
+  assertKiInfluencerAccess,
+  deductKiInfluencerCredits,
+  kiInfluencerErrorResponse,
+  logKiInfluencerError,
+} from "@/lib/ki-influencer-api";
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +49,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const access = await assertKiToolAccess(0);
+  const access = await assertKiInfluencerAccess(
+    body.start === true ? KI_INFLUENCER_TRAINING_SET_CREDITS : 0
+  );
   if (access instanceof NextResponse) return access;
-  const { userId, supabase } = access;
+  const { userId, supabase, isAdmin } = access;
 
   const character = await getOwnedCharacter(supabase, characterId, userId);
   if (!character) {
@@ -68,40 +73,27 @@ export async function POST(request: NextRequest) {
   }
 
   if (body.start === true) {
-    const creditCheck = await hasEnoughCredits(
-      supabase,
-      userId,
-      KI_INFLUENCER_TRAINING_SET_CREDITS
-    );
-    if (!creditCheck.ok) {
-      return NextResponse.json(
-        {
-          error: "Nicht genug Credits.",
-          credits: creditCheck.credits,
-          required: KI_INFLUENCER_TRAINING_SET_CREDITS,
-        },
-        { status: 402 }
-      );
-    }
-
     const characterSetId = randomUUID();
-    const deduction = await deductCredits(
+    const deduction = await deductKiInfluencerCredits(
       supabase,
       userId,
       KI_INFLUENCER_TRAINING_SET_CREDITS,
       "KI-Influencer — Trainingsset (20 Bilder)",
       {
-        generationType: "image",
-        prompt: `${character.name} training set`.slice(0, 500),
-        skipGenerationLog: true,
+        isAdmin,
+        meta: {
+          generationType: "image",
+          prompt: `${character.name} training set`.slice(0, 500),
+          skipGenerationLog: true,
+        },
       }
     );
 
     if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen." },
-        { status: 402 }
-      );
+      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+        credits: deduction.remainingCredits,
+        required: KI_INFLUENCER_TRAINING_SET_CREDITS,
+      });
     }
 
     await updateCharacter(supabase, characterId, userId, {
@@ -114,7 +106,7 @@ export async function POST(request: NextRequest) {
       characterId,
       characterSetId,
       total: KI_INFLUENCER_TRAINING_SET_SIZE,
-      creditsUsed: KI_INFLUENCER_TRAINING_SET_CREDITS,
+      creditsUsed: isAdmin ? 0 : KI_INFLUENCER_TRAINING_SET_CREDITS,
       creditsLeft: deduction.remainingCredits,
     });
   }
@@ -146,7 +138,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (!falResult.ok) {
-      return NextResponse.json({ error: falResult.error }, { status: 500 });
+      logKiInfluencerError(`training-set index ${index}`, falResult.error);
+      return kiInfluencerErrorResponse("generation_failed", 500, falResult.error);
     }
 
     const generationId = randomUUID();
@@ -201,8 +194,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logFalAiError(error);
-    const msg =
-      error instanceof Error ? error.message : "Trainingsset-Schritt fehlgeschlagen";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    logKiInfluencerError(`training-set index ${index}`, error);
+    const detail = error instanceof Error ? error.message : undefined;
+    return kiInfluencerErrorResponse("generation_failed", 500, detail);
   }
 }

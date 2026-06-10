@@ -571,9 +571,12 @@ export default function ImageGeneratorPage() {
                   key={preset.id}
                   type="button"
                   onClick={() => setStyleId(preset.id)}
-                  className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${chipClass(styleId === preset.id)}`}
+                  className={`flex flex-col items-start rounded-lg border px-3 py-2 text-left transition-colors ${chipClass(styleId === preset.id)}`}
                 >
-                  {preset.labelDE}
+                  <span className="text-sm font-semibold">{preset.labelDE}</span>
+                  <span className="text-[0.7rem] font-normal opacity-70">
+                    {preset.subtitleDE}
+                  </span>
                 </button>
               ))}
             </div>

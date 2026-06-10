@@ -9,6 +9,8 @@ export type ImagePlatformId =
 export type ImageStylePreset = {
   id: ImageStyleId;
   labelDE: string;
+  /** Short lay-friendly subtitle shown under style chips in the UI. */
+  subtitleDE: string;
   descriptor: string;
 };
 
@@ -24,24 +26,28 @@ export const IMAGE_STYLE_PRESETS: readonly ImageStylePreset[] = [
   {
     id: "authentic",
     labelDE: "Authentisch / UGC",
+    subtitleDE: "Wie selbst fotografiert",
     descriptor:
       "natural lifestyle photography, shot on a modern smartphone in good daylight, tack sharp focus on the subject, crisp details, realistic skin with visible natural texture, no retouching, true-to-life colors, clean composition, authentic everyday moment",
   },
   {
     id: "editorial",
     labelDE: "Editorial",
+    subtitleDE: "Wie ein Magazin",
     descriptor:
       "professional editorial photography, 85mm lens at f/2.0, soft directional studio light, natural skin texture preserved, subtle color grading, magazine quality",
   },
   {
     id: "cinematic",
     labelDE: "Cinematisch",
+    subtitleDE: "Wie ein Filmposter",
     descriptor:
       "cinematic still frame, anamorphic lens look, shallow depth of field, dramatic motivated lighting, very subtle fine film grain, teal-orange color grade kept subtle",
   },
   {
     id: "product",
     labelDE: "Produkt",
+    subtitleDE: "Für Produktfotos",
     descriptor:
       "commercial product photography, clean controlled studio lighting, sharp focus on product, realistic materials and reflections, minimal styled background",
   },

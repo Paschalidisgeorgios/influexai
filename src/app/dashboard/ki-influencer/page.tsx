@@ -14,7 +14,11 @@ import {
   type ImagePlatformId,
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
-import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import {
+  handleKiInfluencerApiError,
+  kiInfluencerUserMessage,
+  type KiInfluencerApiErrorBody,
+} from "@/lib/ki-influencer-client-errors";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {
@@ -27,10 +31,43 @@ import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
 
 type WizardStep = 0 | 1 | 2 | 3;
 
+const DESCRIPTION_EXAMPLES = [
+  "28-jährige Fitness-Influencerin, lange rotblonde Haare, grüne Augen, sportlich-natürlicher Look, Nische: Fitness & Ernährung",
+  "32-jähriger Tech-Creator, kurze dunkle Haare, Brille, moderner Casual-Style, Nische: Gadgets & KI",
+  "25-jährige Beauty- und Fashion-Influencerin, lange braune Haare, eleganter Look, Nische: Mode & Make-up",
+] as const;
+
+const DESCRIPTION_EXAMPLE_LABELS = [
+  "Fitness-Influencerin",
+  "Tech-Creator",
+  "Beauty & Fashion",
+] as const;
+
+const SCENE_EXAMPLES = [
+  "Beim Frühstück mit Smoothie-Bowl",
+  "Beim Workout im Fitnessstudio",
+  "Golden Hour am Strand",
+] as const;
+
+const LEARN_STATUS_TOOLTIP =
+  "Technisch trainieren wir ein eigenes KI-Modell nur für deinen Charakter. Dadurch sieht er auf jedem Bild gleich aus.";
+
 const chipClass = (active: boolean) =>
   active
     ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
     : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20";
+
+function InfoTip({ text }: { text: string }) {
+  return (
+    <span
+      title={text}
+      className="ml-1.5 inline-flex h-4 w-4 cursor-help items-center justify-center text-[0.7rem] leading-none text-white/45"
+      aria-label={text}
+    >
+      ⓘ
+    </span>
+  );
+}
 
 export default function KiInfluencerPage() {
   const [step, setStep] = useState<WizardStep>(0);
@@ -77,7 +114,7 @@ export default function KiInfluencerPage() {
         }
         if (data.status === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
-          setError(data.errorMessage ?? "Training fehlgeschlagen.");
+          setError(data.errorMessage ?? "Das hat leider nicht geklappt. Bitte erneut versuchen.");
           setLoading(false);
         }
       } catch {
@@ -106,23 +143,26 @@ export default function KiInfluencerPage() {
           confirm,
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as KiInfluencerApiErrorBody & {
+        characterId?: string;
+        imageUrl?: string;
+      };
       if (
         !confirm &&
-        handleApiInsufficientCredits(
+        handleKiInfluencerApiError(
           res.status,
-          data as { error?: string; credits?: number },
+          data,
           IMAGE_GEN_CREDITS.standard
         )
       ) {
         return;
       }
-      if (!res.ok) throw new Error(data.error ?? "Casting fehlgeschlagen.");
-      setCharacterId(data.characterId);
+      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
+      if (data.characterId) setCharacterId(data.characterId);
       if (confirm) {
         setCastingConfirmed(true);
         setStep(1);
-      } else {
+      } else if (data.imageUrl) {
         setCastingImageUrl(data.imageUrl);
       }
       window.dispatchEvent(new Event("credits-updated"));
@@ -145,18 +185,20 @@ export default function KiInfluencerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ characterId, start: true }),
       });
-      const startData = await startRes.json();
+      const startData = (await startRes.json()) as KiInfluencerApiErrorBody & {
+        characterSetId?: string;
+      };
       if (
-        handleApiInsufficientCredits(
+        handleKiInfluencerApiError(
           startRes.status,
-          startData as { error?: string; credits?: number },
+          startData,
           KI_INFLUENCER_TRAINING_SET_CREDITS
         )
       ) {
         return;
       }
       if (!startRes.ok) {
-        throw new Error(startData.error ?? "Trainingsset konnte nicht gestartet werden.");
+        throw new Error(kiInfluencerUserMessage(startData));
       }
       window.dispatchEvent(new Event("credits-updated"));
 
@@ -166,9 +208,9 @@ export default function KiInfluencerPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ characterId, index: i }),
         });
-        const data = await res.json();
+        const data = (await res.json()) as KiInfluencerApiErrorBody;
         if (!res.ok) {
-          throw new Error(data.error ?? `Variante ${i + 1} fehlgeschlagen.`);
+          throw new Error(kiInfluencerUserMessage(data));
         }
         setTrainingProgress(i + 1);
       }
@@ -183,7 +225,7 @@ export default function KiInfluencerPage() {
   const runLoraTraining = async () => {
     if (!characterId) return;
     if (!consentAccepted) {
-      setError("Bitte bestätige die Einwilligung vor dem Training.");
+      setError("Bitte bestätige die Einwilligung, bevor es weitergeht.");
       return;
     }
     setError(null);
@@ -195,17 +237,13 @@ export default function KiInfluencerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ characterId, consentAccepted: true }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as KiInfluencerApiErrorBody & { loraId?: string };
       if (
-        handleApiInsufficientCredits(
-          res.status,
-          data as { error?: string; credits?: number },
-          loraTrainCredits
-        )
+        handleKiInfluencerApiError(res.status, data, loraTrainCredits)
       ) {
         return;
       }
-      if (!res.ok) throw new Error(data.error ?? "Training-Start fehlgeschlagen.");
+      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
       window.dispatchEvent(new Event("credits-updated"));
       pollTrainingStatus(characterId);
     } catch (err) {
@@ -230,18 +268,16 @@ export default function KiInfluencerPage() {
           platform,
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as KiInfluencerApiErrorBody & {
+        imageUrl?: string;
+      };
       if (
-        handleApiInsufficientCredits(
-          res.status,
-          data as { error?: string; credits?: number },
-          LORA_GENERATION_CREDIT
-        )
+        handleKiInfluencerApiError(res.status, data, LORA_GENERATION_CREDIT)
       ) {
         return;
       }
-      if (!res.ok) throw new Error(data.error ?? "Generierung fehlgeschlagen.");
-      setContentResultUrl(data.imageUrl);
+      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
+      if (data.imageUrl) setContentResultUrl(data.imageUrl);
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
       setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
@@ -260,7 +296,8 @@ export default function KiInfluencerPage() {
           </h1>
         </div>
         <p className="text-[0.95rem] leading-relaxed text-[rgba(255,255,255,0.65)]">
-          Charakter designen → Trainingsset → LoRA-Training → konsistente Bilder
+          In 4 Schritten zu deinem eigenen KI-Influencer — einmal einrichten, danach
+          unbegrenzt Content erstellen.
         </p>
       </div>
 
@@ -289,34 +326,52 @@ export default function KiInfluencerPage() {
 
       {step === 0 && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
-          <h2 className="text-lg font-semibold text-[#F0EFE8]">A — Charakter designen</h2>
+          <h2 className="text-lg font-semibold text-[#F0EFE8]">
+            Erstelle deine virtuelle Person
+          </h2>
+          <p className="text-sm text-[rgba(255,255,255,0.65)]">
+            Beschreibe, wie dein KI-Influencer aussehen soll — wir erstellen daraus ein
+            erstes Foto. Gefällt es dir nicht, kannst du es neu erstellen.
+          </p>
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">Name</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="z.B. Luna"
+              placeholder="z.B. Melodia"
               className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
             />
           </label>
-          <label className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">
-              Beschreibung (18+, Look, Stil, Nische)
+              So soll dein Charakter aussehen
             </span>
+            <div className="flex flex-wrap gap-2">
+              {DESCRIPTION_EXAMPLES.map((example, index) => (
+                <button
+                  key={example}
+                  type="button"
+                  onClick={() => setDescription(example)}
+                  className="rounded-lg border border-white/12 px-3 py-2 text-xs font-medium text-[#F0EFE8]/75 transition-colors hover:border-[#B4FF00]/35 hover:text-[#F0EFE8]"
+                >
+                  {DESCRIPTION_EXAMPLE_LABELS[index]}
+                </button>
+              ))}
+            </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              placeholder="z.B. 28-jährige Fitness-Coachin, athletisch, warmherzig, natürliches Makeup…"
+              placeholder="Alter, Haare, Augen, Stil, Themengebiet..."
               className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
             />
-          </label>
+          </div>
 
           {castingImageUrl && (
             <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-xl border border-white/10">
               <Image
                 src={castingImageUrl}
-                alt="Casting"
+                alt="Vorschau deines Charakters"
                 fill
                 unoptimized
                 className="object-cover"
@@ -324,39 +379,46 @@ export default function KiInfluencerPage() {
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              disabled={loading || !name.trim() || description.length < 10}
-              onClick={() => runCasting(false)}
-              className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
-            >
-              {loading && !castingConfirmed
-                ? "Generiere…"
-                : castingImageUrl
-                  ? `Neu generieren (${IMAGE_GEN_CREDITS.standard} Credits)`
-                  : `Casting generieren (${IMAGE_GEN_CREDITS.standard} Credits)`}
-            </button>
-            {castingImageUrl && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                disabled={loading}
-                onClick={() => runCasting(true)}
-                className="rounded-xl border border-[#B4FF00]/50 px-5 py-3 font-semibold text-[#B4FF00] disabled:opacity-60"
+                disabled={loading || !name.trim() || description.length < 10}
+                onClick={() => runCasting(false)}
+                className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
               >
-                Charakter bestätigen
+                {loading && !castingConfirmed
+                  ? "Erstelle Foto…"
+                  : castingImageUrl
+                    ? `Neu erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`
+                    : `Foto erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`}
               </button>
-            )}
+              {castingImageUrl && (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => runCasting(true)}
+                  className="rounded-xl border border-[#B4FF00]/50 px-5 py-3 font-semibold text-[#B4FF00] disabled:opacity-60"
+                >
+                  Passt so, weiter
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-[rgba(255,255,255,0.45)]">
+              Dauert ca. 30 Sekunden · Neu erstellen jederzeit möglich
+            </p>
           </div>
         </div>
       )}
 
       {step === 1 && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
-          <h2 className="text-lg font-semibold text-[#F0EFE8]">B — Trainingsset erstellen</h2>
           <p className="text-sm text-[rgba(255,255,255,0.65)]">
-            20 Varianten aus dem Casting-Bild (Blickwinkel, Ausdruck, Licht, Outfits).
-            Paketpreis: {KI_INFLUENCER_TRAINING_SET_CREDITS} Credits.
+            Wir erstellen jetzt 20 Fotos deines Charakters aus verschiedenen Blickwinkeln.
+            Die braucht dein Charakter, um sein Gesicht zu lernen.
+          </p>
+          <p className="text-xs text-[rgba(255,255,255,0.45)]">
+            {KI_INFLUENCER_TRAINING_SET_CREDITS} Credits · ca. 3–5 Minuten
           </p>
           {castingImageUrl && (
             <div className="relative mx-auto aspect-square w-32 overflow-hidden rounded-lg border border-white/10">
@@ -374,7 +436,7 @@ export default function KiInfluencerPage() {
                 />
               </div>
               <p className="text-sm text-[rgba(255,255,255,0.65)]">
-                {trainingProgress}/{KI_INFLUENCER_TRAINING_SET_SIZE} Varianten…
+                Foto {trainingProgress} von {KI_INFLUENCER_TRAINING_SET_SIZE}…
               </p>
             </div>
           )}
@@ -385,18 +447,20 @@ export default function KiInfluencerPage() {
             className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
           >
             {trainingSetRunning
-              ? "Trainingsset wird erstellt…"
-              : `20 Varianten generieren (${KI_INFLUENCER_TRAINING_SET_CREDITS} Credits)`}
+              ? "Fotos werden erstellt…"
+              : `20 Fotos erstellen (${KI_INFLUENCER_TRAINING_SET_CREDITS} Credits)`}
           </button>
         </div>
       )}
 
       {step === 2 && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
-          <h2 className="text-lg font-semibold text-[#F0EFE8]">C — Training starten</h2>
           <p className="text-sm text-[rgba(255,255,255,0.65)]">
-            LoRA-Training mit 20 Bildern (~10–15 Min). Kosten: ca. {loraTrainCredits}{" "}
-            Credits.
+            Dein Charakter lernt jetzt sein eigenes Gesicht. Das passiert automatisch — du
+            kannst die Seite verlassen und später wiederkommen.
+          </p>
+          <p className="text-xs text-[rgba(255,255,255,0.45)]">
+            ca. {loraTrainCredits} Credits · ca. 10–15 Minuten
           </p>
           <label className="flex items-start gap-3 text-sm text-[rgba(255,255,255,0.75)]">
             <input
@@ -406,26 +470,28 @@ export default function KiInfluencerPage() {
               className="mt-1"
             />
             <span>
-              Ich willige ein, dass meine hochgeladenen/generierten Bilder für das
-              KI-Training verarbeitet werden (synthetischer Charakter).
+              Ich willige ein, dass die erstellten Fotos verarbeitet werden, damit mein
+              Charakter sein Gesicht lernt.
             </span>
           </label>
-          {(loading || loraProgress > 0) && (
+          {(loading || loraProgress > 0 || characterReady) && (
             <div>
               <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
                   className="h-full bg-[#B4FF00] transition-all"
-                  style={{ width: `${loraProgress}%` }}
+                  style={{ width: `${characterReady ? 100 : loraProgress}%` }}
                 />
               </div>
               <p className="text-sm text-[rgba(255,255,255,0.65)]">
-                Training… {loraProgress}%
+                {characterReady ? (
+                  "Fertig! Dein Charakter ist bereit."
+                ) : (
+                  <>
+                    Lernt gerade…
+                    <InfoTip text={LEARN_STATUS_TOOLTIP} />
+                  </>
+                )}
               </p>
-              {loraLogs.length > 0 && (
-                <pre className="mt-2 max-h-24 overflow-auto text-xs text-white/40">
-                  {loraLogs.join("\n")}
-                </pre>
-              )}
             </div>
           )}
           <button
@@ -434,7 +500,7 @@ export default function KiInfluencerPage() {
             onClick={runLoraTraining}
             className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
           >
-            {loading ? "Training läuft…" : `LoRA-Training starten (~${loraTrainCredits} Credits)`}
+            {loading ? "Lernt gerade…" : "Gesicht lernen lassen"}
           </button>
         </div>
       )}

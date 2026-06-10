@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertGatedFeature } from "@/lib/access.server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {
   KI_INFLUENCER_DEFAULT_TRIGGER,
@@ -14,6 +12,13 @@ import {
 } from "@/lib/ki-influencer-db";
 import { buildLoraZipFromGenerationIds } from "@/lib/ki-influencer-lora-upload";
 import { submitLoraTraining } from "@/lib/lora-fal";
+import {
+  assertKiInfluencerAccess,
+  deductKiInfluencerCredits,
+  kiInfluencerErrorResponse,
+  logKiInfluencerError,
+  mapSupabaseWriteError,
+} from "@/lib/ki-influencer-api";
 
 export const dynamic = "force-dynamic";
 
@@ -43,16 +48,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const steps = KI_INFLUENCER_LORA_STEPS;
+  const creditCost = calcLoraCredits(steps);
 
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt." }, { status: 401 });
-  }
+  const access = await assertKiInfluencerAccess(creditCost);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase, isAdmin } = access;
 
-  const character = await getOwnedCharacter(supabase, characterId, user.id);
+  const character = await getOwnedCharacter(supabase, characterId, userId);
   if (!character) {
     return NextResponse.json({ error: "Charakter nicht gefunden." }, { status: 404 });
   }
@@ -77,7 +80,7 @@ export async function POST(request: NextRequest) {
 
   const generationIds = await listTrainingSetGenerationIds(
     supabase,
-    user.id,
+    userId,
     character.character_set_id
   );
 
@@ -90,16 +93,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const steps = KI_INFLUENCER_LORA_STEPS;
-  const creditCost = calcLoraCredits(steps);
-  const creditCheck = await hasEnoughCredits(supabase, user.id, creditCost);
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      { error: "Nicht genug Credits.", credits: creditCheck.credits },
-      { status: 402 }
-    );
-  }
-
   const sessionId = crypto.randomUUID();
   const suffix = characterId.replace(/-/g, "").slice(0, 4).toUpperCase();
   const triggerWord = `${KI_INFLUENCER_DEFAULT_TRIGGER}_${suffix}`;
@@ -107,7 +100,7 @@ export async function POST(request: NextRequest) {
   try {
     const { zipUrl, thumbnailPath, imageCount } = await buildLoraZipFromGenerationIds(
       supabase,
-      user.id,
+      userId,
       generationIds,
       sessionId
     );
@@ -115,7 +108,7 @@ export async function POST(request: NextRequest) {
     const { data: loraRow, error: insertErr } = await supabase
       .from("lora_models")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         name: `KI-Influencer: ${character.name}`,
         trigger_word: triggerWord,
         type: "character",
@@ -131,10 +124,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertErr || !loraRow?.id) {
-      return NextResponse.json(
-        { error: "LoRA-Datensatz konnte nicht erstellt werden." },
-        { status: 500 }
-      );
+      if (insertErr) {
+        return mapSupabaseWriteError("lora_models insert", insertErr);
+      }
+      return kiInfluencerErrorResponse("generation_failed", 500);
     }
 
     const loraId = loraRow.id as string;
@@ -151,15 +144,18 @@ export async function POST(request: NextRequest) {
       .update({ fal_request_id: requestId })
       .eq("id", loraId);
 
-    const deduction = await deductCredits(
+    const deduction = await deductKiInfluencerCredits(
       supabase,
-      user.id,
+      userId,
       creditCost,
       `KI-Influencer LoRA — ${character.name}`,
       {
-        generationType: "lora_training",
-        prompt: character.name.slice(0, 500),
-        skipGenerationLog: true,
+        isAdmin,
+        meta: {
+          generationType: "lora_training",
+          prompt: character.name.slice(0, 500),
+          skipGenerationLog: true,
+        },
       }
     );
 
@@ -168,18 +164,18 @@ export async function POST(request: NextRequest) {
         .from("lora_models")
         .update({ status: "failed", error_message: "Credit deduction failed" })
         .eq("id", loraId);
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
-      );
+      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+        credits: deduction.remainingCredits,
+        required: creditCost,
+      });
     }
 
     await supabase
       .from("lora_models")
-      .update({ credits_used: creditCost })
+      .update({ credits_used: isAdmin ? 0 : creditCost })
       .eq("id", loraId);
 
-    await updateCharacter(supabase, characterId, user.id, {
+    await updateCharacter(supabase, characterId, userId, {
       lora_id: loraId,
       trigger_word: triggerWord,
       status: "training",
@@ -193,18 +189,13 @@ export async function POST(request: NextRequest) {
       endpoint,
       triggerWord,
       status: "training",
-      creditsUsed: creditCost,
+      creditsUsed: isAdmin ? 0 : creditCost,
       creditsLeft: deduction.remainingCredits,
       estimatedMinutes: "10–15",
     });
   } catch (error) {
-    console.error("ki-influencer train:", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Training konnte nicht gestartet werden.",
-      },
-      { status: 500 }
-    );
+    logKiInfluencerError("train", error);
+    const detail = error instanceof Error ? error.message : undefined;
+    return kiInfluencerErrorResponse("generation_failed", 500, detail);
   }
 }

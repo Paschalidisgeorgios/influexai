@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertGatedFeature } from "@/lib/access.server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
 import {
   platformToFalImageSize,
@@ -9,17 +8,22 @@ import {
   type ImagePlatformId,
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
   createGenerationRecord,
   ingestImageGeneratorAssets,
   updateGenerationResult,
 } from "@/lib/generation-assets";
-import { configureFalClient, getFalKey, parseFalError } from "@/lib/fal-image";
+import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { generateWithLora } from "@/lib/lora-fal";
 import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
 import { getOwnedCharacter } from "@/lib/ki-influencer-db";
 import { LORA_WEIGHT_DEFAULT } from "@/lib/ki-influencer-config";
+import {
+  assertKiInfluencerAccess,
+  deductKiInfluencerCredits,
+  kiInfluencerErrorResponse,
+  logKiInfluencerError,
+} from "@/lib/ki-influencer-api";
 
 export const dynamic = "force-dynamic";
 
@@ -58,16 +62,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Generierung nicht konfiguriert." }, { status: 503 });
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const access = await assertKiInfluencerAccess(LORA_GENERATION_CREDIT);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase, isAdmin } = access;
 
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt." }, { status: 401 });
-  }
-
-  const character = await getOwnedCharacter(supabase, characterId, user.id);
+  const character = await getOwnedCharacter(supabase, characterId, userId);
   if (!character || character.status !== "ready") {
     return NextResponse.json(
       { error: "Charakter ist noch nicht trainiert." },
@@ -79,20 +78,11 @@ export async function POST(request: NextRequest) {
     .from("lora_models")
     .select("id, lora_url, trigger_word, status")
     .eq("id", character.lora_id)
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .single();
 
   if (!lora?.lora_url || lora.status !== "ready") {
     return NextResponse.json({ error: "LoRA nicht bereit." }, { status: 400 });
-  }
-
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    LORA_GENERATION_CREDIT
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json({ error: "Nicht genug Credits." }, { status: 402 });
   }
 
   const started = Date.now();
@@ -112,25 +102,31 @@ export async function POST(request: NextRequest) {
       imageSize,
     });
 
-    const deduction = await deductCredits(
+    const deduction = await deductKiInfluencerCredits(
       supabase,
-      user.id,
+      userId,
       LORA_GENERATION_CREDIT,
       `KI-Influencer Content — ${character.name}`,
       {
-        generationType: "lora_generation",
-        prompt: userPrompt.slice(0, 500),
-        skipGenerationLog: true,
+        isAdmin,
+        meta: {
+          generationType: "lora_generation",
+          prompt: userPrompt.slice(0, 500),
+          skipGenerationLog: true,
+        },
       }
     );
 
     if (!deduction.success) {
-      return NextResponse.json({ error: "Nicht genug Credits." }, { status: 402 });
+      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+        credits: deduction.remainingCredits,
+        required: LORA_GENERATION_CREDIT,
+      });
     }
 
     const generationId = await createGenerationRecord(
       supabase,
-      user.id,
+      userId,
       "lora_generation",
       {
         paid: true,
@@ -144,14 +140,14 @@ export async function POST(request: NextRequest) {
         source: "ki_influencer_content",
         character_id: characterId,
       },
-      LORA_GENERATION_CREDIT,
+      isAdmin ? 0 : LORA_GENERATION_CREDIT,
       `${triggerWord} ${userPrompt}`.slice(0, 500)
     );
 
     const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(user.id, generationId, result.url);
+      await ingestImageGeneratorAssets(userId, generationId, result.url);
 
-    await updateGenerationResult(supabase, generationId, user.id, {
+    await updateGenerationResult(supabase, generationId, userId, {
       previewPath,
       sourcePath,
       width,
@@ -162,7 +158,7 @@ export async function POST(request: NextRequest) {
       success: true,
       generationId,
       imageUrl: protectedImageUrl(generationId),
-      creditsUsed: LORA_GENERATION_CREDIT,
+      creditsUsed: isAdmin ? 0 : LORA_GENERATION_CREDIT,
       creditsLeft: deduction.remainingCredits,
       characterId,
       triggerWord,
@@ -173,10 +169,8 @@ export async function POST(request: NextRequest) {
       generationTimeMs: Date.now() - started,
     });
   } catch (error) {
-    console.error("ki-influencer generate:", error);
-    return NextResponse.json(
-      { error: parseFalError(error) },
-      { status: 500 }
-    );
+    logKiInfluencerError("content generate", error);
+    const detail = error instanceof Error ? error.message : undefined;
+    return kiInfluencerErrorResponse("generation_failed", 500, detail);
   }
 }

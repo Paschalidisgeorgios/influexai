@@ -45,8 +45,8 @@ export const KI_INFLUENCER_TRAINING_VARIATIONS: readonly string[] = [
 ] as const;
 
 export const KI_INFLUENCER_WIZARD_STEPS = [
-  { id: "design", label: "Charakter designen" },
-  { id: "dataset", label: "Trainingsset" },
-  { id: "train", label: "Training" },
-  { id: "content", label: "Content erstellen" },
+  { id: "design", label: "Charakter erstellen" },
+  { id: "dataset", label: "Fotos vorbereiten" },
+  { id: "train", label: "Charakter lernt" },
+  { id: "content", label: "Loslegen" },
 ] as const;

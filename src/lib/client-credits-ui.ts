@@ -87,7 +87,11 @@ export function handleApiInsufficientCredits(
   if (clientCreditExempt) return false;
 
   const message = data?.error;
-  if (status !== 402 && !isInsufficientCreditsMessage(message)) {
+  if (
+    status !== 402 &&
+    message !== "insufficient_credits" &&
+    !isInsufficientCreditsMessage(message)
+  ) {
     return false;
   }
 
