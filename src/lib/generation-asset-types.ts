@@ -27,6 +27,9 @@ export type GenerationAssetResult = {
   variationFocus?: string;
   batchId?: string;
   upscaled?: boolean;
+  /** e.g. "character" for Seedream character-mode generations */
+  source?: string;
+  referenceGenerationIds?: string[];
 };
 
 export function parseGenerationAssetResult(
@@ -68,5 +71,9 @@ export function parseGenerationAssetResult(
       typeof r.variationFocus === "string" ? r.variationFocus : undefined,
     batchId: typeof r.batchId === "string" ? r.batchId : undefined,
     upscaled: r.upscaled === true,
+    source: typeof r.source === "string" ? r.source : undefined,
+    referenceGenerationIds: Array.isArray(r.referenceGenerationIds)
+      ? r.referenceGenerationIds.map(String)
+      : undefined,
   };
 }

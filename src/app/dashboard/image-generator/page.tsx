@@ -34,6 +34,16 @@ const chipClass = (active: boolean) =>
     ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
     : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20";
 
+type GeneratorMode = "new" | "character";
+
+const MAX_CHARACTER_REFS = 14;
+
+type GalleryPickItem = {
+  id: string;
+  prompt: string;
+  previewUrl: string;
+};
+
 const CATEGORY_ICONS: Record<ImageCategoryKey, string> = {
   portrait: "👤",
   creator: "🎬",
@@ -70,6 +80,12 @@ export default function ImageGeneratorPage() {
   const [platform, setPlatform] = useState<ImagePlatformId>(
     DEFAULT_IMAGE_PLATFORM_ID
   );
+  const [generatorMode, setGeneratorMode] = useState<GeneratorMode>("new");
+  const [selectedReferenceIds, setSelectedReferenceIds] = useState<string[]>(
+    []
+  );
+  const [galleryImages, setGalleryImages] = useState<GalleryPickItem[]>([]);
+  const [characterLoading, setCharacterLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingHighRes, setLoadingHighRes] = useState(false);
   const [upscaleLoading, setUpscaleLoading] = useState(false);
@@ -116,9 +132,108 @@ export default function ImageGeneratorPage() {
     }
   }, []);
 
+  const loadGalleryImages = useCallback(async () => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("generations")
+      .select("id, prompt, result")
+      .eq("user_id", user.id)
+      .eq("type", "image")
+      .order("created_at", { ascending: false })
+      .limit(48);
+    if (!data) return;
+    setGalleryImages(
+      data
+        .map((row) => {
+          const result = parseGenerationAssetResult(row.result);
+          if (!result?.previewPath && !result?.sourcePath) return null;
+          return {
+            id: row.id,
+            prompt: row.prompt ?? "",
+            previewUrl: `/api/generated-image/${row.id}?variant=preview`,
+          };
+        })
+        .filter((item): item is GalleryPickItem => item !== null)
+    );
+  }, []);
+
   useEffect(() => {
     loadHistory();
-  }, [loadHistory]);
+    loadGalleryImages();
+  }, [loadHistory, loadGalleryImages]);
+
+  const toggleReference = (id: string) => {
+    setSelectedReferenceIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= MAX_CHARACTER_REFS) return prev;
+      return [...prev, id];
+    });
+  };
+
+  const runCharacterGenerate = async () => {
+    if (!prompt.trim()) {
+      setError("Bitte beschreibe die neue Szene.");
+      return;
+    }
+    if (selectedReferenceIds.length === 0) {
+      setError("Wähle mindestens ein Referenzbild aus der Gallery.");
+      return;
+    }
+    setError(null);
+    setCharacterLoading(true);
+    setCompare(null);
+    setVariation(null);
+
+    try {
+      const res = await fetch("/api/character-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt,
+          referenceImageIds: selectedReferenceIds,
+          styleId,
+          platform,
+        }),
+      });
+      const data = await res.json();
+      if (
+        handleApiInsufficientCredits(
+          res.status,
+          data as { error?: string; credits?: number },
+          IMAGE_GEN_CREDITS.standard
+        )
+      ) {
+        return;
+      }
+      if (!res.ok || !data.imageUrl) {
+        throw new Error(data.error || t("error_generic"));
+      }
+      setResult({
+        generationId: data.generationId,
+        imageUrl: data.imageUrl,
+        model: data.model,
+        width: data.width,
+        height: data.height,
+        generationTimeMs: data.generationTimeMs,
+        downloadPaid: false,
+      });
+      window.dispatchEvent(new Event("credits-updated"));
+      await loadHistory();
+      await loadGalleryImages();
+    } catch (err: unknown) {
+      setError(
+        sanitizeUserMessage(
+          err instanceof Error ? err.message : t("error_generic")
+        )
+      );
+    } finally {
+      setCharacterLoading(false);
+    }
+  };
 
   const runGenerate = async (highRes: boolean) => {
     if (!prompt.trim()) {
@@ -332,7 +447,12 @@ export default function ImageGeneratorPage() {
   };
 
   const isBusy =
-    loading || loadingHighRes || upscaleLoading || downloadLoading || variationLoading;
+    loading ||
+    loadingHighRes ||
+    characterLoading ||
+    upscaleLoading ||
+    downloadLoading ||
+    variationLoading;
 
   const restoreFromHistory = (entry: (typeof history)[number]) => {
     if (!entry.result?.previewPath) return;
@@ -375,6 +495,75 @@ export default function ImageGeneratorPage() {
         {/* Left column — 40% */}
         <div className="flex min-w-0 flex-col gap-5" style={{ width: "100%" }}>
           <div>
+            <p className="mb-2 text-sm font-semibold text-[#F0EFE8]">Modus</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setGeneratorMode("new")}
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${chipClass(generatorMode === "new")}`}
+              >
+                Neues Bild
+              </button>
+              <button
+                type="button"
+                onClick={() => setGeneratorMode("character")}
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${chipClass(generatorMode === "character")}`}
+              >
+                Charakter-Modus
+              </button>
+            </div>
+          </div>
+
+          {generatorMode === "character" && (
+            <div>
+              <p className="mb-1 text-sm font-semibold text-[#F0EFE8]">
+                Referenzbilder ({selectedReferenceIds.length}/{MAX_CHARACTER_REFS})
+              </p>
+              <p className="mb-3 text-xs text-[rgba(255,255,255,0.55)]">
+                Wähle Bilder derselben Person aus deiner Gallery.
+              </p>
+              {galleryImages.length === 0 ? (
+                <p className="text-xs text-[rgba(255,255,255,0.45)]">
+                  Noch keine Bilder in der Gallery — generiere zuerst Referenzfotos.
+                </p>
+              ) : (
+                <div className="grid max-h-52 grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-white/10 p-2 sm:grid-cols-5">
+                  {galleryImages.map((item) => {
+                    const selected = selectedReferenceIds.includes(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => toggleReference(item.id)}
+                        className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-colors ${
+                          selected
+                            ? "border-[#B4FF00]"
+                            : "border-transparent hover:border-white/20"
+                        }`}
+                        title={item.prompt || item.id}
+                      >
+                        <Image
+                          src={item.previewUrl}
+                          alt=""
+                          fill
+                          unoptimized
+                          className="object-cover"
+                          sizes="80px"
+                        />
+                        {selected && (
+                          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#B4FF00] text-xs font-bold text-[#060608]">
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
             <p className="mb-2 text-sm font-semibold text-[#F0EFE8]">Stil</p>
             <div className="flex flex-wrap gap-2">
               {IMAGE_STYLE_PRESETS.map((preset) => (
@@ -408,17 +597,24 @@ export default function ImageGeneratorPage() {
 
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">
-              {t("prompt_label")}
+              {generatorMode === "character"
+                ? "Neue Szene beschreiben…"
+                : t("prompt_label")}
             </span>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder={t("prompt_placeholder")}
+              placeholder={
+                generatorMode === "character"
+                  ? "z.B. dieselbe Frau im Café, lächelt in die Kamera…"
+                  : t("prompt_placeholder")
+              }
               rows={5}
               className="w-full resize-y rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3.5 text-base leading-relaxed text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40 font-[family-name:var(--font-dm)]"
             />
           </label>
 
+          {generatorMode === "new" && (
           <div>
             <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">
               {t("category_label")}
@@ -448,7 +644,9 @@ export default function ImageGeneratorPage() {
               })}
             </div>
           </div>
+          )}
 
+          {generatorMode === "new" ? (
           <div className="flex flex-col gap-2 sm:flex-row" style={{ width: "100%" }}>
             <button
               type="button"
@@ -469,6 +667,19 @@ export default function ImageGeneratorPage() {
               {loadingHighRes ? t("loading_highres") : t("generate_highres")}
             </button>
           </div>
+          ) : (
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={runCharacterGenerate}
+            className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
+            style={{ width: "100%" }}
+          >
+            {characterLoading
+              ? "Charakter wird generiert…"
+              : `Charakter generieren — ${IMAGE_GEN_CREDITS.standard} Credits`}
+          </button>
+          )}
 
           {error && (
             <p className="text-sm text-[#ff6b7a]">{error}</p>
@@ -499,23 +710,27 @@ export default function ImageGeneratorPage() {
 
         {/* Right column — 60% */}
         <div className="flex min-h-[420px] select-none flex-col gap-4 rounded-2xl border border-white/8 bg-[#060608] p-4">
-          {!result && !loading && !loadingHighRes && (
+          {!result && !loading && !loadingHighRes && !characterLoading && (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
               <TablerPhoto size={48} color="rgba(255,255,255,0.65)" strokeWidth={1.5} />
               <p className="text-sm text-[rgba(255,255,255,0.65)]">{t("preview_empty")}</p>
             </div>
           )}
 
-          {(loading || loadingHighRes) && (
+          {(loading || loadingHighRes || characterLoading) && (
             <div className="flex flex-1 flex-col gap-3 p-4">
               <div className="h-full min-h-[320px] animate-pulse rounded-xl bg-white/5" />
               <p className="text-center text-sm text-[rgba(255,255,255,0.65)]">
-                {loadingHighRes ? t("loading_highres") : t("loading_standard")}
+                {characterLoading
+                  ? "Charakter wird generiert…"
+                  : loadingHighRes
+                    ? t("loading_highres")
+                    : t("loading_standard")}
               </p>
             </div>
           )}
 
-          {result && !loading && !loadingHighRes && (
+          {result && !loading && !loadingHighRes && !characterLoading && (
             <>
               {compare ? (
                 <ImageCompareSlider
