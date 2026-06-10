@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { UserRound } from "lucide-react";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
-import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import {
   DEFAULT_IMAGE_PLATFORM_ID,
@@ -15,10 +14,20 @@ import {
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
 import {
+  apiBodyToErrorMessage,
   handleKiInfluencerApiError,
-  kiInfluencerUserMessage,
+  isKiInfluencerApiFailure,
+  toErrorMessage,
   type KiInfluencerApiErrorBody,
 } from "@/lib/ki-influencer-client-errors";
+import type {
+  TrainingSetImageResponse,
+  TrainingSetStartResponse,
+} from "@/lib/ki-influencer-types";
+import {
+  isTrainingSetImageResponse,
+  isTrainingSetStartResponse,
+} from "@/lib/ki-influencer-types";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {
@@ -179,15 +188,15 @@ export default function KiInfluencerPage() {
       const createData = (await createRes.json()) as KiInfluencerApiErrorBody & {
         characterId?: string;
       };
-      if (!createRes.ok) {
-        throw new Error(kiInfluencerUserMessage(createData));
+      if (!createRes.ok || isKiInfluencerApiFailure(createRes.ok, createData)) {
+        throw new Error(apiBodyToErrorMessage(createData));
       }
       if (createData.characterId) {
         setCharacterId(createData.characterId);
         setStep(2);
       }
     } catch (err) {
-      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+      setError(toErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -252,7 +261,9 @@ export default function KiInfluencerPage() {
       ) {
         return;
       }
-      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
+      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+        throw new Error(apiBodyToErrorMessage(data));
+      }
       if (data.characterId) setCharacterId(data.characterId);
       if (confirm) {
         setCastingConfirmed(true);
@@ -262,7 +273,7 @@ export default function KiInfluencerPage() {
       }
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
-      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+      setError(toErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -280,9 +291,9 @@ export default function KiInfluencerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ characterId, start: true }),
       });
-      const startData = (await startRes.json()) as KiInfluencerApiErrorBody & {
-        characterSetId?: string;
-      };
+      const startData = (await startRes.json()) as TrainingSetStartResponse &
+        KiInfluencerApiErrorBody;
+
       if (
         handleKiInfluencerApiError(
           startRes.status,
@@ -292,26 +303,64 @@ export default function KiInfluencerPage() {
       ) {
         return;
       }
-      if (!startRes.ok) {
-        throw new Error(kiInfluencerUserMessage(startData));
+
+      if (!isTrainingSetStartResponse(startData)) {
+        throw new Error(apiBodyToErrorMessage(startData));
       }
+
       window.dispatchEvent(new Event("credits-updated"));
 
+      // Brief pause so character_set_id is visible before per-image requests.
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      let successCount = 0;
+      let lastError: string | null = null;
+
       for (let i = 0; i < KI_INFLUENCER_TRAINING_SET_SIZE; i++) {
-        const res = await fetch("/api/ki-influencer/training-set", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ characterId, index: i }),
-        });
-        const data = (await res.json()) as KiInfluencerApiErrorBody;
-        if (!res.ok) {
-          throw new Error(kiInfluencerUserMessage(data));
+        try {
+          const res = await fetch("/api/ki-influencer/training-set", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ characterId, index: i }),
+          });
+          const data = (await res.json()) as TrainingSetImageResponse &
+            KiInfluencerApiErrorBody;
+
+          if (isTrainingSetImageResponse(data)) {
+            successCount += 1;
+            setTrainingProgress(successCount);
+            continue;
+          }
+
+          if (
+            handleKiInfluencerApiError(
+              res.status,
+              data,
+              KI_INFLUENCER_TRAINING_SET_CREDITS
+            )
+          ) {
+            return;
+          }
+
+          lastError = apiBodyToErrorMessage(data);
+          console.warn("[ki-influencer] training-set image failed", i, data);
+        } catch (imageErr) {
+          lastError = toErrorMessage(imageErr);
+          console.warn("[ki-influencer] training-set image error", i, imageErr);
         }
-        setTrainingProgress(i + 1);
       }
-      setStep(2);
+
+      if (successCount >= LORA_MIN_IMAGES) {
+        setStep(2);
+        return;
+      }
+
+      setError(
+        lastError ??
+          `Es wurden nur ${successCount} von ${KI_INFLUENCER_TRAINING_SET_SIZE} Fotos erstellt — mindestens ${LORA_MIN_IMAGES} nötig.`
+      );
     } catch (err) {
-      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+      setError(toErrorMessage(err));
     } finally {
       setTrainingSetRunning(false);
     }
@@ -338,11 +387,13 @@ export default function KiInfluencerPage() {
       ) {
         return;
       }
-      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
+      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+        throw new Error(apiBodyToErrorMessage(data));
+      }
       window.dispatchEvent(new Event("credits-updated"));
       pollTrainingStatus(characterId);
     } catch (err) {
-      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+      setError(toErrorMessage(err));
       setLoading(false);
     }
   };
@@ -371,11 +422,13 @@ export default function KiInfluencerPage() {
       ) {
         return;
       }
-      if (!res.ok) throw new Error(kiInfluencerUserMessage(data));
+      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+        throw new Error(apiBodyToErrorMessage(data));
+      }
       if (data.imageUrl) setContentResultUrl(data.imageUrl);
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
-      setError(sanitizeUserMessage(err instanceof Error ? err.message : "Fehler"));
+      setError(toErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -39,12 +39,19 @@ export async function POST(request: NextRequest) {
 
   const characterId = body.characterId?.trim() ?? "";
   if (!characterId) {
-    return NextResponse.json({ error: "characterId erforderlich." }, { status: 400 });
+    console.log("[ki-influencer] training-set", "validate", "error", {
+      reason: "missing characterId",
+    });
+    return NextResponse.json(
+      { success: false, error: "characterId erforderlich." },
+      { status: 400 }
+    );
   }
 
   if (!getFalKey()) {
+    console.log("[ki-influencer] training-set", "config", "error");
     return NextResponse.json(
-      { error: "Charakter-Generierung ist nicht konfiguriert." },
+      { success: false, error: "Charakter-Generierung ist nicht konfiguriert." },
       { status: 503 }
     );
   }
@@ -57,22 +64,33 @@ export async function POST(request: NextRequest) {
 
   const character = await getOwnedCharacter(supabase, characterId, userId);
   if (!character) {
-    return NextResponse.json({ error: "Charakter nicht gefunden." }, { status: 404 });
+    console.log("[ki-influencer] training-set", "load", "error", { characterId });
+    return NextResponse.json(
+      { success: false, error: "Charakter nicht gefunden." },
+      { status: 404 }
+    );
   }
   if (character.status !== "casting_confirmed" && character.status !== "training_set") {
+    console.log("[ki-influencer] training-set", "status", "error", {
+      characterId,
+      status: character.status,
+    });
     return NextResponse.json(
-      { error: "Bitte zuerst das Casting-Bild bestätigen." },
+      { success: false, error: "Bitte zuerst das Casting-Bild bestätigen." },
       { status: 400 }
     );
   }
   if (!character.casting_image_url) {
+    console.log("[ki-influencer] training-set", "casting", "error", { characterId });
     return NextResponse.json(
-      { error: "Casting-Bild fehlt." },
+      { success: false, error: "Casting-Bild fehlt." },
       { status: 400 }
     );
   }
 
   if (body.start === true) {
+    console.log("[ki-influencer] training-set", "start", "running", { characterId });
+
     const characterSetId = randomUUID();
     const deduction = await deductKiInfluencerCredits(
       supabase,
@@ -90,6 +108,10 @@ export async function POST(request: NextRequest) {
     );
 
     if (!deduction.success) {
+      console.log("[ki-influencer] training-set", "start", "error", {
+        characterId,
+        reason: "insufficient_credits",
+      });
       return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
         credits: deduction.remainingCredits,
         required: KI_INFLUENCER_TRAINING_SET_CREDITS,
@@ -99,6 +121,12 @@ export async function POST(request: NextRequest) {
     await updateCharacter(supabase, characterId, userId, {
       character_set_id: characterSetId,
       status: "training_set",
+    });
+
+    console.log("[ki-influencer] training-set", "start", "ok", {
+      characterId,
+      characterSetId,
+      total: KI_INFLUENCER_TRAINING_SET_SIZE,
     });
 
     return NextResponse.json({
@@ -113,18 +141,29 @@ export async function POST(request: NextRequest) {
 
   const index = body.index;
   if (typeof index !== "number" || index < 0 || index >= KI_INFLUENCER_TRAINING_SET_SIZE) {
+    console.log("[ki-influencer] training-set", "index", "error", { index });
     return NextResponse.json(
-      { error: `index muss 0–${KI_INFLUENCER_TRAINING_SET_SIZE - 1} sein.` },
+      {
+        success: false,
+        error: `index muss 0–${KI_INFLUENCER_TRAINING_SET_SIZE - 1} sein.`,
+      },
       { status: 400 }
     );
   }
 
   if (!character.character_set_id) {
+    console.log("[ki-influencer] training-set", `image-${index}`, "error", {
+      reason: "missing character_set_id",
+    });
     return NextResponse.json(
-      { error: "Trainingsset zuerst starten (start: true)." },
+      { success: false, error: "Trainingsset zuerst starten (start: true)." },
       { status: 400 }
     );
   }
+
+  console.log("[ki-influencer] training-set", `image-${index}`, "running", {
+    characterId,
+  });
 
   const variationPrompt = KI_INFLUENCER_TRAINING_VARIATIONS[index];
   const scenePrompt = `${character.description ?? character.name}. ${variationPrompt}`;
@@ -139,6 +178,9 @@ export async function POST(request: NextRequest) {
 
     if (!falResult.ok) {
       logKiInfluencerError(`training-set index ${index}`, falResult.error);
+      console.log("[ki-influencer] training-set", `image-${index}`, "error", {
+        reason: "fal",
+      });
       return kiInfluencerErrorResponse("generation_failed", 500, falResult.error);
     }
 
@@ -182,6 +224,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    console.log("[ki-influencer] training-set", `image-${index}`, "ok", {
+      characterId,
+      generationId,
+      done: isLast,
+    });
+
     return NextResponse.json({
       success: true,
       characterId,
@@ -195,6 +243,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logFalAiError(error);
     logKiInfluencerError(`training-set index ${index}`, error);
+    console.log("[ki-influencer] training-set", `image-${index}`, "error", {
+      reason: "exception",
+    });
     const detail = error instanceof Error ? error.message : undefined;
     return kiInfluencerErrorResponse("generation_failed", 500, detail);
   }

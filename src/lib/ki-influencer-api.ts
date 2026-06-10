@@ -12,10 +12,8 @@ import {
   type DeductCreditsResult,
 } from "@/lib/credits";
 
-export type KiInfluencerErrorCode =
-  | "insufficient_credits"
-  | "table_missing"
-  | "generation_failed";
+export type { KiInfluencerErrorCode } from "@/lib/ki-influencer-types";
+import type { KiInfluencerErrorCode } from "@/lib/ki-influencer-types";
 
 export function isSupabaseRelationMissingError(error: unknown): boolean {
   if (!error || typeof error !== "object") {
@@ -31,12 +29,29 @@ export function isSupabaseRelationMissingError(error: unknown): boolean {
   );
 }
 
+function errorDetailString(detail: unknown): string | undefined {
+  if (detail == null) return undefined;
+  if (typeof detail === "string" && detail.trim()) return detail.trim();
+  if (detail instanceof Error) return detail.message;
+  try {
+    return JSON.stringify(detail);
+  } catch {
+    return String(detail);
+  }
+}
+
 export function kiInfluencerErrorJson(
   code: KiInfluencerErrorCode,
-  detail?: string,
+  detail?: unknown,
   extras?: Record<string, unknown>
 ) {
-  return { error: code, ...(detail ? { detail } : {}), ...extras };
+  const detailStr = errorDetailString(detail);
+  return {
+    success: false,
+    error: code,
+    ...(detailStr ? { detail: detailStr } : {}),
+    ...extras,
+  };
 }
 
 export function kiInfluencerErrorResponse(
