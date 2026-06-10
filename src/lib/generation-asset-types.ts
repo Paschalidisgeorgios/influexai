@@ -30,6 +30,8 @@ export type GenerationAssetResult = {
   /** e.g. "character" for Seedream character-mode generations */
   source?: string;
   referenceGenerationIds?: string[];
+  character_set_id?: string;
+  character_id?: string;
 };
 
 export function parseGenerationAssetResult(
@@ -75,5 +77,8 @@ export function parseGenerationAssetResult(
     referenceGenerationIds: Array.isArray(r.referenceGenerationIds)
       ? r.referenceGenerationIds.map(String)
       : undefined,
+    character_set_id:
+      typeof r.character_set_id === "string" ? r.character_set_id : undefined,
+    character_id: typeof r.character_id === "string" ? r.character_id : undefined,
   };
 }

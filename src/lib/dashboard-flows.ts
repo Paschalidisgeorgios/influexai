@@ -19,6 +19,7 @@ import {
   Theater,
   Images,
   Brain,
+  UserRound,
   Home,
   PlusCircle,
   User,
@@ -412,6 +413,13 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
     label: "Agent",
     items: [
       {
+        id: "ki-influencer",
+        href: "/dashboard/ki-influencer",
+        label: "KI-Influencer",
+        icon: UserRound,
+        badge: "NEU",
+      },
+      {
         id: "campaign-autopilot",
         href: "/dashboard/campaign-autopilot",
         label: "Autopilot",
@@ -458,7 +466,6 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         href: "/dashboard/ugc-video",
         labelKey: "ugc_video",
         icon: Video,
-        badge: "NEU",
       },
       {
         id: "upscaler",
@@ -480,6 +487,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   const keys: string[] = [];
   if (
     path.includes("ki-agent") ||
+    path.includes("ki-influencer") ||
     path.includes("campaign-autopilot") ||
     path === "/dashboard/agent"
   ) {

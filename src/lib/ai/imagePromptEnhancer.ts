@@ -16,9 +16,11 @@ const ANTI_GLOSS_RULE = `Never use terms like 4k, 8k, ultra HD, masterpiece, hyp
 
 const CHARACTER_IDENTITY_RULE = `The person in the reference images must remain EXACTLY the same: identical face, hair, body type and skin tone. Only change scene, outfit, pose and lighting as described. Never alter the identity.`;
 
+const INFLUENCER_CASTING_RULE = `Create a distinctive, memorable adult person (clearly 25-35 years old) with unique recognizable facial features suitable as a recurring virtual character.`;
+
 function buildEnhancerSystem(
   styleId: ImageStyleId,
-  characterMode?: boolean
+  options?: { characterMode?: boolean; influencerCastingMode?: boolean }
 ): string {
   const preset = getStylePreset(styleId);
   return `You are a professional image prompt engineer for photorealistic AI image generation (Flux-class models). The user gives a short description, often in German. Your job:
@@ -29,8 +31,8 @@ function buildEnhancerSystem(
 5. Never add objects, people or props the user did not ask for.
 6. Phrase quality requirements POSITIVELY inside the main prompt instead of relying on the negative prompt: e.g. 'natural relaxed hands', 'clean composition with only the described subject and setting', 'anatomically correct'. Never mention unwanted objects by name in the prompt.
 7. ${SHARPNESS_RULE}
-8. ${ANTI_GLOSS_RULE}${characterMode ? `\n9. ${CHARACTER_IDENTITY_RULE}` : ""}
-${characterMode ? "10" : "9"}. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
+8. ${ANTI_GLOSS_RULE}${options?.characterMode ? `\n9. ${CHARACTER_IDENTITY_RULE}` : ""}${options?.influencerCastingMode ? `\n${options?.characterMode ? "10" : "9"}. ${INFLUENCER_CASTING_RULE}` : ""}
+${options?.influencerCastingMode ? (options?.characterMode ? "11" : "10") : options?.characterMode ? "10" : "9"}. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
 }
 
 const FALLBACK_NEGATIVE_PROMPT =
@@ -47,6 +49,7 @@ export type EnhanceImagePromptOptions = {
   styleId?: ImageStyleId | string;
   platform?: ImagePlatformId | string;
   characterMode?: boolean;
+  influencerCastingMode?: boolean;
 };
 
 function buildUserMessage(
@@ -97,6 +100,7 @@ export async function enhanceImagePrompt(
   const styleId = resolveImageStyleId(options?.styleId);
   const platform = resolveImagePlatformId(options?.platform);
   const characterMode = options?.characterMode === true;
+  const influencerCastingMode = options?.influencerCastingMode === true;
 
   if (!trimmed) {
     return {
@@ -110,7 +114,7 @@ export async function enhanceImagePrompt(
   const result = await createAnthropicMessage({
     model: IMAGE_PROMPT_ENHANCER_MODEL,
     maxTokens: 1024,
-    system: buildEnhancerSystem(styleId, characterMode),
+    system: buildEnhancerSystem(styleId, { characterMode, influencerCastingMode }),
     user: buildUserMessage(trimmed, { styleId, platform, characterMode }),
   });
 
@@ -139,6 +143,7 @@ export async function enhanceImagePrompt(
     styleId,
     platform,
     characterMode,
+    influencerCastingMode,
     prompt: parsed.prompt,
   });
 
