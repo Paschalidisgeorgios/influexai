@@ -11,19 +11,28 @@ import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import {
-  CATEGORY_PROMPTS,
   IMAGE_CATEGORY_KEYS,
-  type FalImageSize,
   type ImageCategoryKey,
-  uiFormatToImageSize,
 } from "@/lib/generation-config";
+import {
+  DEFAULT_IMAGE_PLATFORM_ID,
+  DEFAULT_IMAGE_STYLE_ID,
+  IMAGE_STYLE_PRESETS,
+  PLATFORM_FORMATS,
+  platformToFalImageSize,
+  type ImagePlatformId,
+  type ImageStyleId,
+} from "@/lib/ai/imageStylePresets";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import {
   IMAGE_GEN_CREDITS,
 } from "@/lib/image-generator-credits";
 import { createClient } from "@/lib/supabase/client";
 
-type UiFormat = "1:1" | "16:9" | "9:16" | "4:3";
+const chipClass = (active: boolean) =>
+  active
+    ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
+    : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20";
 
 const CATEGORY_ICONS: Record<ImageCategoryKey, string> = {
   portrait: "👤",
@@ -57,7 +66,10 @@ export default function ImageGeneratorPage() {
   const loraTrigger = searchParams.get("trigger");
   const [prompt, setPrompt] = useState("");
   const [category, setCategory] = useState<ImageCategoryKey>("creator");
-  const [format, setFormat] = useState<UiFormat>("16:9");
+  const [styleId, setStyleId] = useState<ImageStyleId>(DEFAULT_IMAGE_STYLE_ID);
+  const [platform, setPlatform] = useState<ImagePlatformId>(
+    DEFAULT_IMAGE_PLATFORM_ID
+  );
   const [loading, setLoading] = useState(false);
   const [loadingHighRes, setLoadingHighRes] = useState(false);
   const [upscaleLoading, setUpscaleLoading] = useState(false);
@@ -78,8 +90,6 @@ export default function ImageGeneratorPage() {
       result: ReturnType<typeof parseGenerationAssetResult>;
     }[]
   >([]);
-
-  const aspectRatio: FalImageSize = uiFormatToImageSize(format);
 
   const loadHistory = useCallback(async () => {
     const supabase = createClient();
@@ -127,12 +137,13 @@ export default function ImageGeneratorPage() {
         ? {
             loraId,
             prompt: loraTrigger ? `${prompt}, ${loraTrigger}` : prompt,
-            imageSize: aspectRatio,
+            imageSize: platformToFalImageSize(platform),
           }
         : {
             prompt,
             category,
-            aspectRatio,
+            styleId,
+            platform,
             highRes,
           };
 
@@ -191,7 +202,8 @@ export default function ImageGeneratorPage() {
         body: JSON.stringify({
           prompt,
           category,
-          aspectRatio,
+          styleId,
+          platform,
           highRes: false,
           variation: true,
           parentGenerationId: result.generationId,
@@ -322,13 +334,6 @@ export default function ImageGeneratorPage() {
   const isBusy =
     loading || loadingHighRes || upscaleLoading || downloadLoading || variationLoading;
 
-  const formats: { id: UiFormat; labelKey: string }[] = [
-    { id: "1:1", labelKey: "format_1_1" },
-    { id: "16:9", labelKey: "format_16_9" },
-    { id: "9:16", labelKey: "format_9_16" },
-    { id: "4:3", labelKey: "format_4_3" },
-  ];
-
   const restoreFromHistory = (entry: (typeof history)[number]) => {
     if (!entry.result?.previewPath) return;
     setCompare(null);
@@ -369,6 +374,38 @@ export default function ImageGeneratorPage() {
       <div className="grid min-w-0 gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10" style={{ width: "100%" }}>
         {/* Left column — 40% */}
         <div className="flex min-w-0 flex-col gap-5" style={{ width: "100%" }}>
+          <div>
+            <p className="mb-2 text-sm font-semibold text-[#F0EFE8]">Stil</p>
+            <div className="flex flex-wrap gap-2">
+              {IMAGE_STYLE_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setStyleId(preset.id)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${chipClass(styleId === preset.id)}`}
+                >
+                  {preset.labelDE}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-sm font-semibold text-[#F0EFE8]">Format</p>
+            <div className="flex flex-wrap gap-2">
+              {PLATFORM_FORMATS.map((fmt) => (
+                <button
+                  key={fmt.id}
+                  type="button"
+                  onClick={() => setPlatform(fmt.id)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${chipClass(platform === fmt.id)}`}
+                >
+                  {fmt.labelDE}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">
               {t("prompt_label")}
@@ -409,28 +446,6 @@ export default function ImageGeneratorPage() {
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-3 text-sm font-semibold text-[#F0EFE8]">
-              {t("format_label")}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {formats.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFormat(f.id)}
-                  className={`rounded-lg border px-3.5 py-2 text-sm font-semibold ${
-                    format === f.id
-                      ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
-                      : "border-white/12 text-[#F0EFE8]/65"
-                  }`}
-                >
-                  {t(f.labelKey)}
-                </button>
-              ))}
             </div>
           </div>
 

@@ -14,6 +14,14 @@ import {
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
 import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
+import {
+  getPlatformImageDimensions,
+  platformToFalImageSize,
+  resolveImagePlatformId,
+  resolveImageStyleId,
+  type ImagePlatformId,
+  type ImageStyleId,
+} from "@/lib/ai/imageStylePresets";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 
@@ -50,18 +58,29 @@ export async function runImageGeneratorGeneration(
       enhancedPrompt: string;
       negativePrompt: string;
       category?: ImageCategoryKey;
+      styleId?: ImageStyleId;
+      platform?: ImagePlatformId;
     };
+    styleId?: ImageStyleId;
+    platform?: ImagePlatformId;
   }
 ): Promise<ImageGeneratorRunResult> {
   const trimmedPrompt = params.prompt.trim();
   const category: ImageCategoryKey = isValidCategory(params.category ?? "")
     ? (params.category as ImageCategoryKey)
     : "creator";
+  const styleId = resolveImageStyleId(
+    params.preEnhanced?.styleId ?? params.styleId
+  );
+  const platform = resolveImagePlatformId(
+    params.preEnhanced?.platform ?? params.platform
+  );
+  const imageDimensions = getPlatformImageDimensions(platform);
   const imageSize = VALID_FAL_IMAGE_SIZES.includes(
     params.aspectRatio as FalImageSize
   )
     ? (params.aspectRatio as FalImageSize)
-    : "landscape_16_9";
+    : platformToFalImageSize(platform);
   const highRes = params.highRes === true;
   const creditCost = highRes
     ? IMAGE_GEN_CREDITS.highRes
@@ -91,8 +110,13 @@ export async function runImageGeneratorGeneration(
           negativePrompt: params.preEnhanced.negativePrompt,
           category: params.preEnhanced.category ?? category,
           promptEnhanced: true,
+          styleId,
+          platform,
         }
-      : await prepareImageGeneratorPrompts(trimmedPrompt, category);
+      : await prepareImageGeneratorPrompts(trimmedPrompt, category, {
+          styleId,
+          platform,
+        });
 
     const falResult = await generateCategoryImage({
       prompt: prepared.enhancedPrompt,
@@ -100,6 +124,7 @@ export async function runImageGeneratorGeneration(
       negativePrompt: prepared.negativePrompt,
       category: prepared.category,
       imageSize,
+      imageDimensions,
       highRes,
     });
 

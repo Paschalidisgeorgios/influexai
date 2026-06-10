@@ -2,7 +2,16 @@ import {
   CATEGORY_PROMPTS,
   type ImageCategoryKey,
 } from "@/lib/generation-config";
-import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
+import {
+  enhanceImagePrompt,
+  type EnhanceImagePromptOptions,
+} from "@/lib/ai/imagePromptEnhancer";
+import {
+  resolveImagePlatformId,
+  resolveImageStyleId,
+  type ImagePlatformId,
+  type ImageStyleId,
+} from "@/lib/ai/imageStylePresets";
 
 const CATEGORY_PATTERNS: { category: ImageCategoryKey; pattern: RegExp }[] = [
   {
@@ -80,17 +89,21 @@ export type PreparedImageGeneratorPrompts = {
   negativePrompt: string;
   category: ImageCategoryKey;
   promptEnhanced: boolean;
+  styleId: ImageStyleId;
+  platform: ImagePlatformId;
 };
 
 export async function prepareImageGeneratorPrompts(
   userPrompt: string,
-  selectedCategory: ImageCategoryKey
+  selectedCategory: ImageCategoryKey,
+  options?: EnhanceImagePromptOptions
 ): Promise<PreparedImageGeneratorPrompts> {
   const trimmed = userPrompt.trim();
   const category = resolveImageCategory(trimmed, selectedCategory);
-  const style = CATEGORY_PROMPTS[category].label;
+  const styleId = resolveImageStyleId(options?.styleId);
+  const platform = resolveImagePlatformId(options?.platform);
   const { prompt: enhancedPrompt, negative_prompt: negativePrompt } =
-    await enhanceImagePrompt(trimmed, style);
+    await enhanceImagePrompt(trimmed, { styleId, platform });
 
   return {
     userPrompt: trimmed,
@@ -98,6 +111,8 @@ export async function prepareImageGeneratorPrompts(
     negativePrompt,
     category,
     promptEnhanced: enhancedPrompt !== trimmed,
+    styleId,
+    platform,
   };
 }
 

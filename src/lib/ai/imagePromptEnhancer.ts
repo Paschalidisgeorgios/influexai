@@ -1,29 +1,55 @@
 import { createAnthropicMessage } from "@/lib/anthropic";
+import {
+  getPlatformFormat,
+  getStylePreset,
+  resolveImagePlatformId,
+  resolveImageStyleId,
+  type ImagePlatformId,
+  type ImageStyleId,
+} from "@/lib/ai/imageStylePresets";
 
 const IMAGE_PROMPT_ENHANCER_MODEL = "claude-sonnet-4-5-20250929";
 
-const IMAGE_PROMPT_ENHANCER_SYSTEM = `You are a professional image prompt engineer for photorealistic and stylized AI image generation (Flux-class models). The user gives a short description, often in German. Your job:
+const ANTI_GLOSS_RULE = `Never use terms like 4k, 8k, ultra HD, masterpiece, hyperrealistic — they create artificial gloss. Describe a real photograph instead. For people: always preserve natural skin texture, avoid flawless airbrushed skin.`;
+
+function buildEnhancerSystem(styleId: ImageStyleId): string {
+  const preset = getStylePreset(styleId);
+  return `You are a professional image prompt engineer for photorealistic AI image generation (Flux-class models). The user gives a short description, often in German. Your job:
 1. Translate the intent to English.
 2. Expand it into a detailed, professional image prompt: subject (with explicit age descriptor like 'adult woman in her 30s' when people are involved), setting, composition, lighting, camera/lens feel, mood, style.
-3. Write a negative prompt that excludes common artifacts: deformed hands, extra fingers, extra limbs, duplicate objects, phones or props not requested, text, watermark, logo, low quality, blurry, oversaturated, cartoonish (unless requested), child-like features when an adult is described.
-4. Never add objects, people or props the user did not ask for.
-5. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
+3. Integrate this photographic style faithfully into the prompt: ${preset.descriptor}
+4. Write a negative prompt that excludes common artifacts: deformed hands, extra fingers, extra limbs, duplicate objects, phones or props not requested, text, watermark, logo, low quality, blurry, oversaturated, cartoonish (unless requested), child-like features when an adult is described.
+5. Never add objects, people or props the user did not ask for.
+6. Phrase quality requirements POSITIVELY inside the main prompt instead of relying on the negative prompt: e.g. 'natural relaxed hands', 'clean composition with only the described subject and setting', 'anatomically correct'. Never mention unwanted objects by name in the prompt.
+7. ${ANTI_GLOSS_RULE}
+8. Respond ONLY with valid JSON, no markdown, no backticks: {"prompt": "...", "negative_prompt": "..."}`;
+}
 
 const FALLBACK_NEGATIVE_PROMPT =
-  "deformed, extra limbs, duplicate objects, text, watermark, low quality";
+  "deformed, extra limbs, duplicate objects, text, watermark, low quality, airbrushed skin, plastic skin";
 
 export type EnhancedImagePrompt = {
   prompt: string;
   negative_prompt: string;
+  styleId: ImageStyleId;
+  platform: ImagePlatformId;
 };
 
-function buildUserMessage(userInput: string, style?: string): string {
+export type EnhanceImagePromptOptions = {
+  styleId?: ImageStyleId | string;
+  platform?: ImagePlatformId | string;
+};
+
+function buildUserMessage(
+  userInput: string,
+  options?: EnhanceImagePromptOptions
+): string {
   const trimmed = userInput.trim();
-  if (!style?.trim()) return trimmed;
-  return `${trimmed}\n\nSelected style/context: ${style.trim()}`;
+  const platform = getPlatformFormat(resolveImagePlatformId(options?.platform));
+  return `${trimmed}\n\nTarget platform/format: ${platform.labelDE} (${platform.aspectLabel})`;
 }
 
-function parseEnhancerJson(raw: string): EnhancedImagePrompt | null {
+function parseEnhancerJson(raw: string): Omit<EnhancedImagePrompt, "styleId" | "platform"> | null {
   try {
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned) as {
@@ -52,42 +78,68 @@ function parseEnhancerJson(raw: string): EnhancedImagePrompt | null {
  */
 export async function enhanceImagePrompt(
   userInput: string,
-  style?: string
+  options?: EnhanceImagePromptOptions
 ): Promise<EnhancedImagePrompt> {
   const trimmed = userInput.trim();
+  const styleId = resolveImageStyleId(options?.styleId);
+  const platform = resolveImagePlatformId(options?.platform);
+
   if (!trimmed) {
-    return { prompt: trimmed, negative_prompt: FALLBACK_NEGATIVE_PROMPT };
+    return {
+      prompt: trimmed,
+      negative_prompt: FALLBACK_NEGATIVE_PROMPT,
+      styleId,
+      platform,
+    };
   }
 
   const result = await createAnthropicMessage({
     model: IMAGE_PROMPT_ENHANCER_MODEL,
     maxTokens: 1024,
-    system: IMAGE_PROMPT_ENHANCER_SYSTEM,
-    user: buildUserMessage(trimmed, style),
+    system: buildEnhancerSystem(styleId),
+    user: buildUserMessage(trimmed, { styleId, platform }),
   });
 
   if (!result.ok) {
     console.warn("[imagePromptEnhancer] Anthropic call failed:", result.error);
-    return { prompt: trimmed, negative_prompt: FALLBACK_NEGATIVE_PROMPT };
+    return {
+      prompt: trimmed,
+      negative_prompt: FALLBACK_NEGATIVE_PROMPT,
+      styleId,
+      platform,
+    };
   }
 
   const parsed = parseEnhancerJson(result.text);
   if (!parsed) {
     console.warn("[imagePromptEnhancer] Failed to parse JSON response");
-    return { prompt: trimmed, negative_prompt: FALLBACK_NEGATIVE_PROMPT };
+    return {
+      prompt: trimmed,
+      negative_prompt: FALLBACK_NEGATIVE_PROMPT,
+      styleId,
+      platform,
+    };
   }
 
-  return parsed;
+  console.log("[imagePromptEnhancer]", {
+    styleId,
+    platform,
+    prompt: parsed.prompt,
+  });
+
+  return { ...parsed, styleId, platform };
 }
 
 /** Agent workflow: enhance + log; never throws (falls back to original prompt). */
 export async function enhanceImagePromptForAgent(
   userInput: string,
-  style?: string
+  options?: EnhanceImagePromptOptions
 ): Promise<EnhancedImagePrompt> {
   try {
-    const result = await enhanceImagePrompt(userInput, style);
+    const result = await enhanceImagePrompt(userInput, options);
     console.log("[agent-image]", {
+      styleId: result.styleId,
+      platform: result.platform,
       prompt: result.prompt,
       negative_prompt: result.negative_prompt,
     });
@@ -95,6 +147,13 @@ export async function enhanceImagePromptForAgent(
   } catch (error) {
     console.warn("[agent-image] enhancement failed, using original prompt", error);
     const trimmed = userInput.trim();
-    return { prompt: trimmed, negative_prompt: FALLBACK_NEGATIVE_PROMPT };
+    const styleId = resolveImageStyleId(options?.styleId);
+    const platform = resolveImagePlatformId(options?.platform);
+    return {
+      prompt: trimmed,
+      negative_prompt: FALLBACK_NEGATIVE_PROMPT,
+      styleId,
+      platform,
+    };
   }
 }

@@ -24,6 +24,14 @@ import {
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
 import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
+import {
+  getPlatformImageDimensions,
+  platformToFalImageSize,
+  resolveImagePlatformId,
+  resolveImageStyleId,
+  type ImagePlatformId,
+  type ImageStyleId,
+} from "@/lib/ai/imageStylePresets";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +58,8 @@ export async function POST(request: NextRequest) {
     falPrompt,
     negativePrompt: negativePromptRaw,
     skipPromptEnhancement,
+    styleId: styleIdRaw,
+    platform: platformRaw,
   } = body as {
     prompt?: string;
     category?: string;
@@ -61,15 +71,20 @@ export async function POST(request: NextRequest) {
     falPrompt?: string;
     negativePrompt?: string;
     skipPromptEnhancement?: boolean;
+    styleId?: ImageStyleId;
+    platform?: ImagePlatformId;
   };
 
   const trimmedPrompt = prompt?.trim() ?? "";
   const category: ImageCategoryKey = isValidCategory(categoryRaw ?? "")
     ? (categoryRaw as ImageCategoryKey)
     : "creator";
+  const styleId = resolveImageStyleId(styleIdRaw);
+  const platform = resolveImagePlatformId(platformRaw);
+  const imageDimensions = getPlatformImageDimensions(platform);
   const imageSize = VALID_FAL_IMAGE_SIZES.includes(aspectRatio as FalImageSize)
     ? (aspectRatio as FalImageSize)
-    : "landscape_16_9";
+    : platformToFalImageSize(platform);
   const highRes = highResRaw === true;
   const isVariation = variationRaw === true;
   const creditCost = isVariation
@@ -119,8 +134,13 @@ export async function POST(request: NextRequest) {
                 : "deformed, extra limbs, duplicate objects, text, watermark, low quality",
             category,
             promptEnhanced: true,
+            styleId,
+            platform,
           }
-        : await prepareImageGeneratorPrompts(trimmedPrompt, category);
+        : await prepareImageGeneratorPrompts(trimmedPrompt, category, {
+            styleId,
+            platform,
+          });
 
     const falResult = await generateCategoryImage({
       prompt: prepared.enhancedPrompt,
@@ -128,6 +148,7 @@ export async function POST(request: NextRequest) {
       negativePrompt: prepared.negativePrompt,
       category: prepared.category,
       imageSize,
+      imageDimensions,
       highRes,
       seed,
     });
@@ -200,6 +221,8 @@ export async function POST(request: NextRequest) {
       categoryLabel: CATEGORY_PROMPTS[prepared.category].label,
       resolvedCategory: prepared.category,
       promptEnhanced: prepared.promptEnhanced,
+      styleId: prepared.styleId,
+      platform: prepared.platform,
       ...(prepared.promptEnhanced
         ? { enhancedPrompt: prepared.enhancedPrompt }
         : {}),

@@ -154,6 +154,14 @@ export type AgentScores = {
   riskLevel?: "low" | "medium" | "high";
 };
 
+export type AgentTextToolRun<T = unknown> = {
+  tool: string;
+  input: Record<string, unknown>;
+  output: T;
+  qualityScore: number;
+  retried: boolean;
+};
+
 export type AgentResult = {
   type: string;
   title: string;
@@ -161,6 +169,8 @@ export type AgentResult = {
   outputs: unknown[];
   scores?: AgentScores;
   nextActions?: string[];
+  /** Per-tool execution metadata for agent_executions.result */
+  toolRuns?: AgentTextToolRun[];
 };
 
 export type AgentExecution = {

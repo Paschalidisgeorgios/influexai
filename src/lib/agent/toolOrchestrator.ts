@@ -3,7 +3,14 @@ import type { ProductAdPlatform } from "@/lib/product-ad-config";
 import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
-import type { AgentIntent, AgentResult, AgentScores } from "./types";
+import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
+import {
+  runContentKalenderTextTool,
+  runProductAdTextTool,
+  runTrendScriptTextTool,
+  runViralHookTextTool,
+} from "@/lib/agent/text-tool-runners";
+import type { AgentIntent, AgentResult, AgentScores, AgentTextToolRun } from "./types";
 
 type ToolErrorBody = { error?: string; success?: boolean };
 
@@ -102,8 +109,18 @@ function mapCalendarEntries(
   }));
 }
 
-function scoreOutput(data: unknown, platform: string): AgentScores {
-  const text = JSON.stringify(data).toLowerCase();
+function scoresFromQualityRun(
+  runs: AgentTextToolRun[],
+  platform: string
+): AgentScores {
+  const avgScore =
+    runs.length > 0
+      ? Math.round(
+          runs.reduce((sum, run) => sum + run.qualityScore, 0) / runs.length
+        )
+      : 70;
+
+  const text = JSON.stringify(runs.map((r) => r.output)).toLowerCase();
   const hasRisk = /garantiert|spart.*€|sicher.*rendite|heilt|kuriert/i.test(text);
   const platformFit =
     /tiktok|reels|shorts/i.test(platform)
@@ -112,17 +129,12 @@ function scoreOutput(data: unknown, platform: string): AgentScores {
         ? ("medium" as const)
         : ("low" as const);
 
-  let hookScore = 65;
-  if (/hook/i.test(text)) hookScore += 15;
-  if (/\?|—|\.\.\./i.test(text)) hookScore += 10;
-  if (text.length > 200) hookScore += 10;
-
   return {
-    hookScore: Math.min(hookScore, 100),
-    clarity: 80,
+    hookScore: avgScore,
+    clarity: avgScore,
     platformFit,
     trendFit: "medium",
-    ctaStrength: 75,
+    ctaStrength: avgScore,
     riskLevel: hasRisk ? "high" : "low",
   };
 }
@@ -145,41 +157,38 @@ export async function orchestrate(
 ): Promise<AgentResult> {
   const platform = detectPlatform(prompt);
   const nische = detectNische(prompt);
+  const toolRuns: AgentTextToolRun[] = [];
 
   switch (intent) {
     case "hook_generation": {
-      const data = (await callTool(
-        "/api/viral-hook",
-        { input: prompt },
-        authCookie
-      )) as { hooks?: string[] };
-      const hooks = data.hooks ?? [];
+      const run = await runViralHookTextTool(prompt);
+      toolRuns.push(run);
+      const hooks = run.output;
       return {
         type: "hooks",
         title: "Hooks bereit",
         summary: `${hooks.length} virale Hooks generiert.`,
         outputs: hooks,
-        scores: scoreOutput(data, platform),
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["mehr_varianten", "in_kalender_uebernehmen", "exportieren"],
       };
     }
 
     case "script_generation": {
-      const data = (await callTool(
-        "/api/trend-script",
-        {
-          thema: prompt,
-          plattform: mapToTrendScriptPlatform(platform),
-          region: "DE",
-        },
-        authCookie
-      )) as { script?: string; sources?: unknown[] };
+      const run = await runTrendScriptTextTool({
+        thema: prompt,
+        plattform: mapToTrendScriptPlatform(platform),
+        region: "DE",
+      });
+      toolRuns.push(run);
       return {
         type: "script",
         title: "Script bereit",
         summary: "Script generiert.",
-        outputs: [{ script: data.script, sources: data.sources }],
-        scores: scoreOutput(data, platform),
+        outputs: [{ script: run.output.script, sources: run.output.sources }],
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: [
           "mehr_varianten",
           "thumbnail_erstellen",
@@ -192,92 +201,81 @@ export async function orchestrate(
     case "product_ad": {
       const { productName, productDescription, audience } =
         inferProductAdFields(prompt, nische);
-      const adPlatform = mapToProductAdPlatform(platform);
-      let adData: Record<string, unknown>;
-      try {
-        adData = (await callTool(
-          "/api/product-ad/script",
-          {
-            productName,
-            productDescription,
-            audience,
-            platform: adPlatform,
-            style: "lifestyle",
-            language: "de",
-            ctaText: "Jetzt entdecken",
-          },
-          authCookie
-        )) as Record<string, unknown>;
-      } catch {
-        const raw = (await callTool(
-          "/api/ki-agent",
-          { messages: [{ role: "user", content: prompt }] },
-          authCookie
-        )) as { agentResponse?: Record<string, unknown> };
-        adData = raw.agentResponse ?? raw;
-      }
+      const run = await runProductAdTextTool({
+        productName,
+        productDescription,
+        audience,
+        platform: mapToProductAdPlatform(platform),
+        style: "lifestyle",
+        language: "de",
+        ctaText: "Jetzt entdecken",
+      });
+      toolRuns.push(run);
       return {
         type: "ad",
         title: "Ad Script bereit",
         summary: "Reel-Ad generiert.",
-        outputs: [adData],
-        scores: scoreOutput(adData, platform),
+        outputs: [run.output],
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["mehr_varianten", "caption_schreiben", "exportieren"],
       };
     }
 
     case "content_calendar": {
-      const data = (await callTool(
-        "/api/content-kalender",
-        {
-          nische,
-          plattform: mapToContentKalenderPlatform(platform),
-          frequenz: "5x_woche",
-        },
-        authCookie
-      )) as {
-        entries?: Array<{ tag: string; idee: string; format: string }>;
-      };
-      const entries = mapCalendarEntries(data.entries ?? []);
+      const run = await runContentKalenderTextTool({
+        nische,
+        plattform: mapToContentKalenderPlatform(platform),
+        frequenz: "5x_woche",
+      });
+      toolRuns.push(run);
+      const entries = mapCalendarEntries(run.output);
       return {
         type: "calendar",
         title: "Content-Kalender bereit",
         summary: `Wochenplan für ${nische} auf ${mapToContentKalenderPlatform(platform)} erstellt.`,
         outputs: entries,
-        scores: { platformFit: "high", riskLevel: "low" },
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["exportieren", "mehr_varianten"],
       };
     }
 
     case "video_briefing": {
       const [scriptRes, hooksRes] = await Promise.allSettled([
-        callTool(
-          "/api/trend-script",
-          {
-            thema: prompt,
-            plattform: mapToTrendScriptPlatform(platform),
-            region: "DE",
-          },
-          authCookie
-        ),
-        callTool("/api/viral-hook", { input: prompt }, authCookie),
+        runTrendScriptTextTool({
+          thema: prompt,
+          plattform: mapToTrendScriptPlatform(platform),
+          region: "DE",
+        }),
+        runViralHookTextTool(prompt),
       ]);
 
-      const scriptData =
-        scriptRes.status === "fulfilled"
-          ? {
-              script: (scriptRes.value as { script?: string }).script,
-              sources: (scriptRes.value as { sources?: unknown[] }).sources,
-            }
-          : null;
-      const hooksData =
-        hooksRes.status === "fulfilled"
-          ? { hooks: (hooksRes.value as { hooks?: string[] }).hooks ?? [] }
-          : null;
+      const outputs: unknown[] = [];
+      if (scriptRes.status === "fulfilled") {
+        toolRuns.push(scriptRes.value);
+        outputs.push({
+          script: scriptRes.value.output.script,
+          sources: scriptRes.value.output.sources,
+        });
+      }
+      if (hooksRes.status === "fulfilled") {
+        toolRuns.push(hooksRes.value);
+        outputs.push({ hooks: hooksRes.value.output });
+      }
 
-      const outputs = [scriptData, hooksData].filter(Boolean);
       if (!outputs.length) {
-        throw new Error("Video-Briefing konnte nicht generiert werden.");
+        const reason =
+          scriptRes.status === "rejected"
+            ? scriptRes.reason
+            : hooksRes.status === "rejected"
+              ? hooksRes.reason
+              : "Unbekannter Fehler";
+        throw new Error(
+          reason instanceof Error
+            ? reason.message
+            : "Video-Briefing konnte nicht generiert werden."
+        );
       }
 
       return {
@@ -285,48 +283,39 @@ export async function orchestrate(
         title: "Video-Briefing bereit",
         summary: "Script und Hooks für Video generiert.",
         outputs,
-        scores: scoreOutput(outputs[0] ?? {}, platform),
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["exportieren", "mehr_varianten"],
       };
     }
 
     case "multi_tool_content_package": {
       const [hooksRes, scriptRes, calRes] = await Promise.allSettled([
-        callTool("/api/viral-hook", { input: prompt }, authCookie),
-        callTool(
-          "/api/trend-script",
-          {
-            thema: prompt,
-            plattform: mapToTrendScriptPlatform(platform),
-            region: "DE",
-          },
-          authCookie
-        ),
-        callTool(
-          "/api/content-kalender",
-          {
-            nische,
-            plattform: mapToContentKalenderPlatform(platform),
-            frequenz: "5x_woche",
-          },
-          authCookie
-        ),
+        runViralHookTextTool(prompt),
+        runTrendScriptTextTool({
+          thema: prompt,
+          plattform: mapToTrendScriptPlatform(platform),
+          region: "DE",
+        }),
+        runContentKalenderTextTool({
+          nische,
+          plattform: mapToContentKalenderPlatform(platform),
+          frequenz: "5x_woche",
+        }),
       ]);
 
       const outputs: unknown[] = [];
       if (hooksRes.status === "fulfilled") {
-        outputs.push(hooksRes.value);
+        toolRuns.push(hooksRes.value);
+        outputs.push({ hooks: hooksRes.value.output });
       }
       if (scriptRes.status === "fulfilled") {
-        outputs.push(
-          trendScriptToOutput(
-            ((scriptRes.value as { script?: string }).script ?? "") as string
-          )
-        );
+        toolRuns.push(scriptRes.value);
+        outputs.push(trendScriptToOutput(scriptRes.value.output.script));
       }
       if (calRes.status === "fulfilled") {
-        const entries = (calRes.value as { entries?: unknown[] }).entries ?? [];
-        outputs.push({ entries: mapCalendarEntries(entries as never[]) });
+        toolRuns.push(calRes.value);
+        outputs.push({ entries: mapCalendarEntries(calRes.value.output) });
       }
 
       if (!outputs.length) {
@@ -336,15 +325,20 @@ export async function orchestrate(
       return {
         type: "content_package",
         title: "Content-Paket bereit",
-        summary: `${outputs.length} Tools erfolgreich ausgeführt.`,
+        summary: `${toolRuns.length} Tools erfolgreich ausgeführt.`,
         outputs,
-        scores: { platformFit: "high", riskLevel: "low" },
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["exportieren", "in_kalender_uebernehmen", "mehr_varianten"],
       };
     }
 
     case "image_generation": {
-      const enhanced = await enhanceImagePromptForAgent(prompt, "creator");
+      const { styleId, platform } = inferImageStyleAndPlatform(prompt);
+      const enhanced = await enhanceImagePromptForAgent(prompt, {
+        styleId,
+        platform,
+      });
       const data = (await callTool(
         "/api/generate-image",
         {
@@ -353,6 +347,8 @@ export async function orchestrate(
           falPrompt: enhanced.prompt,
           negativePrompt: enhanced.negative_prompt,
           skipPromptEnhancement: true,
+          styleId: enhanced.styleId,
+          platform: enhanced.platform,
         },
         authCookie
       )) as { imageUrl?: string; generationId?: string; prompt?: string };
@@ -373,18 +369,16 @@ export async function orchestrate(
     }
 
     default: {
-      const data = (await callTool(
-        "/api/viral-hook",
-        { input: prompt },
-        authCookie
-      )) as { hooks?: string[] };
-      const hooks = data.hooks ?? [];
+      const run = await runViralHookTextTool(prompt);
+      toolRuns.push(run);
+      const hooks = run.output;
       return {
         type: "hooks",
         title: "Output bereit",
         summary: "Generierung abgeschlossen.",
         outputs: hooks,
-        scores: scoreOutput(data, platform),
+        scores: scoresFromQualityRun(toolRuns, platform),
+        toolRuns,
         nextActions: ["mehr_varianten", "exportieren"],
       };
     }

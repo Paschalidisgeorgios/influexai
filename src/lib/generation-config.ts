@@ -287,14 +287,36 @@ export function uiFormatToImageSize(
 
 export const FAL_IMAGE_MODELS = {
   FLUX_PULID: "fal-ai/flux-pulid",
-  /** Bild Generator high-res */
+  /** Bild Generator — FLUX.2 [pro] (primary) */
+  FLUX_2_PRO: "fal-ai/flux-2-pro",
+  /** Bild Generator high-res fallback */
   FLUX_PRO_T2I: "fal-ai/flux-pro",
   /** FLUX Pro v1.1 (product, thumbnail pages). */
   FLUX_PRO: "fal-ai/flux-pro/v1.1",
-  /** Bild Generator standard */
+  /** Bild Generator standard fallback */
   FLUX_DEV: "fal-ai/flux/dev",
   CLARITY_UPSCALER: "fal-ai/clarity-upscaler",
 } as const;
+
+/** fal-ai/flux-2-pro custom sizes — short edge ≥ 1080px */
+export function resolveFlux2ProImageSize(
+  imageSize: FalImageSize
+): { width: number; height: number } {
+  switch (imageSize) {
+    case "square_hd":
+      return { width: 1080, height: 1080 };
+    case "portrait_16_9":
+      return { width: 1080, height: 1920 };
+    case "landscape_16_9":
+      return { width: 1920, height: 1080 };
+    case "portrait_4_3":
+      return { width: 1080, height: 1440 };
+    case "landscape_4_3":
+      return { width: 1440, height: 1080 };
+    default:
+      return { width: 1920, height: 1080 };
+  }
+}
 
 export const TEXT_TO_IMAGE_STYLE_SUFFIX: Record<string, string> = {
   realistic: "photorealistic, natural lighting, highly detailed, realistic",
