@@ -507,10 +507,13 @@ export default function KiInfluencerPage() {
 
       {step === 3 && (
         <div className="flex flex-col gap-5 rounded-2xl border border-white/8 bg-[#060608] p-6">
-          <h2 className="text-lg font-semibold text-[#F0EFE8]">D — Content erstellen</h2>
-          <p className="text-sm text-[#B4FF00]">
-            {name} ist trainiert — generiere konsistente Bilder mit deinem LoRA.
+          <p className="text-sm text-[rgba(255,255,255,0.65)]">
+            Beschreibe eine Szene — dein Charakter erscheint darin. Immer mit demselben
+            Gesicht.
           </p>
+          {name && (
+            <p className="text-sm text-[#B4FF00]">{name} ist bereit — leg los!</p>
+          )}
 
           <div>
             <p className="mb-2 text-sm font-semibold text-[#F0EFE8]">Stil</p>
@@ -520,9 +523,12 @@ export default function KiInfluencerPage() {
                   key={preset.id}
                   type="button"
                   onClick={() => setStyleId(preset.id)}
-                  className={`rounded-lg border px-3 py-2 text-sm font-semibold ${chipClass(styleId === preset.id)}`}
+                  className={`flex flex-col items-start rounded-lg border px-3 py-2 text-left ${chipClass(styleId === preset.id)}`}
                 >
-                  {preset.labelDE}
+                  <span className="text-sm font-semibold">{preset.labelDE}</span>
+                  <span className="text-[0.7rem] font-normal opacity-70">
+                    {preset.subtitleDE}
+                  </span>
                 </button>
               ))}
             </div>
@@ -544,16 +550,28 @@ export default function KiInfluencerPage() {
             </div>
           </div>
 
-          <label className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-[#F0EFE8]">Szene beschreiben</span>
+            <div className="flex flex-wrap gap-2">
+              {SCENE_EXAMPLES.map((example) => (
+                <button
+                  key={example}
+                  type="button"
+                  onClick={() => setContentPrompt(example)}
+                  className="rounded-lg border border-white/12 px-3 py-2 text-xs font-medium text-[#F0EFE8]/75 transition-colors hover:border-[#B4FF00]/35 hover:text-[#F0EFE8]"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
             <textarea
               value={contentPrompt}
               onChange={(e) => setContentPrompt(e.target.value)}
               rows={3}
-              placeholder="z.B. im Fitnessstudio, motivierender Blick in die Kamera…"
+              placeholder="z.B. im Gym beim Training, lächelt in die Kamera"
               className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
             />
-          </label>
+          </div>
 
           <button
             type="button"
@@ -562,8 +580,8 @@ export default function KiInfluencerPage() {
             className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
           >
             {loading
-              ? "Generiere…"
-              : `Bild generieren (${LORA_GENERATION_CREDIT} Credits)`}
+              ? "Erstelle Bild…"
+              : `Bild erstellen (${LORA_GENERATION_CREDIT} Credits)`}
           </button>
 
           {contentResultUrl && (
