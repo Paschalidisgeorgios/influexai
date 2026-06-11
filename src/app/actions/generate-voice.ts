@@ -1,8 +1,14 @@
 "use server";
 
+import { randomUUID } from "crypto";
+
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
+import {
+  createGenerationRecord,
+  ingestAudioFromDataUrl,
+} from "@/lib/generation-assets";
 import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
@@ -13,6 +19,7 @@ const CREDIT_COST = 3;
 type GenerateSuccess = {
   success: true;
   audioUrl: string;
+  generationId: string;
   creditsLeft: number;
 };
 
@@ -57,14 +64,34 @@ export async function generateVoice(
       return { success: false, error: tts.error };
     }
 
-    const voiceLabel = voiceId;
+    const generationId = randomUUID();
+    const finalPath = await ingestAudioFromDataUrl(
+      userId,
+      generationId,
+      tts.audioDataUrl
+    );
+
+    await createGenerationRecord(
+      supabase,
+      userId,
+      "audio",
+      {
+        finalPath,
+        assetKind: "audio",
+        paid: true,
+        mimeType: "audio/mpeg",
+      },
+      CREDIT_COST,
+      trimmed,
+      generationId
+    );
 
     const deduction = await deductCredits(
       supabase,
       userId,
       CREDIT_COST,
-      `KI Stimme (${voiceLabel})`,
-      { generationType: "voice-tts", prompt: trimmed.slice(0, 500) }
+      `KI Stimme (${voiceId})`,
+      { generationType: "audio", prompt: trimmed.slice(0, 500) }
     );
 
     if (!deduction.success) {
@@ -77,6 +104,7 @@ export async function generateVoice(
     return {
       success: true,
       audioUrl: tts.audioDataUrl,
+      generationId,
       creditsLeft: deduction.remainingCredits,
     };
   } catch (e) {

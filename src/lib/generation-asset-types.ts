@@ -9,7 +9,7 @@ export type GenerationAssetResult = {
   downloadPaid?: boolean;
   mode?: "preview" | "final";
   jobId?: string;
-  assetKind?: "image" | "video";
+  assetKind?: "image" | "video" | "audio";
   mimeType?: string;
   category?: string;
   model?: string;
@@ -47,7 +47,11 @@ export function parseGenerationAssetResult(
     mode: r.mode === "preview" || r.mode === "final" ? r.mode : undefined,
     jobId: typeof r.jobId === "string" ? r.jobId : undefined,
     assetKind:
-      r.assetKind === "image" || r.assetKind === "video" ? r.assetKind : undefined,
+      r.assetKind === "image" ||
+      r.assetKind === "video" ||
+      r.assetKind === "audio"
+        ? r.assetKind
+        : undefined,
     mimeType: typeof r.mimeType === "string" ? r.mimeType : undefined,
     sourcePath: typeof r.sourcePath === "string" ? r.sourcePath : undefined,
     upscaledPath: typeof r.upscaledPath === "string" ? r.upscaledPath : undefined,

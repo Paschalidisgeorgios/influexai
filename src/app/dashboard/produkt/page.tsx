@@ -18,6 +18,7 @@ import type { ProductAdScript } from "@/lib/product-ad-script";
 import { LOCALE_LANGUAGE_NAMES, type Locale } from "@/lib/locale";
 import { createClient } from "@/lib/supabase/client";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import { ProductAdLoadingSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
 type Step = "input" | "loading" | "result";
 
@@ -91,8 +92,6 @@ function ProduktWerbungPageInner() {
   );
   const [dragOver, setDragOver] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
-  const [loadingScript, setLoadingScript] = useState<ProductAdScript | null>(null);
-  const [loadingScriptText, setLoadingScriptText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AdResult | null>(null);
   const [batchResults, setBatchResults] = useState<AdResult[] | null>(null);
@@ -206,8 +205,6 @@ function ProduktWerbungPageInner() {
     setError(null);
     setStep("loading");
     setLoadingStep(0);
-    setLoadingScript(null);
-    setLoadingScriptText(null);
     setBatchResults(null);
     setResult(null);
 
@@ -239,8 +236,6 @@ function ProduktWerbungPageInner() {
           throw new Error(scriptData.error || t("error_generic"));
         }
         scriptForVideo = scriptData.script as ProductAdScript;
-        setLoadingScript(scriptForVideo);
-        setLoadingScriptText(scriptData.scriptText ?? null);
         setLoadingStep(1);
       } else if (opts.batch) {
         setLoadingStep(1);
@@ -684,22 +679,22 @@ function ProduktWerbungPageInner() {
       )}
 
       {step === "loading" && (
-        <div style={{ ...cardStyle(), textAlign: "center", padding: "60px 20px" }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid #B4FF00", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 24px" }} />
-          <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.8rem", color: "#F0EFE8", marginBottom: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p
+            style={{
+              textAlign: "center",
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontSize: "1.2rem",
+              color: "#B4FF00",
+              letterSpacing: "0.04em",
+            }}
+          >
             {t(`loading_${LOADING_STEPS[loadingStep]}`)}
-          </h2>
-          {loadingScript && (
-            <div style={{ textAlign: "left", maxWidth: 520, margin: "0 auto 20px", padding: 16, borderRadius: 12, background: "#18181d", border: "1px solid rgba(180,255,0,0.2)" }}>
-              <div style={{ fontSize: "0.65rem", fontWeight: 800, color: "#B4FF00", marginBottom: 8, letterSpacing: "0.12em" }}>HOOK</div>
-              <p style={{ margin: "0 0 12px", fontSize: "1.05rem", fontWeight: 700, color: "#F0EFE8", lineHeight: 1.4 }}>{loadingScript.hook}</p>
-              {loadingScriptText && (
-                <p style={{ margin: 0, fontSize: "0.82rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{loadingScriptText}</p>
-              )}
-            </div>
-          )}
-          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>{t("loading_hint")}</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </p>
+          <ProductAdLoadingSkeleton />
+          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", fontSize: "0.82rem" }}>
+            {t("loading_hint")}
+          </p>
         </div>
       )}
 

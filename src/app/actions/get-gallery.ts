@@ -12,6 +12,7 @@ import {
   type GalleryItem,
 } from "@/lib/gallery-types";
 import {
+  isAudioGenerationType,
   isImageGenerationType,
   isVideoGenerationType,
   resolveGenerationMediaUrls,
@@ -134,7 +135,7 @@ function normalizeGeneration(
     getPublicUrl,
   });
   const displayTitle =
-    media.imageUrl || media.videoUrl
+    media.imageUrl || media.videoUrl || media.audioUrl
       ? type.replace(/-/g, " ")
       : prompt.slice(0, 80);
 
@@ -159,6 +160,18 @@ function normalizeGeneration(
       searchText: `${type} ${prompt}`.toLowerCase(),
       generationType: type,
       videoUrl: media.videoUrl,
+    };
+  }
+  if (isAudioGenerationType(type)) {
+    return {
+      id: row.id,
+      _type: "audio",
+      created_at: row.created_at,
+      title: prompt.slice(0, 80) || "KI Stimme",
+      searchText: `${type} ${prompt}`.toLowerCase(),
+      generationType: type,
+      prompt,
+      audioUrl: media.audioUrl,
     };
   }
   return null;

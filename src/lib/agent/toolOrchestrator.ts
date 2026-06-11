@@ -5,13 +5,15 @@ import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
-import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
 import {
   runContentKalenderTextTool,
   runProductAdTextTool,
   runTrendScriptTextTool,
   runViralHookTextTool,
 } from "@/lib/agent/text-tool-runners";
+import { buildImagePrompt } from "./promptBuilder";
+import { parseRequirements } from "./requirements";
+import { runVisualQAWithRetry } from "./visualQuality";
 import type { AgentIntent, AgentResult, AgentScores, AgentTextToolRun } from "./types";
 
 type OrchestrateContext = {
@@ -306,12 +308,17 @@ export async function orchestrate(
     }
 
     case "image_generation": {
+      const requirements = parseRequirements(prompt, intent);
+      const built = buildImagePrompt(prompt, requirements.hardConstraints);
       const { styleId, platform: imagePlatform } =
-        inferImageStyleAndPlatform(prompt);
-      const enhanced = await enhanceImagePromptForAgent(prompt, {
+        inferImageStyleAndPlatform(built.positive);
+      const enhanced = await enhanceImagePromptForAgent(built.positive, {
         styleId,
         platform: imagePlatform,
       });
+      const mergedNegative = [enhanced.negative_prompt, built.negative]
+        .filter(Boolean)
+        .join(", ");
 
       console.log("[agent-image]", {
         styleId: enhanced.styleId,
@@ -320,23 +327,26 @@ export async function orchestrate(
         source: "toolOrchestrator",
       });
 
-      const result = await runImageGeneratorGeneration(ctx.supabase, ctx.userId, {
-        prompt,
-        category: "creator",
+      const imageResult = await runVisualQAWithRetry({
+        supabase: ctx.supabase,
+        userId: ctx.userId,
+        prompt: built.positive,
         styleId: enhanced.styleId,
         platform: enhanced.platform,
-        preEnhanced: {
-          enhancedPrompt: enhanced.prompt,
-          negativePrompt: enhanced.negative_prompt,
-          category: "creator",
-          styleId: enhanced.styleId,
-          platform: enhanced.platform,
+        enhanced: {
+          ...enhanced,
+          negative_prompt: mergedNegative,
         },
       });
 
-      if (!result.ok) {
-        throw new Error(result.error);
-      }
+      const imageRun: AgentTextToolRun = {
+        tool: "image-generator",
+        input: { prompt: built.positive, constraints: requirements.hardConstraints },
+        output: imageResult,
+        qualityScore: imageResult.qualityScore,
+        retried: imageResult.retried,
+      };
+      toolRuns.push(imageRun);
 
       return {
         type: "image",
@@ -344,14 +354,31 @@ export async function orchestrate(
         summary: `Visual für "${prompt.slice(0, 50)}..." generiert.`,
         outputs: [
           {
-            imageUrl: result.imageUrl,
-            generationId: result.generationId,
-            prompt,
+            imageUrl: imageResult.imageUrl,
+            generationId: imageResult.generationId,
+            prompt: built.positive,
+            negativePrompt: mergedNegative,
             styleId: enhanced.styleId,
             platform: enhanced.platform,
+            qualityScore: imageResult.qualityScore,
           },
         ],
-        scores: { platformFit: "high", riskLevel: "low" },
+        scores: {
+          platformFit:
+            imageResult.qualityScore >= 80
+              ? "high"
+              : imageResult.qualityScore >= 60
+                ? "medium"
+                : "low",
+          visualFit:
+            imageResult.qualityScore >= 80
+              ? "high"
+              : imageResult.qualityScore >= 60
+                ? "medium"
+                : "low",
+          riskLevel: "low",
+        },
+        toolRuns,
         nextActions: ["exportieren", "thumbnail_erstellen"],
       };
     }

@@ -83,6 +83,7 @@ export function PricingPlans({
       name: t(`${key}_name`),
       credits: t(`${key}_credits`),
       desc: t(`${key}_desc`),
+      delta: t(`plan_delta_${key}`),
       cta: t(`${key}_cta`),
       features: sharedFeatures,
     };
@@ -161,13 +162,13 @@ export function PricingPlans({
               >
                 {plan.hot && (
                   <div
-                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[#060608] font-bold text-[0.7rem] px-4 py-1 rounded-full whitespace-nowrap"
+                    className="absolute -top-4 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#B4FF00] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#060608] shadow-[0_0_24px_rgba(180,255,0,0.35)]"
                     style={{
-                      background: "var(--acid)",
-                      fontFamily: "var(--font-dm), sans-serif",
+                      background: "#B4FF00",
+                      fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
                     }}
                   >
-                    {t("popular")}
+                    {t("most_popular")}
                   </div>
                 )}
                 <div className="text-[0.72rem] font-bold uppercase tracking-[0.1em] mb-2.5 text-white">
@@ -205,9 +206,18 @@ export function PricingPlans({
                 <div className="text-[0.75rem] mt-1.5 mb-1 text-white/85">
                   {plan.credits}
                 </div>
-                <div className="text-[0.82rem] mb-4 leading-[1.55] text-white/80">
+                <div className="text-[0.82rem] mb-2 leading-[1.55] text-white/80">
                   {plan.desc}
                 </div>
+                <p
+                  className="mb-4 text-[0.75rem] leading-[1.5]"
+                  style={{
+                    color: "#888888",
+                    fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+                  }}
+                >
+                  {plan.delta}
+                </p>
 
                 {checkoutMode && onSubscribe ? (
                   <button

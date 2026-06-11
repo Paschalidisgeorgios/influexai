@@ -10,6 +10,7 @@ import {
   fetchImageBuffer,
 } from "@/lib/generated-image-process";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
+import { parseAudioDataUrl } from "@/lib/upload-audio-fal";
 
 export const GENERATED_ASSETS_BUCKET = "generated-assets";
 
@@ -34,6 +35,10 @@ export function finalVideoStoragePath(
   generationId: string
 ): string {
   return `${userId}/${generationId}/final.mp4`;
+}
+
+export function audioStoragePath(userId: string, generationId: string): string {
+  return `${userId}/${generationId}/final.mp3`;
 }
 
 export async function createGenerationRecord(
@@ -151,6 +156,17 @@ export async function ingestImageGeneratorAssets(
     width: meta.width,
     height: meta.height,
   };
+}
+
+export async function ingestAudioFromDataUrl(
+  userId: string,
+  generationId: string,
+  audioDataUrl: string
+): Promise<string> {
+  const { buffer, mimeType } = parseAudioDataUrl(audioDataUrl);
+  const path = audioStoragePath(userId, generationId);
+  await uploadToGeneratedAssets(path, buffer, mimeType || "audio/mpeg");
+  return path;
 }
 
 export async function ingestPreviewFromUrl(

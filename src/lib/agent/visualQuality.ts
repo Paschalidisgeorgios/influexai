@@ -17,11 +17,40 @@ const VISION_MODEL = "claude-sonnet-4-5-20250929";
 
 const VISION_SYSTEM = `Du bewertest Social-Media-Bilder für Creator. Score 0-100: Motiv passt zum Briefing, natürliche Anatomie, keine verzerrten Hände/Gesichter, plattformgerecht, kein unleserlicher Text im Bild. Antworte NUR JSON: {"score": number, "weaknesses": ["..."], "passed": boolean}`;
 
+const PROMPT_SCORER_SYSTEM = `Du bewertest Bild-Prompts für Social-Media (ohne das Bild zu sehen). Score 0-100 mit Breakdown:
+- engagement: Scroll-Stopper, emotionale Trigger, Hook-Potenzial
+- clarity: klare Szene, Motiv, Komposition, keine Widersprüche
+- platformFit: passt zu Plattform-Format und Best Practices
+Antworte NUR JSON: {"score": number, "breakdown": {"engagement": number, "clarity": number, "platformFit": number}, "weaknesses": ["..."], "passed": boolean}`;
+
+export type VisualQualityBreakdown = {
+  engagement: number;
+  clarity: number;
+  platformFit: number;
+};
+
 export type VisualScoreResult = {
   score: number;
   weaknesses: string[];
   passed: boolean;
+  breakdown?: VisualQualityBreakdown;
 };
+
+function clampScore(value: unknown): number | null {
+  return typeof value === "number"
+    ? Math.max(0, Math.min(100, Math.round(value)))
+    : null;
+}
+
+function parseBreakdown(raw: unknown): VisualQualityBreakdown | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const row = raw as Record<string, unknown>;
+  const engagement = clampScore(row.engagement);
+  const clarity = clampScore(row.clarity);
+  const platformFit = clampScore(row.platformFit);
+  if (engagement == null || clarity == null || platformFit == null) return undefined;
+  return { engagement, clarity, platformFit };
+}
 
 function parseVisionJson(raw: string): VisualScoreResult | null {
   try {
@@ -30,21 +59,74 @@ function parseVisionJson(raw: string): VisualScoreResult | null {
       score?: unknown;
       weaknesses?: unknown;
       passed?: unknown;
+      breakdown?: unknown;
     };
-    const score =
-      typeof parsed.score === "number"
-        ? Math.max(0, Math.min(100, Math.round(parsed.score)))
-        : null;
+    const score = clampScore(parsed.score);
     if (score == null) return null;
     const weaknesses = Array.isArray(parsed.weaknesses)
       ? parsed.weaknesses.map((w) => String(w).trim()).filter(Boolean)
       : [];
     const passed =
       typeof parsed.passed === "boolean" ? parsed.passed : score >= 70;
-    return { score, weaknesses, passed };
+    return {
+      score,
+      weaknesses,
+      passed,
+      breakdown: parseBreakdown(parsed.breakdown),
+    };
   } catch {
     return null;
   }
+}
+
+/** Prompt-based visual scoring when image bytes are unavailable. */
+export async function scorePromptVisualQuality(
+  prompt: string,
+  platform: string,
+  userGoal: string
+): Promise<VisualScoreResult> {
+  const trimmed = prompt.trim();
+  if (!trimmed) {
+    return {
+      score: 0,
+      weaknesses: ["Leerer Prompt"],
+      passed: false,
+      breakdown: { engagement: 0, clarity: 0, platformFit: 0 },
+    };
+  }
+
+  const result = await createAnthropicMessage({
+    model: VISION_MODEL,
+    maxTokens: 500,
+    system: PROMPT_SCORER_SYSTEM,
+    user: `Plattform: ${platform}
+Briefing: ${userGoal.trim()}
+Prompt:
+${trimmed}`,
+  });
+
+  if (!result.ok) {
+    console.warn("[visualQA] prompt scoring failed:", result.error);
+    return {
+      score: 55,
+      weaknesses: ["Prompt-Scoring fehlgeschlagen"],
+      passed: false,
+      breakdown: { engagement: 55, clarity: 55, platformFit: 55 },
+    };
+  }
+
+  const parsed = parseVisionJson(result.text);
+  if (!parsed) {
+    return {
+      score: 55,
+      weaknesses: ["Prompt-Scoring unparsebar"],
+      passed: false,
+      breakdown: { engagement: 55, clarity: 55, platformFit: 55 },
+    };
+  }
+
+  console.log("[visualQA] prompt score:", parsed.score, parsed.breakdown);
+  return parsed;
 }
 
 async function imageUrlToBase64(
@@ -87,15 +169,25 @@ export async function scoreVisualOutput(
   imageUrl: string,
   userGoal: string,
   supabase?: SupabaseClient,
-  generationId?: string
+  generationId?: string,
+  promptFallback?: string,
+  platform = "instagram"
 ): Promise<VisualScoreResult> {
   const base64 = supabase
     ? await imageUrlToBase64(supabase, imageUrl, generationId)
     : null;
 
   if (!base64) {
-    console.warn("[visualQA] could not load image, skipping vision score");
-    return { score: 100, weaknesses: [], passed: true };
+    console.warn("[visualQA] could not load image — using prompt analysis");
+    if (promptFallback?.trim()) {
+      return scorePromptVisualQuality(promptFallback, platform, userGoal);
+    }
+    return {
+      score: 50,
+      weaknesses: ["Bild nicht ladbar und kein Prompt für Analyse"],
+      passed: false,
+      breakdown: { engagement: 50, clarity: 50, platformFit: 50 },
+    };
   }
 
   const result = await createAnthropicMessage({
@@ -120,12 +212,28 @@ export async function scoreVisualOutput(
 
   if (!result.ok) {
     console.warn("[visualQA] vision failed:", result.error);
-    return { score: 100, weaknesses: [], passed: true };
+    if (promptFallback?.trim()) {
+      return scorePromptVisualQuality(promptFallback, platform, userGoal);
+    }
+    return {
+      score: 50,
+      weaknesses: ["Vision-Scoring fehlgeschlagen"],
+      passed: false,
+      breakdown: { engagement: 50, clarity: 50, platformFit: 50 },
+    };
   }
 
   const parsed = parseVisionJson(result.text);
   if (!parsed) {
-    return { score: 100, weaknesses: [], passed: true };
+    if (promptFallback?.trim()) {
+      return scorePromptVisualQuality(promptFallback, platform, userGoal);
+    }
+    return {
+      score: 50,
+      weaknesses: ["Vision-Scoring unparsebar"],
+      passed: false,
+      breakdown: { engagement: 50, clarity: 50, platformFit: 50 },
+    };
   }
 
   console.log("[visualQA] score:", parsed.score, "passed:", parsed.passed);
@@ -253,7 +361,9 @@ export async function runVisualQAWithRetry(params: {
     first.imageUrl,
     params.prompt,
     params.supabase,
-    first.generationId
+    first.generationId,
+    params.prompt,
+    params.platform
   );
 
   if (firstScore.score >= QUALITY_RETRY_THRESHOLD) {
@@ -270,7 +380,9 @@ export async function runVisualQAWithRetry(params: {
     second.imageUrl,
     params.prompt,
     params.supabase,
-    second.generationId
+    second.generationId,
+    params.prompt,
+    params.platform
   );
 
   if (secondScore.score >= firstScore.score) {

@@ -23,7 +23,8 @@ export type GalleryItemType =
   | "outlier"
   | "remix"
   | "image"
-  | "video";
+  | "video"
+  | "audio";
 
 export type GalleryItem = {
   id: string;
@@ -42,6 +43,7 @@ export type GalleryItem = {
   prompt?: string;
   imageUrl?: string | null;
   videoUrl?: string | null;
+  audioUrl?: string | null;
 };
 
 export const GALLERY_FILTER_TABS: { id: GalleryFilter; label: string }[] = [

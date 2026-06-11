@@ -96,7 +96,8 @@ export async function GET(request: NextRequest) {
     const mapped = mapFaceswapStatus(result.faceswap_status);
 
     if (mapped.status === "completed" && result.url) {
-      const kind = owned.asset.assetKind ?? "image";
+      const kind: "image" | "video" =
+        owned.asset.assetKind === "video" ? "video" : "image";
       const { path, mimeType } = await ingestFinalAssetFromUrl(
         user.id,
         generationId,

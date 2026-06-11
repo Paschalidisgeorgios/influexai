@@ -855,5 +855,65 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
     );
   }
 
+  if (item._type === "audio") {
+    const hasAudio = Boolean(item.audioUrl?.trim());
+
+    return (
+      <article style={cardStyle}>
+        <CardHeader
+          item={item}
+          badge={{ emoji: "🎙️", label: "KI Stimme" }}
+          onDelete={handleDelete}
+          canDelete={canDelete}
+        />
+        <div style={{ ...bodyPadding, paddingTop: 0 }}>
+          <div
+            style={{
+              borderRadius: 10,
+              background: "#18181d",
+              border: "1px solid rgba(180,255,0,0.15)",
+              padding: 14,
+            }}
+          >
+            {hasAudio ? (
+              <audio
+                controls
+                src={item.audioUrl!}
+                style={{ width: "100%" }}
+              />
+            ) : (
+              <p
+                style={{
+                  fontSize: "0.78rem",
+                  color: "rgba(255,255,255,0.55)",
+                  margin: 0,
+                }}
+              >
+                Audio nicht verfügbar.
+              </p>
+            )}
+          </div>
+          {item.prompt && (
+            <p
+              style={{
+                fontSize: "0.78rem",
+                color: "rgba(255,255,255,0.65)",
+                marginTop: 8,
+                lineHeight: 1.45,
+              }}
+            >
+              {item.prompt.length > 140
+                ? `${item.prompt.slice(0, 140)}…`
+                : item.prompt}
+            </p>
+          )}
+        </div>
+        <ActionRow>
+          <ActionBtn label="Neu generieren" href="/dashboard/voice" primary />
+        </ActionRow>
+      </article>
+    );
+  }
+
   return null;
 }

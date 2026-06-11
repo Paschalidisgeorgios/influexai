@@ -239,10 +239,12 @@ export type ContentItem = {
   platform: CampaignPlatform;
   day?: number;
   title: string;
+  content?: string;
   hook?: string;
   script?: string;
   caption?: string;
   hashtags?: string[];
+  postingTime?: string;
   cta?: string;
   visualBriefing?: string;
   imagePrompt?: string;

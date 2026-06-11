@@ -1,4 +1,4 @@
-import { createAnthropicMessage } from "@/lib/anthropic";
+import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import type { AgentTextToolRun } from "@/lib/agent/types";
 import {
@@ -41,6 +41,7 @@ export async function runViralHookTextTool(
     toOutputText: (items) => items.join("\n"),
     generate: async (retryHint) => {
       const claude = await createAnthropicMessage({
+        model: SCRIPT_GENERATOR_MODEL,
         system: VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
         user: buildViralHookExtractorUserPrompt(trimmed, retryHint),
         maxTokens: 1536,
@@ -72,6 +73,7 @@ export async function runContentKalenderTextTool(params: {
       items.map((e) => `${e.tag}: ${e.idee} (${e.format})`).join("\n"),
     generate: async (retryHint) => {
       const claude = await createAnthropicMessage({
+        model: SCRIPT_GENERATOR_MODEL,
         system: CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
         user: buildContentKalenderToolUserPrompt(params, retryHint),
         maxTokens: 4096,
@@ -113,6 +115,7 @@ export async function runTrendScriptTextTool(params: {
     toOutputText: (value) => value,
     generate: async (retryHint) => {
       const claude = await createAnthropicMessage({
+        model: SCRIPT_GENERATOR_MODEL,
         system: TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
         user: buildTrendScriptToolUserPrompt(trendParams, retryHint),
         maxTokens: 4096,

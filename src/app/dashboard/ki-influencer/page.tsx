@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { UserRound } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { BrainCircuit, UserRound } from "lucide-react";
+import { KiInfluencerTrainingVisualizer } from "@/components/ki-influencer/KiInfluencerTrainingVisualizer";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { LoadingButton } from "@/components/ui/LoadingButton";
@@ -18,7 +20,9 @@ import {
   apiBodyToErrorMessage,
   handleKiInfluencerApiError,
   isKiInfluencerApiFailure,
+  KI_INFLUENCER_ERROR_MESSAGES,
   parseKiInfluencerJsonResponse,
+  resolveWizardDisplayError,
   toErrorMessage,
   type KiInfluencerApiErrorBody,
 } from "@/lib/ki-influencer-client-errors";
@@ -43,6 +47,7 @@ import {
   KI_INFLUENCER_WIZARD_STEPS,
 } from "@/lib/ki-influencer-config";
 import { LORA_GENERATION_CREDIT, LORA_MAX_FILE_BYTES, LORA_MIN_IMAGES } from "@/lib/lora-config";
+import { getSafeSearchParam } from "@/lib/safe-url-param";
 
 type WizardStep = 0 | 1 | 2 | 3;
 type PathMode = null | "generated" | "uploaded";
@@ -81,32 +86,33 @@ const SCENE_EXAMPLES = [
   "Golden Hour am Strand",
 ] as const;
 
-const LEARN_STATUS_TOOLTIP =
-  "Technisch trainieren wir ein eigenes KI-Modell nur für deinen Charakter. Dadurch sieht er auf jedem Bild gleich aus.";
-
 const chipClass = (active: boolean) =>
   active
     ? "border-[#B4FF00] bg-[#B4FF00]/12 text-[#B4FF00]"
     : "border-white/12 text-[#F0EFE8]/65 hover:border-white/20";
 
-function InfoTip({ text }: { text: string }) {
-  return (
-    <span
-      title={text}
-      className="ml-1.5 inline-flex h-4 w-4 cursor-help items-center justify-center text-[0.7rem] leading-none text-white/45"
-      aria-label={text}
-    >
-      ⓘ
-    </span>
-  );
+function parseUrlWizardStep(raw: string | null): WizardStep {
+  const stepFromUrl = Number(raw) || 1;
+  return Math.min(3, Math.max(0, stepFromUrl - 1)) as WizardStep;
 }
 
-export default function KiInfluencerPage() {
-  const [pathMode, setPathMode] = useState<PathMode>(null);
-  const [step, setStep] = useState<WizardStep>(0);
-  const [name, setName] = useState("");
+function KiInfluencerPageInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const urlStep = searchParams.get("step");
+  const urlId = searchParams.get("id");
+  const urlName = getSafeSearchParam(searchParams, "name");
+  const hasUrlWizardState = Boolean(urlStep || urlId);
+
+  const [pathMode, setPathMode] = useState<PathMode>(
+    hasUrlWizardState ? "generated" : null
+  );
+  const [step, setStep] = useState<WizardStep>(() => parseUrlWizardStep(urlStep));
+  const [name, setName] = useState(urlName);
   const [description, setDescription] = useState("");
-  const [characterId, setCharacterId] = useState<string | null>(null);
+  const [characterId, setCharacterId] = useState<string | null>(urlId);
   const [castingImageUrl, setCastingImageUrl] = useState<string | null>(null);
   const [castingConfirmed, setCastingConfirmed] = useState(false);
 
@@ -135,9 +141,163 @@ export default function KiInfluencerPage() {
 
   const [busyAction, setBusyAction] = useState<WizardBusyAction | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [schemaReady, setSchemaReady] = useState(false);
+  const schemaReadyRef = useRef(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loraTrainCredits = calcLoraCredits(KI_INFLUENCER_LORA_STEPS);
+
+  const setWizardError = useCallback((message: string | null) => {
+    if (!message) {
+      setError(null);
+      return;
+    }
+    setError(resolveWizardDisplayError(message, schemaReadyRef.current));
+  }, []);
+
+  useEffect(() => {
+    const stepParam = searchParams.get("step");
+    if (stepParam) setStep(parseUrlWizardStep(stepParam));
+    const idParam = searchParams.get("id");
+    if (idParam) setCharacterId(idParam);
+    const nameParam = getSafeSearchParam(searchParams, "name");
+    if (nameParam) setName(nameParam);
+  }, [searchParams]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/ki-influencer/schema-status");
+        const parsed = await parseKiInfluencerJsonResponse<
+          KiInfluencerApiErrorBody & {
+            ready?: boolean;
+            missing?: string[];
+          }
+        >(res);
+        if (cancelled) return;
+
+        if (parsed.ok && parsed.data.ready) {
+          schemaReadyRef.current = true;
+          setSchemaReady(true);
+          setError((prev) =>
+            prev === KI_INFLUENCER_ERROR_MESSAGES.table_missing ? null : prev
+          );
+          return;
+        }
+
+        if (parsed.ok && (parsed.data.missing?.length ?? 0) > 0) {
+          schemaReadyRef.current = false;
+          setSchemaReady(false);
+          setError(KI_INFLUENCER_ERROR_MESSAGES.table_missing);
+        }
+      } catch {
+        /* ignore probe errors */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!characterId) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch(`/api/ki-influencer/character/${characterId}`);
+        const parsed = await parseKiInfluencerJsonResponse<
+          KiInfluencerApiErrorBody & {
+            character?: {
+              name?: string;
+              source?: "generated" | "uploaded";
+              status?: string;
+              casting_image_url?: string | null;
+            };
+          }
+        >(res);
+        if (cancelled || !parsed.ok || !parsed.data.character) return;
+
+        const character = parsed.data.character;
+        if (character.name) setName(character.name);
+        setPathMode(character.source === "uploaded" ? "uploaded" : "generated");
+        if (character.casting_image_url) {
+          setCastingImageUrl(character.casting_image_url);
+        }
+        if (
+          character.status &&
+          [
+            "casting_confirmed",
+            "training_set",
+            "training_set_ready",
+            "training",
+            "ready",
+          ].includes(character.status)
+        ) {
+          setCastingConfirmed(true);
+        }
+        if (character.status === "ready") {
+          setCharacterReady(true);
+        }
+      } catch {
+        /* ignore hydrate errors */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [characterId]);
+
+  const persistWizardUrl = useCallback(
+    (overrides?: {
+      step?: WizardStep;
+      id?: string | null;
+      name?: string;
+    }) => {
+      const nextStep = overrides?.step ?? step;
+      const nextId = overrides?.id !== undefined ? overrides.id : characterId;
+      const nextName = overrides?.name !== undefined ? overrides.name : name;
+
+      const params = new URLSearchParams();
+      if (nextStep > 0 || nextId || nextName.trim()) {
+        params.set("step", String(nextStep + 1));
+        if (nextId) params.set("id", nextId);
+        if (nextName.trim()) params.set("name", nextName.trim());
+      }
+
+      const nextQs = params.toString();
+      if (nextQs === searchParams.toString()) return;
+
+      router.replace(nextQs ? `${pathname}?${nextQs}` : pathname, {
+        scroll: false,
+      });
+    },
+    [step, characterId, name, searchParams, router, pathname]
+  );
+
+  const goToStep = useCallback(
+    (
+      nextStep: WizardStep,
+      extra?: { id?: string | null; name?: string }
+    ) => {
+      setStep(nextStep);
+      persistWizardUrl({ step: nextStep, ...extra });
+    },
+    [persistWizardUrl]
+  );
+
+  const handleNameChange = useCallback(
+    (value: string) => {
+      setName(value);
+      persistWizardUrl({ name: value });
+    },
+    [persistWizardUrl]
+  );
 
   const addUploadFiles = (incoming: FileList | File[]) => {
     const next: File[] = [];
@@ -215,9 +375,9 @@ export default function KiInfluencerPage() {
       }
 
       setCharacterId(createData.characterId);
-      setStep(2);
+      goToStep(2, { id: createData.characterId, name: name.trim() });
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWizardError(toErrorMessage(err));
     } finally {
       setBusyAction(null);
       setUploadProgress(0);
@@ -242,18 +402,64 @@ export default function KiInfluencerPage() {
           if (pollRef.current) clearInterval(pollRef.current);
           setCharacterReady(true);
           setBusyAction(null);
-          setStep(3);
+          goToStep(3);
         }
         if (data.status === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
-          setError(data.errorMessage ?? "Das hat leider nicht geklappt. Bitte erneut versuchen.");
+          setWizardError(
+            data.errorMessage ??
+              "Das hat leider nicht geklappt. Bitte erneut versuchen."
+          );
           setBusyAction(null);
         }
       } catch {
         /* keep polling */
       }
     }, 4000);
-  }, []);
+  }, [goToStep]);
+
+  useEffect(() => {
+    if (!characterId) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch(`/api/ki-influencer/status/${characterId}`);
+        const parsed = await parseKiInfluencerJsonResponse<
+          KiInfluencerApiErrorBody & {
+            status?: string;
+            progress?: number;
+            logs?: string[];
+          }
+        >(res);
+        if (cancelled || !parsed.ok) return;
+
+        const data = parsed.data;
+        if (typeof data.progress === "number") {
+          setLoraProgress(data.progress);
+        }
+        if (Array.isArray(data.logs)) {
+          setLoraLogs(data.logs);
+        }
+
+        if (data.status === "training") {
+          setBusyAction("loraTrain");
+          pollTrainingStatus(characterId);
+        } else if (data.status === "ready") {
+          setCharacterReady(true);
+          setBusyAction(null);
+          goToStep(3);
+        }
+      } catch {
+        /* ignore resume errors */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [characterId, goToStep, pollTrainingStatus]);
 
   useEffect(() => {
     return () => {
@@ -293,16 +499,19 @@ export default function KiInfluencerPage() {
       if (!parsed.ok || isKiInfluencerApiFailure(parsed.ok, data)) {
         throw new Error(apiBodyToErrorMessage(data));
       }
-      if (data.characterId) setCharacterId(data.characterId);
+      if (data.characterId) {
+        setCharacterId(data.characterId);
+        persistWizardUrl({ id: data.characterId });
+      }
       if (confirm) {
         setCastingConfirmed(true);
-        setStep(1);
+        goToStep(1, { id: data.characterId ?? characterId });
       } else if (data.imageUrl) {
         setCastingImageUrl(data.imageUrl);
       }
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWizardError(toErrorMessage(err));
     } finally {
       setBusyAction(null);
     }
@@ -385,16 +594,16 @@ export default function KiInfluencerPage() {
       }
 
       if (successCount >= LORA_MIN_IMAGES) {
-        setStep(2);
+        goToStep(2);
         return;
       }
 
-      setError(
+      setWizardError(
         lastError ??
           `Es wurden nur ${successCount} von ${KI_INFLUENCER_TRAINING_SET_SIZE} Fotos erstellt — mindestens ${LORA_MIN_IMAGES} nötig.`
       );
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWizardError(toErrorMessage(err));
     } finally {
       setTrainingSetRunning(false);
     }
@@ -445,7 +654,7 @@ export default function KiInfluencerPage() {
       pollTrainingStatus(characterId);
       startedPolling = true;
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWizardError(toErrorMessage(err));
     } finally {
       if (!startedPolling) setBusyAction(null);
     }
@@ -484,7 +693,7 @@ export default function KiInfluencerPage() {
       if (data.imageUrl) setContentResultUrl(data.imageUrl);
       window.dispatchEvent(new Event("credits-updated"));
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWizardError(toErrorMessage(err));
     } finally {
       setBusyAction(null);
     }
@@ -511,13 +720,20 @@ export default function KiInfluencerPage() {
         </p>
       </div>
 
-      {error && <p className="mb-4 text-sm text-[#ff6b7a]">{error}</p>}
+      {error && (
+        <p className="mb-4 text-sm text-[#ff6b7a]">
+          {resolveWizardDisplayError(error, schemaReady)}
+        </p>
+      )}
 
       {pathMode === null && (
         <div className="mb-8 grid gap-4 sm:grid-cols-2">
           <button
             type="button"
-            onClick={() => setPathMode("generated")}
+            onClick={() => {
+              setPathMode("generated");
+              persistWizardUrl({ step: 0 });
+            }}
             className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-[#060608] p-6 text-left transition-colors hover:border-[#B4FF00]/40"
           >
             <span className="text-lg font-semibold text-[#F0EFE8]">
@@ -529,7 +745,10 @@ export default function KiInfluencerPage() {
           </button>
           <button
             type="button"
-            onClick={() => setPathMode("uploaded")}
+            onClick={() => {
+              setPathMode("uploaded");
+              persistWizardUrl({ step: 0 });
+            }}
             className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-[#060608] p-6 text-left transition-colors hover:border-[#B4FF00]/40"
           >
             <span className="text-lg font-semibold text-[#F0EFE8]">
@@ -548,7 +767,7 @@ export default function KiInfluencerPage() {
             <span className="text-sm font-semibold text-[#F0EFE8]">Name</span>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
               placeholder="z.B. Melodia"
               className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
             />
@@ -705,7 +924,7 @@ export default function KiInfluencerPage() {
             <span className="text-sm font-semibold text-[#F0EFE8]">Name</span>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
               placeholder="z.B. Melodia"
               className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[#F0EFE8] outline-none focus:border-[#B4FF00]/40"
             />
@@ -840,36 +1059,43 @@ export default function KiInfluencerPage() {
               Charakter sein Gesicht lernt.
             </span>
           </label>
-          {(isLoraTraining || loraProgress > 0 || characterReady) && (
-            <div>
-              <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="h-full bg-[#B4FF00] transition-all"
-                  style={{ width: `${characterReady ? 100 : loraProgress}%` }}
-                />
-              </div>
-              <p className="text-sm text-[rgba(255,255,255,0.65)]">
-                {characterReady ? (
-                  "Fertig! Dein Charakter ist bereit."
-                ) : (
-                  <>
-                    Lernt gerade…
-                    <InfoTip text={LEARN_STATUS_TOOLTIP} />
-                  </>
-                )}
+          {(isLoraTraining || (loraProgress > 0 && !characterReady)) &&
+            characterId && (
+              <KiInfluencerTrainingVisualizer
+                active={isLoraTraining || (loraProgress > 0 && !characterReady)}
+                characterId={characterId}
+                fallbackImageUrl={castingImageUrl ?? uploadPreviews[0] ?? null}
+                onComplete={() => {
+                  setCharacterReady(true);
+                  setBusyAction(null);
+                  goToStep(3);
+                }}
+              />
+            )}
+          {isLoraTraining ? (
+            <div className="flex flex-col gap-1">
+              <button
+                type="button"
+                disabled
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] opacity-50"
+              >
+                <BrainCircuit className="h-4 w-4 animate-pulse" aria-hidden />
+                Dein Charakter lernt...
+              </button>
+              <p className="text-xs text-[rgba(255,255,255,0.45)]">
+                Das dauert ca. 10–15 Minuten. Du kannst die Seite verlassen.
               </p>
             </div>
+          ) : (
+            <LoadingButton
+              disabled={characterReady}
+              isLoading={false}
+              onClick={() => void runLoraTraining()}
+              className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
+            >
+              Gesicht lernen lassen
+            </LoadingButton>
           )}
-          <LoadingButton
-            disabled={characterReady}
-            isLoading={isLoraTraining}
-            loadingText="Dein Charakter lernt..."
-            loadingSubtext="Das dauert ca. 10–15 Minuten. Du kannst die Seite verlassen."
-            onClick={() => void runLoraTraining()}
-            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
-          >
-            Gesicht lernen lassen
-          </LoadingButton>
         </div>
       )}
 
@@ -965,5 +1191,13 @@ export default function KiInfluencerPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function KiInfluencerPage() {
+  return (
+    <Suspense fallback={null}>
+      <KiInfluencerPageInner />
+    </Suspense>
   );
 }

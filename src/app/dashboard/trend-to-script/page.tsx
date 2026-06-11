@@ -17,6 +17,7 @@ import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { TrendScriptResultSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
 const CREDIT_COST = TREND_SCRIPT_CREDIT_COST;
 
@@ -269,8 +270,11 @@ function TrendToScriptPageInner() {
       )}
 
       {step === "loading" && (
-        <div style={{ ...cardStyle(), textAlign: "center", padding: 48 }}>
-          <p style={{ color: "#B4FF00" }}>{loadingMsg}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ color: "#B4FF00", fontSize: "0.9rem", textAlign: "center" }}>
+            {loadingMsg}
+          </p>
+          <TrendScriptResultSkeleton />
         </div>
       )}
 

@@ -495,15 +495,14 @@ export function LandingFooter() {
               </span>
             </Link>
             <p
-              className="max-w-[210px] text-[0.83rem] leading-[1.65]"
-              style={{ color: "var(--grey)" }}
+              className="max-w-[210px] text-[0.83rem] leading-[1.65] text-[#888888]"
             >
               {t("tagline")}
             </p>
           </div>
           {FOOTER_COLS.map(({ col, links }) => (
             <div key={col}>
-              <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-neutral-400">
+              <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#888888]">
                 {tc(col)}
               </h5>
               <div className="flex flex-col gap-2">
@@ -511,8 +510,7 @@ export function LandingFooter() {
                   <a
                     key={link}
                     href={FOOTER_LINK_HREF[link] ?? "#"}
-                    className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--white)]"
-                    style={{ color: "var(--grey)" }}
+                    className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00]"
                   >
                     {tc(link)}
                   </a>
@@ -521,13 +519,12 @@ export function LandingFooter() {
             </div>
           ))}
           <div>
-            <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-neutral-400">
+            <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#888888]">
               {t("partner")}
             </h5>
             <a
               href="/agency"
-              className="text-[0.84rem] no-underline transition-colors duration-150 hover:text-[var(--accent)]"
-              style={{ color: "var(--grey)" }}
+              className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00]"
             >
               {t("for_agencies")}
             </a>
@@ -543,17 +540,14 @@ export function LandingFooter() {
             background: "rgba(255,255,255,0.02)",
           }}
         >
-          <ul
-            className="flex flex-col gap-1.5 text-[0.78rem] leading-relaxed sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-1.5"
-            style={{ color: "var(--grey)" }}
-          >
+          <ul className="flex flex-col gap-1.5 text-[0.78rem] leading-relaxed text-[#888888] sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-1.5">
             <li>{t("trust.operated_from_germany")}</li>
             <li>{t("trust.secure_payments")}</li>
             <li>
               {t("trust.support")}{" "}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-[var(--white)]/80 no-underline transition-colors hover:text-[var(--accent,#B4FF00)]"
+                className="text-[#aaaaaa] no-underline transition-colors hover:text-[#B4FF00]"
               >
                 {SUPPORT_EMAIL}
               </a>
@@ -566,7 +560,7 @@ export function LandingFooter() {
           className="mx-auto flex max-w-[1160px] flex-col items-center justify-between gap-2 pt-4 sm:flex-row"
           style={{ borderTop: "1px solid var(--border)" }}
         >
-          <p className="text-[0.78rem]" style={{ color: "var(--grey)" }}>
+          <p className="text-[0.78rem] text-[#888888]">
             © {new Date().getFullYear()} InfluexAI
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
@@ -579,8 +573,7 @@ export function LandingFooter() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-[12px] no-underline transition-colors duration-150 hover:text-[#B4FF00] hover:underline"
-                style={{ color: "rgba(255,255,255,0.45)" }}
+                className="text-[12px] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00] hover:underline"
               >
                 {link.label}
               </a>
@@ -591,12 +584,7 @@ export function LandingFooter() {
               <a
                 key={icon}
                 href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[0.8rem] no-underline transition-all duration-150 hover:text-[var(--acid)]"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid var(--border)",
-                  color: "var(--grey)",
-                }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[#B4FF00]/35 hover:text-[#B4FF00]"
               >
                 {icon}
               </a>

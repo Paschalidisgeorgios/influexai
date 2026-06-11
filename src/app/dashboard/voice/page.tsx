@@ -13,6 +13,7 @@ import { VoiceSelector } from "@/components/voice-selector";
 import { getDefaultVoiceIdForLocale } from "@/lib/elevenlabs-tts";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { VoiceGeneratingSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
 type Tab = "stimme" | "eigen" | "musik";
 
@@ -457,6 +458,8 @@ export default function VoicePage() {
           >
             Kostet 3 Credits
           </p>
+
+          {generating && !audioUrl && <VoiceGeneratingSkeleton />}
 
           {audioUrl && (
             <>

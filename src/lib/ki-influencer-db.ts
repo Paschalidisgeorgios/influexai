@@ -54,6 +54,22 @@ export async function updateCharacter(
   if (error) throw new Error(error.message);
 }
 
+export async function getCharacterTrainingImageUrls(
+  supabase: SupabaseClient,
+  userId: string,
+  character: CharacterRow
+): Promise<string[]> {
+  if (!character.character_set_id) return [];
+
+  const ids = await listTrainingSetGenerationIds(
+    supabase,
+    userId,
+    character.character_set_id
+  );
+
+  return ids.map((id) => `/api/generated-image/${id}?variant=preview`);
+}
+
 export async function listTrainingSetGenerationIds(
   supabase: SupabaseClient,
   userId: string,

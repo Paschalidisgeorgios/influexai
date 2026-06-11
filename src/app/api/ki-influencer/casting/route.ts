@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
         user_id: userId,
         name,
         description,
+        source: "generated",
         status: "draft",
       })
       .select("id")

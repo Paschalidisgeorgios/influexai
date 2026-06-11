@@ -66,6 +66,19 @@ export function kiInfluencerUserMessage(data: KiInfluencerApiErrorBody): string 
 }
 
 /** Known API codes → message; Error.message; JSON fallback. */
+export function resolveWizardDisplayError(
+  message: string,
+  schemaReady: boolean
+): string {
+  if (
+    schemaReady &&
+    message === KI_INFLUENCER_ERROR_MESSAGES.table_missing
+  ) {
+    return KI_INFLUENCER_ERROR_MESSAGES.generation_failed;
+  }
+  return message;
+}
+
 export function toErrorMessage(err: unknown): string {
   if (err instanceof Error) {
     const msg = err.message?.trim();

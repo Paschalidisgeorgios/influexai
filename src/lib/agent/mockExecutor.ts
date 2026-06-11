@@ -12,15 +12,9 @@ import {
   CampaignGoal,
   CampaignMode,
   CampaignPlatform,
-  CampaignResult,
   CampaignTone,
 } from "./types";
-import {
-  buildMockContentItems,
-  CAMPAIGN_SPECS,
-  CAMPAIGN_STEPS,
-  inferBrandDNA,
-} from "./campaignPlanner";
+import { CAMPAIGN_SPECS, CAMPAIGN_STEPS, inferBrandDNA } from "./campaignPlanner";
 import { detectIntent, routeToTools, STEP_LABELS } from "./router";
 import { scoreResult } from "./scoring";
 
@@ -86,10 +80,6 @@ export function buildMockResult(execution: AgentExecution): AgentResult {
   };
 }
 
-function newCampaignId() {
-  return newExecutionId();
-}
-
 export function createCampaignExecution(
   prompt: string,
   mode: CampaignMode,
@@ -129,33 +119,3 @@ export function createCampaignExecution(
   };
 }
 
-export function buildCampaignResult(exec: CampaignExecution): CampaignResult {
-  const { dna, assumptions } = inferBrandDNA(exec.prompt);
-  const items = buildMockContentItems(exec.mode, exec.platforms);
-  const spec = CAMPAIGN_SPECS[exec.mode];
-
-  // NEXT: Echte Tool-Generierung via toolOrchestrator.ts (siehe Dateikopf)
-  //   → Campaign Autopilot auf /api/agent/execute umstellen
-  //   → Persistenz via saveCampaignResultServer (Migration 050)
-
-  return {
-    id: newCampaignId(),
-    mode: exec.mode,
-    title: `Beispiel: ${spec.label} Content-Paket`,
-    summary: `${items.length} Beispiel-Content-Items für ${exec.platforms.join(", ")} (Preview — keine echte KI-Generierung).`,
-    brandDNA: dna,
-    assumptionsMade: assumptions,
-    items,
-    overallScores: {
-      brandFit: 88,
-      clarity: 85,
-      platformFit: 90,
-      claimRisk: "low",
-      legalRisk: "low",
-      overallScore: 87,
-    },
-    estimatedCredits: spec.estimatedCredits,
-    usedCredits: 0,
-    createdAt: new Date().toISOString(),
-  };
-}

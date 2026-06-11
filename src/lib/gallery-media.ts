@@ -57,13 +57,22 @@ export function isImageGenerationType(type: string): boolean {
   );
 }
 
+export function isAudioGenerationType(type: string): boolean {
+  const t = type.toLowerCase();
+  return (
+    t === "audio" ||
+    t === "voice-tts" ||
+    t.includes("stimme-speak") ||
+    t.includes("stimme-clone")
+  );
+}
+
 export function isVideoGenerationType(type: string): boolean {
   const t = type.toLowerCase();
+  if (isAudioGenerationType(type)) return false;
   return (
     t.includes("live-creator") ||
     t.includes("video-remix") ||
-    t.includes("voice") ||
-    t.includes("stimme") ||
     t === "product_ad" ||
     t === "seedance" ||
     t === "motion-transfer" ||
@@ -121,13 +130,14 @@ export function resolveGenerationMediaUrls(params: {
   generationId: string;
   result: unknown;
   getPublicUrl: (bucket: string, path: string) => string;
-}): { imageUrl: string | null; videoUrl: string | null } {
+}): { imageUrl: string | null; videoUrl: string | null; audioUrl: string | null } {
   const { type, prompt, generationId, result, getPublicUrl } = params;
   const asset = parseGenerationAssetResult(result);
   const legacy = resolveLegacyPromptHttpUrl(type, prompt);
 
   let imageUrl: string | null = null;
   let videoUrl: string | null = null;
+  let audioUrl: string | null = null;
 
   if (isImageGenerationType(type)) {
     const storagePath =
@@ -155,10 +165,15 @@ export function resolveGenerationMediaUrls(params: {
     }
   }
 
+  if (isAudioGenerationType(type) && asset?.finalPath) {
+    audioUrl = `/api/generated-audio/${generationId}`;
+  }
+
   if (imageUrl && isInvalidMediaToken(imageUrl)) imageUrl = null;
   if (videoUrl && isInvalidMediaToken(videoUrl)) videoUrl = null;
+  if (audioUrl && isInvalidMediaToken(audioUrl)) audioUrl = null;
 
-  return { imageUrl, videoUrl };
+  return { imageUrl, videoUrl, audioUrl };
 }
 
 export type { GalleryMediaItem } from "@/lib/gallery-media-client";

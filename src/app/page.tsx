@@ -18,6 +18,8 @@ import {
   LandingFooter,
   LandingNav,
 } from "@/components/landing";
+import { LandingBentoToolsSection } from "@/components/landing/LandingBentoToolsSection";
+import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
 import { LandingValueSection } from "@/components/landing/LandingValueSection";
 import { LightSystem } from "@/components/LightSystem";
 import { ABTracker } from "@/components/ab-tracker";
@@ -78,6 +80,8 @@ export default async function HomePage() {
         <LandingNav />
         <main className="landing-root overflow-x-clip max-w-[100vw]">
           <HeroSection variant={variant} />
+          <LandingUseCasesSection />
+          <LandingBentoToolsSection />
           <LandingValueSection />
           <TrustBarSection />
           <PricingSection />

@@ -21,6 +21,7 @@ import { estimateKiAgentOrchestrateCredits } from "@/lib/agent/ki-agent-orchestr
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { saveFeedback } from "@/lib/agent/persistExecution";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { KiAgentRunningSkeleton } from "@/components/skeletons/tool-output-skeletons";
 import { AgentResultOutputs } from "@/components/dashboard/AgentResultOutputs";
 import { AgentPlanPreviewCard } from "@/components/dashboard/AgentPlanPreviewCard";
 import { AgentPlannerBlockedCard } from "@/components/dashboard/AgentPlannerBlockedCard";
@@ -529,46 +530,15 @@ export default function KiAgentPage() {
       )}
 
       {phase === "running" && (
-        <div
-          className="mt-6 p-4"
-          style={{
-            borderRadius: 4,
-            background: "#0f0f12",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
+        <div className="mt-6">
           <p
-            className="text-[10px] font-bold uppercase tracking-[0.14em]"
-            style={{
-              color: "rgba(255,255,255,0.45)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            }}
-          >
-            Ladezustand
-          </p>
-          <p
-            className="mt-3 text-[0.85rem] font-medium"
+            className="mb-3 text-center text-[0.85rem] font-medium"
             style={{ color: "rgba(255,255,255,0.82)" }}
           >
             Aufgabe wird analysiert, passendes Tool wird ausgewählt und
             ausgeführt…
           </p>
-          <p
-            className="mt-2 text-[0.72rem] leading-[1.5]"
-            style={{ color: "rgba(255,255,255,0.42)" }}
-          >
-            Keine autonome Planung oder Recherche — automatische Tool-Zuordnung
-            per Keyword-Erkennung.
-          </p>
-          <div
-            className="mt-4 h-1 w-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.07)" }}
-          >
-            <div
-              className="h-full w-1/3 animate-pulse"
-              style={{ background: "#B4FF00" }}
-            />
-          </div>
+          <KiAgentRunningSkeleton />
         </div>
       )}
 

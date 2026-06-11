@@ -643,6 +643,7 @@
     "auth_login": "Anmelden",
     "auth_signup": "Jetzt starten",
     "nav_brands": "Marken",
+    "nav_for_brands": "Für Brands",
     "nav_features": "Features",
     "nav_pricing": "Preise",
     "nav_agency": "Agenturen",
@@ -1268,6 +1269,11 @@
       "monthly": "Monatlich",
       "per_month": "/Monat",
       "popular": "Beliebtester Plan",
+      "most_popular": "Most Popular",
+      "plan_delta_starter": "Alle Tools inklusive — 50 Credits/Monat",
+      "plan_delta_creator": "Alles aus Starter + KI-Agent + 300 Credits/Monat",
+      "plan_delta_pro": "Alles aus Creator + 800 Credits/Monat + Live Creator",
+      "plan_delta_business": "Alles aus Pro + 2.500 Credits/Monat + API & White Label",
       "starter_credits": "50 Credits/Monat",
       "starter_cta": "Jetzt starten",
       "starter_desc": "Einstieg für gelegentliche Creator.",
@@ -1394,6 +1400,32 @@
           "prompt": "Erstelle ein TikTok Video-Konzept für eine Fitness Coachin"
         }
       }
+    },
+    "useCases": {
+      "kicker": "Use Cases",
+      "headline": "Für jeden Creator-Typ",
+      "creator_title": "Content Creator",
+      "creator_desc": "Täglicher Content auf Autopilot — Hooks, Scripts und Visuals in einem Flow.",
+      "brand_title": "Brand & Business",
+      "brand_desc": "Professionelle Werbung ohne Agentur — Ads, Kalender und Kampagnen aus einem Briefing.",
+      "influencer_title": "KI-Influencer",
+      "influencer_desc": "Eigener digitaler Avatar, 24/7 aktiv — konsistente Posts und Face-Consistent Visuals."
+    },
+    "bentoTools": {
+      "kicker": "Studio Tools",
+      "headline": "Alles in einem Workflow",
+      "ki_agent_name": "KI Agent",
+      "ki_agent_benefit": "Plant und erstellt Content-Pakete autonom aus einem Prompt.",
+      "viral_hook_name": "Viral Hook",
+      "viral_hook_benefit": "Scroll-stoppende Hooks in Sekunden — plattformoptimiert.",
+      "content_kalender_name": "Content Kalender",
+      "content_kalender_benefit": "Wochenplan mit Ideen, Formaten und Posting-Rhythmus.",
+      "trend_script_name": "Trend-Script",
+      "trend_script_benefit": "Scripts aus aktuellen Trends — sofort drehbar.",
+      "ki_ich_name": "KI-Ich",
+      "ki_ich_benefit": "Dein digitaler Avatar — konsistent in Bild und Video.",
+      "bild_generator_name": "Bild Generator",
+      "bild_generator_benefit": "Creator-Visuals und Thumbnails in Studio-Qualität."
     },
     "value": {
       "headline": "Plane zuerst. Erstelle danach.",
@@ -1750,6 +1782,52 @@
     "cta": {
       "headline": "Bereit deine eigene KI-Agentur zu starten?",
       "button": "Kostenlos testen — 14 Tage"
+    }
+  },
+  "businessPage": {
+    "hero": {
+      "kicker": "Für Marken & Business",
+      "headline": "KI-Content für deine Marke. Ohne Agentur.",
+      "subline": "Erstelle professionelle Werbung, Social Content und Kampagnen — vollautomatisch mit deiner eigenen KI.",
+      "cta": "Kostenlos testen"
+    },
+    "proof": {
+      "label": "Social Proof",
+      "text": "Bereits von Marken und Creators genutzt"
+    },
+    "compare": {
+      "headline": "Agentur war gestern",
+      "problem_label": "Klassische Agentur",
+      "solution_label": "Mit InfluexAI",
+      "problem_expensive": "Teuer",
+      "problem_slow": "Langsam",
+      "problem_inconsistent": "Inkonsistent",
+      "solution_affordable": "Günstig",
+      "solution_instant": "Sofort",
+      "solution_onbrand": "Immer on-brand"
+    },
+    "features": {
+      "kicker": "B2B Features",
+      "headline": "Alles für deine Marke",
+      "product_ad_title": "Produkt-Werbung KI",
+      "product_ad_desc": "Texte + Bilder in Sekunden — aus URL, Briefing oder Produktfoto.",
+      "ki_agent_title": "KI Agent",
+      "ki_agent_desc": "Vollautomatische Kampagnen — Plan, Content und Visuals aus einem Prompt.",
+      "image_gen_title": "Bild Generator",
+      "image_gen_desc": "On-brand Visuals für Ads, Social und Kampagnen in Studio-Qualität.",
+      "calendar_title": "Content Kalender",
+      "calendar_desc": "Monatsplanung per Klick — Ideen, Formate und Rhythmus inklusive."
+    },
+    "pricing": {
+      "kicker": "Business Plan",
+      "headline": "Für Teams & Agenturen",
+      "badge": "Für Teams & Agenturen",
+      "compare_note": "Alle Pläne vergleichen:",
+      "compare_link": "Vollständiger Preisvergleich"
+    },
+    "cta": {
+      "headline": "Bereit loszulegen?",
+      "button": "Business Plan starten"
     }
   },
   "noCredits": {

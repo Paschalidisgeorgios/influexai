@@ -5,6 +5,7 @@ import {
   createExecution,
 } from "@/lib/agent/mockExecutor";
 import {
+  saveCampaignExecutionServer,
   saveCampaignResultServer,
   saveExecutionServer,
   saveTextToolRunsServer,
@@ -172,6 +173,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: msg }, { status: 500 });
     }
 
+    const finalExec = completeCampaignExecution(
+      { ...execWithUser, result },
+      result.usedCredits
+    );
+
     if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
       try {
         await saveCampaignResultServer(
@@ -181,6 +187,7 @@ export async function POST(request: Request) {
           prompt,
           platforms
         );
+        await saveCampaignExecutionServer(supabase, finalExec, result);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         const friendly =
@@ -192,11 +199,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: friendly }, { status: 500 });
       }
     }
-
-    const finalExec = completeCampaignExecution(
-      { ...execWithUser, result },
-      result.usedCredits
-    );
 
     return NextResponse.json({
       execution: finalExec,

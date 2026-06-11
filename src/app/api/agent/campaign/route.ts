@@ -9,7 +9,10 @@ import {
   needsJobQueue,
   updateJobStatus,
 } from "@/lib/agent/jobQueue";
-import { saveCampaignResultServer } from "@/lib/agent/persistExecution";
+import {
+  saveCampaignExecutionServer,
+  saveCampaignResultServer,
+} from "@/lib/agent/persistExecution";
 import type {
   CampaignExecution,
   CampaignGoal,
@@ -111,6 +114,10 @@ async function runJobAsync(
     });
 
     if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
+      const completedExec = completeCampaignExecution(
+        { ...execution, result, usedCredits: result.usedCredits },
+        result.usedCredits
+      );
       await saveCampaignResultServer(
         supabase,
         result,
@@ -118,6 +125,7 @@ async function runJobAsync(
         execution.prompt,
         execution.platforms
       );
+      await saveCampaignExecutionServer(supabase, completedExec, result);
     }
 
     await updateJobStatus(supabase, jobId, "completed", {
@@ -238,17 +246,6 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
-    try {
-      await saveCampaignResultServer(supabase, result, userId, prompt, platforms);
-    } catch (err: unknown) {
-      return NextResponse.json(
-        { error: sanitizeCampaignError(err) },
-        { status: 500 }
-      );
-    }
-  }
-
   const usedCredits = result.usedCredits;
 
   const completedExec = completeCampaignExecution({
@@ -256,6 +253,18 @@ export async function POST(request: Request) {
     result,
     usedCredits,
   });
+
+  if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
+    try {
+      await saveCampaignResultServer(supabase, result, userId, prompt, platforms);
+      await saveCampaignExecutionServer(supabase, completedExec, result);
+    } catch (err: unknown) {
+      return NextResponse.json(
+        { error: sanitizeCampaignError(err) },
+        { status: 500 }
+      );
+    }
+  }
 
   return NextResponse.json({
     execution: completedExec,

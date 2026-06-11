@@ -1,14 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createAnthropicMessage, parseClaudeJson } from "@/lib/anthropic";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
-import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
 import { parseScriptBlocks } from "@/lib/script-format";
 import {
   CAMPAIGN_SPECS,
   CAMPAIGN_STEPS,
+  enrichCampaignItemsWithMeta,
+  generateCampaignPlan,
   inferBrandDNA,
+  type CampaignPlanStep,
 } from "@/lib/agent/campaignPlanner";
+import { getCreatorProfile } from "@/lib/agent/creatorMemory";
 import { updateJobProgress, updateJobStatus } from "@/lib/agent/jobQueue";
 import { saveTextToolRunServer } from "@/lib/agent/persistExecution";
 import {
@@ -22,37 +24,14 @@ import type {
   AgentExecutionStep,
   AgentTextToolRun,
   CampaignExecution,
-  CampaignGoal,
-  CampaignMode,
   CampaignPlatform,
   CampaignResult,
-  CampaignTone,
   ContentItem,
   ContentScores,
 } from "@/lib/agent/types";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import type { TrendScriptPlatform, TrendScriptRegion } from "@/lib/trend-script-tool";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
-
-const PLANNER_MODEL = "claude-sonnet-4-5-20250929";
-
-export type CampaignPlanStep = {
-  reihenfolge: number;
-  tool:
-    | "viral-hook"
-    | "content-kalender"
-    | "trend-script"
-    | "product-ad"
-    | "image-generator";
-  input: Record<string, unknown>;
-  begruendung: string;
-  contentType?: ContentItem["type"];
-  platform?: CampaignPlatform;
-};
-
-const PLANNER_SYSTEM = `Du bist Campaign Planner für InfluexAI. Erstelle einen strukturierten Ausführungsplan als JSON.
-Verfügbare Tools: viral-hook (input: {input}), content-kalender (input: {nische, plattform, frequenz}), trend-script (input: {thema, plattform, region}), product-ad (input: {productName, productDescription, audience, platform, style, language, ctaText}), image-generator (input: {prompt}).
-Antworte NUR mit JSON: {"steps":[{"reihenfolge":1,"tool":"...","input":{...},"begruendung":"...","contentType":"reel|post|ad|visual_briefing|...","platform":"tiktok|instagram|..."}]}`;
 
 function mapCampaignPlatform(p: CampaignPlatform): string {
   const map: Record<CampaignPlatform, string> = {
@@ -62,25 +41,6 @@ function mapCampaignPlatform(p: CampaignPlatform): string {
     linkedin: "LinkedIn",
   };
   return map[p];
-}
-
-function mapToKalenderPlatform(p: CampaignPlatform): ContentKalenderPlatform {
-  if (p === "instagram") return "Instagram";
-  if (p === "linkedin") return "LinkedIn";
-  if (p === "youtube_shorts") return "YouTube";
-  return "TikTok";
-}
-
-function mapToTrendPlatform(p: CampaignPlatform): TrendScriptPlatform {
-  if (p === "instagram") return "Reels";
-  if (p === "youtube_shorts") return "YouTube";
-  return "TikTok";
-}
-
-function mapToAdPlatform(p: CampaignPlatform): ProductAdPlatform {
-  if (p === "instagram") return "instagram";
-  if (p === "youtube_shorts") return "youtube";
-  return "tiktok";
 }
 
 function newItemId(type: string) {
@@ -94,126 +54,6 @@ function hookFromScript(script: string): string {
     script.split("\n")[0]?.trim() ??
     ""
   );
-}
-
-export async function generateCampaignPlan(params: {
-  prompt: string;
-  mode: CampaignMode;
-  platforms: CampaignPlatform[];
-  goal: CampaignGoal;
-  tone: CampaignTone;
-}): Promise<CampaignPlanStep[]> {
-  const spec = CAMPAIGN_SPECS[params.mode];
-  const user = `Kampagnenziel: ${params.prompt}
-Modus: ${params.mode} (${spec.label})
-Plattformen: ${params.platforms.join(", ")}
-Ziel: ${params.goal}
-Ton: ${params.tone}
-Lieferumfang: ${spec.reels} Reels, ${spec.posts} Posts, ${spec.ads} Ads, ${spec.visualBriefings} Visuals, ${spec.carousels} Carousels, ${spec.stories} Stories.
-Erstelle 6–14 Schritte mit passenden Tools und konkreten Inputs auf Deutsch.`;
-
-  const result = await createAnthropicMessage({
-    model: PLANNER_MODEL,
-    maxTokens: 4096,
-    system: PLANNER_SYSTEM,
-    user,
-  });
-
-  if (!result.ok) {
-    throw new Error(result.error);
-  }
-
-  try {
-    const parsed = parseClaudeJson<{ steps?: CampaignPlanStep[] }>(result.text);
-    const steps = (parsed.steps ?? [])
-      .filter((s) => s.tool && s.reihenfolge)
-      .sort((a, b) => a.reihenfolge - b.reihenfolge);
-    if (steps.length > 0) return steps;
-  } catch {
-    // fallback below
-  }
-
-  return buildFallbackPlan(params);
-}
-
-function buildFallbackPlan(params: {
-  prompt: string;
-  mode: CampaignMode;
-  platforms: CampaignPlatform[];
-}): CampaignPlanStep[] {
-  const platform = params.platforms[0] ?? "tiktok";
-  const spec = CAMPAIGN_SPECS[params.mode];
-  const steps: CampaignPlanStep[] = [];
-  let order = 1;
-
-  steps.push({
-    reihenfolge: order++,
-    tool: "content-kalender",
-    input: {
-      nische: params.prompt.slice(0, 80),
-      plattform: mapToKalenderPlatform(platform),
-      frequenz: spec.days <= 7 ? "5x_woche" : "3x_woche",
-    },
-    begruendung: "Content-Kalender als Basis",
-    contentType: "post",
-    platform,
-  });
-
-  steps.push({
-    reihenfolge: order++,
-    tool: "viral-hook",
-    input: { input: params.prompt },
-    begruendung: "Hooks für Reels",
-    contentType: "reel",
-    platform,
-  });
-
-  for (let i = 0; i < Math.min(spec.reels, 3); i++) {
-    steps.push({
-      reihenfolge: order++,
-      tool: "trend-script",
-      input: {
-        thema: params.prompt,
-        plattform: mapToTrendPlatform(platform),
-        region: "DE",
-      },
-      begruendung: `Reel-Script ${i + 1}`,
-      contentType: "reel",
-      platform,
-    });
-  }
-
-  for (let i = 0; i < Math.min(spec.visualBriefings, 2); i++) {
-    steps.push({
-      reihenfolge: order++,
-      tool: "image-generator",
-      input: { prompt: `${params.prompt} — Visual ${i + 1}` },
-      begruendung: `Visual ${i + 1}`,
-      contentType: "visual_briefing",
-      platform,
-    });
-  }
-
-  if (spec.ads > 0) {
-    steps.push({
-      reihenfolge: order++,
-      tool: "product-ad",
-      input: {
-        productName: params.prompt.slice(0, 60),
-        productDescription: params.prompt,
-        audience: "Zielgruppe",
-        platform: mapToAdPlatform(platform),
-        style: "lifestyle",
-        language: "de",
-        ctaText: "Jetzt entdecken",
-      },
-      begruendung: "Werbespot-Script",
-      contentType: "ad",
-      platform,
-    });
-  }
-
-  return steps;
 }
 
 async function executePlanStep(
@@ -246,6 +86,7 @@ async function executePlanStep(
           platform,
           title: "Reel Hook",
           hook,
+          content: hook,
           status: "generated",
           scores: { overallScore: run.qualityScore, hookScore: run.qualityScore },
         },
@@ -271,6 +112,7 @@ async function executePlanStep(
           type: "post",
           platform,
           title: first?.idee?.slice(0, 60) ?? "Kalender-Post",
+          content: first?.idee,
           caption: first?.idee,
           status: "generated",
           scores: { overallScore: run.qualityScore },
@@ -299,6 +141,7 @@ async function executePlanStep(
           title: "Reel Script",
           hook: hookFromScript(script),
           script,
+          content: script,
           status: "generated",
           scores: { overallScore: run.qualityScore, hookScore: run.qualityScore },
         },
@@ -328,6 +171,7 @@ async function executePlanStep(
           platform,
           title: "Werbespot",
           script: run.output.scriptText,
+          content: run.output.scriptText,
           caption: run.output.scriptText,
           status: "generated",
           scores: { overallScore: run.qualityScore },
@@ -382,6 +226,7 @@ async function executePlanStep(
           title: "Visual",
           imagePrompt: userPrompt,
           visualBriefing: userPrompt,
+          content: userPrompt,
           caption: imageResult.imageUrl,
           status: "generated",
           scores: { overallScore: imageResult.qualityScore },
@@ -420,6 +265,7 @@ export async function executeRealCampaign(params: {
   const { exec, supabase, userId, jobId } = params;
   const { dna, assumptions } = inferBrandDNA(exec.prompt);
   const spec = CAMPAIGN_SPECS[exec.mode];
+  const creatorDNA = await getCreatorProfile(supabase, userId);
 
   const plan = await generateCampaignPlan({
     prompt: exec.prompt,
@@ -427,6 +273,7 @@ export async function executeRealCampaign(params: {
     platforms: exec.platforms,
     goal: exec.goal,
     tone: exec.tone,
+    creatorDNA,
   });
 
   const steps: AgentExecutionStep[] = CAMPAIGN_STEPS.map((label, i) => ({
@@ -436,7 +283,6 @@ export async function executeRealCampaign(params: {
   }));
 
   const items: ContentItem[] = [];
-  let usedCredits = 0;
   const toolRuns: AgentTextToolRun[] = [];
 
   const markStep = async (idx: number, status: AgentExecutionStep["status"]) => {
@@ -453,9 +299,12 @@ export async function executeRealCampaign(params: {
   await markStep(0, "running");
   await markStep(0, "completed");
   await markStep(1, "running");
+  await markStep(1, "completed");
+  await markStep(2, "running");
+  await markStep(2, "completed");
 
   for (let i = 0; i < plan.length; i++) {
-    const stepIdx = Math.min(i + 2, steps.length - 1);
+    const stepIdx = Math.min(i + 3, steps.length - 1);
     await markStep(stepIdx, "running");
 
     const { run, item } = await executePlanStep(plan[i], {
@@ -468,21 +317,38 @@ export async function executeRealCampaign(params: {
     if (item) items.push({ ...item, day: items.length + 1 });
 
     if (run.tool === "image-generator") {
-      usedCredits += 5;
-    } else if (run.tool === "trend-script") {
-      usedCredits += 4;
-    } else if (run.tool === "viral-hook") {
-      usedCredits += 3;
-    } else if (run.tool === "content-kalender") {
-      usedCredits += 5;
-    } else if (run.tool === "product-ad") {
-      usedCredits += 3;
+      // credits tracked in result.usedCredits below
     }
 
     await markStep(stepIdx, "completed");
   }
 
-  for (let i = plan.length + 2; i < steps.length; i++) {
+  await markStep(7, "running");
+  await markStep(7, "completed");
+
+  await markStep(8, "running");
+  const enrichedItems = await enrichCampaignItemsWithMeta({
+    prompt: exec.prompt,
+    goal: exec.goal,
+    tone: exec.tone,
+    platforms: exec.platforms,
+    mode: exec.mode,
+    creatorDNA,
+    items,
+  });
+  items.splice(0, items.length, ...enrichedItems);
+  await markStep(8, "completed");
+
+  let usedCredits = 0;
+  for (const run of toolRuns) {
+    if (run.tool === "image-generator") usedCredits += 5;
+    else if (run.tool === "trend-script") usedCredits += 4;
+    else if (run.tool === "viral-hook") usedCredits += 3;
+    else if (run.tool === "content-kalender") usedCredits += 5;
+    else if (run.tool === "product-ad") usedCredits += 3;
+  }
+
+  for (let i = 9; i < steps.length; i++) {
     await markStep(i, "completed");
   }
 
@@ -502,7 +368,7 @@ export async function executeRealCampaign(params: {
 
   if (jobId) {
     await updateJobStatus(supabase, jobId, "running", {
-      progress: { steps, complete: false },
+      progress: { steps, complete: true, itemsCount: items.length },
       partialResult: result,
     });
   }

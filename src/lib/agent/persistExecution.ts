@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 import type {
   AgentExecution,
   AgentTextToolRun,
+  CampaignExecution,
   CampaignPlatform,
   CampaignResult,
 } from "./types";
@@ -79,6 +80,38 @@ export async function saveExecutionServer(
     if (error) console.error("[persistExecution]", error.message);
   } catch (e) {
     console.error("[persistExecution]", e);
+  }
+}
+
+export async function saveCampaignExecutionServer(
+  supabase: SupabaseClient,
+  exec: CampaignExecution,
+  result: CampaignResult
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("agent_executions").upsert({
+      id: exec.id,
+      user_id: exec.userId,
+      prompt: exec.prompt,
+      intent: "campaign_autopilot",
+      selected_tools: ["campaign_autopilot"],
+      status: "completed",
+      steps: exec.steps,
+      result: {
+        type: "campaign",
+        mode: result.mode,
+        goal: exec.goal,
+        tone: exec.tone,
+        platforms: exec.platforms,
+        campaignResult: result,
+      },
+      estimated_credits: exec.estimatedCredits ?? 0,
+      used_credits: result.usedCredits,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.error("[persistExecution] campaign exec:", error.message);
+  } catch (e) {
+    console.error("[persistExecution] campaign exec:", e);
   }
 }
 

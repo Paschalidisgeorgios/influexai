@@ -1,3 +1,5 @@
+export { LandingBentoToolsSection } from "./LandingBentoToolsSection";
+export { LandingUseCasesSection } from "./LandingUseCasesSection";
 export { LandingValueSection } from "./LandingValueSection";
 export { StackedDemoSection } from "./StackedDemoSection";
 export { LandingProofSection } from "./LandingProofSection";

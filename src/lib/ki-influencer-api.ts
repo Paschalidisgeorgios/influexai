@@ -11,23 +11,12 @@ import {
   type DeductCreditsMeta,
   type DeductCreditsResult,
 } from "@/lib/credits";
+import { isSupabaseRelationMissingError } from "@/lib/ki-influencer-supabase-errors";
 
 export type { KiInfluencerErrorCode } from "@/lib/ki-influencer-types";
 import type { KiInfluencerErrorCode } from "@/lib/ki-influencer-types";
 
-export function isSupabaseRelationMissingError(error: unknown): boolean {
-  if (!error || typeof error !== "object") {
-    const msg = String(error ?? "");
-    return /relation .* does not exist/i.test(msg);
-  }
-  const record = error as { code?: string; message?: string };
-  const msg = record.message ?? "";
-  return (
-    record.code === "42P01" ||
-    /relation .* does not exist/i.test(msg) ||
-    /Could not find the table/i.test(msg)
-  );
-}
+export { isSupabaseRelationMissingError } from "@/lib/ki-influencer-supabase-errors";
 
 function errorDetailString(detail: unknown): string | undefined {
   if (detail == null) return undefined;

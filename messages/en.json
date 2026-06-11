@@ -85,6 +85,52 @@
       "yearly": "Yearly"
     }
   },
+  "businessPage": {
+    "hero": {
+      "kicker": "For Brands & Business",
+      "headline": "AI content for your brand. No agency.",
+      "subline": "Create professional ads, social content, and campaigns — fully automated with your own AI.",
+      "cta": "Try for free"
+    },
+    "proof": {
+      "label": "Social proof",
+      "text": "Already used by brands and creators"
+    },
+    "compare": {
+      "headline": "Agencies are yesterday",
+      "problem_label": "Traditional agency",
+      "solution_label": "With InfluexAI",
+      "problem_expensive": "Expensive",
+      "problem_slow": "Slow",
+      "problem_inconsistent": "Inconsistent",
+      "solution_affordable": "Affordable",
+      "solution_instant": "Instant",
+      "solution_onbrand": "Always on-brand"
+    },
+    "features": {
+      "kicker": "B2B Features",
+      "headline": "Everything for your brand",
+      "product_ad_title": "Product Ad AI",
+      "product_ad_desc": "Copy + visuals in seconds — from URL, brief, or product photo.",
+      "ki_agent_title": "AI Agent",
+      "ki_agent_desc": "Fully automated campaigns — plan, content, and visuals from one prompt.",
+      "image_gen_title": "Image Generator",
+      "image_gen_desc": "On-brand visuals for ads, social, and campaigns in studio quality.",
+      "calendar_title": "Content Calendar",
+      "calendar_desc": "Monthly planning in one click — ideas, formats, and rhythm included."
+    },
+    "pricing": {
+      "kicker": "Business Plan",
+      "headline": "For teams & agencies",
+      "badge": "For teams & agencies",
+      "compare_note": "Compare all plans:",
+      "compare_link": "Full pricing comparison"
+    },
+    "cta": {
+      "headline": "Ready to get started?",
+      "button": "Start Business Plan"
+    }
+  },
   "agent": {
     "chip_ugc_creator": "I'm a UGC creator",
     "chip_faceless": "Create faceless content",
@@ -754,6 +800,7 @@
     "auth_signup": "Get started",
     "nav_agency": "Agencies",
     "nav_brands": "Brands",
+    "nav_for_brands": "For Brands",
     "nav_features": "Features",
     "nav_home": "Home",
     "nav_pricing": "Pricing",
@@ -828,6 +875,32 @@
           "prompt": "Create a TikTok video concept for a fitness coach"
         }
       }
+    },
+    "useCases": {
+      "kicker": "Use Cases",
+      "headline": "Built for every creator type",
+      "creator_title": "Content Creator",
+      "creator_desc": "Daily content on autopilot — hooks, scripts, and visuals in one flow.",
+      "brand_title": "Brand & Business",
+      "brand_desc": "Professional ads without an agency — campaigns from a single brief.",
+      "influencer_title": "AI Influencer",
+      "influencer_desc": "Your own digital avatar, active 24/7 — consistent posts and face-matched visuals."
+    },
+    "bentoTools": {
+      "kicker": "Studio Tools",
+      "headline": "Everything in one workflow",
+      "ki_agent_name": "AI Agent",
+      "ki_agent_benefit": "Plans and creates content packages autonomously from one prompt.",
+      "viral_hook_name": "Viral Hook",
+      "viral_hook_benefit": "Scroll-stopping hooks in seconds — platform-optimized.",
+      "content_kalender_name": "Content Calendar",
+      "content_kalender_benefit": "Weekly plan with ideas, formats, and posting rhythm.",
+      "trend_script_name": "Trend Script",
+      "trend_script_benefit": "Scripts from current trends — ready to film.",
+      "ki_ich_name": "My AI Self",
+      "ki_ich_benefit": "Your digital avatar — consistent across image and video.",
+      "bild_generator_name": "Image Generator",
+      "bild_generator_benefit": "Creator visuals and thumbnails in studio quality."
     },
     "value": {
       "headline": "Plan first. Create after.",
@@ -999,6 +1072,11 @@
       "credit_outcome_body": "50 credits can cover about 25 scripts (2 credits each) or about 10 standard images (5 credits each). Videos, premium images, and lip-sync use significantly more credits.",
       "per_month": "/month",
       "popular": "Most Popular Plan",
+      "most_popular": "Most Popular",
+      "plan_delta_starter": "All tools included — 50 credits/month",
+      "plan_delta_creator": "Everything in Starter + AI Agent + 300 credits/month",
+      "plan_delta_pro": "Everything in Creator + 800 credits/month + Live Creator",
+      "plan_delta_business": "Everything in Pro + 2,500 credits/month + API & White Label",
       "pro_credits": "800 Credits/month",
       "pro_cta": "Start Pro",
       "pro_desc": "For professional creators & streamers.",

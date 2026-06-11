@@ -1,5 +1,14 @@
+import { createAnthropicMessage, parseClaudeJson } from "@/lib/anthropic";
+import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
+import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
+import type { ProductAdPlatform } from "@/lib/product-ad-config";
+import {
+  formatCreatorProfileForPrompt,
+  type CreatorProfile,
+} from "./creatorMemory";
 import type {
   BrandDNA,
+  CampaignGoal,
   CampaignMode,
   CampaignPlatform,
   CampaignTone,
@@ -10,6 +19,31 @@ import type {
 export const CAMPAIGN_AUTOPILOT_IS_PREVIEW = false;
 
 export const CAMPAIGN_PREVIEW_CREDITS = 0;
+
+const PLANNER_MODEL = "claude-sonnet-4-5-20250929";
+
+export type CampaignPlanStep = {
+  reihenfolge: number;
+  tool:
+    | "viral-hook"
+    | "content-kalender"
+    | "trend-script"
+    | "product-ad"
+    | "image-generator";
+  input: Record<string, unknown>;
+  begruendung: string;
+  contentType?: ContentItem["type"];
+  platform?: CampaignPlatform;
+};
+
+const PLANNER_SYSTEM = `Du bist Campaign Planner für InfluexAI. Erstelle einen strukturierten Ausführungsplan als JSON.
+Verfügbare Tools: viral-hook (input: {input}), content-kalender (input: {nische, plattform, frequenz}), trend-script (input: {thema, plattform, region}), product-ad (input: {productName, productDescription, audience, platform, style, language, ctaText}), image-generator (input: {prompt}).
+Antworte NUR mit JSON: {"steps":[{"reihenfolge":1,"tool":"...","input":{...},"begruendung":"...","contentType":"reel|post|ad|visual_briefing|...","platform":"tiktok|instagram|..."}]}`;
+
+const ENRICH_SYSTEM = `Du bist Social-Media-Stratege. Ergänze Kampagnen-Content-Items mit Caption, Hashtags und Posting-Zeit.
+Antworte NUR mit JSON:
+{"items":[{"id":"...","content":"Kerninhalt/Briefing","caption":"fertige Caption","hashtags":["#..."],"posting_time":"HH:MM"}]}
+Regeln: Deutsch, plattformgerecht, posting_time realistisch (z.B. 18:30), 5-12 Hashtags pro Item.`;
 
 export const CAMPAIGN_SPECS: Record<
   CampaignMode,
@@ -86,6 +120,227 @@ export const CAMPAIGN_STEPS = [
   "Kampagnenpaket bereitstellen",
 ] as const;
 
+function mapToKalenderPlatform(p: CampaignPlatform): ContentKalenderPlatform {
+  if (p === "instagram") return "Instagram";
+  if (p === "linkedin") return "LinkedIn";
+  if (p === "youtube_shorts") return "YouTube";
+  return "TikTok";
+}
+
+function mapToTrendPlatform(p: CampaignPlatform): TrendScriptPlatform {
+  if (p === "instagram") return "Reels";
+  if (p === "youtube_shorts") return "YouTube";
+  return "TikTok";
+}
+
+function mapToAdPlatform(p: CampaignPlatform): ProductAdPlatform {
+  if (p === "instagram") return "instagram";
+  if (p === "youtube_shorts") return "youtube";
+  return "tiktok";
+}
+
+function buildFallbackPlan(params: {
+  prompt: string;
+  mode: CampaignMode;
+  platforms: CampaignPlatform[];
+}): CampaignPlanStep[] {
+  const platform = params.platforms[0] ?? "tiktok";
+  const spec = CAMPAIGN_SPECS[params.mode];
+  const steps: CampaignPlanStep[] = [];
+  let order = 1;
+
+  steps.push({
+    reihenfolge: order++,
+    tool: "content-kalender",
+    input: {
+      nische: params.prompt.slice(0, 80),
+      plattform: mapToKalenderPlatform(platform),
+      frequenz: spec.days <= 7 ? "5x_woche" : "3x_woche",
+    },
+    begruendung: "Content-Kalender als Basis",
+    contentType: "post",
+    platform,
+  });
+
+  steps.push({
+    reihenfolge: order++,
+    tool: "viral-hook",
+    input: { input: params.prompt },
+    begruendung: "Hooks für Reels",
+    contentType: "reel",
+    platform,
+  });
+
+  for (let i = 0; i < Math.min(spec.reels, 3); i++) {
+    steps.push({
+      reihenfolge: order++,
+      tool: "trend-script",
+      input: {
+        thema: params.prompt,
+        plattform: mapToTrendPlatform(platform),
+        region: "DE",
+      },
+      begruendung: `Reel-Script ${i + 1}`,
+      contentType: "reel",
+      platform,
+    });
+  }
+
+  for (let i = 0; i < Math.min(spec.visualBriefings, 2); i++) {
+    steps.push({
+      reihenfolge: order++,
+      tool: "image-generator",
+      input: { prompt: `${params.prompt} — Visual ${i + 1}` },
+      begruendung: `Visual ${i + 1}`,
+      contentType: "visual_briefing",
+      platform,
+    });
+  }
+
+  if (spec.ads > 0) {
+    steps.push({
+      reihenfolge: order++,
+      tool: "product-ad",
+      input: {
+        productName: params.prompt.slice(0, 60),
+        productDescription: params.prompt,
+        audience: "Zielgruppe",
+        platform: mapToAdPlatform(platform),
+        style: "lifestyle",
+        language: "de",
+        ctaText: "Jetzt entdecken",
+      },
+      begruendung: "Werbespot-Script",
+      contentType: "ad",
+      platform,
+    });
+  }
+
+  return steps;
+}
+
+export async function generateCampaignPlan(params: {
+  prompt: string;
+  mode: CampaignMode;
+  platforms: CampaignPlatform[];
+  goal: CampaignGoal;
+  tone: CampaignTone;
+  creatorDNA?: CreatorProfile | null;
+}): Promise<CampaignPlanStep[]> {
+  const spec = CAMPAIGN_SPECS[params.mode];
+  const creatorContext = formatCreatorProfileForPrompt(params.creatorDNA ?? null);
+  const user = `${creatorContext ? `${creatorContext}\n\n` : ""}Kampagnenziel: ${params.prompt}
+Modus: ${params.mode} (${spec.label})
+Plattformen: ${params.platforms.join(", ")}
+Ziel: ${params.goal}
+Ton: ${params.tone}
+Lieferumfang: ${spec.reels} Reels, ${spec.posts} Posts, ${spec.ads} Ads, ${spec.visualBriefings} Visuals, ${spec.carousels} Carousels, ${spec.stories} Stories.
+Erstelle 6–14 Schritte mit passenden Tools und konkreten Inputs auf Deutsch.`;
+
+  const result = await createAnthropicMessage({
+    model: PLANNER_MODEL,
+    maxTokens: 4096,
+    system: PLANNER_SYSTEM,
+    user,
+  });
+
+  if (!result.ok) {
+    throw new Error(result.error);
+  }
+
+  try {
+    const parsed = parseClaudeJson<{ steps?: CampaignPlanStep[] }>(result.text);
+    const steps = (parsed.steps ?? [])
+      .filter((s) => s.tool && s.reihenfolge)
+      .sort((a, b) => a.reihenfolge - b.reihenfolge);
+    if (steps.length > 0) return steps;
+  } catch {
+    // fallback below
+  }
+
+  return buildFallbackPlan(params);
+}
+
+export async function enrichCampaignItemsWithMeta(params: {
+  prompt: string;
+  goal: CampaignGoal;
+  tone: CampaignTone;
+  platforms: CampaignPlatform[];
+  mode: CampaignMode;
+  creatorDNA?: CreatorProfile | null;
+  items: ContentItem[];
+}): Promise<ContentItem[]> {
+  if (params.items.length === 0) return params.items;
+
+  const creatorContext = formatCreatorProfileForPrompt(params.creatorDNA ?? null);
+  const itemSummary = params.items.map((item) => ({
+    id: item.id,
+    type: item.type,
+    platform: item.platform,
+    day: item.day,
+    title: item.title,
+    hook: item.hook,
+    script: item.script?.slice(0, 400),
+    caption: item.caption,
+    visualBriefing: item.visualBriefing,
+  }));
+
+  const user = `${creatorContext ? `${creatorContext}\n\n` : ""}Kampagne: ${params.prompt}
+Ziel: ${params.goal}
+Ton: ${params.tone}
+Plattformen: ${params.platforms.join(", ")}
+Modus: ${params.mode}
+
+Items:
+${JSON.stringify(itemSummary, null, 2)}
+
+Ergänze jedes Item mit content, caption, hashtags und posting_time.`;
+
+  const result = await createAnthropicMessage({
+    model: PLANNER_MODEL,
+    maxTokens: 4096,
+    system: ENRICH_SYSTEM,
+    user,
+  });
+
+  if (!result.ok) {
+    console.warn("[campaignPlanner] enrich failed:", result.error);
+    return params.items;
+  }
+
+  try {
+    const parsed = parseClaudeJson<{
+      items?: Array<{
+        id?: string;
+        content?: string;
+        caption?: string;
+        hashtags?: string[];
+        posting_time?: string;
+      }>;
+    }>(result.text);
+
+    const byId = new Map(
+      (parsed.items ?? [])
+        .filter((row) => row.id)
+        .map((row) => [row.id as string, row])
+    );
+
+    return params.items.map((item) => {
+      const meta = byId.get(item.id);
+      if (!meta) return item;
+      return {
+        ...item,
+        content: meta.content ?? item.content ?? item.hook ?? item.script,
+        caption: meta.caption ?? item.caption,
+        hashtags: meta.hashtags?.length ? meta.hashtags : item.hashtags,
+        postingTime: meta.posting_time ?? item.postingTime,
+      };
+    });
+  } catch {
+    return params.items;
+  }
+}
+
 export function inferBrandDNA(prompt: string): {
   dna: Partial<BrandDNA>;
   assumptions: string[];
@@ -120,46 +375,4 @@ export function inferBrandDNA(prompt: string): {
     },
     assumptions,
   };
-}
-
-export function buildMockContentItems(
-  mode: CampaignMode,
-  platforms: CampaignPlatform[]
-): ContentItem[] {
-  // TODO: echte KI-Generierung anbinden
-  const spec = CAMPAIGN_SPECS[mode];
-  const platform = platforms[0] ?? "instagram";
-  const items: ContentItem[] = [];
-  let day = 1;
-
-  const makeItem = (
-    type: ContentItem["type"],
-    index: number
-  ): ContentItem => ({
-    id: `${type}-${index}-${Math.random().toString(36).slice(2)}`,
-    type,
-    platform,
-    day: day++,
-    title: `${type.charAt(0).toUpperCase() + type.slice(1)} ${index + 1}`,
-    hook: "Beispiel-Hook (Preview)",
-    caption: "Beispiel-Caption (Preview)",
-    hashtags: ["#content", "#ai", "#influexai"],
-    cta: "Link in Bio",
-    status: "generated",
-    scores: {
-      overallScore: 85 + Math.floor(Math.random() * 10),
-      claimRisk: "low",
-      legalRisk: "low",
-      brandFit: 88,
-      clarity: 84,
-    },
-  });
-
-  for (let i = 0; i < spec.reels; i++) items.push(makeItem("reel", i));
-  for (let i = 0; i < spec.carousels; i++) items.push(makeItem("carousel", i));
-  for (let i = 0; i < spec.stories; i++) items.push(makeItem("story", i));
-  for (let i = 0; i < spec.posts; i++) items.push(makeItem("post", i));
-  for (let i = 0; i < spec.ads; i++) items.push(makeItem("ad", i));
-
-  return items;
 }
