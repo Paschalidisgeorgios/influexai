@@ -14,6 +14,10 @@ import { getCreatorProfile } from "@/lib/agent/creatorMemory";
 import { updateJobProgress, updateJobStatus } from "@/lib/agent/jobQueue";
 import { saveTextToolRunServer } from "@/lib/agent/persistExecution";
 import {
+  AgentTextToolBillingError,
+  checkAgentTextToolCredits,
+  deductAgentTextToolRunCredits,
+  getAgentTextToolCreditCost,
   runContentKalenderTextTool,
   runProductAdTextTool,
   runTrendScriptTextTool,
@@ -284,6 +288,8 @@ export async function executeRealCampaign(params: {
 
   const items: ContentItem[] = [];
   const toolRuns: AgentTextToolRun[] = [];
+  let usedCredits = 0;
+  let remainingCredits: number | undefined;
 
   const markStep = async (idx: number, status: AgentExecutionStep["status"]) => {
     steps[idx] = { ...steps[idx], status };
@@ -307,6 +313,23 @@ export async function executeRealCampaign(params: {
     const stepIdx = Math.min(i + 3, steps.length - 1);
     await markStep(stepIdx, "running");
 
+    const requiredCredits = getAgentTextToolCreditCost(plan[i].tool);
+    if (requiredCredits > 0) {
+      const creditCheck = await checkAgentTextToolCredits({
+        supabase,
+        userId,
+        tools: [plan[i].tool],
+      });
+      if (!creditCheck.ok) {
+        throw new AgentTextToolBillingError({
+          error: creditCheck.error,
+          status: 402,
+          remainingCredits: creditCheck.credits,
+          requiredCredits: creditCheck.requiredCredits,
+        });
+      }
+    }
+
     const { run, item } = await executePlanStep(plan[i], {
       supabase,
       userId,
@@ -316,8 +339,15 @@ export async function executeRealCampaign(params: {
     toolRuns.push(run);
     if (item) items.push({ ...item, day: items.length + 1 });
 
-    if (run.tool === "image-generator") {
-      // credits tracked in result.usedCredits below
+    const billed = await deductAgentTextToolRunCredits({
+      supabase,
+      userId,
+      run,
+      prompt: exec.prompt,
+    });
+    usedCredits += billed.creditsUsed;
+    if (typeof billed.remainingCredits === "number") {
+      remainingCredits = billed.remainingCredits;
     }
 
     await markStep(stepIdx, "completed");
@@ -339,18 +369,19 @@ export async function executeRealCampaign(params: {
   items.splice(0, items.length, ...enrichedItems);
   await markStep(8, "completed");
 
-  let usedCredits = 0;
-  for (const run of toolRuns) {
-    if (run.tool === "image-generator") usedCredits += 5;
-    else if (run.tool === "trend-script") usedCredits += 4;
-    else if (run.tool === "viral-hook") usedCredits += 3;
-    else if (run.tool === "content-kalender") usedCredits += 5;
-    else if (run.tool === "product-ad") usedCredits += 3;
-  }
-
   for (let i = 9; i < steps.length; i++) {
     await markStep(i, "completed");
   }
+
+  const { data: profileAfter } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", userId)
+    .maybeSingle();
+  const finalRemainingCredits =
+    typeof profileAfter?.credits === "number"
+      ? profileAfter.credits
+      : remainingCredits;
 
   const result: CampaignResult = {
     id: exec.id,
@@ -363,6 +394,7 @@ export async function executeRealCampaign(params: {
     overallScores: computeOverallScores(items),
     estimatedCredits: exec.estimatedCredits,
     usedCredits,
+    remainingCredits: finalRemainingCredits,
     createdAt: new Date().toISOString(),
   };
 

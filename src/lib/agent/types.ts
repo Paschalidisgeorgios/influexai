@@ -277,6 +277,7 @@ export type CampaignResult = {
   overallScores: ContentScores;
   estimatedCredits: number;
   usedCredits: number;
+  remainingCredits?: number;
   createdAt: string;
 };
 
