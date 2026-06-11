@@ -275,15 +275,7 @@ function LoraTrainingPageInner() {
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <Brain size={28} color="#B4FF00" />
-            <h1
-              style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "clamp(2rem, 4vw, 3rem)",
-                letterSpacing: "0.02em",
-                color: "#F0EFE8",
-                margin: 0,
-              }}
-            >
+            <h1 className="font-display m-0 text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
               {t("title")}
             </h1>
             <span

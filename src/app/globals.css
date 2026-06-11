@@ -2069,3 +2069,94 @@ header.site-header.site-header--scrolled {
     animation: none;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes loading-dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.loading-dot {
+  animation: loading-dot-pulse 1.2s ease-in-out infinite;
+}
+
+.loading-dot--2 {
+  animation-delay: 0.15s;
+}
+
+.loading-dot--3 {
+  animation-delay: 0.3s;
+}
+
+.agent-typing-dot {
+  animation: loading-dot-pulse 1.2s ease-in-out infinite;
+}
+
+.agent-typing-dot--2 {
+  animation-delay: 0.15s;
+}
+
+.agent-typing-dot--3 {
+  animation-delay: 0.3s;
+}
+
+.agent-markdown strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.agent-markdown ol {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  list-style: decimal;
+}
+
+.agent-markdown ol li::marker {
+  color: #b4ff00;
+  font-weight: 700;
+}
+
+.agent-markdown ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.agent-markdown ul li::marker {
+  color: #b4ff00;
+}
+
+.agent-markdown p {
+  margin: 0.5rem 0;
+}
+
+.agent-markdown p:first-child {
+  margin-top: 0;
+}
+
+.agent-markdown h1,
+.agent-markdown h2,
+.agent-markdown h3 {
+  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  margin: 0.75rem 0 0.35rem;
+  color: #b4ff00;
+}
+

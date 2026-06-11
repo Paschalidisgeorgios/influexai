@@ -178,7 +178,7 @@ export function AgentPlannerBlockedCard({
             className="mt-2 text-[11px] leading-[1.45]"
             style={{ color: "rgba(255,255,255,0.55)" }}
           >
-            Antworte im Prompt oben und tippe erneut auf Plan-Vorschau oder
+            Antworte im Prompt oben und tippe erneut auf Vorschau oder
             Ausführen.
           </p>
         </div>

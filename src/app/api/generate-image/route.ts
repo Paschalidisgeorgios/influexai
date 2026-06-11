@@ -32,8 +32,11 @@ import {
   type ImagePlatformId,
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
+import { applyVisualQARetry } from "@/lib/agent/visualQuality";
 
 export const dynamic = "force-dynamic";
+
+export const maxDuration = 300;
 
 configureFalClient();
 
@@ -180,54 +183,93 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const falResult = await generateCategoryImage({
-      prompt: prepared.enhancedPrompt,
-      falPrompt: prepared.enhancedPrompt,
-      negativePrompt: prepared.negativePrompt,
-      category: prepared.category,
-      imageSize,
-      imageDimensions,
-      highRes,
-      seed,
-    });
+    type GenerationPayload = {
+      generationId: string;
+      imageUrl: string;
+      falResult: Awaited<ReturnType<typeof generateCategoryImage>>;
+      width?: number;
+      height?: number;
+    };
 
-    const generationId = randomUUID();
-    const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(userId, generationId, falResult.url);
+    const runGeneration = async (retryHint?: string): Promise<GenerationPayload> => {
+      const enhancedPrompt = retryHint
+        ? `${prepared.enhancedPrompt}. ${retryHint}`
+        : prepared.enhancedPrompt;
 
-    await createGenerationRecord(
-      supabase,
-      userId,
-      "image",
-      {
-        paid: false,
-        downloadPaid: false,
-        mode: "preview",
-        assetKind: "image",
+      const falResult = await generateCategoryImage({
+        prompt: enhancedPrompt,
+        falPrompt: enhancedPrompt,
+        negativePrompt: prepared.negativePrompt,
         category: prepared.category,
-        model: falResult.model,
+        imageSize,
+        imageDimensions,
+        highRes,
+        seed: retryHint ? Math.floor(Math.random() * 999999) : seed,
+      });
+
+      const generationId = randomUUID();
+      const { previewPath, sourcePath, width, height } =
+        await ingestImageGeneratorAssets(userId, generationId, falResult.url);
+
+      await createGenerationRecord(
+        supabase,
+        userId,
+        "image",
+        {
+          paid: false,
+          downloadPaid: false,
+          mode: "preview",
+          assetKind: "image",
+          category: prepared.category,
+          model: falResult.model,
+          width: width ?? falResult.width,
+          height: height ?? falResult.height,
+          generationTimeMs: Date.now() - started,
+          seed: retryHint ? undefined : seed,
+          highRes,
+          parentGenerationId: isVariation ? parentGenerationId : undefined,
+          previewPath,
+          sourcePath,
+        },
+        0,
+        prepared.userPrompt.slice(0, 500),
+        generationId
+      );
+
+      await updateGenerationResult(supabase, generationId, userId, {
+        credits_used: creditCost,
+      });
+
+      return {
+        generationId,
+        imageUrl: protectedImageUrl(generationId, "preview"),
+        falResult,
         width: width ?? falResult.width,
         height: height ?? falResult.height,
-        generationTimeMs: Date.now() - started,
-        seed,
-        highRes,
-        parentGenerationId: isVariation ? parentGenerationId : undefined,
-        previewPath,
-        sourcePath,
-      },
-      0,
-      prepared.userPrompt.slice(0, 500),
-      generationId
-    );
+      };
+    };
 
-    await updateGenerationResult(supabase, generationId, userId, {
-      credits_used: creditCost,
-    });
+    const first = await runGeneration();
+    let final = first;
+    let qualityScore = 100;
+
+    if (!isVariation) {
+      const qa = await applyVisualQARetry({
+        supabase,
+        userId,
+        prompt: prepared.userPrompt,
+        platform: prepared.platform,
+        first,
+        regenerate: (retryHint) => runGeneration(retryHint),
+      });
+      final = qa.result;
+      qualityScore = qa.qualityScore;
+    }
 
     const response: Record<string, unknown> = {
       success: true,
-      generationId,
-      imageUrl: protectedImageUrl(generationId, "preview"),
+      generationId: final.generationId,
+      imageUrl: final.imageUrl,
       locked: true,
       downloadPaid: false,
       creditsUsed: creditCost,
@@ -238,12 +280,13 @@ export async function POST(request: NextRequest) {
       promptEnhanced: prepared.promptEnhanced,
       styleId: prepared.styleId,
       platform: prepared.platform,
+      qualityScore,
       ...(prepared.promptEnhanced
         ? { enhancedPrompt: prepared.enhancedPrompt }
         : {}),
-      model: falResult.model,
-      width: width ?? falResult.width,
-      height: height ?? falResult.height,
+      model: final.falResult.model,
+      width: final.width,
+      height: final.height,
       generationTimeMs: Date.now() - started,
       seed,
       highRes,

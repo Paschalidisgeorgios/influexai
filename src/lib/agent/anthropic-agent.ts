@@ -1,4 +1,4 @@
-import { getAnthropicConfigError } from "@/lib/anthropic";
+import { getAnthropicConfigError, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import { MASTER_AGENT_TOOLS } from "./tools-definition";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -54,7 +54,7 @@ export async function runAnthropicAgentTurn(
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-opus-4-5",
+      model: SCRIPT_GENERATOR_MODEL,
       max_tokens: 8192,
       system,
       tools: MASTER_AGENT_TOOLS,
@@ -128,7 +128,7 @@ export async function* streamAnthropicAgentTurn(
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-opus-4-5",
+      model: SCRIPT_GENERATOR_MODEL,
       max_tokens: 8192,
       system,
       tools: MASTER_AGENT_TOOLS,

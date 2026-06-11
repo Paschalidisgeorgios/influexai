@@ -15,6 +15,7 @@ import {
   mapAkoolVideoStatus,
 } from "@/lib/akool";
 import { assertGatedFeature } from "@/lib/access.server";
+import { isAkoolConfigured } from "@/lib/akool-env";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Foto ist erforderlich" }, { status: 400 });
   }
 
-  if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+  if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Avatar-Video ist gerade nicht verfügbar." },
       { status: 503 }

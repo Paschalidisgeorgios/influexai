@@ -2,6 +2,7 @@ import {
   CLAUDE_JSON_SYSTEM_RULE,
   createAnthropicMessage,
   parseClaudeJson,
+  SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
 import {
   PLATFORM_GUIDES,
@@ -86,6 +87,7 @@ Respond as JSON only:
     system: systemPrompt,
     user: userPrompt,
     maxTokens: 1200,
+    model: SCRIPT_GENERATOR_MODEL,
   });
 
   if (!claude.ok) {

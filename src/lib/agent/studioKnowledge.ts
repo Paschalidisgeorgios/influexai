@@ -6,9 +6,9 @@ export const STUDIO_KNOWLEDGE = `
 ## InfluexAI Studio — Tools im Überblick
 
 ### Agent
-- **KI Agent** (/dashboard) — Zentraler Assistent: plant Workflows, führt Tools aus, empfiehlt nächste Schritte. Kosten variieren je nach Tools (~2–80 Credits).
+- **Agent Autopilot** (/dashboard/ki-agent) — Zentraler Assistent: plant Workflows, erstellt Content, empfiehlt nächste Schritte. 1 Credit pro Anfrage, Tools zusätzlich.
 - **KI-Influencer** (/dashboard/ki-influencer) — Eigenen digitalen Creator anlegen (Foto-Upload oder Beschreibung), für konsistente Bilder. NEU.
-- **Campaign Autopilot** (/dashboard/campaign-autopilot) — Komplette Kampagnen (Reels, Posts, Visuals) aus einem Briefing. Ab ~38 Credits.
+- **Autopilot Kampagne** (/dashboard/campaign-autopilot) — Komplette Kampagnen (Reels, Posts, Visuals) aus einem Briefing. Ab ~38 Credits.
 
 ### Text & Script
 - **Script Generator** (/dashboard/script-generator) — Virale YouTube-/Shorts-Scripts in Sekunden. 2 Credits. Tipp: Thema + Zielgruppe angeben.
@@ -19,7 +19,7 @@ export const STUDIO_KNOWLEDGE = `
 ### Video & Bild
 - **Bild Generator** (/dashboard/image-generator) — Social-Media-Bilder in verschiedenen Stilen & Formaten. Ab 5 Credits. Tipp: Plattform nennen (TikTok = Hochformat).
 - **UGC Video** (/dashboard/ugc-video) — Authentisches Produktvideo mit Upload. Höhere Credits.
-- **Mein KI-Ich** (/dashboard/ki-ich) — Dein Gesicht in einer Szene einsetzen. 8 Credits.
+- **KI-Ich** (/dashboard/ki-influencer) — Dein Gesicht in einer Szene einsetzen. 8 Credits.
 - **Bild zu Video** (/dashboard/seedance) — Statisches Bild animieren mit Sound. 40 Credits.
 - **Motion Transfer** (/dashboard/motion-transfer) — Bewegung von Referenzvideo auf dein Foto. 8 Credits.
 - **Live Portrait** (/dashboard/live-portrait) — Mimik von Video auf Foto übertragen. 5 Credits.
@@ -33,15 +33,15 @@ export const STUDIO_KNOWLEDGE = `
 - **Content Kalender** (/dashboard/content-kalender) — 30-Tage-Plan mit Ideen & Formaten. 5 Credits.
 - **Trend → Script** (/dashboard/trend-to-script) — Aktuelle Trends → passendes Script. 4 Credits.
 - **Konkurrenz-Analyse** (/dashboard/competitor) — Kanäle vergleichen, Lücken finden. 5 Credits.
-- **Viral Score** — Im KI Agent: Content 0–100 bewerten lassen.
+- **Viral Score** — Im Agent Autopilot: Content 0–100 bewerten lassen.
 
 ### Live & Audio
 - **Stimme & Musik** (/dashboard/stimme-musik) — Voiceover & Hintergrundmusik.
 - **Live Creator** (/dashboard/live-creator) — Live-Avatar / Face Swap.
 
 Empfehlungs-Regeln:
-- Für Hooks → Viral Hooks oder KI Agent
-- Für Wochenplan → Content Kalender oder Campaign Autopilot
+- Für Hooks → Viral Hooks oder Agent Autopilot
+- Für Wochenplan → Content Kalender oder Autopilot Kampagne
 - Für Produktvideo → Produkt-Werbung oder UGC Video
 - Für Social-Bild → Bild Generator
 - Für Trend-Content → Trend → Script

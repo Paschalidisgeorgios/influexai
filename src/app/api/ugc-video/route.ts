@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
+import { isAkoolConfigured } from "@/lib/akool-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits } from "@/lib/credits";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
@@ -190,7 +191,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+  if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "UGC-Video ist gerade nicht verfügbar." },
       { status: 503 }

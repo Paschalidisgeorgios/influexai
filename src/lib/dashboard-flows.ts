@@ -24,6 +24,9 @@ import {
   User,
   ZoomIn,
   Zap,
+  Languages,
+  Mic,
+  Wand2,
   type LucideIcon,
 } from "lucide-react";
 import { TablerPhoto } from "@/components/icons/TablerPhoto";
@@ -110,10 +113,10 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
   },
   {
     id: "ki-ich",
-    href: "/dashboard/ki-ich",
+    href: "/dashboard/ki-influencer",
     category: "create",
     icon: Sparkles,
-    title: "Mein KI-Ich",
+    title: "KI-Ich",
     tagline: "Dein Gesicht in einer Szene — AI-Self-Bild (kein Influencer-Profil)",
     creditCost: 8,
     creditLabel: "8 Credits",
@@ -159,15 +162,15 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
   },
   {
     id: "seedance",
-    href: "/dashboard/seedance",
+    href: "/dashboard/szenen-generator",
     category: "create",
     icon: Film,
-    title: "Bild zu Video",
+    title: "Szenen Generator",
     tagline: "Statisches Bild in bewegtes Video mit Sound verwandeln",
     creditCost: 40,
-    creditLabel: "40 Credits",
+    creditLabel: "dynamisch",
     badge: "NEU",
-    genTypes: ["seedance", "image_to_video"],
+    genTypes: ["seedance", "image_to_video", "akool-image-to-video"],
   },
   {
     id: "kling25-i2v",
@@ -274,10 +277,10 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     href: "/dashboard/campaign-autopilot",
     category: "analyze",
     icon: Bot,
-    title: "Campaign Autopilot",
-    tagline: "Beispiel-Kampagnenstruktur (Preview, kein autonomer Agent)",
-    creditCost: 0,
-    creditLabel: "Preview · 0 Credits",
+    title: "Autopilot Kampagne",
+    tagline: "Kampagnenstruktur & Content-Plan mit Credits",
+    creditCost: 5,
+    creditLabel: "ab 5 Credits",
     badge: "Preview",
     genTypes: ["campaign-autopilot"],
   },
@@ -359,16 +362,15 @@ export const DASHBOARD_FLOWS: DashboardFlow[] = [
     genTypes: ["ugc-video"],
   },
   {
-    id: "live-creator-new",
-    href: "/dashboard/live-creator-new",
+    id: "face-studio",
+    href: "/dashboard/face-studio",
     category: "live",
     icon: ScanFace,
-    title: "Face Swap",
+    title: "Face Studio",
     tagline: "Face Swap in Videos und Fotos — nur mit Einwilligung aller Personen",
     creditCost: 5,
     creditLabel: "5–10 Credits",
-    badge: "NEU",
-    genTypes: ["live-creator-new", "faceswap"],
+    genTypes: ["live-creator-new", "faceswap", "face-studio"],
   },
   {
     id: "voice",
@@ -421,7 +423,7 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
       {
         id: "viral-hook",
         href: "/dashboard/viral-hook",
-        label: "Viral Hook",
+        label: "Viral Hook Generator",
         icon: Zap,
       },
       {
@@ -455,8 +457,8 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         icon: ImageGeneratorPhotoIcon,
       },
       {
-        id: "ki-ich",
-        href: "/dashboard/ki-ich",
+        id: "ki-influencer",
+        href: "/dashboard/ki-influencer",
         label: "KI-Ich",
         icon: Sparkles,
       },
@@ -475,21 +477,43 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
     ],
   },
   {
-    key: "automation",
-    label: "Automation",
+    key: "video-film",
+    label: "Video & Film",
     items: [
       {
-        id: "ki-agent",
-        href: "/dashboard",
-        label: "KI Agent",
-        icon: Star,
+        id: "szenen-generator",
+        href: "/dashboard/szenen-generator",
+        label: "Szenen Generator",
+        icon: Film,
+        badge: "NEU",
       },
       {
-        id: "campaign-autopilot",
-        href: "/dashboard/campaign-autopilot",
-        label: "Campaign Autopilot",
-        icon: Rocket,
+        id: "story-creator",
+        href: "/dashboard/story-creator",
+        label: "Story Creator",
+        icon: Clapperboard,
+        badge: "NEU",
       },
+      {
+        id: "video-transformer",
+        href: "/dashboard/video-transformer",
+        label: "Video Transformer",
+        icon: Wand2,
+        badge: "NEU",
+      },
+      {
+        id: "video-uebersetzer",
+        href: "/dashboard/video-uebersetzer",
+        label: "Video Übersetzer",
+        icon: Languages,
+        badge: "NEU",
+      },
+    ],
+  },
+  {
+    key: "avatar-live",
+    label: "Avatar & Live",
+    items: [
       {
         id: "live-creator",
         href: "/dashboard/live-creator",
@@ -497,10 +521,74 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         icon: Video,
       },
       {
-        id: "voice",
-        href: "/dashboard/voice",
-        label: "Stimme & Musik",
+        id: "avatar-studio",
+        href: "/dashboard/avatar-studio",
+        label: "Avatar Studio",
+        icon: Theater,
+      },
+      {
+        id: "character-studio",
+        href: "/dashboard/character-studio",
+        label: "Character Studio",
+        icon: ScanFace,
+        badge: "NEU",
+      },
+      {
+        id: "lipsync-studio",
+        href: "/dashboard/lipsync-studio",
+        label: "Lipsync Studio",
+        icon: Mic,
+        badge: "NEU",
+      },
+    ],
+  },
+  {
+    key: "audio",
+    label: "Audio",
+    items: [
+      {
+        id: "melodia",
+        href: "/dashboard/melodia",
+        label: "Melodia Studio",
         icon: Mic2,
+        badge: "NEU",
+      },
+    ],
+  },
+  {
+    key: "werbung-business",
+    label: "Werbung",
+    items: [
+      {
+        id: "ad-creator",
+        href: "/dashboard/ad-creator",
+        label: "Ad Creator",
+        icon: ShoppingBag,
+        badge: "NEU",
+      },
+      {
+        id: "thumbnail-concept",
+        href: "/dashboard/thumbnail-concept",
+        label: "Thumbnail Concept",
+        icon: Image,
+      },
+    ],
+  },
+  {
+    key: "automation",
+    label: "Automation",
+    items: [
+      {
+        id: "ki-agent",
+        href: "/dashboard/ki-agent",
+        label: "Agent Autopilot",
+        icon: Star,
+      },
+      {
+        id: "campaign-autopilot",
+        href: "/dashboard/campaign-autopilot",
+        label: "Autopilot Kampagne",
+        icon: Rocket,
       },
     ],
   },
@@ -518,6 +606,7 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
   }
   if (
     path.includes("image-generator") ||
+    path.includes("ki-influencer") ||
     path.includes("ki-ich") ||
     path.includes("lora-training") ||
     path === "/dashboard/gallery"
@@ -525,12 +614,43 @@ export function sidebarCategoryKeysForPath(path: string): string[] {
     keys.push("visuals");
   }
   if (
+    path.includes("szenen-generator") ||
+    path.includes("story-creator") ||
+    path.includes("video-transformer") ||
+    path.includes("video-uebersetzer") ||
+    path.includes("video-generator") ||
+    path.includes("text-to-video") ||
+    path.includes("video-editor") ||
+    path.includes("seedance")
+  ) {
+    keys.push("video-film");
+  }
+  if (
+    path.includes("live-creator") ||
+    path.includes("avatar-studio") ||
+    path.includes("character-studio") ||
+    path.includes("face-studio") ||
+    path.includes("lipsync") ||
+    path.includes("live-creator-new") ||
+    path.includes("ugc-video")
+  ) {
+    keys.push("avatar-live");
+  }
+  if (path.includes("melodia") || path.includes("voice-studio")) {
+    keys.push("audio");
+  }
+  if (
+    path.includes("ad-creator") ||
+    path.includes("ecommerce-ads") ||
+    path.includes("thumbnail-concept")
+  ) {
+    keys.push("werbung-business");
+  }
+  if (
     path === "/dashboard" ||
     path === "/dashboard/agent" ||
     path.includes("ki-agent") ||
-    path.includes("campaign-autopilot") ||
-    path.includes("live-creator") ||
-    path.includes("/dashboard/voice")
+    path.includes("campaign-autopilot")
   ) {
     keys.push("automation");
   }
@@ -570,7 +690,7 @@ export const NAV_GROUPS: {
     label: "Live & Audio",
     items: [
       { id: "live-creator", href: "/dashboard/live-creator", label: "Live Creator", icon: Video },
-      { id: "live-creator-new", href: "/dashboard/live-creator-new", label: "Face Swap", icon: ScanFace },
+      { id: "face-studio", href: "/dashboard/face-studio", label: "Face Studio", icon: ScanFace },
       { id: "voice", href: "/dashboard/voice", label: "Stimme & Musik", icon: Mic2 },
       { id: "voice-agent", href: "/dashboard/voice-agent", label: "Voice Agent", icon: Bot },
     ],

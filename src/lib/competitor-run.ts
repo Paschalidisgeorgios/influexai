@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import {
   buildCompetitorUserPrompt,
@@ -81,7 +81,7 @@ export async function runCompetitorAnalysis(
     system: COMPETITOR_ANALYSIS_SYSTEM_PROMPT,
     user: buildCompetitorUserPrompt(bundle),
     maxTokens: 2048,
-    model: "claude-opus-4-5",
+    model: SCRIPT_GENERATOR_MODEL,
   });
 
   if (!claude.ok) {

@@ -286,7 +286,7 @@ export const AGENT_TOOL_REGISTRY: readonly AgentToolRegistryItem[] = [
     label: "Mein KI-Ich",
     category: "avatar",
     status: "production",
-    route: "/dashboard/ki-ich",
+    route: "/dashboard/ki-influencer",
     agentToolName: "avatar_video",
     kiAgentToolName: "ki_ich",
     description:
@@ -516,7 +516,7 @@ export const AGENT_TOOL_REGISTRY: readonly AgentToolRegistryItem[] = [
     label: "Face Swap",
     category: "avatar",
     status: "risky",
-    route: "/dashboard/live-creator-new",
+    route: "/dashboard/face-studio",
     api: "/api/faceswap",
     description: "Gesicht in Video/Bild tauschen — High-Risk Consent Tool.",
     canDo: ["Face Swap im Dashboard (live-creator-new)"],

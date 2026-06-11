@@ -161,16 +161,7 @@ function TrendToScriptPageInner() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Rocket size={32} color="#B4FF00" strokeWidth={2} />
           <div>
-            <h1
-              style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                fontSize: "clamp(2rem, 4vw, 3rem)",
-                letterSpacing: "0.02em",
-                color: "#F0EFE8",
-                margin: 0,
-                lineHeight: 1,
-              }}
-            >
+            <h1 className="font-display m-0 text-[clamp(2rem,4vw,3rem)] leading-none tracking-wide text-[#F0EFE8]">
               TREND → SCRIPT
             </h1>
             <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", margin: "6px 0 0" }}>

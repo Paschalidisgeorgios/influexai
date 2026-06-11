@@ -1,10 +1,10 @@
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
-/** Same model as Produkt-Werbung (verified working in production). */
-export const ANTHROPIC_MODEL = "claude-opus-4-5";
-
 /** Script Generator — Sonnet 4 (claude-sonnet-4-20250514 returns 404 on current API). */
 export const SCRIPT_GENERATOR_MODEL = "claude-sonnet-4-5-20250929";
+
+/** Default Claude model for dashboard text tools and API routes. */
+export const ANTHROPIC_MODEL = SCRIPT_GENERATOR_MODEL;
 
 export const CLAUDE_JSON_SYSTEM_RULE =
   "Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.";

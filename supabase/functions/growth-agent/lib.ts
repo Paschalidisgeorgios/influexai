@@ -6,7 +6,7 @@ import {
 import type { DailyVideoIdea, ProfileRow, TrendingVideo } from "./types.ts";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_MODEL = "claude-opus-4-5";
+const ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
 const SITE = "https://influexaicreator.com";
 
 const SYSTEM_PROMPT = `Du bist ein YouTube Shorts Stratege.

@@ -42,20 +42,20 @@ export const IMAGE_TO_VIDEO_MODELS: readonly ImageToVideoModelConfig[] = [
     label: SEEDANCE_UI_NAME,
     category: "Video / Image-to-Video",
     creditCost: SEEDANCE_CREDIT_COST,
-    provider: "fal.ai",
+    provider: "akool",
     providerEnabled: true,
     requiresReferenceImage: true,
     description: {
-      de: "Statisches Bild in bewegtes Video mit KI-generiertem Sound.",
-      en: "Turn a still image into motion video with AI-generated sound.",
+      de: "Statisches Bild in bewegtes Video — alle verfügbaren Modelle.",
+      en: "Turn a still image into motion video using available models.",
     },
     safetyHint: {
       de: "Benötigt ein Referenzbild und eine Motion-Beschreibung.",
       en: "Requires a reference image and a motion description.",
     },
     subline: {
-      de: "Image-to-Video · Seedance",
-      en: "Image-to-video · Seedance",
+      de: "Image-to-Video · Szenen Generator",
+      en: "Image-to-video · Scene Generator",
     },
   },
   {

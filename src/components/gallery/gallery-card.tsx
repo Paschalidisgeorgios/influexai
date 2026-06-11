@@ -745,7 +745,7 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             {item.imageUrl && onOpenMedia && (
               <ActionBtn label="Vorschau" onClick={openMedia} primary />
             )}
-            <ActionBtn label="Neu generieren" href="/dashboard/ki-ich" />
+            <ActionBtn label="Neu generieren" href="/dashboard/ki-influencer" />
           </ActionRow>
       </article>
     );

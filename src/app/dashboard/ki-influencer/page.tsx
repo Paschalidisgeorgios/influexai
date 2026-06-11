@@ -691,7 +691,7 @@ function KiInfluencerPageInner() {
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
           <UserRound size={32} color="#B4FF00" strokeWidth={2.2} />
-          <h1 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+          <h1 className="font-display text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
             KI-Influencer erstellen
           </h1>
         </div>

@@ -210,10 +210,10 @@ export function AgentPlanPreviewCard({
             border: "1px solid rgba(180,255,0,0.35)",
           }}
         >
-          Plan-Vorschau
+          Vorschau
         </span>
         <span className="text-[11px] sm:text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-          Keine Credits in der Vorschau · noch keine Ausführung
+          Schätzung — Ausführung kostet Credits
         </span>
       </div>
 
@@ -312,7 +312,7 @@ export function AgentPlanPreviewCard({
             className="mt-3 text-[10px] leading-[1.45]"
             style={{ color: "rgba(216,180,254,0.9)" }}
           >
-            Campaign Autopilot ist eine Demo-Preview — kein autonomer Live-Kampagnen-Agent.
+            Autopilot Kampagne ist eine Demo-Preview — kein autonomer Live-Kampagnen-Agent.
           </p>
         )}
 

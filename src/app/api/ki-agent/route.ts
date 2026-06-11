@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { createAnthropicMessage, parseClaudeJson } from "@/lib/anthropic";
+import {
+  createAnthropicMessage,
+  parseClaudeJson,
+  SCRIPT_GENERATOR_MODEL,
+} from "@/lib/anthropic";
 import { scoreOutput } from "@/lib/agent-scoring";
 import type {
   AgentIntent,
@@ -24,6 +28,7 @@ import {
   STUDIO_GUIDE_INSTRUCTIONS,
   STUDIO_KNOWLEDGE,
 } from "@/lib/agent/studioKnowledge";
+import { detectIntent } from "@/lib/agent/router";
 
 export const dynamic = "force-dynamic";
 
@@ -31,22 +36,26 @@ export const maxDuration = 120;
 
 const KI_AGENT_CREDIT_COST = 1;
 
-const SYSTEM_PROMPT = `Du bist der INFLUEXAI KI Agent — ein intelligenter 
-Creator-Stratege, kein allgemeiner Chatbot.
+const SYSTEM_PROMPT = `Du bist AGENT AUTOPILOT — der intelligente Content-Stratege von InfluexAI.
 
-Deine Aufgabe:
-1. Erkenne den Intent des Nutzers (script_generation, ad_creation, 
-   hook_generation, calendar_planning, thumbnail_creation, avatar_creation, unknown).
-2. Wähle das passende Tool.
-3. Wenn wichtige Infos fehlen: stelle maximal 1–2 gezielte Rückfragen.
-4. Generiere einen strukturierten Output.
-5. Schlage 2–3 sinnvolle nächste Aktionen vor.
+CREATOR PROFIL:
+{creatorDNA injected here}
 
-WICHTIGE REGELN:
-- Keine garantierten Finanz-, Steuer-, Gesundheits- oder Reichweitenversprechen.
-- Keine automatischen Veröffentlichungen.
-- Bei Avatar, Face, Voice: Consent-Hinweis in nextActions aufnehmen.
-- RiskLevel "high" wenn der Content riskante Claims enthält.
+DEINE AUFGABEN:
+- Virale Hooks, Skripte und Content erstellen
+- Kampagnen und Strategien entwickeln
+- Content analysieren und verbessern
+- Trends für die Nische des Creators identifizieren
+
+REGELN:
+- Antworte IMMER auf Deutsch
+- Sei konkret und actionable — kein Fülltext
+- Erstelle Content der sofort verwendbar ist
+- Formatiere Hooks als nummerierte Liste
+- Beende jede Antwort mit einem konkreten nächsten Schritt
+- Du heißt AGENT AUTOPILOT, nicht KI Agent oder Claude
+- Keine garantierten Finanz-, Steuer-, Gesundheits- oder Reichweitenversprechen
+- Keine automatischen Veröffentlichungen
 
 Antworte AUSSCHLIESSLICH als valides JSON ohne Markdown-Backticks:
 {
@@ -67,12 +76,15 @@ Antworte AUSSCHLIESSLICH als valides JSON ohne Markdown-Backticks:
 }`;
 
 function buildKiAgentSystemPrompt(creatorContext: string): string {
-  return `${SYSTEM_PROMPT}
+  const base = SYSTEM_PROMPT.replace(
+    "{creatorDNA injected here}",
+    creatorContext || "Noch kein Creator-Profil hinterlegt."
+  );
+  return `${base}
 
 ${STUDIO_GUIDE_INSTRUCTIONS}
 
-${STUDIO_KNOWLEDGE}
-${creatorContext ? `\n${creatorContext}` : ""}`;
+${STUDIO_KNOWLEDGE}`;
 }
 
 type RequestBody = {
@@ -305,11 +317,16 @@ export async function POST(request: Request) {
     dbProfile?.plattformen?.join(", ") ??
     resolvePlatform(body.creatorDNA);
   const userPrompt = buildUserPrompt(messages, body.creatorDNA);
+  const lastUserContent = lastUser.content.trim();
+  const detectedIntent = detectIntent(lastUserContent);
 
   const claude = await createAnthropicMessage({
-    system: buildKiAgentSystemPrompt(creatorContext),
+    system:
+      buildKiAgentSystemPrompt(creatorContext) +
+      `\n\nErkannter Intent (Heuristik): ${detectedIntent}`,
     user: userPrompt,
     maxTokens: 4096,
+    model: SCRIPT_GENERATOR_MODEL,
   });
 
   if (!claude.ok) {
@@ -326,7 +343,7 @@ export async function POST(request: Request) {
     supabase,
     userId,
     KI_AGENT_CREDIT_COST,
-    "KI Agent",
+    "Agent Autopilot",
     {
       generationType: "ki-agent",
       skipGenerationLog: true,

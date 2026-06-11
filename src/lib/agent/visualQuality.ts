@@ -446,3 +446,62 @@ export async function runVisualQAWithRetry(params: {
     retried: true,
   };
 }
+
+/** Visual QA + one free retry when credits were already deducted (dashboard generate-image). */
+export async function applyVisualQARetry<T extends { imageUrl: string; generationId: string }>(
+  params: {
+    supabase: SupabaseClient;
+    userId: string;
+    prompt: string;
+    platform: string;
+    first: T;
+    regenerate: (retryHint?: string) => Promise<T>;
+  }
+): Promise<{ result: T; qualityScore: number; retried: boolean }> {
+  const firstScore = await scoreVisualOutput(
+    params.first.imageUrl,
+    params.prompt,
+    params.supabase,
+    params.first.generationId,
+    params.prompt,
+    params.platform
+  );
+
+  if (firstScore.score >= QUALITY_RETRY_THRESHOLD) {
+    return {
+      result: params.first,
+      qualityScore: firstScore.score,
+      retried: false,
+    };
+  }
+
+  try {
+    const second = await params.regenerate(
+      buildQualityRetryHint(firstScore.weaknesses)
+    );
+    const secondScore = await scoreVisualOutput(
+      second.imageUrl,
+      params.prompt,
+      params.supabase,
+      second.generationId,
+      params.prompt,
+      params.platform
+    );
+
+    if (secondScore.score >= firstScore.score) {
+      return {
+        result: second,
+        qualityScore: secondScore.score,
+        retried: true,
+      };
+    }
+  } catch {
+    /* keep first result */
+  }
+
+  return {
+    result: params.first,
+    qualityScore: firstScore.score,
+    retried: true,
+  };
+}

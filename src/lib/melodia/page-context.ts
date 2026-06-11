@@ -19,7 +19,7 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
   "/dashboard/produkt":
     "Der Nutzer ist bei Produkt-Werbung. Er braucht ein Produktbild und optional eine Produkt-URL. Das Tool erstellt dann ein Werbe-Video. Hilf beim Upload, bei der URL-Eingabe oder wenn das Ergebnis nicht passt.",
 
-  "/dashboard/ki-ich":
+  "/dashboard/ki-influencer":
     "Der Nutzer will seinen KI-Avatar erstellen. Er braucht ein Referenz-Selfie. Erkläre: gutes Licht, neutraler Hintergrund, Frontal — kein Filter, Gesicht klar sichtbar.",
 
   "/dashboard/lora-training":
@@ -29,7 +29,34 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
     "Der Nutzer ist beim Bild Generator. Er wählt Kategorie und Prompt — Standard oder High-Res. Hilf bei präzisen Prompts, Stil und wenn das Bild nicht der Vorstellung entspricht (Prompt verfeinern, Kategorie wechseln).",
 
   "/dashboard/seedance":
-    "Der Nutzer ist bei Bild zu Video (Seedance). Er lädt ein Bild hoch oder nutzt ein generiertes Bild und erstellt daraus ein kurzes Video mit Bewegung. Erkläre: klares Motiv, passende Bewegungsbeschreibung, 25 Credits pro Video.",
+    "Der Nutzer ist beim Szenen Generator. Er lädt ein Startbild hoch und erstellt daraus ein kurzes Video mit Bewegung und Sound. Erkläre: klares Motiv, passende Bewegungsbeschreibung, Credits abhängig von Modell und Dauer.",
+
+  "/dashboard/szenen-generator":
+    "Der Nutzer ist beim Szenen Generator (Bild zu Video). Er lädt ein Startbild hoch, wählt Modell, Dauer und Auflösung. Hilf bei Motion-Prompt, Endframe und Credit-Kosten.",
+
+  "/dashboard/story-creator":
+    "Der Nutzer ist beim Story Creator (Text zu Video). Er beschreibt eine Szene per Text und erhält ein generiertes Video. Tipp: konkrete Bildsprache, Kamerabewegung und Stimmung nennen.",
+
+  "/dashboard/video-uebersetzer":
+    "Der Nutzer ist beim Video Übersetzer. Er übersetzt Videos in andere Sprachen — optional mit Stimmklon. Hilf bei Sprachwahl, Video-URL und Dauer (Credits pro Minute).",
+
+  "/dashboard/lipsync-studio":
+    "Der Nutzer ist im Lipsync Studio. Er synchronisiert Lippenbewegungen mit Audio oder Text-to-Speech. Tipp: klares Gesicht im Video, passende Audioqualität.",
+
+  "/dashboard/melodia":
+    "Der Nutzer ist im Melodia Studio — Text zu Sprache, Stimme klonen oder Stimme ändern. Bei Clone: klare Audio-Aufnahme, mindestens 30 Sekunden empfohlen.",
+
+  "/dashboard/character-studio":
+    "Der Nutzer ist im Character Studio. Er animiert einen Charakter oder ersetzt ein Gesicht in einem Video. Erkläre Modus Animieren vs. Gesicht ersetzen.",
+
+  "/dashboard/video-transformer":
+    "Der Nutzer ist beim Video Transformer. Er wendet KI-Stile auf ein bestehendes Video an — Stil-Prompt und Stärke einstellen.",
+
+  "/dashboard/ad-creator":
+    "Der Nutzer ist beim Ad Creator. Er erstellt Werbe-Creatives aus Produktfotos — Hintergrund beschreiben und Format wählen (1:1, 9:16, 16:9).",
+
+  "/dashboard/face-studio":
+    "Der Nutzer ist im Face Studio (Face Swap). Er tauscht Gesichter in Videos oder Fotos — nur mit Einwilligung aller Personen. Tipp: ähnliche Beleuchtung und Blickwinkel.",
 
   "/dashboard/ugc-video":
     "Der Nutzer ist bei UGC Video. Er erstellt authentische Creator-Videos im 9:16 UGC-Stil — Produkt, Avatar oder Script. Hilf bei Produktbild, Hook-Idee oder wenn er UGC vs. Produkt-Werbung verwechselt.",
@@ -53,7 +80,7 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
     "Der Nutzer ist beim Live Creator — KI-Avatar live streamen (9:16 Shorts mit Webcam). Erkläre Setup: Webcam, Mikro, Avatar wählen; Credits pro Minute. Bei Technik-Problemen: Browser-Berechtigungen prüfen.",
 
   "/dashboard/live-creator-new":
-    "Der Nutzer ist bei Face Swap. Er tauscht Gesichter in Videos — Referenzvideo und Gesicht nötig. Tipp: gute Beleuchtung, frontal, ähnlicher Blickwinkel wie im Zielvideo.",
+    "Der Nutzer ist im Face Studio. Er tauscht Gesichter in Videos — Referenzvideo und Gesicht nötig. Tipp: gute Beleuchtung, frontal, ähnlicher Blickwinkel wie im Zielvideo.",
 
   "/dashboard/voice":
     "Der Nutzer ist bei Stimme & Musik. Er kann KI-Stimme (TTS), Voice Clone oder lizenzfreie Musik nutzen. Bei Clone: klare Audio-Aufnahme, 1–2 Minuten, ohne Hintergrundgeräusche.",
@@ -85,11 +112,21 @@ const MELODIA_PAGE_CONTEXT: Record<string, string> = {
 /** Legacy URLs → kanonischer Pfad */
 const MELODIA_PATH_ALIASES: Record<string, string> = {
   "/dashboard/produkt-werbung": "/dashboard/produkt",
-  "/dashboard/mein-ki-ich": "/dashboard/ki-ich",
+  "/dashboard/mein-ki-ich": "/dashboard/ki-influencer",
+  "/dashboard/ki-ich": "/dashboard/ki-influencer",
   "/dashboard/stimme-musik": "/dashboard/voice",
   "/dashboard/stimme": "/dashboard/voice",
   "/dashboard/agent": "/dashboard",
   "/dashboard/video-ad": "/dashboard/produkt",
+  "/dashboard/video-generator": "/dashboard/szenen-generator",
+  "/dashboard/seedance": "/dashboard/szenen-generator",
+  "/dashboard/text-to-video": "/dashboard/story-creator",
+  "/dashboard/video-translation": "/dashboard/video-uebersetzer",
+  "/dashboard/lipsync": "/dashboard/lipsync-studio",
+  "/dashboard/voice-studio": "/dashboard/melodia",
+  "/dashboard/video-editor": "/dashboard/video-transformer",
+  "/dashboard/ecommerce-ads": "/dashboard/ad-creator",
+  "/dashboard/live-creator-new": "/dashboard/face-studio",
 };
 
 function normalizePath(pathname: string): string {

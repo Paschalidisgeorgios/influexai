@@ -44,7 +44,57 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/mein-ki-ich",
-        destination: "/dashboard/ki-ich",
+        destination: "/dashboard/ki-influencer",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/ki-ich",
+        destination: "/dashboard/ki-influencer",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/video-generator",
+        destination: "/dashboard/szenen-generator",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/seedance",
+        destination: "/dashboard/szenen-generator",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/text-to-video",
+        destination: "/dashboard/story-creator",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/video-translation",
+        destination: "/dashboard/video-uebersetzer",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/lipsync",
+        destination: "/dashboard/lipsync-studio",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/voice-studio",
+        destination: "/dashboard/melodia",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/video-editor",
+        destination: "/dashboard/video-transformer",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/ecommerce-ads",
+        destination: "/dashboard/ad-creator",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/live-creator-new",
+        destination: "/dashboard/face-studio",
         permanent: true,
       },
     ];

@@ -46,7 +46,7 @@ Scope: `src/app` (275 files), `src/lib` (234), `src/components` (203), `src/hook
 
 4. **Impressum missing USt-IdNr.** | `src/app/impressum/page.tsx:17-27` | Has name, address, email; no VAT ID. | Add USt-Id if registered.
 
-5. **Wrong Anthropic model strings** | `src/lib/anthropic.ts:4` (`claude-opus-4-5`), `src/lib/agent/anthropic-agent.ts:57,131`, `src/app/api/viral-score/route.ts:103`, `src/lib/competitor-run.ts:84` | Canonical Sonnet: `claude-sonnet-4-5-20250929` used elsewhere. Opus string may 404 or bill unexpectedly. | Standardize model IDs.
+5. ~~**Wrong Anthropic model strings**~~ **FIXED** | `src/lib/anthropic.ts`, `anthropic-agent.ts`, `viral-score/route.ts`, `competitor-run.ts` | All standardized to `claude-sonnet-4-5-20250929`. | Done.
 
 6. **ESLint fails CI (12 errors)** | `src/components/live-creator/face-swap-panel.tsx:439,494`, `src/components/ui/AnimatedCredits.tsx:18,30` | `react-hooks/refs` — ref access during render. | Refactor to event handlers / state.
 
@@ -282,9 +282,9 @@ Full app file list generated at `.audit-tree-app.txt` (275 paths).
 | Stimme (voice page) | ElevenLabs | `eleven_multilingual_v2` | `actions/generate-voice` | 3 | Active | Gallery save ✓ |
 | Stimme speak API | ElevenLabs | `eleven_multilingual_v2` | `/api/stimme/speak` | 2 | Active | Cost mismatch |
 | Stimme clone | ElevenLabs | | `/api/stimme/clone` | varies | Active | |
-| Viral Score | Anthropic | **`claude-opus-4-5`** | `/api/viral-score` | varies | Active | Wrong model string |
-| Competitor | Anthropic | **`claude-opus-4-5`** | `/api/competitor` | varies | Active | Wrong model |
-| Agent (legacy) | Anthropic | **`claude-opus-4-5`** | `anthropic-agent.ts` | — | Active | Wrong model |
+| Viral Score | Anthropic | `claude-sonnet-4-5-20250929` | `/api/viral-score` | varies | Active | — |
+| Competitor | Anthropic | `claude-sonnet-4-5-20250929` | `/api/competitor` | varies | Active | — |
+| Agent (legacy) | Anthropic | `claude-sonnet-4-5-20250929` | `anthropic-agent.ts` | — | Active | — |
 | Melodia chat | Anthropic | `claude-haiku-4-5-20251001` | `/api/melodia` | varies | Active | |
 | Image prompt improve | Anthropic | `claude-haiku-4-5-20251001` | `improve-image-prompt.ts` | — | Internal | |
 | Visual QA | Anthropic | `claude-sonnet-4-5-20250929` | `visualQuality.ts` | — | Active | Retry 2× image cost |
@@ -486,7 +486,7 @@ All user credit deductions in production paths use `deductCredits()` → RPC ✓
 - **Files:** 30+ (see grep `anthropic` in src)
 - **API key:** `ANTHROPIC_API_KEY` env
 - **Canonical Sonnet:** `claude-sonnet-4-5-20250929`
-- **Wrong strings:** `claude-opus-4-5` in 4 files (P1 #5)
+- **Model IDs:** All Anthropic calls use `claude-sonnet-4-5-20250929` (P1 #5 fixed)
 - **Streaming:** `melodia/stream-chat.ts` — SSE with error handling
 
 ### fal.ai

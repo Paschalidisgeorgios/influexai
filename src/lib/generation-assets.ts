@@ -228,7 +228,7 @@ export async function ingestFinalAssetFromUrl(
   userId: string,
   generationId: string,
   sourceUrl: string,
-  kind: "image" | "video"
+  kind: "image" | "video" | "audio"
 ): Promise<{ path: string; mimeType: string }> {
   const res = await fetch(sourceUrl, { cache: "no-store" });
   if (!res.ok) {
@@ -237,11 +237,17 @@ export async function ingestFinalAssetFromUrl(
   const buffer = Buffer.from(await res.arrayBuffer());
   const mimeType =
     res.headers.get("content-type") ??
-    (kind === "video" ? "video/mp4" : "image/jpeg");
+    (kind === "video"
+      ? "video/mp4"
+      : kind === "audio"
+        ? "audio/mpeg"
+        : "image/jpeg");
   const path =
     kind === "video"
       ? finalVideoStoragePath(userId, generationId)
-      : finalStoragePath(userId, generationId);
+      : kind === "audio"
+        ? audioStoragePath(userId, generationId)
+        : finalStoragePath(userId, generationId);
   await uploadToGeneratedAssets(path, buffer, mimeType);
   return { path, mimeType };
 }

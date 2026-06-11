@@ -521,11 +521,8 @@ export default function CampaignAutopilot() {
           Creator Studio · Preview
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <h1
-            className="text-[clamp(2rem,4vw,2.75rem)] leading-none"
-            style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif" }}
-          >
-            CAMPAIGN AUTOPILOT
+          <h1 className="font-display text-[clamp(2rem,4vw,2.75rem)] leading-none">
+            AUTOPILOT KAMPAGNE
           </h1>
           <span
             className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"

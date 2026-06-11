@@ -141,7 +141,7 @@ export function LandingBentoToolsSection() {
               tag={t("ki_ich_tag")}
               title={t("ki_ich_name")}
               description={t("ki_ich_benefit")}
-              href="/dashboard/ki-ich"
+              href="/dashboard/ki-influencer"
             />
           </SpringReveal>
 

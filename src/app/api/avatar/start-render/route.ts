@@ -1,5 +1,5 @@
 export const dynamic = "force-dynamic";
-export const maxDuration = 90;
+export const maxDuration = 300;
 
 import { fal } from "@fal-ai/client";
 import { NextRequest, NextResponse } from "next/server";

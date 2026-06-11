@@ -190,15 +190,7 @@ export default function GalleryPage() {
           }}
         >
           <div>
-            <h1
-              className="text-[clamp(1.75rem,7vw,2.5rem)]"
-              style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                color: "#F0EFE8",
-                lineHeight: 1.1,
-                marginBottom: 4,
-              }}
-            >
+            <h1 className="font-display mb-1 text-[clamp(1.75rem,7vw,2.5rem)] leading-tight text-[#F0EFE8]">
               {t("title")}
             </h1>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.95rem" }}>

@@ -35,7 +35,6 @@ async function run(model: string) {
 }
 
 async function main() {
-  await run("claude-opus-4-5");
   await run("claude-sonnet-4-20250514");
   await run("claude-sonnet-4-5-20250929");
 }

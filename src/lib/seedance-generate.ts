@@ -1,8 +1,19 @@
 import { fal } from "@fal-ai/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import {
+  addCredits,
+  deductCredits,
+  hasEnoughCredits,
+} from "@/lib/credits";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
+import {
+  calculateAkoolModelCredits,
+  createAkoolImage2VideoJob,
+  findAkoolImageToVideoModel,
+  getAkoolImage2VideoStatus,
+  getDefaultAkoolImageToVideoModel,
+} from "@/lib/akool-models";
 import {
   configureFalClient,
   getFalKey,
@@ -15,17 +26,38 @@ import {
   ingestFinalAssetFromUrl,
   updateGenerationResult,
 } from "@/lib/generation-assets";
-import {
-  SEEDANCE_CREDIT_COST,
-  SEEDANCE_MODEL,
-  SEEDANCE_UI_NAME,
-} from "@/lib/seedance-config";
+import { isAkoolConfigured } from "@/lib/akool-env";
+import { SEEDANCE_UI_NAME } from "@/lib/seedance-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
-type SeedanceVideoOutput = {
-  data?: { video?: { url?: string } };
-  video?: { url?: string };
+export type SeedanceParams = {
+  imageUrl: string;
+  prompt: string;
+  modelId?: string;
+  duration?: number;
+  resolution?: string;
+  lastFrameUrl?: string;
 };
+
+export type SeedanceStartResult =
+  | {
+      ok: true;
+      jobId: string;
+      generationId: string;
+      creditsUsed: number;
+      creditsLeft: number;
+    }
+  | { ok: false; error: string };
+
+export type SeedancePollResult =
+  | { status: "processing"; progress: number }
+  | {
+      status: "completed";
+      videoUrl: string;
+      generationId: string;
+      creditsLeft?: number;
+    }
+  | { status: "failed"; error: string; refunded: boolean };
 
 export type SeedanceGenerationResult =
   | {
@@ -39,11 +71,6 @@ export type SeedanceGenerationResult =
 
 export function protectedSeedanceVideoUrl(generationId: string) {
   return `/api/generated-video/${generationId}`;
-}
-
-function extractVideoUrl(result: unknown): string | null {
-  const r = result as SeedanceVideoOutput;
-  return r.data?.video?.url ?? r.video?.url ?? null;
 }
 
 async function uploadBufferToFal(
@@ -125,7 +152,7 @@ export async function resolveImageUrlForSeedance(
       );
     }
     if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
-      throw new Error("localhost-URLs funktionieren nicht mit fal.ai");
+      throw new Error("localhost-URLs funktionieren nicht für Video-Upload");
     }
     return trimmed;
   }
@@ -133,11 +160,101 @@ export async function resolveImageUrlForSeedance(
   throw new Error("Ungültige Bild-URL.");
 }
 
-export async function runSeedanceGeneration(
+export async function getSeedanceGenerationByJobId(
   supabase: SupabaseClient,
   userId: string,
-  params: { imageUrl: string; prompt: string }
-): Promise<SeedanceGenerationResult> {
+  jobId: string
+) {
+  const { data, error } = await supabase
+    .from("generations")
+    .select("id, result, credits_used, prompt")
+    .eq("user_id", userId)
+    .eq("type", "seedance")
+    .filter("result->>jobId", "eq", jobId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}
+
+async function refundSeedanceCredits(
+  supabase: SupabaseClient,
+  userId: string,
+  generationId: string,
+  amount: number
+): Promise<boolean> {
+  if (amount <= 0) return false;
+
+  const refund = await addCredits(
+    supabase,
+    userId,
+    amount,
+    `${SEEDANCE_UI_NAME} — Erstattung`
+  );
+  if (!refund.success) {
+    console.error("[seedance] refund failed:", refund.error);
+    return false;
+  }
+
+  await updateGenerationResult(supabase, generationId, userId, {
+    credits_used: 0,
+  });
+  return true;
+}
+
+export async function finalizeSeedanceVideo(
+  supabase: SupabaseClient,
+  userId: string,
+  generationId: string,
+  akoolVideoUrl: string
+): Promise<{ videoUrl: string }> {
+  const row = await getOwnedGeneration(supabase, generationId, userId);
+  if (row?.asset?.finalPath) {
+    return { videoUrl: protectedSeedanceVideoUrl(generationId) };
+  }
+
+  const { path: finalPath } = await ingestFinalAssetFromUrl(
+    userId,
+    generationId,
+    akoolVideoUrl,
+    "video"
+  );
+
+  await updateGenerationResult(supabase, generationId, userId, {
+    finalPath,
+  });
+
+  await invalidateUserGenerations(userId);
+
+  notifyGenerationCompletePush(
+    userId,
+    SEEDANCE_UI_NAME,
+    `/dashboard/seedance?generation=${generationId}`
+  );
+
+  return { videoUrl: protectedSeedanceVideoUrl(generationId) };
+}
+
+async function resolveSeedanceModel(modelId?: string) {
+  if (modelId?.trim()) {
+    const model = await findAkoolImageToVideoModel(modelId.trim());
+    if (!model) {
+      throw new Error("Unbekanntes Video-Modell.");
+    }
+    return model;
+  }
+  const fallback = await getDefaultAkoolImageToVideoModel();
+  if (!fallback) {
+    throw new Error("Keine Video-Modelle verfügbar.");
+  }
+  return fallback;
+}
+
+export async function startSeedanceJob(
+  supabase: SupabaseClient,
+  userId: string,
+  params: SeedanceParams
+): Promise<SeedanceStartResult> {
   const imageUrl = params.imageUrl.trim();
   const prompt = params.prompt.trim();
 
@@ -148,51 +265,98 @@ export async function runSeedanceGeneration(
     return { ok: false, error: "Bewegungs-Prompt erforderlich." };
   }
 
-  if (!getFalKey()) {
+  if (!isAkoolConfigured()) {
     return { ok: false, error: "Video-Engine ist nicht konfiguriert." };
   }
+  if (!getFalKey()) {
+    return {
+      ok: false,
+      error: "Medien-Upload ist gerade nicht verfügbar.",
+    };
+  }
 
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    userId,
-    SEEDANCE_CREDIT_COST
-  );
+  let model;
+  try {
+    model = await resolveSeedanceModel(params.modelId);
+  } catch (error) {
+    return {
+      ok: false,
+      error: sanitizeUserMessage(
+        error instanceof Error ? error.message : "Modell nicht verfügbar."
+      ),
+    };
+  }
+
+  const duration =
+    params.duration && model.durationList.includes(params.duration)
+      ? params.duration
+      : model.durationList[0];
+
+  const resolution =
+    model.resolutionList.find(
+      (item) =>
+        item.value.toLowerCase() === (params.resolution ?? "").toLowerCase()
+    )?.value ?? model.resolutionList[0]?.value;
+
+  if (!resolution) {
+    return { ok: false, error: "Auflösung nicht verfügbar." };
+  }
+
+  const creditCost = calculateAkoolModelCredits(model, resolution, duration);
+
+  const creditCheck = await hasEnoughCredits(supabase, userId, creditCost);
   if (!creditCheck.ok) {
     return { ok: false, error: "Nicht genug Credits." };
   }
 
+  const deduction = await deductCredits(
+    supabase,
+    userId,
+    creditCost,
+    SEEDANCE_UI_NAME,
+    {
+      generationType: "seedance",
+      prompt: prompt.slice(0, 500),
+      skipGenerationLog: true,
+    }
+  );
+
+  if (!deduction.success) {
+    return {
+      ok: false,
+      error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
+    };
+  }
+
+  let generationId: string | null = null;
+
   try {
     configureFalClient();
-    const falImageUrl = await resolveImageUrlForSeedance(
+    const publicImageUrl = await resolveImageUrlForSeedance(
       supabase,
       userId,
       imageUrl
     );
 
-    let result: unknown;
-    try {
-      result = await fal.subscribe(SEEDANCE_MODEL, {
-        input: {
-          image_url: falImageUrl,
-          prompt,
-          resolution: "720p",
-          duration: "5",
-          aspect_ratio: "auto",
-          generate_audio: true,
-        },
-        logs: false,
-      });
-    } catch (falError) {
-      console.error(JSON.stringify(falError));
-      throw falError;
+    let publicLastFrameUrl: string | undefined;
+    if (params.lastFrameUrl?.trim() && model.supportedLastFrame) {
+      publicLastFrameUrl = await resolveImageUrlForSeedance(
+        supabase,
+        userId,
+        params.lastFrameUrl.trim()
+      );
     }
 
-    const falVideoUrl = extractVideoUrl(result);
-    if (!falVideoUrl) {
-      return { ok: false, error: "Keine Video-URL in der Antwort." };
-    }
+    const { jobId } = await createAkoolImage2VideoJob({
+      model: model.value,
+      image_url: publicImageUrl,
+      prompt,
+      duration,
+      resolution,
+      last_frame_url: publicLastFrameUrl,
+    });
 
-    const generationId = await createGenerationRecord(
+    generationId = await createGenerationRecord(
       supabase,
       userId,
       "seedance",
@@ -201,66 +365,186 @@ export async function runSeedanceGeneration(
         downloadPaid: true,
         assetKind: "video",
         mode: "final",
-        model: SEEDANCE_MODEL,
+        model: model.value,
+        jobId,
       },
-      0,
+      creditCost,
       prompt.slice(0, 500)
-    );
-
-    const { path: finalPath } = await ingestFinalAssetFromUrl(
-      userId,
-      generationId,
-      falVideoUrl,
-      "video"
-    );
-
-    await updateGenerationResult(supabase, generationId, userId, {
-      finalPath,
-      credits_used: SEEDANCE_CREDIT_COST,
-    });
-
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      SEEDANCE_CREDIT_COST,
-      SEEDANCE_UI_NAME,
-      {
-        generationType: "seedance",
-        prompt: prompt.slice(0, 500),
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
-      return {
-        ok: false,
-        error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
-      };
-    }
-
-    await invalidateUserGenerations(userId);
-
-    notifyGenerationCompletePush(
-      userId,
-      SEEDANCE_UI_NAME,
-      `/dashboard/seedance?generation=${generationId}`
     );
 
     return {
       ok: true,
-      videoUrl: protectedSeedanceVideoUrl(generationId),
+      jobId,
       generationId,
-      creditsUsed: SEEDANCE_CREDIT_COST,
+      creditsUsed: creditCost,
       creditsLeft: deduction.remainingCredits ?? 0,
     };
   } catch (error) {
-    console.error(JSON.stringify(error));
+    console.error("[seedance start]", error);
+
+    if (generationId) {
+      await refundSeedanceCredits(
+        supabase,
+        userId,
+        generationId,
+        creditCost
+      );
+    } else {
+      await addCredits(
+        supabase,
+        userId,
+        creditCost,
+        `${SEEDANCE_UI_NAME} — Erstattung`
+      );
+    }
+
     return {
       ok: false,
       error: sanitizeUserMessage(
         error instanceof Error
           ? error.message
           : "Video-Generierung fehlgeschlagen."
+      ),
+    };
+  }
+}
+
+export async function pollSeedanceJob(
+  supabase: SupabaseClient,
+  userId: string,
+  jobId: string
+): Promise<SeedancePollResult> {
+  const row = await getSeedanceGenerationByJobId(supabase, userId, jobId);
+  if (!row) {
+    return {
+      status: "failed",
+      error: "Job nicht gefunden.",
+      refunded: false,
+    };
+  }
+
+  const generationId = row.id as string;
+  const creditsUsed = (row.credits_used as number) ?? 0;
+
+  try {
+    const job = await getAkoolImage2VideoStatus(jobId);
+
+    if (job.status === "processing") {
+      return { status: "processing", progress: 50 };
+    }
+
+    if (job.status === "failed" || !job.videoUrl) {
+      const refunded =
+        creditsUsed > 0
+          ? await refundSeedanceCredits(
+              supabase,
+              userId,
+              generationId,
+              creditsUsed
+            )
+          : false;
+      return {
+        status: "failed",
+        error: "Video-Generierung fehlgeschlagen",
+        refunded,
+      };
+    }
+
+    const { videoUrl } = await finalizeSeedanceVideo(
+      supabase,
+      userId,
+      generationId,
+      job.videoUrl
+    );
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", userId)
+      .single();
+
+    return {
+      status: "completed",
+      videoUrl,
+      generationId,
+      creditsLeft: profile?.credits ?? undefined,
+    };
+  } catch (error) {
+    console.error("[seedance poll]", error);
+    const refunded =
+      creditsUsed > 0
+        ? await refundSeedanceCredits(
+            supabase,
+            userId,
+            generationId,
+            creditsUsed
+          )
+        : false;
+    return {
+      status: "failed",
+      error: sanitizeUserMessage(
+        error instanceof Error ? error.message : "Status-Abfrage fehlgeschlagen"
+      ),
+      refunded,
+    };
+  }
+}
+
+async function waitForAkoolImage2Video(
+  jobId: string,
+  maxAttempts = 60,
+  intervalMs = 3000
+): Promise<string> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const job = await getAkoolImage2VideoStatus(jobId);
+    if (job.status === "completed" && job.videoUrl) {
+      return job.videoUrl;
+    }
+    if (job.status === "failed") {
+      throw new Error("Video-Generierung fehlgeschlagen");
+    }
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  throw new Error("Zeitüberschreitung bei der Video-Generierung");
+}
+
+/** Blocking path for agent tools — start job, wait, finalize. */
+export async function runSeedanceGeneration(
+  supabase: SupabaseClient,
+  userId: string,
+  params: SeedanceParams
+): Promise<SeedanceGenerationResult> {
+  const start = await startSeedanceJob(supabase, userId, params);
+  if (!start.ok) {
+    return { ok: false, error: start.error };
+  }
+
+  try {
+    const akoolVideoUrl = await waitForAkoolImage2Video(start.jobId);
+    const { videoUrl } = await finalizeSeedanceVideo(
+      supabase,
+      userId,
+      start.generationId,
+      akoolVideoUrl
+    );
+
+    return {
+      ok: true,
+      videoUrl,
+      generationId: start.generationId,
+      creditsUsed: start.creditsUsed,
+      creditsLeft: start.creditsLeft,
+    };
+  } catch (error) {
+    const poll = await pollSeedanceJob(supabase, userId, start.jobId);
+    return {
+      ok: false,
+      error: sanitizeUserMessage(
+        poll.status === "failed"
+          ? poll.error
+          : error instanceof Error
+            ? error.message
+            : "Video-Generierung fehlgeschlagen."
       ),
     };
   }

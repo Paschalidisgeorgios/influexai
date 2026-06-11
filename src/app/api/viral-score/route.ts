@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
-import { createAnthropicMessage } from "@/lib/anthropic";
+import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import {
   buildViralScoreUserPrompt,
   parseViralScoreResult,
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     system: VIRAL_SCORE_SYSTEM_PROMPT,
     user: userPrompt,
     maxTokens: 1536,
-    model: "claude-opus-4-5",
+    model: SCRIPT_GENERATOR_MODEL,
   });
 
   if (!claude.ok) {

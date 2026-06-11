@@ -7,9 +7,9 @@ export type LandingToolExample = {
 
 export const LANDING_TOOL_EXAMPLES: LandingToolExample[] = [
   { id: "script", image: "/images/examples/script.jpg", href: "/dashboard/script-generator" },
-  { id: "avatar", image: "/images/examples/avatar.jpg", href: "/dashboard/ki-ich" },
+  { id: "avatar", image: "/images/examples/avatar.jpg", href: "/dashboard/ki-influencer" },
   { id: "thumbnail", image: "/images/examples/thumbnail.jpg", href: "/dashboard/thumbnail-concept" },
-  { id: "faceswap", image: "/images/examples/faceswap.jpg", href: "/dashboard/live-creator-new" },
+  { id: "faceswap", image: "/images/examples/faceswap.jpg", href: "/dashboard/face-studio" },
   { id: "niche", image: "/images/examples/niche.jpg", href: "/dashboard/niche-analyzer" },
   { id: "outlier", image: "/images/examples/outlier.jpg", href: "/dashboard/outlier-detector" },
   { id: "remix", image: "/images/examples/remix.jpg", href: "/dashboard/video-remix" },

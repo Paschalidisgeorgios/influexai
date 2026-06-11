@@ -12,6 +12,7 @@ import {
 } from "@/lib/akool-live-avatar";
 import { resolvePreferredLiveAvatarId } from "@/lib/preferred-live-avatar";
 import { assertGatedFeature } from "@/lib/access.server";
+import { isAkoolConfigured } from "@/lib/akool-env";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export async function GET() {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+  if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Live-Avatar ist gerade nicht verfügbar." },
       { status: 503 }
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+  if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Live-Avatar ist gerade nicht verfügbar." },
       { status: 503 }

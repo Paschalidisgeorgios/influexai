@@ -85,6 +85,10 @@ function navItemLabel(
 const DEFAULT_OPEN: Record<string, boolean> = {
   erstellen: false,
   visuals: false,
+  "video-film": false,
+  "avatar-live": false,
+  audio: false,
+  "werbung-business": false,
   automation: true,
 };
 

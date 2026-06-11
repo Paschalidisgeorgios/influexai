@@ -1,4 +1,3 @@
-/** InfluexAI credit costs aligned with fal.ai API pricing. */
 export const FAL_CREDITS = {
   /** Kling image-to-video (~20s) — product ad v1.6 pro */
   klingVideo: 75,
@@ -17,3 +16,5 @@ export const FAL_CREDITS = {
   /** Live Creator live-portrait frame */
   liveCreatorPortrait: 20,
 } as const;
+
+export { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";

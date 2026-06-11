@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         bebas: ["var(--font-bebas)", "Bebas Neue", "sans-serif"],
+        display: ["var(--font-bebas)", "Bebas Neue", "sans-serif"],
         dm: ["var(--font-dm)", "DM Sans", "system-ui", "sans-serif"],
         sans: ["var(--font-dm)", "DM Sans", "system-ui", "sans-serif"],
         mono: ["var(--font-dm)", "DM Mono", "monospace"],
@@ -36,6 +37,7 @@ const config: Config = {
         scan: "scan-line 2.5s linear infinite",
         "fade-in-up": "fade-in-up 0.6s ease both",
         "spin-custom": "spin 0.8s linear infinite",
+        shimmer: "shimmer 1.5s ease-in-out infinite",
       },
       keyframes: {
         blink: {
@@ -57,6 +59,10 @@ const config: Config = {
         "fade-in-up": {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "none" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
         },
       },
     },

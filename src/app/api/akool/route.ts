@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
 import { getAkoolVideoResult, mapAkoolVideoStatus } from "@/lib/akool";
+import { isAkoolConfigured } from "@/lib/akool-env";
 import {
   MSG_VIDEO_SERVICE_UNAVAILABLE,
   sanitizeUserMessage,
@@ -22,9 +23,7 @@ function serviceUnavailableResponse() {
 }
 
 function akoolConfigured(): boolean {
-  return Boolean(
-    process.env.AKOOL_CLIENT_ID?.trim() && process.env.AKOOL_API_KEY?.trim()
-  );
+  return isAkoolConfigured();
 }
 
 /** POST disabled — jobs must go through POST /api/live-creator (credit deduction on completion). */

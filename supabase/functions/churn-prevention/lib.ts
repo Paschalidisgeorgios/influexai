@@ -10,7 +10,7 @@ import type {
 type Supabase = ReturnType<typeof createClient>;
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_MODEL = "claude-opus-4-5";
+const ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
 const SITE = "https://influexaicreator.com";
 
 function daysSince(iso: string | null): number | null {

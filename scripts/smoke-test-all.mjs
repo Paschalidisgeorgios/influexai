@@ -44,7 +44,7 @@ const envChecks = [
   ["ELEVENLABS_API_KEY", process.env.ELEVENLABS_API_KEY?.length > 10],
   ["RESEND_API_KEY", process.env.RESEND_API_KEY?.startsWith("re_")],
   ["AKOOL_CLIENT_ID", process.env.AKOOL_CLIENT_ID],
-  ["AKOOL_API_KEY", process.env.AKOOL_API_KEY],
+  ["AKOOL_CLIENT_SECRET", process.env.AKOOL_CLIENT_SECRET ?? process.env.AKOOL_API_KEY],
 ];
 
 for (const [name, ok] of envChecks) {
@@ -113,7 +113,7 @@ if (process.env.ANTHROPIC_API_KEY?.startsWith("sk-ant-")) {
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-opus-4-5",
+      model: "claude-sonnet-4-5-20250929",
       max_tokens: 32,
       messages: [{ role: "user", content: 'Say "ok" only' }],
     }),

@@ -16,6 +16,7 @@ import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import { assertGatedFeature } from "@/lib/access.server";
+import { isAkoolConfigured } from "@/lib/akool-env";
 import {
   createGenerationRecord,
   getOwnedGeneration,
@@ -157,7 +158,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  if (!process.env.AKOOL_CLIENT_ID || !process.env.AKOOL_API_KEY) {
+  if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Face-Swap ist gerade nicht verfügbar." },
       { status: 503 }

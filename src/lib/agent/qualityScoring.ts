@@ -48,11 +48,14 @@ function parseQualityScoreJson(raw: string): QualityScoreResult | null {
       score?: unknown;
       weaknesses?: unknown;
     };
-    const score =
-      typeof parsed.score === "number"
-        ? Math.max(0, Math.min(100, Math.round(parsed.score)))
-        : null;
-    if (score == null) return null;
+    let score: number | null = null;
+    if (typeof parsed.score === "number") {
+      score = Math.round(parsed.score);
+    } else if (typeof parsed.score === "string") {
+      score = parseInt(parsed.score, 10);
+    }
+    if (score == null || Number.isNaN(score)) return null;
+    score = Math.max(0, Math.min(100, score));
     const weaknesses = Array.isArray(parsed.weaknesses)
       ? parsed.weaknesses.map((w) => String(w).trim()).filter(Boolean)
       : [];
@@ -62,7 +65,10 @@ function parseQualityScoreJson(raw: string): QualityScoreResult | null {
   }
 }
 
-/** LLM quality gate for text tool outputs. Never throws — fallback score 100. */
+/** Safe default on error — triggers retry at threshold */
+const QUALITY_SCORE_ERROR_FALLBACK = 50;
+
+/** LLM quality gate for text tool outputs. Never throws — safe fallback on error. */
 export async function scoreOutput(
   toolName: string,
   userGoal: string,
@@ -94,18 +100,24 @@ ${trimmedOutput}`;
 
     if (!result.ok) {
       console.warn("[qualityScoring] scorer failed:", result.error);
-      return { score, weaknesses: [] };
+      // Safe default on error — triggers retry at threshold
+      return { score: QUALITY_SCORE_ERROR_FALLBACK, weaknesses: ["Scoring fehlgeschlagen"] };
     }
 
     const parsed = parseQualityScoreJson(result.text);
     if (!parsed) {
-      return { score, weaknesses: ["Unter Qualitätsschwelle"] };
+      // Safe default on error — triggers retry at threshold
+      return {
+        score: QUALITY_SCORE_ERROR_FALLBACK,
+        weaknesses: ["Unter Qualitätsschwelle"],
+      };
     }
 
     return parsed.score >= score ? parsed : { score, weaknesses: parsed.weaknesses };
   } catch (error) {
     console.warn("[qualityScoring] scorer error:", error);
-    return { score: 100, weaknesses: [] };
+    // Safe default on error — triggers retry at threshold
+    return { score: QUALITY_SCORE_ERROR_FALLBACK, weaknesses: ["Scoring fehlgeschlagen"] };
   }
 }
 
