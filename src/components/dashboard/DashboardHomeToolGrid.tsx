@@ -17,7 +17,7 @@ export function DashboardHomeToolGrid() {
         <div className="h-px flex-1 bg-white/10" />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 md:gap-4">
         {DASHBOARD_HOME_TOOLS.map((tool) => (
           <FeatureCard
             key={tool.id}

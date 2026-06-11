@@ -90,9 +90,14 @@ export default function VoiceStudioPage() {
         </div>
       ) : undefined}
     >
-      <div className="flex flex-wrap gap-2">
+      <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3">
         {tabs.map((t) => (
-          <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`rounded-xl border px-3 py-2 text-sm ${tab === t.id ? "border-[#B4FF00]/50 bg-[#B4FF00]/10 text-[#B4FF00]" : "border-white/12 text-zinc-300"}`}>
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`min-h-[48px] w-full rounded-xl border px-3 py-2 text-sm sm:w-auto ${tab === t.id ? "border-[#B4FF00]/50 bg-[#B4FF00]/10 text-[#B4FF00]" : "border-white/12 text-zinc-300"}`}
+          >
             {t.label}
           </button>
         ))}

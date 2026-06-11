@@ -437,7 +437,7 @@ const FOOTER_COLS = [
   },
   {
     col: "company",
-    links: ["company_blog", "company_guides"],
+    links: ["company_blog", "company_guides", "company_business", "company_faq"],
   },
   {
     col: "legal",
@@ -445,6 +445,7 @@ const FOOTER_COLS = [
       "legal_imprint",
       "legal_privacy",
       "legal_terms",
+      "legal_withdrawal",
       "legal_cookies",
     ],
   },
@@ -456,9 +457,12 @@ const FOOTER_LINK_HREF: Partial<
   product_pricing: "/pricing",
   company_blog: "/blog",
   company_guides: "/guides",
+  company_business: "/business",
+  company_faq: "/faq",
   legal_imprint: "/impressum",
   legal_privacy: "/datenschutz",
   legal_terms: "/agb",
+  legal_withdrawal: "/widerruf",
   legal_cookies: "/cookies",
 };
 
@@ -472,7 +476,7 @@ export function LandingFooter() {
     <>
       <LandingPreFooterCta />
       <footer
-        className="px-[clamp(20px,6vw,64px)] pb-[calc(6rem+env(safe-area-inset-bottom,0px))] pt-10 md:pb-6 md:pt-12"
+        className="px-4 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] pt-8 md:px-6 md:pb-6 md:pt-12 lg:px-10"
         style={{
           background: "var(--bg-1)",
           borderTop: "1px solid var(--border)",
@@ -506,7 +510,7 @@ export function LandingFooter() {
               <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#888888]">
                 {tc(col)}
               </h5>
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                 {links.map((link) => (
                   <a
                     key={link}
@@ -558,13 +562,13 @@ export function LandingFooter() {
         </div>
         <PoweredByFooter />
         <div
-          className="mx-auto flex max-w-[1160px] flex-col items-center justify-between gap-2 pt-4 sm:flex-row"
+          className="mx-auto flex max-w-[1160px] flex-col items-center gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between"
           style={{ borderTop: "1px solid var(--border)" }}
         >
-          <p className="text-[0.78rem] text-[#666666]">
+          <p className="order-3 text-center text-[0.78rem] text-[#666666] sm:order-1 sm:text-left">
             © {new Date().getFullYear()} InfluexAI
           </p>
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
             {[
               { href: "/datenschutz", label: "Datenschutz" },
               { href: "/impressum", label: "Impressum" },
@@ -582,7 +586,7 @@ export function LandingFooter() {
               </a>
             ))}
           </div>
-          <div className="flex gap-2">
+          <div className="order-2 flex gap-2 sm:order-3">
             {["𝕏", "in", "▶"].map((icon) => (
               <a
                 key={icon}

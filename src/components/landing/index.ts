@@ -1,3 +1,4 @@
+export { LandingAgentAutopilotSection } from "./LandingAgentAutopilotSection";
 export { LandingBentoToolsSection } from "./LandingBentoToolsSection";
 export { LandingUseCasesSection } from "./LandingUseCasesSection";
 export { LandingValueSection } from "./LandingValueSection";

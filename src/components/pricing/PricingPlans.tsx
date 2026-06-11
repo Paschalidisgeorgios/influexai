@@ -13,7 +13,15 @@ import {
   type BillingInterval,
 } from "@/lib/subscription-plans";
 
-/** Identical tool list on every plan card — only credits/month differ. */
+const PLAN_MOBILE_ORDER: Record<
+  (typeof SUBSCRIPTION_PLAN_ORDER)[number],
+  string
+> = {
+  creator: "order-1",
+  starter: "order-2",
+  pro: "order-3",
+  business: "order-4",
+};
 const ALL_PLAN_TOOL_KEYS = [
   "all_tools_f1",
   "all_tools_f2",
@@ -142,7 +150,7 @@ export function PricingPlans({
         })}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 text-left">
+      <div className="flex flex-col gap-3 text-left md:grid md:grid-cols-2 xl:grid-cols-4">
         {plans.map((plan, planIndex) => {
           const loading = subscribeLoading === `${plan.key}-${interval}`;
           const staggerDelays = [0, 0.15, 0.3, 0.45];
@@ -153,6 +161,7 @@ export function PricingPlans({
             <SpringReveal
               key={plan.key}
               delay={staggerDelays[planIndex] ?? planIndex * 0.15}
+              className={`${PLAN_MOBILE_ORDER[plan.key]} md:order-none`}
             >
               <div
                 className={`glass-card flex flex-col p-[clamp(20px,3vw,28px)] transition-all duration-200 hover:-translate-y-0.5 relative h-full ${plan.hot ? "pc-hot" : ""}`}
@@ -218,7 +227,7 @@ export function PricingPlans({
                     type="button"
                     disabled={subscribeLoading !== null}
                     onClick={() => handleCta(plan.key)}
-                    className="block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 cursor-pointer border-none"
+                    className="mb-5 block min-h-[48px] w-full cursor-pointer rounded-[9px] border-none py-2.5 text-center text-[0.88rem] font-bold no-underline transition-all duration-200"
                     style={
                       plan.hot
                         ? {
@@ -241,7 +250,7 @@ export function PricingPlans({
                 ) : (
                   <AcidMotionButton
                     href="/auth/sign-up"
-                    className={`block w-full text-center py-2.5 rounded-[9px] font-bold text-[0.88rem] no-underline transition-all duration-200 mb-5 ${
+                    className={`mb-5 block min-h-[48px] w-full rounded-[9px] py-2.5 text-center text-[0.88rem] font-bold no-underline transition-all duration-200 ${
                       plan.hot ? "btn-acid" : "btn-ghost"
                     }`}
                   >

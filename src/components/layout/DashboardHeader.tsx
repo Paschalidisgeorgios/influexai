@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ExternalLink,
   LogOut,
+  Menu,
   Settings,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,12 +31,16 @@ interface Profile {
 
 type DashboardHeaderProps = {
   credits?: number | null;
+  onMobileMenuToggle?: () => void;
 };
 
 const menuItemClass =
   "flex w-full items-center gap-2.5 px-3.5 py-2.5 text-[0.875rem] text-white/80 no-underline transition-colors hover:bg-white/[0.04] hover:text-[#F0EFE8]";
 
-export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) {
+export function DashboardHeader({
+  credits: creditsProp,
+  onMobileMenuToggle,
+}: DashboardHeaderProps) {
   const t = useTranslations("buyCredits");
   const tNav = useTranslations("nav");
   const { open: openBuyCredits } = useBuyCredits();
@@ -119,12 +124,22 @@ export function DashboardHeader({ credits: creditsProp }: DashboardHeaderProps) 
   return (
     <header className="dashboard-mobile-top-shell md:sticky md:top-0 md:z-30 md:shrink-0 md:border-b md:border-white/[0.07] md:bg-[rgba(6,6,8,0.92)] md:pt-0 md:backdrop-blur-md min-w-0">
       <div className="flex h-16 max-h-[64px] items-center justify-between gap-2 px-4 sm:h-[72px] sm:max-h-[72px] sm:px-5">
-      <div className="flex min-w-0 items-center gap-1.5">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <button
+          type="button"
+          onClick={onMobileMenuToggle}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/80 md:hidden"
+          aria-label="Menü öffnen"
+        >
+          <Menu size={20} aria-hidden />
+        </button>
+        <div className="flex min-w-0 items-center gap-1.5">
         <span className="hidden sm:inline text-sm font-medium text-white/65">Studio</span>
         <span className="hidden sm:inline text-[#2a2a2a]">›</span>
         <span className="truncate text-sm font-semibold leading-none text-[#F0EFE8]">
           Dashboard
         </span>
+        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-1 sm:gap-2.5">

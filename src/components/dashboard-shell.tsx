@@ -13,7 +13,13 @@ import { createClient } from "@/lib/supabase/client";
 import { isAdminUser, isCreditExemptEmail } from "@/lib/access";
 import { isClientCreditExempt, syncClientCreditExemptFromEmail } from "@/lib/client-credits-ui";
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  onMobileMenuToggle,
+}: {
+  children: React.ReactNode;
+  onMobileMenuToggle?: () => void;
+}) {
   const [credits, setCredits] = useState<number | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCreditExempt, setIsCreditExempt] = useState(false);
@@ -76,12 +82,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-      <DashboardHeader credits={credits} />
+      <DashboardHeader
+        credits={credits}
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
         <PlatformBanners isAdmin={isAdmin} />
         {creditsReady && credits !== null && !isCreditExempt && !isAdmin && (
           <CreditsWarningBanner credits={credits} isAdmin={isAdmin} />
         )}
-        <main className="relative z-[1] flex flex-col flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden px-4 py-2 sm:p-4 md:p-5 pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-0 box-border">
+        <main className="relative z-[1] flex flex-col flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-8 pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-8 box-border">
           <ReengagementBanner />
           {children}
         </main>

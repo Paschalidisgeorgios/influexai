@@ -365,7 +365,7 @@ function ViralScorePageInner() {
             style={{ ...inputStyle, marginBottom: 18 }}
           />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="dashboard-grid-2">
             <div>
               <label style={labelStyle}>{t("niche_label")}</label>
               <input
@@ -484,15 +484,7 @@ function ViralScorePageInner() {
             {score.verdict}
           </p>
 
-          <div
-            className="viral-score-strengths-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 16,
-              marginBottom: 20,
-            }}
-          >
+          <div className="viral-score-strengths-grid dashboard-grid-2 mb-5">
             <div
               style={{
                 background: "rgba(16,185,129,0.08)",

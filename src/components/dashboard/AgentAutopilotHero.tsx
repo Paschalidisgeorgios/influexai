@@ -48,7 +48,7 @@ export function AgentAutopilotHero() {
   return (
     <section className="mb-10 w-full">
       <h1
-        className="font-display text-[42px] leading-none"
+        className="font-display text-[clamp(28px,6vw,42px)] leading-none"
         style={{ color: "#B4FF00" }}
       >
         AGENT AUTOPILOT
@@ -81,7 +81,7 @@ export function AgentAutopilotHero() {
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="z.B. Erstelle 10 virale Hooks für mein Fitness-Business auf TikTok"
           rows={4}
-          className="min-h-[120px] w-full resize-none rounded-xl border border-white/10 bg-[#0d0d0f] p-4 text-sm text-white outline-none transition-[border-color,box-shadow] placeholder:text-white/35 focus:border-[#B4FF00] focus:shadow-[0_0_0_1px_rgba(180,255,0,0.25),0_0_24px_rgba(180,255,0,0.08)]"
+          className="min-h-[120px] w-full resize-none rounded-xl border border-white/10 bg-[#0d0d0f] p-4 text-base text-white outline-none transition-[border-color,box-shadow] placeholder:text-white/35 focus:border-[#B4FF00] focus:shadow-[0_0_0_1px_rgba(180,255,0,0.25),0_0_24px_rgba(180,255,0,0.08)]"
         />
       </div>
 
@@ -111,7 +111,7 @@ export function AgentAutopilotHero() {
         isLoading={false}
         onClick={() => navigate()}
         disabled={!prompt.trim()}
-        className="mt-4 w-full rounded-xl bg-[#B4FF00] py-4 text-lg font-bold text-[#060608] disabled:opacity-40"
+        className="mt-4 min-h-[48px] w-full rounded-xl bg-[#B4FF00] py-4 text-lg font-bold text-[#060608] disabled:opacity-40"
       >
         ERSTELLEN
       </LoadingButton>

@@ -80,7 +80,7 @@ export function LandingBentoToolsSection() {
   return (
     <section
       id="tools-bento"
-      className="border-t border-white/[0.06] bg-[#060608] px-[clamp(20px,6vw,64px)] py-16 md:py-20"
+      className="border-t border-white/[0.06] bg-[#060608] px-4 py-8 md:px-6 md:py-10 lg:px-10 lg:py-16"
       aria-labelledby="bento-tools-heading"
     >
       <div className="mx-auto w-full max-w-[1160px]">
@@ -102,7 +102,7 @@ export function LandingBentoToolsSection() {
             className="mb-10 text-center md:mb-12"
             style={{
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "clamp(2rem, 5vw, 48px)",
+              fontSize: "clamp(28px, 6vw, 48px)",
               color: "#ffffff",
               letterSpacing: "0.02em",
               lineHeight: 1,
@@ -138,37 +138,47 @@ export function LandingBentoToolsSection() {
 
           <SpringReveal delay={0.06}>
             <BentoCard
-              tag={t("ki_ich_tag")}
-              title={t("ki_ich_name")}
-              description={t("ki_ich_benefit")}
-              href="/dashboard/ki-influencer"
+              accent
+              tag={t("agent_autopilot_tag")}
+              title={t("agent_autopilot_name")}
+              description={t("agent_autopilot_benefit")}
+              href="/dashboard/ki-agent"
             />
           </SpringReveal>
 
           <SpringReveal delay={0.1}>
             <BentoCard
-              tag={t("bild_generator_tag")}
-              title={t("bild_generator_name")}
-              description={t("bild_generator_benefit")}
-              href="/dashboard/image-generator"
+              tag={t("szenen_tag")}
+              title={t("szenen_name")}
+              description={t("szenen_benefit")}
+              href="/dashboard/szenen-generator"
             />
           </SpringReveal>
 
           <SpringReveal delay={0.14}>
             <BentoCard
-              tag={t("ki_agent_tag")}
-              title={t("ki_agent_name")}
-              description={t("ki_agent_benefit")}
-              href="/dashboard/ki-agent"
+              tag={t("story_tag")}
+              title={t("story_name")}
+              description={t("story_benefit")}
+              href="/dashboard/story-creator"
             />
           </SpringReveal>
 
           <SpringReveal delay={0.18}>
             <BentoCard
-              tag={t("content_kalender_tag")}
-              title={t("content_kalender_name")}
-              description={t("content_kalender_benefit")}
-              href="/dashboard/content-kalender"
+              tag={t("melodia_tag")}
+              title={t("melodia_name")}
+              description={t("melodia_benefit")}
+              href="/dashboard/melodia"
+            />
+          </SpringReveal>
+
+          <SpringReveal delay={0.22}>
+            <BentoCard
+              tag={t("video_uebersetzer_tag")}
+              title={t("video_uebersetzer_name")}
+              description={t("video_uebersetzer_benefit")}
+              href="/dashboard/video-uebersetzer"
             />
           </SpringReveal>
         </div>

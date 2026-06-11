@@ -420,7 +420,7 @@ export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
                   className="h-[7px] w-[7px] shrink-0 animate-blink rounded-full bg-[var(--accent,#B4FF00)]"
                   aria-hidden
                 />
-                <span className="kicker">{t("badge")} · 2026</span>
+                <span className="kicker">{t("badge")}</span>
               </div>
             </SpringReveal>
 
@@ -451,22 +451,22 @@ export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
             </SpringReveal>
 
             <SpringReveal delay={0.16}>
-              <p className="hero-subtitle w-full max-w-[520px]">
+              <p className="hero-subtitle w-full max-w-[520px] text-[15px] leading-relaxed md:text-base">
                 {audience === "creator" ? t("creator_subtitle") : t("brand_subtitle")}
               </p>
             </SpringReveal>
 
             <SpringReveal delay={0.4}>
-              <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+              <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <AcidMotionButton
                   href="/auth/sign-up"
-                  className="btn-acid w-full justify-center sm:w-auto sm:justify-start"
+                  className="btn-acid w-full min-h-[48px] justify-center sm:w-auto sm:justify-start"
                 >
                   → {t("cta_primary", priceParams)}
                 </AcidMotionButton>
                 <a
                   href="#features"
-                  className="btn-ghost w-full justify-center sm:w-auto sm:justify-start"
+                  className="btn-ghost w-full min-h-[48px] justify-center sm:w-auto sm:justify-start"
                 >
                   {t("cta_secondary")}
                 </a>
@@ -479,9 +479,6 @@ export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
               </p>
             </SpringReveal>
 
-            <div className="mt-2 block w-full max-w-[520px] lg:hidden">
-              <HeroWorkspaceDemo compact />
-            </div>
           </div>
 
           {/* Column 2: Cinematic AI Workspace — between copy and model */}

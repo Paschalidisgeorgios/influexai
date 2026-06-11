@@ -205,7 +205,7 @@ export default function KiIchPage() {
   };
 
   return (
-    <div style={{ maxWidth: 760, margin: "0 auto" }}>
+    <div className="dashboard-tool-page">
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1
@@ -501,14 +501,7 @@ export default function KiIchPage() {
             >
               Schnellauswahl
             </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 8,
-                marginBottom: 16,
-              }}
-            >
+            <div className="dashboard-grid-4 mb-4">
               {SCENE_PRESETS.map((p) => (
                 <button
                   key={p.label}

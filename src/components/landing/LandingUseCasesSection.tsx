@@ -16,7 +16,7 @@ export function LandingUseCasesSection() {
   return (
     <section
       id="use-cases"
-      className="border-t border-white/[0.06] bg-[#060608] px-[clamp(20px,6vw,64px)] py-16 md:py-20"
+      className="border-t border-white/[0.06] bg-[#060608] px-4 py-8 md:px-6 md:py-10 lg:px-10 lg:py-16"
       aria-labelledby="use-cases-heading"
     >
       <div className="mx-auto w-full max-w-[1160px]">
@@ -38,7 +38,7 @@ export function LandingUseCasesSection() {
             className="mb-10 text-center md:mb-12"
             style={{
               fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "clamp(2rem, 5vw, 48px)",
+              fontSize: "clamp(28px, 6vw, 48px)",
               color: "#ffffff",
               letterSpacing: "0.02em",
               lineHeight: 1,

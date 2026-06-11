@@ -324,14 +324,7 @@ export default function GalleryPage() {
         </div>
       ) : (
         <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 16,
-            }}
-            className="gallery-grid"
-          >
+          <div className="gallery-grid">
             {items.map((item) => (
               <GalleryCard
                 key={`${item._type}-${item.id}`}

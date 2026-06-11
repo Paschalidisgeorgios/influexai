@@ -508,7 +508,7 @@ export default function ImageGeneratorPage() {
         </p>
       </div>
 
-      <div className="grid min-w-0 gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10" style={{ width: "100%" }}>
+      <div className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10">
         {/* Left column — 40% */}
         <div className="flex min-w-0 flex-col gap-5" style={{ width: "100%" }}>
           <div>

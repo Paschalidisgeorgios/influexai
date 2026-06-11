@@ -125,7 +125,7 @@ export function HeroTitle({ titles }: Props) {
         {slide.lines.map((line, i) => (
           <span
             key={`${currentSlide}-${i}-${line}`}
-            className="block w-full max-w-full text-[clamp(36px,9vw,72px)] md:text-[clamp(52px,12vw,120px)]"
+            className="block w-full max-w-full text-[clamp(36px,10vw,84px)] md:text-[clamp(52px,12vw,120px)]"
             style={{
               fontWeight: "inherit",
               lineHeight: "var(--heading-leading, 0.88)",

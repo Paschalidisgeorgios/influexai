@@ -92,10 +92,11 @@ const DEFAULT_OPEN: Record<string, boolean> = {
   automation: true,
 };
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ drawerMode = false }: { drawerMode?: boolean }) {
   const tNav = useTranslations("nav");
   const tFlows = useTranslations("flows");
   const [collapsed, setCollapsed] = useState(false);
+  const isCollapsed = drawerMode ? false : collapsed;
   const [open, setOpen] = useState<Record<string, boolean>>(DEFAULT_OPEN);
   const [credits, setCredits] = useState<number | null>(null);
   const [hasPlatformPlan, setHasPlatformPlan] = useState(false);
@@ -186,7 +187,7 @@ export function DashboardSidebar() {
   const linkClass = (active: boolean, disabled?: boolean) =>
     [
       "flex items-center gap-2.5 rounded-lg text-[0.875rem] font-medium transition-all min-h-[44px]",
-      collapsed ? "justify-center px-3 py-2.5" : "px-3 py-2.5",
+      isCollapsed ? "justify-center px-3 py-2.5" : "px-3 py-2.5",
       disabled
         ? "opacity-45 cursor-not-allowed text-white/25"
         : active
@@ -223,7 +224,7 @@ export function DashboardSidebar() {
             ? { fill: isActive ? "#B4FF00" : "transparent" }
             : {})}
         />
-        {!collapsed && (
+        {!isCollapsed && (
           <>
             <span className="truncate">{label}</span>
             {item.badge && !isComingSoon && (
@@ -243,7 +244,7 @@ export function DashboardSidebar() {
       return (
         <span
           key={item.id}
-          title={collapsed ? `${label} (bald)` : "Kommt bald"}
+          title={isCollapsed ? `${label} (bald)` : "Kommt bald"}
           className={linkClass(false, true)}
         >
           {inner}
@@ -256,7 +257,7 @@ export function DashboardSidebar() {
         key={item.id}
         href={item.href}
         active={isActive}
-        title={collapsed ? label : undefined}
+        title={isCollapsed ? label : undefined}
         className={linkClass(isActive)}
       >
         {inner}
@@ -270,7 +271,7 @@ export function DashboardSidebar() {
     items: NavItem[],
     showDivider: boolean
   ) => {
-    if (collapsed) {
+    if (isCollapsed) {
       return items.map((item) => renderNavItem(item));
     }
 
@@ -329,19 +330,21 @@ export function DashboardSidebar() {
 
   return (
     <aside
-      className="flex flex-col shrink-0 min-h-screen bg-[#0f0f12] border-r border-white/[0.07] transition-[width] duration-300"
-      style={{ width: collapsed ? 64 : 220 }}
+      className={`flex flex-col shrink-0 bg-[#0f0f12] border-r border-white/[0.07] transition-[width] duration-300 ${
+        drawerMode ? "h-full min-h-0 w-[min(100vw,280px)]" : "min-h-screen"
+      }`}
+      style={{ width: drawerMode ? undefined : isCollapsed ? 64 : 220 }}
     >
       <Link
         href="/dashboard"
         className="h-14 flex items-center border-b border-white/[0.07] gap-2.5 shrink-0 no-underline hover:opacity-90 transition-opacity"
-        style={{ padding: collapsed ? "0 17px" : "0 20px" }}
+        style={{ padding: isCollapsed ? "0 17px" : "0 20px" }}
         aria-label={tNav("dashboard")}
       >
         <div className="w-[30px] h-[30px] rounded-lg bg-[#B4FF00] flex items-center justify-center text-[#060608] font-bold shrink-0">
           I
         </div>
-        {!collapsed && (
+        {!isCollapsed && (
           <span className="text-[1.1rem] tracking-wide text-[#F0EFE8] whitespace-nowrap font-[family-name:var(--font-syne)]">
             Influex<span className="text-[#B4FF00]">AI</span>
           </span>
@@ -349,7 +352,7 @@ export function DashboardSidebar() {
       </Link>
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
-        {!collapsed && (
+        {!isCollapsed && (
           <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
             Tools
           </p>
@@ -366,7 +369,7 @@ export function DashboardSidebar() {
 
         <div className="h-px bg-white/5 my-2 mx-1" />
 
-        {!collapsed && (
+        {!isCollapsed && (
           <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
             {tNav("more")}
           </p>
@@ -380,7 +383,7 @@ export function DashboardSidebar() {
               key={item.id}
               href={item.href}
               active={isActive}
-              title={collapsed ? label : undefined}
+              title={isCollapsed ? label : undefined}
               className={linkClass(isActive)}
             >
               <Icon
@@ -389,7 +392,7 @@ export function DashboardSidebar() {
                 className="shrink-0"
                 color={isActive ? "#B4FF00" : "rgba(255,255,255,0.75)"}
               />
-              {!collapsed && label}
+              {!isCollapsed && label}
             </SidebarNavLink>
           );
         })}
@@ -403,7 +406,7 @@ export function DashboardSidebar() {
               key={item.id}
               href={item.href}
               active={isActive}
-              title={collapsed ? tNav(item.labelKey) : undefined}
+              title={isCollapsed ? tNav(item.labelKey) : undefined}
               className={`${linkClass(isActive)} !text-white/65 !font-normal !border-b-0`}
             >
               {"useGiftIcon" in item && item.useGiftIcon ? (
@@ -418,12 +421,12 @@ export function DashboardSidebar() {
                   {"emoji" in item ? item.emoji : "💳"}
                 </span>
               )}
-              {!collapsed && <span>{tNav(item.labelKey)}</span>}
+              {!isCollapsed && <span>{tNav(item.labelKey)}</span>}
             </SidebarNavLink>
           );
         })}
 
-        {isAdmin && !collapsed && (
+        {isAdmin && !isCollapsed && (
           <>
             <div className="h-px bg-white/5 my-2 mx-1" />
             <p
@@ -442,18 +445,18 @@ export function DashboardSidebar() {
                 key={item.label}
                 href={item.href}
                 active={isActive}
-                title={collapsed ? item.label : undefined}
+                title={isCollapsed ? item.label : undefined}
                 className={`${linkClass(isActive)} !border-b-0 ${
                   isActive ? "!text-[#E0A951]" : "!text-[#E0A951]/75"
                 } hover:!text-[#E0A951]`}
               >
                 <span className="text-[0.95rem] shrink-0">{item.icon}</span>
-                {!collapsed && item.label}
+                {!isCollapsed && item.label}
               </SidebarNavLink>
             );
           })}
 
-        {hasAgency && !collapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
+        {hasAgency && !isCollapsed && <div className="h-px bg-white/5 my-2 mx-1" />}
         {hasAgency &&
           AGENCY_NAV.map((item) => {
             const isActive = pathname === item.href;
@@ -462,24 +465,24 @@ export function DashboardSidebar() {
                 key={item.label}
                 href={item.href}
                 active={isActive}
-                title={collapsed ? item.label : undefined}
+                title={isCollapsed ? item.label : undefined}
                 className={`${linkClass(isActive)} !text-[var(--accent)] !font-bold !border-b-0`}
               >
                 <span className="text-[0.95rem] shrink-0">{item.icon}</span>
-                {!collapsed && item.label}
+                {!isCollapsed && item.label}
               </SidebarNavLink>
             );
           })}
       </nav>
 
-      {credits !== null && !collapsed && !canUseKiTools && (
+      {credits !== null && !isCollapsed && !canUseKiTools && (
         <SidebarChoosePlanPanel />
       )}
 
       <SidebarNavLink
         href="/"
         active={false}
-        title={collapsed ? tNav("view_website") : undefined}
+        title={isCollapsed ? tNav("view_website") : undefined}
         className={`${linkClass(false)} !text-white/50 !font-normal !border-b-0 mb-1`}
       >
         <Home
@@ -488,16 +491,18 @@ export function DashboardSidebar() {
           className="shrink-0"
           color="rgba(255,255,255,0.5)"
         />
-        {!collapsed && <span>{tNav("view_website")}</span>}
+        {!isCollapsed && <span>{tNav("view_website")}</span>}
       </SidebarNavLink>
 
-      <button
-        type="button"
-        onClick={() => setCollapsed(!collapsed)}
-        className="m-2 mb-2 py-2 rounded-lg border border-white/[0.06] text-[rgba(255,255,255,0.65)] text-xs cursor-pointer"
-      >
-        {collapsed ? "→" : `← ${tNav("collapse")}`}
-      </button>
+      {!drawerMode && (
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          className="m-2 mb-2 min-h-[44px] py-2 rounded-lg border border-white/[0.06] text-[rgba(255,255,255,0.65)] text-xs cursor-pointer"
+        >
+          {collapsed ? "→" : `← ${tNav("collapse")}`}
+        </button>
+      )}
     </aside>
   );
 }

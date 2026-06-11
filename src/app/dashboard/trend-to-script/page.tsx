@@ -156,7 +156,7 @@ function TrendToScriptPageInner() {
   };
 
   return (
-    <div style={{ maxWidth: 760, margin: "0 auto", paddingBottom: 48 }}>
+    <div className="dashboard-tool-page">
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Rocket size={32} color="#B4FF00" strokeWidth={2} />

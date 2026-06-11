@@ -798,7 +798,7 @@ function KiInfluencerPageInner() {
             />
           </div>
           {uploadPreviews.length > 0 && (
-            <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6">
               {uploadPreviews.map((src) => (
                 <div
                   key={src}

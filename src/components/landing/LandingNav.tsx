@@ -21,16 +21,6 @@ const LANDING_NAV_LINK =
 const HEADER_CLASS =
   "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell bg-[#EFEFEA]/95 backdrop-blur-md";
 
-const MOBILE_DRAWER_STYLE = {
-  background: "#0d0f0d",
-  borderRight: "1px solid rgba(180,255,0,0.15)",
-} as const;
-
-const MOBILE_LINK_STYLE = {
-  color: "rgba(255,255,255,0.85)",
-  fontSize: "18px",
-} as const;
-
 export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
   const t = useTranslations("landing");
   const tNav = useTranslations("nav");
@@ -222,33 +212,11 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             ) : null}
           </div>
 
-          <div className="flex shrink-0 items-center gap-2 md:hidden">
-            {showGuestAuth ? (
-              <AcidMotionButton
-                href="/auth/sign-up"
-                className="btn-acid !min-h-10 !px-3 !py-2 text-[0.72rem] whitespace-nowrap"
-              >
-                {t("auth_signup")}
-              </AcidMotionButton>
-            ) : showMemberNav ? (
-              <Link
-                href="/dashboard"
-                className="landing-nav-auth-link text-xs font-medium px-2 py-2"
-              >
-                Dashboard
-              </Link>
-            ) : showNoPlanNav ? (
-              <Link
-                href="/pricing"
-                className="landing-nav-auth-link text-xs font-medium px-2 py-2"
-              >
-                {t("nav_pricing")}
-              </Link>
-            ) : null}
+          <div className="flex shrink-0 items-center md:hidden">
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="landing-nav-menu-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-all md:hidden"
+              className="landing-nav-menu-btn flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg transition-all"
               aria-label={menuOpen ? t("menu_close") : t("menu_open")}
               aria-expanded={menuOpen}
             >
@@ -291,10 +259,9 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
             onClick={closeMenu}
           />
           <div
-            className="mobile-nav-drawer"
+            className="mobile-nav-drawer border-r border-[#B4FF00]/15 bg-[#0d0f0d]"
             role="dialog"
             aria-modal="true"
-            style={MOBILE_DRAWER_STYLE}
           >
             <div className="flex items-center justify-between mb-6">
               <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#F0EFE8]">
@@ -319,8 +286,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                   <Link
                     href="/"
                     onClick={closeMenu}
-                    className="mobile-nav-link"
-                    style={MOBILE_LINK_STYLE}
+                    className="mobile-nav-link py-4 text-[20px] text-white/85"
                   >
                     {t("nav_home")}
                     <span className="text-xl">↗</span>
@@ -328,8 +294,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                   <a
                     href="#agency-pricing"
                     onClick={closeMenu}
-                    className="mobile-nav-link"
-                    style={MOBILE_LINK_STYLE}
+                    className="mobile-nav-link py-4 text-[20px] text-white/85"
                   >
                     {t("nav_pricing")}
                     <span className="text-xl">↗</span>
@@ -342,8 +307,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                       key={l.href}
                       href={l.href}
                       onClick={closeMenu}
-                      className="mobile-nav-link"
-                      style={MOBILE_LINK_STYLE}
+                      className="mobile-nav-link py-4 text-[20px] text-white/85"
                     >
                       {t(l.key)}
                       <span className="text-xl">↗</span>
@@ -353,8 +317,7 @@ export function LandingNav({ agencyMode = false }: { agencyMode?: boolean }) {
                       key={l.href}
                       href={l.href}
                       onClick={closeMenu}
-                      className="mobile-nav-link"
-                      style={MOBILE_LINK_STYLE}
+                      className="mobile-nav-link py-4 text-[20px] text-white/85"
                     >
                       {t(l.key)}
                       <span className="text-xl">↗</span>

@@ -236,7 +236,7 @@ export default function VoicePage() {
   };
 
   return (
-    <div style={{ maxWidth: 760, margin: "0 auto" }}>
+    <div className="dashboard-tool-page">
       <div style={{ marginBottom: 28 }}>
         <div
           style={{

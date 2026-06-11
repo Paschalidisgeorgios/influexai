@@ -21,6 +21,7 @@ import {
 import { LandingBentoToolsSection } from "@/components/landing/LandingBentoToolsSection";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
 import { LandingValueSection } from "@/components/landing/LandingValueSection";
+import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
 import { LightSystem } from "@/components/LightSystem";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
@@ -84,6 +85,7 @@ export default async function HomePage() {
           <LandingBentoToolsSection />
           <LandingValueSection />
           <TrustBarSection />
+          <LandingAgentAutopilotSection />
           <PricingSection />
           <FaqSection />
         </main>

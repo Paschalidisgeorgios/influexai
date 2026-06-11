@@ -9,7 +9,7 @@ function KiAgentPageInner() {
   const initialPrompt = searchParams.get("prompt")?.trim() ?? "";
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col px-4 py-6 md:px-6">
+    <div className="mx-auto flex h-[calc(100dvh-8.5rem)] min-h-0 w-full max-w-3xl flex-col md:h-full md:px-0 md:py-6">
       <AgentAutopilotChat initialPrompt={initialPrompt} />
     </div>
   );
