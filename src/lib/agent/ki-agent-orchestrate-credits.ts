@@ -4,9 +4,6 @@ import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 import type { AgentIntent } from "./types";
 
-/** Fallback when /api/product-ad/script fails and /api/ki-agent is used. */
-const KI_AGENT_FALLBACK_CREDIT_COST = 1;
-
 export type KiAgentOrchestrateCreditEstimate = {
   typical: number;
   min: number;
@@ -26,12 +23,7 @@ export function estimateKiAgentOrchestrateCredits(
     case "content_calendar":
       return fixed(CONTENT_KALENDER_TOOL_CREDIT_COST);
     case "product_ad":
-      return {
-        min: 0,
-        typical: 0,
-        max: KI_AGENT_FALLBACK_CREDIT_COST,
-        label: "0–1 Credits",
-      };
+      return fixed(0);
     case "video_briefing":
       return fixed(
         TREND_SCRIPT_TOOL_CREDIT_COST + VIRAL_HOOK_EXTRACTOR_CREDIT_COST

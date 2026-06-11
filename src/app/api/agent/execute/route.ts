@@ -12,6 +12,12 @@ import {
 } from "@/lib/agent/persistExecution";
 import { orchestrate } from "@/lib/agent/toolOrchestrator";
 import { estimateKiAgentOrchestrateCredits } from "@/lib/agent/ki-agent-orchestrate-credits";
+import {
+  AgentTextToolBillingError,
+  checkAgentTextToolCredits,
+  deductAgentTextToolRunsCredits,
+  getAgentTextToolNamesForIntent,
+} from "@/lib/agent/text-tool-runners";
 import type {
   AgentExecution,
   AgentResult,
@@ -28,7 +34,6 @@ import {
   evaluatePlannerGuard,
   isBlockingPlannerDecision,
 } from "@/lib/agent/planner-guard";
-import { deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -169,6 +174,18 @@ export async function POST(request: Request) {
         userId,
       });
     } catch (err: unknown) {
+      if (err instanceof AgentTextToolBillingError) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: err.message,
+            credits: err.remainingCredits,
+            required: err.requiredCredits,
+          },
+          { status: err.status }
+        );
+      }
+
       const msg = err instanceof Error ? err.message : String(err);
       return NextResponse.json({ error: msg }, { status: 500 });
     }
@@ -204,6 +221,7 @@ export async function POST(request: Request) {
       execution: finalExec,
       result,
       usedCredits: result.usedCredits,
+      remainingCredits: result.remainingCredits,
     });
   }
 
@@ -233,6 +251,23 @@ export async function POST(request: Request) {
   const creditAccess = await assertKiToolAccess(billingEstimate.max);
   if (creditAccess instanceof NextResponse) return creditAccess;
 
+  const textToolCreditCheck = await checkAgentTextToolCredits({
+    supabase,
+    userId,
+    tools: getAgentTextToolNamesForIntent(exec.intent),
+  });
+  if (!textToolCreditCheck.ok) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: textToolCreditCheck.error,
+        credits: textToolCreditCheck.credits,
+        required: textToolCreditCheck.requiredCredits,
+      },
+      { status: 402 }
+    );
+  }
+
   const execWithUser = {
     ...exec,
     userId,
@@ -247,6 +282,34 @@ export async function POST(request: Request) {
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Fehler";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+
+  let billing: { usedCredits: number; remainingCredits?: number };
+  try {
+    billing = await deductAgentTextToolRunsCredits({
+      supabase,
+      userId,
+      runs: result.toolRuns ?? [],
+      prompt,
+    });
+  } catch (err: unknown) {
+    if (err instanceof AgentTextToolBillingError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: err.message,
+          credits: err.remainingCredits,
+          required: err.requiredCredits,
+        },
+        { status: err.status }
+      );
+    }
+
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "Credits konnten nicht abgezogen werden.";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
@@ -265,7 +328,7 @@ export async function POST(request: Request) {
     status: "completed",
     steps: completedSteps,
     result,
-    usedCredits: 0,
+    usedCredits: billing.usedCredits,
     updatedAt: new Date().toISOString(),
   };
 
@@ -284,10 +347,10 @@ export async function POST(request: Request) {
   return NextResponse.json({
     execution: completedExec,
     result,
-    usedCredits: 0,
+    usedCredits: billing.usedCredits,
     estimatedCredits: billingEstimate.typical,
     billingNote:
       "Credits werden von den ausgeführten Tools abgezogen — keine separate Agent-Gebühr.",
-    remainingCredits: profileAfter?.credits,
+    remainingCredits: billing.remainingCredits ?? profileAfter?.credits,
   });
 }

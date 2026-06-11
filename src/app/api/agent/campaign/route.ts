@@ -23,6 +23,7 @@ import type {
 } from "@/lib/agent/types";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { CAMPAIGN_AUTOPILOT_IS_PREVIEW } from "@/lib/agent/campaignPlanner";
+import { AgentTextToolBillingError } from "@/lib/agent/text-tool-runners";
 
 export const dynamic = "force-dynamic";
 
@@ -240,6 +241,18 @@ export async function POST(request: Request) {
       userId,
     });
   } catch (err: unknown) {
+    if (err instanceof AgentTextToolBillingError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: err.message,
+          credits: err.remainingCredits,
+          required: err.requiredCredits,
+        },
+        { status: err.status }
+      );
+    }
+
     return NextResponse.json(
       { error: sanitizeCampaignError(err) },
       { status: 500 }
@@ -248,11 +261,14 @@ export async function POST(request: Request) {
 
   const usedCredits = result.usedCredits;
 
-  const completedExec = completeCampaignExecution({
-    ...execWithUser,
-    result,
-    usedCredits,
-  });
+  const completedExec = completeCampaignExecution(
+    {
+      ...execWithUser,
+      result,
+      usedCredits,
+    },
+    usedCredits
+  );
 
   if (!CAMPAIGN_AUTOPILOT_IS_PREVIEW) {
     try {
@@ -270,5 +286,6 @@ export async function POST(request: Request) {
     execution: completedExec,
     result,
     usedCredits,
+    remainingCredits: result.remainingCredits,
   });
 }
