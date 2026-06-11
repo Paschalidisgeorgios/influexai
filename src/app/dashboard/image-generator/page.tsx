@@ -10,6 +10,7 @@ import { TablerPhoto } from "@/components/icons/TablerPhoto";
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import {
   IMAGE_CATEGORY_KEYS,
   type ImageCategoryKey,
@@ -185,6 +186,7 @@ export default function ImageGeneratorPage() {
   };
 
   const runCharacterGenerate = async () => {
+    if (characterLoading || loading || loadingHighRes) return;
     if (!prompt.trim()) {
       setError("Bitte beschreibe die neue Szene.");
       return;
@@ -246,6 +248,7 @@ export default function ImageGeneratorPage() {
   };
 
   const runGenerate = async (highRes: boolean) => {
+    if (loading || loadingHighRes || characterLoading) return;
     if (!prompt.trim()) {
       setError(t("error_missing_prompt"));
       return;
@@ -464,6 +467,10 @@ export default function ImageGeneratorPage() {
     downloadLoading ||
     variationLoading;
 
+  const standardGenerateLoadingText = loraId
+    ? "Generiere mit deinem Charakter..."
+    : t("loading_standard");
+
   const restoreFromHistory = (entry: (typeof history)[number]) => {
     if (!entry.result?.previewPath) return;
     setCompare(null);
@@ -661,37 +668,38 @@ export default function ImageGeneratorPage() {
 
           {generatorMode === "new" ? (
           <div className="flex flex-col gap-2 sm:flex-row" style={{ width: "100%" }}>
-            <button
-              type="button"
+            <LoadingButton
               disabled={isBusy}
-              onClick={() => runGenerate(false)}
-              className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
+              isLoading={loading}
+              loadingText={standardGenerateLoadingText}
+              onClick={() => void runGenerate(false)}
+              className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608]"
               style={{ flex: 1, minWidth: 0 }}
             >
-              {loading ? t("loading_standard") : t("generate_standard")}
-            </button>
-            <button
-              type="button"
+              {t("generate_standard")}
+            </LoadingButton>
+            <LoadingButton
               disabled={isBusy}
-              onClick={() => runGenerate(true)}
-              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00] disabled:opacity-80"
+              isLoading={loadingHighRes}
+              loadingText={t("loading_highres")}
+              onClick={() => void runGenerate(true)}
+              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00]"
               style={{ flex: 1, minWidth: 0 }}
             >
-              {loadingHighRes ? t("loading_highres") : t("generate_highres")}
-            </button>
+              {t("generate_highres")}
+            </LoadingButton>
           </div>
           ) : (
-          <button
-            type="button"
+          <LoadingButton
             disabled={isBusy}
-            onClick={runCharacterGenerate}
-            className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:opacity-80"
+            isLoading={characterLoading}
+            loadingText="Generiere mit deinem Charakter..."
+            onClick={() => void runCharacterGenerate()}
+            className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608]"
             style={{ width: "100%" }}
           >
-            {characterLoading
-              ? "Charakter wird generiert…"
-              : `Charakter generieren — ${IMAGE_GEN_CREDITS.standard} Credits`}
-          </button>
+            {`Charakter generieren — ${IMAGE_GEN_CREDITS.standard} Credits`}
+          </LoadingButton>
           )}
 
           {error && (
@@ -735,10 +743,12 @@ export default function ImageGeneratorPage() {
               <div className="h-full min-h-[320px] animate-pulse rounded-xl bg-white/5" />
               <p className="text-center text-sm text-[rgba(255,255,255,0.65)]">
                 {characterLoading
-                  ? "Charakter wird generiert…"
+                  ? "Generiere mit deinem Charakter..."
                   : loadingHighRes
                     ? t("loading_highres")
-                    : t("loading_standard")}
+                    : loraId
+                      ? "Generiere mit deinem Charakter..."
+                      : t("loading_standard")}
               </p>
             </div>
           )}

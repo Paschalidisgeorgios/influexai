@@ -5,6 +5,7 @@ import Image from "next/image";
 import { UserRound } from "lucide-react";
 import { ProtectedGeneratedImage } from "@/components/generated/ProtectedGeneratedImage";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import {
   DEFAULT_IMAGE_PLATFORM_ID,
   DEFAULT_IMAGE_STYLE_ID,
@@ -45,6 +46,12 @@ import { LORA_GENERATION_CREDIT, LORA_MAX_FILE_BYTES, LORA_MIN_IMAGES } from "@/
 
 type WizardStep = 0 | 1 | 2 | 3;
 type PathMode = null | "generated" | "uploaded";
+type WizardBusyAction =
+  | "upload"
+  | "casting"
+  | "castingConfirm"
+  | "loraTrain"
+  | "content";
 
 const UPLOAD_MAX_PHOTOS = 20;
 const ALLOWED_UPLOAD_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -126,7 +133,7 @@ export default function KiInfluencerPage() {
   );
   const [contentResultUrl, setContentResultUrl] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [busyAction, setBusyAction] = useState<WizardBusyAction | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -151,13 +158,14 @@ export default function KiInfluencerPage() {
   };
 
   const submitUploadedPhotos = async () => {
+    if (busyAction || trainingSetRunning) return;
     if (!name.trim() || uploadFiles.length < LORA_MIN_IMAGES) return;
     if (!uploadConsent || !uploadRightsConsent) {
       setError("Bitte bestätige beide Checkboxen, bevor es weitergeht.");
       return;
     }
     setError(null);
-    setLoading(true);
+    setBusyAction("upload");
     setUploadProgress(0);
 
     const sessionId = crypto.randomUUID();
@@ -211,7 +219,7 @@ export default function KiInfluencerPage() {
     } catch (err) {
       setError(toErrorMessage(err));
     } finally {
-      setLoading(false);
+      setBusyAction(null);
       setUploadProgress(0);
     }
   };
@@ -233,13 +241,13 @@ export default function KiInfluencerPage() {
         if (data.status === "ready") {
           if (pollRef.current) clearInterval(pollRef.current);
           setCharacterReady(true);
-          setLoading(false);
+          setBusyAction(null);
           setStep(3);
         }
         if (data.status === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
           setError(data.errorMessage ?? "Das hat leider nicht geklappt. Bitte erneut versuchen.");
-          setLoading(false);
+          setBusyAction(null);
         }
       } catch {
         /* keep polling */
@@ -254,8 +262,9 @@ export default function KiInfluencerPage() {
   }, []);
 
   const runCasting = async (confirm = false) => {
+    if (busyAction || trainingSetRunning) return;
     setError(null);
-    setLoading(true);
+    setBusyAction(confirm ? "castingConfirm" : "casting");
     try {
       const res = await fetch("/api/ki-influencer/casting", {
         method: "POST",
@@ -295,12 +304,12 @@ export default function KiInfluencerPage() {
     } catch (err) {
       setError(toErrorMessage(err));
     } finally {
-      setLoading(false);
+      setBusyAction(null);
     }
   };
 
   const runTrainingSet = async () => {
-    if (!characterId) return;
+    if (!characterId || busyAction || trainingSetRunning) return;
     setError(null);
     setTrainingSetRunning(true);
     setTrainingProgress(0);
@@ -392,14 +401,15 @@ export default function KiInfluencerPage() {
   };
 
   const runLoraTraining = async () => {
-    if (!characterId) return;
+    if (!characterId || busyAction || trainingSetRunning) return;
     if (!consentAccepted) {
       setError("Bitte bestätige die Einwilligung, bevor es weitergeht.");
       return;
     }
     setError(null);
-    setLoading(true);
+    setBusyAction("loraTrain");
     setLoraProgress(0);
+    let startedPolling = false;
     try {
       if (pathMode === "uploaded") {
         const finRes = await fetch("/api/ki-influencer/finalize-upload", {
@@ -433,16 +443,20 @@ export default function KiInfluencerPage() {
       }
       window.dispatchEvent(new Event("credits-updated"));
       pollTrainingStatus(characterId);
+      startedPolling = true;
     } catch (err) {
       setError(toErrorMessage(err));
-      setLoading(false);
+    } finally {
+      if (!startedPolling) setBusyAction(null);
     }
   };
 
   const runContentGenerate = async () => {
-    if (!characterId || !contentPrompt.trim()) return;
+    if (!characterId || !contentPrompt.trim() || busyAction || trainingSetRunning) {
+      return;
+    }
     setError(null);
-    setLoading(true);
+    setBusyAction("content");
     setContentResultUrl(null);
     try {
       const res = await fetch("/api/ki-influencer/generate", {
@@ -472,9 +486,15 @@ export default function KiInfluencerPage() {
     } catch (err) {
       setError(toErrorMessage(err));
     } finally {
-      setLoading(false);
+      setBusyAction(null);
     }
   };
+
+  const isUploading = busyAction === "upload";
+  const isCasting = busyAction === "casting";
+  const isCastingConfirm = busyAction === "castingConfirm";
+  const isLoraTraining = busyAction === "loraTrain";
+  const isContentGenerating = busyAction === "content";
 
   return (
     <div className="mx-auto max-w-[960px]">
@@ -592,7 +612,7 @@ export default function KiInfluencerPage() {
           <p className="text-sm text-[#B4FF00]">
             {uploadFiles.length} von mindestens {LORA_MIN_IMAGES} Fotos
           </p>
-          {loading && uploadProgress > 0 && (
+          {isUploading && uploadProgress > 0 && (
             <div>
               <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
@@ -628,24 +648,24 @@ export default function KiInfluencerPage() {
             />
             <span>Fotos werden nur für dein Training verwendet.</span>
           </label>
-          <button
-            type="button"
+          <LoadingButton
             disabled={
-              loading ||
               !name.trim() ||
               uploadFiles.length < LORA_MIN_IMAGES ||
               !uploadConsent ||
               !uploadRightsConsent
             }
+            isLoading={isUploading}
+            loadingText={
+              uploadProgress > 0
+                ? `Foto ${uploadProgress} von ${uploadFiles.length} hochgeladen`
+                : "Lade Fotos hoch..."
+            }
             onClick={() => void submitUploadedPhotos()}
-            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
           >
-            {loading
-              ? uploadProgress > 0
-                ? `Lade hoch (${uploadProgress}/${uploadFiles.length})…`
-                : "Speichere Charakter…"
-              : "Weiter zum Gesicht lernen"}
-          </button>
+            Weiter zum Gesicht lernen
+          </LoadingButton>
         </div>
       )}
 
@@ -729,27 +749,26 @@ export default function KiInfluencerPage() {
 
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                disabled={loading || !name.trim() || description.length < 10}
-                onClick={() => runCasting(false)}
-                className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+              <LoadingButton
+                disabled={!name.trim() || description.length < 10}
+                isLoading={isCasting}
+                loadingText="Erstelle Foto..."
+                onClick={() => void runCasting(false)}
+                className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
               >
-                {loading && !castingConfirmed
-                  ? "Erstelle Foto…"
-                  : castingImageUrl
-                    ? `Neu erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`
-                    : `Foto erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`}
-              </button>
+                {castingImageUrl
+                  ? `Neu erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`
+                  : `Foto erstellen (${IMAGE_GEN_CREDITS.standard} Credits)`}
+              </LoadingButton>
               {castingImageUrl && (
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => runCasting(true)}
-                  className="rounded-xl border border-[#B4FF00]/50 px-5 py-3 font-semibold text-[#B4FF00] disabled:opacity-60"
+                <LoadingButton
+                  isLoading={isCastingConfirm}
+                  loadingText="Einen Moment..."
+                  onClick={() => void runCasting(true)}
+                  className="rounded-xl border border-[#B4FF00]/50 px-5 py-3 font-semibold text-[#B4FF00]"
                 >
                   Passt so, weiter
-                </button>
+                </LoadingButton>
               )}
             </div>
             <p className="text-xs text-[rgba(255,255,255,0.45)]">
@@ -788,16 +807,15 @@ export default function KiInfluencerPage() {
               </p>
             </div>
           )}
-          <button
-            type="button"
-            disabled={trainingSetRunning || !characterId}
-            onClick={runTrainingSet}
-            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+          <LoadingButton
+            disabled={!characterId}
+            isLoading={trainingSetRunning}
+            loadingText={`Foto ${trainingProgress} von ${KI_INFLUENCER_TRAINING_SET_SIZE}...`}
+            onClick={() => void runTrainingSet()}
+            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
           >
-            {trainingSetRunning
-              ? "Fotos werden erstellt…"
-              : `20 Fotos erstellen (${KI_INFLUENCER_TRAINING_SET_CREDITS} Credits)`}
-          </button>
+            {`20 Fotos erstellen (${KI_INFLUENCER_TRAINING_SET_CREDITS} Credits)`}
+          </LoadingButton>
         </div>
       )}
 
@@ -822,7 +840,7 @@ export default function KiInfluencerPage() {
               Charakter sein Gesicht lernt.
             </span>
           </label>
-          {(loading || loraProgress > 0 || characterReady) && (
+          {(isLoraTraining || loraProgress > 0 || characterReady) && (
             <div>
               <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
@@ -842,14 +860,16 @@ export default function KiInfluencerPage() {
               </p>
             </div>
           )}
-          <button
-            type="button"
-            disabled={loading || characterReady}
-            onClick={runLoraTraining}
-            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+          <LoadingButton
+            disabled={characterReady}
+            isLoading={isLoraTraining}
+            loadingText="Dein Charakter lernt..."
+            loadingSubtext="Das dauert ca. 10–15 Minuten. Du kannst die Seite verlassen."
+            onClick={() => void runLoraTraining()}
+            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
           >
-            {loading ? "Lernt gerade…" : "Gesicht lernen lassen"}
-          </button>
+            Gesicht lernen lassen
+          </LoadingButton>
         </div>
       )}
 
@@ -921,16 +941,15 @@ export default function KiInfluencerPage() {
             />
           </div>
 
-          <button
-            type="button"
-            disabled={loading || !contentPrompt.trim()}
-            onClick={runContentGenerate}
-            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
+          <LoadingButton
+            disabled={!contentPrompt.trim()}
+            isLoading={isContentGenerating}
+            loadingText="Erstelle Bild..."
+            onClick={() => void runContentGenerate()}
+            className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608]"
           >
-            {loading
-              ? "Erstelle Bild…"
-              : `Bild erstellen (${LORA_GENERATION_CREDIT} Credits)`}
-          </button>
+            {`Bild erstellen (${LORA_GENERATION_CREDIT} Credits)`}
+          </LoadingButton>
 
           {contentResultUrl && (
             <ProtectedGeneratedImage
