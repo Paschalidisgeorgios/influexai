@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -510,7 +511,7 @@ function ProduktWerbungPageInner() {
             {scrapePreview && (
               <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#18181d", display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
                 {scrapePreview.image && (
-                  <img src={scrapePreview.image} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8 }} />
+                  <Image src={scrapePreview.image} alt="" width={72} height={72} unoptimized style={{ objectFit: "cover", borderRadius: 8 }} />
                 )}
                 <div style={{ flex: 1, minWidth: 160 }}>
                   <div style={{ fontWeight: 700, color: "#F0EFE8", marginBottom: 4 }}>{scrapePreview.name}</div>
@@ -543,7 +544,7 @@ function ProduktWerbungPageInner() {
             >
               <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
               {imagePreview ? (
-                <img src={imagePreview} alt="" style={{ maxHeight: 200, maxWidth: "100%", borderRadius: 8, margin: "0 auto" }} />
+                <Image src={imagePreview} alt="" width={400} height={200} unoptimized style={{ maxHeight: 200, maxWidth: "100%", width: "auto", height: "auto", borderRadius: 8, margin: "0 auto" }} />
               ) : (
                 <p style={{ color: "rgba(255,255,255,0.65)", margin: 0 }}>{t("image_drop")}</p>
               )}

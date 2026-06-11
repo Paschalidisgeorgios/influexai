@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { addCredits, deductCredits, isCreditExemptUser } from "@/lib/credits";
 import {
   CATEGORY_PROMPTS,
   IMAGE_CATEGORY_KEYS,
@@ -120,8 +120,9 @@ export async function POST(request: NextRequest) {
 
   const started = Date.now();
 
+  let prepared;
   try {
-    const prepared =
+    prepared =
       skipPromptEnhancement === true &&
       typeof falPrompt === "string" &&
       falPrompt.trim()
@@ -141,7 +142,44 @@ export async function POST(request: NextRequest) {
             styleId,
             platform,
           });
+  } catch (error: unknown) {
+    logFalAiError(error);
+    const err = error as { message?: string };
+    return NextResponse.json(
+      {
+        success: false,
+        error: err?.message ?? "Unbekannter Fehler",
+      },
+      { status: 500 }
+    );
+  }
 
+  const creditAction = isVariation
+    ? "Bild Generator — Variation"
+    : highRes
+      ? "Bild Generator — High-Res"
+      : "Bild Generator — Standard";
+
+  const deduction = await deductCredits(
+    supabase,
+    userId,
+    creditCost,
+    creditAction,
+    {
+      generationType: "image",
+      prompt: prepared.userPrompt.slice(0, 500),
+      skipGenerationLog: true,
+    }
+  );
+
+  if (!deduction.success) {
+    return NextResponse.json(
+      { error: deduction.error ?? "Nicht genug Credits" },
+      { status: 402 }
+    );
+  }
+
+  try {
     const falResult = await generateCategoryImage({
       prompt: prepared.enhancedPrompt,
       falPrompt: prepared.enhancedPrompt,
@@ -186,29 +224,6 @@ export async function POST(request: NextRequest) {
       credits_used: creditCost,
     });
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      creditCost,
-      isVariation
-        ? "Bild Generator — Variation"
-        : highRes
-          ? "Bild Generator — High-Res"
-          : "Bild Generator — Standard",
-      {
-        generationType: "image",
-        prompt: prepared.userPrompt.slice(0, 500),
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
-      );
-    }
-
     const response: Record<string, unknown> = {
       success: true,
       generationId,
@@ -248,6 +263,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error: unknown) {
+    if (!(await isCreditExemptUser(supabase, userId))) {
+      await addCredits(
+        supabase,
+        userId,
+        creditCost,
+        `${creditAction} — Refund`
+      );
+    }
     logFalAiError(error);
     const err = error as { message?: string };
     return NextResponse.json(

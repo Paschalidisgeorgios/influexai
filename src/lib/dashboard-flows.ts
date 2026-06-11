@@ -19,7 +19,6 @@ import {
   Theater,
   Images,
   Brain,
-  UserRound,
   Home,
   PlusCircle,
   User,
@@ -29,6 +28,7 @@ import {
 } from "lucide-react";
 import { TablerPhoto } from "@/components/icons/TablerPhoto";
 import { TablerSpy } from "@/components/icons/TablerSpy";
+import { KLING_25_PROVIDER_ENABLED } from "@/lib/kling25-config";
 
 const CompetitorSpyIcon = TablerSpy as unknown as LucideIcon;
 const ImageGeneratorPhotoIcon = TablerPhoto as unknown as LucideIcon;
@@ -53,6 +53,12 @@ export type DashboardFlow = {
   /** generation.type values counted for popularity */
   genTypes: string[];
 };
+
+function isDashboardFlowVisible(flow: DashboardFlow): boolean {
+  if (flow.locked) return false;
+  if (flow.id === "kling25-i2v" && !KLING_25_PROVIDER_ENABLED) return false;
+  return true;
+}
 
 export const DASHBOARD_FLOW_CATEGORIES: {
   id: FlowCategory;
@@ -409,33 +415,26 @@ export type SidebarCollapseCategory = {
 
 export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
   {
-    key: "agent",
-    label: "Agent",
+    key: "erstellen",
+    label: "Erstellen",
     items: [
       {
-        id: "ki-influencer",
-        href: "/dashboard/ki-influencer",
-        label: "KI-Influencer",
-        icon: UserRound,
-        badge: "NEU",
+        id: "viral-hook",
+        href: "/dashboard/viral-hook",
+        label: "Viral Hook",
+        icon: Zap,
       },
       {
-        id: "campaign-autopilot",
-        href: "/dashboard/campaign-autopilot",
-        label: "Autopilot",
+        id: "content-kalender",
+        href: "/dashboard/content-kalender",
+        label: "Content Kalender",
+        icon: Calendar,
+      },
+      {
+        id: "trend-to-script",
+        href: "/dashboard/trend-to-script",
+        label: "Trend Script",
         icon: Rocket,
-      },
-    ],
-  },
-  {
-    key: "text",
-    label: "Text & Script",
-    items: [
-      {
-        id: "script",
-        href: "/dashboard/script-generator",
-        labelKey: "script",
-        icon: FileText,
       },
       {
         id: "produkt",
@@ -443,30 +442,12 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
         label: "Produkt-Werbung",
         icon: ShoppingBag,
       },
-      {
-        id: "thumbnail",
-        href: "/dashboard/thumbnail-concept",
-        labelKey: "thumbnail",
-        icon: Image,
-      },
-      {
-        id: "viral-hook",
-        href: "/dashboard/viral-hook",
-        label: "Viral Hooks",
-        icon: Zap,
-      },
     ],
   },
   {
-    key: "video",
-    label: "Video & Avatar",
+    key: "visuals",
+    label: "Visuals",
     items: [
-      {
-        id: "ugc-video",
-        href: "/dashboard/ugc-video",
-        labelKey: "ugc_video",
-        icon: Video,
-      },
       {
         id: "image-generator",
         href: "/dashboard/image-generator",
@@ -476,44 +457,50 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
       {
         id: "ki-ich",
         href: "/dashboard/ki-ich",
-        label: "Mein KI-Ich",
+        label: "KI-Ich",
         icon: Sparkles,
-      },
-      {
-        id: "seedance",
-        href: "/dashboard/seedance",
-        label: "Bild zu Video",
-        icon: Film,
-      },
-      {
-        id: "motion-transfer",
-        href: "/dashboard/motion-transfer",
-        label: "Motion Transfer",
-        icon: Clapperboard,
-      },
-      {
-        id: "live-portrait",
-        href: "/dashboard/live-portrait",
-        label: "Live Portrait",
-        icon: Theater,
-      },
-      {
-        id: "avatar-studio",
-        href: "/dashboard/avatar-studio",
-        label: "Avatar Studio",
-        icon: Sparkles,
-      },
-      {
-        id: "upscaler",
-        href: "/dashboard/upscaler",
-        label: "HD Upscaler",
-        icon: ZoomIn,
       },
       {
         id: "lora-training",
         href: "/dashboard/lora-training",
         label: "LoRA Training",
         icon: Brain,
+      },
+      {
+        id: "gallery",
+        href: "/dashboard/gallery",
+        label: "Galerie",
+        icon: Images,
+      },
+    ],
+  },
+  {
+    key: "automation",
+    label: "Automation",
+    items: [
+      {
+        id: "ki-agent",
+        href: "/dashboard",
+        label: "KI Agent",
+        icon: Star,
+      },
+      {
+        id: "campaign-autopilot",
+        href: "/dashboard/campaign-autopilot",
+        label: "Campaign Autopilot",
+        icon: Rocket,
+      },
+      {
+        id: "live-creator",
+        href: "/dashboard/live-creator",
+        label: "Live Creator",
+        icon: Video,
+      },
+      {
+        id: "voice",
+        href: "/dashboard/voice",
+        label: "Stimme & Musik",
+        icon: Mic2,
       },
     ],
   },
@@ -522,52 +509,30 @@ export const SIDEBAR_TOOL_CATEGORIES: SidebarCollapseCategory[] = [
 export function sidebarCategoryKeysForPath(path: string): string[] {
   const keys: string[] = [];
   if (
-    path.includes("ki-agent") ||
-    path.includes("ki-influencer") ||
-    path.includes("campaign-autopilot") ||
-    path === "/dashboard/agent"
-  ) {
-    keys.push("agent");
-  }
-  if (
-    path.includes("script-generator") ||
-    path.includes("thumbnail-concept") ||
-    path.includes("produkt") ||
-    path.includes("viral-hook")
-  ) {
-    keys.push("text");
-  }
-  if (
-    path.includes("ugc-video") ||
-    path.includes("image-generator") ||
-    path.includes("ki-ich") ||
-    path.includes("seedance") ||
-    path.includes("motion-transfer") ||
-    path.includes("live-portrait") ||
-    path.includes("avatar-studio") ||
-    path.includes("upscaler") ||
-    path.includes("lora-training")
-  ) {
-    keys.push("video");
-  }
-  if (
-    path.includes("niche-analyzer") ||
-    path.includes("outlier-detector") ||
+    path.includes("viral-hook") ||
     path.includes("content-kalender") ||
     path.includes("trend-to-script") ||
-    path.includes("competitor") ||
-    path.includes("viral-score") ||
-    path.includes("video-remix")
+    path.includes("produkt")
   ) {
-    keys.push("analyze");
+    keys.push("erstellen");
   }
   if (
-    path.includes("live-creator-new") ||
+    path.includes("image-generator") ||
+    path.includes("ki-ich") ||
+    path.includes("lora-training") ||
+    path === "/dashboard/gallery"
+  ) {
+    keys.push("visuals");
+  }
+  if (
+    path === "/dashboard" ||
+    path === "/dashboard/agent" ||
+    path.includes("ki-agent") ||
+    path.includes("campaign-autopilot") ||
     path.includes("live-creator") ||
-    path.includes("voice-agent") ||
     path.includes("/dashboard/voice")
   ) {
-    keys.push("live");
+    keys.push("automation");
   }
   return keys;
 }
@@ -626,9 +591,9 @@ export const MOBILE_QUICK_NAV = [
 
 export function flowsByCategory(): Record<FlowCategory, DashboardFlow[]> {
   return {
-    create: DASHBOARD_FLOWS.filter((f) => f.category === "create" && !f.locked),
-    analyze: DASHBOARD_FLOWS.filter((f) => f.category === "analyze" && !f.locked),
-    live: DASHBOARD_FLOWS.filter((f) => f.category === "live" && !f.locked),
+    create: DASHBOARD_FLOWS.filter((f) => f.category === "create" && isDashboardFlowVisible(f)),
+    analyze: DASHBOARD_FLOWS.filter((f) => f.category === "analyze" && isDashboardFlowVisible(f)),
+    live: DASHBOARD_FLOWS.filter((f) => f.category === "live" && isDashboardFlowVisible(f)),
   };
 }
 
@@ -641,7 +606,7 @@ export function rankTopFlows(
     counts.set(g.type, (counts.get(g.type) ?? 0) + 1);
   }
 
-  const scored = DASHBOARD_FLOWS.filter((f) => !f.locked).map((flow) => {
+  const scored = DASHBOARD_FLOWS.filter(isDashboardFlowVisible).map((flow) => {
     let score = 0;
     for (const t of flow.genTypes) {
       score += counts.get(t) ?? 0;

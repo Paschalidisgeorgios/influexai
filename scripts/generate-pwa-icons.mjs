@@ -5,7 +5,6 @@
  * Usage: node scripts/generate-pwa-icons.mjs
  */
 import sharp from "sharp";
-import { writeFileSync, readFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 

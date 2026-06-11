@@ -24,6 +24,8 @@ function extractProgress(result: unknown): JobProgress | null {
 function displayStatus(status: string): string {
   if (status === "queued") return "pending";
   if (status === "completed") return "done";
+  if (status === "running") return "running";
+  if (status === "failed") return "failed";
   return status;
 }
 
@@ -52,21 +54,47 @@ export async function GET(
     return NextResponse.json({ error: "Job nicht gefunden" }, { status: 404 });
   }
 
+  const status = displayStatus(data.status);
   const progress = extractProgress(data.result);
+
+  let executionResult: unknown = null;
+  const payload = (data.payload ?? {}) as Record<string, unknown>;
+  const executionId =
+    typeof payload.executionId === "string" ? payload.executionId : null;
+
+  if (status === "done" && executionId) {
+    const { data: execution } = await supabase
+      .from("agent_executions")
+      .select("id, result, status, intent, used_credits, created_at")
+      .eq("id", executionId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (execution?.result) {
+      executionResult = execution.result;
+    }
+  }
+
   const campaignResult =
-    data.result &&
-    typeof data.result === "object" &&
-    !("progress" in (data.result as Record<string, unknown>))
-      ? data.result
-      : (data.result as Record<string, unknown> | null)?.partialResult ??
-        (data.status === "completed" ? data.result : null);
+    status === "done"
+      ? executionResult ??
+        (data.result &&
+        typeof data.result === "object" &&
+        !("progress" in (data.result as Record<string, unknown>))
+          ? data.result
+          : (data.result as Record<string, unknown> | null)?.partialResult ??
+            data.result)
+      : null;
 
   return NextResponse.json({
     job: {
       ...data,
-      displayStatus: displayStatus(data.status),
+      status,
+      displayStatus: status,
       progress,
-      result: data.status === "completed" ? campaignResult ?? data.result : data.result,
+      result: campaignResult,
+      executionResult,
+      error: status === "failed" ? data.error ?? "Job fehlgeschlagen" : null,
     },
   });
 }

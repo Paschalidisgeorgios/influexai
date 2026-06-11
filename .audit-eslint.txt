@@ -1,0 +1,263 @@
+﻿
+C:\Projekte\influexai\scripts\generate-pwa-icons.mjs
+  8:10  warning  'writeFileSync' is defined but never used  @typescript-eslint/no-unused-vars
+  8:25  warning  'readFileSync' is defined but never used   @typescript-eslint/no-unused-vars
+  8:39  warning  'existsSync' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\scripts\i18n-audit.mjs
+  25:7  warning  'GERMAN_TEXT_RE' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\scripts\test-anthropic-34.mjs
+  114:9  warning  'events' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\scripts\test-anthropic-functional.mjs
+  329:13  warning  'assistantText' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\scripts\test-credits-payments.mjs
+  113:9  warning  'modalAt8' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  126:7  warning  'checkoutResult' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\scripts\update-agency-i18n.mjs
+  214:10  warning  'deepMerge' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\actions\detect-outliers.ts
+  18:8  warning  'ViralMechanism' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\actions\remix-video.ts
+  17:8  warning  'RemixStructure' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\api\agent\execute\route.ts
+  31:10  warning  'deductCredits' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\api\live-avatar\session\route.ts
+  5:10  warning  'deductCredits' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\api\lora\train\route.ts
+  4:10  warning  'createServiceSupabaseClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\api\product-ad\script\route.ts
+  16:30  warning  'Locale' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\api\stripe\webhook\route.ts
+  10:8  warning  'SubscriptionPlanId' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\dashboard\avatar-studio\page.tsx
+   90:10  warning  'jobId' is assigned a value but never used                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  448:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projekte\influexai\src\app\dashboard\competitor\page.tsx
+  305:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  483:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projekte\influexai\src\app\dashboard\ki-influencer\page.tsx
+  117:10  warning  'castingConfirmed' is assigned a value but never used                                                                @typescript-eslint/no-unused-vars
+  131:10  warning  'loraLogs' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  419:6   warning  React Hook useCallback has a missing dependency: 'setWizardError'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projekte\influexai\src\app\dashboard\live-creator\talking-avatar-page.tsx
+  146:10  warning  'videoStatus' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\app\dashboard\live-portrait\page.tsx
+  271:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projekte\influexai\src\app\dashboard\lora-training\page.tsx
+  402:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  577:38  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projekte\influexai\src\app\dashboard\produkt\page.tsx
+  513:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  546:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projekte\influexai\src\components\agent\MasterAgentChat.tsx
+  151:10  warning  'creditsLeft' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\dashboard\CampaignAutopilot.tsx
+  188:10  warning  'jobId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\guides\guide-body.tsx
+  17:47  warning  'source' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\landing\HeroSection.tsx
+  278:12  warning  '_variant' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\layout\SidebarNavLink.tsx
+  24:3  warning  'collapsed' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\live-creator\LiveCreatorStudioInner.tsx
+  133:6  warning  React Hook useCallback has a missing dependency: 'stopWebcam'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projekte\influexai\src\components\live-creator\face-swap-panel.tsx
+  439:9  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\live-creator\face-swap-panel.tsx:439:9
+  437 |         dragSource,
+  438 |         setDragSource,
+> 439 |         () => sourceInputRef.current?.click(),
+      |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  440 |         sourceInputRef,
+  441 |         acceptSource,
+  442 |         applySourceFile,                 react-hooks/refs
+  494:9  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\live-creator\face-swap-panel.tsx:494:9
+  492 |         dragTarget,
+  493 |         setDragTarget,
+> 494 |         () => targetInputRef.current?.click(),
+      |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  495 |         targetInputRef,
+  496 |         "image/jpeg,image/png,image/webp",
+  497 |         setTarget,  react-hooks/refs
+
+C:\Projekte\influexai\src\components\melodia\MelodiaWidget.tsx
+  207:11  warning  'dim' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  208:11  warning  'fontSize' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                                              react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                                              react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                                              react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                            react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                            react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {                            react-hooks/refs
+  18:23  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:23
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {  react-hooks/refs
+  18:66  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:18:66
+  16 | }: AnimatedCreditsProps) {
+  17 |   const prev = useRef<number | null>(value);
+> 18 |   const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+     |                                                                  ^^^^^^^^^^^^ Cannot access ref value during render
+  19 |   const isLow = value !== null && value < 10;
+  20 |
+  21 |   useEffect(() => {            react-hooks/refs
+  30:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:30:9
+  28 |       style={style}
+  29 |       animate={
+> 30 |         shouldPulse
+     |         ^^^^^^^^^^^ Cannot access ref value during render
+  31 |           ? {
+  32 |               scale: [1, 1.2, 1],
+  33 |               color: isLow                                                                                                                                                                       react-hooks/refs
+  30:9   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Projekte\influexai\src\components\ui\AnimatedCredits.tsx:30:9
+  28 |       style={style}
+  29 |       animate={
+> 30 |         shouldPulse
+     |         ^^^^^^^^^^^ Cannot access ref value during render
+  31 |           ? {
+  32 |               scale: [1, 1.2, 1],
+  33 |               color: isLow                                                                                                                                                                       react-hooks/refs
+
+C:\Projekte\influexai\src\lib\access.server.ts
+  135:3  warning  '_requiredPlan' is defined but never used  @typescript-eslint/no-unused-vars
+  141:3  warning  '_feature' is defined but never used       @typescript-eslint/no-unused-vars
+  169:3  warning  '_feature' is defined but never used       @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\lib\access.ts
+  82:3  warning  '_requiredPlan' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\lib\gallery-media.ts
+  3:15  warning  'GalleryItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\lib\generation-config.ts
+  406:3  warning  'feature' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\lib\ki-influencer-client-errors.ts
+  2:10  warning  'KI_INFLUENCER_TIMEOUT_MESSAGE' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projekte\influexai\src\lib\subscription-plans.ts
+   71:7  warning  'PLAN_RANK' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  137:3  warning  '_requiredPlan' is defined but never used       @typescript-eslint/no-unused-vars
+
+Ô£û 58 problems (12 errors, 46 warnings)
+

@@ -1,5 +1,7 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
+import { resetUserCredits } from "./supabase";
+
 export const AUTH_STATE = "tests/e2e/.auth/user.json";
 
 export async function waitForGeneration(page: Page) {
@@ -27,13 +29,11 @@ export async function selectOption(page: Page, label: string, value: string) {
 }
 
 export async function setTestCredits(
-  request: APIRequestContext,
+  _request: APIRequestContext,
   credits: number
 ) {
-  const res = await request.post("/api/test/set-credits", {
-    data: { credits },
-  });
-  expect(res.ok()).toBeTruthy();
+  const email = process.env.TEST_USER_EMAIL ?? "test@influexai.test";
+  await resetUserCredits(email, credits);
 }
 
 /** Dismiss re-engagement overlay if present. */

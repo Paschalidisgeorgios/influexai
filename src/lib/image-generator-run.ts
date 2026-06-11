@@ -63,6 +63,8 @@ export async function runImageGeneratorGeneration(
     };
     styleId?: ImageStyleId;
     platform?: ImagePlatformId;
+    /** QA retry / agent pipeline — credits deducted once by caller. */
+    skipCreditDeduction?: boolean;
   }
 ): Promise<ImageGeneratorRunResult> {
   const trimmedPrompt = params.prompt.trim();
@@ -95,9 +97,11 @@ export async function runImageGeneratorGeneration(
     return { ok: false, error: "Bildgenerierung ist nicht konfiguriert." };
   }
 
-  const creditCheck = await hasEnoughCredits(supabase, userId, creditCost);
-  if (!creditCheck.ok) {
-    return { ok: false, error: "Nicht genug Credits." };
+  if (!params.skipCreditDeduction) {
+    const creditCheck = await hasEnoughCredits(supabase, userId, creditCost);
+    if (!creditCheck.ok) {
+      return { ok: false, error: "Nicht genug Credits." };
+    }
   }
 
   const started = Date.now();
@@ -159,33 +163,39 @@ export async function runImageGeneratorGeneration(
       credits_used: creditCost,
     });
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      creditCost,
-      highRes ? "Bild Generator — High-Res" : "Bild Generator — Standard",
-      {
-        generationType: "image",
-        prompt: prepared.userPrompt.slice(0, 500),
-        skipGenerationLog: true,
+    let creditsLeft = 0;
+    if (params.skipCreditDeduction) {
+      await invalidateUserGenerations(userId);
+    } else {
+      const deduction = await deductCredits(
+        supabase,
+        userId,
+        creditCost,
+        highRes ? "Bild Generator — High-Res" : "Bild Generator — Standard",
+        {
+          generationType: "image",
+          prompt: prepared.userPrompt.slice(0, 500),
+          skipGenerationLog: true,
+        }
+      );
+
+      if (!deduction.success) {
+        return {
+          ok: false,
+          error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
+        };
       }
-    );
 
-    if (!deduction.success) {
-      return {
-        ok: false,
-        error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
-      };
+      creditsLeft = deduction.remainingCredits ?? 0;
+      await invalidateUserGenerations(userId);
     }
-
-    await invalidateUserGenerations(userId);
 
     return {
       ok: true,
       generationId,
       imageUrl: protectedImageUrl(generationId, "preview"),
-      creditsUsed: creditCost,
-      creditsLeft: deduction.remainingCredits ?? 0,
+      creditsUsed: params.skipCreditDeduction ? 0 : creditCost,
+      creditsLeft,
       width: width ?? falResult.width,
       height: height ?? falResult.height,
     };

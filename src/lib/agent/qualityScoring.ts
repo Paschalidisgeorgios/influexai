@@ -1,4 +1,5 @@
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { scoreContent } from "@/lib/agent/contentScoring";
 import type { ContentScores, QualityDecision } from "./types";
 
 const QUALITY_SCORER_MODEL = "claude-sonnet-4-5-20250929";
@@ -72,13 +73,18 @@ export async function scoreOutput(
     return { score: 0, weaknesses: ["Empty output"] };
   }
 
-  const user = `Tool: ${toolName}
+  try {
+    const score = await scoreContent(trimmedOutput, userGoal, toolName);
+    if (score >= QUALITY_RETRY_THRESHOLD) {
+      return { score, weaknesses: [] };
+    }
+
+    const user = `Tool: ${toolName}
 User goal: ${userGoal.trim()}
 
 Output to evaluate:
 ${trimmedOutput}`;
 
-  try {
     const result = await createAnthropicMessage({
       model: QUALITY_SCORER_MODEL,
       maxTokens: 500,
@@ -88,16 +94,15 @@ ${trimmedOutput}`;
 
     if (!result.ok) {
       console.warn("[qualityScoring] scorer failed:", result.error);
-      return { score: 100, weaknesses: [] };
+      return { score, weaknesses: [] };
     }
 
     const parsed = parseQualityScoreJson(result.text);
     if (!parsed) {
-      console.warn("[qualityScoring] failed to parse scorer JSON");
-      return { score: 100, weaknesses: [] };
+      return { score, weaknesses: ["Unter Qualitätsschwelle"] };
     }
 
-    return parsed;
+    return parsed.score >= score ? parsed : { score, weaknesses: parsed.weaknesses };
   } catch (error) {
     console.warn("[qualityScoring] scorer error:", error);
     return { score: 100, weaknesses: [] };

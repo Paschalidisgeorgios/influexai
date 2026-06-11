@@ -15,7 +15,6 @@ import {
   outlierResultsSaveErrorMessage,
   parseOutlierConcepts,
   type OutlierConcept,
-  type ViralMechanism,
 } from "@/lib/outlier-analysis";
 
 const CREDIT_COST = 3;

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {

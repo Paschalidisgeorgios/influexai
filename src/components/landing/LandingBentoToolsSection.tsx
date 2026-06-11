@@ -1,123 +1,77 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
-import {
-  Sparkles,
-  CalendarDays,
-  UserRound,
-  ImageIcon,
-  TrendingUp,
-  Bot,
-} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 
-const BENTO_TOOLS = [
-  {
-    key: "ki_agent",
-    href: "/dashboard/ki-agent",
-    icon: Bot,
-    large: true,
-    gridClass: "md:col-span-2 md:row-span-2",
-  },
-  {
-    key: "viral_hook",
-    href: "/dashboard/viral-hook",
-    icon: Sparkles,
-    large: false,
-    gridClass: "",
-  },
-  {
-    key: "content_kalender",
-    href: "/dashboard/content-kalender",
-    icon: CalendarDays,
-    large: false,
-    gridClass: "",
-  },
-  {
-    key: "trend_script",
-    href: "/dashboard/trend-to-script",
-    icon: TrendingUp,
-    large: false,
-    gridClass: "",
-  },
-  {
-    key: "ki_ich",
-    href: "/dashboard/ki-ich",
-    icon: UserRound,
-    large: false,
-    gridClass: "",
-  },
-  {
-    key: "bild_generator",
-    href: "/dashboard/image-generator",
-    icon: ImageIcon,
-    large: true,
-    gridClass: "md:col-span-2",
-  },
+const HOOK_PILLS = [
+  "Diese eine Gewohnheit hat alles verändert...",
+  "POV: Du entdeckst das Geheimnis von...",
+  "Niemand redet darüber, aber...",
 ] as const;
 
-function BentoCard({
-  toolKey,
-  href,
-  icon: Icon,
-  large,
-}: {
-  toolKey: (typeof BENTO_TOOLS)[number]["key"];
-  href: string;
-  icon: (typeof BENTO_TOOLS)[number]["icon"];
-  large: boolean;
-}) {
-  const t = useTranslations("landingPage.bentoTools");
+type BentoCardProps = {
+  tag: string;
+  title: string;
+  description: string;
+  href?: string;
+  className?: string;
+  children?: ReactNode;
+  accent?: boolean;
+};
 
-  return (
-    <Link
-      href={href}
-      className={`group relative flex h-full min-h-[140px] flex-col justify-end overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 no-underline transition-all duration-300 hover:border-[#B4FF00]/45 hover:-translate-y-0.5 ${large ? "min-h-[200px] md:min-h-[260px]" : ""}`}
+function BentoCard({
+  tag,
+  title,
+  description,
+  href,
+  className = "",
+  children,
+  accent = false,
+}: BentoCardProps) {
+  const inner = (
+    <article
+      className={`flex h-full min-h-[180px] flex-col rounded-2xl border bg-[#0d0d0f] p-6 transition-all duration-300 hover:border-[#B4FF00]/35 ${
+        accent ? "border-[#B4FF00]/20" : "border-white/[0.08]"
+      } ${href ? "group no-underline" : ""} ${className}`}
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      <span
+        className="mb-3 inline-flex w-fit rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/[0.08] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]"
+        style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+      >
+        {tag}
+      </span>
+      <h3
+        className="mb-2 text-white"
         style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 20% 0%, rgba(180,255,0,0.12), transparent 55%), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(180,255,0,0.06), transparent 50%)",
+          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+          fontSize: accent ? "clamp(1.35rem, 2.5vw, 1.75rem)" : "1.25rem",
+          letterSpacing: "0.02em",
+          lineHeight: 1.1,
         }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35] transition-transform duration-700 group-hover:scale-110"
-        style={{
-          backgroundImage:
-            "linear-gradient(135deg, rgba(180,255,0,0.04) 0%, transparent 40%, rgba(255,255,255,0.02) 100%)",
-        }}
-        aria-hidden
-      />
-      <div className="relative z-10 flex flex-col gap-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-[#060608]/60 text-[#B4FF00] transition-colors group-hover:border-[#B4FF00]/40">
-          <Icon size={18} strokeWidth={2} />
-        </div>
-        <h3
-          className="text-white"
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: large ? "1.5rem" : "1.2rem",
-            letterSpacing: "0.02em",
-            lineHeight: 1.1,
-          }}
-        >
-          {t(`${toolKey}_name`)}
-        </h3>
-        <p
-          className="text-sm leading-snug"
-          style={{
-            color: "#888888",
-            fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
-          }}
-        >
-          {t(`${toolKey}_benefit`)}
-        </p>
-      </div>
-    </Link>
+      >
+        {title}
+      </h3>
+      <p
+        className="text-sm leading-relaxed text-[#888888]"
+        style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+      >
+        {description}
+      </p>
+      {children}
+    </article>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block h-full">
+        {inner}
+      </Link>
+    );
+  }
+
+  return inner;
 }
 
 export function LandingBentoToolsSection() {
@@ -129,7 +83,7 @@ export function LandingBentoToolsSection() {
       className="border-t border-white/[0.06] bg-[#060608] px-[clamp(20px,6vw,64px)] py-16 md:py-20"
       aria-labelledby="bento-tools-heading"
     >
-      <div className="mx-auto max-w-[1160px]">
+      <div className="mx-auto w-full max-w-[1160px]">
         <SpringReveal>
           <p
             className="mb-2 text-center uppercase"
@@ -158,21 +112,65 @@ export function LandingBentoToolsSection() {
           </h2>
         </SpringReveal>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-3 md:auto-rows-fr md:gap-4">
-          {BENTO_TOOLS.map((tool, i) => (
-            <SpringReveal
-              key={tool.key}
-              delay={i * 0.06}
-              className={tool.gridClass}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
+          <SpringReveal className="md:col-span-2">
+            <BentoCard
+              accent
+              tag={t("viral_hook_tag")}
+              title={t("viral_hook_name")}
+              description={t("viral_hook_benefit")}
+              href="/dashboard/viral-hook"
+              className="min-h-[240px] md:min-h-[280px]"
             >
-              <BentoCard
-                toolKey={tool.key}
-                href={tool.href}
-                icon={tool.icon}
-                large={tool.large}
-              />
-            </SpringReveal>
-          ))}
+              <div className="mt-5 flex flex-col gap-2">
+                {HOOK_PILLS.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[0.78rem] italic text-white/75"
+                    style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+                  >
+                    {'„' + pill + '\u201C'}
+                  </span>
+                ))}
+              </div>
+            </BentoCard>
+          </SpringReveal>
+
+          <SpringReveal delay={0.06}>
+            <BentoCard
+              tag={t("ki_ich_tag")}
+              title={t("ki_ich_name")}
+              description={t("ki_ich_benefit")}
+              href="/dashboard/ki-ich"
+            />
+          </SpringReveal>
+
+          <SpringReveal delay={0.1}>
+            <BentoCard
+              tag={t("bild_generator_tag")}
+              title={t("bild_generator_name")}
+              description={t("bild_generator_benefit")}
+              href="/dashboard/image-generator"
+            />
+          </SpringReveal>
+
+          <SpringReveal delay={0.14}>
+            <BentoCard
+              tag={t("ki_agent_tag")}
+              title={t("ki_agent_name")}
+              description={t("ki_agent_benefit")}
+              href="/dashboard/ki-agent"
+            />
+          </SpringReveal>
+
+          <SpringReveal delay={0.18}>
+            <BentoCard
+              tag={t("content_kalender_tag")}
+              title={t("content_kalender_name")}
+              description={t("content_kalender_benefit")}
+              href="/dashboard/content-kalender"
+            />
+          </SpringReveal>
         </div>
       </div>
     </section>

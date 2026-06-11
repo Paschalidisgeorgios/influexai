@@ -1,12 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { deductCredits } from "@/lib/credits";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
 import { parseScriptBlocks } from "@/lib/script-format";
 import {
-  CAMPAIGN_SPECS,
   CAMPAIGN_STEPS,
   enrichCampaignItemsWithMeta,
+  fullCampaignStepsToItems,
   generateCampaignPlan,
+  generateFullCampaign,
   inferBrandDNA,
   type CampaignPlanStep,
 } from "@/lib/agent/campaignPlanner";
@@ -20,6 +22,7 @@ import {
   runViralHookTextTool,
 } from "@/lib/agent/text-tool-runners";
 import { runVisualQAWithRetry } from "@/lib/agent/visualQuality";
+import { sumCampaignPlanCredits } from "@/lib/agent/credits";
 import type {
   AgentExecutionStep,
   AgentTextToolRun,
@@ -33,15 +36,6 @@ import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import type { TrendScriptPlatform, TrendScriptRegion } from "@/lib/trend-script-tool";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
 
-function mapCampaignPlatform(p: CampaignPlatform): string {
-  const map: Record<CampaignPlatform, string> = {
-    instagram: "Instagram",
-    tiktok: "TikTok",
-    youtube_shorts: "YouTube",
-    linkedin: "LinkedIn",
-  };
-  return map[p];
-}
 
 function newItemId(type: string) {
   return `${type}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -264,8 +258,17 @@ export async function executeRealCampaign(params: {
 }): Promise<CampaignResult> {
   const { exec, supabase, userId, jobId } = params;
   const { dna, assumptions } = inferBrandDNA(exec.prompt);
-  const spec = CAMPAIGN_SPECS[exec.mode];
   const creatorDNA = await getCreatorProfile(supabase, userId);
+  const defaultPlatform = exec.platforms[0] ?? "tiktok";
+
+  const fullCampaign = await generateFullCampaign({
+    prompt: exec.prompt,
+    mode: exec.mode,
+    platforms: exec.platforms,
+    goal: exec.goal,
+    tone: exec.tone,
+    creatorDNA,
+  });
 
   const plan = await generateCampaignPlan({
     prompt: exec.prompt,
@@ -276,13 +279,31 @@ export async function executeRealCampaign(params: {
     creatorDNA,
   });
 
+  const totalCredits = sumCampaignPlanCredits(plan);
+  if (totalCredits > 0) {
+    const deduction = await deductCredits(
+      supabase,
+      userId,
+      totalCredits,
+      "Campaign Autopilot",
+      {
+        generationType: "campaign-autopilot",
+        skipGenerationLog: true,
+        prompt: exec.prompt.slice(0, 500),
+      }
+    );
+    if (!deduction.success) {
+      throw new Error(deduction.error ?? "Nicht genug Credits.");
+    }
+  }
+
   const steps: AgentExecutionStep[] = CAMPAIGN_STEPS.map((label, i) => ({
     id: `step-${i}`,
     label,
     status: "pending" as const,
   }));
 
-  const items: ContentItem[] = [];
+  const items: ContentItem[] = fullCampaignStepsToItems(fullCampaign, defaultPlatform);
   const toolRuns: AgentTextToolRun[] = [];
 
   const markStep = async (idx: number, status: AgentExecutionStep["status"]) => {
@@ -314,7 +335,16 @@ export async function executeRealCampaign(params: {
       executionId: exec.id,
     });
     toolRuns.push(run);
-    if (item) items.push({ ...item, day: items.length + 1 });
+    if (item) {
+      const existingIdx = items.findIndex(
+        (i) => i.type === item.type && i.day === items.length
+      );
+      if (existingIdx >= 0) {
+        items[existingIdx] = { ...items[existingIdx], ...item, id: items[existingIdx].id };
+      } else {
+        items.push({ ...item, day: item.day ?? items.length + 1 });
+      }
+    }
 
     if (run.tool === "image-generator") {
       // credits tracked in result.usedCredits below
@@ -339,14 +369,7 @@ export async function executeRealCampaign(params: {
   items.splice(0, items.length, ...enrichedItems);
   await markStep(8, "completed");
 
-  let usedCredits = 0;
-  for (const run of toolRuns) {
-    if (run.tool === "image-generator") usedCredits += 5;
-    else if (run.tool === "trend-script") usedCredits += 4;
-    else if (run.tool === "viral-hook") usedCredits += 3;
-    else if (run.tool === "content-kalender") usedCredits += 5;
-    else if (run.tool === "product-ad") usedCredits += 3;
-  }
+  const usedCredits = totalCredits;
 
   for (let i = 9; i < steps.length; i++) {
     await markStep(i, "completed");
@@ -355,8 +378,11 @@ export async function executeRealCampaign(params: {
   const result: CampaignResult = {
     id: exec.id,
     mode: exec.mode,
-    title: `${spec.label} — ${exec.platforms.map(mapCampaignPlatform).join(", ")}`,
-    summary: `${items.length} Content-Items für deine Kampagne generiert.`,
+    title: fullCampaign.title,
+    summary: fullCampaign.strategy,
+    strategy: fullCampaign.strategy,
+    expectedReach: fullCampaign.expectedReach,
+    tips: fullCampaign.tips,
     brandDNA: { ...dna, platforms: exec.platforms },
     assumptionsMade: assumptions,
     items,

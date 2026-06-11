@@ -403,8 +403,9 @@ export function buildProductVideoNegativePrompt(): string {
 
 export function buildPositivePrompt(
   userPrompt: string,
-  feature: ImageGenerationFeature = "generic"
+  _feature?: ImageGenerationFeature
 ): string {
+  void _feature;
   const trimmed = userPrompt.trim();
   if (!trimmed) return QUALITY_PROMPT_PREFIX;
   return joinPromptParts([QUALITY_PROMPT_PREFIX, trimmed]);

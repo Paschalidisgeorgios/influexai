@@ -7,7 +7,6 @@ import { AGENCY_PLANS, type AgencyPlanId } from "@/lib/agency-plans";
 import {
   SUBSCRIPTION_PLANS,
   normalizePlan,
-  type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
 import { creditsForStripePriceId } from "@/lib/stripe-credit-prices";
 import { getStripe } from "@/lib/stripe";

@@ -23,6 +23,10 @@ import type {
 } from "@/lib/agent/types";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { CAMPAIGN_AUTOPILOT_IS_PREVIEW } from "@/lib/agent/campaignPlanner";
+import {
+  AgentSafetyError,
+  checkAgentInputSafety,
+} from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -152,6 +156,15 @@ export async function POST(request: Request) {
       { error: "Bitte gib einen Kampagnen-Prompt ein." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(prompt);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const mode = body.mode;

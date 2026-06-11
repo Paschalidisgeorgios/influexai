@@ -34,7 +34,6 @@ async function uploadCustomAvatar(file: File): Promise<string> {
 }
 
 type FlowStep = "input" | "generating" | "result";
-type VideoStatus = "idle" | "processing" | "completed" | "failed";
 type AudioSource = "elevenlabs" | "own";
 
 const CREDIT_COST = 10;
@@ -143,7 +142,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [videoStatus, setVideoStatus] = useState<VideoStatus>("idle");
   const [progress, setProgress] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
@@ -245,7 +243,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Abschluss fehlgeschlagen");
     if (data.status === "completed" && data.videoUrl) {
-      setVideoStatus("completed");
       setVideoUrl(data.videoUrl);
       setProgress(100);
       if (typeof data.creditsLeft === "number") setCreditsLeft(data.creditsLeft);
@@ -255,7 +252,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
       return true;
     }
     if (data.status === "failed") {
-      setVideoStatus("failed");
       setError("Video-Generierung fehlgeschlagen");
       setFlowStep("input");
       stopPolling();
@@ -273,7 +269,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
       const statusData = await statusRes.json();
       if (statusData.progress != null) setProgress(statusData.progress);
       if (statusData.status === "failed") {
-        setVideoStatus("failed");
         setError(
           sanitizeUserMessage(
             statusData.error || "Video-Generierung fehlgeschlagen"
@@ -293,7 +288,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
   const startPolling = (jobId: string) => {
     stopPolling();
-    setVideoStatus("processing");
     setProgress(8);
     void pollOnce(jobId);
     pollIntervalRef.current = setInterval(() => void pollOnce(jobId), 5000);
@@ -343,7 +337,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
       }
       startPolling(data.jobId);
     } catch (err: unknown) {
-      setVideoStatus("failed");
       setError(
         sanitizeUserMessage(
           err instanceof Error ? err.message : "Generierung fehlgeschlagen",
@@ -363,7 +356,6 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     setScript("");
     clearRecording();
     setVideoUrl(null);
-    setVideoStatus("idle");
     setProgress(0);
     setError(null);
     setCreditsLeft(null);

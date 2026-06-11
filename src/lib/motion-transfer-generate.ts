@@ -1,6 +1,6 @@
 import { fal } from "@fal-ai/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { addCredits, deductCredits, hasEnoughCredits, isCreditExemptUser } from "@/lib/credits";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
@@ -129,6 +129,8 @@ export async function runMotionTransferGeneration(
     return { ok: false, error: "Nicht genug Credits." };
   }
 
+  let shouldRefundOnFailure = false;
+
   try {
     configureFalClient();
 
@@ -144,6 +146,27 @@ export async function runMotionTransferGeneration(
     } else {
       imageUrl = await resolveMediaUrl(params.sourceImage, "image");
     }
+
+    const deduction = await deductCredits(
+      supabase,
+      userId,
+      MOTION_TRANSFER_CREDIT_COST,
+      MOTION_TRANSFER_UI_NAME,
+      {
+        generationType: "motion-transfer",
+        prompt: MOTION_TRANSFER_UI_NAME,
+        skipGenerationLog: true,
+      }
+    );
+
+    if (!deduction.success) {
+      return {
+        ok: false,
+        error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
+      };
+    }
+
+    shouldRefundOnFailure = !(await isCreditExemptUser(supabase, userId));
 
     let result: unknown;
     try {
@@ -162,7 +185,7 @@ export async function runMotionTransferGeneration(
 
     const falVideoUrl = extractVideoUrl(result);
     if (!falVideoUrl) {
-      return { ok: false, error: "Kein Video generiert. Bitte erneut versuchen." };
+      throw new Error("Kein Video generiert. Bitte erneut versuchen.");
     }
 
     const generationId = await createGenerationRecord(
@@ -192,25 +215,6 @@ export async function runMotionTransferGeneration(
       credits_used: MOTION_TRANSFER_CREDIT_COST,
     });
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      MOTION_TRANSFER_CREDIT_COST,
-      MOTION_TRANSFER_UI_NAME,
-      {
-        generationType: "motion-transfer",
-        prompt: MOTION_TRANSFER_UI_NAME,
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
-      return {
-        ok: false,
-        error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
-      };
-    }
-
     await invalidateUserGenerations(userId);
 
     notifyGenerationCompletePush(
@@ -226,6 +230,14 @@ export async function runMotionTransferGeneration(
       creditsLeft: deduction.remainingCredits ?? 0,
     };
   } catch (error) {
+    if (shouldRefundOnFailure) {
+      await addCredits(
+        supabase,
+        userId,
+        MOTION_TRANSFER_CREDIT_COST,
+        `${MOTION_TRANSFER_UI_NAME} — Refund`
+      );
+    }
     console.error("[motion-transfer]", error);
     return {
       ok: false,

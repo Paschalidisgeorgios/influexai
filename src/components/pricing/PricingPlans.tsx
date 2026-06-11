@@ -161,13 +161,7 @@ export function PricingPlans({
                 }}
               >
                 {plan.hot && (
-                  <div
-                    className="absolute -top-4 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#B4FF00] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#060608] shadow-[0_0_24px_rgba(180,255,0,0.35)]"
-                    style={{
-                      background: "#B4FF00",
-                      fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
-                    }}
-                  >
+                  <div className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#B4FF00] px-4 py-1 text-xs font-bold text-[#060608]">
                     {t("most_popular")}
                   </div>
                 )}

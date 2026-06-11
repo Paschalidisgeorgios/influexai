@@ -132,14 +132,16 @@ export async function requireActivePlan(): Promise<FeatureAccessResult> {
 
 /** @deprecated Tier ignored — any active plan grants access. */
 export async function requireFeatureAccess(
-  _requiredPlan: PlanTier
+  requiredPlan?: PlanTier
 ): Promise<FeatureAccessResult> {
+  void requiredPlan;
   return requireActivePlan();
 }
 
 export async function requireGatedFeature(
-  _feature: GatedFeature
+  feature: GatedFeature
 ): Promise<FeatureAccessResult> {
+  void feature;
   return requireActivePlan();
 }
 
@@ -166,8 +168,9 @@ export async function assertActivePlan(): Promise<NextResponse | null> {
 
 /** Returns a 401/403 NextResponse, or null when access is granted. */
 export async function assertGatedFeature(
-  _feature: GatedFeature
+  feature: GatedFeature
 ): Promise<NextResponse | null> {
+  void feature;
   return assertActivePlan();
 }
 

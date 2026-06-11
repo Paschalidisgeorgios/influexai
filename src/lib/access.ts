@@ -77,9 +77,6 @@ export function hasKiToolEntitlement(
  * Zwei-Stufen-Zugang: Admin/Owner oder aktiver Plan → true.
  * `requiredPlan` wird ignoriert (kein Tier-Gating mehr).
  */
-export function canUseFeature(
-  user: AccessUser,
-  _requiredPlan?: PlanTier
-): boolean {
+export function canUseFeature(user: AccessUser): boolean {
   return hasActivePlan(user);
 }

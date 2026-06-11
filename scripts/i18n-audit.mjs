@@ -21,10 +21,6 @@ function flatten(obj, prefix = "") {
   return out;
 }
 
-/** Likely untranslated German UI copy (audit heuristic for de-identical strings) */
-const GERMAN_TEXT_RE =
-  /[äöüßÄÖÜ]|\b(Willkommen|Wähle|Zurück|Bitte|Keine|Schließen|Anmelden|Abmelden|Einstellungen|Credits kaufen|Jetzt starten|Häufige Fragen|Für Marken|So funktioniert|Einmaliger|Einstieg)\b/;
-
 function isLoanwordEqual(deVal, locVal) {
   if (deVal !== locVal) return false;
   if (deVal.length < 4) return true;

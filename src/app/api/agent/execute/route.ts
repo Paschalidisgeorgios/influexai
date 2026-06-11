@@ -10,8 +10,9 @@ import {
   saveExecutionServer,
   saveTextToolRunsServer,
 } from "@/lib/agent/persistExecution";
-import { orchestrate } from "@/lib/agent/toolOrchestrator";
+import { orchestrate, AgentInsufficientCreditsError } from "@/lib/agent/toolOrchestrator";
 import { estimateKiAgentOrchestrateCredits } from "@/lib/agent/ki-agent-orchestrate-credits";
+import { sumKiAgentOrchestratorUsedCredits } from "@/lib/agent/credits";
 import type {
   AgentExecution,
   AgentResult,
@@ -28,7 +29,10 @@ import {
   evaluatePlannerGuard,
   isBlockingPlannerDecision,
 } from "@/lib/agent/planner-guard";
-import { deductCredits } from "@/lib/credits";
+import {
+  AgentSafetyError,
+  checkAgentInputSafety,
+} from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -108,6 +112,15 @@ export async function POST(request: Request) {
     );
   }
 
+  try {
+    checkAgentInputSafety(prompt);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   const type: ExecuteType = body.type === "campaign" ? "campaign" : "agent";
 
   if (type === "campaign") {
@@ -170,6 +183,12 @@ export async function POST(request: Request) {
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      if (
+        err instanceof AgentInsufficientCreditsError ||
+        msg === "Nicht genug Credits."
+      ) {
+        return NextResponse.json({ error: msg }, { status: 402 });
+      }
       return NextResponse.json({ error: msg }, { status: 500 });
     }
 
@@ -247,8 +266,16 @@ export async function POST(request: Request) {
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Fehler";
+    if (
+      err instanceof AgentInsufficientCreditsError ||
+      msg === "Nicht genug Credits."
+    ) {
+      return NextResponse.json({ error: msg }, { status: 402 });
+    }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
+
+  const usedCredits = sumKiAgentOrchestratorUsedCredits(result.toolRuns);
 
   const { data: profileAfter } = await supabase
     .from("profiles")
@@ -265,7 +292,7 @@ export async function POST(request: Request) {
     status: "completed",
     steps: completedSteps,
     result,
-    usedCredits: 0,
+    usedCredits,
     updatedAt: new Date().toISOString(),
   };
 
@@ -284,7 +311,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     execution: completedExec,
     result,
-    usedCredits: 0,
+    usedCredits,
     estimatedCredits: billingEstimate.typical,
     billingNote:
       "Credits werden von den ausgeführten Tools abgezogen — keine separate Agent-Gebühr.",

@@ -1,4 +1,9 @@
 import { createAnthropicMessage, parseClaudeJson } from "@/lib/anthropic";
+import {
+  generateFullCampaignClaude,
+  isToolError,
+  type FullCampaignResult,
+} from "@/lib/agent/claude-agent-tools";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
 import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
@@ -339,6 +344,78 @@ Ergänze jedes Item mit content, caption, hashtags und posting_time.`;
   } catch {
     return params.items;
   }
+}
+
+function mapCampaignPlatformFromString(value: string): CampaignPlatform {
+  const v = value.toLowerCase();
+  if (v.includes("instagram")) return "instagram";
+  if (v.includes("linkedin")) return "linkedin";
+  if (v.includes("youtube")) return "youtube_shorts";
+  return "tiktok";
+}
+
+function mapStepTypeToContentType(
+  type: FullCampaignResult["steps"][number]["type"]
+): ContentItem["type"] {
+  switch (type) {
+    case "hook":
+    case "video":
+      return "reel";
+    case "image":
+      return "visual_briefing";
+    case "kalender":
+      return "post";
+    default:
+      return "post";
+  }
+}
+
+export async function generateFullCampaign(params: {
+  prompt: string;
+  mode: CampaignMode;
+  platforms: CampaignPlatform[];
+  goal: CampaignGoal;
+  tone: CampaignTone;
+  creatorDNA?: CreatorProfile | null;
+}): Promise<FullCampaignResult> {
+  const spec = CAMPAIGN_SPECS[params.mode];
+  const creatorContext =
+    formatCreatorProfileForPrompt(params.creatorDNA ?? null) || params.prompt.slice(0, 200);
+  const platform = params.platforms[0] ?? "tiktok";
+
+  const result = await generateFullCampaignClaude({
+    creatorDNA: creatorContext,
+    nische: params.prompt.slice(0, 120),
+    plattform: platform,
+    ziel: params.goal,
+    duration: spec.days,
+  });
+
+  if (isToolError(result)) {
+    throw new Error(result.error);
+  }
+
+  return result;
+}
+
+export function fullCampaignStepsToItems(
+  campaign: FullCampaignResult,
+  defaultPlatform: CampaignPlatform
+): ContentItem[] {
+  return campaign.steps.map((step, index) => ({
+    id: `campaign-step-${step.day}-${index}`,
+    type: mapStepTypeToContentType(step.type),
+    platform: mapCampaignPlatformFromString(step.platform) || defaultPlatform,
+    day: step.day,
+    title: step.title,
+    content: step.content,
+    caption: step.caption,
+    hashtags: step.hashtags,
+    postingTime: step.posting_time,
+    hook: step.type === "hook" ? step.content : undefined,
+    script: step.type === "video" ? step.content : undefined,
+    status: "generated" as const,
+  }));
 }
 
 export function inferBrandDNA(prompt: string): {

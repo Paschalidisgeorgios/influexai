@@ -111,7 +111,6 @@ async function main() {
   const sendBtn = page.locator('button[type="submit"], button').filter({ has: page.locator("svg") }).last();
   await sendBtn.click();
 
-  const events = [];
   try {
     await page.waitForSelector('span.text-\\[\\#B4FF00\\].ml-1', { timeout: 300000 });
     const doneCount = await page.locator("span.text-\\[\\#B4FF00\\].ml-1").count();

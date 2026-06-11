@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Box,
@@ -399,7 +400,7 @@ function LoraTrainingPageInner() {
               {previews.length ? (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
                   {previews.slice(0, 12).map((src, i) => (
-                    <img key={i} src={src} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6 }} />
+                    <Image key={i} src={src} alt="" width={56} height={56} unoptimized style={{ objectFit: "cover", borderRadius: 6 }} />
                   ))}
                   {previews.length > 12 && <span style={{ color: "rgba(255,255,255,0.65)", alignSelf: "center" }}>+{previews.length - 12}</span>}
                 </div>
@@ -573,8 +574,8 @@ function LoraTrainingPageInner() {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {models.map((m) => (
               <div key={m.id} style={{ display: "flex", gap: 14, padding: 14, borderRadius: 12, background: "#18181d", flexWrap: "wrap", alignItems: "center" }}>
-                <div style={{ width: 56, height: 56, borderRadius: 8, overflow: "hidden", background: "#0f0f12", flexShrink: 0 }}>
-                  {thumbUrls[m.id] ? <img src={thumbUrls[m.id]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.65)", fontSize: "1.2rem" }}>🧠</div>}
+                <div style={{ position: "relative", width: 56, height: 56, borderRadius: 8, overflow: "hidden", background: "#0f0f12", flexShrink: 0 }}>
+                  {thumbUrls[m.id] ? <Image src={thumbUrls[m.id]} alt="" fill unoptimized className="object-cover" /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.65)", fontSize: "1.2rem" }}>🧠</div>}
                 </div>
                 <div style={{ flex: 1, minWidth: 140 }}>
                   <div style={{ fontWeight: 700, color: "#F0EFE8" }}>{m.name}</div>

@@ -14,7 +14,6 @@ import {
   REMIX_SYSTEM_PROMPT,
   remixResultsSaveErrorMessage,
   type RemixConcept,
-  type RemixStructure,
 } from "@/lib/remix-analysis";
 import { extractYouTubeVideoId } from "@/lib/youtube";
 import { fetchYouTubeVideoSnippet } from "@/lib/youtube-metadata";

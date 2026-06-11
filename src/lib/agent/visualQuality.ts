@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAnthropicMessage } from "@/lib/anthropic";
-import { runImageGeneratorGeneration } from "@/lib/image-generator-run";
+import {
+  runImageGeneratorGeneration,
+  type ImageGeneratorRunResult,
+} from "@/lib/image-generator-run";
+import { addCredits, deductCredits } from "@/lib/credits";
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import {
   QUALITY_RETRY_THRESHOLD,
   buildQualityRetryHint,
@@ -12,6 +17,8 @@ import type {
   VisualQAReport,
 } from "./types";
 import type { ImagePlatformId, ImageStyleId } from "@/lib/ai/imageStylePresets";
+
+export { scoreContent } from "@/lib/agent/contentScoring";
 
 const VISION_MODEL = "claude-sonnet-4-5-20250929";
 
@@ -256,7 +263,6 @@ export async function runVisualQA(
 
   return {
     passed: scored.passed && scored.score >= QUALITY_RETRY_THRESHOLD,
-    genderMatches: true,
     subjectCountMatches: true,
     anatomyOk: scored.score >= 60,
     handsOk: scored.score >= 60,
@@ -281,14 +287,6 @@ export function buildRepairPrompt(
 ): string {
   const fixes: string[] = [];
 
-  if (!report.genderMatches) {
-    const g = constraints.subjectGenderPresentation;
-    fixes.push(
-      g === "female"
-        ? "Regenerate with one clearly female-presenting adult woman. No male subjects, no beards, no masculine features."
-        : "Regenerate with one clearly male-presenting adult man."
-    );
-  }
   if (!report.handsOk) {
     fixes.push(
       "Fix hand anatomy: exactly 5 fingers per hand, no extra fingers, natural proportions."
@@ -329,7 +327,34 @@ export async function runVisualQAWithRetry(params: {
   qualityScore: number;
   retried: boolean;
 }> {
-  const generate = async (retryHint?: string) => {
+  const creditCost = IMAGE_GEN_CREDITS.standard;
+
+  const deduction = await deductCredits(
+    params.supabase,
+    params.userId,
+    creditCost,
+    "Bild Generator — Visual QA",
+    {
+      generationType: "image",
+      prompt: params.prompt.slice(0, 500),
+      skipGenerationLog: true,
+    }
+  );
+
+  if (!deduction.success) {
+    throw new Error(deduction.error ?? "Nicht genug Credits.");
+  }
+
+  async function refundVisualQaCredits(reason: string) {
+    await addCredits(
+      params.supabase,
+      params.userId,
+      creditCost,
+      `Bild Generator — Visual QA Refund (${reason})`
+    );
+  }
+
+  const generate = async (retryHint?: string): Promise<ImageGeneratorRunResult & { ok: true }> => {
     const enhancedPrompt = retryHint
       ? `${params.enhanced.prompt}. ${retryHint}`
       : params.enhanced.prompt;
@@ -342,6 +367,7 @@ export async function runVisualQAWithRetry(params: {
         category: "creator",
         styleId: params.styleId,
         platform: params.platform,
+        skipCreditDeduction: true,
         preEnhanced: {
           enhancedPrompt,
           negativePrompt: params.enhanced.negative_prompt,
@@ -356,7 +382,14 @@ export async function runVisualQAWithRetry(params: {
     return result;
   };
 
-  const first = await generate();
+  let first: ImageGeneratorRunResult & { ok: true };
+  try {
+    first = await generate();
+  } catch {
+    await refundVisualQaCredits("Erstversuch fehlgeschlagen");
+    throw new Error("Bildgenerierung fehlgeschlagen.");
+  }
+
   const firstScore = await scoreVisualOutput(
     first.imageUrl,
     params.prompt,
@@ -375,7 +408,19 @@ export async function runVisualQAWithRetry(params: {
     };
   }
 
-  const second = await generate(buildQualityRetryHint(firstScore.weaknesses));
+  // Retry is free — credits already deducted on first attempt
+  let second: ImageGeneratorRunResult & { ok: true };
+  try {
+    second = await generate(buildQualityRetryHint(firstScore.weaknesses));
+  } catch {
+    return {
+      imageUrl: first.imageUrl,
+      generationId: first.generationId,
+      qualityScore: firstScore.score,
+      retried: true,
+    };
+  }
+
   const secondScore = await scoreVisualOutput(
     second.imageUrl,
     params.prompt,

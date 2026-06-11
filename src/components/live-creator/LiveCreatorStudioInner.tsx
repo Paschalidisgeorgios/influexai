@@ -107,7 +107,7 @@ export function LiveCreatorStudioInner() {
     }
   };
 
-  const stopWebcam = () => {
+  const stopWebcam = useCallback(() => {
     stopFrameLoops();
     recorderRef.current?.stop();
     recorderRef.current = null;
@@ -119,7 +119,7 @@ export function LiveCreatorStudioInner() {
     if (webcamVideoRef.current) {
       webcamVideoRef.current.srcObject = null;
     }
-  };
+  }, []);
 
   const closeRealtime = () => {
     connectionRef.current?.close();
@@ -130,7 +130,7 @@ export function LiveCreatorStudioInner() {
     stopHeartbeat();
     stopWebcam();
     closeRealtime();
-  }, []);
+  }, [stopWebcam]);
 
   const displayFrame = useCallback((url: string, isVideo = false) => {
     setOutputUrl(url);

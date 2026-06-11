@@ -1,5 +1,4 @@
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
-import { KI_INFLUENCER_TIMEOUT_MESSAGE } from "@/lib/ki-influencer-http";
 import type { KiInfluencerApiErrorBody } from "@/lib/ki-influencer-types";
 
 export const KI_INFLUENCER_ERROR_MESSAGES = {

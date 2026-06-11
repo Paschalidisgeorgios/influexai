@@ -68,14 +68,6 @@ export const SUBSCRIPTION_PLAN_ORDER: Exclude<SubscriptionPlanId, "free">[] = [
   "business",
 ];
 
-const PLAN_RANK: Record<SubscriptionPlanId, number> = {
-  free: 0,
-  starter: 1,
-  creator: 2,
-  pro: 3,
-  business: 4,
-};
-
 /** Client-safe price ID map (NEXT_PUBLIC_* inlined at build) */
 function readPublicPriceId(key: string | undefined): string | undefined {
   const trimmed = key?.trim();
@@ -134,8 +126,9 @@ export function normalizePlan(plan: string | null | undefined): SubscriptionPlan
 
 export function planMeetsRequirement(
   userPlan: string | null | undefined,
-  _requiredPlan?: SubscriptionPlanId
+  requiredPlan?: SubscriptionPlanId
 ): boolean {
+  void requiredPlan;
   return hasActivePlan({ plan: userPlan });
 }
 

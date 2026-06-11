@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { BusinessLandingPage } from "@/components/marketing/BusinessLandingPage";
 
 export const metadata: Metadata = {
-  title: "InfluexAI für Marken & Business | KI-Content ohne Agentur",
+  title: "InfluexAI für Brands & Businesses — Content ohne Agentur",
   description:
-    "Erstelle professionelle Werbung, Social Content und Kampagnen vollautomatisch mit deiner eigenen KI — für Marken, Teams und Agenturen.",
+    "Erstelle professionelle Werbung, Kampagnen und Social Content vollautomatisch. Ab 9,99€/Monat. Keine Agentur nötig.",
   openGraph: {
-    title: "InfluexAI für Marken & Business",
+    title: "InfluexAI für Brands & Businesses — Content ohne Agentur",
     description:
-      "KI-Content für deine Marke. Ohne Agentur. Werbung, Social Content und Kampagnen auf Autopilot.",
+      "Erstelle professionelle Werbung, Kampagnen und Social Content vollautomatisch. Ab 9,99€/Monat. Keine Agentur nötig.",
     type: "website",
   },
 };

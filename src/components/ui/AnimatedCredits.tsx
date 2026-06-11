@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 type AnimatedCreditsProps = {
   value: number | null;
@@ -14,12 +14,14 @@ export function AnimatedCredits({
   className,
   style,
 }: AnimatedCreditsProps) {
-  const prev = useRef<number | null>(value);
-  const shouldPulse = prev.current !== null && value !== null && prev.current !== value;
+  const [shouldPulse, setShouldPulse] = useState(false);
+  const prevRef = useRef<number | null>(null);
   const isLow = value !== null && value < 10;
 
-  useEffect(() => {
-    prev.current = value;
+  useLayoutEffect(() => {
+    const prev = prevRef.current;
+    setShouldPulse(prev !== null && value !== null && prev !== value);
+    prevRef.current = value;
   }, [value]);
 
   return (

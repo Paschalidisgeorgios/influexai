@@ -185,7 +185,6 @@ export default function CampaignAutopilot() {
   const [stepIdx, setStepIdx] = useState(0);
   const [guard, setGuard] = useState<GuardState>(null);
   const [startError, setStartError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -315,7 +314,6 @@ export default function CampaignAutopilot() {
               };
             });
             setPhase("done");
-            setJobId(null);
           }
 
           if (job?.status === "failed") {
@@ -324,7 +322,6 @@ export default function CampaignAutopilot() {
             setStartError(job.error ?? "Job fehlgeschlagen");
             setPhase("idle");
             setExecution(null);
-            setJobId(null);
           }
         } catch (e) {
           console.error("[polling]", e);
@@ -356,7 +353,6 @@ export default function CampaignAutopilot() {
     setPhase("idle");
     setExecution(null);
     setStepIdx(0);
-    setJobId(null);
   };
 
   const handleStart = async () => {
@@ -367,7 +363,6 @@ export default function CampaignAutopilot() {
     clearPolling();
     setStartError(null);
     pendingResultRef.current = null;
-    setJobId(null);
 
     let data: {
       execution: CampaignExecution;
@@ -415,7 +410,6 @@ export default function CampaignAutopilot() {
     }
 
     if (data.jobId) {
-      setJobId(data.jobId);
       const next: CampaignExecution = {
         ...data.execution,
         status: "running",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, type CSSProperties } from "react";
+import Image from "next/image";
 
 export default function LivePortraitPage() {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
@@ -252,7 +253,7 @@ export default function LivePortraitPage() {
           </div>
           <div
             onClick={() => imageRef.current?.click()}
-            className={mediaBoxHeight}
+            className={`relative ${mediaBoxHeight}`}
             style={{
               border: sourceImage
                 ? "1px solid rgba(180,255,0,0.4)"
@@ -268,10 +269,12 @@ export default function LivePortraitPage() {
             }}
           >
             {sourceImage ? (
-              <img
+              <Image
                 src={sourceImage}
                 alt="Foto"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                fill
+                unoptimized
+                className="object-cover"
               />
             ) : (
               <>
@@ -358,7 +361,7 @@ export default function LivePortraitPage() {
             <>
               <div
                 onClick={() => videoRef.current?.click()}
-                className={mediaBoxHeight}
+                className={`relative ${mediaBoxHeight}`}
                 style={{
                   border: drivingVideo
                     ? "1px solid rgba(180,255,0,0.4)"
@@ -430,7 +433,7 @@ export default function LivePortraitPage() {
             </>
           ) : drivingVideo ? (
             <div
-              className={mediaBoxHeight}
+              className={`relative ${mediaBoxHeight}`}
               style={{
                 border: "1px solid rgba(180,255,0,0.3)",
                 borderRadius: 8,
@@ -476,7 +479,7 @@ export default function LivePortraitPage() {
             </div>
           ) : (
             <div
-              className={mediaBoxHeight}
+              className={`relative ${mediaBoxHeight}`}
               style={{
                 border: "1px solid rgba(180,255,0,0.3)",
                 borderRadius: 8,

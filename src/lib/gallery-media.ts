@@ -1,6 +1,5 @@
 import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
 import { GENERATED_ASSETS_BUCKET } from "@/lib/generation-assets";
-import type { GalleryItem } from "@/lib/gallery-types";
 
 export const AKOOL_JOB_PREFIX = "akool-job:";
 

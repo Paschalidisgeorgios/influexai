@@ -11,7 +11,6 @@ type SidebarNavLinkProps = {
   href: string;
   active: boolean;
   disabled?: boolean;
-  collapsed?: boolean;
   title?: string;
   className: string;
   children: ReactNode;
@@ -21,7 +20,6 @@ export function SidebarNavLink({
   href,
   active,
   disabled,
-  collapsed,
   title,
   className,
   children,

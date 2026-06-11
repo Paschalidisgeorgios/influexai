@@ -76,6 +76,7 @@ export type AnthropicMessageParams = {
   user: string | AnthropicContentBlock[];
   maxTokens?: number;
   model?: string;
+  temperature?: number;
 };
 
 export type AnthropicMessageResult =
@@ -103,6 +104,7 @@ export async function createAnthropicMessage(
       body: JSON.stringify({
         model: params.model ?? ANTHROPIC_MODEL,
         max_tokens: params.maxTokens ?? 4096,
+        ...(params.temperature != null ? { temperature: params.temperature } : {}),
         system: params.system,
         messages: [
           {

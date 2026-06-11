@@ -14,24 +14,11 @@ import {
   LANDING_SECTION_CLASS,
   LANDING_SECTION_COMPACT_CLASS,
 } from "./section-styles";
+import { LANDING_FAQ_ITEMS } from "@/lib/landing-faq-items";
 
 const STEP_KEYS = ["s1", "s2", "s3"] as const;
 
-const FAQ_ITEMS = [
-  { q: "q_agent1", a: "a_agent1" },
-  { q: "q_agent2", a: "a_agent2" },
-  { q: "q_agent3", a: "a_agent3" },
-  { q: "q_agent4", a: "a_agent4" },
-  { q: "q_agent5", a: "a_agent5" },
-  { q: "q_sub1", a: "a_sub1" },
-  { q: "q_sub2", a: "a_sub2" },
-  { q: "q_sub3", a: "a_sub3" },
-  { q: "q2", a: "a2" },
-  { q: "q3", a: "a3" },
-  { q: "q4", a: "a4" },
-  { q: "q5", a: "a5" },
-  { q: "q6", a: "a6" },
-] as const;
+const FAQ_ITEMS = LANDING_FAQ_ITEMS;
 
 const TRUST_SIGNAL_KEYS = ["trust_1", "trust_2", "trust_3", "trust_4"] as const;
 
@@ -269,7 +256,21 @@ export function FaqSection() {
                       fontFamily: "var(--font-dm), sans-serif",
                     }}
                   >
-                    {t(item.a)}
+                    {item.a === "a3" ? (
+                      <>
+                        {t("a3")
+                          .replace(/\s*Details:\s*\/?datenschutz\s*$/i, "")
+                          .trim()}{" "}
+                        <Link
+                          href="/datenschutz"
+                          className="text-[#B4FF00] no-underline hover:underline"
+                        >
+                          Datenschutz
+                        </Link>
+                      </>
+                    ) : (
+                      t(item.a)
+                    )}
                   </p>
                 </div>
               </div>
@@ -510,7 +511,7 @@ export function LandingFooter() {
                   <a
                     key={link}
                     href={FOOTER_LINK_HREF[link] ?? "#"}
-                    className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00]"
+                    className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-white"
                   >
                     {tc(link)}
                   </a>
@@ -524,7 +525,7 @@ export function LandingFooter() {
             </h5>
             <a
               href="/agency"
-              className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00]"
+              className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-white"
             >
               {t("for_agencies")}
             </a>
@@ -547,7 +548,7 @@ export function LandingFooter() {
               {t("trust.support")}{" "}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-[#aaaaaa] no-underline transition-colors hover:text-[#B4FF00]"
+                className="text-[#888888] no-underline transition-colors hover:text-white"
               >
                 {SUPPORT_EMAIL}
               </a>
@@ -560,7 +561,7 @@ export function LandingFooter() {
           className="mx-auto flex max-w-[1160px] flex-col items-center justify-between gap-2 pt-4 sm:flex-row"
           style={{ borderTop: "1px solid var(--border)" }}
         >
-          <p className="text-[0.78rem] text-[#888888]">
+          <p className="text-[0.78rem] text-[#666666]">
             © {new Date().getFullYear()} InfluexAI
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
@@ -568,12 +569,14 @@ export function LandingFooter() {
               { href: "/datenschutz", label: "Datenschutz" },
               { href: "/impressum", label: "Impressum" },
               { href: "/agb", label: "AGB" },
+              { href: "/widerruf", label: "Widerruf" },
+              { href: "/faq", label: "FAQ" },
               { href: "/cookies", label: "Cookies" },
             ].map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-[12px] text-[#888888] no-underline transition-colors duration-150 hover:text-[#B4FF00] hover:underline"
+                className="text-[12px] text-[#888888] no-underline transition-colors duration-150 hover:text-white hover:underline"
               >
                 {link.label}
               </a>
@@ -584,7 +587,7 @@ export function LandingFooter() {
               <a
                 key={icon}
                 href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[#B4FF00]/35 hover:text-[#B4FF00]"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[#B4FF00]/35 hover:text-white"
               >
                 {icon}
               </a>

@@ -271,6 +271,9 @@ export type CampaignResult = {
   mode: CampaignMode;
   title: string;
   summary: string;
+  strategy?: string;
+  expectedReach?: string;
+  tips?: string[];
   brandDNA: Partial<BrandDNA>;
   assumptionsMade: string[];
   items: ContentItem[];
@@ -334,7 +337,6 @@ export type GenerationRequirements = {
 
 export type VisualQAReport = {
   passed: boolean;
-  genderMatches?: boolean;
   subjectCountMatches?: boolean;
   anatomyOk?: boolean;
   handsOk?: boolean;

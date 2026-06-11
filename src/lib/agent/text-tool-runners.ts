@@ -1,59 +1,52 @@
-import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import type { AgentTextToolRun } from "@/lib/agent/types";
 import {
-  buildContentKalenderToolUserPrompt,
-  CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
-  parseContentKalenderToolResult,
-  type ContentKalenderEntry,
-  type ContentKalenderFrequency,
-  type ContentKalenderPlatform,
-} from "@/lib/content-kalender-tool";
-import {
-  generateProductAdScript,
-  scriptToDisplayText,
-  type ProductAdScript,
-  type ProductAdScriptInput,
-} from "@/lib/product-ad-script";
-import {
-  buildTrendScriptToolUserPrompt,
-  parseTrendScriptToolResult,
-  TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
-  trendVideosToSources,
-  type TrendScriptPlatform,
-  type TrendScriptRegion,
-  type TrendScriptSource,
-} from "@/lib/trend-script-tool";
-import {
-  buildViralHookExtractorUserPrompt,
-  parseViralHookExtractorResult,
-  VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
-} from "@/lib/viral-hook-extraktor";
-import { fetchTrendingVideos } from "@/lib/youtube";
+  productAdToDisplayText,
+  runContentKalenderClaude,
+  runProductAdClaude,
+  runTrendScriptClaude,
+  runViralHookClaude,
+  trendScriptToDisplayText,
+  type ContentKalenderDay,
+  type ProductAdResult,
+  type TrendScriptResult,
+  type ViralHookItem,
+} from "@/lib/agent/claude-agent-tools";
+import type { ContentKalenderFrequency, ContentKalenderPlatform } from "@/lib/content-kalender-tool";
+import type { TrendScriptPlatform, TrendScriptRegion } from "@/lib/trend-script-tool";
+import type { ProductAdScriptInput } from "@/lib/product-ad-script";
+
+function throwIfToolError<T>(result: T | { error: string; fallback: null }): T {
+  if (result != null && typeof result === "object" && "error" in result) {
+    throw new Error(result.error);
+  }
+  return result as T;
+}
 
 export async function runViralHookTextTool(
-  input: string
+  input: string,
+  platform = "TikTok",
+  nische = "Content Creation"
 ): Promise<AgentTextToolRun<string[]>> {
   const trimmed = input.trim();
   const picked = await runWithQualityRetry<string[]>({
     toolName: "viral-hook",
     userGoal: trimmed,
     toOutputText: (items) => items.join("\n"),
-    generate: async (retryHint) => {
-      const claude = await createAnthropicMessage({
-        model: SCRIPT_GENERATOR_MODEL,
-        system: VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
-        user: buildViralHookExtractorUserPrompt(trimmed, retryHint),
-        maxTokens: 1536,
+    generate: async () => {
+      const result = await runViralHookClaude({
+        input: trimmed,
+        platform,
+        nische,
       });
-      if (!claude.ok) throw new Error(claude.error);
-      return parseViralHookExtractorResult(claude.text);
+      const hooks = throwIfToolError<ViralHookItem[]>(result);
+      return hooks.map((h) => h.hook);
     },
   });
 
   return {
     tool: "viral-hook",
-    input: { input: trimmed },
+    input: { input: trimmed, platform, nische },
     output: picked.value,
     qualityScore: picked.score,
     retried: picked.wasRetried,
@@ -64,29 +57,39 @@ export async function runContentKalenderTextTool(params: {
   nische: string;
   plattform: ContentKalenderPlatform;
   frequenz: ContentKalenderFrequency;
-}): Promise<AgentTextToolRun<ContentKalenderEntry[]>> {
+}): Promise<
+  AgentTextToolRun<
+    Array<{ tag: string; idee: string; format: string; hook?: string; caption?: string }>
+  >
+> {
   const userGoal = `${params.nische} · ${params.plattform} · ${params.frequenz}`;
-  const picked = await runWithQualityRetry<ContentKalenderEntry[]>({
+  const picked = await runWithQualityRetry<ContentKalenderDay[]>({
     toolName: "content-kalender",
     userGoal,
     toOutputText: (items) =>
-      items.map((e) => `${e.tag}: ${e.idee} (${e.format})`).join("\n"),
-    generate: async (retryHint) => {
-      const claude = await createAnthropicMessage({
-        model: SCRIPT_GENERATOR_MODEL,
-        system: CONTENT_KALENDER_TOOL_SYSTEM_PROMPT,
-        user: buildContentKalenderToolUserPrompt(params, retryHint),
-        maxTokens: 4096,
+      items.map((e) => `Tag ${e.day}: ${e.topic} (${e.format})`).join("\n"),
+    generate: async () => {
+      const result = await runContentKalenderClaude({
+        nische: params.nische,
+        plattform: params.plattform,
+        frequenz: params.frequenz,
       });
-      if (!claude.ok) throw new Error(claude.error);
-      return parseContentKalenderToolResult(claude.text);
+      return throwIfToolError(result);
     },
   });
+
+  const mapped = picked.value.map((entry) => ({
+    tag: entry.date || `Tag ${entry.day}`,
+    idee: entry.topic,
+    format: entry.format,
+    hook: entry.hook,
+    caption: entry.caption,
+  }));
 
   return {
     tool: "content-kalender",
     input: { ...params },
-    output: picked.value,
+    output: mapped,
     qualityScore: picked.score,
     retried: picked.wasRetried,
   };
@@ -97,38 +100,31 @@ export async function runTrendScriptTextTool(params: {
   plattform: TrendScriptPlatform;
   region?: TrendScriptRegion;
 }): Promise<
-  AgentTextToolRun<{ script: string; sources: TrendScriptSource[] }>
+  AgentTextToolRun<{ script: string; sources: Array<{ title: string; views: number }> }>
 > {
   const region = params.region ?? "DE";
   const thema = params.thema.trim();
-  const trends = await fetchTrendingVideos(thema, region);
-  if (trends.length === 0) {
-    throw new Error("Keine Trends gefunden.");
-  }
 
-  const sources = trendVideosToSources(trends);
-  const trendParams = { thema, plattform: params.plattform, trends };
-
-  const picked = await runWithQualityRetry<string>({
+  const picked = await runWithQualityRetry<TrendScriptResult>({
     toolName: "trend-script",
     userGoal: `${thema} · ${params.plattform}`,
-    toOutputText: (value) => value,
-    generate: async (retryHint) => {
-      const claude = await createAnthropicMessage({
-        model: SCRIPT_GENERATOR_MODEL,
-        system: TREND_SCRIPT_TOOL_SYSTEM_PROMPT,
-        user: buildTrendScriptToolUserPrompt(trendParams, retryHint),
-        maxTokens: 4096,
+    toOutputText: trendScriptToDisplayText,
+    generate: async () => {
+      const result = await runTrendScriptClaude({
+        thema,
+        plattform: params.plattform,
+        region,
       });
-      if (!claude.ok) throw new Error(claude.error);
-      return parseTrendScriptToolResult(claude.text);
+      return throwIfToolError(result);
     },
   });
+
+  const scriptText = trendScriptToDisplayText(picked.value);
 
   return {
     tool: "trend-script",
     input: { thema, plattform: params.plattform, region },
-    output: { script: picked.value, sources },
+    output: { script: scriptText, sources: [] },
     qualityScore: picked.score,
     retried: picked.wasRetried,
   };
@@ -137,16 +133,19 @@ export async function runTrendScriptTextTool(params: {
 export async function runProductAdTextTool(
   params: ProductAdScriptInput
 ): Promise<
-  AgentTextToolRun<{ script: ProductAdScript; scriptText: string }>
+  AgentTextToolRun<{ script: ProductAdResult; scriptText: string }>
 > {
-  const picked = await runWithQualityRetry<ProductAdScript>({
+  const picked = await runWithQualityRetry<ProductAdResult>({
     toolName: "product-ad",
     userGoal: `${params.productName} · ${params.audience} · ${params.platform}`,
-    toOutputText: scriptToDisplayText,
-    generate: async (retryHint) => {
-      const scriptResult = await generateProductAdScript(params, retryHint);
-      if (!scriptResult.ok) throw new Error(scriptResult.error);
-      return scriptResult.script;
+    toOutputText: productAdToDisplayText,
+    generate: async () => {
+      const result = await runProductAdClaude({
+        produkt: params.productName,
+        zielgruppe: params.audience,
+        plattform: params.platform,
+      });
+      return throwIfToolError(result);
     },
   });
 
@@ -163,7 +162,7 @@ export async function runProductAdTextTool(
     },
     output: {
       script: picked.value,
-      scriptText: scriptToDisplayText(picked.value),
+      scriptText: productAdToDisplayText(picked.value),
     },
     qualityScore: picked.score,
     retried: picked.wasRetried,

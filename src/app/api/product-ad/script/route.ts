@@ -13,7 +13,7 @@ import {
   scriptToDisplayText,
 } from "@/lib/product-ad-script";
 import { assertGatedFeature } from "@/lib/access.server";
-import { isValidLocale, type Locale } from "@/lib/locale";
+import { isValidLocale } from "@/lib/locale";
 
 export const dynamic = "force-dynamic";
 

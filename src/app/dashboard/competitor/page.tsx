@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type {
   CompetitorAnalysisResponse,
@@ -302,11 +303,12 @@ function CompetitorPageInner() {
             }}
           >
             {data.channel.thumbnailUrl && (
-              <img
+              <Image
                 src={data.channel.thumbnailUrl}
                 alt=""
                 width={72}
                 height={72}
+                unoptimized
                 style={{ borderRadius: "50%", objectFit: "cover" }}
               />
             )}
@@ -480,11 +482,12 @@ function CompetitorPageInner() {
                 }}
               >
                 {v.thumbnailUrl && (
-                  <img
+                  <Image
                     src={v.thumbnailUrl}
                     alt=""
                     width={96}
                     height={54}
+                    unoptimized
                     style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
                   />
                 )}

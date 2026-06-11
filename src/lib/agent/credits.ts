@@ -1,9 +1,13 @@
+import { CONTENT_KALENDER_TOOL_CREDIT_COST } from "@/lib/content-kalender-tool";
 import { COMPETITOR_ANALYSIS_CREDIT_COST } from "@/lib/competitor-analysis";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { PRODUCT_PREVIEW_CREDIT_COST } from "@/lib/product-ad-preview-run";
 import { SEEDANCE_CREDIT_COST } from "@/lib/seedance-config";
+import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
+import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 import { VIRAL_SCORE_CREDIT_COST } from "@/lib/viral-score";
-import type { AgentExecutableToolName } from "./types";
+import type { AgentExecutableToolName, AgentTextToolRun } from "./types";
+import type { CampaignPlanStep } from "./campaignPlanner";
 
 /** Credit costs for executable tools (shown before run). */
 export const AGENT_TOOL_CREDITS: Record<AgentExecutableToolName, number> = {
@@ -108,4 +112,59 @@ export function fullPipelineCreditSum(): number {
     (s, t) => s + AGENT_TOOL_CREDITS[t],
     0
   );
+}
+
+/** KI-Agent orchestrator text tools — aligned with standalone API route costs. */
+export function kiAgentOrchestratorToolCreditCost(tool: string): number {
+  switch (tool) {
+    case "viral-hook":
+      return VIRAL_HOOK_EXTRACTOR_CREDIT_COST;
+    case "trend-script":
+      return TREND_SCRIPT_TOOL_CREDIT_COST;
+    case "content-kalender":
+      return CONTENT_KALENDER_TOOL_CREDIT_COST;
+    case "product-ad":
+      return 0;
+    case "image-generator":
+      return AGENT_TOOL_CREDITS.generate_image;
+    default:
+      return VIRAL_HOOK_EXTRACTOR_CREDIT_COST;
+  }
+}
+
+export function sumKiAgentOrchestratorUsedCredits(
+  toolRuns: AgentTextToolRun[] | undefined
+): number {
+  if (!toolRuns?.length) return 0;
+  return toolRuns.reduce(
+    (sum, run) => sum + kiAgentOrchestratorToolCreditCost(run.tool),
+    0
+  );
+}
+
+/** Campaign autopilot — per planned step (matches post-run sum in campaignExecutor). */
+export function sumCampaignPlanCredits(plan: CampaignPlanStep[]): number {
+  let total = 0;
+  for (const step of plan) {
+    switch (step.tool) {
+      case "image-generator":
+        total += AGENT_TOOL_CREDITS.generate_image;
+        break;
+      case "trend-script":
+        total += 4;
+        break;
+      case "viral-hook":
+        total += 3;
+        break;
+      case "content-kalender":
+        total += 5;
+        break;
+      case "product-ad":
+        total += 3;
+        break;
+      default:
+        break;
+    }
+  }
+  return total;
 }

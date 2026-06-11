@@ -1,335 +1,391 @@
-# InfluexAI System-Audit
+# InfluexAI Audit Report — 2026-06-11
 
-**Datum:** Juni 2026  
-**Methode:** Read-only Code-Review (keine Änderungen am Produktcode, kein Build, kein Commit)  
-**Hinweis:** Dies ist keine Rechtsberatung. Rechtliche Bewertungen sind als technische Compliance-Hinweise markiert.
+**Scope:** Full read-only audit of the InfluexAI Next.js codebase (repo commit `a5a8724`).  
+**Stack (actual):** Next.js **16.2.7**, TypeScript, Tailwind v3, Supabase, Stripe, fal.ai, ElevenLabs, Akool, Anthropic Claude (`claude-sonnet-4-5-20250929`).  
+**Note:** Audit checklist references Next.js 15; project runs Next.js 16 with Turbopack.
 
----
-
-## 🔴 KRITISCH (sofort fixen — blockiert Geld / Login / Sicherheit)
-
-| Bereich | Datei:Zeile | Problem | Fix nötig |
-|---------|-------------|---------|-----------|
-| Stripe Webhook | `src/app/api/stripe/webhook/route.ts:308-313` | **Keine Idempotenz** vor `addCredits()`. Stripe kann `checkout.session.completed` erneut senden → Credits mehrfach gutgeschrieben. `stripe_payments`-Upsert erfolgt **nach** Gutschrift, prüft nicht ob Session bereits verarbeitet. | Vor Gutschrift prüfen ob `stripe_session_id` bereits existiert; `event.id` persistieren. |
-| Stripe Webhook | `src/app/api/stripe/webhook/route.ts:144-152` | Abo-Checkout (`handlePlatformSubscription`) addiert monatliche Credits bei jedem erneuten Event ohne Duplikat-Check. | Idempotenz pro `session.id` / `subscription.id`. |
-| Profil-Anlage | `supabase/migrations/024_paid_only_new_users.sql:3-19` | `handle_new_user()` existiert, aber **kein `CREATE TRIGGER … ON auth.users`** in Repo-Migrationen. Profil-Row evtl. nicht automatisch angelegt. | Trigger in Migration + Supabase-Prod verifizieren. |
-| Aufladen UI | `src/components/credits/BuyCreditsProvider.tsx:222` | `showModal = modalOpen && hasPlan` — Free-User sehen beim Klick auf Credits-Badge/Sidebar **kein Modal** (stilles No-Op). | Modal öffnen oder Redirect `/pricing` / `/dashboard/credits`. |
-| Avatar Render | `src/app/api/avatar/start-render/route.ts:44-49` | Credits werden **vor** Render abgezogen (manueller Update, nicht `deductCredits`). RunPod nicht angebunden (Z. 59–63); bei Fehler **keine Erstattung**. | Abbuchung nach Erfolg oder Refund bei Fehler. |
-| Recht / Signup | `src/app/(auth)/signup/page.tsx:400` | Link `href="/terms"` — Route **existiert nicht** (AGB liegt unter `/agb`). | Link auf `/agb` (+ Datenschutz-Link). |
-| Recht | — | **`/widerruf` fehlt komplett** — bei digitalen Abos (7,99 € Starter-Abo) in DE üblicherweise erforderlich. | Widerrufsseite + Verlinkung in AGB/Checkout. |
-| Analytics | `src/app/layout.tsx:170-171` + `GoogleAnalytics.tsx:5-20` | Google Analytics wird **immer** geladen, unabhängig vom Cookie-Banner-Consent. | GA erst nach Consent laden. |
-| Credit-Race | `src/lib/credits.ts:124-152` | `deductCredits` = Read-Modify-Write ohne DB-Transaktion/Lock → parallele Requests können Credits **unter 0** drücken oder doppelt abbuchen. | Atomare RPC oder `SELECT … FOR UPDATE`. |
+**Commands run:**
+- `npx tsc --noEmit` → **0 errors**
+- `npm run build` → **success** (warnings: middleware→proxy deprecation, edge runtime static gen)
 
 ---
 
-## 🟡 MITTEL (wichtig, nicht sofort blockierend)
+## 🔴 Critical (blocks launch or breaks functionality)
 
-| Bereich | Datei:Zeile | Problem | Fix nötig |
-|---------|-------------|---------|-----------|
-| Auth Admin-API | `src/app/api/admin/ab-stats/route.ts:23` | Prüft nur `profile.is_admin`, **nicht** `isPlatformAdminServer` / Email-Allowlist. Allowlist-Admin ohne DB-Flag → 403. | Einheitlich `requireAdmin()` / `isPlatformAdminServer`. |
-| Auth Admin-API | `src/app/api/admin/ab-reset/route.ts:22` | Gleiches Problem (`is_admin` only). | Wie oben. |
-| Signup Legal | `src/app/(auth)/signup/page.tsx:397-405` | **Keine Checkbox**; nur Fließtext „stimmst du AGB zu“. Kein Datenschutz-Link. | Checkbox + Links `/agb` + `/datenschutz`. |
-| Legacy Auth | `src/app/auth/page.tsx` | Parallele Auth-UI neben `/auth/sign-in`; Signup ohne Email-Redirect-Konfiguration wie neue Seite. | Deprecaten oder angleichen. |
-| Email-Bestätigung | `signup/page.tsx:128-138` | Code setzt `emailRedirectTo`, aber ob Supabase **Confirm email = ON** ist, steht nur im Dashboard (nicht im Repo). | In Supabase Prod verifizieren. |
-| Plan-Gating | `src/middleware.ts:259-261` | Setzt nur Header `x-plan-upgrade-required`, **blockiert Route nicht**. Schutz clientseitig via `PlanGateProvider`. | Serverseitig redirect oder API härter absichern (teilweise via `assertGatedFeature`). |
-| Plan-Gating Client | `PlanGateProvider.tsx:56` | `hasActivePlan` ohne Email an Admin-Allowlist → Admin-Allowlist-Email evtl. als Free behandelt bis Profil geladen. | Email in Client-Check mitschicken. |
-| Produkt-Script | `src/app/api/product-ad/script/route.ts:82-101` | Auth + Plan-Gate, aber **keine Credit-Abbuchung** — Claude-Script gratis nach Plan-Kauf. | Credits definieren oder bewusst dokumentieren. |
-| Voice Preview | `src/app/api/elevenlabs/voice-preview/route.ts:37-49` | Auth ja, **keine Credits** — ElevenLabs-Kosten pro Preview. | Rate-Limit oder Credit-Kosten. |
-| Agent Execute | `src/app/api/agent/execute/route.ts:6` | Nutzt `mockExecutor` — Credits werden abgebucht, Ergebnis teils Mock. | Produktions-Executor oder Kennzeichnung. |
-| Agent Campaign | `src/app/api/agent/campaign/route.ts:6` | `buildCampaignResult` aus Mock; Credits bei Erfolg abgebucht. | Erwartung vs. Realität klären. |
-| Webhook | `src/app/api/stripe/webhook/route.ts` | **`export const dynamic` fehlt** (andere Stripe-Routen haben `force-dynamic`). | Konsistenz / Caching vermeiden. |
-| RLS profiles | Repo-Migrationen | Kein explizites `enable row level security` auf `profiles` in gefundenen Migrationen (Tabelle vermutlich extern angelegt). | RLS-Status in Supabase prüfen. |
-| AGB | `src/app/agb/page.tsx` | Kein Widerrufs-/Kündigungsabschnitt für Verbraucher-Abos. | Rechtstext ergänzen (mit Anwalt). |
-| Checkout UX DE | Stripe Checkout | Kein eigener „zahlungspflichtig bestellen“-Text im Code (Stripe-Standard). | Stripe Custom Text / AGB-Links prüfen. |
-| Doppel-Checkout-API | `src/app/api/credits/checkout` + `src/app/api/stripe/credits-checkout` | Zwei Pfade für Credit-Packs; unterschiedliche Clients. | Vereinheitlichen. |
-| Admin UI | `DashboardSidebar.tsx:431-448` | Admin-Nav nur wenn `isAdminUser()` (Client). URL `/dashboard/admin/*` dennoch erreichbar → Layout blockiert serverseitig. | OK, aber Client-Check nicht alleinige Sicherheit (Layout ok). |
-| Start-Credits Anzeige | `subscription-plans.ts:122` | `getPlanMonthlyCredits("free")` returns **50** für UI-Kapazität, obwohl Signup **0** Credits setzt. | Verwirrende Sidebar-Max-Anzeige. |
+| # | Finding | Location | What's wrong | Fix |
+|---|---------|----------|--------------|-----|
+| C1 | Agent text runs free | `src/app/api/agent/execute/route.ts` L268, L287 | `usedCredits: 0` always returned; text tools via `orchestrate()` do not call `deductCredits` | Deduct per tool using `AGENT_TOOL_CREDITS` / registry after successful runs; return real `usedCredits` |
+| C2 | Campaign credits not deducted | `src/lib/agent/campaignExecutor.ts` L345–349 | `usedCredits` is hardcoded sum; no `deductCredits` calls | Charge credits per executed campaign step via RPC |
+| C3 | Image generated before credit deduct | `src/app/api/generate-image/route.ts` L156–209 | FAL + storage complete before `deductCredits`; on 402 user keeps asset | Deduct first (hold) or rollback generation on deduct failure |
+| C4 | Agent image QA double-billing | `src/lib/agent/visualQuality.ts` L332–378 | `runVisualQAWithRetry` calls `runImageGeneratorGeneration` twice; each run deducts credits | Single charge + retry flag, or cap at one billed generation |
+| C5 | Checklist routes 404 | See routing table below | `/dashboard/trend-script`, `/dashboard/produkt-werbung`, `/dashboard/bild-generator`, `/dashboard/thumbnail`, `/dashboard/lora` have **no pages** | Add redirects in `middleware.ts` to canonical paths or create alias pages |
+| C6 | Missing legal pages | — | `/widerruf` and `/faq` routes **do not exist** | Add `/widerruf` page + link from AGB/checkout; FAQ is landing-only (`Sections.tsx`) |
+| C7 | Admin email mismatch | `src/lib/admin-allowlist.ts` L2–4 | Default allowlist is `paschalidis.georgio38@gmail.com`; audit expects `paschalidisgeorgios38@gmail.com` | Align allowlist with production admin email via `ADMIN_EMAIL_ALLOWLIST` env |
+| C8 | Migration 059 not in production | `supabase/migrations/059_protect_profiles_sensitive_columns.sql` | Sensitive column protection (GUC + trigger) may be undeployed per project policy | Run staging test script `scripts/db/test-migration-059-profiles-security.sql` before controlled prod deploy |
+| C9 | Plan gate bypass | `src/app/api/upscale-image/route.ts` L18–27, `src/app/api/purchase-image-download/route.ts`, `src/app/api/avatar/start-render/route.ts` | Auth only — no `assertKiToolAccess` / plan check | Add `assertKiToolAccess(creditCost)` like `generate-image` |
+| C10 | `/admin` page client-only guard | `src/app/admin/page.tsx` L38–39 | Fetches `/api/admin/stats` client-side; page shell renders before auth | Server layout guard or redirect; API is protected (`requireAdmin`) but UI flashes |
+| C11 | Wrong API paths in docs/registry | `src/lib/agent/tools-definition.ts` L125 | References `POST /api/image-generator` — **route does not exist** | Update to `/api/generate-image` |
+| C12 | Kling 2.5 UI without backend | `src/lib/kling25-config.ts` L22 | `KLING_25_PROVIDER_ENABLED = false` but UI may expose model | Hide UI option or implement `runKling25Generation` |
+| C13 | Direct profile credit update (test) | `src/app/api/test/set-credits/route.ts` L40 | `.update({ credits })` bypasses RPC | Gate behind `E2E_TEST_API` only in CI; block in production builds |
+| C14 | No prompt-level safety block | `src/lib/agent/planner-guard.ts`, execute routes | NSFW/celebrity/minor prompts not rejected before AI calls | Add input moderation layer before orchestration |
 
 ---
 
-## 🟢 KOSMETISCH (nice to have)
+## 🟡 Warning (degrades experience or has wrong data)
 
-| Bereich | Datei:Zeile | Problem |
-|---------|-------------|---------|
-| Tote Komponente | `src/components/credits/BuyCreditsModal.tsx` | Wird nirgends importiert; `BuyCreditsProvider` nutzt `NoCreditsModal`. |
-| Auth Marketing | `src/app/auth/page.tsx:389` | „DSGVO-konform“-Claim ohne rechtliche Absicherung im Text. |
-| Legacy URLs | `middleware.ts:41-45` | `/login`, `/signup` → Redirect (funktioniert). |
-| forgot-password | `forgot-password/page.tsx:89` | Link `/login` statt `/auth/sign-in` (Redirect ok). |
-| TS | `npx tsc --noEmit` | **Keine TypeScript-Fehler** (Juni 2026 Audit-Lauf). |
-| Env-Doku | `docs/auth/ENV_REQUIRED.md` | Gut dokumentiert inkl. `ADMIN_EMAIL_ALLOWLIST`; Stripe Credit-Env vorhanden. |
-| .gitignore | `.gitignore:37` | `.env*` ignoriert ✓ |
-
----
-
-## 📊 STATUS-MATRIX
-
-| Bereich | Status | Details |
-|---------|--------|---------|
-| **Auth Login** | ⚠️ Teilweise | `signInWithPassword` + Fehler-UI (`login/page.tsx:34-40`). Redirect via `resolvePostAuthRedirect`. |
-| **Auth Signup** | ⚠️ Teilweise | Funktional; Email-Verify-Screen; `/terms`-Link kaputt; keine Legal-Checkbox. |
-| **Email-Bestätigung** | ⚠️ Unklar | Code unterstützt es; Supabase-Dashboard-Einstellung nicht im Repo verifizierbar. |
-| **Passwort-Reset** | ✅ | `/forgot-password` + `resetPasswordForEmail` (`forgot-password/page.tsx:30-32`). |
-| **Session / Middleware** | ✅ | `middleware.ts:146-151` blockiert `/dashboard` ohne User. Admin-Guard Z. 160-181. |
-| **Profil-Anlage** | 🔴 Risiko | Trigger-Funktion ja, Trigger-Create im Repo **nein**. 0 Start-Credits (`024_paid_only_new_users.sql:14`). |
-| **Stripe Checkout** | ✅ | Sessions via `create-credits-checkout.ts`, `subscribe/route.ts`. Success URLs gesetzt. |
-| **Stripe Webhook** | 🔴 | Signatur-Check ja (`webhook/route.ts:337-350`). **Idempotenz nein.** Events: `checkout.session.completed`, `invoice.paid`, `customer.subscription.*`. |
-| **Aufladen-Button** | 🔴 Free-User | onClick vorhanden; Stripe nur mit Plan-Modal oder direkt `/dashboard/credits`. |
-| **Credit-Verbrauch Tools** | ⚠️ Gemischt | Meiste Kern-APIs: Auth + Check + Abbuchung nach Erfolg. Ausnahmen siehe Tabelle unten. |
-| **Navigation** | ✅ | Sidebar-Hrefs haben `page.tsx` (siehe Nav-Tabelle). Tot: `/terms` (Signup). |
-| **Admin-Schutz** | ⚠️ | Server: Layouts + `requireAdmin`/`isPlatformAdminServer`. Inkonsistenz bei `ab-stats`/`ab-reset`. |
-| **Rechtliches (DE)** | 🔴 | Impressum/Datenschutz/AGB/Cookies ✓. **Widerruf ✗.** GA ohne Consent. |
-| **Sicherheit** | ⚠️ | Secrets serverseitig; `.env*` gitignored. Credit-Race + Webhook-Idempotenz schwach. |
-| **TypeScript** | ✅ | `npx tsc --noEmit` exit 0. |
-
----
-
-## TEIL A — AUTH & REGISTRIERUNG (Detail)
-
-### Auth-Dateien
-
-| Pfad | Rolle |
-|------|-------|
-| `src/app/(auth)/login/page.tsx` | Haupt-Login |
-| `src/app/(auth)/signup/page.tsx` | Haupt-Signup |
-| `src/app/(auth)/forgot-password/page.tsx` | Passwort-Reset |
-| `src/app/auth/sign-in/page.tsx` | Re-Export Login |
-| `src/app/auth/sign-up/page.tsx` | Re-Export Signup |
-| `src/app/auth/callback/route.ts` | OAuth/Email-Callback |
-| `src/app/auth/page.tsx` | Legacy kombinierte Auth |
-| `src/middleware.ts` | Session + Redirects + Guards |
-
-### Befunde
-
-1. **Login:** ✅ Funktioniert grundsätzlich. Fehler → generische Meldung `bad_credentials` (kein Unterscheid unbestätigte Email vs. falsches Passwort).
-2. **Registrierung:** ✅ `signUp` mit Metadata (Referral, Beta). Duplikat-Email-Handling via `isSignupEmailAlreadyRegistered`.
-3. **Email-Bestätigung:** ⚠️ `emailRedirectTo` gesetzt; Erzwingung in Supabase nicht aus Code ableitbar.
-4. **Passwort-Reset:** ✅ Vorhanden.
-5. **AGB/Datenschutz-Checkbox:** ❌ Nur Text + kaputter `/terms`-Link.
-6. **Redirect nach Registrierung:** Mit Session → `resolvePostAuthRedirect` (Admin → `/admin`, mit Plan → `/dashboard`, ohne Plan → `/pricing`). Ohne Session → Verify-Screen.
-7. **Middleware:** ✅ Vorhanden; Supabase SSR Cookies.
-8. **Geschützte Routen:** ✅ `/dashboard` ohne Auth → `/auth/sign-in?redirect=…` (`middleware.ts:146-151`).
+| # | Finding | Location | What's wrong | Fix |
+|---|---------|----------|--------------|-----|
+| W1 | Next.js version drift | `package.json` L49 | Next **16.2.7**, not 15 | Update docs/checklist |
+| W2 | Build warning | build output | Middleware file convention deprecated (use proxy) | Plan Next 16 proxy migration |
+| W3 | Credit/model mismatch | `src/lib/fal-credits.ts`, `src/lib/image-generator-fal.ts` L69–91 | Standard billed as `fluxDev` (5 cr) but primary model is `flux-2-pro` | Align pricing labels and `FAL_CREDITS` |
+| W4 | `characters.training_images` column | Audit checklist vs schema | Column **does not exist** in `060_characters.sql`; API computes `training_images` from generations | Document as computed field; do not query DB column |
+| W5 | No separate `credits` or `gallery` tables | `002_generations_and_credit_transactions.sql` | Credits live on `profiles.credits`; gallery = `generations` table | Update internal docs |
+| W6 | Triple intent routers | `router.ts`, `intentRouter.ts`, `planner.ts` | Same prompt can map to different tools | Consolidate on registry planner |
+| W7 | `avatar_workflow` / `thumbnail_concept` dropped | `src/lib/agent/toolOrchestrator.ts` L386+ | Intents fall through to viral-hook | Add orchestrator cases |
+| W8 | Text quality retry doubles API cost | `src/lib/agent/qualityScoring.ts` L143 | Retries Claude without extra user credits (good for user, bad for margin) | Accept or cap retries |
+| W9 | Visual QA stubs | `src/lib/agent/visualQuality.ts` L259–265 | `genderMatches: true` always | Implement real constraint checks |
+| W10 | `scoreOutput` fallback 100 | `src/lib/agent/qualityScoring.ts` L91, L97 | LLM failure → pass quality gate | Fail closed or lower default score |
+| W11 | FAQ vs Datenschutz | `messages/de.json` `landingPage.faq.a3` vs `src/app/datenschutz/page.tsx` | FAQ implies EU-only processing; Datenschutz lists US AI vendors | Align copy |
+| W11 | DSGVO wording drift | `messages/de.json` L623 vs L1369 | `DSGVO-konform` vs `DSGVO-bewusst` | Pick one consistent term |
+| W12 | German/English mix | `src/lib/dashboard-flows.ts` L410–613 | Sidebar categories in English | i18n keys in `de.json` |
+| W13 | Duplicate agent routes | `/dashboard`, `/dashboard/agent`, `/dashboard/ki-agent` | Three entry points | Canonicalize to one route |
+| W14 | Voice Agent still linked | `src/app/dashboard/voice-agent/page.tsx`, sidebar | Coming-soon page still in nav | Hide or badge non-clickable |
+| W15 | `stimme/speak` vs `generate-voice` | `src/app/api/stimme/speak/route.ts` | 2 credits, no gallery; duplicate of 3-cr action | Deprecate or unify |
+| W16 | ElevenLabs missing from `.env.local.example` | `.env.local.example` | No `ELEVENLABS_API_KEY`, `AKOOL_*`, `ANTHROPIC_API_KEY` | Document all required keys |
+| W17 | Credit pack Stripe placeholders | `.env.local.example` L31–34 | `STRIPE_CREDITS_*=price_xxx` | Set real price IDs in deployment |
+| W18 | `purchase-image-download` deduct order | `src/app/api/purchase-image-download/route.ts` | Credits deducted before unlock confirmed | Refund on unlock failure |
+| W19 | Live-portrait external URL | `src/app/api/live-portrait/route.ts` | Often no `generated-assets` ingest | Persist to storage + gallery |
+| W20 | Product-ad Kling v1.6 | `src/app/api/product-ad/generate/route.ts` | Oldest Kling; 75 credits/video | Evaluate v2.5+ upgrade |
+| W21 | Agent registry stale href | `src/lib/agent/redirect-tools.ts` L22 | `/dashboard/produkt-werbung` (404) | Change to `/dashboard/produkt` |
+| W22 | Most dashboard pages lack metadata | e.g. `src/app/dashboard/viral-hook/page.tsx` | Only `dashboard/admin/content` exports `metadata` | Add `metadata` or layout titles |
+| W23 | Missing loading skeletons | `campaign-autopilot`, `seedance`, `motion-transfer`, `live-creator`, `live-portrait`, `avatar-studio` | Spinner or text-only loading | Add layout-matched skeletons |
+| W24 | `AiOutputDisclaimer` gaps | `src/components/agent/MasterAgentChat.tsx` | Main dashboard agent has no disclaimer | Add below outputs |
+| W25 | `ab-track` unauthenticated writes | `src/app/api/ab-track/route.ts` | Service role insert without auth | Rate limit + validation |
+| W26 | Agency routes present | `/dashboard/agency`, `/api/agency/checkout` | Agency WIP should stay blocked per policy | Feature-flag or env gate before prod marketing |
+| W27 | Custom domain redirect | HTTP check `www.influexai.com` | 302 → `influexai-com.l.ink` (DNS outside repo) | Verify Vercel domain config |
+| W28 | `mockExecutor` naming | `src/lib/agent/mockExecutor.ts` L52 | Still exports `buildMockResult`; execute imports `createExecution` from same file | Rename module; remove dead mock paths |
+| W29 | Voice clone API only | `src/app/api/stimme/clone/route.ts` | No UI; FAQ promises cloning | UI with consent or adjust marketing |
+| W30 | Footer dead social links | `src/components/landing/Sections.tsx` ~586 | `href="#"` | Remove or add real URLs |
 
 ---
 
-## TEIL B — PROFIL & START-CREDITS (Detail)
+## 🟢 Passed (confirmed working correctly)
 
-1. **Automatisches profiles-Row:** ⚠️ Funktion `handle_new_user()` insert mit `credits: 0`. Trigger-Anlage **nicht im Repo** → **Unsicherheit**.
-2. **Start-Credits:** **0** (`024_paid_only_new_users.sql:14`). Kein Signup-Bonus.
-3. **Mechanismus:** DB-Trigger (Funktion), nicht App-Code. Kein `profiles.insert` in `src/`.
-4. **Trigger fehlschlägt:** User existiert in `auth.users`, aber API/Dashboard erwartet `profiles` → `deductCredits` → „Profil nicht gefunden“ (`credits.ts:130-135`).
-5. **RLS profiles:** Policies in `043_user_role.sql`, `021_push_notifications.sql` etc. Explizites RLS-Enable auf `profiles` in Repo **nicht gefunden** → manuell prüfen.
+| # | Area | Evidence |
+|---|------|----------|
+| P1 | TypeScript compile | `npx tsc --noEmit` exit 0 |
+| P2 | Production build | `npm run build` exit 0, 629 static pages generated |
+| P3 | Claude model consistency | `SCRIPT_GENERATOR_MODEL`, `INTENT_ROUTER_MODEL`, `PLANNER_MODEL`, `IMAGE_PROMPT_ENHANCER_MODEL` = `claude-sonnet-4-5-20250929` |
+| P4 | Plan preview no credits | `src/app/api/agent/plan-preview/route.ts` L31–32, L60 — `assertKiToolAccess(0)`, no deduct |
+| P5 | Stripe webhook idempotency | `057_stripe_events.sql`, `058_processed_checkout_dedup.sql`, `webhook/route.ts` L480–507 |
+| P6 | Subscription pricing | `src/lib/subscription-plans.ts` — Starter €9.99, Creator €49, Pro €99, Business €199 |
+| P7 | Credit packs | `src/lib/credit-packages.ts` — 50/€5, 150/€12, 350/€25, 800/€45 |
+| P8 | Stripe env naming | `NEXT_PUBLIC_STRIPE_INFLUEXAI_*` convention in `subscription-plans.ts` |
+| P9 | Atomic credit RPC | `056_atomic_credits.sql`, `src/lib/credits.ts` `deductCredits` / `addCredits` |
+| P10 | Auth middleware | `src/middleware.ts` L152–164 — unauthenticated `/dashboard/*` → `/auth/sign-in` |
+| P11 | Admin API guard | `src/app/api/admin/stats/route.ts` L10–16 — `requireAdmin()` |
+| P12 | Admin credit bypass server-side | `src/lib/credits.ts` L129 — `isCreditExemptUser` |
+| P13 | Legal pages exist | `/impressum`, `/datenschutz`, `/agb`, `/cookies` |
+| P14 | Processors in Datenschutz | Anthropic, fal.ai, ElevenLabs, Stripe, Supabase listed |
+| P15 | No fake testimonials live | `SocialProofPopup` not mounted; no `garantiert viral` in codebase |
+| P16 | Stimme/Musik activated | `VOICE_COMING_SOON = false` in `feature-flags.ts` |
+| P17 | Live Creator activated | `LIVE_CREATOR_COMING_SOON = false` |
+| P18 | Image prompt enhancer (main path) | `prepareImageGeneratorPrompts` → `enhanceImagePrompt` in `image-generator-prompt-pipeline.ts` |
+| P19 | Flux primary model | `FAL_IMAGE_MODELS.FLUX_2_PRO` in `image-generator-fal.ts` L86 |
+| P20 | Generated media ownership | `src/app/api/generated-image/[id]/route.ts` L27 — `getOwnedGeneration` |
+| P21 | RLS on generations | `002_generations_and_credit_transactions.sql` L26–33 |
+| P22 | RLS on creator_profiles | `062_creator_profiles.sql` L12–29 |
+| P23 | RLS on agent_executions | `049_agent_executions.sql` L19–23 |
+| P24 | agent_jobs table | `052_agent_jobs.sql` |
+| P25 | campaign_results table | `050_campaign_results.sql` |
+| P26 | agent_feedback table | `051_agent_feedback.sql` |
+| P27 | stripe_events table | `057_stripe_events.sql` |
+| P28 | lora_models table | `040_lora_models.sql` |
+| P29 | characters table | `060_characters.sql` |
+| P30 | Hydration warning | `src/app/layout.tsx` L142, L155 — `suppressHydrationWarning` on html/body |
+| P31 | `/preise` redirect | `middleware.ts` L49–51 → `/pricing` |
+| P32 | Tool loading skeletons (recent) | `tool-output-skeletons.tsx` wired in viral-hook, content-kalender, trend-to-script, produkt, ki-agent, voice |
+| P33 | ElevenLabs TTS + gallery audio | `generate-voice.ts`, `/api/generated-audio/[id]` |
+| P34 | Akool async polling | `live-creator/route.ts`, `ugc-video/route.ts` — charge on completion |
+| P35 | Landing index exports | `src/components/landing/index.ts` — all exports resolve (no root `components/index.ts` exists; not required) |
 
 ---
 
-## TEIL C — STRIPE / BEZAHLLOGIK (Detail)
+## 📋 Todo (improvements, not blockers)
 
-### Stripe-Routen
+| # | Finding | Location | Suggestion |
+|---|---------|----------|------------|
+| T1 | No `components/index.ts` | — | Optional barrel file; not blocking |
+| T2 | ~26 sidebar tools | `dashboard-flows.ts` | Collapse groups, favorites, search |
+| T3 | Unused landing sections | `StackedDemoSection`, `LandingProofSection`, etc. | Archive or delete dead exports |
+| T4 | `console.log` in production paths | ~25 files (e.g. `training-set/route.ts` 14×) | Replace with structured logger or remove |
+| T5 | TODO/FIXME comments | `mockExecutor.ts`, `publish/route.ts`, etc. | Triage and close |
+| T6 | Limited error boundaries | Only 7 `error.tsx` files | Add dashboard tool-level boundaries |
+| T7 | Hero 3-video rotation | `HeroSection.tsx` L120–189 | Reduce mobile LCP impact |
+| T8 | Kling version fragmentation | v1.6 product-ad, v3 motion, v2.5 disabled | Document matrix in ops runbook |
+| T9 | GPT Image / Recraft evaluation | — | PoC on staging only |
+| T10 | FAL sync-lipsync v3 evaluation | — | Compare vs Akool for talking creator |
+| T11 | Favorite gallery feature | — | Not implemented (smoke test mentions it) |
+| T12 | i18n for `AiOutputDisclaimer` | `AiOutputDisclaimer.tsx` L5–19 | Move to `messages/de.json` |
+| T13 | E2E mock path | `src/lib/e2e-mock-generations.ts` | Ensure `E2E_MOCK_GENERATIONS=1` never in prod |
+| T14 | Middleware → proxy migration | Next 16 warning | Follow Next.js 16 docs |
+| T15 | Performance: GridReveal canvas | `GridReveal.tsx` | Disable on mobile |
+| T16 | `creator_profiles` migration 062 | May not be in prod | Verify before agent memory features |
+| T17 | Voice page ElevenLabs branding | `voice/page.tsx` | Consider user-facing “KI-Stimme” only |
+| T18 | Melodia widget | `MelodiaWidget.tsx` TODO | Review if needed |
+| T19 | Agency teaser on landing | `Sections.tsx` AgencyTeaserSection | Keep hidden if agency blocked |
+| T20 | Unit test coverage | `vitest` configured | Expand beyond e2e smoke |
+
+---
+
+## Detailed checklist results
+
+### 1. Build & compilation
+
+| Check | Result |
+|-------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `npm run build` | ✅ Success |
+| Warnings | Middleware deprecation; edge runtime static gen |
+| `components/index.ts` | ❌ Does not exist (not required) |
+| `components/landing/index.ts` | ✅ Exports valid |
+
+### 2. Routing & pages
+
+| Requested path | Status | Actual / notes |
+|----------------|--------|-----------------|
+| `/` | ✅ | `src/app/page.tsx` |
+| `/dashboard` | ✅ | Master Agent Chat |
+| `/dashboard/viral-hook` | ✅ | |
+| `/dashboard/content-kalender` | ✅ | |
+| `/dashboard/trend-script` | ❌ 404 | Use `/dashboard/trend-to-script` |
+| `/dashboard/produkt-werbung` | ❌ 404 | Use `/dashboard/produkt` |
+| `/dashboard/ki-ich` | ✅ | |
+| `/dashboard/bild-generator` | ❌ 404 | Use `/dashboard/image-generator` |
+| `/dashboard/gallery` | ✅ | |
+| `/dashboard/thumbnail` | ❌ 404 | Use `/dashboard/thumbnail-concept` |
+| `/dashboard/lora` | ❌ 404 | Use `/dashboard/lora-training` |
+| `/dashboard/ki-agent` | ✅ | |
+| `/dashboard/campaign-autopilot` | ✅ | |
+| `/dashboard/stimme-musik` | ✅ | Re-exports voice page |
+| `/dashboard/live-creator` | ✅ | |
+| `/admin` | ✅ | Client page; API guarded |
+| `/preise` | ✅ redirect | → `/pricing` |
+| `/business` | ✅ | |
+| `/impressum` | ✅ | |
+| `/datenschutz` | ✅ | |
+| `/agb` | ✅ | |
+| `/widerruf` | ❌ | Missing |
+| `/faq` | ❌ | FAQ section on landing only |
+
+**Metadata:** Most dashboard pages are `"use client"` without `export const metadata`.
+
+### 3. API routes (checklist vs actual)
+
+| Requested | Actual route | Auth | Credits RPC | Notes |
+|-----------|--------------|------|-------------|-------|
+| `/api/viral-hook` | ✅ | ✅ | ✅ | |
+| `/api/content-kalender` | ✅ | ✅ | ✅ | |
+| `/api/trend-script` | ✅ | ✅ | ✅ refund on fail | |
+| `/api/product-ad/generate` | ✅ | ✅ | After success | No refund on FAL fail |
+| `/api/ki-agent` | ✅ | ✅ | varies | |
+| `/api/agent/execute` | ✅ | ✅ preflight | ❌ text not deducted | C1 |
+| `/api/agent/campaign` | ✅ | ✅ preflight | ❌ not deducted | C2 |
+| `/api/agent/job/[id]` | ✅ | ✅ | — | |
+| `/api/agent/publish` | ✅ | ✅ | — | |
+| `/api/bild-generator` | ❌ | — | — | Use `/api/generate-image` |
+| `/api/ki-ich/train` | ❌ | — | — | KI-Ich: `/api/ki-ich` (portrait, not LoRA train) |
+| `/api/ki-ich/status` | ❌ | — | — | KI-Influencer: `/api/ki-influencer/status/[id]` |
+| `/api/stripe/checkout` | ✅ | ✅ | — | |
+| `/api/stripe/webhook` | ✅ | signature | add_credits RPC | |
+| `/api/admin/*` | ✅ | `requireAdmin` | — | |
+
+**Total API routes:** 114 `route.ts` files under `src/app/api/`.
+
+### 4. Supabase
+
+| Table | Migration | RLS |
+|-------|-----------|-----|
+| profiles | pre-existing + patches | PARTIAL in repo (043, 059) |
+| credits (column) | on `profiles.credits` | via 059 trigger when deployed |
+| characters | 060 | ✅ |
+| creator_profiles | 062 | ✅ |
+| agent_executions | 049 | ✅ |
+| campaign_results | 050 | ✅ |
+| agent_feedback | 051 | ✅ |
+| agent_jobs | 052 | ✅ |
+| stripe_events | 057 | ✅ (service role) |
+| generations (gallery) | 002, 032 | ✅ |
+| lora_models | 040 | ✅ |
+
+**RPC usage:** `deductCredits` / `addCredits` in `src/lib/credits.ts` — preferred path. Exceptions: agency tenant pool updates, test route, `credits_used` on generations row (not balance).
+
+### 5. Authentication
+
+| Check | Result |
+|-------|--------|
+| `/dashboard/*` protected | ✅ middleware |
+| `/admin/*` protected | ✅ middleware + admin profile check |
+| Admin server guard | ✅ `requireAdmin`, `isPlatformAdminServer` |
+| Credit exempt admin | ✅ server `isCreditExemptUser` |
+| Redirect unauthenticated | ✅ `/auth/sign-in?redirect=...` |
+| Default admin email | ⚠️ `paschalidis.georgio38@gmail.com` (see C7) |
+
+### 6. Stripe
+
+| Check | Result |
+|-------|--------|
+| 4 subscription plans | ✅ €9.99 / €49 / €99 / €199 |
+| 4 credit packs | ✅ €5 / €12 / €25 / €45 |
+| Env convention | ✅ `NEXT_PUBLIC_STRIPE_INFLUEXAI_*` |
+| `checkout.session.completed` | ✅ webhook L480 |
+| `invoice.paid` | ✅ webhook L501 |
+| `customer.subscription.deleted` | ✅ webhook L507 |
+| `stripe_events` idempotency | ✅ |
+
+### 7. Credits system
+
+| Check | Result |
+|-------|--------|
+| Signup 0 credits | ✅ `024_paid_only_new_users.sql` |
+| Plan required for KI tools | ✅ mostly `assertKiToolAccess` |
+| Admin bypass | ✅ |
+| Deduct before AI | ❌ many routes deduct after (generate-image, seedance, etc.) |
+| Refund on failure | PARTIAL (trend-script yes; most image/video no) |
+| Agent/campaign billing | ❌ Critical C1/C2 |
+
+### 8. AI integrations
+
+| Check | Result |
+|-------|--------|
+| Anthropic model | ✅ sonnet 4.5 everywhere checked |
+| fal.ai flux-2-pro primary | ✅ |
+| imagePromptEnhancer before fal (Bild Generator) | ✅ via pipeline |
+| KI-Ich `/api/ki-ich` | ⚠️ uses flux-pulid; enhancer not in ki-ich path |
+| Quality retry < 70 | ✅ text: no extra credit; image agent: **double charge** |
+| ElevenLabs | ✅ code complete; env in Vercel per ops |
+| Akool async | ✅ |
+| Mock data in prod | ✅ only `E2E_MOCK_GENERATIONS=1` paths |
+
+### 9. UI & design
+
+| Check | Result |
+|-------|--------|
+| Acid Noir tokens | PARTIAL — mix of Tailwind + inline styles on older pages |
+| Loading skeletons | PARTIAL — see W23 |
+| Error states | PARTIAL — most tools show inline errors |
+| Mobile | PARTIAL — overflow guards present; hero heavy |
+| Duplicate KI Agent nav | ⚠️ `/dashboard`, `/dashboard/agent`, `/dashboard/ki-agent` |
+| suppressHydrationWarning | ✅ layout.tsx |
+
+### 10. Environment variables (used in codebase)
+
+**Public (client-safe):**
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_STRIPE_INFLUEXAI_*` (8 plan price IDs)
+- `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SENTRY_DSN`
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`
+
+**Server-only (must NOT be NEXT_PUBLIC):**
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_CREDITS_50/150/350/800`
+- `FAL_API_KEY` / `FAL_KEY`
+- `ANTHROPIC_API_KEY`
+- `ELEVENLABS_API_KEY`
+- `AKOOL_CLIENT_ID`, `AKOOL_API_KEY`
+- `ADMIN_EMAIL_ALLOWLIST`
+- `RESEND_API_KEY`, `YOUTUBE_API_KEY`
+- `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`
+- `E2E_TEST_API`, `PLAYWRIGHT`, `E2E_MOCK_GENERATIONS`
+
+**Missing from `.env.local.example`:** `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `AKOOL_*`, `ADMIN_EMAIL_ALLOWLIST`, `RESEND_API_KEY` (W16).
+
+### 11. Performance & code quality
+
+| Metric | Finding |
+|--------|---------|
+| useEffect cleanup | Not exhaustively audited; hero videos have cleanup |
+| Error boundaries | 7 route-level `error.tsx` |
+| console.log | ~25 files with logs |
+| TODO/FIXME | ~14 matches across 5 files |
+| next/image | Most landing/dashboard images use `next/image`; some `<img>` in visualizer |
+
+### 12. COMING SOON / locked features
+
+| Feature | Flag | Status |
+|---------|------|--------|
+| Stimme & Musik | `VOICE_COMING_SOON` | **false** — active |
+| Live Creator | `LIVE_CREATOR_COMING_SOON` | **false** — active |
+| Voice Agent | `dashboard-flows.ts` `locked: true` | Coming soon page |
+| Kling 2.5 provider | `KLING_25_PROVIDER_ENABLED` | **false** — UI may show option |
+| Agency / White-label | routes exist | WIP — block deploy per policy |
+| Campaign autopilot preview flag | `CAMPAIGN_AUTOPILOT_IS_PREVIEW` | **false** — real execution |
+
+---
+
+## Modell-Matrix (summary)
+
+| Workflow | Model | API | Credits |
+|----------|-------|-----|---------|
+| Bild Generator Standard | fal-ai/flux-2-pro | /api/generate-image | 5 |
+| Bild High-Res | flux-2-pro (+ flux-pro fallback) | /api/generate-image | 8 |
+| Charakter Edit | seedream v4.5/edit | /api/character-image | 5 |
+| KI-Ich | flux-pulid | /api/ki-ich | 8 |
+| Upscale | clarity-upscaler | /api/upscale-image | 4 |
+| LoRA infer | flux-lora | /api/lora/generate | 2 |
+| Seedance I2V | seedance 2.0 | /api/seedance | 40 |
+| Product Ad | kling v1.6 | /api/product-ad/generate | 75 |
+| Motion Transfer | kling v3 | /api/motion-transfer | 8 |
+| Live Creator | Akool + ElevenLabs | /api/live-creator | 10 |
+| UGC Video | Akool | /api/ugc-video | 5 |
+| TTS | ElevenLabs | generate-voice action | 3 |
+| Agent text | Claude Sonnet 4.5 | /api/agent/execute | **0 (bug)** |
+
+---
+
+## Smoke test plan (executable)
+
+### A) Public
+1. `/`, `/pricing`, `/business`, `/tools/script-generator/fitness`
+2. Legal: impressum, datenschutz, agb, cookies — **+ widerruf when added**
+3. Mobile 390px — hero, CTAs, no horizontal scroll
+4. Verify `influexai.com` DNS → Vercel (not stale redirect)
+
+### B) Auth
+1. Sign-up → 0 credits, plan gate
+2. Sign-in redirect back to tool
+3. Admin login → credit exempt + admin routes
+
+### C) Agent
+1. Plan preview — no credit change
+2. Execute script plan — **verify credits decrease (currently fails)**
+3. Campaign autopilot end-to-end
+
+### D) Generation
+1. generate-image, seedance, product-ad, voice TTS
+2. Induce FAL failure — verify credit behavior
+
+### E) Payments
+1. Checkout session, webhook replay (idempotent)
+
+### F) Gallery
+1. New generation visible, download, cross-user 403
+
+---
+
+## Recommended next fix (single prompt)
 
 ```
-src/app/api/stripe/checkout/route.ts          — Credit-Packs (legacy)
-src/app/api/stripe/credits-checkout/route.ts  — Credit-Packs (priceId)
-src/app/api/stripe/subscribe/route.ts         — Plattform-Abo
-src/app/api/stripe/agency-checkout/route.ts   — Agency-Abo
-src/app/api/stripe/agency-credits/route.ts    — Agency Credits
-src/app/api/stripe/session/route.ts           — Post-Checkout Poll
-src/app/api/stripe/webhook/route.ts           — Webhook
-src/app/api/webhooks/stripe/route.ts          — Alias Re-Export
-src/app/api/credits/checkout/route.ts         — Dashboard Credits-Seite
+Fix agent/campaign credit billing only (minimal scope):
+- src/app/api/agent/execute/route.ts: deduct credits per completed text/image tool run
+- src/lib/agent/campaignExecutor.ts: call deductCredits for each step
+- Return accurate usedCredits and remainingCredits
+- No DB migration, no other refactors
+- npm run build must pass
 ```
 
-**Kein** `src/app/api/checkout/`.
-
-### Aufladen-Button
-
-| UI | onClick | Stripe |
-|----|---------|--------|
-| Header Credits | `openBuyCredits()` | Nur wenn `hasPlan` → `NoCreditsModal` → `/api/stripe/credits-checkout` |
-| Sidebar „Aufladen“ | `openBuyCreditsModal()` | Gleich |
-| `/dashboard/credits` | `handleCheckout` → `/api/credits/checkout` | ✅ Funktioniert (auch Free-User mit Login) |
-
-### Preise
-
-| Typ | Definition | Stripe |
-|-----|------------|--------|
-| **InfluExAi Starter 9,99 €** | `subscription-plans.ts:28-35` | Abo `mode: subscription`, Env `NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_*` |
-| **Credit-Packs** | `credit-packages.ts:20-58` | Einmalkauf `mode: payment`, Env `STRIPE_CREDITS_*` |
-| **7,99 € Credits/Monat** | Starter: **50 Credits/Monat** bei Abo-Aktivierung (`webhook/route.ts:134-148`) |
-
-### Env-Vars (vom Code benötigt)
-
-- `STRIPE_SECRET_KEY` — Pflicht (`stripe.ts:4-7`)
-- `STRIPE_WEBHOOK_SECRET` — Pflicht für Webhook (`webhook/route.ts:337`)
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — Client/Stripe.js
-- `NEXT_PUBLIC_STRIPE_{PLAN}_{MONTHLY|YEARLY}` — Abo Price IDs
-- `STRIPE_CREDITS_50/150/350/800` — Credit-Packs
-- `STRIPE_AGENCY_*` — Agency
-- `NEXT_PUBLIC_APP_URL` — Redirect URLs
-
-Ob in `.env.local`/Vercel gesetzt: **nicht aus Repo verifizierbar** (Secrets nicht committed — korrekt).
-
-### force-dynamic
-
-✅ Auf: `checkout`, `credits-checkout`, `subscribe`, `agency-checkout`, `agency-credits`, `session`, `credits/checkout`  
-❌ Fehlt auf: `webhook/route.ts`
-
 ---
 
-## TEIL D — CREDIT-VERBRAUCH IN TOOLS
-
-**Legende:** Auth = Session-Check; Credit = hasEnough/deduct; Mock = Mock/Stub/TODO
-
-| API-Route | Auth? | Credit-Check? | Abbuchung? | Mock? | Status |
-|-----------|-------|---------------|------------|-------|--------|
-| `/api/viral-hook` | ✅ | ✅ | ✅ nach Erfolg | — | ✅ |
-| `/api/content-kalender` | ✅ | ✅ | ✅ nach Erfolg | — | ✅ |
-| `/api/trend-script` | ✅ | ✅ | ✅ + Refund bei Fehler | — | ✅ |
-| `/api/product-ad/generate` | ✅ | ✅ | ✅ nach Erfolg | — | ✅ |
-| `/api/product-ad/script` | ✅ | Plan-Gate | ❌ | — | 🟡 Gratis Script |
-| `/api/ki-agent` | ✅ | ✅ | ✅ nach Claude OK | — | ✅ |
-| `/api/agent/execute` | ✅ | ✅ | ✅ | 🟡 mockExecutor | 🟡 |
-| `/api/agent/campaign` | ✅ | ✅ | ✅ nach Erfolg/Job | 🟡 mockExecutor | 🟡 |
-| `/api/motion-transfer` | ✅ | ✅ | ✅ (lib) | — | ✅ |
-| `/api/live-portrait` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/avatar/create-job` | ✅ | ✅ Check only | ❌ (bei start-render) | — | ⚠️ |
-| `/api/avatar/start-render` | ✅ | ✅ | 🔴 **vor** Render | 🔴 RunPod TODO | 🔴 |
-| `/api/avatar/job/[id]` | ✅ | — | — | — | ✅ Read own job |
-| `/api/ugc-video` | ✅ | ✅ | ✅ bei Complete (GET) | — | ✅ |
-| `/api/faceswap` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/stimme/clone` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/stimme/speak` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/elevenlabs/voice-preview` | ✅ | ❌ | ❌ | — | 🟡 Kostenrisiko |
-| `/api/generate-image` | ✅ | ✅ | ✅ nach Erfolg | — | ✅ |
-| `/api/lora/train` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/lora/generate` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/upscale` | ✅ | ✅ (lib) | ✅ (lib) | — | ✅ |
-| `/api/live-creator` | ✅ | ✅ | ✅ bei Video ready | — | ✅ |
-| `/api/seedance` | ✅ | ✅ | ✅ (lib) | — | ✅ |
-| `/api/competitor` | ✅ | ✅ (lib) | ✅ (lib) | — | ✅ |
-| `/api/outlier-detector` | Server Action | ✅ | ✅ in Action | — | ✅ |
-| `/api/video-remix` | Plan-Gate | ✅ in Action | ✅ in Action | — | ✅ |
-| `/api/viral-score` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/ki-ich` | ✅ | ✅ | ✅ | — | ✅ |
-| `/api/melodia` | ✅ | ✅ | ✅ Stream | — | ✅ |
-| `/api/fal/realtime-token` | ✅ | ❌ | ❌ | — | 🟡 Token-Exposure |
-| `/api/scrape-product` | ✅ | ❌ | ❌ | — | 🟡 |
-| `/api/test/set-credits` | ✅ | — | — | — | ✅ Nur E2E-Flag |
-
-**Race Condition:** Alle Routen mit `deductCredits` ohne Transaktion (`credits.ts`) — siehe 🔴.
-
----
-
-## TEIL E — NAVIGATION & TOTE LINKS
-
-| Nav-Label | href | page.tsx? | 404-Risiko? |
-|-----------|------|-----------|-------------|
-| KI Agent | `/dashboard/ki-agent` | ✅ | Nein |
-| Campaign Autopilot | `/dashboard/campaign-autopilot` | ✅ | Nein |
-| Script Generator | `/dashboard/script-generator` | ✅ | Nein |
-| Produkt-Werbung | `/dashboard/produkt` | ✅ | Nein |
-| Thumbnail Konzept | `/dashboard/thumbnail-concept` | ✅ | Nein |
-| Viral Hook | `/dashboard/viral-hook` | ✅ | Nein |
-| UGC Video | `/dashboard/ugc-video` | ✅ | Nein |
-| Live Portrait | `/dashboard/live-portrait` | ✅ | Nein |
-| Avatar Studio | `/dashboard/avatar-studio` | ✅ | Nein |
-| Motion Transfer | `/dashboard/motion-transfer` | ✅ | Nein |
-| Bild zu Video | `/dashboard/seedance` | ✅ | Nein |
-| Live Creator | `/dashboard/live-creator` | ✅ | Nein |
-| Mein KI-Ich | `/dashboard/ki-ich` | ✅ | Nein |
-| Bild Generator | `/dashboard/image-generator` | ✅ | Nein |
-| HD Upscaler | `/dashboard/upscaler` | ✅ | Nein |
-| LoRA Training | `/dashboard/lora-training` | ✅ | Nein |
-| Galerie | `/dashboard/gallery` | ✅ | Nein |
-| Niche Analyzer | `/dashboard/niche-analyzer` | ✅ | Nein |
-| Outlier Detector | `/dashboard/outlier-detector` | ✅ | Nein |
-| Content Kalender | `/dashboard/content-kalender` | ✅ | Nein |
-| Trend → Script | `/dashboard/trend-to-script` | ✅ | Nein |
-| Konkurrenz | `/dashboard/competitor` | ✅ | Nein |
-| Viral Score | `/dashboard/viral-score` | ✅ | Nein |
-| Video Remix | `/dashboard/video-remix` | ✅ | Nein |
-| Face Swap | `/dashboard/live-creator-new` | ✅ | Nein |
-| Stimme & Musik | `/dashboard/voice` | ✅ | Nein |
-| Statistiken | `/dashboard/analytics` | ✅ | Nein |
-| Community | `/community` | ✅ | Nein |
-| Developer API | `/dashboard/api` | ✅ | Nein |
-| Freunde einladen | `/dashboard/referral` | ✅ | Nein |
-| Einstellungen | `/dashboard/settings` | ✅ | Nein |
-| Credits & Plan | `/dashboard/credits` | ✅ | Nein |
-| Business Analytics | `/dashboard/admin/analytics` | ✅ | Nein (Admin-Layout) |
-| Product Hunt | `/dashboard/admin/producthunt` | ✅ | Nein |
-| App Store Kit | `/dashboard/admin/app-store` | ✅ | Nein |
-| SEO Content | `/dashboard/admin/content` | ✅ | Nein |
-| Admin Panel | `/admin` | ✅ | Nein |
-| Mobile Quick Agent | `/dashboard/agent` | ✅ | Nein |
-
-### Tote / fehlerhafte Links (außerhalb Sidebar)
-
-| Link | Quelle | Problem |
-|------|--------|---------|
-| `/terms` | `signup/page.tsx:400` | **404** — kein `src/app/terms/` |
-| `/login` | `forgot-password/page.tsx:89` | Redirect via Middleware → OK |
-
----
-
-## TEIL F — ADMIN-ZUGRIFF (Detail)
-
-1. **Erkennung:** `isPlatformAdminServer()` — `is_admin` OR `role === admin` OR `ADMIN_EMAIL_ALLOWLIST` (`platform-admin.server.ts`, `admin-allowlist.server.ts`). Client: `isAdminUser()` mit Default-Allowlist (UI only).
-2. **Rote Sidebar-Einträge:** Nur wenn `isAdmin === true` (`DashboardSidebar.tsx:431-448`). Normale User sehen sie **nicht** in UI.
-3. **Server-Schutz:** ✅ `/admin/layout.tsx`, `/dashboard/admin/layout.tsx`, `middleware.ts:160-181`, `requireAdmin()` in Actions/APIs. ⚠️ Ausnahme: `ab-stats`, `ab-reset` nur `is_admin`.
-4. **Admin Credit-Bypass:** ✅ `isCreditExemptUser` / `isCreditExemptEmail` in `credits.ts:101-122`.
-
----
-
-## TEIL G — DATENSCHUTZ & RECHTLICHES (Detail)
-
-| Seite | Existiert |
-|-------|-----------|
-| `/impressum` | ✅ |
-| `/datenschutz` | ✅ (Resend, fal.ai, ElevenLabs, Akool, Stripe, Supabase, Vercel, Sentry; GA in Cookies-Abschnitt) |
-| `/agb` | ✅ |
-| `/cookies` | ✅ |
-| `/widerruf` | ❌ |
-
-1. **Cookie-Banner:** ✅ `CookieBanner.tsx` — localStorage `influexai_cookie_consent`. **Aber:** GA ignoriert Consent (siehe 🔴).
-2. **Registrierung Legal:** ❌ Keine Checkbox; kaputter Terms-Link.
-3. **Bezahl-Button DE:** Stripe Hosted Checkout — kein expliziter „zahlungspflichtig bestellen“-Custom-Text im Code (`create-credits-checkout.ts:60-63` nur Marketing-Text).
-4. **Widerruf:** ❌ Fehlt.
-5. **GA nach Consent:** ❌ `GoogleAnalytics` in Root-Layout immer aktiv.
-6. **Datenschutz-Anbieter:** ✅ Supabase, Stripe, Vercel, fal.ai, ElevenLabs, Akool, Resend, Sentry; GA via Cookie-Richtlinie referenziert.
-
----
-
-## TEIL H — SICHERHEIT (Detail)
-
-1. **Secrets serverseitig:** ✅ Stripe Secret, Service Role, Anthropic, fal, etc. in API Routes / `server-only` Modulen. Kein `NEXT_PUBLIC_*` für Secrets gefunden.
-2. **NEXT_PUBLIC Keys:** Nur Supabase Anon, Stripe Publishable, Price IDs, App URL, GA ID — erwartbar.
-3. **`.env.local` in .gitignore:** ✅ Zeile 37 `.env*`
-4. **Input-Validierung:** Teilweise (z. B. `credits-checkout` whitelist Price IDs). Nicht überall einheitlich.
-5. **RLS:** Auf vielen Tabellen aktiv (generations, credit_transactions, agent_jobs, …). **profiles:** Status unklar im Repo.
-6. **Fremde Jobs:** ✅ `avatar/job/[id]` filtert `.eq("user_id", user.id)` (Z. 24-25). Stripe session prüft `metaUser === user.id` (`session/route.ts:26-27`).
-
----
-
-## TEIL I — BUILD & TYPESCRIPT
-
-1. **TypeScript:** `npx tsc --noEmit` → **Exit 0**, keine Fehler gemeldet.
-2. **Tote Dateien:** `BuyCreditsModal.tsx` (ungenutzt); Legacy `auth/page.tsx`.
-3. **Env-Doku:** `docs/auth/ENV_REQUIRED.md` vorhanden und aktuell (Admin-Allowlist, Stripe, Supabase).
-
----
-
-## ✅ EMPFOHLENE FIX-REIHENFOLGE
-
-1. **Stripe Webhook Idempotenz** — Doppelte Credit-Gutschrift verhindern (`webhook/route.ts`).
-2. **Supabase `handle_new_user` Trigger** — Migration + Prod verifizieren; sonst keine Profile/Credits.
-3. **Aufladen-Flow für Free-User** — `BuyCreditsProvider.tsx` / Redirect zu `/dashboard/credits` oder `/pricing`.
-4. **`/widerruf` + Signup-Legal** — `/terms` → `/agb`, Datenschutz-Link, Checkbox; Widerrufsseite.
-5. **Google Analytics Consent-Gating** — erst nach Cookie-Banner-Akzeptanz laden.
-6. **Avatar `start-render`** — Credits erst bei Erfolg oder Refund-Logik.
-7. **Admin-API vereinheitlichen** — `ab-stats`/`ab-reset` auf `requireAdmin()`.
-8. **`deductCredits` atomar machen** — Race Conditions beheben.
-9. **Produkt-ad/script & Voice-Preview** — Credit-/Rate-Limits definieren.
-10. **Agent Mock → Production** — oder UI klar als Beta kennzeichnen.
-
----
-
-*Ende des Audits. Keine Code-Änderungen vorgenommen (außer dieser Report-Datei).*
+*End of audit report. No code changes were made during this audit.*

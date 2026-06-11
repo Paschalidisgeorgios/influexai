@@ -211,21 +211,6 @@ const landingExtras = {
   },
 };
 
-function deepMerge(target, source) {
-  for (const k of Object.keys(source)) {
-    if (
-      source[k] &&
-      typeof source[k] === "object" &&
-      !Array.isArray(source[k])
-    ) {
-      if (!target[k]) target[k] = {};
-      deepMerge(target[k], source[k]);
-    } else {
-      target[k] = source[k];
-    }
-  }
-}
-
 const locales = ["de", "en", "el", "es", "fr", "pt", "tr", "ar"];
 
 for (const locale of locales) {

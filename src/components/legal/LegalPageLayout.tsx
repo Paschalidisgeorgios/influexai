@@ -160,6 +160,8 @@ export const LEGAL_FOOTER_LINKS = [
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/impressum", label: "Impressum" },
   { href: "/agb", label: "AGB" },
+  { href: "/widerruf", label: "Widerruf" },
+  { href: "/faq", label: "FAQ" },
   { href: "/cookies", label: "Cookies" },
 ] as const;
 

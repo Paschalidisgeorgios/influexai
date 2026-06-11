@@ -3,6 +3,7 @@ import { parseScriptBlocks } from "@/lib/script-format";
 import type { ProductAdPlatform } from "@/lib/product-ad-config";
 import type { TrendScriptPlatform } from "@/lib/trend-script-tool";
 import type { ContentKalenderPlatform } from "@/lib/content-kalender-tool";
+import { deductCredits } from "@/lib/credits";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
 import {
@@ -11,6 +12,7 @@ import {
   runTrendScriptTextTool,
   runViralHookTextTool,
 } from "@/lib/agent/text-tool-runners";
+import { kiAgentOrchestratorToolCreditCost } from "@/lib/agent/credits";
 import { buildImagePrompt } from "./promptBuilder";
 import { parseRequirements } from "./requirements";
 import { runVisualQAWithRetry } from "./visualQuality";
@@ -20,6 +22,40 @@ type OrchestrateContext = {
   supabase: SupabaseClient;
   userId: string;
 };
+
+export class AgentInsufficientCreditsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AgentInsufficientCreditsError";
+  }
+}
+
+async function deductBeforeTextTool(
+  ctx: OrchestrateContext,
+  tool: string,
+  prompt: string
+): Promise<void> {
+  const amount = kiAgentOrchestratorToolCreditCost(tool);
+  if (amount <= 0 || tool === "image-generator") return;
+
+  const result = await deductCredits(
+    ctx.supabase,
+    ctx.userId,
+    amount,
+    `KI Agent — ${tool}`,
+    {
+      generationType: `agent-${tool}`,
+      skipGenerationLog: true,
+      prompt: prompt.slice(0, 500),
+    }
+  );
+
+  if (!result.success) {
+    throw new AgentInsufficientCreditsError(
+      result.error ?? "Nicht genug Credits."
+    );
+  }
+}
 
 function detectPlatform(prompt: string): string {
   if (/tiktok/i.test(prompt)) return "TikTok";
@@ -74,12 +110,22 @@ function trendScriptToOutput(script: string) {
 }
 
 function mapCalendarEntries(
-  entries: Array<{ tag?: string; idee?: string; format?: string; day?: string; idea?: string }>
+  entries: Array<{
+    tag?: string;
+    idee?: string;
+    format?: string;
+    day?: string;
+    idea?: string;
+    hook?: string;
+    caption?: string;
+  }>
 ) {
   return entries.map((entry) => ({
     day: entry.day ?? entry.tag ?? "",
     idea: entry.idea ?? entry.idee ?? "",
     format: entry.format ?? "",
+    hook: entry.hook ?? "",
+    caption: entry.caption ?? "",
   }));
 }
 
@@ -135,7 +181,8 @@ export async function orchestrate(
 
   switch (intent) {
     case "hook_generation": {
-      const run = await runViralHookTextTool(prompt);
+      await deductBeforeTextTool(ctx, "viral-hook", prompt);
+      const run = await runViralHookTextTool(prompt, platform, nische);
       toolRuns.push(run);
       const hooks = run.output;
       return {
@@ -150,6 +197,7 @@ export async function orchestrate(
     }
 
     case "script_generation": {
+      await deductBeforeTextTool(ctx, "trend-script", prompt);
       const run = await runTrendScriptTextTool({
         thema: prompt,
         plattform: mapToTrendScriptPlatform(platform),
@@ -175,6 +223,7 @@ export async function orchestrate(
     case "product_ad": {
       const { productName, productDescription, audience } =
         inferProductAdFields(prompt, nische);
+      await deductBeforeTextTool(ctx, "product-ad", prompt);
       const run = await runProductAdTextTool({
         productName,
         productDescription,
@@ -197,6 +246,7 @@ export async function orchestrate(
     }
 
     case "content_calendar": {
+      await deductBeforeTextTool(ctx, "content-kalender", prompt);
       const run = await runContentKalenderTextTool({
         nische,
         plattform: mapToContentKalenderPlatform(platform),
@@ -216,13 +266,15 @@ export async function orchestrate(
     }
 
     case "video_briefing": {
+      await deductBeforeTextTool(ctx, "trend-script", prompt);
+      await deductBeforeTextTool(ctx, "viral-hook", prompt);
       const [scriptRes, hooksRes] = await Promise.allSettled([
         runTrendScriptTextTool({
           thema: prompt,
           plattform: mapToTrendScriptPlatform(platform),
           region: "DE",
         }),
-        runViralHookTextTool(prompt),
+        runViralHookTextTool(prompt, platform, nische),
       ]);
 
       const outputs: unknown[] = [];
@@ -264,8 +316,11 @@ export async function orchestrate(
     }
 
     case "multi_tool_content_package": {
+      await deductBeforeTextTool(ctx, "viral-hook", prompt);
+      await deductBeforeTextTool(ctx, "trend-script", prompt);
+      await deductBeforeTextTool(ctx, "content-kalender", prompt);
       const [hooksRes, scriptRes, calRes] = await Promise.allSettled([
-        runViralHookTextTool(prompt),
+        runViralHookTextTool(prompt, platform, nische),
         runTrendScriptTextTool({
           thema: prompt,
           plattform: mapToTrendScriptPlatform(platform),
@@ -384,7 +439,8 @@ export async function orchestrate(
     }
 
     default: {
-      const run = await runViralHookTextTool(prompt);
+      await deductBeforeTextTool(ctx, "viral-hook", prompt);
+      const run = await runViralHookTextTool(prompt, platform, nische);
       toolRuns.push(run);
       const hooks = run.output;
       return {

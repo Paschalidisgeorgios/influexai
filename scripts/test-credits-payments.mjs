@@ -110,7 +110,6 @@ async function main() {
 
   // Low-credits modal may also open once (sessionStorage gate)
   const buyModalLow = page.locator('[class*="max-w-4xl"]').filter({ hasText: /Credits|credit/i });
-  const modalAt8 = await buyModalLow.first().isVisible().catch(() => false);
 
   // ── 3. Zero credits modal ──
   await setCredits(admin, userId, 0);
@@ -123,10 +122,9 @@ async function main() {
   const closeBtn = page.getByRole("button", { name: /schließen|close|×/i }).first();
   const canDismiss = await closeBtn.isVisible().catch(() => false);
 
-  let checkoutResult = null;
   page.on("request", (req) => {
     if (req.url().includes("checkout.stripe.com")) {
-      checkoutResult = { navigated: true, url: req.url() };
+      report.stripeCheckoutNavigated = true;
     }
   });
 

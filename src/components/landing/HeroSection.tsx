@@ -11,6 +11,7 @@ import { HeroWorkspaceDemo } from "@/components/landing/HeroWorkspaceDemo";
 import { EXTRA_HERO_ROTATING_TITLES } from "@/data/heroRotatingTitles";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const GridReveal = dynamic(
   () => import("@/components/landing/GridReveal"),
@@ -23,22 +24,24 @@ type HeroMediaItem =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster: string };
 
+const HERO_POSTER = "/images/landing/hero-poster.jpg";
+
 const HERO_MEDIA_ITEMS: HeroMediaItem[] = [
   { type: "image", src: "/images/landing/feature-1.png", alt: "Creator mit InfluexAI" },
   {
     type: "video",
     src: "/videos/landing/feature-1.mp4",
-    poster: "/images/landing/feature-1.png",
+    poster: HERO_POSTER,
   },
   {
     type: "video",
     src: "/videos/landing/feature-2.mp4",
-    poster: "/images/landing/feature-1.png",
+    poster: HERO_POSTER,
   },
   {
     type: "video",
     src: "/videos/landing/feature-3.mp4",
-    poster: "/images/landing/feature-3.png",
+    poster: HERO_POSTER,
   },
 ];
 
@@ -117,7 +120,47 @@ function prepVideoAtStart(video: HTMLVideoElement) {
   video.addEventListener("seeked", () => {}, { once: true });
 }
 
-function HeroBackgroundMedia() {
+function HeroMobileBackgroundVideo() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    void video.play().catch(() => {});
+  }, []);
+
+  return (
+    <div
+      className="absolute inset-0 z-[2] md:hidden pointer-events-none overflow-hidden"
+      aria-hidden
+    >
+      <video
+        ref={videoRef}
+        src="/videos/landing/feature-1.mp4"
+        poster={HERO_POSTER}
+        muted
+        playsInline
+        loop
+        preload="metadata"
+        style={{
+          ...HERO_MEDIA_OBJECT_STYLE,
+          objectPosition: "center top",
+          filter: HERO_MEDIA_FILTER,
+          opacity: 0.35,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0.92) 100%)",
+        }}
+      />
+    </div>
+  );
+}
+
+function HeroDesktopBackgroundMedia() {
   const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const videoRef2 = useRef<HTMLVideoElement | null>(null);
   const videoRef3 = useRef<HTMLVideoElement | null>(null);
@@ -250,10 +293,10 @@ function HeroBackgroundMedia() {
                   <video
                     ref={getVideoRef(index)}
                     src={item.src}
-                    poster={item.poster}
+                    poster={HERO_POSTER}
                     muted
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     onEnded={getVideoEndedHandler(index)}
                     style={{
                       filter: HERO_MEDIA_FILTER,
@@ -274,11 +317,18 @@ function HeroBackgroundMedia() {
   );
 }
 
-export function HeroSection({
-  variant: _variant = "a",
-}: {
-  variant?: AbVariant;
-} = {}) {
+function HeroBackgroundMedia() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  if (isMobile) {
+    return <HeroMobileBackgroundVideo />;
+  }
+
+  return <HeroDesktopBackgroundMedia />;
+}
+
+export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
+  void variant;
   const t = useTranslations("hero");
   const locale = useLocale();
   const priceParams = getStarterPriceParams(locale);
@@ -307,29 +357,7 @@ export function HeroSection({
       id="landing-hero-sentinel"
       className="relative isolate min-h-0 max-w-[100vw] overflow-x-clip md:min-h-[min(100dvh,920px)]"
     >
-      {/* Mobile: dezentes Hintergrundbild (CSS, kein Video) */}
-      <div
-        className="absolute inset-0 z-[2] md:hidden pointer-events-none overflow-hidden"
-        aria-hidden
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/landing/feature-1.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-            opacity: 0.15,
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0.92) 100%)",
-          }}
-        />
-      </div>
-      {/* Base grid + interactive reveal */}
+      {/* Base grid + interactive reveal (desktop only) */}
       <div
         className="absolute inset-0 z-0 overflow-hidden pointer-events-none md:overflow-visible"
         aria-hidden
@@ -354,7 +382,9 @@ export function HeroSection({
             backgroundSize: "40px 40px",
           }}
         />
-        <GridReveal />
+        <div className="hidden md:block">
+          <GridReveal />
+        </div>
       </div>
 
       {/* Layer 1: Model / video — decorative background, far right */}

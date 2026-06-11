@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BarChart2, ChevronDown, Home, Images, Star } from "lucide-react";
+import { BarChart2, ChevronDown, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   LIVE_CREATOR_COMING_SOON,
   VOICE_COMING_SOON,
 } from "@/lib/feature-flags";
-import { NAV_GROUPS, SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
+import { SIDEBAR_TOOL_CATEGORIES, sidebarCategoryKeysForPath, type NavItem } from "@/lib/dashboard-flows";
 import { hasActivePlan } from "@/lib/access";
 import { hasActiveTenantMembershipFromRows } from "@/lib/agency-access";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
@@ -83,11 +83,9 @@ function navItemLabel(
 }
 
 const DEFAULT_OPEN: Record<string, boolean> = {
-  agent: true,
-  text: false,
-  video: false,
-  analyze: false,
-  live: false,
+  erstellen: false,
+  visuals: false,
+  automation: true,
 };
 
 export function DashboardSidebar() {
@@ -193,7 +191,12 @@ export function DashboardSidebar() {
     ].join(" ");
 
   const renderNavItem = (item: NavItem) => {
-    const isActive = pathname === item.href;
+    const isActive =
+      item.id === "ki-agent"
+        ? pathname === "/dashboard" ||
+          pathname === "/dashboard/agent" ||
+          pathname.startsWith("/dashboard/ki-agent")
+        : pathname === item.href;
     const isComingSoon =
       (item.id === "live-creator" && LIVE_CREATOR_COMING_SOON) ||
       (item.id === "voice" && VOICE_COMING_SOON);
@@ -212,6 +215,9 @@ export function DashboardSidebar() {
                 ? "#B4FF00"
                 : "rgba(255,255,255,0.75)"
           }
+          {...(item.id === "ki-agent"
+            ? { fill: isActive ? "#B4FF00" : "transparent" }
+            : {})}
         />
         {!collapsed && (
           <>
@@ -246,7 +252,6 @@ export function DashboardSidebar() {
         key={item.id}
         href={item.href}
         active={isActive}
-        collapsed={collapsed}
         title={collapsed ? label : undefined}
         className={linkClass(isActive)}
       >
@@ -340,66 +345,6 @@ export function DashboardSidebar() {
       </Link>
 
       <nav className="flex-1 py-2.5 px-2 flex flex-col gap-0.5 overflow-y-auto">
-        <SidebarNavLink
-          href="/dashboard"
-          active={pathname === "/dashboard" || pathname === "/dashboard/agent"}
-          collapsed={collapsed}
-          title={collapsed ? tNav("agent") : undefined}
-          className={linkClass(
-            pathname === "/dashboard" || pathname === "/dashboard/agent"
-          )}
-        >
-          <Star
-            size={18}
-            strokeWidth={
-              pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? 2.5
-                : 2
-            }
-            className="shrink-0"
-            color={
-              pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? "#B4FF00"
-                : "rgba(255,255,255,0.75)"
-            }
-            fill={
-              pathname === "/dashboard" || pathname === "/dashboard/agent"
-                ? "#B4FF00"
-                : "transparent"
-            }
-          />
-          {!collapsed && (
-            <>
-              <span className="truncate">{tNav("agent")}</span>
-              <span className="ml-auto text-[0.58rem] font-bold text-[#060608] bg-[#B4FF00] px-1.5 py-0.5 rounded-full">
-                NEU
-              </span>
-            </>
-          )}
-        </SidebarNavLink>
-
-        <SidebarNavLink
-          href="/dashboard/gallery"
-          active={pathname === "/dashboard/gallery"}
-          collapsed={collapsed}
-          title={collapsed ? tNav("gallery") : undefined}
-          className={linkClass(pathname === "/dashboard/gallery")}
-        >
-          <Images
-            size={18}
-            strokeWidth={pathname === "/dashboard/gallery" ? 2.5 : 2}
-            className="shrink-0"
-            color={
-              pathname === "/dashboard/gallery"
-                ? "#B4FF00"
-                : "rgba(255,255,255,0.75)"
-            }
-          />
-          {!collapsed && <span className="truncate">{tNav("gallery")}</span>}
-        </SidebarNavLink>
-
-        <div className="h-px bg-white/5 my-2 mx-1" />
-
         {!collapsed && (
           <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.65)] px-2.5 py-2">
             Tools
@@ -413,10 +358,6 @@ export function DashboardSidebar() {
             category.items,
             index > 0
           )
-        )}
-
-        {NAV_GROUPS.map((group) =>
-          renderCollapseCategory(group.key, group.label, group.items, true)
         )}
 
         <div className="h-px bg-white/5 my-2 mx-1" />
@@ -435,7 +376,6 @@ export function DashboardSidebar() {
               key={item.id}
               href={item.href}
               active={isActive}
-              collapsed={collapsed}
               title={collapsed ? label : undefined}
               className={linkClass(isActive)}
             >
@@ -459,7 +399,6 @@ export function DashboardSidebar() {
               key={item.id}
               href={item.href}
               active={isActive}
-              collapsed={collapsed}
               title={collapsed ? tNav(item.labelKey) : undefined}
               className={`${linkClass(isActive)} !text-white/65 !font-normal !border-b-0`}
             >
@@ -499,7 +438,6 @@ export function DashboardSidebar() {
                 key={item.label}
                 href={item.href}
                 active={isActive}
-                collapsed={collapsed}
                 title={collapsed ? item.label : undefined}
                 className={`${linkClass(isActive)} !border-b-0 ${
                   isActive ? "!text-[#E0A951]" : "!text-[#E0A951]/75"
@@ -520,7 +458,6 @@ export function DashboardSidebar() {
                 key={item.label}
                 href={item.href}
                 active={isActive}
-                collapsed={collapsed}
                 title={collapsed ? item.label : undefined}
                 className={`${linkClass(isActive)} !text-[var(--accent)] !font-bold !border-b-0`}
               >
@@ -538,7 +475,6 @@ export function DashboardSidebar() {
       <SidebarNavLink
         href="/"
         active={false}
-        collapsed={collapsed}
         title={collapsed ? tNav("view_website") : undefined}
         className={`${linkClass(false)} !text-white/50 !font-normal !border-b-0 mb-1`}
       >

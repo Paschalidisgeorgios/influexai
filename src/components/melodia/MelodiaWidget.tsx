@@ -204,8 +204,6 @@ export default function MelodiaWidget({ userName, currentPath }: Props) {
   );
 
   const orb = (size: "lg" | "sm") => {
-    const dim = size === "lg" ? 48 : 32;
-    const fontSize = size === "lg" ? 18 : 13;
     const lgClass =
       size === "lg"
         ? "inline-grid place-items-center rounded-full bg-[var(--accent,#B4FF00)] text-[#060608] font-extrabold melodia-orb-pulse h-12 w-12 text-lg md:h-14 md:w-14 md:text-xl"

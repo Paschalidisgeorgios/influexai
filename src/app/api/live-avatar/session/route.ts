@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { hasEnoughCredits } from "@/lib/credits";
 import {
   closeLiveAvatarSession,
   createLiveAvatarSession,

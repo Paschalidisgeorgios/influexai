@@ -7,6 +7,7 @@ import {
   useCallback,
   type CSSProperties,
 } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import {
   estimateAvatarCredits,
@@ -87,7 +88,6 @@ export default function AvatarStudioPage() {
 
   const [consentGiven, setConsentGiven] = useState(false);
 
-  const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<string>("queued");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -234,7 +234,6 @@ export default function AvatarStudioPage() {
     setPhase("render");
     setJobStatus("uploading");
     setResultUrl(null);
-    setJobId(null);
 
     try {
       const supabase = createClient();
@@ -278,7 +277,6 @@ export default function AvatarStudioPage() {
       }
 
       const newJobId = createData.job.id as string;
-      setJobId(newJobId);
       setJobStatus("running");
 
       const startRes = await fetch("/api/avatar/start-render", {
@@ -315,7 +313,6 @@ export default function AvatarStudioPage() {
     setDrivingVideoPreview(null);
     setVideoMode("upload");
     setConsentGiven(false);
-    setJobId(null);
     setJobStatus("queued");
     setResultUrl(null);
     setError(null);
@@ -429,7 +426,7 @@ export default function AvatarStudioPage() {
               </div>
               <div
                 onClick={() => imageRef.current?.click()}
-                className={mediaBoxHeight}
+                className={`relative ${mediaBoxHeight}`}
                 style={{
                   border: sourceImage
                     ? "1px solid rgba(180,255,0,0.4)"
@@ -445,10 +442,12 @@ export default function AvatarStudioPage() {
                 }}
               >
                 {sourceImage ? (
-                  <img
+                  <Image
                     src={sourceImage}
                     alt="Avatar"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    fill
+                    unoptimized
+                    className="object-cover"
                   />
                 ) : (
                   <>

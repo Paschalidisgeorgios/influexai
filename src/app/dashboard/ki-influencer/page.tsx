@@ -114,7 +114,6 @@ function KiInfluencerPageInner() {
   const [description, setDescription] = useState("");
   const [characterId, setCharacterId] = useState<string | null>(urlId);
   const [castingImageUrl, setCastingImageUrl] = useState<string | null>(null);
-  const [castingConfirmed, setCastingConfirmed] = useState(false);
 
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [uploadPreviews, setUploadPreviews] = useState<string[]>([]);
@@ -128,7 +127,6 @@ function KiInfluencerPageInner() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const [loraProgress, setLoraProgress] = useState(0);
-  const [loraLogs, setLoraLogs] = useState<string[]>([]);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [characterReady, setCharacterReady] = useState(false);
 
@@ -227,18 +225,6 @@ function KiInfluencerPageInner() {
         setPathMode(character.source === "uploaded" ? "uploaded" : "generated");
         if (character.casting_image_url) {
           setCastingImageUrl(character.casting_image_url);
-        }
-        if (
-          character.status &&
-          [
-            "casting_confirmed",
-            "training_set",
-            "training_set_ready",
-            "training",
-            "ready",
-          ].includes(character.status)
-        ) {
-          setCastingConfirmed(true);
         }
         if (character.status === "ready") {
           setCharacterReady(true);
@@ -397,7 +383,6 @@ function KiInfluencerPageInner() {
           errorMessage?: string;
         };
         if (typeof data.progress === "number") setLoraProgress(data.progress);
-        if (Array.isArray(data.logs)) setLoraLogs(data.logs);
         if (data.status === "ready") {
           if (pollRef.current) clearInterval(pollRef.current);
           setCharacterReady(true);
@@ -416,7 +401,7 @@ function KiInfluencerPageInner() {
         /* keep polling */
       }
     }, 4000);
-  }, [goToStep]);
+  }, [goToStep, setWizardError]);
 
   useEffect(() => {
     if (!characterId) return;
@@ -438,9 +423,6 @@ function KiInfluencerPageInner() {
         const data = parsed.data;
         if (typeof data.progress === "number") {
           setLoraProgress(data.progress);
-        }
-        if (Array.isArray(data.logs)) {
-          setLoraLogs(data.logs);
         }
 
         if (data.status === "training") {
@@ -504,7 +486,6 @@ function KiInfluencerPageInner() {
         persistWizardUrl({ id: data.characterId });
       }
       if (confirm) {
-        setCastingConfirmed(true);
         goToStep(1, { id: data.characterId ?? characterId });
       } else if (data.imageUrl) {
         setCastingImageUrl(data.imageUrl);

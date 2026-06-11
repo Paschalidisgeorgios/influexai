@@ -326,7 +326,6 @@ async function main() {
       const doneChecks = await page.locator("span.text-\\[\\#B4FF00\\].ml-1").count();
       checks.a_tool_steps = doneChecks >= 1 ? `OK (${doneChecks} Schritte ✓)` : "FAIL: keine abgeschlossenen Tool-Schritte";
 
-      const assistantText = await page.locator('[class*="assistant"], .prose, main').last().innerText().catch(() => "");
       const msgBlocks = await page.locator("p, div").allInnerTexts();
       const combined = msgBlocks.join("\n").slice(-3000);
       checks.b_ergebnis =

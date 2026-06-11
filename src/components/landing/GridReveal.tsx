@@ -12,6 +12,8 @@ export default function GridReveal() {
   const visibleRef = useRef(true);
 
   useEffect(() => {
+    if (window.innerWidth < 768) return;
+
     const cv = cvRef.current;
     if (!cv) return;
     const ctx = cv.getContext("2d");

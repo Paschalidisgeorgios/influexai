@@ -19,6 +19,108 @@ const TIPS = [
   "Fast fertig…",
 ];
 
+type FaceSwapUploadBoxProps = {
+  hasFile: boolean;
+  preview: string | null;
+  isVideo: boolean;
+  label: string;
+  tip: string;
+  drag: boolean;
+  onDrag: (v: boolean) => void;
+  accept: string;
+  onFile: (f: File) => void;
+  readyBadge?: string;
+};
+
+function FaceSwapUploadBox({
+  hasFile,
+  preview,
+  isVideo,
+  label,
+  tip,
+  drag,
+  onDrag,
+  accept,
+  onFile,
+  readyBadge,
+}: FaceSwapUploadBoxProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div>
+      <p className="text-white/80 text-xs uppercase tracking-wider font-bold mb-2">
+        {label}
+      </p>
+      <div
+        className={`relative group cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-300 ${
+          drag
+            ? "border-[#B4FF00]/60 bg-[#B4FF00]/10"
+            : "border-white/20 hover:border-[#B4FF00]/50 hover:bg-[#B4FF00]/5"
+        }`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          onDrag(true);
+        }}
+        onDragLeave={() => onDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          onDrag(false);
+          const file = e.dataTransfer.files[0];
+          if (file) onFile(file);
+        }}
+        onClick={() => inputRef.current?.click()}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onFile(file);
+          }}
+        />
+        {!hasFile ? (
+          <div className="p-8 text-center">
+            <div className="text-4xl mb-3">{isVideo ? "🎬" : "🖼"}</div>
+            <p className="text-white font-semibold mb-1">
+              {isVideo ? "Video hochladen" : "Foto hochladen"}
+            </p>
+            <p className="text-white/70 text-xs">{tip}</p>
+          </div>
+        ) : (
+          <div className="relative aspect-video max-h-64 overflow-hidden rounded-xl m-2">
+            {isVideo && preview ? (
+              <video
+                src={preview}
+                controls
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : preview ? (
+              <Image
+                src={preview}
+                alt=""
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+              <p className="text-white font-medium text-sm">Ändern</p>
+            </div>
+            {readyBadge && (
+              <div className="absolute top-2 right-2 bg-[#B4FF00] text-[#060608] text-xs font-bold px-2 py-1 rounded-full">
+                {readyBadge}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 type FaceSwapPanelProps = {
   mode: Mode;
   sourceLabel: string;
@@ -54,8 +156,6 @@ export function FaceSwapPanel({
   const [isRecording, setIsRecording] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
 
-  const sourceInputRef = useRef<HTMLInputElement>(null);
-  const targetInputRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const videoPreviewRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -263,93 +363,6 @@ export function FaceSwapPanel({
     setIsRecording(false);
   };
 
-  const uploadBox = (
-    hasFile: boolean,
-    preview: string | null,
-    isVideo: boolean,
-    label: string,
-    tip: string,
-    drag: boolean,
-    onDrag: (v: boolean) => void,
-    onPick: () => void,
-    inputRef: React.RefObject<HTMLInputElement | null>,
-    accept: string,
-    onFile: (f: File) => void,
-    readyBadge?: string
-  ) => (
-    <div>
-      <p className="text-white/80 text-xs uppercase tracking-wider font-bold mb-2">
-        {label}
-      </p>
-      <div
-        className={`relative group cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-300 ${
-          drag
-            ? "border-[#B4FF00]/60 bg-[#B4FF00]/10"
-            : "border-white/20 hover:border-[#B4FF00]/50 hover:bg-[#B4FF00]/5"
-        }`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          onDrag(true);
-        }}
-        onDragLeave={() => onDrag(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          onDrag(false);
-          const file = e.dataTransfer.files[0];
-          if (file) onFile(file);
-        }}
-        onClick={onPick}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) onFile(file);
-          }}
-        />
-        {!hasFile ? (
-          <div className="p-8 text-center">
-            <div className="text-4xl mb-3">{isVideo ? "🎬" : "🖼"}</div>
-            <p className="text-white font-semibold mb-1">
-              {isVideo ? "Video hochladen" : "Foto hochladen"}
-            </p>
-            <p className="text-white/70 text-xs">{tip}</p>
-          </div>
-        ) : (
-          <div className="relative aspect-video max-h-64 overflow-hidden rounded-xl m-2">
-            {isVideo && preview ? (
-              <video
-                src={preview}
-                controls
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : preview ? (
-              <Image
-                src={preview}
-                alt=""
-                fill
-                className="object-cover"
-                unoptimized
-              />
-            ) : null}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-              <p className="text-white font-medium text-sm">Ändern</p>
-            </div>
-            {readyBadge && (
-              <div className="absolute top-2 right-2 bg-[#B4FF00] text-[#060608] text-xs font-bold px-2 py-1 rounded-full">
-                {readyBadge}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   if (step === "result" && resultUrl && generationId) {
     return (
       <div className="space-y-4">
@@ -428,20 +441,18 @@ export function FaceSwapPanel({
         </div>
       )}
 
-      {uploadBox(
-        !!sourceFile,
-        sourcePreview,
-        sourceIsVideo,
-        sourceLabel,
-        sourceTip,
-        dragSource,
-        setDragSource,
-        () => sourceInputRef.current?.click(),
-        sourceInputRef,
-        acceptSource,
-        applySourceFile,
-        sourceFile ? "✓ Bereit" : undefined
-      )}
+      <FaceSwapUploadBox
+        hasFile={!!sourceFile}
+        preview={sourcePreview}
+        isVideo={sourceIsVideo}
+        label={sourceLabel}
+        tip={sourceTip}
+        drag={dragSource}
+        onDrag={setDragSource}
+        accept={acceptSource}
+        onFile={applySourceFile}
+        readyBadge={sourceFile ? "✓ Bereit" : undefined}
+      />
 
       {sourceIsVideo && !sourceFile && (
         <div className="flex flex-col gap-3">
@@ -483,20 +494,18 @@ export function FaceSwapPanel({
         </div>
       )}
 
-      {uploadBox(
-        !!targetFile,
-        targetPreview,
-        false,
-        targetLabel,
-        targetTip,
-        dragTarget,
-        setDragTarget,
-        () => targetInputRef.current?.click(),
-        targetInputRef,
-        "image/jpeg,image/png,image/webp",
-        setTarget,
-        targetFile ? "✓ Gesicht" : undefined
-      )}
+      <FaceSwapUploadBox
+        hasFile={!!targetFile}
+        preview={targetPreview}
+        isVideo={false}
+        label={targetLabel}
+        tip={targetTip}
+        drag={dragTarget}
+        onDrag={setDragTarget}
+        accept="image/jpeg,image/png,image/webp"
+        onFile={setTarget}
+        readyBadge={targetFile ? "✓ Gesicht" : undefined}
+      />
 
       <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 cursor-pointer">
         <input

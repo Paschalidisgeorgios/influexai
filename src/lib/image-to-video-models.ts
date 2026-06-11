@@ -78,6 +78,11 @@ const MODEL_BY_ID = Object.fromEntries(
   IMAGE_TO_VIDEO_MODELS.map((model) => [model.id, model])
 ) as Record<ImageToVideoModelId, ImageToVideoModelConfig>;
 
+/** Models users can pick in the Image-to-Video UI (provider must be enabled). */
+export function getSelectableImageToVideoModels(): ImageToVideoModelConfig[] {
+  return IMAGE_TO_VIDEO_MODELS.filter((model) => model.providerEnabled);
+}
+
 export function getImageToVideoModel(
   id: ImageToVideoModelId
 ): ImageToVideoModelConfig {
@@ -88,7 +93,10 @@ export function parseImageToVideoModelId(
   raw: string | null | undefined
 ): ImageToVideoModelId {
   if (raw === "kling25_turbo_pro" || raw === "kling25") {
-    return "kling25_turbo_pro";
+    const kling = MODEL_BY_ID.kling25_turbo_pro;
+    if (kling?.providerEnabled) {
+      return "kling25_turbo_pro";
+    }
   }
   return "seedance";
 }

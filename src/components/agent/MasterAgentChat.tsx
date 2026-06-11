@@ -148,7 +148,6 @@ export function MasterAgentChat({
   const [routingToast, setRoutingToast] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
-  const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const [totalUsed, setTotalUsed] = useState(0);
   const [lastOutputs, setLastOutputs] = useState<AgentOutputs>({});
   const [lastUserGoal, setLastUserGoal] = useState("");
@@ -234,7 +233,6 @@ export function MasterAgentChat({
       });
       const data = await res.json();
       if (data.estimate) setEstimate(data.estimate);
-      if (typeof data.credits === "number") setCreditsLeft(data.credits);
     } catch {
       setEstimate(null);
     }
@@ -461,7 +459,6 @@ export function MasterAgentChat({
               )
             );
           } else if (event.type === "credits") {
-            setCreditsLeft(event.creditsLeft);
             setTotalUsed(event.totalUsed);
             window.dispatchEvent(new Event("credits-updated"));
           } else if (event.type === "error") {
@@ -777,6 +774,15 @@ export function MasterAgentChat({
                           (m.outputs.redirects?.length ?? 0) > 0) && (
                           <AgentResultCard outputs={m.outputs} />
                         )}
+                      {m.role === "assistant" &&
+                      (m.content ||
+                        m.outputs ||
+                        (m.steps && m.steps.length > 0)) &&
+                      !(isActiveAssistant && running && !m.content) ? (
+                        <p className="mt-3 text-xs text-white/25">
+                          KI-generierter Inhalt — bitte vor Verwendung prüfen.
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 );

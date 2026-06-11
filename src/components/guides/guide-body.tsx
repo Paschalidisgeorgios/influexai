@@ -14,7 +14,7 @@ function FeaturedSnippetBox({ text }: { text: string }) {
   );
 }
 
-function injectInlineNewsletter(html: string, source: string): string {
+function injectInlineNewsletter(html: string): string {
   const parts = html.split(/<\/p>/i);
   if (parts.length < 4) return html;
   parts[3] = `${parts[3]}<!--NEWSLETTER-->`;
@@ -32,7 +32,7 @@ export async function GuideBody({
 }) {
   const linked = autoInternalLinks(markdown);
   const html = await markdownToHtml(linked);
-  const withNl = injectInlineNewsletter(html, source);
+  const withNl = injectInlineNewsletter(html);
   const segments = withNl.split("<!--NEWSLETTER-->");
 
   return (
