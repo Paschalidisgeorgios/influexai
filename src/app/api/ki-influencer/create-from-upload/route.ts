@@ -8,24 +8,27 @@ import {
 
 export const dynamic = "force-dynamic";
 
+export const maxDuration = 15;
+
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     name?: string;
     sessionId?: string;
-    zipUrl?: string;
     thumbnailPath?: string;
     imageCount?: number;
   };
 
   const name = body.name?.trim() ?? "";
   const sessionId = body.sessionId?.trim() ?? "";
-  const zipUrl = body.zipUrl?.trim() ?? "";
   const thumbnailPath = body.thumbnailPath?.trim() ?? "";
   const imageCount = body.imageCount ?? 0;
 
-  if (!name || !sessionId || !zipUrl || imageCount < 10) {
+  if (!name || !sessionId || imageCount < 10) {
     return NextResponse.json(
-      { error: "Name, sessionId, zipUrl und mindestens 10 Fotos erforderlich." },
+      {
+        success: false,
+        error: "Name, sessionId und mindestens 10 Fotos erforderlich.",
+      },
       { status: 400 }
     );
   }
@@ -33,6 +36,11 @@ export async function POST(request: NextRequest) {
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
+
+  console.log("[ki-influencer] create-from-upload", "running", {
+    sessionId,
+    imageCount,
+  });
 
   try {
     const { data, error } = await supabase
@@ -43,29 +51,35 @@ export async function POST(request: NextRequest) {
         description: "Eigene Fotos hochgeladen",
         source: "uploaded",
         upload_session_id: sessionId,
-        upload_zip_url: zipUrl,
+        upload_zip_url: null,
         upload_image_count: imageCount,
         casting_image_url: thumbnailPath || null,
-        status: "training_set_ready",
+        status: "upload_ready",
       })
       .select("id")
       .single();
 
     if (error || !data?.id) {
       if (error) {
+        console.log("[ki-influencer] create-from-upload", "error", error.message);
         return mapSupabaseWriteError("create-from-upload insert", error);
       }
       return kiInfluencerErrorResponse("generation_failed", 500);
     }
 
+    console.log("[ki-influencer] create-from-upload", "ok", {
+      characterId: data.id,
+    });
+
     return NextResponse.json({
       success: true,
       characterId: data.id,
-      status: "training_set_ready",
+      status: "upload_ready",
       source: "uploaded",
     });
   } catch (error) {
     logKiInfluencerError("create-from-upload", error);
+    console.log("[ki-influencer] create-from-upload", "error");
     return kiInfluencerErrorResponse("generation_failed", 500);
   }
 }

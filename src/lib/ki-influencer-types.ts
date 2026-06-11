@@ -22,6 +22,39 @@ export type TrainingSetStartResponse = KiInfluencerApiErrorBody & {
   creditsLeft?: number;
 };
 
+export type CreateFromUploadResponse = KiInfluencerApiErrorBody & {
+  success: true;
+  characterId: string;
+  status: "upload_ready";
+  source: "uploaded";
+};
+
+export type UploadPhotoResponse = KiInfluencerApiErrorBody & {
+  success: true;
+  sessionId: string;
+  index: number;
+  storagePath: string;
+  filename: string;
+};
+
+export type FinalizeUploadResponse = KiInfluencerApiErrorBody & {
+  success: true;
+  characterId: string;
+  status: "training_set_ready";
+  zipUrl: string;
+  imageCount: number;
+};
+
+export function isCreateFromUploadResponse(
+  data: KiInfluencerApiErrorBody
+): data is CreateFromUploadResponse {
+  return (
+    data.success === true &&
+    typeof (data as CreateFromUploadResponse).characterId === "string" &&
+    (data as CreateFromUploadResponse).status === "upload_ready"
+  );
+}
+
 export type TrainingSetImageResponse = KiInfluencerApiErrorBody & {
   success: true;
   characterId: string;

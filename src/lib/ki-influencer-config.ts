@@ -14,6 +14,7 @@ export type CharacterStatus =
   | "draft"
   | "casting"
   | "casting_confirmed"
+  | "upload_ready"
   | "training_set"
   | "training_set_ready"
   | "training"

@@ -17,14 +17,19 @@ import {
   apiBodyToErrorMessage,
   handleKiInfluencerApiError,
   isKiInfluencerApiFailure,
+  parseKiInfluencerJsonResponse,
   toErrorMessage,
   type KiInfluencerApiErrorBody,
 } from "@/lib/ki-influencer-client-errors";
 import type {
+  CreateFromUploadResponse,
+  FinalizeUploadResponse,
   TrainingSetImageResponse,
   TrainingSetStartResponse,
+  UploadPhotoResponse,
 } from "@/lib/ki-influencer-types";
 import {
+  isCreateFromUploadResponse,
   isTrainingSetImageResponse,
   isTrainingSetStartResponse,
 } from "@/lib/ki-influencer-types";
@@ -107,6 +112,7 @@ export default function KiInfluencerPage() {
 
   const [trainingProgress, setTrainingProgress] = useState(0);
   const [trainingSetRunning, setTrainingSetRunning] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [loraProgress, setLoraProgress] = useState(0);
   const [loraLogs, setLoraLogs] = useState<string[]>([]);
@@ -152,26 +158,34 @@ export default function KiInfluencerPage() {
     }
     setError(null);
     setLoading(true);
-    try {
-      const formData = new FormData();
-      for (const file of uploadFiles) {
-        formData.append("images", file);
-      }
-      formData.append("consentAccepted", "true");
+    setUploadProgress(0);
 
-      const uploadRes = await fetch("/api/lora/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const uploadData = (await uploadRes.json()) as {
-        error?: string;
-        sessionId?: string;
-        zipUrl?: string;
-        thumbnailPath?: string;
-        imageCount?: number;
-      };
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error ?? "Upload fehlgeschlagen.");
+    const sessionId = crypto.randomUUID();
+    let thumbnailPath: string | null = null;
+    let uploadedCount = 0;
+
+    try {
+      for (let i = 0; i < uploadFiles.length; i++) {
+        const formData = new FormData();
+        formData.append("sessionId", sessionId);
+        formData.append("index", String(i));
+        formData.append("image", uploadFiles[i]!);
+
+        const photoRes = await fetch("/api/ki-influencer/upload-photo", {
+          method: "POST",
+          body: formData,
+        });
+        const photoParsed = await parseKiInfluencerJsonResponse<UploadPhotoResponse>(
+          photoRes
+        );
+
+        if (!photoParsed.ok || !photoParsed.data.success) {
+          throw new Error(apiBodyToErrorMessage(photoParsed.data));
+        }
+
+        uploadedCount += 1;
+        if (!thumbnailPath) thumbnailPath = photoParsed.data.storagePath;
+        setUploadProgress(uploadedCount);
       }
 
       const createRes = await fetch("/api/ki-influencer/create-from-upload", {
@@ -179,26 +193,26 @@ export default function KiInfluencerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          sessionId: uploadData.sessionId,
-          zipUrl: uploadData.zipUrl,
-          thumbnailPath: uploadData.thumbnailPath,
-          imageCount: uploadData.imageCount,
+          sessionId,
+          thumbnailPath,
+          imageCount: uploadedCount,
         }),
       });
-      const createData = (await createRes.json()) as KiInfluencerApiErrorBody & {
-        characterId?: string;
-      };
-      if (!createRes.ok || isKiInfluencerApiFailure(createRes.ok, createData)) {
+      const createParsed =
+        await parseKiInfluencerJsonResponse<CreateFromUploadResponse>(createRes);
+      const createData = createParsed.data;
+
+      if (!isCreateFromUploadResponse(createData)) {
         throw new Error(apiBodyToErrorMessage(createData));
       }
-      if (createData.characterId) {
-        setCharacterId(createData.characterId);
-        setStep(2);
-      }
+
+      setCharacterId(createData.characterId);
+      setStep(2);
     } catch (err) {
       setError(toErrorMessage(err));
     } finally {
       setLoading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -207,7 +221,13 @@ export default function KiInfluencerPage() {
     pollRef.current = setInterval(async () => {
       try {
         const res = await fetch(`/api/ki-influencer/status/${id}`);
-        const data = await res.json();
+        const parsed = await parseKiInfluencerJsonResponse(res);
+        const data = parsed.data as {
+          progress?: number;
+          logs?: string[];
+          status?: string;
+          errorMessage?: string;
+        };
         if (typeof data.progress === "number") setLoraProgress(data.progress);
         if (Array.isArray(data.logs)) setLoraLogs(data.logs);
         if (data.status === "ready") {
@@ -247,21 +267,21 @@ export default function KiInfluencerPage() {
           confirm,
         }),
       });
-      const data = (await res.json()) as KiInfluencerApiErrorBody & {
-        characterId?: string;
-        imageUrl?: string;
-      };
+      const parsed = await parseKiInfluencerJsonResponse<
+        KiInfluencerApiErrorBody & { characterId?: string; imageUrl?: string }
+      >(res);
+      const data = parsed.data;
       if (
         !confirm &&
         handleKiInfluencerApiError(
-          res.status,
+          parsed.status,
           data,
           IMAGE_GEN_CREDITS.standard
         )
       ) {
         return;
       }
-      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+      if (!parsed.ok || isKiInfluencerApiFailure(parsed.ok, data)) {
         throw new Error(apiBodyToErrorMessage(data));
       }
       if (data.characterId) setCharacterId(data.characterId);
@@ -291,12 +311,15 @@ export default function KiInfluencerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ characterId, start: true }),
       });
-      const startData = (await startRes.json()) as TrainingSetStartResponse &
-        KiInfluencerApiErrorBody;
+      const startParsed =
+        await parseKiInfluencerJsonResponse<TrainingSetStartResponse>(
+          startRes
+        );
+      const startData = startParsed.data;
 
       if (
         handleKiInfluencerApiError(
-          startRes.status,
+          startParsed.status,
           startData,
           KI_INFLUENCER_TRAINING_SET_CREDITS
         )
@@ -323,8 +346,10 @@ export default function KiInfluencerPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ characterId, index: i }),
           });
-          const data = (await res.json()) as TrainingSetImageResponse &
-            KiInfluencerApiErrorBody;
+          const parsed = await parseKiInfluencerJsonResponse<TrainingSetImageResponse>(
+            res
+          );
+          const data = parsed.data;
 
           if (isTrainingSetImageResponse(data)) {
             successCount += 1;
@@ -334,7 +359,7 @@ export default function KiInfluencerPage() {
 
           if (
             handleKiInfluencerApiError(
-              res.status,
+              parsed.status,
               data,
               KI_INFLUENCER_TRAINING_SET_CREDITS
             )
@@ -376,18 +401,34 @@ export default function KiInfluencerPage() {
     setLoading(true);
     setLoraProgress(0);
     try {
+      if (pathMode === "uploaded") {
+        const finRes = await fetch("/api/ki-influencer/finalize-upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ characterId }),
+        });
+        const finParsed =
+          await parseKiInfluencerJsonResponse<FinalizeUploadResponse>(finRes);
+        if (!finParsed.data.success) {
+          throw new Error(apiBodyToErrorMessage(finParsed.data));
+        }
+      }
+
       const res = await fetch("/api/ki-influencer/train", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ characterId, consentAccepted: true }),
       });
-      const data = (await res.json()) as KiInfluencerApiErrorBody & { loraId?: string };
+      const parsed = await parseKiInfluencerJsonResponse<
+        KiInfluencerApiErrorBody & { loraId?: string }
+      >(res);
+      const data = parsed.data;
       if (
-        handleKiInfluencerApiError(res.status, data, loraTrainCredits)
+        handleKiInfluencerApiError(parsed.status, data, loraTrainCredits)
       ) {
         return;
       }
-      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+      if (!parsed.ok || isKiInfluencerApiFailure(parsed.ok, data)) {
         throw new Error(apiBodyToErrorMessage(data));
       }
       window.dispatchEvent(new Event("credits-updated"));
@@ -414,15 +455,16 @@ export default function KiInfluencerPage() {
           platform,
         }),
       });
-      const data = (await res.json()) as KiInfluencerApiErrorBody & {
-        imageUrl?: string;
-      };
+      const parsed = await parseKiInfluencerJsonResponse<
+        KiInfluencerApiErrorBody & { imageUrl?: string }
+      >(res);
+      const data = parsed.data;
       if (
-        handleKiInfluencerApiError(res.status, data, LORA_GENERATION_CREDIT)
+        handleKiInfluencerApiError(parsed.status, data, LORA_GENERATION_CREDIT)
       ) {
         return;
       }
-      if (!res.ok || isKiInfluencerApiFailure(res.ok, data)) {
+      if (!parsed.ok || isKiInfluencerApiFailure(parsed.ok, data)) {
         throw new Error(apiBodyToErrorMessage(data));
       }
       if (data.imageUrl) setContentResultUrl(data.imageUrl);
@@ -550,6 +592,21 @@ export default function KiInfluencerPage() {
           <p className="text-sm text-[#B4FF00]">
             {uploadFiles.length} von mindestens {LORA_MIN_IMAGES} Fotos
           </p>
+          {loading && uploadProgress > 0 && (
+            <div>
+              <div className="mb-2 h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full bg-[#B4FF00] transition-all"
+                  style={{
+                    width: `${(uploadProgress / uploadFiles.length) * 100}%`,
+                  }}
+                />
+              </div>
+              <p className="text-sm text-[rgba(255,255,255,0.65)]">
+                Foto {uploadProgress} von {uploadFiles.length} hochgeladen…
+              </p>
+            </div>
+          )}
           <label className="flex items-start gap-3 text-sm text-[rgba(255,255,255,0.75)]">
             <input
               type="checkbox"
@@ -583,7 +640,11 @@ export default function KiInfluencerPage() {
             onClick={() => void submitUploadedPhotos()}
             className="rounded-xl bg-[#B4FF00] px-5 py-3 font-semibold text-[#060608] disabled:opacity-60"
           >
-            {loading ? "Lade hoch…" : "Weiter zum Gesicht lernen"}
+            {loading
+              ? uploadProgress > 0
+                ? `Lade hoch (${uploadProgress}/${uploadFiles.length})…`
+                : "Speichere Charakter…"
+              : "Weiter zum Gesicht lernen"}
           </button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import { KI_INFLUENCER_TIMEOUT_MESSAGE } from "@/lib/ki-influencer-http";
 import type { KiInfluencerApiErrorBody } from "@/lib/ki-influencer-types";
 
 export const KI_INFLUENCER_ERROR_MESSAGES = {
@@ -8,6 +9,11 @@ export const KI_INFLUENCER_ERROR_MESSAGES = {
 } as const;
 
 export type { KiInfluencerApiErrorBody } from "@/lib/ki-influencer-types";
+export {
+  KI_INFLUENCER_TIMEOUT_MESSAGE,
+  isJsonResponse,
+  parseKiInfluencerJsonResponse,
+} from "@/lib/ki-influencer-http";
 
 function stringFromUnknown(value: unknown): string | null {
   if (typeof value === "string" && value.trim()) return value.trim();
@@ -69,6 +75,10 @@ export function toErrorMessage(err: unknown): string {
   if (typeof err === "string" && err.trim()) return err.trim();
 
   if (err && typeof err === "object") {
+    const record = err as Record<string, unknown>;
+    if (typeof record.message === "string" && record.message.trim()) {
+      return record.message.trim();
+    }
     const asApi = err as KiInfluencerApiErrorBody;
     if ("error" in asApi || "detail" in asApi) {
       return apiBodyToErrorMessage(asApi);
