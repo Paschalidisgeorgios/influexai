@@ -8,6 +8,7 @@ import { GlobalSentientBadge } from "@/components/dashboard/GlobalSentientBadge"
 import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
 import { PushPermission } from "@/components/ui/PushPermission";
+import { SmartCapsule } from "@/components/agent/SmartCapsule";
 import { DashboardToolProvider } from "@/contexts/DashboardToolContext";
 
 export function DashboardLayoutClient({
@@ -25,6 +26,7 @@ export function DashboardLayoutClient({
           data-dashboard
         >
           <GlobalSentientBadge />
+          <SmartCapsule themeKey="green" />
           <div className="hidden md:flex shrink-0">
             <DashboardSidebar />
           </div>

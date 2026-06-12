@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoadingButton } from "@/components/ui/LoadingButton";
@@ -20,16 +20,23 @@ export function AgentAutopilotHero() {
   const [chipsLoading, setChipsLoading] = useState(true);
   const { profile, profileLabel, loading: profileLoading } = useCreatorProfile();
   const dashboard = useDashboardToolOptional();
+  const setPromptInDashboard = dashboard?.setPrompt;
+  const setParamInDashboard = dashboard?.setParam;
+  const prevCreatorDnaRef = useRef<string | null>(null);
+
+  const handlePromptChange = useCallback(
+    (value: string) => {
+      setPrompt(value);
+      setPromptInDashboard?.(value);
+    },
+    [setPromptInDashboard]
+  );
 
   useEffect(() => {
-    dashboard?.setPrompt(prompt);
-  }, [dashboard, prompt]);
-
-  useEffect(() => {
-    if (profileLabel) {
-      dashboard?.setParam("creatorDNA", profileLabel);
-    }
-  }, [dashboard, profileLabel]);
+    if (!profileLabel || profileLabel === prevCreatorDnaRef.current) return;
+    prevCreatorDnaRef.current = profileLabel;
+    setParamInDashboard?.("creatorDNA", profileLabel);
+  }, [profileLabel, setParamInDashboard]);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,7 +104,7 @@ export function AgentAutopilotHero() {
       <div className="mt-5">
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={(e) => handlePromptChange(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -125,7 +132,7 @@ export function AgentAutopilotHero() {
               <button
                 key={chip}
                 type="button"
-                onClick={() => setPrompt(chip)}
+                onClick={() => handlePromptChange(chip)}
                 className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-left text-xs text-white/60 transition-colors hover:border-[#B4FF00]/30 hover:text-[#B4FF00]"
               >
                 {chip}

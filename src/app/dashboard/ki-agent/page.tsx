@@ -1,40 +1,46 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { AgentAutopilotChat } from "@/components/agent/AgentAutopilotChat";
-import { DynamicDashboardEngine } from "@/components/dashboard/DynamicDashboardEngine";
+import { useCallback, useRef } from "react";
+import { AgentAutopilotV2 } from "@/components/agent/AgentAutopilotV2";
+import { capsuleShow } from "@/components/agent/SmartCapsule";
 import { useDashboardTool } from "@/contexts/DashboardToolContext";
-import { useEffect } from "react";
-
-function KiAgentPageInner() {
-  const searchParams = useSearchParams();
-  const initialPrompt = searchParams.get("prompt")?.trim() ?? "";
-  const { setPrompt } = useDashboardTool();
-
-  useEffect(() => {
-    if (initialPrompt) setPrompt(initialPrompt);
-  }, [initialPrompt, setPrompt]);
-
-  return (
-    <div className="mx-auto flex h-[calc(100dvh-8.5rem)] min-h-0 w-full max-w-3xl flex-col md:h-full md:px-0 md:py-6">
-      <AgentAutopilotChat initialPrompt={initialPrompt} />
-    </div>
-  );
-}
 
 export default function KiAgentPage() {
+  const { userName } = useDashboardTool();
+  const lastScrollYRef = useRef(0);
+  const lastScrollTimeRef = useRef(Date.now());
+  const scrollCooldownRef = useRef(0);
+
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      const now = Date.now();
+      const currentY = target.scrollTop;
+      const elapsed = now - lastScrollTimeRef.current;
+      const velocity =
+        Math.abs(currentY - lastScrollYRef.current) / Math.max(elapsed, 16);
+      lastScrollYRef.current = currentY;
+      lastScrollTimeRef.current = now;
+
+      if (velocity > 15 && now - scrollCooldownRef.current > 6000) {
+        scrollCooldownRef.current = now;
+        capsuleShow(
+          `Hey ${userName}, nicht so schnell durch den Autopiloten! Quantenprozessoren noch am warmrechnen! 🧠`,
+          4000
+        );
+      }
+    },
+    [userName]
+  );
+
   return (
-    <DynamicDashboardEngine toolId="agent-autopilot">
-      <Suspense
-        fallback={
-          <div className="mx-auto max-w-3xl px-4 py-8 text-sm text-white/50">
-            Agent Autopilot wird geladen…
-          </div>
-        }
+    <div className="flex h-full flex-col overflow-hidden bg-[#08080a]">
+      <div
+        className="dashboard-scroll-area flex-1 space-y-4 overflow-y-auto px-6 py-6"
+        onScroll={handleScroll}
       >
-        <KiAgentPageInner />
-      </Suspense>
-    </DynamicDashboardEngine>
+        <AgentAutopilotV2 />
+      </div>
+    </div>
   );
 }
