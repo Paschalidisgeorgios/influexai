@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.fal.ai",
+        hostname: "images.unsplash.com",
       },
     ],
   },
