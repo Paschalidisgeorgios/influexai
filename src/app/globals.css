@@ -2098,6 +2098,28 @@ header.site-header.site-header--scrolled {
   }
 }
 
+@keyframes szenen-gen-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px var(--szenen-accent-20);
+  }
+  50% {
+    box-shadow:
+      0 4px 40px var(--szenen-accent-30),
+      0 0 60px var(--szenen-accent-10);
+  }
+}
+
+.szenen-gen-pulse {
+  animation: szenen-gen-pulse 1.5s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .szenen-gen-pulse {
+    animation: none;
+  }
+}
+
 @keyframes loading-dot-pulse {
   0%,
   80%,
@@ -3387,5 +3409,27 @@ header.site-header.site-header--scrolled {
   position: sticky;
   top: 0;
   align-self: start;
+}
+
+@keyframes szenen-gen-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px var(--szenen-accent-20);
+  }
+  50% {
+    box-shadow:
+      0 4px 40px var(--szenen-accent-30),
+      0 0 60px var(--szenen-accent-10);
+  }
+}
+
+.szenen-gen-pulse {
+  animation: szenen-gen-pulse 1.5s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .szenen-gen-pulse {
+    animation: none;
+  }
 }
 

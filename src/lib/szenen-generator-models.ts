@@ -1,5 +1,6 @@
 import type { AkoolImageToVideoModel } from "@/lib/akool-models";
 import { calculateAkoolModelCredits, getDurationsForModel } from "@/lib/akool-models";
+import type { SzenenThemeKey } from "@/lib/szenen-generator-theme";
 
 export type SzenenFeatureTag =
   | "Start"
@@ -18,9 +19,15 @@ export type SzenenGeneratorModel = {
   description: string;
   tags: SzenenFeatureTag[];
   badge?: SzenenModelBadge;
+  themeKey: SzenenThemeKey;
   creditEstimate: string;
   durationLabel: string;
   resolutionLabel: string;
+  durations: number[];
+  resolutions: string[];
+  supportsEnd: boolean;
+  supportsAudio: boolean;
+  supportsReference: boolean;
   akool?: AkoolImageToVideoModel;
   apiAvailable: boolean;
 };
@@ -32,12 +39,61 @@ type CatalogEntry = {
   description: string;
   tags: SzenenFeatureTag[];
   badge?: SzenenModelBadge;
+  themeKey: SzenenThemeKey;
   creditEstimate: string;
   durationLabel: string;
   resolutionLabel: string;
   matchLabels: string[];
   excludeLabels?: string[];
 };
+
+function buildModelCapabilities(tags: SzenenFeatureTag[]) {
+  return {
+    supportsEnd: tags.includes("End"),
+    supportsAudio: tags.includes("Audio"),
+    supportsReference: tags.includes("Referenz"),
+  };
+}
+
+function parseDurationList(label: string, akool?: AkoolImageToVideoModel): number[] {
+  if (akool) {
+    const resolution = akool.resolutionList[0]?.value;
+    return getDurationsForModel(akool, resolution);
+  }
+  const nums = label.match(/\d+/g)?.map(Number) ?? [5];
+  if (nums.length >= 2) {
+    const [min, max] = nums;
+    const list: number[] = [];
+    for (let d = min; d <= max; d += 1) list.push(d);
+    return list.length ? list : [min];
+  }
+  return [nums[0] ?? 5];
+}
+
+function parseResolutionList(label: string, akool?: AkoolImageToVideoModel): string[] {
+  if (akool) return akool.resolutionList.map((r) => r.value);
+  const parts = label.split("-").map((p) => p.trim()).filter(Boolean);
+  return parts.length ? parts : ["720p"];
+}
+
+function inferThemeKey(name: string, catalogTheme?: SzenenThemeKey): SzenenThemeKey {
+  if (catalogTheme) return catalogTheme;
+  const lower = name.toLowerCase();
+  if (lower.includes("fast")) return "green";
+  if (
+    lower.includes("wan 2.7") ||
+    lower.includes("wan2.7") ||
+    lower.includes("happyhorse") ||
+    lower.includes("happy horse")
+  ) {
+    return "green";
+  }
+  if (lower.includes("lite")) return "violet";
+  if (lower.includes("hailuo") && !lower.includes("fast")) return "violet";
+  if (lower.includes("pro") || lower.includes("omni")) return "blue";
+  if (lower.includes("2.0") && !lower.includes("fast")) return "blue";
+  return "blue";
+}
 
 const CATALOG: CatalogEntry[] = [
   {
@@ -46,6 +102,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "SEEDANCE",
     description: "Hochwertige Bild-zu-Video-Animation mit Audio & Referenz.",
     tags: ["Start", "End", "Audio", "Referenz"],
+    themeKey: "blue",
     creditEstimate: "~1100 Credits",
     durationLabel: "2-10s",
     resolutionLabel: "720p-1080p",
@@ -58,6 +115,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "SEEDANCE",
     description: "Schnellere Variante mit Start-, End- und Referenzbild.",
     tags: ["Start", "End", "Referenz"],
+    themeKey: "green",
     creditEstimate: "~900 Credits",
     durationLabel: "2-10s",
     resolutionLabel: "720p",
@@ -69,6 +127,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "SEEDANCE",
     description: "Pro-Qualität mit flexiblem Seitenverhältnis.",
     tags: ["Start", "End", "Multi-Ratio"],
+    themeKey: "blue",
     creditEstimate: "~700 Credits",
     durationLabel: "5-10s",
     resolutionLabel: "1080p",
@@ -81,6 +140,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "SEEDANCE",
     description: "Zuverlässige Animation mit Start- und Endframe.",
     tags: ["Start", "End"],
+    themeKey: "blue",
     creditEstimate: "~500 Credits",
     durationLabel: "5s",
     resolutionLabel: "720p",
@@ -93,6 +153,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "SEEDANCE",
     description: "Günstiger Einstieg nur mit Startbild.",
     tags: ["Start"],
+    themeKey: "violet",
     creditEstimate: "~200 Credits",
     durationLabel: "5s",
     resolutionLabel: "480p",
@@ -104,6 +165,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "MINIMAX",
     description: "Minimax Hailuo mit Audio-Unterstützung.",
     tags: ["Start", "Audio"],
+    themeKey: "violet",
     creditEstimate: "~600 Credits",
     durationLabel: "6s",
     resolutionLabel: "768p",
@@ -116,6 +178,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "MINIMAX",
     description: "Schnelle Minimax-Variante mit Startbild.",
     tags: ["Start"],
+    themeKey: "green",
     creditEstimate: "~150 Credits",
     durationLabel: "6s",
     resolutionLabel: "768p",
@@ -128,6 +191,7 @@ const CATALOG: CatalogEntry[] = [
     description: "Premium Kling mit Audio und Endframe.",
     tags: ["Start", "End", "Audio"],
     badge: "Pro",
+    themeKey: "blue",
     creditEstimate: "~800 Credits",
     durationLabel: "5-10s",
     resolutionLabel: "1080p",
@@ -139,6 +203,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "GOOGLE",
     description: "Google Veo Lite für schnelle Szenen.",
     tags: ["Start"],
+    themeKey: "violet",
     creditEstimate: "~200 Credits",
     durationLabel: "8s",
     resolutionLabel: "720p",
@@ -150,6 +215,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "WEITERE",
     description: "Referenzbasierte Animation mit Startbild.",
     tags: ["Start", "Referenz"],
+    themeKey: "green",
     creditEstimate: "~500 Credits",
     durationLabel: "5-8s",
     resolutionLabel: "720p",
@@ -161,6 +227,7 @@ const CATALOG: CatalogEntry[] = [
     provider: "WEITERE",
     description: "Multi-Shot Clips mit Start- und Endframe.",
     tags: ["Start", "End", "Multi-Shot"],
+    themeKey: "green",
     creditEstimate: "~400 Credits",
     durationLabel: "5s",
     resolutionLabel: "720p",
@@ -202,6 +269,30 @@ function formatCreditEstimate(
   return `~${credits} Credits`;
 }
 
+function buildCatalogModel(
+  entry: CatalogEntry,
+  akool?: AkoolImageToVideoModel
+): SzenenGeneratorModel {
+  const caps = buildModelCapabilities(entry.tags);
+  return {
+    id: akool?.value ?? entry.id,
+    name: akool?.label ?? entry.name,
+    provider: entry.provider,
+    description: akool?.description ?? entry.description,
+    tags: entry.tags,
+    badge: entry.badge ?? (akool?.isPro ? "Pro" : undefined),
+    themeKey: entry.themeKey,
+    creditEstimate: formatCreditEstimate(entry, akool),
+    durationLabel: entry.durationLabel,
+    resolutionLabel: entry.resolutionLabel,
+    durations: parseDurationList(entry.durationLabel, akool),
+    resolutions: parseResolutionList(entry.resolutionLabel, akool),
+    ...caps,
+    akool,
+    apiAvailable: Boolean(akool),
+  };
+}
+
 export function mergeSzenenGeneratorModels(
   apiModels: AkoolImageToVideoModel[] = []
 ): SzenenGeneratorModel[] {
@@ -210,19 +301,7 @@ export function mergeSzenenGeneratorModels(
   const catalogModels = CATALOG.map((entry) => {
     const akool = findApiModel(entry, apiModels);
     if (akool) usedApiIds.add(akool.value);
-    return {
-      id: akool?.value ?? entry.id,
-      name: akool?.label ?? entry.name,
-      provider: entry.provider,
-      description: akool?.description ?? entry.description,
-      tags: entry.tags,
-      badge: entry.badge ?? (akool?.isPro ? "Pro" : undefined),
-      creditEstimate: formatCreditEstimate(entry, akool),
-      durationLabel: entry.durationLabel,
-      resolutionLabel: entry.resolutionLabel,
-      akool,
-      apiAvailable: Boolean(akool),
-    } satisfies SzenenGeneratorModel;
+    return buildCatalogModel(entry, akool);
   });
 
   const extraApiModels = apiModels
@@ -235,9 +314,9 @@ export function mergeSzenenGeneratorModels(
       const durationLabel =
         minDur === maxDur ? `${minDur}s` : `${minDur}-${maxDur}s`;
       const resLabels = model.resolutionList.map((r) => r.label).join("-");
-
       const tags: SzenenFeatureTag[] = ["Start"];
       if (model.supportedLastFrame) tags.push("End");
+      const themeKey = inferThemeKey(model.label);
 
       return {
         id: model.value,
@@ -246,15 +325,16 @@ export function mergeSzenenGeneratorModels(
         description: model.description ?? "Bild-zu-Video Modell",
         tags,
         badge: model.isPro ? ("Pro" as const) : undefined,
+        themeKey,
         creditEstimate: formatCreditEstimate(
-          {
-            ...CATALOG[0],
-            creditEstimate: "~500 Credits",
-          },
+          { ...CATALOG[0], creditEstimate: "~500 Credits" },
           model
         ),
         durationLabel,
         resolutionLabel: resLabels || resolution,
+        durations,
+        resolutions: model.resolutionList.map((r) => r.value),
+        ...buildModelCapabilities(tags),
         akool: model,
         apiAvailable: true,
       } satisfies SzenenGeneratorModel;
@@ -316,5 +396,18 @@ export function getDefaultDuration(model: SzenenGeneratorModel): number {
 }
 
 export function getDefaultResolution(model: SzenenGeneratorModel): string {
-  return model.akool?.resolutionList[0]?.value ?? "720p";
+  return model.resolutions[0] ?? model.akool?.resolutionList[0]?.value ?? "720p";
+}
+
+export function getModelDurations(
+  model: SzenenGeneratorModel,
+  resolution: string
+): number[] {
+  if (model.akool) return getDurationsForModel(model.akool, resolution);
+  return model.durations;
+}
+
+export function getModelResolutions(model: SzenenGeneratorModel): string[] {
+  if (model.akool) return model.akool.resolutionList.map((r) => r.value);
+  return model.resolutions;
 }

@@ -7,14 +7,21 @@ import {
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Film, Plus, Search, Upload } from "lucide-react";
-import { TablerPhoto } from "@/components/icons/TablerPhoto";
+import { ChevronUp, Film, Search } from "lucide-react";
+import { AiCoreBadge } from "@/components/szenen-generator/AiCoreBadge";
+import { AdvancedSettingsPanel } from "@/components/szenen-generator/AdvancedSettingsPanel";
+import { ModelCard } from "@/components/szenen-generator/ModelCard";
+import { UploadBox } from "@/components/szenen-generator/UploadBox";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
-import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import { useBuyCredits } from "@/components/credits/BuyCreditsProvider";
+import { handleApiInsufficientCredits, handleInsufficientCredits } from "@/lib/client-credits-ui";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
+import { useMouseVelocity } from "@/hooks/useMouseVelocity";
+import { useScrollVelocity } from "@/hooks/useScrollVelocity";
+import { useSentientBadge } from "@/hooks/useSentientBadge";
+import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import type { AkoolImageToVideoModel } from "@/lib/akool-models";
 import { getDurationsForModel } from "@/lib/akool-models";
@@ -22,68 +29,161 @@ import {
   getDefaultDuration,
   getDefaultResolution,
   getModelCreditCost,
+  getModelDurations,
+  getModelResolutions,
   groupSzenenModelsByProvider,
   mergeSzenenGeneratorModels,
   modelSupportsTag,
-  type SzenenFeatureTag,
   type SzenenGeneratorModel,
 } from "@/lib/szenen-generator-models";
+import {
+  getThemeTokens,
+  resolveModelThemeKey,
+  spotlightBackground,
+  themeCssVars,
+  type SzenenThemeKey,
+} from "@/lib/szenen-generator-theme";
+import { createClient } from "@/lib/supabase/client";
 
-const TAG_ICONS: Record<SzenenFeatureTag, string> = {
-  Start: "▶",
-  End: "◼",
-  Audio: "♪",
-  Referenz: "◎",
-  "Multi-Shot": "⧉",
-  "Multi-Ratio": "⬒",
-};
+const BUTTON_LOADING_MESSAGES = [
+  "GENERIEREN...",
+  "AI CORE AKTIV...",
+  "FAST FERTIG...",
+];
 
-function filterModels(
-  models: SzenenGeneratorModel[],
-  query: string
-): SzenenGeneratorModel[] {
+function loadingMessages(name: string) {
+  return [
+    "AI Core berechnet Szene...",
+    "Neuronale Pfade werden aktiviert...",
+    "Video-Matrix wird generiert...",
+    "Quantenprozessoren bei 98%...",
+    `Fast fertig, ${name}...`,
+  ];
+}
+
+type DialogStep = 0 | 1;
+
+function filterModels(models: SzenenGeneratorModel[], query: string) {
   const q = query.trim().toLowerCase();
   if (!q) return models;
   return models.filter(
     (m) =>
       m.name.toLowerCase().includes(q) ||
       m.provider.toLowerCase().includes(q) ||
-      m.description.toLowerCase().includes(q) ||
-      m.tags.some((t) => t.toLowerCase().includes(q))
+      m.description.toLowerCase().includes(q)
   );
 }
 
 export function SzenenGeneratorStudio() {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const lastFrameRef = useRef<HTMLInputElement>(null);
+  const modelListRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const modelCardRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const hoverCooldown = useRef(0);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastInteraction = useRef(Date.now());
 
+  const { openBuyModal } = useBuyCredits();
+  const { credits } = useUserCredits();
+
+  const [userName, setUserName] = useState("Georg");
+  const [themeOverride, setThemeOverride] = useState<SzenenThemeKey | null>(null);
+  const [pulseGenerate, setPulseGenerate] = useState(false);
+  const [displayedCredits, setDisplayedCredits] = useState<number | null>(null);
+  const [creditFlash, setCreditFlash] = useState(false);
   const [modelsLoading, setModelsLoading] = useState(true);
   const [models, setModels] = useState<SzenenGeneratorModel[]>([]);
-  const [selectedModel, setSelectedModel] = useState<SzenenGeneratorModel | null>(
-    null
-  );
+  const [selectedModel, setSelectedModel] = useState<SzenenGeneratorModel | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  const [hoveredModelId, setHoveredModelId] = useState<string | null>(null);
+  const [dialogStep, setDialogStep] = useState<DialogStep>(0);
+  const [prompt, setPrompt] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [duration, setDuration] = useState(5);
   const [resolution, setResolution] = useState("720p");
-  const [prompt, setPrompt] = useState("");
+  const [videoCount, setVideoCount] = useState(1);
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [lastFrameUrl, setLastFrameUrl] = useState("");
   const [lastFramePreview, setLastFramePreview] = useState<string | null>(null);
+  const [referencePreview, setReferencePreview] = useState<string | null>(null);
+  const [audioName, setAudioName] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [generationId, setGenerationId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
 
-  const { generating, elapsedSec, error, setError, startPolling } =
-    useAkoolJobPoll({
-      onSuccess: ({ resultUrl: url, generationId: gid }) => {
-        setResultUrl(url);
-        setGenerationId(gid ?? null);
-      },
+  const { badgeText, badgeVisible, showMessage } = useSentientBadge(isTyping);
+
+  const applyTheme = useCallback((key: SzenenThemeKey | null) => {
+    setThemeOverride(key);
+  }, []);
+
+  const themeKey: SzenenThemeKey =
+    themeOverride ??
+    (selectedModel ? resolveModelThemeKey(selectedModel) : "green");
+  const theme = getThemeTokens(themeKey);
+
+  const placeholder =
+    dialogStep === 0
+      ? `Beschreibe dein Video, ${userName}... Was erschaffen wir heute? 👇`
+      : "Oder beschreibe eine neue Szene...";
+
+  const msgs = useMemo(() => loadingMessages(userName), [userName]);
+
+  const { generating, elapsedSec, error, setError, startPolling } = useAkoolJobPoll({
+    onSuccess: ({ resultUrl: url, generationId: gid }) => {
+      setResultUrl(url);
+      setGenerationId(gid ?? null);
+      setDialogStep(1);
+      showMessage(`Fertig, ${userName}! Deine Szene wartet. ✨`, 5000, 8);
+    },
+  });
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      const metaName = session?.user?.user_metadata?.full_name as string | undefined;
+      const firstName =
+        metaName?.trim().split(/\s+/)[0] ||
+        session?.user?.email?.split("@")[0] ||
+        "Georg";
+      setUserName(firstName);
     });
+  }, []);
+
+  useEffect(() => {
+    if (credits !== null) setDisplayedCredits(credits);
+  }, [credits]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      showMessage(
+        `Hi ${userName}, bereit für etwas Großes? Was wollen wir heute erschaffen? 👇`,
+        5000,
+        3
+      );
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [userName, showMessage]);
+
+  useEffect(() => {
+    if (dialogStep !== 0) return;
+    idleTimer.current = setTimeout(() => {
+      if (Date.now() - lastInteraction.current >= 12000) {
+        showMessage(
+          "Ich warte noch... soll ich schon die Modelle aufwärmen? 🔥",
+          4000,
+          2
+        );
+      }
+    }, 12000);
+    return () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+    };
+  }, [dialogStep, showMessage]);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,9 +195,7 @@ export function SzenenGeneratorStudio() {
           error?: string;
         };
         const apiModels = res.ok ? (data.models ?? []) : [];
-        if (!res.ok && !apiModels.length) {
-          setLoadError(data.error ?? null);
-        }
+        if (!res.ok && !apiModels.length) setLoadError(data.error ?? null);
         const merged = mergeSzenenGeneratorModels(apiModels);
         if (cancelled) return;
         setModels(merged);
@@ -126,11 +224,18 @@ export function SzenenGeneratorStudio() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!generating) return;
+    const iv = setInterval(() => {
+      setLoadingMsgIndex((i) => (i + 1) % msgs.length);
+    }, 1500);
+    return () => clearInterval(iv);
+  }, [generating, msgs.length]);
+
   const filteredModels = useMemo(
     () => filterModels(models, searchQuery),
     [models, searchQuery]
   );
-
   const groupedModels = useMemo(
     () => groupSzenenModelsByProvider(filteredModels),
     [filteredModels]
@@ -138,56 +243,97 @@ export function SzenenGeneratorStudio() {
 
   const creditCost = useMemo(() => {
     if (!selectedModel) return 0;
-    return getModelCreditCost(selectedModel, duration, resolution);
-  }, [selectedModel, duration, resolution]);
+    return getModelCreditCost(selectedModel, duration, resolution) * videoCount;
+  }, [selectedModel, duration, resolution, videoCount]);
 
-  const selectModel = useCallback((model: SzenenGeneratorModel) => {
-    setSelectedModel(model);
-    setDuration(getDefaultDuration(model));
-    setResolution(getDefaultResolution(model));
-    setResultUrl(null);
-    setGenerationId(null);
-    setSubmitError(null);
-    setError(null);
+  const availableDurations = useMemo(() => {
+    if (!selectedModel) return [5];
+    return getModelDurations(selectedModel, resolution);
+  }, [selectedModel, resolution]);
 
-    requestAnimationFrame(() => {
-      modelCardRefs.current.get(model.id)?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
+  const availableResolutions = useMemo(() => {
+    if (!selectedModel) return ["720p"];
+    return getModelResolutions(selectedModel);
+  }, [selectedModel]);
+
+  const { isFast } = useScrollVelocity(modelListRef);
+
+  useEffect(() => {
+    if (!isFast) return;
+    showMessage(
+      `Hey ${userName}, nicht so hastig! Die Quantenprozessoren kommen bei dem Tempo nicht mit! 🧠`,
+      4000,
+      5
+    );
+  }, [isFast, userName, showMessage]);
+
+  useMouseVelocity(canvasRef, {
+    onWobble: useCallback(() => {
+      showMessage(
+        `Alles okay bei dir, ${userName}? Suchst du die Credits oder testest du nur meine Framerate? ⏱️`,
+        4000,
+        3
+      );
+    }, [userName, showMessage]),
+  });
+
+  const selectModel = useCallback(
+    (model: SzenenGeneratorModel) => {
+      setSelectedModel(model);
+      setDuration(getDefaultDuration(model));
+      setResolution(getDefaultResolution(model));
+      applyTheme(null);
+      setResultUrl(null);
+      setGenerationId(null);
+      setSubmitError(null);
+      setError(null);
+      lastInteraction.current = Date.now();
+      requestAnimationFrame(() => {
+        modelCardRefs.current.get(model.id)?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
       });
-    });
-  }, [setError]);
+    },
+    [setError, applyTheme]
+  );
 
   useEffect(() => {
     if (!selectedModel?.akool) return;
     const durations = getDurationsForModel(selectedModel.akool, resolution);
-    if (!durations.includes(duration)) {
-      setDuration(durations[0] ?? 5);
-    }
+    if (!durations.includes(duration)) setDuration(durations[0] ?? 5);
   }, [selectedModel, resolution, duration]);
 
-  const handleFile = (file: File, target: "source" | "last") => {
-    if (!file.type.startsWith("image/")) return;
+  const readImageFile = (file: File, onDone: (url: string) => void) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const url = e.target?.result as string;
-      if (target === "source") {
-        setImageUrl(url);
-        setImagePreview(url);
-      } else {
-        setLastFrameUrl(url);
-        setLastFramePreview(url);
-      }
-      setSubmitError(null);
-    };
+    reader.onload = (e) => onDone(e.target?.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handlePromptKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    e.preventDefault();
+    lastInteraction.current = Date.now();
+    const text = prompt.trim();
+    if (dialogStep === 0 && text.length > 10) {
+      setDialogStep(1);
+      applyTheme("violet");
+      showMessage(
+        `Geisteskranke Idee, ${userName}. Ich liebe es! Prozessoren übertaktet. Klick auf GENERIEREN! 🔥`,
+        6000,
+        10
+      );
+      setPrompt("");
+      setTimeout(() => setPulseGenerate(true), 2000);
+    }
   };
 
   const runGenerate = useCallback(async () => {
     if (!selectedModel) return;
 
     if (modelSupportsTag(selectedModel, "Start") && !imageUrl.trim()) {
-      setSubmitError("Bitte lade ein Startbild hoch.");
+      setUploadError(true);
+      showMessage("Bitte lade zuerst ein Startbild hoch — ohne geht die Magie nicht! 🖼️", 4000, 6);
       return;
     }
     if (!prompt.trim()) {
@@ -198,11 +344,38 @@ export function SzenenGeneratorStudio() {
       setSubmitError("Dieses Modell ist derzeit nicht verfügbar.");
       return;
     }
+    if (
+      credits !== null &&
+      handleInsufficientCredits(credits, creditCost)
+    ) {
+      showMessage(`Nicht genug Credits, ${userName}! Zeit für ein Upgrade! 💳`, 5000, 9);
+      openBuyModal();
+      return;
+    }
 
+    setUploadError(false);
     setSubmitError(null);
     setError(null);
     setResultUrl(null);
     setGenerationId(null);
+    setPulseGenerate(false);
+    showMessage("AI Core berechnet deine Szene... 🔥", 4000, 8);
+
+    if (credits !== null && creditCost > 0) {
+      setCreditFlash(true);
+      const start = credits;
+      const end = Math.max(0, credits - creditCost);
+      const steps = 12;
+      let step = 0;
+      const iv = setInterval(() => {
+        step += 1;
+        setDisplayedCredits(Math.round(start + ((end - start) * step) / steps));
+        if (step >= steps) {
+          clearInterval(iv);
+          setTimeout(() => setCreditFlash(false), 400);
+        }
+      }, 40);
+    }
 
     try {
       const res = await fetch("/api/akool/image-to-video", {
@@ -217,11 +390,13 @@ export function SzenenGeneratorStudio() {
           lastFrameUrl: lastFrameUrl || undefined,
         }),
       });
-      const data = (await res.json()) as { jobId?: string; error?: string };
-      if (handleApiInsufficientCredits(res.status, data, creditCost)) return;
-      if (!res.ok || !data.jobId) {
-        throw new Error(data.error ?? "Fehler");
+      const data = (await res.json()) as { jobId?: string; error?: string; credits?: number };
+      if (handleApiInsufficientCredits(res.status, data, creditCost)) {
+        showMessage(`Nicht genug Credits, ${userName}! Zeit für ein Upgrade! 💳`, 5000, 9);
+        openBuyModal();
+        return;
       }
+      if (!res.ok || !data.jobId) throw new Error(data.error ?? "Fehler");
       startPolling(data.jobId, "image2video");
     } catch (err: unknown) {
       setSubmitError(
@@ -236,359 +411,315 @@ export function SzenenGeneratorStudio() {
     resolution,
     lastFrameUrl,
     creditCost,
+    credits,
+    userName,
     startPolling,
     setError,
+    showMessage,
+    openBuyModal,
+    applyTheme,
   ]);
 
-  const showStartUpload = selectedModel
-    ? modelSupportsTag(selectedModel, "Start")
-    : false;
-  const showEndUpload = selectedModel
-    ? modelSupportsTag(selectedModel, "End")
-    : false;
+  const handleModelLongHover = useCallback(() => {
+    const now = Date.now();
+    if (now - hoverCooldown.current < 10000) return;
+    hoverCooldown.current = now;
+    showMessage("Ich sehe dich... du darfst klicken. 👀", 4000, 4);
+  }, [showMessage]);
+
+  const panel = (
+    <div className="flex h-full flex-col px-3 pb-3 pt-3">
+      <AiCoreBadge text={badgeText} visible={badgeVisible} />
+      <div className="relative mb-3">
+        <Search
+          size={14}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/25"
+        />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Modelle suchen..."
+          className="w-full rounded-xl border border-white/[0.07] bg-white/[0.04] py-2.5 pl-9 pr-3 text-[13px] text-white outline-none backdrop-blur-sm placeholder:text-white/25 focus:border-white/20"
+        />
+      </div>
+      <div ref={modelListRef} className="min-h-0 flex-1 overflow-y-auto pr-1">
+        {modelsLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-20 animate-pulse rounded-[14px] bg-white/[0.04]" />
+            ))}
+          </div>
+        ) : (
+          groupedModels.map((group, gi) => (
+            <div key={group.provider}>
+              {gi > 0 && <div className="my-2 h-[0.5px] bg-white/10" />}
+              <p className="px-1 pb-2 pt-1 text-[9px] uppercase tracking-[1.5px] text-white/25">
+                {group.provider}
+              </p>
+              {group.models.map((model) => (
+                <div
+                  key={model.id}
+                  onMouseEnter={() => setHoveredModelId(model.id)}
+                  onMouseLeave={() => setHoveredModelId(null)}
+                >
+                  <ModelCard
+                    model={model}
+                    active={selectedModel?.id === model.id}
+                    neighborHover={
+                      hoveredModelId !== null &&
+                      hoveredModelId !== model.id &&
+                      group.models.some((m) => m.id === hoveredModelId)
+                    }
+                    onSelect={() => selectModel(model)}
+                    onLongHover={handleModelLongHover}
+                    cardRef={(el) => {
+                      if (el) modelCardRefs.current.set(model.id, el);
+                      else modelCardRefs.current.delete(model.id);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="-mx-4 -mt-4 mb-0 flex min-h-[calc(100dvh-120px)] flex-col sm:-mx-6 md:-mx-10 md:-mt-8">
-      <div className="border-b border-[#1e1e1e] px-4 py-4 sm:px-6 md:px-8">
-        <h1 className="font-display text-[clamp(28px,5vw,40px)] leading-none tracking-wide text-white">
-          SZENEN GENERATOR
-        </h1>
-      </div>
-
+    <div
+      className="-mx-4 -mt-4 flex min-h-[calc(100dvh-120px)] flex-col font-sans transition-all duration-700 ease-in-out sm:-mx-6 md:-mx-10 md:-mt-8"
+      style={themeCssVars(theme)}
+    >
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        {/* Left panel — model picker */}
+        {/* Middle panel — desktop */}
         <aside
-          className={`flex shrink-0 flex-col border-[#1e1e1e] bg-[#111] lg:w-[320px] lg:border-r lg:[border-right-width:0.5px] ${
-            mobilePanelOpen ? "max-h-[300px] border-b" : "max-h-12 overflow-hidden border-b lg:max-h-none lg:overflow-visible lg:border-b-0"
-          }`}
+          className="hidden w-[260px] shrink-0 flex-col border-r border-white/[0.05] bg-[#0e0e11] lg:flex"
+          style={{ borderRightWidth: "0.5px" }}
         >
-          <button
-            type="button"
-            onClick={() => setMobilePanelOpen((v) => !v)}
-            className="flex items-center justify-between px-4 py-3 text-left lg:hidden"
-          >
-            <span className="text-[12px] text-[#888]">Alle Modelle</span>
-            <ChevronDown
-              size={16}
-              className={`text-[#888] transition-transform ${mobilePanelOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-
-          <div className="hidden px-4 pt-4 lg:block">
-            <p className="text-[12px] text-[#888]">Alle Modelle</p>
-            <div className="relative mt-3">
-              <Search
-                size={14}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#555]"
-              />
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Modelle suchen..."
-                className="w-full rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] py-2 pl-9 pr-3 text-[13px] text-[#e0e0e0] outline-none placeholder:text-[#555] focus:border-[#333]"
-              />
-            </div>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:pt-0">
-            <div className="px-4 pt-2 lg:hidden">
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#555]"
-                />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Modelle suchen..."
-                  className="w-full rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] py-2 pl-9 pr-3 text-[13px] text-[#e0e0e0] outline-none placeholder:text-[#555] focus:border-[#333]"
-                />
-              </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto px-2 py-3 lg:px-0">
-              {modelsLoading ? (
-                <div className="space-y-2 px-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-20 animate-pulse rounded-lg bg-[#161616]"
-                    />
-                  ))}
-                </div>
-              ) : groupedModels.length === 0 ? (
-                <p className="px-4 py-6 text-center text-[12px] text-[#555]">
-                  Keine Modelle gefunden
-                </p>
-              ) : (
-                groupedModels.map((group, groupIndex) => (
-                  <div key={group.provider}>
-                    {groupIndex > 0 && (
-                      <div className="my-2 h-px bg-[#1e1e1e]" />
-                    )}
-                    <p
-                      className="px-4 pb-2 pt-1 text-[9px] uppercase tracking-[1.5px] text-[#444]"
-                      style={{ letterSpacing: "1.5px" }}
-                    >
-                      {group.provider}
-                    </p>
-                    {group.models.map((model) => {
-                      const active = selectedModel?.id === model.id;
-                      return (
-                        <button
-                          key={model.id}
-                          ref={(el) => {
-                            if (el) modelCardRefs.current.set(model.id, el);
-                            else modelCardRefs.current.delete(model.id);
-                          }}
-                          type="button"
-                          onClick={() => selectModel(model)}
-                          className={`relative mb-1 w-full rounded-none px-4 py-3 text-left transition-colors hover:bg-[#161616] ${
-                            active
-                              ? "border-l-2 border-[#B4FF00] bg-[#161616]"
-                              : "border-l-2 border-transparent"
-                          }`}
-                        >
-                          <div className="flex items-start gap-2">
-                            <span
-                              className={`mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full border ${
-                                active
-                                  ? "border-[#B4FF00] bg-[#B4FF00]"
-                                  : "border-[#444] bg-transparent"
-                              }`}
-                            >
-                              {active && (
-                                <span className="h-[6px] w-[6px] rounded-full bg-[#0a0a0a]" />
-                              )}
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[13px] font-medium text-[#e0e0e0]">
-                                  {model.name}
-                                </span>
-                                {model.badge && (
-                                  <span className="rounded bg-[#1e2a1a] px-1.5 py-0.5 text-[9px] text-[#7ab800]">
-                                    {model.badge}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="ml-[22px] mt-1 text-[11px] leading-snug text-[#555]">
-                                {model.description}
-                              </p>
-                              <div className="ml-[22px] mt-2 flex flex-wrap gap-1">
-                                {model.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="inline-flex items-center gap-0.5 rounded-full border border-[#2a2a2a] px-1.5 py-0.5 text-[10px] text-[#444]"
-                                  >
-                                    <span aria-hidden>{TAG_ICONS[tag]}</span>
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                            <span className="shrink-0 text-[10px] text-[#555]">
-                              {model.creditEstimate}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          {panel}
         </aside>
 
-        {/* Right canvas */}
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-[#0a0a0a]">
-          {selectedModel && (
-            <div className="absolute right-4 top-4 z-10 rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1.5 text-[12px] text-[#888]">
-              {creditCost > 0 ? `${creditCost} Credits` : selectedModel.creditEstimate}
-            </div>
+        {/* Mobile bottom sheet toggle */}
+        <div className="lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileSheetOpen((v) => !v)}
+            className="flex w-full items-center justify-center gap-2 border-b border-white/10 bg-[#0e0e11] py-2 text-[12px] text-white/50"
+          >
+            <ChevronUp
+              size={16}
+              className={`transition-transform ${mobileSheetOpen ? "rotate-180" : ""}`}
+            />
+            Modelle {mobileSheetOpen ? "ausblenden" : "anzeigen"}
+          </button>
+          {mobileSheetOpen && (
+            <aside className="max-h-[300px] overflow-hidden border-b border-white/10 bg-[#0e0e11]">
+              {panel}
+            </aside>
           )}
+        </div>
 
-          <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8 sm:px-8">
-            <div className="flex w-full max-w-[720px] flex-col items-center">
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1a1a1a]">
-                <Film size={24} color="#B4FF00" strokeWidth={2} />
+        {/* Right canvas */}
+        <div
+          ref={canvasRef}
+          className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-[#08080a]"
+        >
+          <div
+            className="pointer-events-none absolute left-1/2 top-[30%] z-0 h-[380px] w-[500px] max-w-[90%] -translate-x-1/2 rounded-full blur-[80px] transition-all duration-[1200ms] ease-in-out"
+            style={{
+              background: spotlightBackground(theme),
+              opacity: theme.spotOpacity + 0.3,
+            }}
+          />
+
+          <div className="relative z-[1] flex items-start justify-between px-4 pt-4 sm:px-8">
+            <h1
+              className="font-display text-[36px] font-semibold leading-none tracking-tight text-white transition-all duration-700 ease-in-out"
+              style={{ textShadow: `0 0 40px rgba(${theme.rgb},0.3)` }}
+            >
+              SZENEN GENERATOR
+            </h1>
+            {selectedModel && (
+              <div
+                className="rounded-xl border px-3 py-1.5 text-[12px] transition-all duration-700 ease-in-out"
+                style={{
+                  borderColor: `rgba(${theme.rgb},0.35)`,
+                  background: "rgba(255,255,255,0.04)",
+                  color: creditFlash ? "#ff6b7a" : "var(--szenen-accent-text-muted)",
+                }}
+              >
+                {displayedCredits !== null
+                  ? `${displayedCredits} Credits`
+                  : creditCost > 0
+                    ? `${creditCost} Credits`
+                    : selectedModel.creditEstimate}
               </div>
+            )}
+          </div>
 
+          <div className="relative z-[1] flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 pb-8 pt-6 sm:px-8">
+            <div className="flex w-full max-w-[720px] flex-col items-center">
+              <div
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-[1200ms]"
+                style={{ background: "rgba(255,255,255,0.06)" }}
+              >
+                <Film size={24} style={{ color: "var(--szenen-accent)" }} strokeWidth={2} />
+              </div>
               <h2
-                className="text-center text-[36px] font-bold leading-tight tracking-[-0.5px] text-white"
-                style={{ letterSpacing: "-0.5px" }}
+                className="text-center text-[28px] font-bold leading-tight tracking-[-1px] transition-colors duration-[800ms]"
+                style={{
+                  color: "var(--szenen-accent-text)",
+                  textShadow: `0 0 32px rgba(${theme.rgb},0.25)`,
+                }}
               >
                 {selectedModel?.name ?? "Modell wählen"}
               </h2>
 
               <div className="mt-8 w-full max-w-[620px]">
-                <div className="flex items-center gap-2 rounded-2xl border border-[#2a2a2a] bg-[#181818] p-3 focus-within:border-[#333]">
-                  <button
-                    type="button"
-                    onClick={() => fileRef.current?.click()}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#888] transition-colors hover:text-[#B4FF00]"
-                    aria-label="Startbild hochladen"
-                  >
-                    <TablerPhoto size={20} color="currentColor" />
-                  </button>
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleFile(f, "source");
-                    }}
-                  />
-                  <input
-                    type="text"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        void runGenerate();
-                      }
-                    }}
-                    placeholder="Beschreibe dein Video..."
-                    className="min-w-0 flex-1 bg-transparent text-[14px] text-[#e0e0e0] outline-none placeholder:text-[#555]"
-                  />
-                  <button
-                    type="button"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1e1e1e] text-[#888]"
-                    aria-hidden
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => {
+                    setPrompt(e.target.value);
+                    setIsTyping(true);
+                    lastInteraction.current = Date.now();
+                  }}
+                  onBlur={(e) => {
+                    setIsTyping(false);
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                  }}
+                  onKeyDown={handlePromptKeyDown}
+                  placeholder={placeholder}
+                  rows={3}
+                  className="w-full resize-none rounded-[14px] border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[14px] text-white outline-none backdrop-blur-[10px] transition-all duration-300 placeholder:text-white/25 focus:shadow-[0_0_0_3px_var(--szenen-accent-10)]"
+                  style={{ borderWidth: "0.5px" }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = theme.primary;
+                  }}
+                />
 
                 {selectedModel && (
                   <div className="mt-3 flex flex-wrap justify-center gap-2">
-                    <span className="rounded-full border border-[#2d4a00] bg-[#0d1a00] px-3 py-1 text-[11px] text-[#7ab800]">
+                    <span
+                      className="rounded-full border px-3 py-1 text-[11px] transition-all duration-[1200ms]"
+                      style={{
+                        borderColor: "var(--szenen-accent-30)",
+                        background: "var(--szenen-accent-10)",
+                        color: "var(--szenen-accent-text-muted)",
+                      }}
+                    >
                       {selectedModel.name}
                     </span>
                     {modelSupportsTag(selectedModel, "Start") && (
-                      <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-[11px] text-[#777]">
-                        Startbild
-                      </span>
+                      <Pill label="Startbild" />
                     )}
-                    {modelSupportsTag(selectedModel, "End") && (
-                      <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-[11px] text-[#777]">
-                        Endrahmen
-                      </span>
-                    )}
-                    {modelSupportsTag(selectedModel, "Audio") && (
-                      <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-[11px] text-[#777]">
-                        Audio
-                      </span>
-                    )}
-                    <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-[11px] text-[#777]">
-                      {selectedModel.resolutionLabel}
-                    </span>
-                    <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-[11px] text-[#777]">
-                      {selectedModel.durationLabel}
-                    </span>
+                    {selectedModel.supportsEnd && <Pill label="Endrahmen" />}
+                    {selectedModel.supportsAudio && <Pill label="Audio" />}
+                    <Pill label={selectedModel.resolutionLabel} />
+                    <Pill label={selectedModel.durationLabel} />
                   </div>
                 )}
 
-                {showStartUpload && (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => fileRef.current?.click()}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        fileRef.current?.click();
-                      }
+                <div className="mt-4 space-y-3">
+                  <UploadBox
+                    label="Startbild hochladen"
+                    accept="image/jpeg,image/png,image/webp"
+                    kind="image"
+                    previewUrl={imagePreview}
+                    error={uploadError}
+                    onFile={(file) => {
+                      readImageFile(file, (url) => {
+                        setImageUrl(url);
+                        setImagePreview(url);
+                        setUploadError(false);
+                      });
                     }}
-                    className="mt-4 cursor-pointer rounded-xl border border-dashed border-[#2a2a2a] p-8 text-center transition-colors hover:border-[#333]"
-                  >
-                    {imagePreview ? (
-                      <div className="relative mx-auto h-40 w-full max-w-sm overflow-hidden rounded-lg">
-                        <Image
-                          src={imagePreview}
-                          alt="Startbild"
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <>
-                        <Upload size={24} className="mx-auto text-[#555]" />
-                        <p className="mt-2 text-[13px] text-[#777]">
-                          Startbild hochladen
-                        </p>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {showEndUpload && (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => lastFrameRef.current?.click()}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        lastFrameRef.current?.click();
-                      }
+                    onRemove={() => {
+                      setImageUrl("");
+                      setImagePreview(null);
                     }}
-                    className="mt-3 cursor-pointer rounded-xl border border-dashed border-[#2a2a2a] p-6 text-center transition-colors hover:border-[#333]"
-                  >
-                    <input
-                      ref={lastFrameRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) handleFile(f, "last");
+                  />
+                  {selectedModel?.supportsEnd && (
+                    <UploadBox
+                      label="Endrahmen (optional)"
+                      accept="image/jpeg,image/png,image/webp"
+                      kind="image"
+                      previewUrl={lastFramePreview}
+                      onFile={(file) => {
+                        readImageFile(file, (url) => {
+                          setLastFrameUrl(url);
+                          setLastFramePreview(url);
+                        });
+                      }}
+                      onRemove={() => {
+                        setLastFrameUrl("");
+                        setLastFramePreview(null);
                       }}
                     />
-                    {lastFramePreview ? (
-                      <div className="relative mx-auto h-28 w-full max-w-xs overflow-hidden rounded-lg">
-                        <Image
-                          src={lastFramePreview}
-                          alt="Endrahmen"
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <p className="text-[13px] text-[#777]">
-                        Endrahmen (optional)
-                      </p>
-                    )}
-                  </div>
-                )}
+                  )}
+                  {selectedModel?.supportsAudio && (
+                    <UploadBox
+                      label="Audio hinzufügen (optional)"
+                      accept="audio/mpeg,audio/wav,.mp3"
+                      kind="audio"
+                      previewName={audioName ?? undefined}
+                      onFile={(file) => setAudioName(file.name)}
+                      onRemove={() => setAudioName(null)}
+                    />
+                  )}
+                  {selectedModel?.supportsReference && (
+                    <UploadBox
+                      label="Referenzbild (optional)"
+                      accept="image/jpeg,image/png,image/webp"
+                      kind="image"
+                      previewUrl={referencePreview}
+                      onFile={(file) => {
+                        readImageFile(file, (url) => setReferencePreview(url));
+                      }}
+                      onRemove={() => setReferencePreview(null)}
+                    />
+                  )}
+                </div>
+
+                <AdvancedSettingsPanel
+                  duration={duration}
+                  resolution={resolution}
+                  videoCount={videoCount}
+                  durations={availableDurations}
+                  resolutions={availableResolutions}
+                  onDuration={setDuration}
+                  onResolution={setResolution}
+                  onVideoCount={setVideoCount}
+                />
 
                 <LoadingButton
                   type="button"
                   mode="tool"
                   isLoading={generating}
-                  loadingText="Wird generiert..."
-                  disabled={
-                    !selectedModel ||
-                    !prompt.trim() ||
-                    (showStartUpload && !imageUrl.trim())
+                  loadingText={
+                    generating
+                      ? msgs[loadingMsgIndex]
+                      : BUTTON_LOADING_MESSAGES[loadingMsgIndex % BUTTON_LOADING_MESSAGES.length]
                   }
+                  disabled={!selectedModel || !prompt.trim()}
                   onClick={() => void runGenerate()}
-                  className="mt-4 rounded-xl bg-[#B4FF00] px-8 py-3 text-[#0a0a0a] disabled:opacity-40"
+                  className={`mt-4 h-12 w-full rounded-[10px] font-display text-base tracking-wide disabled:opacity-40 ${
+                    pulseGenerate && !generating ? "szenen-gen-pulse" : ""
+                  }`}
+                  style={{
+                    background: generating ? undefined : theme.primary,
+                    color: theme.onAccent,
+                    fontWeight: 700,
+                    boxShadow: `0 4px 20px rgba(${theme.rgb},0.3)`,
+                  }}
                 >
                   GENERIEREN
                 </LoadingButton>
 
-                {generating && elapsedSec > 0 && (
-                  <p className="mt-2 text-center text-[12px] text-[#555]">
-                    Generierung läuft… {elapsedSec}s
+                {generating && (
+                  <p className="mt-2 text-center text-[12px] text-white/25">
+                    {msgs[loadingMsgIndex]} · {elapsedSec}s
                   </p>
                 )}
 
@@ -604,20 +735,20 @@ export function SzenenGeneratorStudio() {
                       src={resultUrl}
                       controls
                       playsInline
-                      className="max-h-[400px] w-full rounded-xl bg-black"
+                      className="max-h-[400px] w-full rounded-[14px] bg-black"
                     />
                     <div className="mt-4 flex flex-wrap gap-3">
                       {generationId && (
                         <a
                           href={`/api/generated-video/${generationId}?download=1`}
-                          className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] px-4 py-2 text-[13px] font-medium text-[#e0e0e0] transition-colors hover:border-[#333]"
+                          className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-[13px] text-white/70"
                         >
                           Herunterladen
                         </a>
                       )}
                       <Link
                         href="/dashboard/gallery"
-                        className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] px-4 py-2 text-[13px] font-medium text-[#e0e0e0] transition-colors hover:border-[#333]"
+                        className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-[13px] text-white/70"
                       >
                         Im Studio-Archiv speichern
                       </Link>
@@ -631,5 +762,16 @@ export function SzenenGeneratorStudio() {
         </div>
       </div>
     </div>
+  );
+}
+
+function Pill({ label }: { label: string }) {
+  return (
+    <span
+      className="rounded-full border px-3 py-1 text-[11px] text-white/50 transition-all duration-700"
+      style={{ borderColor: "var(--szenen-accent-20)" }}
+    >
+      {label}
+    </span>
   );
 }
