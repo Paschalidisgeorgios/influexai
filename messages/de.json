@@ -1493,14 +1493,46 @@
       "showcase": {
         "kicker": "Showcase",
         "headline": "Kampagnen-Assets die sofort wirken.",
-        "c1_tag": "Reel Visual",
-        "c1_prompt": "Product Launch · Acid-Look · 9:16",
-        "c2_tag": "Motion Clip",
-        "c2_prompt": "SaaS Demo · 15s Loop · LinkedIn",
-        "c3_tag": "Hook Card",
-        "c3_prompt": "Scroll-Stopper · TikTok · DE",
-        "c4_tag": "Ad Pack",
-        "c4_prompt": "Brand Story · Multi-Format Export"
+        "scrollPrev": "Vorherige Karten",
+        "scrollNext": "Nächste Karten",
+        "items": {
+          "reel": {
+            "tag": "Reel Visual",
+            "title": "Product Launch · Acid-Look · 9:16",
+            "description": "Ein aufmerksamkeitsstarkes Hochformat-Visual für TikTok, Reels und Shorts.",
+            "badges": { "ratio": "9:16", "visual": "Visual" }
+          },
+          "motion": {
+            "tag": "Motion Clip",
+            "title": "SaaS Demo · 15s Loop · LinkedIn",
+            "description": "Kurzer Motion-Clip für Produktvorstellungen, Ads und Launch-Posts.",
+            "badges": { "video": "Video", "duration": "15s" }
+          },
+          "hook": {
+            "tag": "Hook Card",
+            "title": "Scroll-Stopper · TikTok · DE",
+            "description": "Hook-Visual mit starkem Einstieg für mehr Aufmerksamkeit im Feed.",
+            "badges": { "tiktok": "TikTok", "hook": "Hook" }
+          },
+          "adPack": {
+            "tag": "Ad Pack",
+            "title": "Brand Story · Multi-Format Export",
+            "description": "Kampagnenpaket mit mehreren Formaten für Reels, Story, Feed und Ads.",
+            "badges": { "export": "Export", "multi": "Multi" }
+          },
+          "creator": {
+            "tag": "Creator Pack",
+            "title": "Creator Campaign · UGC Look",
+            "description": "Natürlich wirkendes Creator-Asset für Social Proof und Performance Ads.",
+            "badges": { "ugc": "UGC", "ads": "Ads" }
+          },
+          "score": {
+            "tag": "Creative Score",
+            "title": "Score Analyse · Kampagnen-Check",
+            "description": "Bewertung von Hook, Format, Lesbarkeit und Scroll-Stop-Potential.",
+            "badges": { "score": "Score", "analysis": "Analyse" }
+          }
+        }
       },
       "tools": {
         "kicker": "Studio",
@@ -1638,6 +1670,113 @@
         "subheadline": "Credits für echte Generierungen — monatlich kündbar.",
         "ctaPrimary": "Preise ansehen",
         "ctaSecondary": "Kostenlos registrieren"
+      },
+      "featuresMenu": {
+        "title": "Features",
+        "close": "Features-Menü schließen",
+        "categories": {
+          "create": "Create",
+          "visuals": "Visuals",
+          "video": "Video",
+          "avatar": "Avatar & Audio",
+          "intelligence": "Intelligence",
+          "workflow": "Workflow"
+        },
+        "groups": {
+          "scripts": { "title": "Scripts & Hooks" },
+          "ads": { "title": "Werbung & Ads" },
+          "images": { "title": "Bilder & Avatare" },
+          "ugc": { "title": "UGC & Commerce" },
+          "motion": { "title": "Motion & Clips" },
+          "edit": { "title": "Edit & Transform" },
+          "live": { "title": "Live & Charaktere" },
+          "audio": { "title": "Audio & Sync" },
+          "agent": { "title": "Agent & Kampagnen" },
+          "analysis": { "title": "Analyse & Score" },
+          "library": { "title": "Archiv" },
+          "tools": { "title": "Insights" }
+        },
+        "items": {
+          "script": "Script Generator",
+          "hook": "Viral Hook Generator",
+          "trend": "Trend Script",
+          "calendar": "Content Kalender",
+          "product": "Produkt-Werbung",
+          "ad": "Ad Creator",
+          "thumbnail": "Thumbnail Konzept",
+          "imageGen": "Bild Generator",
+          "kiIch": "Mein KI-Ich",
+          "lora": "LoRA Training",
+          "upscaler": "HD Upscaler",
+          "ugcVideo": "UGC Video",
+          "ecommerce": "E-Commerce Ads",
+          "story": "Story Creator",
+          "scene": "Szenen Generator",
+          "seedance": "Video Motion",
+          "textToVideo": "Text to Video",
+          "transform": "Video Transformer",
+          "remix": "Video Remix",
+          "motionTransfer": "Motion Transfer",
+          "liveCreator": "Live Creator",
+          "avatarStudio": "Avatar Studio",
+          "character": "Character Studio",
+          "lipsync": "Lipsync Studio",
+          "melodia": "Melodia Studio",
+          "translate": "Video Übersetzer",
+          "faceStudio": "Face Studio",
+          "autopilot": "Agent Autopilot",
+          "campaign": "Campaign Autopilot",
+          "score": "Viral Score",
+          "outlier": "Outlier Detector",
+          "niche": "Niche Analyzer",
+          "competitor": "Konkurrenz-Analyse",
+          "gallery": "Studio Archiv",
+          "analytics": "Analytics"
+        },
+        "promo": {
+          "campaign": {
+            "label": "AI Campaign Studio",
+            "headline": "Aus einer Idee wird eine Kampagne.",
+            "description": "Bilder, Motion, Hooks und Score — in einem Workflow.",
+            "cta": "Jetzt starten",
+            "href": "/auth/sign-up"
+          },
+          "create": {
+            "label": "Content Create",
+            "headline": "Scripts die sofort postbar sind.",
+            "description": "Hooks, Kalender und Ads aus einem Briefing.",
+            "cta": "Script erstellen",
+            "href": "/dashboard/script-generator"
+          },
+          "visuals": {
+            "label": "Visual Studio",
+            "headline": "Brand Assets in Sekunden.",
+            "description": "KI-Bilder, Avatare und UGC-Look für Social.",
+            "cta": "Bild generieren",
+            "href": "/dashboard/image-generator"
+          },
+          "video": {
+            "label": "Video Motion",
+            "headline": "Bild wird Motion Clip.",
+            "description": "Story, Szenen und Video-Transformation.",
+            "cta": "Video starten",
+            "href": "/dashboard/story-creator"
+          },
+          "avatar": {
+            "label": "Avatar Studio",
+            "headline": "Dein KI-Gesicht. Überall konsistent.",
+            "description": "Live, Lipsync und Stimme in einem Flow.",
+            "cta": "Live Creator öffnen",
+            "href": "/dashboard/live-creator"
+          },
+          "intelligence": {
+            "label": "Creative Intelligence",
+            "headline": "Datenbasiert statt raten.",
+            "description": "Agent, Score und Wettbewerbs-Analyse.",
+            "cta": "Agent Autopilot",
+            "href": "/dashboard/ki-agent"
+          }
+        }
       }
     }
   },

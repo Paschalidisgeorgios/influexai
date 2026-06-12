@@ -79,10 +79,19 @@ export function AgentAutopilotHero() {
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              navigate();
+            }
+          }}
           placeholder="z.B. Erstelle 10 virale Hooks für mein Fitness-Business auf TikTok"
           rows={4}
           className="min-h-[120px] w-full resize-none rounded-xl border border-white/10 bg-[#0d0d0f] p-4 text-base text-white outline-none transition-[border-color,box-shadow] placeholder:text-white/35 focus:border-[#B4FF00] focus:shadow-[0_0_0_1px_rgba(180,255,0,0.25),0_0_24px_rgba(180,255,0,0.08)]"
         />
+        <p className="mt-2 text-xs text-white/25">
+          Enter zum Senden · Shift+Enter für neue Zeile
+        </p>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">

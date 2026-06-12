@@ -3,23 +3,32 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { ChevronDown } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import {
+  FeaturesMegaMenuDesktop,
+  FeaturesMegaMenuMobile,
+} from "@/components/landing/features/FeaturesMegaMenu";
 import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
-const NAV_LINKS = [
-  { key: "nav_features" as const, href: "#value" },
-  { key: "nav_for_brands" as const, href: "/business", external: true },
-  { key: "nav_pricing" as const, href: "/pricing", external: true },
-  { key: "nav_agency" as const, href: "/agency", external: true },
+type NavLinkItem = {
+  key: "nav_showcase" | "nav_for_brands" | "nav_pricing" | "nav_agency";
+  href: string;
+  external?: boolean;
+};
+
+const NAV_LINKS: NavLinkItem[] = [
+  { key: "nav_for_brands", href: "/business", external: true },
+  { key: "nav_pricing", href: "/pricing", external: true },
+  { key: "nav_agency", href: "/agency", external: true },
 ];
 
-const CAMPAIGN_NAV_LINKS = [
-  { key: "nav_showcase" as const, href: "#showcase" },
-  { key: "nav_tools" as const, href: "#tools" },
-  { key: "nav_pricing" as const, href: "/pricing", external: true },
-  { key: "nav_agency" as const, href: "/agency", external: true },
+const CAMPAIGN_NAV_LINKS: NavLinkItem[] = [
+  { key: "nav_showcase", href: "#showcase" },
+  { key: "nav_pricing", href: "/pricing", external: true },
+  { key: "nav_agency", href: "/agency", external: true },
 ];
 
 const LANDING_NAV_LINK =
@@ -40,6 +49,8 @@ export function LandingNav({
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
   const [navSession, setNavSession] = useState<{
     user: boolean;
     hasPlan: boolean;
@@ -95,20 +106,39 @@ export function LandingNav({
   }, [mounted]);
 
   useEffect(() => {
+    if (menuOpen) setFeaturesOpen(false);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (featuresOpen) setMenuOpen(false);
+  }, [featuresOpen]);
+
+  useEffect(() => {
     if (!mounted) return;
     if (menuOpen) {
       document.body.style.overflow = "hidden";
-    } else {
+    } else if (!featuresOpen) {
       document.body.style.overflow = "";
       document.body.style.overflowX = "clip";
     }
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.overflowX = "";
+      if (!featuresOpen) {
+        document.body.style.overflow = "";
+        document.body.style.overflowX = "";
+      }
     };
-  }, [menuOpen, mounted]);
+  }, [menuOpen, mounted, featuresOpen]);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setMobileFeaturesOpen(false);
+  };
+
+  const closeFeatures = () => setFeaturesOpen(false);
+
+  const toggleFeatures = () => {
+    setFeaturesOpen((v) => !v);
+  };
 
   const showGuestAuth = mounted && !navSession.user;
   const showMemberNav = mounted && navSession.user && (navSession.hasPlan || navSession.isAdmin);
@@ -160,17 +190,39 @@ export function LandingNav({
                 </a>
               </>
             ) : (
-              navLinks.map((l) =>
-                l.external ? (
-                  <Link key={l.href} href={l.href} className={navLinkClass}>
-                    {t(l.key)}
-                  </Link>
-                ) : (
-                  <a key={l.href} href={l.href} className={navLinkClass}>
-                    {t(l.key)}
+              <>
+                {darkNav && !agencyMode ? (
+                  <a href="#showcase" className={navLinkClass}>
+                    {t("nav_showcase")}
                   </a>
-                )
-              )
+                ) : null}
+                <button
+                  type="button"
+                  className={`${navLinkClass}${featuresOpen && !darkNav ? " bg-black/[0.06]" : ""}${
+                    featuresOpen && darkNav ? " bg-white/[0.08] text-white" : ""
+                  }`}
+                  aria-expanded={featuresOpen}
+                  aria-haspopup="dialog"
+                  onClick={toggleFeatures}
+                >
+                  {t("nav_features")}
+                  <ChevronDown
+                    className={`ml-1 h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
+                    strokeWidth={2}
+                  />
+                </button>
+                {navLinks.map((l) =>
+                  l.external ? (
+                    <Link key={l.href} href={l.href} className={navLinkClass}>
+                      {t(l.key)}
+                    </Link>
+                  ) : (
+                    <a key={l.href} href={l.href} className={navLinkClass}>
+                      {t(l.key)}
+                    </a>
+                  )
+                )}
+              </>
             )}
           </div>
 
@@ -279,6 +331,9 @@ export function LandingNav({
             </button>
           </div>
         </nav>
+        {!agencyMode ? (
+          <FeaturesMegaMenuDesktop open={featuresOpen} onClose={closeFeatures} />
+        ) : null}
       </header>
 
       {mounted && menuOpen ? (
@@ -332,29 +387,59 @@ export function LandingNav({
                   </a>
                 </>
               ) : (
-                navLinks.map((l) =>
-                  l.external ? (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      onClick={closeMenu}
-                      className="mobile-nav-link py-4 text-[20px] text-white/85"
-                    >
-                      {t(l.key)}
-                      <span className="text-xl">↗</span>
-                    </Link>
-                  ) : (
+                <>
+                  {darkNav ? (
                     <a
-                      key={l.href}
-                      href={l.href}
+                      href="#showcase"
                       onClick={closeMenu}
                       className="mobile-nav-link py-4 text-[20px] text-white/85"
                     >
-                      {t(l.key)}
+                      {t("nav_showcase")}
                       <span className="text-xl">↗</span>
                     </a>
-                  )
-                )
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => setMobileFeaturesOpen((v) => !v)}
+                    className="mobile-nav-link w-full py-4 text-left text-[20px] text-white/85"
+                    aria-expanded={mobileFeaturesOpen}
+                  >
+                    <span className="flex items-center justify-between">
+                      {t("nav_features")}
+                      <ChevronDown
+                        className={`h-5 w-5 transition-transform ${mobileFeaturesOpen ? "rotate-180" : ""}`}
+                      />
+                    </span>
+                  </button>
+                  {mobileFeaturesOpen ? (
+                    <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                      <FeaturesMegaMenuMobile onNavigate={closeMenu} />
+                    </div>
+                  ) : null}
+                  {navLinks.map((l) =>
+                    l.external ? (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        onClick={closeMenu}
+                        className="mobile-nav-link py-4 text-[20px] text-white/85"
+                      >
+                        {t(l.key)}
+                        <span className="text-xl">↗</span>
+                      </Link>
+                    ) : (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        onClick={closeMenu}
+                        className="mobile-nav-link py-4 text-[20px] text-white/85"
+                      >
+                        {t(l.key)}
+                        <span className="text-xl">↗</span>
+                      </a>
+                    )
+                  )}
+                </>
               )}
             </div>
 
