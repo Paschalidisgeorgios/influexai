@@ -16,16 +16,28 @@ function toPath(points: [number, number][], w: number, h: number) {
   return `M ${scaled[0][0]},${scaled[0][1]} C ${scaled[1][0]},${scaled[1][1]} ${scaled[2][0]},${scaled[2][1]} ${scaled[3][0]},${scaled[3][1]}`;
 }
 
-export function SpeedRampEditor() {
-  const [preset, setPreset] = useState<SpeedPreset>("auto");
-  const [points, setPoints] = useState<[number, number][]>(PRESETS[0].points);
+type SpeedRampEditorProps = {
+  value: string;
+  onChange: (label: string) => void;
+};
+
+export function SpeedRampEditor({ value, onChange }: SpeedRampEditorProps) {
+  const initialPreset =
+    PRESETS.find((p) => p.label === value)?.id ?? ("auto" as SpeedPreset);
+  const [preset, setPreset] = useState<SpeedPreset>(initialPreset);
+  const [points, setPoints] = useState<[number, number][]>(
+    PRESETS.find((p) => p.id === initialPreset)?.points ?? PRESETS[0].points
+  );
 
   const path = useMemo(() => toPath(points, 280, 80), [points]);
 
   const applyPreset = (id: SpeedPreset) => {
     setPreset(id);
     const found = PRESETS.find((p) => p.id === id);
-    if (found) setPoints(found.points);
+    if (found) {
+      setPoints(found.points);
+      onChange(found.label);
+    }
   };
 
   const dragPoint = (index: number, e: React.MouseEvent<SVGCircleElement>) => {
@@ -43,6 +55,7 @@ export function SpeedRampEditor() {
         return next;
       });
       setPreset("auto");
+      onChange("Custom");
     };
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);

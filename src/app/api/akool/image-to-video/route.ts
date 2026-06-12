@@ -7,10 +7,53 @@ import {
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
 import { getFalKey } from "@/lib/fal-image";
-import { resolveImageUrlForSeedance } from "@/lib/seedance-generate";
+import {
+  clampSelectionToCapabilities,
+  getModelCapabilities,
+  type SzenenAspectRatio,
+  type SzenenAudioMode,
+} from "@/lib/szenen-generator-capabilities";
+import {
+  buildAkoolImage2VideoBodies,
+  enrichPrompt,
+  type SzenenCinematicParams,
+  type SzenenGenerationInput,
+  validateGenerationInput,
+} from "@/lib/szenen-generator-payload";
+import {
+  getDefaultDuration,
+  getDefaultResolution,
+  mergeSzenenGeneratorModels,
+} from "@/lib/szenen-generator-models";
+import {
+  resolveAudioUrlForAkool,
+  resolveImageUrlForSeedance,
+} from "@/lib/seedance-generate";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
+
+type ImageToVideoBody = {
+  model?: string;
+  modelId?: string;
+  image_url?: string;
+  imageUrl?: string;
+  prompt?: string;
+  duration?: number;
+  resolution?: string;
+  last_frame_url?: string;
+  lastFrameUrl?: string;
+  referenceUrl?: string;
+  reference_url?: string;
+  audioUrl?: string;
+  audio_url?: string;
+  audioMode?: SzenenAudioMode;
+  aspectRatio?: SzenenAspectRatio;
+  videoCount?: number;
+  extendPrompt?: boolean;
+  cinematic?: SzenenCinematicParams;
+  speedRampLabel?: string;
+};
 
 export async function POST(request: NextRequest) {
   if (!getFalKey()) {
@@ -20,17 +63,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: {
-    model?: string;
-    modelId?: string;
-    image_url?: string;
-    imageUrl?: string;
-    prompt?: string;
-    duration?: number;
-    resolution?: string;
-    last_frame_url?: string;
-    lastFrameUrl?: string;
-  };
+  let body: ImageToVideoBody;
 
   try {
     body = await request.json();
@@ -49,33 +82,69 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const model = await findAkoolImageToVideoModel(modelId);
-  if (!model) {
+  const akoolModel = await findAkoolImageToVideoModel(modelId);
+  if (!akoolModel) {
     return NextResponse.json({ error: "Unbekanntes Modell" }, { status: 400 });
   }
 
-  const duration =
-    body.duration && model.durationList.includes(body.duration)
-      ? body.duration
-      : model.durationList[0];
-  const resolution =
-    model.resolutionList.find(
-      (r) => r.value.toLowerCase() === (body.resolution ?? "").toLowerCase()
-    )?.value ?? model.resolutionList[0]?.value;
+  const uiModel =
+    mergeSzenenGeneratorModels([akoolModel]).find((m) => m.id === modelId) ??
+    mergeSzenenGeneratorModels([akoolModel])[0];
 
-  if (!resolution) {
-    return NextResponse.json({ error: "Auflösung nicht verfügbar" }, { status: 400 });
+  const resolution =
+    body.resolution &&
+    akoolModel.resolutionList.some(
+      (r) => r.value.toLowerCase() === body.resolution!.toLowerCase()
+    )
+      ? body.resolution
+      : getDefaultResolution(uiModel);
+
+  const capabilities = getModelCapabilities(uiModel, resolution);
+  const clamped = clampSelectionToCapabilities(capabilities, {
+    duration: body.duration ?? getDefaultDuration(uiModel),
+    resolution,
+    aspectRatio: body.aspectRatio,
+    videoCount: body.videoCount ?? 1,
+    audioMode: body.audioMode ?? "none",
+  });
+
+  const generationInput: SzenenGenerationInput = {
+    model: { ...uiModel, akool: akoolModel, apiAvailable: true },
+    capabilities,
+    prompt,
+    duration: clamped.duration,
+    resolution: clamped.resolution,
+    aspectRatio: clamped.aspectRatio,
+    imageUrl,
+    lastFrameUrl: (body.last_frame_url ?? body.lastFrameUrl)?.trim(),
+    referenceUrl: (body.referenceUrl ?? body.reference_url)?.trim(),
+    audioUrl: (body.audioUrl ?? body.audio_url)?.trim(),
+    audioMode: clamped.audioMode,
+    videoCount: clamped.videoCount,
+    extendPrompt: body.extendPrompt,
+    cinematic: body.cinematic,
+    speedRampLabel: body.speedRampLabel,
+  };
+
+  const validationError = validateGenerationInput(generationInput);
+  if (validationError) {
+    return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
-  const creditCost = calculateAkoolModelCredits(model, resolution, duration);
-  const lastRaw = (body.last_frame_url ?? body.lastFrameUrl)?.trim();
+  const enrichedPrompt = enrichPrompt(generationInput);
+  const creditCost =
+    calculateAkoolModelCredits(
+      akoolModel,
+      clamped.resolution,
+      clamped.duration
+    ) * clamped.videoCount;
 
   return runAkoolAsyncPost({
     creditCost,
     generationType: "akool-image-to-video",
     label: "Video Generator",
     pollType: "image2video",
-    prompt,
+    prompt: enrichedPrompt,
     model: modelId,
     createJob: async ({ supabase, userId }) => {
       const publicImage = await resolveImageUrlForSeedance(
@@ -83,21 +152,69 @@ export async function POST(request: NextRequest) {
         userId,
         imageUrl
       );
+
       let lastFrame: string | undefined;
-      if (lastRaw && model.supportedLastFrame) {
-        lastFrame = await resolveImageUrlForSeedance(supabase, userId, lastRaw);
+      if (generationInput.lastFrameUrl && capabilities.supportsEndFrame) {
+        lastFrame = await resolveImageUrlForSeedance(
+          supabase,
+          userId,
+          generationInput.lastFrameUrl
+        );
       }
+
+      let referenceUrl: string | undefined;
+      if (generationInput.referenceUrl && capabilities.supportsReference) {
+        referenceUrl = await resolveImageUrlForSeedance(
+          supabase,
+          userId,
+          generationInput.referenceUrl
+        );
+      }
+
+      let audioUrl: string | undefined;
+      if (
+        generationInput.audioMode === "custom" &&
+        generationInput.audioUrl
+      ) {
+        audioUrl = await resolveAudioUrlForAkool(
+          supabase,
+          userId,
+          generationInput.audioUrl
+        );
+      }
+
+      const bodies = buildAkoolImage2VideoBodies(
+        akoolModel,
+        {
+          imageUrl: publicImage,
+          lastFrameUrl: lastFrame,
+          referenceUrl,
+          audioUrl,
+        },
+        {
+          prompt: enrichedPrompt,
+          duration: clamped.duration,
+          resolution: clamped.resolution,
+          aspectRatio: clamped.aspectRatio,
+          audioMode: clamped.audioMode,
+          videoCount: clamped.videoCount,
+          extendPrompt: generationInput.extendPrompt,
+          capabilities,
+        }
+      );
+
+      if (bodies.useBatch && bodies.batch) {
+        return createAkoolJob(
+          "/v4/image2Video/createBySourcePrompt/batch",
+          bodies.batch
+        );
+      }
+
       return createAkoolJob(
         "/v4/image2video/create",
-        {
-          model: modelId,
-          image_url: publicImage,
-          prompt,
-          duration,
-          resolution,
-          last_frame_url: lastFrame,
-        },
-        "/v4/image2Video/createBySourcePrompt"
+        bodies.primary,
+        "/v4/image2Video/createBySourcePrompt",
+        bodies.fallback
       );
     },
   });

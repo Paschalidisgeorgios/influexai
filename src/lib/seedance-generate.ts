@@ -160,6 +160,39 @@ export async function resolveImageUrlForSeedance(
   throw new Error("Ungültige Bild-URL.");
 }
 
+export async function resolveAudioUrlForAkool(
+  supabase: SupabaseClient,
+  userId: string,
+  audioUrl: string
+): Promise<string> {
+  const trimmed = audioUrl.trim();
+
+  if (trimmed.startsWith("data:audio/")) {
+    configureFalClient();
+    const base64Data = trimmed.replace(/^data:audio\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    const mimeMatch = trimmed.match(/^data:(audio\/\w+);base64,/);
+    const mimeType = mimeMatch?.[1] ?? "audio/mpeg";
+    const ext = mimeType.includes("wav") ? "wav" : "mp3";
+    const bytes = new Uint8Array(buffer);
+    const blob = new Blob([bytes], { type: mimeType });
+    const file = new File([blob], `upload.${ext}`, { type: mimeType });
+    return fal.storage.upload(file);
+  }
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    if (!trimmed.startsWith("https://")) {
+      throw new Error("Audio-URL muss https:// sein");
+    }
+    if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
+      throw new Error("localhost-URLs funktionieren nicht für Audio-Upload");
+    }
+    return trimmed;
+  }
+
+  throw new Error("Ungültige Audio-URL.");
+}
+
 export async function getSeedanceGenerationByJobId(
   supabase: SupabaseClient,
   userId: string,

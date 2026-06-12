@@ -85,12 +85,16 @@ export async function pollAkoolJobStatus(
 export async function createAkoolJob(
   postPath: string,
   body: Record<string, unknown>,
-  fallbackPath?: string
+  fallbackPath?: string,
+  fallbackBody?: Record<string, unknown>
 ): Promise<string> {
   let json = await akoolPost<Record<string, unknown>>(postPath, body);
   let jobId = extractAkoolJobId(json.data ?? json);
   if ((!json.code || json.code !== 1000 || !jobId) && fallbackPath) {
-    json = await akoolPost<Record<string, unknown>>(fallbackPath, body);
+    json = await akoolPost<Record<string, unknown>>(
+      fallbackPath,
+      fallbackBody ?? body
+    );
     jobId = extractAkoolJobId(json.data ?? json);
   }
   if (json.code !== 1000 || !jobId) {

@@ -24,16 +24,24 @@ import { useSentientBadge } from "@/hooks/useSentientBadge";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import type { AkoolImageToVideoModel } from "@/lib/akool-models";
-import { getDurationsForModel } from "@/lib/akool-models";
+import {
+  clampSelectionToCapabilities,
+  getModelCapabilities,
+  type SzenenAspectRatio,
+  type SzenenAudioMode,
+} from "@/lib/szenen-generator-capabilities";
+import {
+  buildClientRequestBody,
+  type SzenenCinematicParams,
+  validateGenerationInput,
+  type SzenenGenerationInput,
+} from "@/lib/szenen-generator-payload";
 import {
   getDefaultDuration,
   getDefaultResolution,
   getModelCreditCost,
-  getModelDurations,
-  getModelResolutions,
   groupSzenenModelsByProvider,
   mergeSzenenGeneratorModels,
-  modelSupportsTag,
   type SzenenGeneratorModel,
 } from "@/lib/szenen-generator-models";
 import {
@@ -101,12 +109,26 @@ export function SzenenGeneratorStudio() {
   const [isTyping, setIsTyping] = useState(false);
   const [duration, setDuration] = useState(5);
   const [resolution, setResolution] = useState("720p");
+  const [aspectRatio, setAspectRatio] = useState<SzenenAspectRatio>("16:9");
   const [videoCount, setVideoCount] = useState(1);
+  const [audioMode, setAudioMode] = useState<SzenenAudioMode>("none");
+  const [extendPrompt, setExtendPrompt] = useState(false);
+  const [speedRampLabel, setSpeedRampLabel] = useState("Auto");
+  const [cinematic, setCinematic] = useState<SzenenCinematicParams>({
+    camera: "Statisch",
+    shot: "Medium Shot",
+    expression: "Neutral",
+    atmosphere: "Cinematic",
+    light: "Natürlich",
+    effect: "Keine",
+  });
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [lastFrameUrl, setLastFrameUrl] = useState("");
   const [lastFramePreview, setLastFramePreview] = useState<string | null>(null);
+  const [referenceUrl, setReferenceUrl] = useState("");
   const [referencePreview, setReferencePreview] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState("");
   const [audioName, setAudioName] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -241,20 +263,15 @@ export function SzenenGeneratorStudio() {
     [filteredModels]
   );
 
+  const capabilities = useMemo(() => {
+    if (!selectedModel) return null;
+    return getModelCapabilities(selectedModel, resolution);
+  }, [selectedModel, resolution]);
+
   const creditCost = useMemo(() => {
     if (!selectedModel) return 0;
     return getModelCreditCost(selectedModel, duration, resolution) * videoCount;
   }, [selectedModel, duration, resolution, videoCount]);
-
-  const availableDurations = useMemo(() => {
-    if (!selectedModel) return [5];
-    return getModelDurations(selectedModel, resolution);
-  }, [selectedModel, resolution]);
-
-  const availableResolutions = useMemo(() => {
-    if (!selectedModel) return ["720p"];
-    return getModelResolutions(selectedModel);
-  }, [selectedModel]);
 
   const { isFast } = useScrollVelocity(modelListRef);
 
@@ -279,9 +296,38 @@ export function SzenenGeneratorStudio() {
 
   const selectModel = useCallback(
     (model: SzenenGeneratorModel) => {
+      const nextResolution = getDefaultResolution(model);
+      const nextDuration = getDefaultDuration(model);
+      const caps = getModelCapabilities(model, nextResolution);
+      const clamped = clampSelectionToCapabilities(caps, {
+        duration: nextDuration,
+        resolution: nextResolution,
+        aspectRatio: caps.aspectRatios[0],
+        videoCount: 1,
+        audioMode: "none",
+      });
+
       setSelectedModel(model);
-      setDuration(getDefaultDuration(model));
-      setResolution(getDefaultResolution(model));
+      setDuration(clamped.duration);
+      setResolution(clamped.resolution);
+      setAspectRatio(clamped.aspectRatio ?? "16:9");
+      setVideoCount(clamped.videoCount);
+      setAudioMode(clamped.audioMode);
+      setExtendPrompt(false);
+
+      if (!caps.supportsEndFrame) {
+        setLastFrameUrl("");
+        setLastFramePreview(null);
+      }
+      if (!caps.supportsReference) {
+        setReferenceUrl("");
+        setReferencePreview(null);
+      }
+      if (!caps.supportsAudio) {
+        setAudioUrl("");
+        setAudioName(null);
+      }
+
       applyTheme(null);
       setResultUrl(null);
       setGenerationId(null);
@@ -299,12 +345,32 @@ export function SzenenGeneratorStudio() {
   );
 
   useEffect(() => {
-    if (!selectedModel?.akool) return;
-    const durations = getDurationsForModel(selectedModel.akool, resolution);
-    if (!durations.includes(duration)) setDuration(durations[0] ?? 5);
-  }, [selectedModel, resolution, duration]);
+    if (!selectedModel || !capabilities) return;
+    const clamped = clampSelectionToCapabilities(capabilities, {
+      duration,
+      resolution,
+      aspectRatio,
+      videoCount,
+      audioMode,
+    });
+    if (clamped.duration !== duration) setDuration(clamped.duration);
+    if (clamped.resolution !== resolution) setResolution(clamped.resolution);
+    if (clamped.aspectRatio && clamped.aspectRatio !== aspectRatio) {
+      setAspectRatio(clamped.aspectRatio);
+    }
+    if (clamped.videoCount !== videoCount) setVideoCount(clamped.videoCount);
+    if (clamped.audioMode !== audioMode) setAudioMode(clamped.audioMode);
+  }, [
+    selectedModel,
+    capabilities,
+    duration,
+    resolution,
+    aspectRatio,
+    videoCount,
+    audioMode,
+  ]);
 
-  const readImageFile = (file: File, onDone: (url: string) => void) => {
+  const readFileAsDataUrl = (file: File, onDone: (url: string) => void) => {
     const reader = new FileReader();
     reader.onload = (e) => onDone(e.target?.result as string);
     reader.readAsDataURL(file);
@@ -329,21 +395,41 @@ export function SzenenGeneratorStudio() {
   };
 
   const runGenerate = useCallback(async () => {
-    if (!selectedModel) return;
+    if (!selectedModel || !capabilities) return;
 
-    if (modelSupportsTag(selectedModel, "Start") && !imageUrl.trim()) {
-      setUploadError(true);
-      showMessage("Bitte lade zuerst ein Startbild hoch — ohne geht die Magie nicht! 🖼️", 4000, 6);
+    const generationInput: SzenenGenerationInput = {
+      model: selectedModel,
+      capabilities,
+      prompt: prompt.trim(),
+      duration,
+      resolution,
+      aspectRatio: capabilities.supportsMultiRatio ? aspectRatio : undefined,
+      imageUrl,
+      lastFrameUrl: lastFrameUrl || undefined,
+      referenceUrl: referenceUrl || undefined,
+      audioUrl: audioUrl || undefined,
+      audioMode,
+      videoCount,
+      extendPrompt,
+      cinematic,
+      speedRampLabel,
+    };
+
+    const validationError = validateGenerationInput(generationInput);
+    if (validationError) {
+      if (validationError.includes("Startbild")) {
+        setUploadError(true);
+        showMessage(
+          "Bitte lade zuerst ein Startbild hoch — ohne geht die Magie nicht! 🖼️",
+          4000,
+          6
+        );
+      } else {
+        setSubmitError(validationError);
+      }
       return;
     }
-    if (!prompt.trim()) {
-      setSubmitError("Bitte beschreibe dein Video.");
-      return;
-    }
-    if (!selectedModel.apiAvailable || !selectedModel.akool) {
-      setSubmitError("Dieses Modell ist derzeit nicht verfügbar.");
-      return;
-    }
+
     if (
       credits !== null &&
       handleInsufficientCredits(credits, creditCost)
@@ -378,17 +464,11 @@ export function SzenenGeneratorStudio() {
     }
 
     try {
+      const requestBody = buildClientRequestBody(generationInput);
       const res = await fetch("/api/akool/image-to-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          modelId: selectedModel.id,
-          imageUrl,
-          prompt: prompt.trim(),
-          duration,
-          resolution,
-          lastFrameUrl: lastFrameUrl || undefined,
-        }),
+        body: JSON.stringify(requestBody),
       });
       const data = (await res.json()) as { jobId?: string; error?: string; credits?: number };
       if (handleApiInsufficientCredits(res.status, data, creditCost)) {
@@ -405,11 +485,20 @@ export function SzenenGeneratorStudio() {
     }
   }, [
     selectedModel,
+    capabilities,
     imageUrl,
     prompt,
     duration,
     resolution,
+    aspectRatio,
     lastFrameUrl,
+    referenceUrl,
+    audioUrl,
+    audioMode,
+    videoCount,
+    extendPrompt,
+    cinematic,
+    speedRampLabel,
     creditCost,
     credits,
     userName,
@@ -417,7 +506,6 @@ export function SzenenGeneratorStudio() {
     setError,
     showMessage,
     openBuyModal,
-    applyTheme,
   ]);
 
   const handleModelLongHover = useCallback(() => {
@@ -599,7 +687,7 @@ export function SzenenGeneratorStudio() {
                   }}
                 />
 
-                {selectedModel && (
+                {selectedModel && capabilities && (
                   <div className="mt-3 flex flex-wrap justify-center gap-2">
                     <span
                       className="rounded-full border px-3 py-1 text-[11px] transition-all duration-[1200ms]"
@@ -611,43 +699,46 @@ export function SzenenGeneratorStudio() {
                     >
                       {selectedModel.name}
                     </span>
-                    {modelSupportsTag(selectedModel, "Start") && (
-                      <Pill label="Startbild" />
-                    )}
-                    {selectedModel.supportsEnd && <Pill label="Endrahmen" />}
-                    {selectedModel.supportsAudio && <Pill label="Audio" />}
-                    <Pill label={selectedModel.resolutionLabel} />
-                    <Pill label={selectedModel.durationLabel} />
+                    {capabilities.requiresStartImage && <Pill label="Startbild" />}
+                    {capabilities.supportsEndFrame && <Pill label="Endrahmen" />}
+                    {capabilities.supportsReference && <Pill label="Referenz" />}
+                    {capabilities.supportsAudio && <Pill label="Audio" />}
+                    {capabilities.supportsMultiRatio && <Pill label="Multi-Ratio" />}
+                    {capabilities.supportsMultiShot && <Pill label="Multi-Shot" />}
+                    {capabilities.showResolution && <Pill label={resolution} />}
+                    {capabilities.showDuration && <Pill label={`${duration}s`} />}
                   </div>
                 )}
 
                 <div className="mt-4 space-y-3">
-                  <UploadBox
-                    label="Startbild hochladen"
-                    accept="image/jpeg,image/png,image/webp"
-                    kind="image"
-                    previewUrl={imagePreview}
-                    error={uploadError}
-                    onFile={(file) => {
-                      readImageFile(file, (url) => {
-                        setImageUrl(url);
-                        setImagePreview(url);
-                        setUploadError(false);
-                      });
-                    }}
-                    onRemove={() => {
-                      setImageUrl("");
-                      setImagePreview(null);
-                    }}
-                  />
-                  {selectedModel?.supportsEnd && (
+                  {capabilities?.requiresStartImage && (
+                    <UploadBox
+                      label="Startbild hochladen"
+                      accept="image/jpeg,image/png,image/webp"
+                      kind="image"
+                      previewUrl={imagePreview}
+                      error={uploadError}
+                      onFile={(file) => {
+                        readFileAsDataUrl(file, (url) => {
+                          setImageUrl(url);
+                          setImagePreview(url);
+                          setUploadError(false);
+                        });
+                      }}
+                      onRemove={() => {
+                        setImageUrl("");
+                        setImagePreview(null);
+                      }}
+                    />
+                  )}
+                  {capabilities?.supportsEndFrame && (
                     <UploadBox
                       label="Endrahmen (optional)"
                       accept="image/jpeg,image/png,image/webp"
                       kind="image"
                       previewUrl={lastFramePreview}
                       onFile={(file) => {
-                        readImageFile(file, (url) => {
+                        readFileAsDataUrl(file, (url) => {
                           setLastFrameUrl(url);
                           setLastFramePreview(url);
                         });
@@ -658,40 +749,69 @@ export function SzenenGeneratorStudio() {
                       }}
                     />
                   )}
-                  {selectedModel?.supportsAudio && (
-                    <UploadBox
-                      label="Audio hinzufügen (optional)"
-                      accept="audio/mpeg,audio/wav,.mp3"
-                      kind="audio"
-                      previewName={audioName ?? undefined}
-                      onFile={(file) => setAudioName(file.name)}
-                      onRemove={() => setAudioName(null)}
-                    />
-                  )}
-                  {selectedModel?.supportsReference && (
+                  {capabilities?.supportsReference && (
                     <UploadBox
                       label="Referenzbild (optional)"
                       accept="image/jpeg,image/png,image/webp"
                       kind="image"
                       previewUrl={referencePreview}
                       onFile={(file) => {
-                        readImageFile(file, (url) => setReferencePreview(url));
+                        readFileAsDataUrl(file, (url) => {
+                          setReferenceUrl(url);
+                          setReferencePreview(url);
+                        });
                       }}
-                      onRemove={() => setReferencePreview(null)}
+                      onRemove={() => {
+                        setReferenceUrl("");
+                        setReferencePreview(null);
+                      }}
+                    />
+                  )}
+                  {capabilities?.supportsCustomAudio &&
+                    (audioMode === "custom" || !capabilities.supportsAiAudio) && (
+                    <UploadBox
+                      label="Audio hinzufügen (optional)"
+                      accept="audio/mpeg,audio/wav,.mp3"
+                      kind="audio"
+                      previewName={audioName ?? undefined}
+                      onFile={(file) => {
+                        setAudioName(file.name);
+                        readFileAsDataUrl(file, (url) => {
+                          setAudioUrl(url);
+                          setAudioMode("custom");
+                        });
+                      }}
+                      onRemove={() => {
+                        setAudioName(null);
+                        setAudioUrl("");
+                      }}
                     />
                   )}
                 </div>
 
-                <AdvancedSettingsPanel
-                  duration={duration}
-                  resolution={resolution}
-                  videoCount={videoCount}
-                  durations={availableDurations}
-                  resolutions={availableResolutions}
-                  onDuration={setDuration}
-                  onResolution={setResolution}
-                  onVideoCount={setVideoCount}
-                />
+                {capabilities && (
+                  <AdvancedSettingsPanel
+                    capabilities={capabilities}
+                    duration={duration}
+                    resolution={resolution}
+                    aspectRatio={aspectRatio}
+                    videoCount={videoCount}
+                    audioMode={audioMode}
+                    extendPrompt={extendPrompt}
+                    cinematic={cinematic}
+                    speedRampLabel={speedRampLabel}
+                    onDuration={setDuration}
+                    onResolution={setResolution}
+                    onAspectRatio={setAspectRatio}
+                    onVideoCount={setVideoCount}
+                    onAudioMode={setAudioMode}
+                    onExtendPrompt={setExtendPrompt}
+                    onCinematic={(key, value) =>
+                      setCinematic((prev) => ({ ...prev, [key]: value }))
+                    }
+                    onSpeedRampLabel={setSpeedRampLabel}
+                  />
+                )}
 
                 <LoadingButton
                   type="button"

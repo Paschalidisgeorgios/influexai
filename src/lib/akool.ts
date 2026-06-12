@@ -82,6 +82,9 @@ export function extractAkoolJobId(data: unknown): string | null {
   const row = data as Record<string, unknown>;
   if (typeof row._id === "string") return row._id;
   if (typeof row.jobId === "string") return row.jobId;
+  if (Array.isArray(row.successList) && row.successList[0]) {
+    return extractAkoolJobId(row.successList[0]);
+  }
   if (row.data && typeof row.data === "object") {
     return extractAkoolJobId(row.data);
   }

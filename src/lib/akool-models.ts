@@ -20,6 +20,10 @@ export type AkoolImageToVideoModel = {
   durationList: number[];
   resolutionList: AkoolResolutionOption[];
   supportedLastFrame: boolean;
+  supportedExtendPrompt: boolean;
+  generateAudio: boolean | null;
+  maxImageCount: number;
+  maxCount: number;
   isPro: boolean;
   sort: number;
 };
@@ -47,6 +51,10 @@ type RawAkoolModel = {
   isPro?: boolean;
   durationList?: number[];
   supportedLastFrame?: boolean;
+  supportedExtendPrompt?: boolean;
+  generate_audio?: boolean | null;
+  maxImageCount?: number;
+  maxCount?: number;
 };
 
 type Image2VideoCreateResponse = {
@@ -113,7 +121,7 @@ const PROVIDER_LABELS: Record<string, string> = {
   openai: "OpenAI",
 };
 
-const DEFAULT_NEGATIVE_PROMPT =
+export const DEFAULT_NEGATIVE_PROMPT =
   "blurry, distorted, low quality, watermark, text, logo, static, worst quality";
 
 export function getProviderLabel(provider: string): string {
@@ -182,6 +190,19 @@ function parseModel(raw: RawAkoolModel): AkoolImageToVideoModel | null {
     durationList,
     resolutionList,
     supportedLastFrame: raw.supportedLastFrame === true,
+    supportedExtendPrompt: raw.supportedExtendPrompt === true,
+    generateAudio:
+      raw.generate_audio === true
+        ? true
+        : raw.generate_audio === false
+          ? false
+          : null,
+    maxImageCount:
+      typeof raw.maxImageCount === "number" && raw.maxImageCount > 0
+        ? raw.maxImageCount
+        : 1,
+    maxCount:
+      typeof raw.maxCount === "number" && raw.maxCount > 0 ? raw.maxCount : 1,
     isPro: raw.isPro === true,
     sort: typeof raw.sort === "number" ? raw.sort : 0,
   };
