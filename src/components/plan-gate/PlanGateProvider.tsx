@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { hasKiToolEntitlement, type AccessUser } from "@/lib/access";
+import { hasKiToolEntitlement, isAdminUser, type AccessUser } from "@/lib/access";
 import { hasActiveTenantMembershipFromRows } from "@/lib/agency-access";
 import { routeRequiresPlan } from "@/lib/plan-gating";
 import { NoPlanModal } from "./NoPlanModal";
@@ -18,6 +18,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   const [blocked, setBlocked] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [hasTenantToolAccess, setHasTenantToolAccess] = useState(false);
+  const [isAdminVerified, setIsAdminVerified] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -39,6 +40,16 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
             is_admin: data.is_admin ?? false,
             email: user.email,
           });
+
+          try {
+            const adminRes = await fetch("/api/auth/is-admin");
+            if (adminRes.ok) {
+              const adminData = (await adminRes.json()) as { isAdmin?: boolean };
+              setIsAdminVerified(adminData.isAdmin === true);
+            }
+          } catch {
+            setIsAdminVerified(false);
+          }
 
           let tenantMembership = false;
           if (data.tenant_id) {
@@ -69,11 +80,15 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const needsPlan = routeRequiresPlan(pathname);
+    const isAdmin =
+      isAdminVerified ||
+      isAdminUser(accessUser);
     setBlocked(
       needsPlan &&
+        !isAdmin &&
         !hasKiToolEntitlement(accessUser, hasTenantToolAccess)
     );
-  }, [pathname, accessUser, profileLoaded, hasTenantToolAccess]);
+  }, [pathname, accessUser, profileLoaded, hasTenantToolAccess, isAdminVerified]);
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">

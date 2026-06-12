@@ -156,9 +156,112 @@ function buildUserPrompt(messages: ChatMessage[], creatorDNA?: CreatorDNA): stri
   return parts.join("\n\n");
 }
 
+function looksLikeJson(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.startsWith("{") || trimmed.startsWith("[");
+}
+
+function readStringField(
+  obj: Record<string, unknown>,
+  ...keys: string[]
+): string {
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+  return "";
+}
+
+function formatLooseOutputObject(raw: Record<string, unknown>): string {
+  const parts: string[] = [];
+
+  const hook = readStringField(raw, "hook");
+  const story = readStringField(raw, "story", "body", "content", "text");
+  const cta = readStringField(raw, "cta");
+  if (hook) parts.push(hook);
+  if (story && story !== hook) parts.push(story);
+  if (cta) parts.push(cta);
+
+  if (Array.isArray(raw.variants)) {
+    parts.push(
+      raw.variants
+        .map((variant, index) => `${index + 1}. ${String(variant)}`)
+        .join("\n")
+    );
+  }
+
+  if (Array.isArray(raw.hashtags)) {
+    const tags = raw.hashtags
+      .map((tag) => String(tag))
+      .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
+      .join(" ");
+    if (tags) parts.push(tags);
+  }
+
+  return parts.filter(Boolean).join("\n\n");
+}
+
+function extractHumanReadableText(rawText: string): string {
+  const trimmed = rawText.trim();
+  if (!trimmed) return "";
+
+  if (!looksLikeJson(trimmed)) {
+    return trimmed;
+  }
+
+  try {
+    const parsed = parseClaudeJson<Record<string, unknown>>(trimmed);
+    const summary = readStringField(parsed, "summary", "message", "response", "text");
+    if (summary && !looksLikeJson(summary)) {
+      return summary;
+    }
+
+    const output = parsed.output;
+    if (typeof output === "string" && output.trim() && !looksLikeJson(output)) {
+      return output.trim();
+    }
+    if (output && typeof output === "object") {
+      const formatted = formatLooseOutputObject(output as Record<string, unknown>);
+      if (formatted) return formatted;
+      const outputText = readStringField(
+        output as Record<string, unknown>,
+        "text",
+        "message",
+        "content",
+        "response"
+      );
+      if (outputText && !looksLikeJson(outputText)) {
+        return outputText;
+      }
+    }
+
+    const direct = readStringField(parsed, "message", "response", "text", "content");
+    if (direct && !looksLikeJson(direct)) {
+      return direct;
+    }
+  } catch {
+    const proseEnd = trimmed.search(/[[{]/);
+    if (proseEnd > 0) {
+      const prose = trimmed.slice(0, proseEnd).trim();
+      if (prose) return prose;
+    }
+  }
+
+  return looksLikeJson(trimmed) ? "" : trimmed;
+}
+
 function normalizeOutput(raw: unknown, fallbackText: string): AgentOutput {
+  const readableFallback = extractHumanReadableText(fallbackText);
+
+  if (typeof raw === "string") {
+    const text = extractHumanReadableText(raw);
+    return { type: "raw", text: text || readableFallback };
+  }
+
   if (!raw || typeof raw !== "object") {
-    return { type: "raw", text: fallbackText };
+    return { type: "raw", text: readableFallback };
   }
 
   const o = raw as Record<string, unknown>;
@@ -213,10 +316,17 @@ function normalizeOutput(raw: unknown, fallbackText: string): AgentOutput {
   }
 
   if (o.type === "raw") {
-    return { type: "raw", text: String(o.text ?? fallbackText) };
+    const text = readStringField(o, "text");
+    return { type: "raw", text: text || readableFallback };
   }
 
-  return { type: "raw", text: fallbackText };
+  const loose = formatLooseOutputObject(o);
+  if (loose) {
+    return { type: "raw", text: loose };
+  }
+
+  const direct = readStringField(o, "text", "message", "content", "response");
+  return { type: "raw", text: direct || readableFallback };
 }
 
 function mergeScores(
@@ -262,24 +372,34 @@ function parseAgentResponse(
         )
       : [];
 
+    const summary = readStringField(
+      parsed as Record<string, unknown>,
+      "summary"
+    );
+    const safeOutput: AgentOutput =
+      output.type === "raw" && looksLikeJson(output.text)
+        ? { type: "raw", text: extractHumanReadableText(rawText) }
+        : output;
+
     return {
       intent,
       tool,
       missingInfo: Array.isArray(parsed.missingInfo)
         ? parsed.missingInfo.map(String)
         : [],
-      summary: String(parsed.summary ?? ""),
-      output,
-      scores: mergeScores(parsed.scores, output, platform),
+      summary: summary && !looksLikeJson(summary) ? summary : "",
+      output: safeOutput,
+      scores: mergeScores(parsed.scores, safeOutput, platform),
       nextActions,
     };
   } catch {
-    const output: AgentOutput = { type: "raw", text: rawText };
+    const humanText = extractHumanReadableText(rawText);
+    const output: AgentOutput = { type: "raw", text: humanText };
     return {
       intent: "unknown",
       tool: null,
       missingInfo: [],
-      summary: "Antwort konnte nicht strukturiert werden.",
+      summary: "",
       output,
       scores: mergeScores(defaultScores(), output, platform),
       nextActions: [],

@@ -33,6 +33,50 @@ type Props = {
   initialPrompt?: string;
 };
 
+const ASSISTANT_JSON_FALLBACK = "Wie kann ich dir helfen?";
+
+function looksLikeAgentJson(content: string): boolean {
+  const trimmed = content.trim();
+  return trimmed.startsWith("{") || trimmed.includes('"intent"');
+}
+
+function sanitizeAssistantContent(content: string): string {
+  const trimmed = content.trim();
+  if (!trimmed) return ASSISTANT_JSON_FALLBACK;
+
+  if (!looksLikeAgentJson(trimmed)) {
+    return content;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+    for (const key of ["summary", "message", "response", "text", "content"]) {
+      const value = parsed[key];
+      if (typeof value === "string" && value.trim() && !looksLikeAgentJson(value)) {
+        return value.trim();
+      }
+    }
+
+    const output = parsed.output;
+    if (typeof output === "string" && output.trim() && !looksLikeAgentJson(output)) {
+      return output.trim();
+    }
+    if (output && typeof output === "object") {
+      const outputRecord = output as Record<string, unknown>;
+      for (const key of ["text", "message", "content", "response", "hook", "story", "body"]) {
+        const value = outputRecord[key];
+        if (typeof value === "string" && value.trim() && !looksLikeAgentJson(value)) {
+          return value.trim();
+        }
+      }
+    }
+  } catch {
+    // Fall through to generic fallback.
+  }
+
+  return ASSISTANT_JSON_FALLBACK;
+}
+
 export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
   const { profile, profileLabel, loading: profileLoading } = useCreatorProfile();
   const [messages, setMessages] = useState<UiMessage[]>([]);
@@ -46,7 +90,7 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
   const growTextarea = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
   }, []);
 
   useEffect(() => {
@@ -137,7 +181,7 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
           return;
         }
 
-        const markdown = formatAgentResponseMarkdown(response);
+        const markdown = sanitizeAssistantContent(formatAgentResponseMarkdown(response));
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -279,14 +323,21 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
               setInput(e.target.value);
               growTextarea(e.currentTarget);
             }}
-            onInput={(e) => growTextarea(e.currentTarget as HTMLTextAreaElement)}
+            onInput={(e) => {
+              const target = e.currentTarget;
+              target.style.height = "auto";
+              target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
+            }}
             onKeyDown={handleKeyDown}
             disabled={running}
             placeholder="Was soll Agent Autopilot für dich erstellen?"
             rows={1}
-            className="block w-full resize-none overflow-hidden border-none bg-transparent p-0 text-base text-white outline-none placeholder:text-white/35"
-            style={{ minHeight: 24, maxHeight: 160 }}
+            className="block w-full resize-none overflow-hidden border-none bg-transparent p-4 text-[15px] text-white outline-none placeholder:text-white/35"
+            style={{ minHeight: 80, maxHeight: 200 }}
           />
+          <p className="px-1 text-xs text-white/25">
+            Enter zum Senden · Shift+Enter für neue Zeile
+          </p>
           <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-[11px] text-white/35">1 Credit pro Antwort</span>
             <LoadingButton
