@@ -10,20 +10,7 @@ import {
   parseKeywords,
 } from "@/lib/seo";
 import type { Locale } from "@/lib/locale";
-import {
-  FaqSection,
-  LandingFooter,
-  LandingNav,
-} from "@/components/landing";
-import { LandingCampaignHero } from "@/components/landing/LandingCampaignHero";
-import { LandingShowcaseSection } from "@/components/landing/LandingShowcaseSection";
-import { LandingFeatureExplorerSection } from "@/components/landing/LandingFeatureExplorerSection";
-import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
-import {
-  LandingAudienceSection,
-  LandingPricingCtaSection,
-} from "@/components/landing/LandingAudienceSection";
-import { LightSystem } from "@/components/LightSystem";
+import { LandingPageV2 } from "@/components/landing/LandingPageV2";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
 
@@ -78,19 +65,7 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <LightSystem>
-        <LandingNav darkNav />
-        <main className="landing-root landing-campaign overflow-x-clip max-w-[100vw]">
-          <LandingCampaignHero />
-          <LandingShowcaseSection />
-          <LandingFeatureExplorerSection />
-          <LandingCampaignPackSection />
-          <LandingAudienceSection />
-          <LandingPricingCtaSection />
-          <FaqSection />
-        </main>
-        <LandingFooter />
-      </LightSystem>
+      <LandingPageV2 />
     </>
   );
 }
