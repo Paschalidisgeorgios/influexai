@@ -7,7 +7,6 @@ import { useTranslations, useLocale } from "next-intl";
 import type { AbVariant } from "@/lib/ab-tracking";
 import { getStarterPriceParams } from "@/lib/pricing";
 import { HeroTitle } from "@/components/landing/HeroTitle";
-import { HeroWorkspaceDemo } from "@/components/landing/HeroWorkspaceDemo";
 import { EXTRA_HERO_ROTATING_TITLES } from "@/data/heroRotatingTitles";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
@@ -411,7 +410,7 @@ export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
             : undefined
         }
       >
-        <div className="grid w-full grid-cols-1 items-start gap-6 overflow-x-hidden pt-2 pb-10 md:min-h-[min(100dvh,920px)] md:items-center md:gap-10 md:pt-0 md:pb-0 lg:grid-cols-[minmax(0,620px)_minmax(520px,640px)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid w-full grid-cols-1 items-start gap-6 overflow-x-hidden pt-2 pb-10 md:min-h-[min(100dvh,920px)] md:items-center md:gap-10 md:pt-0 md:pb-0 lg:grid-cols-[minmax(0,620px)_minmax(0,1fr)] lg:gap-10">
           {/* Column 1: Badge, Toggle, Headline, Subline, CTAs, Trust */}
           <div className="flex min-w-0 max-w-[620px] flex-col gap-4 sm:gap-6 lg:gap-7">
             <SpringReveal>
@@ -481,14 +480,7 @@ export function HeroSection({ variant }: { variant?: AbVariant } = {}) {
 
           </div>
 
-          {/* Column 2: Cinematic AI Workspace — between copy and model */}
-          <div className="hidden min-w-0 items-start justify-start lg:flex">
-            <SpringReveal delay={0.2}>
-              <HeroWorkspaceDemo />
-            </SpringReveal>
-          </div>
-
-          {/* Column 3: Reserved for model background — no overlapping content */}
+          {/* Column 2: Reserved for model background — no overlapping content */}
           <div className="hidden min-w-0 lg:block" aria-hidden />
         </div>
       </div>

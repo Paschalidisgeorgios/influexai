@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { getStarterPriceParams } from "@/lib/pricing";
-import { LandingCampaignMockup } from "./LandingCampaignMockup";
 
 export function LandingCampaignHero() {
   const t = useTranslations("landingPage.campaignStudio.hero");
@@ -47,10 +46,6 @@ export function LandingCampaignHero() {
           </SpringReveal>
 
           <p className="mt-4 text-xs text-white/30">{t("note", priceParams)}</p>
-        </div>
-
-        <div className="mt-12 md:mt-16">
-          <LandingCampaignMockup />
         </div>
       </div>
     </section>

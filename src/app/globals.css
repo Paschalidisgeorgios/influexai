@@ -2518,3 +2518,143 @@ header.site-header.site-header--scrolled {
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+/* ── Feature Explorer ── */
+.feature-explorer-col-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.38);
+}
+
+.feature-explorer-group {
+  border-radius: 14px;
+  padding: 4px 6px 4px 0;
+  transition: background-color 0.2s ease;
+}
+
+.feature-explorer-group--active {
+  background: rgba(180, 255, 0, 0.06);
+}
+
+.feature-explorer-icon {
+  display: flex;
+  height: 34px;
+  width: 34px;
+  shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  color: rgba(10, 10, 10, 0.55);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.feature-explorer-group:hover .feature-explorer-icon,
+.feature-explorer-group--active .feature-explorer-icon {
+  border-color: rgba(180, 255, 0, 0.45);
+  background: rgba(180, 255, 0, 0.08);
+  color: #5a7300;
+}
+
+.feature-explorer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(10, 10, 10, 0.52);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.feature-explorer-link:hover,
+.feature-explorer-link:focus-visible {
+  color: #0a0a0a;
+}
+
+.feature-explorer-preview {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #0a0a0a;
+}
+
+.feature-explorer-preview__visual {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.feature-explorer-preview__overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 420px;
+  flex-direction: column;
+  padding: 24px;
+  background: linear-gradient(
+    to top,
+    rgba(6, 6, 8, 0.92) 0%,
+    rgba(6, 6, 8, 0.35) 45%,
+    rgba(6, 6, 8, 0.12) 100%
+  );
+}
+
+.feature-explorer-preview--scripts .feature-explorer-preview__visual {
+  background:
+    linear-gradient(145deg, rgba(180, 255, 0, 0.18), transparent 50%),
+    linear-gradient(180deg, #2a2a24 0%, #121210 100%);
+}
+
+.feature-explorer-preview--images .feature-explorer-preview__visual {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(180, 255, 0, 0.25), transparent 45%),
+    linear-gradient(160deg, #1c1c1a 0%, #3d3d38 55%, #0d0d0f 100%);
+}
+
+.feature-explorer-preview--video .feature-explorer-preview__visual {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 2px,
+      transparent 10px
+    ),
+    linear-gradient(135deg, #101014 0%, #252530 50%, rgba(180, 255, 0, 0.12) 100%);
+}
+
+.feature-explorer-preview--agent .feature-explorer-preview__visual {
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 30%, rgba(180, 255, 0, 0.2), transparent 55%),
+    linear-gradient(180deg, #0d0d10 0%, #1a1a22 100%);
+}
+
+.feature-explorer-preview--live .feature-explorer-preview__visual {
+  background:
+    linear-gradient(135deg, #141418 0%, #2d2d35 40%, rgba(180, 255, 0, 0.15) 100%);
+}
+
+.feature-explorer-preview--export .feature-explorer-preview__visual {
+  background:
+    linear-gradient(145deg, #101010 0%, #222 50%, rgba(180, 255, 0, 0.1) 100%);
+}
+
+@media (max-width: 1023px) {
+  .feature-explorer-preview {
+    min-height: 320px;
+  }
+
+  .feature-explorer-preview__overlay {
+    min-height: 320px;
+  }
+}
+

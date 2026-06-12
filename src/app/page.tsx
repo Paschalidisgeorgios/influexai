@@ -17,7 +17,7 @@ import {
 } from "@/components/landing";
 import { LandingCampaignHero } from "@/components/landing/LandingCampaignHero";
 import { LandingShowcaseSection } from "@/components/landing/LandingShowcaseSection";
-import { LandingStudioToolsSection } from "@/components/landing/LandingStudioToolsSection";
+import { LandingFeatureExplorerSection } from "@/components/landing/LandingFeatureExplorerSection";
 import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
 import {
   LandingAudienceSection,
@@ -83,7 +83,7 @@ export default async function HomePage() {
         <main className="landing-root landing-campaign overflow-x-clip max-w-[100vw]">
           <LandingCampaignHero />
           <LandingShowcaseSection />
-          <LandingStudioToolsSection />
+          <LandingFeatureExplorerSection />
           <LandingCampaignPackSection />
           <LandingAudienceSection />
           <LandingPricingCtaSection />

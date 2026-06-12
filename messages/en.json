@@ -988,6 +988,87 @@
         "gallery_title": "Gallery & Export",
         "gallery_desc": "All assets in one place — download-ready for TikTok, Reels & LinkedIn."
       },
+      "featureExplorer": {
+        "kicker": "Product",
+        "headline": "Every tool. One clear overview.",
+        "subheadline": "From script to export — every module is one click away.",
+        "columns": {
+          "create": "Create",
+          "visuals": "Visuals",
+          "automate": "Automation"
+        },
+        "groups": {
+          "scripts": { "title": "Scripts & hooks" },
+          "ads": { "title": "Ads & promos" },
+          "images": { "title": "Images & avatars" },
+          "video": { "title": "Video & motion" },
+          "agent": { "title": "Agent & campaigns" },
+          "live": { "title": "Live & audio" },
+          "export": { "title": "Analysis & export" }
+        },
+        "links": {
+          "script": "Script Generator",
+          "hook": "Viral Hook Generator",
+          "trend": "Trend Script",
+          "calendar": "Content Calendar",
+          "product": "Product Ads",
+          "ad": "Ad Creator",
+          "thumbnail": "Thumbnail Concept",
+          "imageGen": "Image Generator",
+          "kiIch": "My AI Self",
+          "lora": "LoRA Training",
+          "story": "Story Creator",
+          "scene": "Scene Generator",
+          "transform": "Video Transformer",
+          "seedance": "Video Motion",
+          "autopilot": "Agent Autopilot",
+          "campaign": "Campaign Autopilot",
+          "liveCreator": "Live Creator",
+          "melodia": "Melodia Studio",
+          "lipsync": "Lipsync Studio",
+          "score": "Viral Score",
+          "gallery": "Studio Archive",
+          "competitor": "Competitor Analysis"
+        },
+        "preview": {
+          "scripts": {
+            "badge": "Script Studio",
+            "quote": "A hook that stops the scroll in 3 seconds",
+            "cta": "Create script",
+            "href": "/dashboard/script-generator"
+          },
+          "images": {
+            "badge": "Image Studio",
+            "quote": "Brand visual for reels & ads",
+            "cta": "Generate image",
+            "href": "/dashboard/image-generator"
+          },
+          "video": {
+            "badge": "Video Motion",
+            "quote": "Turn a still image into a motion clip",
+            "cta": "Start video",
+            "href": "/dashboard/story-creator"
+          },
+          "agent": {
+            "badge": "Agent Autopilot",
+            "quote": "7-day campaign from one briefing",
+            "cta": "Start agent",
+            "href": "/dashboard/ki-agent"
+          },
+          "live": {
+            "badge": "Live Studio",
+            "quote": "AI avatar live on TikTok & YouTube",
+            "cta": "Open Live Creator",
+            "href": "/dashboard/live-creator"
+          },
+          "export": {
+            "badge": "Creative Score",
+            "quote": "Check quality before you publish",
+            "cta": "Run analysis",
+            "href": "/dashboard/viral-score"
+          }
+        }
+      },
       "pack": {
         "kicker": "Campaign Pack",
         "headline": "What you get at the end.",

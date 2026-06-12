@@ -10,6 +10,7 @@ export { LandingNav } from "./LandingNav";
 export { LandingCampaignHero } from "./LandingCampaignHero";
 export { LandingCampaignMockup } from "./LandingCampaignMockup";
 export { LandingShowcaseSection } from "./LandingShowcaseSection";
+export { LandingFeatureExplorerSection } from "./LandingFeatureExplorerSection";
 export { LandingStudioToolsSection } from "./LandingStudioToolsSection";
 export { LandingCampaignPackSection } from "./LandingCampaignPackSection";
 export {
