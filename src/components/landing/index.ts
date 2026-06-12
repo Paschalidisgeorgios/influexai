@@ -7,6 +7,15 @@ export { LandingProofSection } from "./LandingProofSection";
 export { LandingToolsGridSection } from "./LandingToolsGridSection";
 export { InteractiveDemo } from "./InteractiveDemo";
 export { LandingNav } from "./LandingNav";
+export { LandingCampaignHero } from "./LandingCampaignHero";
+export { LandingCampaignMockup } from "./LandingCampaignMockup";
+export { LandingShowcaseSection } from "./LandingShowcaseSection";
+export { LandingStudioToolsSection } from "./LandingStudioToolsSection";
+export { LandingCampaignPackSection } from "./LandingCampaignPackSection";
+export {
+  LandingAudienceSection,
+  LandingPricingCtaSection,
+} from "./LandingAudienceSection";
 export { HeroSection } from "./HeroSection";
 export { AiContentStream } from "./AiContentStream";
 export { CreatorBrandTabsSection } from "./creator-brand-tabs-section";

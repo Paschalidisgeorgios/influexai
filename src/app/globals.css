@@ -2286,3 +2286,235 @@ header.site-header.site-header--scrolled {
   }
 }
 
+/* ── Campaign Studio Landing ── */
+.landing-campaign {
+  background: #f5f5f0;
+}
+
+.campaign-hero {
+  background: #060608;
+  min-height: min(92vh, 920px);
+}
+
+.campaign-hero__glow {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(180, 255, 0, 0.08), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(180, 255, 0, 0.04), transparent 50%);
+}
+
+.campaign-hero__grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black 20%, transparent 85%);
+}
+
+.campaign-light-section {
+  background: #f5f5f0;
+  color: #0a0a0a;
+}
+
+.campaign-kicker {
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5a7300;
+}
+
+.campaign-heading {
+  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: #0a0a0a;
+}
+
+.campaign-mockup-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px;
+}
+
+.campaign-mockup-card__label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.campaign-mockup-card__visual {
+  margin-top: 8px;
+  border-radius: 8px;
+  min-height: 48px;
+}
+
+.campaign-mockup-card__visual--image {
+  min-height: 88px;
+  background:
+    linear-gradient(145deg, rgba(180, 255, 0, 0.15), transparent 55%),
+    linear-gradient(180deg, #1a1a1e, #0d0d0f);
+}
+
+.campaign-mockup-card__visual--video {
+  background:
+    linear-gradient(90deg, rgba(180, 255, 0, 0.12), transparent),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 2px,
+      transparent 8px
+    ),
+    #121214;
+}
+
+.campaign-showcase-scroll {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.campaign-showcase-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.campaign-showcase-card-wrap {
+  width: min(280px, 78vw);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .campaign-showcase-card-wrap {
+    width: 300px;
+  }
+}
+
+.campaign-showcase-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-showcase-card__visual {
+  flex: 1;
+  min-height: 260px;
+}
+
+.campaign-showcase-card--a .campaign-showcase-card__visual {
+  background:
+    linear-gradient(160deg, #e8e8e3 0%, #d4d4cc 40%, #1a1a1a 100%);
+}
+
+.campaign-showcase-card--b .campaign-showcase-card__visual {
+  background:
+    linear-gradient(135deg, #0d0d0f 0%, #1f2937 50%, rgba(180, 255, 0, 0.2) 100%);
+}
+
+.campaign-showcase-card--c .campaign-showcase-card__visual {
+  background:
+    linear-gradient(180deg, #f0efe8 0%, rgba(180, 255, 0, 0.35) 100%);
+}
+
+.campaign-showcase-card--d .campaign-showcase-card__visual {
+  background:
+    linear-gradient(145deg, #111 0%, #333 50%, rgba(180, 255, 0, 0.15) 100%);
+}
+
+.campaign-showcase-card__meta {
+  padding: 14px 16px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.campaign-showcase-card__tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5a7300;
+}
+
+.campaign-showcase-card__prompt {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(10, 10, 10, 0.65);
+}
+
+.campaign-tool-card {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.campaign-tool-card:hover {
+  border-color: rgba(180, 255, 0, 0.45);
+  box-shadow: 0 8px 32px rgba(180, 255, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.campaign-tool-card--featured {
+  background:
+    linear-gradient(145deg, #fff 0%, rgba(180, 255, 0, 0.06) 100%);
+  min-height: 220px;
+}
+
+.campaign-pack-item {
+  transition: border-color 0.2s ease;
+}
+
+.campaign-pack-item:hover {
+  border-color: rgba(180, 255, 0, 0.35);
+}
+
+.campaign-audience-card {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.campaign-audience-card:hover {
+  border-color: rgba(180, 255, 0, 0.35);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.landing-nav-shell--dark.landing-nav-shell--scrolled,
+.landing-nav-bar--dark.landing-nav-bar--scrolled {
+  background: rgba(6, 6, 8, 0.92) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.landing-nav-bar--dark .landing-nav-auth-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.landing-nav-bar--dark .landing-nav-auth-link:hover {
+  color: #fff;
+}
+
+.landing-nav-bar--dark .landing-nav-menu-btn {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.landing-nav-bar--dark .landing-nav-lang-btn {
+  color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+

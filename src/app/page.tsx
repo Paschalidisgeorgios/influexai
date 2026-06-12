@@ -11,17 +11,18 @@ import {
 } from "@/lib/seo";
 import type { Locale } from "@/lib/locale";
 import {
-  HeroSection,
-  TrustBarSection,
-  PricingSection,
   FaqSection,
   LandingFooter,
   LandingNav,
 } from "@/components/landing";
-import { LandingBentoToolsSection } from "@/components/landing/LandingBentoToolsSection";
-import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
-import { LandingValueSection } from "@/components/landing/LandingValueSection";
-import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
+import { LandingCampaignHero } from "@/components/landing/LandingCampaignHero";
+import { LandingShowcaseSection } from "@/components/landing/LandingShowcaseSection";
+import { LandingStudioToolsSection } from "@/components/landing/LandingStudioToolsSection";
+import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
+import {
+  LandingAudienceSection,
+  LandingPricingCtaSection,
+} from "@/components/landing/LandingAudienceSection";
 import { LightSystem } from "@/components/LightSystem";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
@@ -78,15 +79,14 @@ export default async function HomePage() {
     <>
       <ABTracker variant={variant} />
       <LightSystem>
-        <LandingNav />
-        <main className="landing-root overflow-x-clip max-w-[100vw]">
-          <HeroSection variant={variant} />
-          <LandingUseCasesSection />
-          <LandingBentoToolsSection />
-          <LandingValueSection />
-          <TrustBarSection />
-          <LandingAgentAutopilotSection />
-          <PricingSection />
+        <LandingNav darkNav />
+        <main className="landing-root landing-campaign overflow-x-clip max-w-[100vw]">
+          <LandingCampaignHero />
+          <LandingShowcaseSection />
+          <LandingStudioToolsSection />
+          <LandingCampaignPackSection />
+          <LandingAudienceSection />
+          <LandingPricingCtaSection />
           <FaqSection />
         </main>
         <LandingFooter />

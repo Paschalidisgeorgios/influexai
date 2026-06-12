@@ -19,6 +19,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [hasTenantToolAccess, setHasTenantToolAccess] = useState(false);
   const [isAdminVerified, setIsAdminVerified] = useState(false);
+  const [adminCheckComplete, setAdminCheckComplete] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -27,7 +28,25 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          setIsAdminVerified(false);
+          return;
+        }
+
+        try {
+          const adminRes = await fetch("/api/auth/is-admin");
+          if (adminRes.ok) {
+            const adminData = (await adminRes.json()) as { isAdmin?: boolean };
+            setIsAdminVerified(adminData.isAdmin === true);
+          } else {
+            setIsAdminVerified(false);
+          }
+        } catch {
+          setIsAdminVerified(false);
+        } finally {
+          setAdminCheckComplete(true);
+        }
+
         const { data } = await supabase
           .from("profiles")
           .select("plan, role, is_admin, tenant_id")
@@ -40,16 +59,6 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
             is_admin: data.is_admin ?? false,
             email: user.email,
           });
-
-          try {
-            const adminRes = await fetch("/api/auth/is-admin");
-            if (adminRes.ok) {
-              const adminData = (await adminRes.json()) as { isAdmin?: boolean };
-              setIsAdminVerified(adminData.isAdmin === true);
-            }
-          } catch {
-            setIsAdminVerified(false);
-          }
 
           let tenantMembership = false;
           if (data.tenant_id) {
@@ -75,7 +84,7 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!profileLoaded) {
+    if (!profileLoaded || !adminCheckComplete) {
       setBlocked(false);
       return;
     }
@@ -88,7 +97,14 @@ export function PlanGateProvider({ children }: { children: React.ReactNode }) {
         !isAdmin &&
         !hasKiToolEntitlement(accessUser, hasTenantToolAccess)
     );
-  }, [pathname, accessUser, profileLoaded, hasTenantToolAccess, isAdminVerified]);
+  }, [
+    pathname,
+    accessUser,
+    profileLoaded,
+    hasTenantToolAccess,
+    isAdminVerified,
+    adminCheckComplete,
+  ]);
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">

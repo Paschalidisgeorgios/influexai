@@ -645,6 +645,8 @@
     "nav_brands": "Marken",
     "nav_for_brands": "Für Brands",
     "nav_features": "Features",
+    "nav_showcase": "Showcase",
+    "nav_tools": "Studio",
     "nav_pricing": "Preise",
     "nav_agency": "Agenturen",
     "nav_home": "Startseite",
@@ -1466,7 +1468,97 @@
       "cta_primary": "Agent Autopilot starten",
       "cta_secondary": "Preise ansehen"
     },
-    "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator"
+    "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator",
+    "campaignStudio": {
+      "hero": {
+        "kicker": "AI Campaign Studio",
+        "headline": "Aus einer Idee wird eine komplette Kampagne.",
+        "subheadline": "Bilder, Motion, Hooks, Captions, Hashtags und Creative Score — exportfertig für Social Media.",
+        "ctaPrimary": "Jetzt starten",
+        "ctaSecondary": "Demo ansehen",
+        "note": "Ab €{price}/Monat · Credits inklusive · Monatlich kündbar",
+        "mockup": {
+          "promptLabel": "Kampagnen-Briefing",
+          "prompt": "7-Tage-Launch für mein SaaS — Reels, Hooks und Visuals für TikTok & LinkedIn.",
+          "outputImage": "Hero Visual",
+          "outputVideo": "Motion",
+          "outputHook": "Hook",
+          "outputCaption": "Caption",
+          "hookPreview": "POV: Du startest dein SaaS — ohne 80-Stunden-Woche.",
+          "captionPreview": "3 Schritte zum Launch. Speichern für später.",
+          "scoreLabel": "Creative Score",
+          "scoreValue": "91"
+        }
+      },
+      "showcase": {
+        "kicker": "Showcase",
+        "headline": "Kampagnen-Assets die sofort wirken.",
+        "c1_tag": "Reel Visual",
+        "c1_prompt": "Product Launch · Acid-Look · 9:16",
+        "c2_tag": "Motion Clip",
+        "c2_prompt": "SaaS Demo · 15s Loop · LinkedIn",
+        "c3_tag": "Hook Card",
+        "c3_prompt": "Scroll-Stopper · TikTok · DE",
+        "c4_tag": "Ad Pack",
+        "c4_prompt": "Brand Story · Multi-Format Export"
+      },
+      "tools": {
+        "kicker": "Studio",
+        "headline": "Alles für deine Kampagne — in einem Workflow.",
+        "subheadline": "Kein Tool-Chaos. Image, Video, Agent, Score und Export arbeiten zusammen.",
+        "openTool": "Tool öffnen",
+        "image_title": "Image Studio",
+        "image_desc": "KI-Bilder für Reels, Ads und Thumbnails — markenkonform und schnell.",
+        "video_title": "Video Motion",
+        "video_desc": "Bild zu Video, Motion-Clips und Short-Form-Assets für alle Plattformen.",
+        "agent_title": "Agent Autopilot",
+        "agent_desc": "Briefing eingeben — der Agent plant Hooks, Copy und nächste Schritte.",
+        "score_title": "Creative Score",
+        "score_desc": "Bewerte Hooks und Ideen vor dem Upload — datenbasiert statt raten.",
+        "gallery_title": "Gallery & Export",
+        "gallery_desc": "Alle Assets an einem Ort — downloadfertig für TikTok, Reels & LinkedIn."
+      },
+      "pack": {
+        "kicker": "Campaign Pack",
+        "headline": "Das bekommst du am Ende.",
+        "subheadline": "Ein zusammenhängendes Paket — nicht lose Einzeloutputs.",
+        "images_title": "Bilder",
+        "images_desc": "Hero, Thumbnail & Ad-Visuals",
+        "video_title": "Video",
+        "video_desc": "Motion & Short-Clips",
+        "hooks_title": "Hooks",
+        "hooks_desc": "Scroll-Stopper & Opener",
+        "captions_title": "Captions",
+        "captions_desc": "Post-Texte & Story",
+        "hashtags_title": "Hashtags",
+        "hashtags_desc": "Reichweiten-Tags",
+        "score_title": "Score",
+        "score_desc": "Qualitäts-Check vor Publish"
+      },
+      "audience": {
+        "kicker": "Zielgruppen",
+        "headline": "Für Teams die schneller launchen wollen.",
+        "creator_kicker": "Creator",
+        "creator_title": "Content ohne Burnout",
+        "creator_desc": "Von der Idee zum fertigen Post — Hooks, Visuals und Score in Minuten.",
+        "brand_kicker": "Brands",
+        "brand_title": "Kampagnen statt Einzelposts",
+        "brand_desc": "Konsistente Assets für Ads, Reels und Social — ohne teure Shootings.",
+        "agency_kicker": "Agenturen",
+        "agency_title": "Mehr Output pro Kunde",
+        "agency_desc": "Briefings schneller in kampagnenfähige Pakete verwandeln.",
+        "local_kicker": "Lokale Unternehmen",
+        "local_title": "Sichtbarkeit ohne Agentur",
+        "local_desc": "Reels, Angebote und lokale Kampagnen — einfach und wiederholbar."
+      },
+      "pricingCta": {
+        "kicker": "Preise",
+        "headline": "Transparent starten. Skalieren wenn du wächst.",
+        "subheadline": "Credits für echte Generierungen — monatlich kündbar.",
+        "ctaPrimary": "Preise ansehen",
+        "ctaSecondary": "Kostenlos registrieren"
+      }
+    }
   },
   "language": {
     "label": "Sprache"
