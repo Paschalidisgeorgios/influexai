@@ -145,7 +145,7 @@ export function HeroSection() {
           impulse={impulse}
         />
 
-        <div className="pointer-events-none relative z-10 max-w-3xl px-6 text-center">
+        <div className="pointer-events-none relative z-20 max-w-3xl px-6 text-center">
           <div
             className="mb-6 inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-1.5 backdrop-blur-md"
             style={{

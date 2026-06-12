@@ -1,7 +1,6 @@
 export interface HeroScene {
   id: string;
   videoUrl: string;
-  fallbackImageUrl: string;
   label: string;
   theme: "green" | "blue" | "violet";
 }
@@ -9,32 +8,22 @@ export interface HeroScene {
 /** Local clips from /public/videos/landing/ — served at /videos/landing/*.mp4 */
 export const HERO_SCENES: HeroScene[] = [
   {
-    id: "ki-ich",
+    id: "scene-1",
     videoUrl: "/videos/landing/feature-1.mp4",
-    fallbackImageUrl: "/images/landing/hero.jpg",
     label: "KI-Ich Studio",
     theme: "green",
   },
   {
-    id: "szenen",
+    id: "scene-2",
     videoUrl: "/videos/landing/feature-2.mp4",
-    fallbackImageUrl: "/images/landing/hero-2.jpg",
     label: "Szenen Generator",
     theme: "blue",
   },
   {
-    id: "agent",
+    id: "scene-3",
     videoUrl: "/videos/landing/feature-3.mp4",
-    fallbackImageUrl: "/images/landing/hero-3.jpg",
     label: "Agent Autopilot",
     theme: "violet",
-  },
-  {
-    id: "story",
-    videoUrl: "/videos/landing/feature-1.mp4",
-    fallbackImageUrl: "/images/landing/hero-poster.jpg",
-    label: "Story Creator",
-    theme: "green",
   },
 ];
 
