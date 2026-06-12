@@ -14,16 +14,27 @@ import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { DynamicDashboardEngine } from "@/components/dashboard/DynamicDashboardEngine";
+import { useDashboardTool, useSyncDashboardPayload } from "@/contexts/DashboardToolContext";
+import { buildToolPayload } from "@/lib/tools/tool-registry";
 
-export default function TextToVideoPage() {
+function StoryCreatorWorkspace() {
   const [models, setModels] = useState<AkoolImageToVideoModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [modelId, setModelId] = useState("");
-  const [prompt, setPrompt] = useState("");
   const [duration, setDuration] = useState(5);
   const [resolution, setResolution] = useState("720p");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  const {
+    prompt,
+    setPrompt,
+    activeModel,
+    activeParams,
+    setParam,
+    notifyGenerate,
+  } = useDashboardTool();
 
   const selected = useMemo(() => models.find((m) => m.value === modelId), [models, modelId]);
   const creditCost = AKOOL_TOOL_CREDITS.textToVideo;
@@ -31,6 +42,17 @@ export default function TextToVideoPage() {
   const { generating, elapsedSec, error, startPolling } = useAkoolJobPoll({
     onSuccess: ({ resultUrl: url }) => setResultUrl(url),
   });
+
+  const livePayload = useMemo(() => {
+    if (!activeModel) return { prompt, modelId, duration, resolution };
+    return buildToolPayload("story-creator", prompt, activeModel, {
+      ...activeParams,
+      duration: `${duration}s`,
+      resolution,
+    });
+  }, [activeModel, activeParams, prompt, duration, resolution, modelId]);
+
+  useSyncDashboardPayload(livePayload);
 
   useEffect(() => {
     fetch("/api/akool/text-to-video")
@@ -49,6 +71,7 @@ export default function TextToVideoPage() {
 
   const generate = async () => {
     setErr(null);
+    notifyGenerate(creditCost);
     try {
       const res = await fetch("/api/akool/text-to-video", {
         method: "POST",
@@ -73,35 +96,85 @@ export default function TextToVideoPage() {
       loading={loading}
       generating={generating}
       elapsedSec={elapsedSec}
-      result={resultUrl ? (
-        <div className="p-2"><video src={resultUrl} controls className="w-full rounded-xl" /><AiOutputDisclaimer /></div>
-      ) : undefined}
+      result={
+        resultUrl ? (
+          <div className="p-2">
+            <video src={resultUrl} controls className="w-full rounded-xl" />
+            <AiOutputDisclaimer />
+          </div>
+        ) : undefined
+      }
     >
       {models.length > 0 && (
         <select value={modelId} onChange={(e) => setModelId(e.target.value)} className={akoolInputClass}>
           {models.map((m) => (
-            <option key={m.value} value={m.value}>{m.label} ({m.providerLabel})</option>
+            <option key={m.value} value={m.value}>
+              {m.label} ({m.providerLabel})
+            </option>
           ))}
         </select>
       )}
       <label className="flex flex-col gap-2">
         <span className={akoolLabelClass}>Prompt</span>
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={5} className={akoolInputClass} placeholder="Beschreibe dein Video…" />
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={5}
+          className={akoolInputClass}
+          placeholder="Beschreibe dein Video…"
+        />
       </label>
       {selected && (
         <>
-          <select value={duration} onChange={(e) => setDuration(Number(e.target.value))} className={akoolInputClass}>
-            {selected.durationList.map((d) => <option key={d} value={d}>{d}s</option>)}
+          <select
+            value={duration}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setDuration(value);
+              setParam("duration", `${value}s`);
+            }}
+            className={akoolInputClass}
+          >
+            {selected.durationList.map((d) => (
+              <option key={d} value={d}>
+                {d}s
+              </option>
+            ))}
           </select>
-          <select value={resolution} onChange={(e) => setResolution(e.target.value)} className={akoolInputClass}>
-            {selected.resolutionList.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+          <select
+            value={resolution}
+            onChange={(e) => {
+              setResolution(e.target.value);
+              setParam("resolution", e.target.value);
+            }}
+            className={akoolInputClass}
+          >
+            {selected.resolutionList.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
           </select>
         </>
       )}
-      <button type="button" disabled={generating || !prompt.trim()} onClick={generate} className={akoolButtonClass}>
+      <button
+        type="button"
+        disabled={generating || !prompt.trim()}
+        onClick={generate}
+        className={akoolButtonClass}
+        style={{ background: "var(--dash-theme-accent)", color: "var(--dash-theme-on-accent)" }}
+      >
         Video generieren
       </button>
       {(err || error) && <p className="text-sm text-[#ff6b7a]">{err || error}</p>}
     </AkoolToolShell>
+  );
+}
+
+export default function TextToVideoPage() {
+  return (
+    <DynamicDashboardEngine toolId="story-creator">
+      <StoryCreatorWorkspace />
+    </DynamicDashboardEngine>
   );
 }

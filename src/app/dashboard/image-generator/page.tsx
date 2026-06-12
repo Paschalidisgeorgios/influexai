@@ -31,6 +31,9 @@ import {
   IMAGE_GEN_CREDITS,
 } from "@/lib/image-generator-credits";
 import { createClient } from "@/lib/supabase/client";
+import { DynamicDashboardEngine } from "@/components/dashboard/DynamicDashboardEngine";
+import { useSyncDashboardPayload } from "@/contexts/DashboardToolContext";
+import { buildToolPayload, getDefaultModel } from "@/lib/tools/tool-registry";
 
 const chipClass = (active: boolean) =>
   active
@@ -494,7 +497,16 @@ export default function ImageGeneratorPage() {
     }
   };
 
+  const payloadPreview = buildToolPayload(
+    "bild-generator",
+    prompt,
+    getDefaultModel("bild-generator"),
+    { aspectRatio: platformToFalImageSize(platform), outputCount: 1 }
+  );
+  useSyncDashboardPayload(payloadPreview);
+
   return (
+    <DynamicDashboardEngine toolId="bild-generator" hideModelPanel>
     <div className="mx-auto max-w-[1280px]">
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
@@ -871,5 +883,6 @@ export default function ImageGeneratorPage() {
         </div>
       </div>
     </div>
+    </DynamicDashboardEngine>
   );
 }

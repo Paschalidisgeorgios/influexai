@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
+import { useDashboardToolOptional } from "@/contexts/DashboardToolContext";
 
 const FALLBACK_CHIPS = [
   "Erstelle 10 virale Hooks für mein Fitness-Business auf TikTok",
@@ -18,6 +19,17 @@ export function AgentAutopilotHero() {
   const [chips, setChips] = useState<string[]>(FALLBACK_CHIPS);
   const [chipsLoading, setChipsLoading] = useState(true);
   const { profile, profileLabel, loading: profileLoading } = useCreatorProfile();
+  const dashboard = useDashboardToolOptional();
+
+  useEffect(() => {
+    dashboard?.setPrompt(prompt);
+  }, [dashboard, prompt]);
+
+  useEffect(() => {
+    if (profileLabel) {
+      dashboard?.setParam("creatorDNA", profileLabel);
+    }
+  }, [dashboard, profileLabel]);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,14 +54,18 @@ export function AgentAutopilotHero() {
   const navigate = (text?: string) => {
     const value = (text ?? prompt).trim();
     if (!value) return;
+    dashboard?.notifyGenerate(5);
     router.push(`/dashboard/ki-agent?prompt=${encodeURIComponent(value)}`);
   };
 
   return (
     <section className="mb-10 w-full">
       <h1
-        className="font-display text-[clamp(28px,6vw,42px)] leading-none"
-        style={{ color: "#B4FF00" }}
+        className="font-display text-[clamp(28px,6vw,42px)] leading-none transition-all duration-[1200ms]"
+        style={{
+          color: "var(--dash-theme-accent, #B4FF00)",
+          textShadow: "0 0 32px rgba(var(--dash-theme-r, 180), var(--dash-theme-g, 255), var(--dash-theme-b, 0), 0.2)",
+        }}
       >
         AGENT AUTOPILOT
       </h1>
@@ -70,8 +86,11 @@ export function AgentAutopilotHero() {
       )}
 
       {!profileLoading && profileLabel && (
-        <span className="mt-2 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/55">
-          Profil: {profileLabel}
+        <span
+          className="mt-2 inline-flex rounded-full border px-3 py-1 text-xs text-white/55"
+          style={{ borderColor: "var(--dash-theme-accent-25, rgba(255,255,255,0.1))" }}
+        >
+          Creator DNA: {profileLabel}
         </span>
       )}
 
