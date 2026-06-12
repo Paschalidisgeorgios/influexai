@@ -145,7 +145,7 @@ export function HeroSection() {
           impulse={impulse}
         />
 
-        <div className="pointer-events-none relative z-20 max-w-3xl px-6 text-center">
+        <div className="pointer-events-none relative z-20 mx-auto w-full max-w-3xl px-4 text-center sm:px-6">
           <div
             className="mb-6 inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-1.5 backdrop-blur-md"
             style={{
@@ -182,10 +182,10 @@ export function HeroSection() {
           </div>
 
           <h1
-            className="mb-4 leading-[1.04] font-bold text-white"
+            className="mb-4 font-bold leading-[1.04] tracking-tight text-white"
             style={{
-              fontSize: "clamp(36px,7vw,72px)",
-              letterSpacing: "-2.5px",
+              fontSize: "clamp(28px, 6.5vw, 72px)",
+              letterSpacing: "-2px",
               textShadow: "0 2px 40px rgba(0,0,0,0.95)",
             }}
           >
@@ -209,7 +209,7 @@ export function HeroSection() {
             Über 20 Tools in einem Studio.
           </p>
 
-          <div className="pointer-events-auto mb-6 flex justify-center gap-3">
+          <div className="pointer-events-auto mb-6 flex flex-wrap justify-center gap-3">
             <Link
               href="/dashboard"
               className="rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03]"
