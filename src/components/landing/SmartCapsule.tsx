@@ -42,7 +42,7 @@ export function SmartCapsule({
       style={{ transform: "translateX(-50%)" }}
     >
       <div
-        className="flex items-center gap-2 rounded-full border"
+        className="flex items-center gap-2 overflow-hidden rounded-full border"
         style={{
           padding: isScrolled ? "4px 12px" : "5px 16px",
           background: isFlashing

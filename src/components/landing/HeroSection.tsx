@@ -147,7 +147,7 @@ export function HeroSection() {
 
         <div className="pointer-events-none relative z-10 max-w-3xl px-6 text-center">
           <div
-            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 backdrop-blur-md"
+            className="mb-6 inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-1.5 backdrop-blur-md"
             style={{
               background: `rgba(${rgb},0.07)`,
               borderColor: `rgba(${rgb},0.2)`,
@@ -159,9 +159,25 @@ export function HeroSection() {
             }}
           >
             <span
-              className="h-1.5 w-1.5 animate-pulse rounded-full"
-              style={{ background: `rgb(${rgb})` }}
-            />
+              className="relative flex shrink-0 items-center justify-center overflow-hidden"
+              style={{ width: "12px", height: "12px" }}
+            >
+              <span
+                className="absolute inset-0 animate-ping rounded-full"
+                style={{
+                  background: `rgba(${rgb},0.4)`,
+                  animationDuration: "2s",
+                }}
+              />
+              <span
+                className="relative rounded-full"
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  background: `rgb(${rgb})`,
+                }}
+              />
+            </span>
             AI Creator Studio · 2026
           </div>
 
