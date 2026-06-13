@@ -1,8 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Loader2, RotateCcw } from "lucide-react";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
+import {
+  uploadCanvasFile,
+  uploadCanvasFiles,
+  type CanvasUploadTarget,
+} from "@/lib/canvas/canvas-upload";
 import { glassInputClass } from "@/lib/glass-classes";
 import { usePipelineContextOptional } from "@/lib/dashboard-v3/PipelineContext";
 import { InheritedInputBadge } from "@/components/dashboard-v3/InheritedInputBadge";
@@ -383,45 +389,114 @@ function FileUploadField({
   accent,
   onChange,
   onAssetDrop,
+  uploadTarget = "fal",
 }: {
   field: ToolParamSchema;
   value: unknown;
   accent: string;
   onChange: (v: unknown) => void;
   onAssetDrop?: (asset: AssetNodeData) => void;
+  uploadTarget?: CanvasUploadTarget;
 }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<
+    "idle" | "uploading" | "done" | "error"
+  >("idle");
+  const [localPreviews, setLocalPreviews] = useState<string[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const pendingFilesRef = useRef<File[]>([]);
   const isMulti = field.type === "file-list";
   const maxFiles = isMulti ? 4 : 1;
 
-  const previews = useMemo(() => {
+  const storedUrls = useMemo((): string[] => {
     if (isMulti) {
-      if (Array.isArray(value)) {
-        return value.map((item) =>
-          item instanceof File ? URL.createObjectURL(item) : String(item)
-        );
-      }
-      return value ? [String(value)] : [];
+      if (!Array.isArray(value)) return [];
+      return value.filter((item): item is string => typeof item === "string" && item.length > 0);
     }
-    if (value instanceof File) return [URL.createObjectURL(value)];
-    return value ? [String(value)] : [];
+    return typeof value === "string" && value.length > 0 ? [value] : [];
   }, [isMulti, value]);
 
   useEffect(() => {
+    if (storedUrls.length > 0 && uploadStatus !== "uploading") {
+      setUploadStatus("done");
+    } else if (!storedUrls.length && uploadStatus === "done") {
+      setUploadStatus("idle");
+    }
+  }, [storedUrls.length, uploadStatus]);
+
+  const displayPreviews =
+    uploadStatus === "uploading" && localPreviews.length > 0
+      ? localPreviews
+      : storedUrls;
+
+  useEffect(() => {
     return () => {
-      for (const url of previews) {
+      for (const url of localPreviews) {
         if (url.startsWith("blob:")) URL.revokeObjectURL(url);
       }
     };
-  }, [previews]);
+  }, [localPreviews]);
+
+  const revokeLocalPreviews = useCallback((urls: string[]) => {
+    for (const url of urls) {
+      if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+    }
+  }, []);
+
+  const runUpload = useCallback(
+    async (picked: File[]) => {
+      if (!picked.length) return;
+
+      const previewUrls = picked.map((file) => URL.createObjectURL(file));
+      setLocalPreviews((prev) => {
+        revokeLocalPreviews(prev);
+        return isMulti ? previewUrls : previewUrls.slice(0, 1);
+      });
+      pendingFilesRef.current = picked;
+      setUploadError(null);
+      setUploadStatus("uploading");
+
+      try {
+        const results = isMulti
+          ? await uploadCanvasFiles(picked, uploadTarget)
+          : [await uploadCanvasFile(picked[0]!, uploadTarget)];
+
+        const urls = results.map((r) => r.url);
+        onChange(isMulti ? urls : urls[0] ?? null);
+        setUploadStatus("done");
+        setLocalPreviews((prev) => {
+          revokeLocalPreviews(prev);
+          return [];
+        });
+      } catch (err) {
+        setUploadStatus("error");
+        setUploadError(
+          err instanceof Error ? err.message : "Upload fehlgeschlagen"
+        );
+        console.error("Canvas upload failed:", err);
+      }
+    },
+    [isMulti, onChange, revokeLocalPreviews, uploadTarget]
+  );
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
-      if (!files?.length) return;
+      if (!files?.length || uploadStatus === "uploading") return;
       const picked = Array.from(files).slice(0, maxFiles);
-      onChange(isMulti ? picked : picked[0] ?? null);
+      void runUpload(picked);
     },
-    [isMulti, maxFiles, onChange]
+    [maxFiles, runUpload, uploadStatus]
+  );
+
+  const handleRetry = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (pendingFilesRef.current.length > 0) {
+        void runUpload(pendingFilesRef.current);
+      }
+    },
+    [runUpload]
   );
 
   const handleDrop = useCallback(
@@ -448,9 +523,27 @@ function FileUploadField({
       } else {
         onChange(null);
       }
+      setUploadStatus("idle");
+      setUploadError(null);
+      pendingFilesRef.current = [];
+      setLocalPreviews((prev) => {
+        revokeLocalPreviews(prev);
+        return [];
+      });
     },
-    [isMulti, onChange, value]
+    [isMulti, onChange, revokeLocalPreviews, value]
   );
+
+  const borderClass =
+    uploadStatus === "error"
+      ? "border-red-500/60 bg-red-500/5"
+      : uploadStatus === "done" && displayPreviews.length > 0
+        ? "border-emerald-500/40 bg-emerald-500/5"
+        : isDragging
+          ? "border-[#0066FF] bg-[#0066FF]/10"
+          : displayPreviews.length > 0
+            ? "border-[#0066FF]/40 bg-[#0066FF]/5"
+            : "border-white/10 bg-white/[0.02] hover:border-white/20";
 
   return (
     <div
@@ -460,69 +553,106 @@ function FileUploadField({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
-      className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200 ${
-        isDragging
-          ? "border-[#0066FF] bg-[#0066FF]/10"
-          : previews.length > 0
-            ? "border-[#0066FF]/40 bg-[#0066FF]/5"
-            : "border-white/10 bg-white/[0.02] hover:border-white/20"
-      }`}
-      style={{ minHeight: previews.length > 0 ? "auto" : "90px" }}
+      className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200 ${borderClass}`}
+      style={{ minHeight: displayPreviews.length > 0 ? "auto" : "90px" }}
     >
       <input
         type="file"
         accept="image/*,video/*,audio/*"
         multiple={isMulti}
+        disabled={uploadStatus === "uploading"}
         onChange={(e) => handleFiles(e.target.files)}
-        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
         aria-label={field.label}
       />
 
-      {previews.length === 0 ? (
+      {uploadStatus === "uploading" ? (
+        <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-black/50 backdrop-blur-[2px]">
+          <Loader2 className="h-6 w-6 animate-spin text-white/80" aria-hidden />
+          <span className="text-[11px] font-medium text-white/80">
+            Wird hochgeladen…
+          </span>
+        </div>
+      ) : null}
+
+      {displayPreviews.length === 0 ? (
         <div className="pointer-events-none flex flex-col items-center justify-center px-4 py-6 text-center text-zinc-400">
           <span className="mb-1.5 text-2xl" aria-hidden="true">
             🖼
           </span>
           <span className="text-[11px] text-white/60">
-            {field.label} hochladen oder hierher ziehen
+            {uploadStatus === "error"
+              ? "Upload fehlgeschlagen"
+              : `${field.label} hochladen oder hierher ziehen`}
           </span>
-          {field.acceptsOutputTypes?.length ? (
+          {uploadStatus === "error" ? (
+            <>
+              {uploadError ? (
+                <span className="mt-1 max-w-[240px] text-[10px] text-red-400/90">
+                  {uploadError}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[10px] font-medium text-red-300 transition-colors hover:bg-red-500/20"
+              >
+                <RotateCcw size={12} aria-hidden />
+                Erneut versuchen
+              </button>
+            </>
+          ) : null}
+          {field.acceptsOutputTypes?.length && uploadStatus !== "error" ? (
             <span className="mt-1 text-[9px] text-white/40">
               Oder Asset aus der Pipeline verbinden
             </span>
           ) : null}
         </div>
       ) : (
-        <div className="pointer-events-none grid grid-cols-4 gap-1.5 p-2">
-          {previews.map((url, i) => (
-            <div
-              key={`${url}-${i}`}
-              className="relative aspect-square overflow-hidden rounded-lg bg-black/40"
+        <div className="pointer-events-none relative p-2">
+          {uploadStatus === "done" ? (
+            <span
+              className="absolute top-3 right-3 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-xs text-emerald-400"
+              aria-hidden
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt={`Vorschau ${i + 1}`} className="h-full w-full object-cover" />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleRemove(i);
-                }}
-                className="pointer-events-auto absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[10px] text-white/70 hover:text-white"
-                aria-label="Entfernen"
+              ✓
+            </span>
+          ) : null}
+          <div className="grid grid-cols-4 gap-1.5">
+            {displayPreviews.map((url, i) => (
+              <div
+                key={`${url}-${i}`}
+                className="relative aspect-square overflow-hidden rounded-lg bg-black/40"
               >
-                ✕
-              </button>
-            </div>
-          ))}
-          {isMulti && previews.length < maxFiles && (
-            <div
-              className="flex aspect-square items-center justify-center rounded-lg border border-dashed text-[10px] text-white/30"
-              style={{ borderColor: `${accent}44` }}
-            >
-              + weitere
-            </div>
-          )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={`Vorschau ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemove(i);
+                  }}
+                  className="pointer-events-auto absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[10px] text-white/70 hover:text-white"
+                  aria-label="Entfernen"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {isMulti && displayPreviews.length < maxFiles && uploadStatus !== "uploading" ? (
+              <div
+                className="flex aspect-square items-center justify-center rounded-lg border border-dashed text-[10px] text-white/30"
+                style={{ borderColor: `${accent}44` }}
+              >
+                + weitere
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
     </div>

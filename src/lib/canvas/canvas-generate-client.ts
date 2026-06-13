@@ -11,7 +11,15 @@ export type CanvasGenerationResult = {
   data?: unknown;
 };
 
-const DEFAULT_TIMEOUT_MS = 120_000;
+/** Default for synchronous tools; async job tools should pass a higher `timeoutMs`. */
+export const DEFAULT_CANVAS_GENERATION_TIMEOUT_MS = 120_000;
+
+export type RunCanvasGenerationOptions = {
+  signal?: AbortSignal;
+  timeoutMs?: number;
+};
+
+const DEFAULT_TIMEOUT_MS = DEFAULT_CANVAS_GENERATION_TIMEOUT_MS;
 
 function mapHttpError(status: number, body: Record<string, unknown>): CanvasGenerationError {
   const raw =
@@ -346,7 +354,7 @@ async function mockGeneration(
 export async function runCanvasGeneration(
   tool: ToolApiDefinition,
   params: Record<string, unknown>,
-  options?: { signal?: AbortSignal; timeoutMs?: number }
+  options?: RunCanvasGenerationOptions
 ): Promise<CanvasGenerationResult> {
   if (!tool.apiRoute) {
     return mockGeneration(tool, params);
