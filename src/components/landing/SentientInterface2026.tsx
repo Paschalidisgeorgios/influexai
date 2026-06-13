@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { LANDING_BENTO_ACCENT_RGB, LANDING_NEON } from "@/lib/landing-neon-theme";
 import { LandingFeatureVideo } from "@/components/landing/LandingFeatureVideo";
+import { LandingLiveDemoPlayground } from "@/components/landing/LandingLiveDemoPlayground";
 import {
   LANDING_FEATURE_CARDS_2026,
   LANDING_STUDIO_SECTION_2026,
@@ -189,7 +190,13 @@ function HeroPreview() {
   );
 }
 
-function BentoCardItem({ card }: { card: LandingFeatureCardCopy }) {
+function BentoCardItem({
+  card,
+  className = "",
+}: {
+  card: LandingFeatureCardCopy;
+  className?: string;
+}) {
   const { ref, startDwell, cancelDwell } = useCardDwell(card.intentKey);
   const icon = CARD_ICONS[card.id] ?? <Sparkles size={20} />;
 
@@ -198,7 +205,7 @@ function BentoCardItem({ card }: { card: LandingFeatureCardCopy }) {
       ref={ref}
       onPointerEnter={() => startDwell(card.intentKey)}
       onPointerLeave={() => cancelDwell(card.intentKey)}
-      className="landing-neon-bento-card landing-glass-node group relative flex flex-col gap-4 p-6"
+      className={`landing-neon-bento-card landing-glass-node group relative flex flex-col gap-4 p-6 ${className}`}
       style={bentoAccentStyle(card.accent)}
     >
       <span className="landing-glass-node-shine" aria-hidden />
@@ -319,10 +326,12 @@ export default function SentientInterface2026() {
               {LANDING_STUDIO_SECTION_2026.featuresSubline}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {LANDING_FEATURE_CARDS_2026.map((card) => (
-              <BentoCardItem key={card.id} card={card} />
-            ))}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
+            <BentoCardItem card={LANDING_FEATURE_CARDS_2026[0]} className="lg:col-start-1 lg:row-start-1" />
+            <LandingLiveDemoPlayground className="sm:col-span-2 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:row-span-2" />
+            <BentoCardItem card={LANDING_FEATURE_CARDS_2026[1]} className="lg:col-start-3 lg:row-start-1" />
+            <BentoCardItem card={LANDING_FEATURE_CARDS_2026[2]} className="lg:col-start-1 lg:row-start-2" />
+            <BentoCardItem card={LANDING_FEATURE_CARDS_2026[3]} className="lg:col-start-3 lg:row-start-2" />
           </div>
         </div>
       </div>
