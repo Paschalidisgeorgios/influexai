@@ -178,35 +178,43 @@ export function HeroSection() {
                 }}
               />
             </span>
-            AI Creator Studio · 2026
+            AI CAMPAIGN STUDIO · 2026
           </div>
 
           <h1
             className="mb-4 font-bold leading-[1.04] tracking-tight text-white"
             style={{
+              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               fontSize: "clamp(28px, 6.5vw, 72px)",
-              letterSpacing: "-2px",
+              letterSpacing: "0.02em",
               textShadow: "0 2px 40px rgba(0,0,0,0.95)",
             }}
           >
-            Erstelle Content{" "}
-            <span style={{ color: "rgba(255,255,255,0.22)" }}>der</span>{" "}
+            DEINE IDEE.
+            <br />
+            VON KI
+            <br />
+            ZUR{" "}
             <span
               style={{
-                color: `rgb(${rgb})`,
-                textShadow: `0 0 30px rgba(${rgb},0.4)`,
-                transition: "color 0.8s ease, text-shadow 0.8s ease",
+                color: "#B4FF00",
+                textShadow: "0 0 30px rgba(180,255,0,0.35)",
               }}
             >
-              unmöglich
+              KAMPAGNE.
             </span>
-            <br />
-            aussieht.
           </h1>
 
-          <p className="mx-auto mb-7 max-w-md text-base leading-relaxed text-white/35">
-            Von viralen Hooks bis zum fertigen Video — Agent Autopilot erledigt alles.
-            Über 20 Tools in einem Studio.
+          <p
+            className="mx-auto mb-7 max-w-lg text-base leading-relaxed"
+            style={{
+              fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+              fontSize: "16px",
+              color: "rgba(255,255,255,0.45)",
+            }}
+          >
+            Vom ersten Hook bis zum fertigen Video: InfluexAI plant, schreibt und
+            erstellt Social-Media-Assets für Creator, Marken und Agenturen.
           </p>
 
           <div className="pointer-events-auto mb-6 flex flex-wrap justify-center gap-3">
@@ -228,6 +236,20 @@ export function HeroSection() {
             >
               Demo ansehen
             </button>
+          </div>
+
+          <div
+            className="pointer-events-none mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em]"
+            style={{
+              fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+              color: "rgba(255,255,255,0.35)",
+            }}
+          >
+            <span>20+ Tools</span>
+            <span className="hidden h-3 w-px bg-white/15 sm:inline-block" aria-hidden />
+            <span>30s Bis zum ersten Content</span>
+            <span className="hidden h-3 w-px bg-white/15 sm:inline-block" aria-hidden />
+            <span>Kein Abo-Trick · Monatlich kündbar</span>
           </div>
 
           <div className="pointer-events-auto relative mx-auto max-w-[480px]">

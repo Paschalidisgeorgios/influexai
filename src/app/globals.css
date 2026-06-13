@@ -2120,6 +2120,23 @@ header.site-header.site-header--scrolled {
   }
 }
 
+@keyframes scanLine {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
 @keyframes loading-dot-pulse {
   0%,
   80%,
@@ -3430,6 +3447,23 @@ header.site-header.site-header--scrolled {
 @media (prefers-reduced-motion: reduce) {
   .szenen-gen-pulse {
     animation: none;
+  }
+}
+
+@keyframes scanLine {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
   }
 }
 

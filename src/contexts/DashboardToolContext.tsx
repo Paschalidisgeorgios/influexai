@@ -334,16 +334,21 @@ export function useDashboardToolOptional() {
 export function useSyncDashboardPayload(payload: Record<string, unknown> | null) {
   const ctx = useDashboardToolOptional();
   const prevKey = useRef("");
+  const ctxRef = useRef(ctx);
 
   useEffect(() => {
-    if (!ctx) return;
+    ctxRef.current = ctx;
+  }, [ctx]);
+
+  useEffect(() => {
+    if (!ctxRef.current) return;
     const key = payload ? JSON.stringify(payload) : "";
     if (key === prevKey.current) return;
     prevKey.current = key;
-    ctx.setExternalPayload(payload);
+    ctxRef.current.setExternalPayload(payload);
     return () => {
       prevKey.current = "";
-      ctx.setExternalPayload(null);
+      ctxRef.current?.setExternalPayload(null);
     };
-  }, [ctx, payload]);
+  }, [payload]);
 }

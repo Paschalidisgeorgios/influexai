@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
 import { LandingBentoShowcase } from "@/components/landing/LandingBentoShowcase";
+import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
 import { LandingCtaV2 } from "@/components/landing/LandingCtaV2";
 import { LandingNavV2 } from "@/components/landing/LandingNavV2";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
@@ -104,8 +106,10 @@ export function LandingPageV2() {
           <HeroSection />
         </div>
 
-        <LandingBentoShowcase onBentoLongHover={handleBentoLongHover} />
         <LandingUseCasesSection />
+        <LandingCampaignPackSection />
+        <LandingBentoShowcase onBentoLongHover={handleBentoLongHover} />
+        <LandingAgentAutopilotSection />
 
         <div id="pricing" className="landing-v2-pricing border-t border-white/[0.06]">
           <PricingSection />

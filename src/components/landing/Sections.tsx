@@ -566,7 +566,7 @@ export function LandingFooter() {
           style={{ borderTop: "1px solid var(--border)" }}
         >
           <p className="order-3 text-center text-[0.78rem] text-[#666666] sm:order-1 sm:text-left">
-            © {new Date().getFullYear()} InfluexAI
+            © 2026 InfluexAI · Hechingen, DE
           </p>
           <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
             {[

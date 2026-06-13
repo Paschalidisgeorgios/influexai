@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { getToolByRoute } from "@/lib/dashboard-v2/tool-registry";
 import {
   ChevronDown,
   ExternalLink,
@@ -41,6 +43,8 @@ export function DashboardHeader({
   credits: creditsProp,
   onMobileMenuToggle,
 }: DashboardHeaderProps) {
+  const pathname = usePathname();
+  const activeTool = getToolByRoute(pathname);
   const t = useTranslations("buyCredits");
   const tNav = useTranslations("nav");
   const { open: openBuyCredits } = useBuyCredits();
@@ -122,23 +126,24 @@ export function DashboardHeader({
       : creditsBadgeStyle(100);
 
   return (
-    <header className="dashboard-mobile-top-shell md:sticky md:top-0 md:z-30 md:shrink-0 md:border-b md:border-white/[0.07] md:bg-[rgba(6,6,8,0.92)] md:pt-0 md:backdrop-blur-md min-w-0">
-      <div className="flex h-16 max-h-[64px] items-center justify-between gap-2 px-4 sm:h-[72px] sm:max-h-[72px] sm:px-5">
+    <header className="dashboard-mobile-top-shell shrink-0 border-b border-white/[0.06] bg-[#08080a]/90 backdrop-blur-md md:sticky md:top-0 md:z-30 min-w-0">
+      <div className="flex h-14 items-center justify-between gap-2 px-4 sm:h-16 sm:px-5">
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <button
           type="button"
           onClick={onMobileMenuToggle}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/80 md:hidden"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] text-white/70 md:hidden"
           aria-label="Menü öffnen"
         >
-          <Menu size={20} aria-hidden />
+          <Menu size={18} aria-hidden />
         </button>
-        <div className="flex min-w-0 items-center gap-1.5">
-        <span className="hidden sm:inline text-sm font-medium text-white/65">Studio</span>
-        <span className="hidden sm:inline text-[#2a2a2a]">›</span>
-        <span className="truncate text-sm font-semibold leading-none text-[#F0EFE8]">
-          Dashboard
-        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-white">
+            {activeTool?.label ?? "Dashboard"}
+          </p>
+          <p className="truncate text-[10px] text-white/30">
+            {activeTool?.provider ?? "InfluexAI Studio"}
+          </p>
         </div>
       </div>
 
@@ -148,7 +153,7 @@ export function DashboardHeader({
           <button
             type="button"
             onClick={() => openBuyCredits()}
-            className="flex max-h-11 min-h-9 cursor-pointer items-center gap-1 rounded-[9px] px-2 py-1 sm:min-h-[44px] sm:px-3.5 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
+            className="flex max-h-11 min-h-9 cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 sm:min-h-[40px] sm:px-3 font-[family-name:var(--font-dm)] transition-opacity hover:opacity-90"
             style={{
               background: badgeStyle.background,
               border: badgeStyle.border,
@@ -171,7 +176,7 @@ export function DashboardHeader({
           <Link
             href="/pricing"
             data-testid="choose-plan-cta"
-            className="flex max-h-11 min-h-9 items-center rounded-[9px] border border-[#B4FF00]/25 bg-[#B4FF00]/10 px-2.5 py-1 text-[0.72rem] font-bold text-[#B4FF00] no-underline transition-colors hover:bg-[#B4FF00]/15 sm:min-h-[44px] sm:px-3.5 sm:text-[0.78rem]"
+            className="flex max-h-11 min-h-9 items-center rounded-full border border-[#00FF66]/25 bg-[#00FF66]/10 px-2.5 py-1 text-[0.72rem] font-bold text-[#00FF66] no-underline transition-colors hover:bg-[#00FF66]/15 sm:min-h-[40px] sm:px-3.5 sm:text-[0.78rem]"
           >
             {tNav("choose_plan")}
           </Link>
@@ -190,10 +195,10 @@ export function DashboardHeader({
             aria-expanded={showMenu}
             aria-haspopup="menu"
             onClick={() => setShowMenu((open) => !open)}
-            className="flex min-h-9 min-w-9 cursor-pointer items-center gap-2 rounded-[10px] border border-[#B4FF00]/20 bg-[#B4FF00]/10 py-0.5 pl-0.5 pr-0.5 sm:min-h-[44px] sm:min-w-[44px] sm:py-1 sm:pl-1 sm:pr-2 transition-colors hover:bg-[#B4FF00]/14"
+            className="flex min-h-9 min-w-9 cursor-pointer items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] py-0.5 pl-0.5 pr-0.5 sm:min-h-[40px] sm:min-w-[40px] sm:py-1 sm:pl-1 sm:pr-2 transition-colors hover:bg-white/[0.06]"
           >
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#B4FF00]/15 font-[family-name:var(--font-bebas)] text-sm tracking-wide text-[#B4FF00] sm:h-8 sm:w-8 sm:text-base"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#00FF66]/15 font-[family-name:var(--font-bebas)] text-sm tracking-wide text-[#00FF66] sm:h-8 sm:w-8 sm:text-base"
               aria-hidden
             >
               {initials}

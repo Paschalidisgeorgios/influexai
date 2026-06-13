@@ -10,56 +10,62 @@ type BentoCardData = {
   description: string;
   href: string;
   large?: boolean;
+  accent?: boolean;
   image?: string;
+  checkItems?: string[];
 };
 
 const BENTO_CARDS: BentoCardData[] = [
   {
     id: "agent",
-    tag: "Agent Autopilot",
-    title: "Dein KI-Team in einer Box",
+    tag: "AUTOMATION · NEU",
+    title: "AGENT AUTOPILOT",
     description:
-      "Plant Kampagnen, wählt Tools und liefert fertige Assets — du gibst nur das Ziel vor.",
-    href: "/dashboard/ki-agent",
+      "Beschreibe was du brauchst — der Agent wählt Tools, erstellt Content und liefert fertige Ergebnisse.",
+    href: "/dashboard",
     large: true,
+    accent: true,
+    checkItems: [
+      "✓ Hook-Generierung erkannt",
+      "✓ Nische: Fitness · Instagram",
+      "› Erstelle 7-Tage Content-Plan...",
+    ],
+  },
+  {
+    id: "szenen",
+    tag: "VIDEO",
+    title: "SZENEN GENERATOR",
+    description: "Bild zu Video · bis 15s · mehrere Modelle",
+    href: "/dashboard/szenen-generator",
     image:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
+      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=600&q=80",
   },
   {
     id: "ki-ich",
-    tag: "KI-Ich Studio",
-    title: "Dein digitaler Zwilling",
-    description: "Konsistente Face- und Body-Shots für Social & Ads.",
+    tag: "AVATAR",
+    title: "KI-ICH STUDIO",
+    description: "Dein Gesicht. Einmal trainiert. Unbegrenzt nutzbar.",
     href: "/dashboard/ki-influencer",
     image:
       "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
   },
   {
     id: "bild",
-    tag: "Bild Generator",
-    title: "Studio-Qualität in Sekunden",
-    description: "Flux & Seedream für Posts, Thumbnails und Ads.",
+    tag: "VISUALS",
+    title: "BILD GENERATOR",
+    description: "Deutsch eingeben · Flux Pro Qualität raus.",
     href: "/dashboard/image-generator",
     image:
       "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80",
   },
   {
-    id: "szenen",
-    tag: "Szenen Generator",
-    title: "Bild wird Film",
-    description: "Seedance, Kling & Co. — cinematic Image-to-Video.",
-    href: "/dashboard/szenen-generator",
+    id: "uebersetzer",
+    tag: "ÜBERSETZUNG",
+    title: "VIDEO ÜBERSETZER",
+    description: "Dein Video. 155+ Sprachen. Lipsync inklusive.",
+    href: "/dashboard/video-uebersetzer",
     image:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=600&q=80",
-  },
-  {
-    id: "kalender",
-    tag: "Content Kalender",
-    title: "Planen & posten",
-    description: "Slots, Serien und Reminder für deinen Content-Flow.",
-    href: "/dashboard/content-kalender",
-    image:
-      "https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=600&q=80",
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80",
   },
 ];
 
@@ -77,6 +83,7 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const raf = useRef(0);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [checkIndex, setCheckIndex] = useState(0);
 
   const isHovered = hoveredId === card.id;
   const isNeighbor = hoveredId !== null && hoveredId !== card.id;
@@ -91,6 +98,14 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
     raf.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf.current);
   }, []);
+
+  useEffect(() => {
+    if (!card.checkItems?.length) return;
+    const timer = window.setInterval(() => {
+      setCheckIndex((i) => (i + 1) % card.checkItems!.length);
+    }, 2200);
+    return () => window.clearInterval(timer);
+  }, [card.checkItems]);
 
   const handleMove = (e: MouseEvent<HTMLAnchorElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -123,9 +138,11 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
       style={{
         background: "rgba(255,255,255,0.025)",
         borderWidth: "0.5px",
-        borderColor: isHovered
-          ? "var(--theme-accent-30)"
-          : "rgba(255,255,255,0.06)",
+        borderColor: card.accent
+          ? "rgba(180,255,0,0.2)"
+          : isHovered
+            ? "var(--theme-accent-30)"
+            : "rgba(255,255,255,0.06)",
         transform: isHovered
           ? "scale(1.02)"
           : isNeighbor
@@ -133,7 +150,9 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
             : "scale(1)",
         opacity: isNeighbor ? 0.92 : 1,
         boxShadow: isHovered
-          ? "0 0 30px rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1)"
+          ? card.accent
+            ? "0 0 30px rgba(180,255,0,0.12)"
+            : "0 0 30px rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1)"
           : "none",
         transition: isHovered
           ? "transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s, box-shadow 0.3s, opacity 0.4s"
@@ -168,9 +187,13 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
         <span
           className="mb-3 inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em]"
           style={{
-            borderColor: "var(--theme-accent-25)",
-            background: "var(--theme-accent-08)",
-            color: "var(--theme-accent)",
+            borderColor: card.accent
+              ? "rgba(180,255,0,0.25)"
+              : "var(--theme-accent-25)",
+            background: card.accent
+              ? "rgba(180,255,0,0.08)"
+              : "var(--theme-accent-08)",
+            color: card.accent ? "#B4FF00" : "var(--theme-accent)",
           }}
         >
           {card.tag}
@@ -186,6 +209,24 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
           {card.title}
         </h3>
         <p className="text-sm leading-relaxed text-white/50">{card.description}</p>
+
+        {card.checkItems && (
+          <div
+            className="mt-auto space-y-2 pt-6 font-mono text-[0.72rem] leading-relaxed text-[#B4FF00]/80"
+            aria-live="polite"
+          >
+            {card.checkItems.map((item, i) => (
+              <p
+                key={item}
+                className={`transition-opacity duration-500 ${
+                  i <= checkIndex ? "opacity-100" : "opacity-30"
+                }`}
+              >
+                {item}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
     </Link>
   );
