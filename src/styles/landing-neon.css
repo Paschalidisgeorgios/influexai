@@ -1,14 +1,14 @@
 /* ─── InfluexAI Landing — Neon AI Color System ─────────────────────────── */
 
 .landing-neon {
-  --ai-green: #b7ff00;
+  --ai-green: #ccff00;
   --ai-blue: #00d5ff;
   --ai-yellow: #ffd84d;
   --ai-cyan: #00f0ff;
   --ai-violet: #8b5dff;
   --ai-magenta: #ff4ddf;
 
-  --ai-green-rgb: 183, 255, 0;
+  --ai-green-rgb: 204, 255, 0;
   --ai-blue-rgb: 0, 213, 255;
   --ai-yellow-rgb: 255, 216, 77;
   --ai-cyan-rgb: 0, 240, 255;
@@ -413,16 +413,30 @@
 
 .landing-neon-bento-card {
   --bento-accent-rgb: var(--ai-green-rgb);
-  border: 1px solid rgba(var(--bento-accent-rgb), 0.2);
-  background: rgba(10, 13, 18, 0.85);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(39, 39, 42, 0.5);
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 16px 40px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(var(--bento-accent-rgb), 0.05);
+  contain: layout style;
   transition:
     border-color 0.3s ease,
-    box-shadow 0.3s ease;
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .landing-neon-bento-card:hover {
-  border-color: rgba(var(--bento-accent-rgb), 0.45);
-  box-shadow: 0 0 32px rgba(var(--bento-accent-rgb), 0.1);
+  transform: translateY(-2px);
+  border-color: rgba(var(--bento-accent-rgb), 0.4);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 20px 48px rgba(0, 0, 0, 0.38),
+    0 0 36px rgba(var(--bento-accent-rgb), 0.12);
 }
 
 .landing-neon-bento-icon {

@@ -1,0 +1,225 @@
+/* Landing — Fluid Glassmorphism 2026 */
+
+.landing-hero-dot-grid {
+  background-color: #030304;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.landing-glass-dot-grid {
+  background-color: #030304;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.landing-hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.landing-hero-glow--violet {
+  left: -12%;
+  top: 10%;
+  width: min(62vw, 680px);
+  height: min(62vw, 680px);
+  background: radial-gradient(circle, rgba(139, 93, 255, 0.28) 0%, transparent 70%);
+  animation: landing-glass-glow-drift-a 22s ease-in-out infinite alternate;
+}
+
+.landing-hero-glow--green {
+  right: -10%;
+  top: 18%;
+  width: min(58vw, 620px);
+  height: min(58vw, 620px);
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.18) 0%, transparent 72%);
+  animation: landing-glass-glow-drift-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes landing-glass-glow-drift-a {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(4%, 6%) scale(1.08);
+  }
+}
+
+@keyframes landing-glass-glow-drift-b {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-5%, 4%) scale(1.06);
+  }
+}
+
+.landing-hero-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 42%,
+    rgba(3, 3, 4, 0.72) 100%
+  );
+}
+
+.landing-glass-heading {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.landing-glass-node {
+  contain: layout style;
+  border-radius: 1rem;
+  border: 1px solid rgba(39, 39, 42, 0.5);
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 16px 40px rgba(0, 0, 0, 0.35);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.landing-glass-node:hover {
+  transform: translateY(-2px);
+}
+
+.landing-glass-node-shine {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 45%,
+    transparent 100%
+  );
+}
+
+.landing-glass-node-handle {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(63, 63, 70, 0.9);
+  transform: translateY(-50%);
+}
+
+.landing-glass-node-handle--left {
+  left: -4px;
+}
+
+.landing-glass-node-handle--right {
+  right: -4px;
+}
+
+.landing-glass-btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.875rem 1.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #000;
+  background: #ccff00;
+  box-shadow: 0 4px 28px rgba(204, 255, 0, 0.22);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
+}
+
+.landing-glass-btn-cta:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 36px rgba(204, 255, 0, 0.32);
+}
+
+.landing-glass-btn-cta:active {
+  transform: scale(0.98);
+}
+
+.landing-glass-nav-link {
+  position: relative;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.landing-glass-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 1px;
+  background: #ccff00;
+  box-shadow: 0 0 8px rgba(204, 255, 0, 0.45);
+  transition: width 0.25s ease;
+}
+
+.landing-glass-nav-link:hover {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landing-glass-nav-link:hover::after {
+  width: 100%;
+}
+
+.landing-glass-nav-link::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ccff00;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.5);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 0 6px rgba(204, 255, 0, 0.5);
+}
+
+.landing-glass-nav-link:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.landing-glass-header {
+  background: rgba(3, 3, 4, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(39, 39, 42, 0.45);
+}
+
+.landing-glass-header--scrolled {
+  background: rgba(9, 9, 11, 0.72);
+  border-bottom-color: rgba(63, 63, 70, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-glow--violet,
+  .landing-hero-glow--green {
+    animation: none;
+  }
+
+  .landing-glass-btn-cta:hover {
+    transform: none;
+  }
+
+  .landing-glass-node:hover {
+    transform: none;
+  }
+}

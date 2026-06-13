@@ -96,13 +96,10 @@ function bentoAccentStyle(accent: BentoCard["accent"]): CSSProperties {
 
 function HeroPreview() {
   return (
-    <div
-      className="relative mx-auto mt-14 w-full max-w-4xl overflow-hidden rounded-2xl border shadow-2xl"
-      style={{
-        borderColor: "var(--border-soft)",
-        background: "rgba(10, 13, 18, 0.9)",
-      }}
-    >
+    <div className="landing-glass-node relative mx-auto mt-14 w-full max-w-4xl overflow-hidden">
+      <span className="landing-glass-node-shine" aria-hidden />
+      <span className="landing-glass-node-handle landing-glass-node-handle--left" aria-hidden />
+      <span className="landing-glass-node-handle landing-glass-node-handle--right" aria-hidden />
       <div
         className="flex items-center justify-between border-b px-5 py-3"
         style={{ borderColor: "var(--border-soft)" }}
@@ -241,13 +238,15 @@ function BentoCardItem({ card }: { card: BentoCard }) {
       ref={ref}
       onPointerEnter={() => startDwell(card.intentKey)}
       onPointerLeave={() => cancelDwell(card.intentKey)}
-      className="landing-neon-bento-card group relative flex flex-col gap-4 rounded-2xl p-6"
+      className="landing-neon-bento-card landing-glass-node group relative flex flex-col gap-4 p-6"
       style={bentoAccentStyle(card.accent)}
     >
+      <span className="landing-glass-node-shine" aria-hidden />
+      <span className="landing-glass-node-handle landing-glass-node-handle--left" aria-hidden />
+      <span className="landing-glass-node-handle landing-glass-node-handle--right" aria-hidden />
+
       <div className="flex items-start justify-between">
-        <div
-          className="landing-neon-bento-icon flex h-10 w-10 items-center justify-center rounded-xl"
-        >
+        <div className="landing-neon-bento-icon flex h-10 w-10 items-center justify-center rounded-xl">
           {card.icon}
         </div>
         {card.tag && (
@@ -257,12 +256,12 @@ function BentoCardItem({ card }: { card: BentoCard }) {
         )}
       </div>
       <div>
-        <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-white">{card.title}</h3>
-        <p className="text-[13px] leading-relaxed text-white/45">{card.description}</p>
+        <h3 className="landing-glass-heading mb-1.5 text-[15px] text-white">{card.title}</h3>
+        <p className="text-[13px] leading-relaxed text-white/50">{card.description}</p>
       </div>
       <ChevronRight
         size={14}
-        className="mt-auto self-end text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-white/50"
+        className="mt-auto self-end text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-[#ccff00]/70"
         aria-hidden="true"
       />
     </div>
@@ -285,26 +284,14 @@ export default function SentientInterface2026() {
   const statusMessage = STATUS_MESSAGES[badgeIndex];
 
   return (
-    <section className="relative overflow-x-hidden bg-transparent text-white">
+    <section id="studio-showcase" className="relative overflow-x-hidden bg-transparent text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="landing-glass-dot-grid absolute inset-0 opacity-50" />
         <div
-          className="absolute left-[-10%] top-[-5%] h-[500px] w-[500px] rounded-full opacity-25 blur-[120px]"
-          style={{ background: LANDING_NEON.green }}
-        />
-        <div
-          className="absolute right-[-8%] top-[20%] h-[400px] w-[400px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: LANDING_NEON.blue }}
-        />
-        <div
-          className="absolute bottom-[-5%] left-[30%] h-[350px] w-[350px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: LANDING_NEON.yellow }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+            background:
+              "radial-gradient(ellipse at center, transparent 38%, rgba(3,3,4,0.8) 100%)",
           }}
         />
       </div>
@@ -325,19 +312,19 @@ export default function SentientInterface2026() {
           {statusMessage}
         </div>
 
-        <h2 className="mx-auto max-w-3xl text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-tight text-white">
+        <h2 className="landing-glass-heading mx-auto max-w-3xl text-[clamp(2rem,5.5vw,4.25rem)] leading-[1.06] text-white">
           Briefing rein.{" "}
-          <span className="landing-neon-headline-accent">Assets raus.</span>
+          <span className="text-[#ccff00]">Assets raus.</span>
         </h2>
 
-        <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/70">
+        <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/60">
           Vom KI-Befehl bis zum exportfertigen Ergebnis — Bild, Video, Text und Kampagnen
           in einem Workflow.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <IntentLink href="/dashboard" className="landing-neon-btn-primary">
-            Studio öffnen <ArrowRight size={15} aria-hidden="true" />
+          <IntentLink href="/signup" className="landing-glass-btn-cta">
+            Jetzt kostenlos starten <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
         </div>
 
@@ -353,7 +340,7 @@ export default function SentientInterface2026() {
             >
               Features
             </p>
-            <h2 className="text-[clamp(28px,4vw,44px)] font-bold tracking-tight text-white">
+            <h2 className="landing-glass-heading text-[clamp(1.75rem,3.5vw,2.75rem)] text-white">
               Alles in einem Studio.
             </h2>
             <p className="mx-auto mt-3 max-w-md text-[14px] text-white/65">

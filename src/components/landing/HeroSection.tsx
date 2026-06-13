@@ -2,8 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { IntentLink } from "@/hooks/useIntentTracking";
-import { Hero3DScene } from "./Hero3DScene";
-import { LANDING_NEON } from "@/lib/landing-neon-theme";
+import { LandingHeroBackground } from "./LandingHeroBackground";
 
 export function HeroSection() {
   const [name, setName] = useState("");
@@ -28,58 +27,36 @@ export function HeroSection() {
 
   return (
     <section
-      className={`relative flex min-h-screen items-center overflow-hidden bg-transparent transition-transform duration-300 ${
+      className={`relative flex min-h-[100svh] items-center overflow-hidden bg-[#030304] transition-transform duration-300 ${
         isPulsing ? "scale-[1.004]" : "scale-100"
       }`}
     >
-      <Hero3DScene />
+      <LandingHeroBackground />
 
-      <div className="relative z-20 w-full px-5 pt-10 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
-        <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(520px,36vw)] md:text-left lg:max-w-[min(560px,34vw)]">
+      <div className="relative z-20 w-full px-5 pt-24 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
+        <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(560px,38vw)] md:text-left">
           <p className="landing-neon-kicker mb-6">AI Campaign Studio · 2026</p>
 
-          <h1
-            className="mb-4 font-bold leading-[1.04] tracking-tight"
-            style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-              fontSize: "clamp(28px, 6.5vw, 72px)",
-              letterSpacing: "0.02em",
-              color: LANDING_NEON.textPrimary,
-              textShadow: "0 2px 40px rgba(0,0,0,0.95)",
-            }}
-          >
+          <h1 className="landing-glass-heading mb-4 text-[clamp(2rem,6.5vw,4.25rem)] leading-[1.02] text-white">
             DEINE IDEE.
             <br />
             VON{" "}
-            <span
-              style={{
-                background: `linear-gradient(90deg, ${LANDING_NEON.cyan}, ${LANDING_NEON.blue})`,
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
-            >
-              KI
-            </span>
+            <span className="text-[#00d5ff]">KI</span>
             <br />
-            ZUR <span className="landing-neon-headline-accent">KAMPAGNE.</span>
+            ZUR <span className="text-[#ccff00]">KAMPAGNE.</span>
           </h1>
 
           <p
-            className="mb-7 max-w-lg text-base leading-relaxed md:max-w-none"
-            style={{
-              fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
-              fontSize: "16px",
-              color: LANDING_NEON.textSecondary,
-            }}
+            className="mb-8 max-w-lg text-base leading-relaxed text-white/65 md:max-w-none"
+            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           >
             InfluexAI unterstützt dich dabei, aus einer Idee in wenigen Schritten
             fertige Social-Media-Assets für Creator, Marken und Agenturen zu erstellen.
           </p>
 
           <div className="mb-8 flex flex-wrap justify-center gap-3 md:justify-start">
-            <IntentLink href="/dashboard" className="landing-neon-btn-primary">
-              Studio öffnen →
+            <IntentLink href="/signup" className="landing-glass-btn-cta">
+              Jetzt kostenlos starten →
             </IntentLink>
             <a href="#bento-features" className="landing-neon-btn-secondary">
               So funktioniert es
@@ -87,14 +64,14 @@ export function HeroSection() {
           </div>
 
           <div
-            className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] md:justify-start"
+            className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] text-white/45 md:justify-start"
             style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           >
-            <span className="landing-neon-stat">20+ KI-Tools</span>
-            <span className="landing-neon-stat-divider hidden sm:inline-block" aria-hidden />
-            <span className="landing-neon-stat">Erste Inhalte in wenigen Sekunden</span>
-            <span className="landing-neon-stat-divider hidden sm:inline-block" aria-hidden />
-            <span className="landing-neon-stat">Monatlich kündbar</span>
+            <span>20+ KI-Tools</span>
+            <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
+            <span>Erste Inhalte in wenigen Sekunden</span>
+            <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
+            <span>Monatlich kündbar</span>
           </div>
 
           <form
@@ -120,7 +97,7 @@ export function HeroSection() {
               </button>
             </div>
 
-            <p className="mt-2 text-left text-xs text-white/60">
+            <p className="mt-2 text-left text-xs text-white/50">
               {hasSubmittedName ? "Name gespeichert" : "Enter zum Bestätigen"}
             </p>
 

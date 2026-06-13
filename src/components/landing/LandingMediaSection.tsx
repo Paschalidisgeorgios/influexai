@@ -112,7 +112,7 @@ export function LandingMediaSection() {
           </p>
           <h2
             id="landing-media-heading"
-            className="max-w-2xl font-[family-name:var(--font-bebas)] text-[clamp(28px,6vw,52px)] leading-[0.95] tracking-[0.02em] text-white"
+            className="landing-glass-heading max-w-2xl text-[clamp(1.75rem,5vw,3.25rem)] leading-[0.95] text-white"
           >
             Ein Studio. Mehrere KI-Workflows.
           </h2>
