@@ -47,7 +47,7 @@ export function DashboardHeader({
   const activeTool = getToolByRoute(pathname);
   const t = useTranslations("buyCredits");
   const tNav = useTranslations("nav");
-  const { open: openBuyCredits } = useBuyCredits();
+  const { open: openBuyCredits, credits: globalCredits } = useBuyCredits();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const supabase = createClient();
@@ -109,7 +109,7 @@ export function DashboardHeader({
     business: "Business",
   };
 
-  const displayCredits = creditsProp ?? profile?.credits ?? null;
+  const displayCredits = creditsProp ?? globalCredits ?? profile?.credits ?? null;
   const hasPlatformPlan = profile
     ? hasActivePlan({
         plan: profile.plan,

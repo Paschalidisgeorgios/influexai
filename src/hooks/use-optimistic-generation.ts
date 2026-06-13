@@ -1,14 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-
-const OPTIMISTIC_CREDITS_EVENT = "optimistic-credits";
-
-export function dispatchOptimisticCredits(value: number | null) {
-  window.dispatchEvent(
-    new CustomEvent(OPTIMISTIC_CREDITS_EVENT, { detail: value })
-  );
-}
+import { broadcastCreditsBalance, broadcastCreditsRefresh } from "@/lib/credits-sync";
 
 export function useOptimisticGeneration() {
   const [optimisticCredits, setOptimisticCredits] = useState<number | null>(
@@ -25,20 +18,19 @@ export function useOptimisticGeneration() {
       setIsGenerating(true);
       const next = currentCredits - creditCost;
       setOptimisticCredits(next);
-      dispatchOptimisticCredits(next);
+      broadcastCreditsBalance(next);
 
       try {
         const result = await action();
         return result;
       } catch (error) {
         setOptimisticCredits(currentCredits);
-        dispatchOptimisticCredits(null);
+        broadcastCreditsBalance(currentCredits);
         throw error;
       } finally {
         setIsGenerating(false);
         setOptimisticCredits(null);
-        dispatchOptimisticCredits(null);
-        window.dispatchEvent(new Event("credits-updated"));
+        broadcastCreditsRefresh();
       }
     },
     []

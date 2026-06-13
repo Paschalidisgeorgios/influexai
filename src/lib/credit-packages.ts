@@ -3,7 +3,12 @@ export type CreditPackageId = "small" | "medium" | "large" | "xl";
 export type CreditPackage = {
   id: CreditPackageId;
   label: string;
+  /** Total credits granted after purchase (incl. bonus). */
   credits: number;
+  /** Bonus credits included on top of the base rate (0 for Small). */
+  bonusCredits: number;
+  /** Optional highlight ribbon on canvas / pricing cards. */
+  highlightBadge?: string;
   price: string;
   priceNumeric: number;
   envKey: string;
@@ -37,7 +42,8 @@ export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
     id: "small",
     label: "Small",
-    credits: 50,
+    credits: 25,
+    bonusCredits: 0,
     price: "5,00 €",
     priceNumeric: 5.0,
     envKey: "STRIPE_CREDITS_50",
@@ -47,27 +53,32 @@ export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
     id: "medium",
     label: "Medium",
-    credits: 150,
+    credits: 70,
+    bonusCredits: 10,
     price: "12,00 €",
     priceNumeric: 12.0,
     envKey: "STRIPE_CREDITS_150",
-    description: "Beliebteste Wahl",
-    popular: true,
+    description: "Mehr Output pro Euro",
+    popular: false,
   }),
   buildCreditPackage({
     id: "large",
     label: "Large",
-    credits: 350,
+    credits: 160,
+    bonusCredits: 35,
+    highlightBadge: "BESTE WAHL",
     price: "25,00 €",
     priceNumeric: 25.0,
     envKey: "STRIPE_CREDITS_350",
     description: "Für aktive Creator",
-    popular: false,
+    popular: true,
   }),
   buildCreditPackage({
     id: "xl",
     label: "XL",
-    credits: 800,
+    credits: 320,
+    bonusCredits: 90,
+    highlightBadge: "MAXIMALER WERT",
     price: "45,00 €",
     priceNumeric: 45.0,
     envKey: "STRIPE_CREDITS_800",
@@ -91,14 +102,19 @@ export function getStripePriceIdForPackage(
   return value || undefined;
 }
 
+export function formatBonusLabel(bonusCredits: number): string | null {
+  if (bonusCredits <= 0) return null;
+  return `Inkl. ${bonusCredits} Bonus-Credits`;
+}
+
 /** Smallest pack that covers the credit shortfall (by missing amount). */
 export function recommendCreditPackageId(missing: number): CreditPackageId {
-  if (missing <= 50) return "small";
-  if (missing <= 150) return "medium";
-  if (missing <= 350) return "large";
+  if (missing <= 25) return "small";
+  if (missing <= 70) return "medium";
+  if (missing <= 160) return "large";
   return "xl";
 }
 
-export const CREDIT_CALCULATOR_TIERS = [50, 150, 350, 800] as const;
+export const CREDIT_CALCULATOR_TIERS = [25, 70, 160, 320] as const;
 
-export const EXTRA_CREDIT_RATE_LABEL = "€0,08 / Credit";
+export const EXTRA_CREDIT_RATE_LABEL = "€0,20 / Credit";

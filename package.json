@@ -31,6 +31,7 @@
   "dependencies": {
     "@fal-ai/client": "^1.10.1",
     "@sentry/nextjs": "^10.56.0",
+    "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.7.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
@@ -38,6 +39,7 @@
     "@tiptap/pm": "^3.25.0",
     "@tiptap/react": "^3.25.0",
     "@tiptap/starter-kit": "^3.25.0",
+    "@xyflow/react": "^12.11.0",
     "agora-rtc-sdk-ng": "^4.24.4",
     "archiver": "^8.0.0",
     "clsx": "^2.1.1",

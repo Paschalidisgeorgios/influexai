@@ -27,53 +27,62 @@ import {
   getPlanDisplayName,
   getPlanMonthlyCredits,
 } from "@/lib/subscription-plans";
+import {
+  broadcastCreditsBalance,
+  broadcastCreditsRefresh,
+  fetchPaymentIntentStatus,
+  reconcilePaymentIntentBalance,
+  waitMs,
+} from "@/lib/credits-sync";
+import { StudioCreditsToastHost } from "@/components/credits/StudioCreditsToast";
+import type { StudioToastVariant } from "@/components/credits/StudioCreditsToast";
 
-type BuyCreditsContextValue = {
-  open: () => void;
-  openBuyModal: () => void;
-  credits: number | null;
+export type CreditsReconcileResult = {
+  success: boolean;
+  balance: number;
 };
 
-const BuyCreditsContext = createContext<BuyCreditsContextValue | null>(null);
+export type CreditsContextValue = {
+  credits: number | null;
+  verifiedCredits: number | null;
+  isOptimistic: boolean;
+  open: () => void;
+  openBuyModal: () => void;
+  addCreditsOptimistic: (amount: number) => number;
+  rollbackOptimistic: () => void;
+  confirmVerifiedBalance: (balance: number) => void;
+  reconcilePaymentIntent: (
+    paymentIntentId: string,
+    amountAdded: number
+  ) => Promise<CreditsReconcileResult>;
+  refreshCredits: () => Promise<number | null>;
+  showCreditsToast: (message: string, variant?: StudioToastVariant) => void;
+};
 
-export function useBuyCredits() {
-  const ctx = useContext(BuyCreditsContext);
-  if (!ctx) {
-    return {
-      open: openBuyCreditsModal,
-      openBuyModal: openBuyCreditsModal,
-      credits: null as number | null,
-    };
-  }
-  return ctx;
+const CreditsContext = createContext<CreditsContextValue | null>(null);
+
+const FALLBACK_CREDITS: CreditsContextValue = {
+  credits: null,
+  verifiedCredits: null,
+  isOptimistic: false,
+  open: openBuyCreditsModal,
+  openBuyModal: openBuyCreditsModal,
+  addCreditsOptimistic: (amount) => amount,
+  rollbackOptimistic: () => {},
+  confirmVerifiedBalance: () => {},
+  reconcilePaymentIntent: async () => ({ success: false, balance: 0 }),
+  refreshCredits: async () => null,
+  showCreditsToast: () => {},
+};
+
+export function useCredits(): CreditsContextValue {
+  const ctx = useContext(CreditsContext);
+  return ctx ?? FALLBACK_CREDITS;
 }
 
-function CreditsToast({
-  message,
-  onDone,
-}: {
-  message: string;
-  onDone: () => void;
-}) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 4000);
-    return () => clearTimeout(t);
-  }, [onDone]);
-
-  return (
-    <div
-      role="status"
-      className="fixed bottom-[calc(88px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[300] max-w-[min(92vw,360px)] px-5 py-3.5 rounded-xl font-bold text-sm shadow-lg text-center md:bottom-6 md:max-w-none"
-      style={{
-        background: "var(--accent, #B4FF00)",
-        color: "#060608",
-        boxShadow:
-          "0 8px 32px color-mix(in srgb, var(--accent, #B4FF00) 35%, transparent)",
-      }}
-    >
-      {message}
-    </div>
-  );
+/** @deprecated Alias — prefer `useCredits()` */
+export function useBuyCredits(): CreditsContextValue {
+  return useCredits();
 }
 
 function stripCheckoutQueryParams() {
@@ -88,16 +97,14 @@ function stripCheckoutQueryParams() {
   window.history.replaceState(null, "", next);
 }
 
-async function wait(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export function BuyCreditsProvider({ children }: { children: React.ReactNode }) {
   const t = useTranslations("buyCredits");
   const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [credits, setCredits] = useState<number | null>(null);
+  const [verifiedCredits, setVerifiedCredits] = useState<number | null>(null);
+  const [isOptimistic, setIsOptimistic] = useState(false);
   const [hasPlan, setHasPlan] = useState(false);
   const [planName, setPlanName] = useState("Free");
   const [planMonthlyCredits, setPlanMonthlyCredits] = useState(0);
@@ -106,14 +113,25 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   const [modalDetail, setModalDetail] = useState<NoCreditsModalDetail | null>(
     null
   );
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: StudioToastVariant;
+  } | null>(null);
   const processedCheckoutRef = useRef<string | null>(null);
+  const optimisticBaselineRef = useRef<number | null>(null);
 
-  const loadProfile = useCallback(async () => {
+  const showCreditsToast = useCallback(
+    (message: string, variant: StudioToastVariant = "success") => {
+      setToast({ message, variant });
+    },
+    []
+  );
+
+  const loadProfile = useCallback(async (): Promise<number | null> => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) return null;
 
     syncClientCreditExemptFromEmail(user.email);
 
@@ -124,7 +142,12 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       .single();
 
     if (data) {
-      setCredits(data.credits ?? 0);
+      const balance = data.credits ?? 0;
+      setCredits(balance);
+      setVerifiedCredits(balance);
+      setIsOptimistic(false);
+      optimisticBaselineRef.current = null;
+
       const active = hasActivePlan({
         plan: data.plan,
         role: data.role,
@@ -134,16 +157,141 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       setPlanName(getPlanDisplayName(data.plan));
       setPlanMonthlyCredits(getPlanMonthlyCredits(data.plan));
       setHasSubscription(Boolean(data.stripe_subscription_id));
+      return balance;
     }
+
+    return null;
   }, [supabase]);
+
+  const confirmVerifiedBalance = useCallback((balance: number) => {
+    setCredits(balance);
+    setVerifiedCredits(balance);
+    setIsOptimistic(false);
+    optimisticBaselineRef.current = null;
+    broadcastCreditsBalance(balance);
+    broadcastCreditsRefresh();
+  }, []);
+
+  const addCreditsOptimistic = useCallback(
+    (amount: number): number => {
+      const current = credits ?? verifiedCredits ?? 0;
+      if (optimisticBaselineRef.current === null) {
+        optimisticBaselineRef.current = current;
+      }
+      const nextBalance = current + amount;
+      setCredits(nextBalance);
+      setIsOptimistic(true);
+      broadcastCreditsBalance(nextBalance);
+      return nextBalance;
+    },
+    [credits, verifiedCredits]
+  );
+
+  const rollbackOptimistic = useCallback(() => {
+    const baseline = optimisticBaselineRef.current;
+    if (typeof baseline === "number") {
+      setCredits(baseline);
+      setVerifiedCredits(baseline);
+      broadcastCreditsBalance(baseline);
+    }
+    optimisticBaselineRef.current = null;
+    setIsOptimistic(false);
+  }, []);
+
+  const refreshCredits = useCallback(async () => {
+    const balance = await loadProfile();
+    if (typeof balance === "number") {
+      broadcastCreditsBalance(balance);
+      broadcastCreditsRefresh();
+    }
+    return balance;
+  }, [loadProfile]);
+
+  const reconcilePaymentIntent = useCallback(
+    async (
+      paymentIntentId: string,
+      amountAdded: number
+    ): Promise<CreditsReconcileResult> => {
+      const baseline =
+        optimisticBaselineRef.current ?? verifiedCredits ?? credits ?? 0;
+
+      const result = await reconcilePaymentIntentBalance(paymentIntentId);
+
+      if (result?.paid && typeof result.balance === "number") {
+        confirmVerifiedBalance(result.balance);
+        showCreditsToast(
+          `Zahlung erfolgreich! +${amountAdded} Credits gutgeschrieben`,
+          "success"
+        );
+        return { success: true, balance: result.balance };
+      }
+
+      if (
+        result?.status === "canceled" ||
+        result?.status === "requires_payment_method"
+      ) {
+        rollbackOptimistic();
+        showCreditsToast(
+          "Zahlung fehlgeschlagen. Dein Kontostand wurde zurückgesetzt.",
+          "error"
+        );
+        return { success: false, balance: baseline };
+      }
+
+      const refreshed = await loadProfile();
+      if (
+        typeof refreshed === "number" &&
+        refreshed >= baseline + amountAdded
+      ) {
+        confirmVerifiedBalance(refreshed);
+        showCreditsToast(
+          `Zahlung erfolgreich! +${amountAdded} Credits gutgeschrieben`,
+          "success"
+        );
+        return { success: true, balance: refreshed };
+      }
+
+      try {
+        const last = await fetchPaymentIntentStatus(paymentIntentId);
+        if (last.paid && typeof last.balance === "number") {
+          confirmVerifiedBalance(last.balance);
+          showCreditsToast(
+            `Zahlung erfolgreich! +${amountAdded} Credits gutgeschrieben`,
+            "success"
+          );
+          return { success: true, balance: last.balance };
+        }
+      } catch {
+        /* ignore */
+      }
+
+      rollbackOptimistic();
+      showCreditsToast(
+        "Zahlung konnte nicht bestätigt werden. Bitte prüfe deinen Kontostand.",
+        "error"
+      );
+      return { success: false, balance: baseline };
+    },
+    [
+      confirmVerifiedBalance,
+      credits,
+      loadProfile,
+      rollbackOptimistic,
+      showCreditsToast,
+      verifiedCredits,
+    ]
+  );
 
   useEffect(() => {
     void loadProfile();
     const onUpdate = () => void loadProfile();
     const onOptimistic = (e: Event) => {
       const v = (e as CustomEvent<number | null>).detail;
-      if (typeof v === "number") setCredits(v);
-      else void loadProfile();
+      if (typeof v === "number") {
+        setCredits(v);
+      } else {
+        void loadProfile();
+      }
     };
     window.addEventListener("credits-updated", onUpdate);
     window.addEventListener("optimistic-credits", onOptimistic);
@@ -179,7 +327,11 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
   }, [openModal, hasPlan]);
 
   const refreshCreditsAfterCheckout = useCallback(
-    async (sessionId: string | null) => {
+    async (sessionId: string | null, optimisticAmount?: number) => {
+      if (typeof optimisticAmount === "number" && optimisticAmount > 0) {
+        addCreditsOptimistic(optimisticAmount);
+      }
+
       if (sessionId) {
         for (let attempt = 0; attempt < 8; attempt++) {
           try {
@@ -189,28 +341,42 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
             const data = (await res.json()) as {
               balance?: number;
               paymentStatus?: string;
+              creditsAdded?: number;
             };
             if (typeof data.balance === "number") {
-              window.dispatchEvent(
-                new CustomEvent("optimistic-credits", { detail: data.balance })
-              );
+              broadcastCreditsBalance(data.balance);
             }
             if (data.paymentStatus === "paid") {
-              await loadProfile();
-              window.dispatchEvent(new Event("credits-updated"));
+              if (typeof data.balance === "number") {
+                confirmVerifiedBalance(data.balance);
+                if (typeof data.creditsAdded === "number" && data.creditsAdded > 0) {
+                  showCreditsToast(
+                    `Zahlung erfolgreich! +${data.creditsAdded} Credits gutgeschrieben`,
+                    "success"
+                  );
+                }
+              } else {
+                await loadProfile();
+                broadcastCreditsRefresh();
+              }
               return;
             }
           } catch {
             /* webhook may still be processing */
           }
-          await wait(750);
+          await waitMs(750);
         }
       }
 
       await loadProfile();
-      window.dispatchEvent(new Event("credits-updated"));
+      broadcastCreditsRefresh();
     },
-    [loadProfile]
+    [
+      addCreditsOptimistic,
+      confirmVerifiedBalance,
+      loadProfile,
+      showCreditsToast,
+    ]
   );
 
   useEffect(() => {
@@ -225,33 +391,32 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
     stripCheckoutQueryParams();
     setModalOpen(false);
     setModalDetail(null);
-    setToast(t("checkout_success"));
 
     void refreshCreditsAfterCheckout(sessionId);
-  }, [searchParams, refreshCreditsAfterCheckout, t]);
+  }, [searchParams, refreshCreditsAfterCheckout]);
 
   useEffect(() => {
     if (searchParams.get("success") !== "true") return;
     if (processedCheckoutRef.current === "success-true") return;
     processedCheckoutRef.current = "success-true";
 
+    const sessionId = searchParams.get("session_id");
+    const amountParam = searchParams.get("amount");
+    const optimisticAmount = amountParam
+      ? Number.parseInt(amountParam, 10)
+      : undefined;
+
     stripCheckoutQueryParams();
     setModalOpen(false);
     setModalDetail(null);
-    setToast(t("payment_success_pending"));
 
-    const sessionId = searchParams.get("session_id");
-    void refreshCreditsAfterCheckout(sessionId);
-    const reloadTimer = setTimeout(() => window.location.reload(), 3000);
-    return () => clearTimeout(reloadTimer);
-  }, [searchParams, refreshCreditsAfterCheckout, t]);
+    void refreshCreditsAfterCheckout(sessionId, optimisticAmount);
+  }, [searchParams, refreshCreditsAfterCheckout]);
 
   const handleClose = () => {
     setModalOpen(false);
     setModalDetail(null);
   };
-
-  const showModal = modalOpen;
 
   const planInfo: NoCreditsModalPlanInfo | null = hasPlan
     ? {
@@ -261,12 +426,24 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       }
     : null;
 
+  const contextValue: CreditsContextValue = {
+    credits,
+    verifiedCredits,
+    isOptimistic,
+    open: openBuyModal,
+    openBuyModal,
+    addCreditsOptimistic,
+    rollbackOptimistic,
+    confirmVerifiedBalance,
+    reconcilePaymentIntent,
+    refreshCredits,
+    showCreditsToast,
+  };
+
   return (
-    <BuyCreditsContext.Provider
-      value={{ open: openBuyModal, openBuyModal, credits }}
-    >
+    <CreditsContext.Provider value={contextValue}>
       {children}
-      {showModal ? (
+      {modalOpen ? (
         <NoCreditsModal
           open
           onClose={handleClose}
@@ -285,9 +462,7 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
           planInfo={planInfo}
         />
       ) : null}
-      {toast && (
-        <CreditsToast message={toast} onDone={() => setToast(null)} />
-      )}
-    </BuyCreditsContext.Provider>
+      <StudioCreditsToastHost toast={toast} onClear={() => setToast(null)} />
+    </CreditsContext.Provider>
   );
 }

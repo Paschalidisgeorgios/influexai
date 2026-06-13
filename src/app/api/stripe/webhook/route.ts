@@ -439,6 +439,82 @@ async function handleCreditPackPurchase(
   );
 }
 
+async function handleCreditPackPaymentIntent(
+  supabaseAdmin: SupabaseClient,
+  paymentIntent: Stripe.PaymentIntent
+) {
+  if (paymentIntent.metadata?.type !== "credits") return;
+
+  const userId =
+    paymentIntent.metadata?.user_id ?? paymentIntent.metadata?.userId ?? null;
+  if (!userId) return;
+
+  const credits = parseInt(
+    paymentIntent.metadata?.credits_amount ??
+      paymentIntent.metadata?.credits ??
+      "0",
+    10
+  );
+  if (credits <= 0) {
+    const priceId = paymentIntent.metadata?.stripe_price_id?.trim();
+    if (!priceId) return;
+    const mapped = creditsForStripePriceId(priceId);
+    if (mapped <= 0) return;
+    return handleCreditPackPaymentIntentGrant(
+      supabaseAdmin,
+      paymentIntent,
+      userId,
+      mapped
+    );
+  }
+
+  await handleCreditPackPaymentIntentGrant(
+    supabaseAdmin,
+    paymentIntent,
+    userId,
+    credits
+  );
+}
+
+async function handleCreditPackPaymentIntentGrant(
+  supabaseAdmin: SupabaseClient,
+  paymentIntent: Stripe.PaymentIntent,
+  userId: string,
+  credits: number
+) {
+  const { claimed } = await claimCheckoutSession(supabaseAdmin, paymentIntent.id, {
+    checkout_type: "credit_pack",
+    user_id: userId,
+    credits_granted: credits,
+  });
+  if (!claimed) return;
+
+  const result = await addCredits(
+    supabaseAdmin,
+    userId,
+    credits,
+    `${credits} Credits gekauft`
+  );
+
+  if (!result.success) {
+    throw new Error(result.error ?? "Credit pack payment intent addCredits failed");
+  }
+
+  await markReferralPurchased(userId);
+
+  await supabaseAdmin.from("stripe_payments").upsert(
+    {
+      user_id: userId,
+      amount_cents: paymentIntent.amount ?? 0,
+      currency: paymentIntent.currency ?? "eur",
+      plan: paymentIntent.metadata?.plan ?? "credits",
+      credits_amount: credits,
+      stripe_session_id: paymentIntent.id,
+    },
+    { onConflict: "stripe_session_id" }
+  );
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
@@ -476,6 +552,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      await handleCreditPackPaymentIntent(supabaseAdmin, paymentIntent);
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       console.log("[stripe webhook]", {

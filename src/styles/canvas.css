@@ -1,0 +1,287 @@
+.canvas-flow .react-flow__background {
+  background: #030304;
+}
+
+.canvas-flow .react-flow__edge-path {
+  stroke-width: 2;
+}
+
+@keyframes laser-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -30;
+  }
+}
+
+.laser-edge-flow {
+  animation: laser-flow var(--laser-duration, 2s) linear infinite;
+  will-change: stroke-dashoffset;
+  pointer-events: none;
+}
+
+@keyframes canvas-topup-badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(204, 255, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.7);
+  }
+}
+
+.canvas-topup-badge {
+  background: #ccff00;
+  color: #050505;
+  animation: canvas-topup-badge-pulse 2.4s ease-in-out infinite;
+}
+
+.canvas-topup-badge--best-pick {
+  background: linear-gradient(135deg, #ccff00, #a8e600);
+}
+
+.canvas-topup-badge--max {
+  background: linear-gradient(135deg, #e8ff66, #ccff00);
+  letter-spacing: 0.06em;
+}
+
+.canvas-topup-pack--best {
+  border-color: rgba(204, 255, 0, 0.22);
+}
+
+.canvas-topup-bonus-badge {
+  color: #ccff00;
+  border: 1px solid rgba(204, 255, 0, 0.45);
+  box-shadow: 0 0 10px rgba(204, 255, 0, 0.15);
+  background: rgba(204, 255, 0, 0.06);
+}
+
+.canvas-topup-pack-strip {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(204, 255, 0, 0.25) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.canvas-topup-pack-strip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.canvas-topup-pack-strip::-webkit-scrollbar-thumb {
+  background: rgba(204, 255, 0, 0.3);
+  border-radius: 999px;
+}
+
+.canvas-topup-express .StripeElement {
+  width: 100%;
+}
+
+.canvas-flow .react-flow__controls {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.canvas-flow .react-flow__controls-button {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  fill: rgba(255, 255, 255, 0.6);
+}
+
+.canvas-flow .react-flow__controls-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.canvas-dot-grid {
+  background-color: #030304;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── Asset loading shader (GPU-friendly transforms + opacity) ── */
+
+@keyframes pulse-shader {
+  0%,
+  100% {
+    opacity: calc(0.35 + var(--shader-calm, 0) * 0.25);
+    transform: scale(1);
+  }
+  50% {
+    opacity: calc(0.55 + var(--shader-calm, 0) * 0.35);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shader-grid-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-24px, -24px, 0);
+  }
+}
+
+@keyframes shader-wave-flow {
+  0% {
+    transform: translate3d(-4%, 0, 0);
+  }
+  100% {
+    transform: translate3d(4%, 0, 0);
+  }
+}
+
+@keyframes shader-noise-shift {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.08;
+  }
+}
+
+.asset-shader {
+  contain: layout paint;
+  isolation: isolate;
+}
+
+.asset-shader-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  animation: shader-noise-shift var(--shader-duration, 3s) ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+
+.asset-shader-grid {
+  background-image:
+    linear-gradient(rgba(var(--shader-accent-rgb), 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--shader-accent-rgb), 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation:
+    shader-grid-drift calc(var(--shader-duration, 3s) * 2) linear infinite,
+    pulse-shader var(--shader-duration, 3s) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.asset-shader-waves {
+  animation: shader-wave-flow var(--shader-duration, 3s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.asset-shader-wave-path--delay {
+  animation: shader-wave-flow calc(var(--shader-duration, 3s) * 1.4) ease-in-out infinite
+    alternate-reverse;
+}
+
+.asset-shader-percent {
+  animation: pulse-shader calc(var(--shader-duration, 3s) * 0.85) ease-in-out infinite;
+}
+
+.asset-node--loading {
+  pointer-events: auto;
+}
+
+.asset-node--error {
+  contain: layout paint;
+}
+
+.asset-error-state {
+  contain: layout paint;
+}
+
+.asset-node--revealed {
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-shader-grid,
+  .asset-shader-waves,
+  .asset-shader-noise,
+  .asset-shader-percent,
+  .asset-shader-wave-path--delay {
+    animation: none;
+  }
+}
+
+/* ── Canvas keyboard shortcuts ── */
+
+.canvas-flow--space-pan .react-flow__pane {
+  cursor: grab !important;
+}
+
+.canvas-flow--space-pan .react-flow__pane:active {
+  cursor: grabbing !important;
+}
+
+.canvas-shortcut-trigger {
+  contain: layout style;
+}
+
+.canvas-shortcut-panel {
+  contain: layout paint;
+}
+
+.canvas-shortcut-kbd {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Asset share panel ── */
+
+.asset-share-panel {
+  contain: layout paint;
+}
+
+.asset-share-platform {
+  contain: layout style;
+  min-height: 4.5rem;
+}
+
+@keyframes asset-share-bar {
+  0% {
+    transform: scaleX(0.15);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleX(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0.15);
+    opacity: 0.5;
+  }
+}
+
+.asset-share-progress {
+  transform-origin: left center;
+}
+
+/* ── Canvas analytics panel ── */
+
+.canvas-greeting {
+  contain: layout style;
+}
+
+.canvas-analytics-panel,
+.canvas-analytics-trigger {
+  contain: layout style;
+}
+
+.canvas-metric-tile {
+  contain: layout paint;
+}
+
+.canvas-activity-log {
+  contain: strict;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(204, 255, 0, 0.2) transparent;
+}
+
+.canvas-sparkline-line {
+  filter: drop-shadow(0 0 4px rgba(204, 255, 0, 0.35));
+}
+
+.canvas-donut-segment {
+  transition: stroke-dasharray 0.4s ease;
+}
