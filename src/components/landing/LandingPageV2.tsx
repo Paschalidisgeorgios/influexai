@@ -1,7 +1,7 @@
 "use client";
 
-import "@/styles/landing-neon.css";
 import "@/styles/landing-glass.css";
+import "@/styles/pricing-glass.css";
 
 import { HeroSection } from "@/components/landing/HeroSection";
 import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
@@ -28,8 +28,16 @@ export function LandingPageV2() {
         <LandingCampaignPackSection />
         <LandingAgentAutopilotSection />
 
-        <div id="pricing" className="landing-v2-pricing border-t border-[color:var(--border-soft)]">
-          <PricingSection />
+        <div id="pricing" className="pricing-glass-section landing-v2-pricing relative overflow-hidden px-6 py-20 md:px-12">
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            <div className="landing-glass-dot-grid absolute inset-0 opacity-60" />
+            <div className="pricing-glass-glow pricing-glass-glow--violet" />
+            <div className="pricing-glass-glow pricing-glass-glow--cyan-green" />
+            <div className="pricing-glass-vignette" />
+          </div>
+          <div className="relative z-10">
+            <PricingSection />
+          </div>
         </div>
 
         <LandingCtaV2 />

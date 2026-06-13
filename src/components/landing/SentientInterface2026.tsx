@@ -5,100 +5,51 @@ import { IntentLink, useCardDwell, type IntentKey } from "@/hooks/useIntentTrack
 import {
   Video,
   LayoutGrid,
-  Star,
-  Layers,
   ArrowRight,
   ChevronRight,
   TrendingUp,
-  Palette,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import { LANDING_BENTO_ACCENT_RGB, LANDING_NEON } from "@/lib/landing-neon-theme";
-import { LANDING_DEMO_VIDEOS } from "@/lib/landing-demo-videos";
 import { LandingFeatureVideo } from "@/components/landing/LandingFeatureVideo";
+import {
+  LANDING_FEATURE_CARDS_2026,
+  LANDING_STUDIO_SECTION_2026,
+  type LandingCopySegment,
+  type LandingFeatureCardCopy,
+} from "@/lib/landing-copy-2026";
 
-interface BentoCard {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  accent: "green" | "blue" | "gold";
-  tag?: string;
-  intentKey: IntentKey;
-  videoSrc?: string;
+const TOOL_CHIPS = ["Claude Script", "B-Roll Match", "Seedance", "Viral Score"];
+
+const CARD_ICONS: Record<string, React.ReactNode> = {
+  "infinite-canvas": <LayoutGrid size={20} />,
+  "seedance-kling": <Video size={20} />,
+  "avatar-studio": <Layers size={20} />,
+  "viral-predictor": <TrendingUp size={20} />,
+};
+
+function bentoAccentStyle(accent: LandingFeatureCardCopy["accent"]): CSSProperties {
+  return { "--bento-accent-rgb": LANDING_BENTO_ACCENT_RGB[accent] } as CSSProperties;
 }
 
-const STATUS_MESSAGES = [
-  "Studio bereit",
-  "Render-Engine online",
-  "Campaign Pack verfügbar",
-  "Modell wird geladen…",
-  "Ausgabe wird vorbereitet",
-];
-
-const TOOL_CHIPS = ["Image", "Video", "Voice", "Campaign Pack"];
-
-const BENTO_CARDS: BentoCard[] = [
-  {
-    icon: <LayoutGrid size={20} />,
-    title: "Campaign Packs",
-    description:
-      "Ein Briefing. Hooks, Skript, Visuals, Captions und Content-Plan — strukturiert generiert.",
-    accent: "green",
-    tag: "Automation",
-    intentKey: "agent-autopilot",
-  },
-  {
-    icon: <Star size={20} />,
-    title: "KI-Influencer",
-    description:
-      "Dein eigener KI-Avatar. Einmal trainiert, flexibel nutzbar — in verschiedenen Formaten und Styles.",
-    accent: "gold",
-    tag: "Creator",
-    intentKey: "visuals",
-    videoSrc: LANDING_DEMO_VIDEOS.kiInfluencer,
-  },
-  {
-    icon: <Video size={20} />,
-    title: "Video Engine",
-    description:
-      "Bild zu Video, Text zu Video, Lipsync und Video-Übersetzung — alle Modelle in einem Studio.",
-    accent: "blue",
-    tag: "Video",
-    intentKey: "video-film",
-    videoSrc: LANDING_DEMO_VIDEOS.seedance,
-  },
-  {
-    icon: <Palette size={20} />,
-    title: "Brand Consistency",
-    description:
-      "Deine Markenstimme, Ästhetik und Tonalität werden in jeden Output eingebettet.",
-    accent: "gold",
-    tag: "LoRA Training",
-    intentKey: "visuals",
-    videoSrc: LANDING_DEMO_VIDEOS.loraTraining,
-  },
-  {
-    icon: <TrendingUp size={20} />,
-    title: "Creative Score",
-    description:
-      "Jeder Output wird automatisch bewertet und bei Bedarf mit Auto-Retry optimiert.",
-    accent: "green",
-    tag: "Quality AI",
-    intentKey: "werbung",
-  },
-  {
-    icon: <Layers size={20} />,
-    title: "KI Avatar",
-    description:
-      "Digitale Avatare für Social Content, Live-Formate und Kampagnen — konsistent und sofort einsatzbereit.",
-    accent: "green",
-    tag: "Avatar Studio",
-    intentKey: "avatar-live",
-    videoSrc: LANDING_DEMO_VIDEOS.kiAvatar,
-  },
-];
-
-function bentoAccentStyle(accent: BentoCard["accent"]): CSSProperties {
-  return { "--bento-accent-rgb": LANDING_BENTO_ACCENT_RGB[accent] } as CSSProperties;
+function CopySegments({ segments }: { segments: LandingCopySegment[] }) {
+  return (
+    <p
+      className="text-[13px] leading-relaxed text-white/55"
+      style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+    >
+      {segments.map((segment, index) =>
+        segment.highlight ? (
+          <span key={index} className="font-medium text-[#ccff00]">
+            {segment.text}
+          </span>
+        ) : (
+          <span key={index}>{segment.text}</span>
+        )
+      )}
+    </p>
+  );
 }
 
 function HeroPreview() {
@@ -117,7 +68,7 @@ function HeroPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
         </div>
         <div className="flex items-center gap-4">
-          {(["RENDERING_CORE_v2.6", "FPS: 60", "RES: 4K"] as const).map((stat) => (
+          {(["INFINITE_CANVAS_v2", "FPS: 60", "NODES: 12"] as const).map((stat) => (
             <span key={stat} className="font-mono text-[9px] tracking-wider text-white/25">
               {stat}
             </span>
@@ -140,31 +91,32 @@ function HeroPreview() {
           style={{ borderColor: "var(--border-soft)" }}
         >
           <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
-            KI-Befehl
+            Claude · Skript + B-Roll
           </p>
           <div
             className="rounded-xl border p-4"
             style={{ borderColor: "var(--border-soft)", background: LANDING_NEON.bgPrimary }}
           >
             <p className="font-mono text-sm leading-relaxed text-white/70">
-              <span style={{ color: LANDING_NEON.green }}>→</span> Erstelle eine 7-Tage-Kampagne
-              für ein Café auf Instagram
+              <span style={{ color: LANDING_NEON.green }}>→</span> Virales Café-Reel: Hook, 3
+              Body-Segmente, CTA — inkl.{" "}
+              <span className="text-[#ccff00]">Flux/Kling B-Roll-Prompts</span>
             </p>
             <div className="mt-4 flex items-center gap-2">
               <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
                   className="h-full rounded-full"
-                  style={{ width: "72%", background: LANDING_NEON.green }}
+                  style={{ width: "86%", background: LANDING_NEON.green }}
                 />
               </div>
-              <span className="font-mono text-[9px] text-white/50">72%</span>
+              <span className="font-mono text-[9px] text-white/50">86%</span>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {TOOL_CHIPS.map((chip) => (
               <span
                 key={chip}
-                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[10px] text-white/50"
+                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-white/50"
               >
                 {chip}
               </span>
@@ -174,14 +126,14 @@ function HeroPreview() {
 
         <div className="p-5">
           <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
-            Vorschau
+            Canvas Pipeline
           </p>
           <div className="space-y-2">
             {[
-              { label: "Hook-Generierung", done: true },
-              { label: "Skript erstellt", done: true },
-              { label: "Visuals werden gerendert", done: false },
-              { label: "Captions & Hashtags", done: false },
+              { label: "Claude Premium-Skript", done: true },
+              { label: "Viral-Predictor: +24 Score", done: true },
+              { label: "B-Roll-Kacheln gespawnt", done: true },
+              { label: "Seedance-Render bereit", done: false },
             ].map(({ label, done }) => (
               <div
                 key={label}
@@ -228,7 +180,7 @@ function HeroPreview() {
             }}
           >
             <p className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.cyan}CC` }}>
-              Creative Score: 94/100 · Export bereit (Beispiel)
+              CTR-Tendenz: <span className="text-[#ccff00]">+14%</span> · Viral Score 91 · Demo
             </p>
           </div>
         </div>
@@ -237,8 +189,9 @@ function HeroPreview() {
   );
 }
 
-function BentoCardItem({ card }: { card: BentoCard }) {
+function BentoCardItem({ card }: { card: LandingFeatureCardCopy }) {
   const { ref, startDwell, cancelDwell } = useCardDwell(card.intentKey);
+  const icon = CARD_ICONS[card.id] ?? <Sparkles size={20} />;
 
   return (
     <div
@@ -260,19 +213,19 @@ function BentoCardItem({ card }: { card: BentoCard }) {
         />
       ) : null}
 
-      <div className="flex items-start justify-between">
-        <div className="landing-neon-bento-icon flex h-10 w-10 items-center justify-center rounded-xl">
-          {card.icon}
+      <div className="flex items-start justify-between gap-3">
+        <div className="landing-neon-bento-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+          {icon}
         </div>
-        {card.tag && (
-          <span className="landing-neon-bento-tag rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wide">
-            {card.tag}
-          </span>
-        )}
+        <span className="landing-neon-bento-tag rounded-full px-2.5 py-0.5 font-mono text-[10px] font-medium tracking-wide">
+          {card.tag}
+        </span>
       </div>
       <div>
-        <h3 className="landing-glass-heading mb-1.5 text-[15px] text-white">{card.title}</h3>
-        <p className="text-[13px] leading-relaxed text-white/50">{card.description}</p>
+        <h3 className="landing-glass-heading mb-2 text-[15px] tracking-tight text-white">
+          {card.title}
+        </h3>
+        <CopySegments segments={card.segments} />
       </div>
       <ChevronRight
         size={14}
@@ -286,17 +239,18 @@ function BentoCardItem({ card }: { card: BentoCard }) {
 export default function SentientInterface2026() {
   const [badgeIndex, setBadgeIndex] = useState(0);
   const intervalRef = useRef<number | null>(null);
+  const statusMessages = LANDING_STUDIO_SECTION_2026.statusMessages;
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      setBadgeIndex((prev) => (prev + 1) % STATUS_MESSAGES.length);
+      setBadgeIndex((prev) => (prev + 1) % statusMessages.length);
     }, 4000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [statusMessages.length]);
 
-  const statusMessage = STATUS_MESSAGES[badgeIndex];
+  const statusMessage = statusMessages[badgeIndex];
 
   return (
     <section id="studio-showcase" className="relative overflow-x-hidden bg-transparent text-white">
@@ -313,7 +267,7 @@ export default function SentientInterface2026() {
 
       <div className="relative z-10 px-6 pt-20 pb-16 text-center md:px-12 md:pt-28">
         <div
-          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] text-white/50 backdrop-blur-sm"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[11px] text-white/50 backdrop-blur-sm"
           style={{
             borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.25)`,
             background: `rgba(${LANDING_NEON.violetRgb}, 0.06)`,
@@ -328,18 +282,20 @@ export default function SentientInterface2026() {
         </div>
 
         <h2 className="landing-glass-heading mx-auto max-w-3xl text-[clamp(2rem,5.5vw,4.25rem)] leading-[1.06] text-white">
-          Briefing rein.{" "}
-          <span className="text-[#ccff00]">Assets raus.</span>
+          {LANDING_STUDIO_SECTION_2026.headline}{" "}
+          <span className="text-[#ccff00]">{LANDING_STUDIO_SECTION_2026.headlineAccent}</span>
         </h2>
 
-        <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/60">
-          Vom KI-Befehl bis zum exportfertigen Ergebnis — Bild, Video, Text und Kampagnen
-          in einem Workflow.
+        <p
+          className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/60"
+          style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+        >
+          {LANDING_STUDIO_SECTION_2026.subline}
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <IntentLink href="/signup" className="landing-glass-btn-cta">
-            Jetzt kostenlos starten <ArrowRight size={15} aria-hidden="true" />
+            Infinite Workspace öffnen <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
         </div>
 
@@ -350,21 +306,22 @@ export default function SentientInterface2026() {
         <div className="mx-auto max-w-6xl">
           <div className="landing-neon-divider-glow mb-12" aria-hidden />
           <div className="mb-10 text-center">
-            <p
-              className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2"
-            >
-              Features
+            <p className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2 font-mono text-[10px] tracking-[0.14em]">
+              {LANDING_STUDIO_SECTION_2026.featuresKicker}
             </p>
             <h2 className="landing-glass-heading text-[clamp(1.75rem,3.5vw,2.75rem)] text-white">
-              Alles in einem Studio.
+              {LANDING_STUDIO_SECTION_2026.featuresTitle}
             </h2>
-            <p className="mx-auto mt-3 max-w-md text-[14px] text-white/65">
-              Über 20 Tools. Ein Workspace. Für Creator, Marken und Agenturen.
+            <p
+              className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-white/60"
+              style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+            >
+              {LANDING_STUDIO_SECTION_2026.featuresSubline}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {BENTO_CARDS.map((card) => (
-              <BentoCardItem key={card.title} card={card} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {LANDING_FEATURE_CARDS_2026.map((card) => (
+              <BentoCardItem key={card.id} card={card} />
             ))}
           </div>
         </div>

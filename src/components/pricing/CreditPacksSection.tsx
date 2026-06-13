@@ -35,21 +35,21 @@ export function CreditPacksSection() {
   };
 
   return (
-    <section className="mt-20 pt-16 border-t border-white/10">
-      <div className="text-center mb-10">
-        <h2
-          className="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-[#F0EFE8] mb-3"
-          style={{ fontFamily: "var(--font-syne), sans-serif" }}
-        >
+    <section className="mt-20 border-t border-zinc-800/50 pt-16">
+      <div className="mb-10 text-center">
+        <h2 className="pricing-glass-title mb-3 text-[clamp(1.75rem,3vw,2.5rem)] text-white">
           {t("pricing_title")}
         </h2>
-        <p className="text-sm text-white/80 max-w-lg mx-auto">
+        <p
+          className="mx-auto max-w-lg text-sm text-white/60"
+          style={{ fontFamily: "var(--font-dm), sans-serif" }}
+        >
           {t("pricing_subtitle")}
         </p>
       </div>
 
       <div
-        className="grid gap-4 max-w-5xl mx-auto px-0 sm:px-0"
+        className="mx-auto grid max-w-5xl gap-4 px-0 sm:px-0"
         style={{
           gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 168px), 1fr))",
         }}
@@ -60,24 +60,13 @@ export function CreditPacksSection() {
             <motion.div
               key={pkg.id}
               data-testid="pricing-card"
-              className="relative flex flex-col p-6 rounded-xl"
-              style={{
-                border: isPopular
-                  ? "2px solid #B4FF00"
-                  : "1px solid rgba(255,255,255,0.1)",
-                background: isPopular
-                  ? "rgba(180,255,0,0.04)"
-                  : "#0f0f12",
-              }}
-              whileHover={{ scale: 1.02 }}
+              className={`pricing-glass-card relative flex flex-col p-6 ${
+                isPopular ? "pricing-glass-card--featured" : ""
+              }`}
+              whileHover={{ y: -2 }}
             >
               {isPopular && (
-                <span
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.62rem] font-extrabold"
-                  style={{ background: "#B4FF00", color: "#060608" }}
-                >
-                  {t("popular_badge")}
-                </span>
+                <span className="pricing-glass-badge">{t("popular_badge")}</span>
               )}
 
               <span

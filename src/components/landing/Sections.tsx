@@ -288,15 +288,11 @@ export function PricingSection() {
   const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
 
   return (
-    <section
-      id="pricing"
-      className={LANDING_SECTION_CLASS}
-      style={{ background: "var(--bg-1)" }}
-    >
+    <section id="pricing" className="relative bg-transparent py-4 text-white">
       <div className="mx-auto max-w-[1200px] text-center">
         <SpringReveal>
-          <span className="kicker mb-2 block">{t("kicker")}</span>
-          <h2 className="landing-heading text-[clamp(2rem,4.5vw,3.75rem)]">
+          <span className="pricing-glass-kicker mb-2 block">{t("kicker")}</span>
+          <h2 className="pricing-glass-title text-[clamp(2rem,4.5vw,3.75rem)]">
             {t("headline")}
           </h2>
         </SpringReveal>
@@ -307,61 +303,44 @@ export function PricingSection() {
           className="mx-auto max-w-[1200px]"
         />
         <SpringReveal delay={0.08}>
-          <div
-            className="mx-auto mt-8 max-w-[720px] rounded-[12px] border p-5 text-left md:mt-10 md:p-6"
-            style={{
-              borderColor: "rgba(var(--ai-green-rgb), 0.18)",
-              background: "rgba(255,255,255,0.02)",
-            }}
-          >
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--ai-green)]">
-              {t("credits_usage_kicker")}
-            </p>
-            <p className="mb-4 text-[0.88rem] leading-[1.6] text-white/75">
-              {t("credits_usage_desc")}
-            </p>
-            <div className="flex flex-wrap gap-2">
+          <div className="pricing-credits-info mx-auto mt-8 max-w-[720px] md:mt-10">
+            <span className="pricing-credits-info__label">{t("credits_usage_kicker")}</span>
+            <p className="pricing-credits-info__body mb-4">{t("credits_usage_desc")}</p>
+            <div className="flex flex-wrap justify-center gap-2">
               {(["credits_ex1", "credits_ex2", "credits_ex3", "credits_ex4", "credits_ex5"] as const).map(
                 (key) => (
                   <span
                     key={key}
-                    className="rounded-full px-3 py-1 text-[0.72rem] font-semibold"
-                    style={{
-                      background: "rgba(var(--ai-green-rgb), 0.08)",
-                      border: "1px solid rgba(var(--ai-green-rgb), 0.22)",
-                      color: "rgba(255,255,255,0.78)",
-                    }}
+                    className="rounded-full border border-[#ccff00]/20 bg-[#ccff00]/8 px-3 py-1 font-mono text-[0.68rem] tracking-wide text-white/70"
                   >
                     {t(key)}
                   </span>
                 )
               )}
             </div>
-            <p className="mt-4 text-[0.78rem] leading-[1.6] text-white/55">
+            <p
+              className="mt-4 font-mono text-[0.72rem] tracking-wide text-white/40"
+              style={{ fontFamily: "var(--font-dm), sans-serif" }}
+            >
               {t("credits_demo_note")}
             </p>
           </div>
         </SpringReveal>
         <SpringReveal delay={0.1}>
-          <div
-            className="mx-auto mt-10 flex max-w-[960px] flex-col items-center justify-between gap-4 rounded-[14px] border p-5 text-left md:mt-12 md:flex-row md:p-6"
-            style={{
-              borderColor: "color-mix(in srgb, var(--accent, var(--ai-green)) 20%, transparent)",
-              background: "var(--bg-2)",
-            }}
-          >
+          <div className="pricing-glass-card mx-auto mt-10 flex max-w-[960px] flex-col items-center justify-between gap-4 p-5 text-left md:mt-12 md:flex-row md:p-6">
             <div>
-              <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent,var(--ai-green))]">
-                White Label
-              </p>
-              <h3 className="landing-heading mb-1 text-xl md:text-2xl">
+              <p className="pricing-glass-kicker mb-1">White Label</p>
+              <h3 className="pricing-glass-title mb-1 text-xl md:text-2xl">
                 {tAgency("headline")}
               </h3>
-              <p className="text-sm text-white/75 md:text-[0.9rem]">
+              <p
+                className="text-sm text-white/65 md:text-[0.9rem]"
+                style={{ fontFamily: "var(--font-dm), sans-serif" }}
+              >
                 {tAgency("subline")}
               </p>
             </div>
-            <AcidMotionButton href="/agency" className="btn-acid shrink-0 justify-center">
+            <AcidMotionButton href="/agency" className="pricing-glass-btn-primary shrink-0 px-8">
               {tAgency("cta")}
             </AcidMotionButton>
           </div>

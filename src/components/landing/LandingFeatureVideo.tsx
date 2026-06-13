@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SeamlessLoopVideo } from "@/components/ui/SeamlessLoopVideo";
 
 type LandingFeatureVideoProps = {
   src: string;
@@ -16,7 +17,6 @@ export function LandingFeatureVideo({
   aspectClass = "aspect-video",
 }: LandingFeatureVideoProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [inView, setInView] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [coarsePointer, setCoarsePointer] = useState(false);
@@ -30,17 +30,7 @@ export function LandingFeatureVideo({
     if (!el) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        const visible = entry?.isIntersecting ?? false;
-        setInView(visible);
-        const video = videoRef.current;
-        if (!video) return;
-        if (visible) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
+      ([entry]) => setInView(entry?.isIntersecting ?? false),
       { threshold: 0.4, rootMargin: "0px 0px -4% 0px" }
     );
 
@@ -57,18 +47,14 @@ export function LandingFeatureVideo({
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      <video
-        ref={videoRef}
+      <SeamlessLoopVideo
         src={src}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        aria-label={label}
-        className={`landing-feature-video absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
+        ariaLabel={label}
+        playing={inView}
+        className={`absolute inset-0 transition-opacity duration-500 ease-out ${
           bright ? "opacity-100" : "opacity-60"
         }`}
+        videoClassName="landing-feature-video h-full w-full object-cover"
       />
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"

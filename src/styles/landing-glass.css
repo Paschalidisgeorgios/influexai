@@ -233,15 +233,20 @@
   will-change: opacity;
 }
 
+.seamless-loop-video {
+  contain: layout style paint;
+  overflow: hidden;
+}
+
+.seamless-loop-video__layer {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  will-change: opacity;
+}
+
 .landing-media-bg-video {
   will-change: opacity;
-  transition: opacity 0.55s ease-out;
-}
-
-.landing-media-bg-video--bright {
-  opacity: 1;
-}
-
-.landing-media-bg-video--dim {
-  opacity: 0.55;
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { SpringReveal } from "@/components/ui/SpringReveal";
+import { SeamlessLoopVideo } from "@/components/ui/SeamlessLoopVideo";
 import { landingMedia } from "@/lib/landing-media";
 
 function accentRgb(hex: string): string {
@@ -81,19 +82,19 @@ export function LandingMediaSection() {
             exit={reduceMotion ? undefined : { opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.85, ease: "easeInOut" }}
           >
-            <video
-              key={activeItem.id}
-              src={activeItem.src}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-label={activeItem.title}
-              className={`landing-media-bg-video absolute inset-0 h-full w-full rounded-none object-cover ${
-                videoBright ? "landing-media-bg-video--bright" : "landing-media-bg-video--dim"
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ease-out ${
+                videoBright ? "opacity-100" : "opacity-55"
               }`}
-            />
+            >
+              <SeamlessLoopVideo
+                key={activeItem.id}
+                src={activeItem.src}
+                ariaLabel={activeItem.title}
+                className="absolute inset-0 h-full w-full"
+                videoClassName="landing-media-bg-video h-full w-full rounded-none object-cover"
+              />
+            </div>
           </motion.div>
         </AnimatePresence>
 

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { IntentLink } from "@/hooks/useIntentTracking";
 import { LandingHeroBackground } from "./LandingHeroBackground";
+import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
 
 export function HeroSection() {
   const [name, setName] = useState("");
@@ -17,7 +18,7 @@ export function HeroSection() {
     if (!cleanName) return;
 
     setHasSubmittedName(true);
-    setAiText(`Willkommen, ${cleanName}. Dein Studio ist bereit.`);
+    setAiText(LANDING_HERO_2026.welcomeStudio(cleanName));
     setIsPulsing(true);
 
     window.setTimeout(() => {
@@ -35,23 +36,23 @@ export function HeroSection() {
 
       <div className="relative z-20 w-full px-5 pt-24 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
         <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(560px,38vw)] md:text-left">
-          <p className="landing-neon-kicker mb-6">AI Campaign Studio · 2026</p>
+          <p className="landing-neon-kicker mb-6 font-mono text-[11px] tracking-[0.14em]">
+            {LANDING_HERO_2026.kicker}
+          </p>
 
           <h1 className="landing-glass-heading mb-4 text-[clamp(2rem,6.5vw,4.25rem)] leading-[1.02] text-white">
-            DEINE IDEE.
+            {LANDING_HERO_2026.headline.line1}
             <br />
-            VON{" "}
-            <span className="text-[#00d5ff]">KI</span>
+            {LANDING_HERO_2026.headline.line2}
             <br />
-            ZUR <span className="text-[#ccff00]">KAMPAGNE.</span>
+            <span className="text-[#ccff00]">{LANDING_HERO_2026.headline.line3}</span>
           </h1>
 
           <p
-            className="mb-8 max-w-lg text-base leading-relaxed text-white/65 md:max-w-none"
+            className="mb-8 max-w-lg text-base leading-relaxed text-white/70 md:max-w-none"
             style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           >
-            InfluexAI unterstützt dich dabei, aus einer Idee in wenigen Schritten
-            fertige Social-Media-Assets für Creator, Marken und Agenturen zu erstellen.
+            {LANDING_HERO_2026.subline}
           </p>
 
           <div className="mb-8 flex flex-wrap justify-center gap-3 md:justify-start">
@@ -64,14 +65,17 @@ export function HeroSection() {
           </div>
 
           <div
-            className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] text-white/45 md:justify-start"
+            className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.1em] text-white/45 md:justify-start"
             style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           >
-            <span>20+ KI-Tools</span>
-            <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
-            <span>Erste Inhalte in wenigen Sekunden</span>
-            <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
-            <span>Monatlich kündbar</span>
+            {LANDING_HERO_2026.trust.map((item, index) => (
+              <span key={item} className="inline-flex items-center gap-6">
+                {index > 0 ? (
+                  <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
+                ) : null}
+                <span>{item}</span>
+              </span>
+            ))}
           </div>
 
           <form

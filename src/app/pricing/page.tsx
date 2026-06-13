@@ -7,6 +7,8 @@ import { LandingNav } from "@/components/landing/LandingNav";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { CreditPacksSection } from "@/components/pricing/CreditPacksSection";
 import { useSubscriptionCheckout } from "@/hooks/useSubscriptionCheckout";
+import "@/styles/landing-glass.css";
+import "@/styles/pricing-glass.css";
 
 const INTENT_COPY: Record<
   string,
@@ -80,6 +82,17 @@ function PricingPrimaryCtaText({ fallback }: { fallback: string }) {
   return <>{copy.cta}</>;
 }
 
+function PricingGlassBackground() {
+  return (
+    <div className="pricing-glass-bg" aria-hidden>
+      <div className="landing-glass-dot-grid absolute inset-0" />
+      <div className="pricing-glass-glow pricing-glass-glow--violet" />
+      <div className="pricing-glass-glow pricing-glass-glow--cyan-green" />
+      <div className="pricing-glass-vignette" />
+    </div>
+  );
+}
+
 export default function PricingPage() {
   const t = useTranslations("landingPage.pricing");
   const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
@@ -88,36 +101,33 @@ export default function PricingPage() {
   const ctaFallback = t("creator_cta");
 
   return (
-    <div className="min-h-screen bg-[#060608] text-[#F0EFE8] landing-root">
+    <div className="pricing-glass-page landing-root min-h-screen">
+      <PricingGlassBackground />
       <LandingNav />
-      <main className="pt-28 pb-20 px-[clamp(20px,6vw,64px)]">
-        <div className="max-w-[1200px] mx-auto text-center">
-          <span className="kicker mb-2">{t("kicker")}</span>
-          <h1 className="landing-heading mb-2 text-[clamp(2.5rem,5vw,4.5rem)] leading-[0.95]">
+      <main className="px-[clamp(20px,6vw,64px)] pt-28 pb-20">
+        <div className="mx-auto max-w-[1200px] text-center">
+          <span className="pricing-glass-kicker">{t("kicker")}</span>
+          <h1 className="pricing-glass-title mb-2 text-[clamp(2.5rem,5vw,4.5rem)]">
             <Suspense fallback={headlineFallback}>
               <PricingHeadlineText fallback={headlineFallback} />
             </Suspense>
           </h1>
-          <p className="text-[0.95rem] max-w-xl mx-auto mb-4 text-white/80 subtitle">
+          <p className="pricing-glass-subtitle mx-auto mb-8 max-w-xl text-[0.95rem]">
             <Suspense fallback={sublineFallback}>
               <PricingSublineText fallback={sublineFallback} />
             </Suspense>
           </p>
-          <div
-            className="mx-auto mb-8 max-w-2xl rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left"
-          >
-            <p className="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]">
-              {t("credit_outcome_title")}
-            </p>
-            <p className="text-[0.88rem] leading-relaxed text-white/75">
-              {t("credit_outcome_body")}
-            </p>
+
+          <div className="pricing-credits-info">
+            <span className="pricing-credits-info__label">{t("credit_outcome_title")}</span>
+            <p className="pricing-credits-info__body">{t("credit_outcome_body")}</p>
           </div>
+
           <PricingPlans
             checkoutMode
             onSubscribe={handleSubscribe}
             subscribeLoading={loading}
-            className="max-w-[1200px] mx-auto"
+            className="mx-auto max-w-[1200px]"
             primaryCtaLabel={
               <Suspense fallback={ctaFallback}>
                 <PricingPrimaryCtaText fallback={ctaFallback} />
