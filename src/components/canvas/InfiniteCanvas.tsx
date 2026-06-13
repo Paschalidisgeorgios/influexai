@@ -26,6 +26,8 @@ import { CanvasAnalyticsPanel } from "./CanvasAnalyticsPanel";
 import { CanvasNodeErrorBoundary } from "./CanvasNodeErrorBoundary";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { CanvasMobileStackView } from "./CanvasMobileStackView";
 
 const SafeControlNode = memo(function SafeControlNode(
   props: NodeProps<Node<ControlNodeData, "control">>
@@ -78,6 +80,7 @@ export function InfiniteCanvas() {
   const dismissGreeting = useOnboardingStore((s) => s.dismissGreeting);
   const { spacePressed, helpOpen, setHelpOpen, onPaneMouseMove } = useCanvasShortcuts();
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const isMobileCanvas = useMediaQuery("(max-width: 767px)");
   const isTouchCanvas = useCoarsePointer();
 
   const defaultEdgeOptions = useMemo(
@@ -115,8 +118,18 @@ export function InfiniteCanvas() {
   );
 
   useEffect(() => {
+    if (isMobileCanvas) return;
     setViewportCenter({ x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 80 });
-  }, [setViewportCenter]);
+  }, [isMobileCanvas, setViewportCenter]);
+
+  if (isMobileCanvas) {
+    return (
+      <div className="canvas-flow canvas-flow--mobile-stack relative h-full w-full">
+        <CanvasMobileStackView />
+        <CanvasShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
+      </div>
+    );
+  }
 
   return (
     <div

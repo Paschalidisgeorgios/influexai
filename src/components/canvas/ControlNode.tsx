@@ -17,6 +17,10 @@ import {
   userMessageForCanvasError,
 } from "@/lib/canvas/canvas-api-errors";
 import { ParamFields } from "./ParamFields";
+import {
+  AgentAutopilotNodeExtras,
+  AGENT_AI_MODEL_OPTIONS,
+} from "./AgentAutopilotNodeExtras";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
 import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
@@ -287,6 +291,25 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
   const remaining = credits ?? 0;
   const creditExempt = isClientCreditExempt();
   const insufficient = !creditExempt && credits !== null && remaining < coins;
+  const isAgentAutopilot = nodeData.toolId === "agent-autopilot";
+  const visibleParams =
+    tool?.params.filter(
+      (field) =>
+        !isAgentAutopilot ||
+        (field.key !== "ai_model" && field.key !== "reference_image")
+    ) ?? [];
+  const aiModel =
+    typeof nodeData.params.ai_model === "string"
+      ? nodeData.params.ai_model
+      : AGENT_AI_MODEL_OPTIONS[0].value;
+  const referenceImage =
+    typeof nodeData.params.reference_image === "string"
+      ? nodeData.params.reference_image
+      : undefined;
+  const referenceImageName =
+    typeof nodeData.params.reference_image_name === "string"
+      ? nodeData.params.reference_image_name
+      : undefined;
 
   return (
     <div className={`relative w-[90vw] max-w-[360px]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
@@ -320,7 +343,7 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
         </div>
 
         <ParamFields
-          params={tool.params}
+          params={visibleParams}
           values={nodeData.params}
           accent={tool.accent}
           onChange={handleChange}
@@ -338,6 +361,22 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           />
         ) : null}
 
+        {isAgentAutopilot ? (
+          <AgentAutopilotNodeExtras
+            aiModel={aiModel}
+            referenceImage={referenceImage}
+            referenceImageName={referenceImageName}
+            accent={tool.accent}
+            onModelChange={(model) => handleChange("ai_model", model)}
+            onReferenceImageChange={(dataUrl, fileName) => {
+              updateControlParams(id, {
+                reference_image: dataUrl,
+                reference_image_name: fileName,
+              });
+            }}
+          />
+        ) : null}
+
         {insufficient && !topUpOpen ? (
           <p className="mt-3 text-[10px] font-medium text-[#ccff00]/80">
             Nicht genug Credits ({remaining}/{coins}) — Top-Up öffnet sich beim Generieren.
@@ -352,16 +391,24 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           type="button"
           disabled={nodeData.isGenerating}
           onClick={() => void handleGenerate()}
-          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform hover:scale-[1.02] disabled:opacity-50"
-          style={{
-            background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
-          }}
+          className={`mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 ${
+            creditExempt
+              ? "bg-gradient-to-r from-[#ccff00] to-[#00D5FF] text-black shadow-[0_0_24px_rgba(204,255,0,0.35)]"
+              : "text-black"
+          }`}
+          style={
+            creditExempt
+              ? undefined
+              : {
+                  background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
+                }
+          }
         >
           <Sparkles size={14} />
           {nodeData.isGenerating
             ? "Generiere…"
             : creditExempt
-              ? "Generieren (Admin-Bypass) ⚡"
+              ? "⚡ Generieren (Admin-Bypass) ⚡"
               : `Generieren · ${coins} Coins`}
         </button>
       </div>

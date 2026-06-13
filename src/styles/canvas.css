@@ -2,6 +2,20 @@
   background: #08080a;
 }
 
+.canvas-flow--mobile-stack {
+  background: #08080a;
+}
+
+.canvas-mobile-stack {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.canvas-mobile-stack .react-flow__handle {
+  display: none;
+}
+
+
 .canvas-flow--touch .react-flow__pane {
   touch-action: none;
 }

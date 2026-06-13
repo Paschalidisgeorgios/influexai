@@ -523,6 +523,19 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     params: [
       { key: "campaign_goal", label: "Kampagnen-Ziel", type: "textarea", required: true },
       {
+        key: "ai_model",
+        label: "KI-Modell",
+        type: "select",
+        defaultValue: "claude-3-5-sonnet",
+        options: [
+          { value: "claude-3-5-sonnet", label: "Claude 3.5 Sonnet" },
+          { value: "flux-1-dev", label: "Flux.1 Dev" },
+          { value: "kling-v1.5", label: "Kling AI v1.5" },
+          { value: "seedance-v2", label: "Seedance v2.0" },
+        ],
+      },
+      { key: "reference_image", label: "Referenzbild", type: "file" },
+      {
         key: "platforms",
         label: "Plattformen",
         type: "multiselect",

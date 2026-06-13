@@ -75,7 +75,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
                 <CanvasHeader />
                 <div className="relative z-[1] flex min-h-0 flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
                   <CanvasSidebar />
-                  <div className="relative min-w-0 flex-1">
+                  <div className="relative min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain md:overflow-hidden">
                     <InfiniteCanvas />
                   </div>
                   <CanvasMobileNav />

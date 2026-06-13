@@ -110,7 +110,7 @@ export function FeaturesMegaMenuMobile({ onNavigate }: MobileProps) {
       <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
         {label("title") || NAV_LABELS_DE.features}
       </p>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {LANDING_FEATURES_MENU.map((category, index) => (
           <FeatureCategory
             key={category.id}

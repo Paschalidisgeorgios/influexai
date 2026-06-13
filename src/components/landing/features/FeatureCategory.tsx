@@ -30,12 +30,20 @@ export function FeatureCategory({
 
   if (variant === "mobile") {
     return (
-      <div className="border-b border-zinc-800/60">
+      <div
+        className={`rounded-xl border transition-colors duration-300 ${
+          isOpen
+            ? "border-[#ccff00]/30 bg-zinc-950/40"
+            : "border-zinc-800/60 bg-transparent"
+        }`}
+      >
         <button
           type="button"
           onClick={() => setIsOpen((v) => !v)}
           aria-expanded={isOpen}
-          className="flex min-h-12 w-full items-center justify-between py-3 text-left font-mono text-[11px] font-bold uppercase tracking-widest text-zinc-400"
+          className={`flex min-h-12 w-full items-center justify-between px-3 py-3 text-left font-mono text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 ${
+            isOpen ? "text-[#ccff00]" : "text-zinc-400"
+          }`}
         >
           {label(`categories.${category.id}`)}
           <ChevronDown
@@ -53,7 +61,7 @@ export function FeatureCategory({
               exit="collapsed"
               variants={accordionVariants}
               transition={{ duration: 0.28, ease: "easeInOut" }}
-              className="overflow-hidden"
+              className="overflow-hidden px-1 pb-2"
             >
               <div className="pb-2">
                 {category.groups.map((group) =>
