@@ -7,10 +7,31 @@ import { useCardDwell, type IntentKey } from "@/hooks/useIntentTracking";
 import { LANDING_ACCENT_RGB, type LandingNeonAccent } from "@/lib/landing-neon-theme";
 import type { CSSProperties } from "react";
 
+import { LANDING_DEMO_VIDEOS } from "@/lib/landing-demo-videos";
+import { LandingFeatureVideo } from "@/components/landing/LandingFeatureVideo";
+
 const USE_CASES = [
-  { key: "creator", icon: Zap, accent: "green" as LandingNeonAccent, intentKey: "visuals" as IntentKey },
-  { key: "brand", icon: Building2, accent: "blue" as LandingNeonAccent, intentKey: "werbung" as IntentKey },
-  { key: "influencer", icon: Sparkles, accent: "violet" as LandingNeonAccent, intentKey: "avatar-live" as IntentKey },
+  {
+    key: "creator",
+    icon: Zap,
+    accent: "green" as LandingNeonAccent,
+    intentKey: "visuals" as IntentKey,
+    videoSrc: LANDING_DEMO_VIDEOS.kiInfluencer,
+  },
+  {
+    key: "brand",
+    icon: Building2,
+    accent: "blue" as LandingNeonAccent,
+    intentKey: "werbung" as IntentKey,
+    videoSrc: LANDING_DEMO_VIDEOS.loraTraining,
+  },
+  {
+    key: "influencer",
+    icon: Sparkles,
+    accent: "violet" as LandingNeonAccent,
+    intentKey: "avatar-live" as IntentKey,
+    videoSrc: LANDING_DEMO_VIDEOS.kiAvatar,
+  },
 ] as const;
 
 function accentStyle(accent: LandingNeonAccent): CSSProperties {
@@ -25,6 +46,7 @@ function UseCaseGlassNode({
   subtitle,
   desc,
   tag,
+  videoSrc,
 }: {
   intentKey: IntentKey;
   accent: LandingNeonAccent;
@@ -33,6 +55,7 @@ function UseCaseGlassNode({
   subtitle: string;
   desc: string;
   tag: string;
+  videoSrc: string;
 }) {
   const { ref, startDwell, cancelDwell } = useCardDwell(intentKey);
 
@@ -41,7 +64,7 @@ function UseCaseGlassNode({
       ref={ref}
       onPointerEnter={() => startDwell(intentKey)}
       onPointerLeave={() => cancelDwell(intentKey)}
-      className="landing-glass-node group relative flex h-full flex-col p-8"
+      className="landing-glass-node group relative flex h-full flex-col overflow-hidden p-8"
       style={{
         ...accentStyle(accent),
         boxShadow: `0 0 0 1px rgba(255,255,255,0.03) inset, 0 16px 40px rgba(0,0,0,0.35), 0 0 28px rgba(${LANDING_ACCENT_RGB[accent]}, 0.06)`,
@@ -50,6 +73,12 @@ function UseCaseGlassNode({
       <span className="landing-glass-node-shine" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--left" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--right" aria-hidden />
+
+      <LandingFeatureVideo
+        src={videoSrc}
+        label={title}
+        className="mb-5 -mx-1 w-[calc(100%+0.5rem)]"
+      />
 
       <div
         className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-800/60 bg-black/30"
@@ -120,12 +149,13 @@ export function LandingUseCasesSection() {
         </SpringReveal>
 
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-3">
-          {USE_CASES.map(({ key, icon, accent, intentKey }, i) => (
+          {USE_CASES.map(({ key, icon, accent, intentKey, videoSrc }, i) => (
             <SpringReveal key={key} delay={i * 0.08}>
               <UseCaseGlassNode
                 intentKey={intentKey}
                 accent={accent}
                 icon={icon}
+                videoSrc={videoSrc}
                 title={t(`${key}_title`)}
                 subtitle={t(`${key}_subtitle`)}
                 desc={t(`${key}_desc`)}

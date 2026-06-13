@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { landingMedia } from "@/lib/landing-media";
 
@@ -22,10 +22,30 @@ const textTransition = {
 export function LandingMediaSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [coarsePointer, setCoarsePointer] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
 
   const activeItem = landingMedia[activeIndex];
   const activeRgb = accentRgb(activeItem.accent);
+  const videoBright = isHovered || isPaused || (inView && coarsePointer);
+
+  useEffect(() => {
+    setCoarsePointer(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry?.isIntersecting ?? false),
+      { threshold: 0.25 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (isPaused) return;
@@ -37,11 +57,18 @@ export function LandingMediaSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="landing-media"
       className="landing-media-theatre relative min-h-[72vh] overflow-hidden bg-black py-24 md:min-h-[85vh] md:py-32"
       aria-labelledby="landing-media-heading"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => {
+        setIsPaused(true);
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsPaused(false);
+        setIsHovered(false);
+      }}
     >
       {/* Background video + overlays */}
       <div className="absolute inset-0" aria-hidden>
@@ -61,8 +88,11 @@ export function LandingMediaSection() {
               muted
               loop
               playsInline
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover"
+              preload="auto"
+              aria-label={activeItem.title}
+              className={`landing-media-bg-video absolute inset-0 h-full w-full rounded-none object-cover ${
+                videoBright ? "landing-media-bg-video--bright" : "landing-media-bg-video--dim"
+              }`}
             />
           </motion.div>
         </AnimatePresence>

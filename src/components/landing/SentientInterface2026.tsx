@@ -13,6 +13,8 @@ import {
   Palette,
 } from "lucide-react";
 import { LANDING_BENTO_ACCENT_RGB, LANDING_NEON } from "@/lib/landing-neon-theme";
+import { LANDING_DEMO_VIDEOS } from "@/lib/landing-demo-videos";
+import { LandingFeatureVideo } from "@/components/landing/LandingFeatureVideo";
 
 interface BentoCard {
   icon: React.ReactNode;
@@ -21,6 +23,7 @@ interface BentoCard {
   accent: "green" | "blue" | "gold";
   tag?: string;
   intentKey: IntentKey;
+  videoSrc?: string;
 }
 
 const STATUS_MESSAGES = [
@@ -49,8 +52,9 @@ const BENTO_CARDS: BentoCard[] = [
     description:
       "Dein eigener KI-Avatar. Einmal trainiert, flexibel nutzbar — in verschiedenen Formaten und Styles.",
     accent: "gold",
-    tag: "Avatar",
-    intentKey: "avatar-live",
+    tag: "Creator",
+    intentKey: "visuals",
+    videoSrc: LANDING_DEMO_VIDEOS.kiInfluencer,
   },
   {
     icon: <Video size={20} />,
@@ -60,6 +64,7 @@ const BENTO_CARDS: BentoCard[] = [
     accent: "blue",
     tag: "Video",
     intentKey: "video-film",
+    videoSrc: LANDING_DEMO_VIDEOS.seedance,
   },
   {
     icon: <Palette size={20} />,
@@ -67,8 +72,9 @@ const BENTO_CARDS: BentoCard[] = [
     description:
       "Deine Markenstimme, Ästhetik und Tonalität werden in jeden Output eingebettet.",
     accent: "gold",
-    tag: "Branding",
+    tag: "LoRA Training",
     intentKey: "visuals",
+    videoSrc: LANDING_DEMO_VIDEOS.loraTraining,
   },
   {
     icon: <TrendingUp size={20} />,
@@ -81,12 +87,13 @@ const BENTO_CARDS: BentoCard[] = [
   },
   {
     icon: <Layers size={20} />,
-    title: "Multi-Provider Tools",
+    title: "KI Avatar",
     description:
-      "fal.ai, Akool, ElevenLabs und mehr — alles unter einer Oberfläche, ohne Switching.",
-    accent: "blue",
-    tag: "20+ Tools",
-    intentKey: "audio",
+      "Digitale Avatare für Social Content, Live-Formate und Kampagnen — konsistent und sofort einsatzbereit.",
+    accent: "green",
+    tag: "Avatar Studio",
+    intentKey: "avatar-live",
+    videoSrc: LANDING_DEMO_VIDEOS.kiAvatar,
   },
 ];
 
@@ -244,6 +251,14 @@ function BentoCardItem({ card }: { card: BentoCard }) {
       <span className="landing-glass-node-shine" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--left" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--right" aria-hidden />
+
+      {card.videoSrc ? (
+        <LandingFeatureVideo
+          src={card.videoSrc}
+          label={card.title}
+          className="-mx-1 mb-1 w-[calc(100%+0.5rem)]"
+        />
+      ) : null}
 
       <div className="flex items-start justify-between">
         <div className="landing-neon-bento-icon flex h-10 w-10 items-center justify-center rounded-xl">

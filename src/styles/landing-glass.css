@@ -223,3 +223,25 @@
     transform: none;
   }
 }
+
+/* Feature card demo video loops */
+.landing-feature-video-wrap {
+  contain: layout style paint;
+}
+
+.landing-feature-video {
+  will-change: opacity;
+}
+
+.landing-media-bg-video {
+  will-change: opacity;
+  transition: opacity 0.55s ease-out;
+}
+
+.landing-media-bg-video--bright {
+  opacity: 1;
+}
+
+.landing-media-bg-video--dim {
+  opacity: 0.55;
+}
