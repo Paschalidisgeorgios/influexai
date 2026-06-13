@@ -249,8 +249,10 @@
 }
 
 .landing-neon-input-submit:hover:not(:disabled) {
-  filter: brightness(1.08);
-  box-shadow: 0 0 16px rgba(var(--ai-cyan-rgb), 0.35);
+  background: #ccff00;
+  color: #000;
+  filter: none;
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.45);
 }
 
 .landing-neon-input-submit:disabled {
