@@ -56,7 +56,7 @@ export function LandingNavV2() {
           className="relative mx-auto hidden items-center gap-6 md:flex"
           aria-label="Hauptnavigation"
         >
-          <div className="relative">
+          <div className="relative z-[60]">
             <button
               type="button"
               className={`landing-glass-nav-link inline-flex items-center gap-1 bg-transparent border-none cursor-pointer ${

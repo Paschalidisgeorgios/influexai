@@ -59,10 +59,10 @@ export function FeatureCategory({
 
   return (
     <div className="min-w-0">
-      <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-zinc-500">
+      <p className="mb-4 border-b border-zinc-800/60 pb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
         {label(`categories.${category.id}`)}
       </p>
-      <div className="mt-4 space-y-4">
+      <div className="space-y-4">
         {category.groups.map((group) => {
           const Icon = group.icon;
           const groupTitle = label(`groups.${group.id}.title`);

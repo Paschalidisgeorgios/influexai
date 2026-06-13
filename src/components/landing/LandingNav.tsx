@@ -180,7 +180,7 @@ export function LandingNav({
                     {t("nav_showcase")}
                   </a>
                 ) : null}
-                <div className="relative">
+                <div className="relative z-[60]">
                   <button
                     type="button"
                     className={`${navLinkClass}${featuresOpen ? " bg-white/[0.08] text-white" : ""}`}

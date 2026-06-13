@@ -34,7 +34,7 @@ export function FeaturesPromoCard({
 
   return (
     <article
-      className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-800/70 bg-zinc-950/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-md${
+      className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-700/50 bg-zinc-900/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]${
         compact ? " min-h-[280px]" : " min-h-[360px]"
       }`}
     >
@@ -51,7 +51,7 @@ export function FeaturesPromoCard({
         <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-[#ccff00]/85">
           {promo(`${variant}.label`)}
         </span>
-        <h3 className="mt-3 font-[family-name:var(--font-bebas)] text-2xl uppercase leading-[0.95] tracking-wide text-white">
+        <h3 className="mt-3 font-[family-name:var(--font-bebas)] text-2xl font-bold uppercase leading-[0.95] tracking-wide text-white">
           {promo(`${variant}.headline`)}
         </h3>
         <p className="mt-2.5 text-[13px] leading-relaxed text-zinc-400">
@@ -59,7 +59,7 @@ export function FeaturesPromoCard({
         </p>
         <Link
           href={promo(`${variant}.href`)}
-          className="features-mega-promo-cta mt-auto inline-flex w-fit items-center justify-center rounded-full bg-[#ccff00] px-5 py-2.5 text-[13px] font-semibold text-zinc-950 no-underline transition-transform hover:scale-[1.02]"
+          className="features-mega-promo-cta mt-auto inline-flex w-fit items-center justify-center rounded-full bg-[#ccff00] px-5 py-2.5 text-[13px] font-semibold text-zinc-950 no-underline transition-transform hover:scale-[1.02] hover:shadow-[0_0_28px_rgba(204,255,0,0.45)]"
           onClick={onNavigate}
         >
           {promo(`${variant}.cta`)}

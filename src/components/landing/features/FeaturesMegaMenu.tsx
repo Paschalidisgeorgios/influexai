@@ -11,8 +11,8 @@ import { useFeaturesMenuLabel, NAV_LABELS_DE } from "@/lib/features-menu-i18n";
 import { FeatureCategory } from "./FeatureCategory";
 import { FeaturesPromoCard } from "./FeaturesPromoCard";
 
-const PANEL_CLASS =
-  "hidden w-[1100px] max-w-[95vw] rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl md:block";
+const PANEL_SURFACE_CLASS =
+  "hidden w-[1150px] max-w-[95vw] rounded-2xl border border-zinc-700/60 bg-zinc-950/95 p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl md:block isolate";
 
 type DesktopProps = {
   open: boolean;
@@ -48,20 +48,20 @@ export function FeaturesMegaMenuDesktop({
   if (!open) return null;
 
   const panelPositionClass = anchored
-    ? "absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2"
-    : "fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.5rem)] z-[100] -translate-x-1/2";
+    ? "absolute top-full left-1/2 z-[100] mt-3 -translate-x-1/2"
+    : "fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.75rem)] z-[100] -translate-x-1/2";
 
   return (
     <>
       <button
         type="button"
-        className="fixed inset-0 z-[90] cursor-default border-none bg-black/30 backdrop-blur-[2px] hidden md:block"
+        className="fixed inset-0 z-[90] hidden cursor-default border-none bg-black/40 md:block"
         aria-label={label("close")}
         onClick={onClose}
       />
       <div
         ref={panelRef}
-        className={`${panelPositionClass} ${PANEL_CLASS}`}
+        className={`${panelPositionClass} ${PANEL_SURFACE_CLASS}`}
         role="dialog"
         aria-modal="true"
         aria-label={label("title")}
