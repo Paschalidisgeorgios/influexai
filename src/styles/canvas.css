@@ -263,10 +263,17 @@
   contain: layout style;
 }
 
-/* Sidebar logo → landing page */
+/* Sidebar logo → landing page (override global Bebas h1) */
 .canvas-logo-link {
   position: relative;
   width: fit-content;
+}
+
+.canvas-logo-title {
+  font-family: var(--font-dm), "DM Sans", system-ui, sans-serif;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .canvas-logo-link::after {

@@ -29,14 +29,16 @@ export function CanvasSidebar() {
           className="canvas-logo-link group block no-underline"
           aria-label="Zurück zur Startseite"
         >
-          <span className="canvas-logo-brand text-xs font-bold tracking-[0.2em] text-zinc-500 transition-colors duration-300 group-hover:text-[#ccff00]">
+          <span className="canvas-logo-brand font-sans text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500 transition-colors duration-300 group-hover:text-[#ccff00]">
             INFLUEX
           </span>
-          <h1 className="canvas-logo-title text-lg font-semibold text-white transition-[color,text-shadow] duration-300 group-hover:text-[#ccff00] group-hover:[text-shadow:0_0_20px_rgba(204,255,0,0.45)]">
+          <h1 className="canvas-logo-title mt-0.5 font-sans text-[15px] font-extrabold uppercase tracking-tighter leading-none text-white transition-[color,text-shadow] duration-300 group-hover:text-[#ccff00] group-hover:[text-shadow:0_0_20px_rgba(204,255,0,0.45)]">
             Creator Studio 2026
           </h1>
         </Link>
-        <p className="mt-1 text-[10px] text-zinc-500">Infinite Canvas Workspace</p>
+        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+          Infinite Canvas Workspace
+        </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
