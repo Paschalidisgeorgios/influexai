@@ -25,6 +25,7 @@ import { CanvasShortcutsHelp } from "./CanvasShortcutsHelp";
 import { CanvasAnalyticsPanel } from "./CanvasAnalyticsPanel";
 import { CanvasNodeErrorBoundary } from "./CanvasNodeErrorBoundary";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 const SafeControlNode = memo(function SafeControlNode(
   props: NodeProps<Node<ControlNodeData, "control">>
@@ -76,6 +77,7 @@ export function InfiniteCanvas() {
   const touchActivity = useOnboardingStore((s) => s.touchActivity);
   const { spacePressed, helpOpen, setHelpOpen, onPaneMouseMove } = useCanvasShortcuts();
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const isTouchCanvas = useCoarsePointer();
 
   const defaultEdgeOptions = useMemo(
     () => ({
@@ -114,7 +116,7 @@ export function InfiniteCanvas() {
     <div
       className={`canvas-flow relative h-full w-full${
         spacePressed ? " canvas-flow--space-pan" : ""
-      }`}
+      }${isTouchCanvas ? " canvas-flow--touch" : ""}`}
     >
       <ReactFlow
         nodes={nodes}
@@ -131,10 +133,12 @@ export function InfiniteCanvas() {
         fitView={false}
         minZoom={0.2}
         maxZoom={2}
-        panOnScroll
-        panOnDrag={false}
-        panActivationKeyCode="Space"
-        selectionOnDrag
+        panOnScroll={!isTouchCanvas}
+        zoomOnPinch
+        zoomOnScroll={!isTouchCanvas}
+        panOnDrag={isTouchCanvas}
+        selectionOnDrag={!isTouchCanvas}
+        panActivationKeyCode={isTouchCanvas ? null : "Space"}
         deleteKeyCode={null}
         proOptions={{ hideAttribution: true }}
         className="bg-transparent"
@@ -145,7 +149,7 @@ export function InfiniteCanvas() {
           size={1}
           color="#27272a"
         />
-        <Controls showInteractive={false} position="bottom-right" />
+        <Controls showInteractive={false} position="bottom-right" className="!hidden md:!flex" />
         <MiniMap
           nodeColor={(n) => {
             if (n.type === "control") return "rgba(183,255,0,0.4)";
@@ -153,7 +157,7 @@ export function InfiniteCanvas() {
             return "rgba(0,213,255,0.4)";
           }}
           maskColor="rgba(0,0,0,0.75)"
-          className="!rounded-xl !border !border-zinc-800/60 !bg-zinc-950/80"
+          className="!hidden !rounded-xl !border !border-zinc-800/60 !bg-zinc-950/80 md:!block"
         />
         <CanvasIntelligenceBridge />
       </ReactFlow>

@@ -24,11 +24,11 @@ export function FeatureItem({
     return (
       <Link
         href={href}
-        className="features-mega-item features-mega-item--mobile"
+        className="flex min-h-11 items-center justify-between border-b border-zinc-900 py-3 text-sm text-zinc-200 no-underline transition-colors active:text-[#ccff00]"
         onClick={onNavigate}
       >
         <span>{label}</span>
-        <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-40" strokeWidth={2} />
+        <ChevronRight className="h-4 w-4 shrink-0 opacity-40" strokeWidth={2} />
       </Link>
     );
   }

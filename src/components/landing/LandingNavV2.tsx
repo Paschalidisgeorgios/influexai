@@ -7,10 +7,8 @@ import { IntentLink } from "@/hooks/useIntentTracking";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { NAV_LABELS_DE } from "@/lib/features-menu-i18n";
-import {
-  FeaturesMegaMenuDesktop,
-  FeaturesMegaMenuMobile,
-} from "@/components/landing/features/FeaturesMegaMenu";
+import { FeaturesMegaMenuDesktop } from "@/components/landing/features/FeaturesMegaMenu";
+import { FeaturesMobileMenuOverlay } from "@/components/landing/features/FeaturesMobileMenuOverlay";
 
 const NAV_LINKS = [
   { label: NAV_LABELS_DE.workflows, href: "#landing-media" },
@@ -30,6 +28,13 @@ export function LandingNavV2() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const closeFeatures = useCallback(() => setFeaturesOpen(false), []);
   const closeMenu = useCallback(() => {
@@ -59,7 +64,7 @@ export function LandingNavV2() {
           <div className="relative z-[60]">
             <button
               type="button"
-              className={`landing-glass-nav-link inline-flex items-center gap-1 bg-transparent border-none cursor-pointer ${
+              className={`landing-glass-nav-link inline-flex items-center gap-1 border-none bg-transparent cursor-pointer ${
                 featuresOpen ? "text-[#ccff00]" : ""
               }`}
               aria-expanded={featuresOpen}
@@ -108,7 +113,7 @@ export function LandingNavV2() {
           </IntentLink>
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-800/60 text-white md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-800/60 text-white md:hidden"
             aria-label={menuOpen ? NAV_LABELS_DE.menuClose : NAV_LABELS_DE.menuOpen}
             aria-expanded={menuOpen}
             onClick={() => {
@@ -132,48 +137,11 @@ export function LandingNavV2() {
         </div>
       </header>
 
-      {menuOpen ? (
-        <div
-          className="fixed inset-0 z-40 md:hidden"
-          role="presentation"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm border-none cursor-default"
-            aria-label={NAV_LABELS_DE.menuClose}
-            onClick={closeMenu}
-          />
-          <div
-            className="absolute right-0 top-14 bottom-0 w-[min(100%,320px)] overflow-y-auto border-l border-zinc-800/60 bg-zinc-950/95 p-5 backdrop-blur-xl"
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="mb-4">
-              <LanguageSwitcher compact glassAuth />
-            </div>
-            <FeaturesMegaMenuMobile onNavigate={closeMenu} />
-            <div className="mt-6 space-y-1 border-t border-zinc-800/60 pt-4">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block rounded-lg px-3 py-2.5 text-sm text-white/80 hover:bg-white/5"
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                href="/auth/sign-in"
-                className="block rounded-lg px-3 py-2.5 text-sm text-white/80 hover:bg-white/5"
-                onClick={closeMenu}
-              >
-                {NAV_LABELS_DE.login}
-              </Link>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <FeaturesMobileMenuOverlay
+        open={menuOpen}
+        onClose={closeMenu}
+        navLinks={NAV_LINKS}
+      />
     </>
   );
 }

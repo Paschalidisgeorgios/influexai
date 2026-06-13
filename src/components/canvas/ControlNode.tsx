@@ -288,7 +288,7 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
   const insufficient = credits !== null && remaining < coins;
 
   return (
-    <div className={`relative w-[min(340px,90vw)]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
+    <div className={`relative w-[90vw] max-w-[360px]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
       {selected ? <CanvasNodeAmbientGlow accentRgb={tool.accentRgb} /> : null}
       <div
         className="canvas-glass-node rounded-2xl border-zinc-700/80 p-4 shadow-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
@@ -347,7 +347,7 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           type="button"
           disabled={nodeData.isGenerating}
           onClick={() => void handleGenerate()}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-black transition-transform hover:scale-[1.02] disabled:opacity-50"
+          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform hover:scale-[1.02] disabled:opacity-50"
           style={{
             background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
           }}

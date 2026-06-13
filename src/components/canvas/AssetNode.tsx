@@ -107,7 +107,7 @@ function AssetNodeComponent({ id, data, selected }: NodeProps<Node<AssetNodeData
         >
           {selected ? <CanvasNodeAmbientGlow accentRgb={accentRgb} /> : null}
           <div
-          className={`canvas-glass-node relative w-[min(320px,88vw)] rounded-2xl border-zinc-700/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-shadow duration-500 ${
+          className={`canvas-glass-node relative w-[90vw] max-w-[360px] rounded-2xl border-zinc-700/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-shadow duration-500 ${
             justCompleted ? "asset-node--revealed" : ""
           } ${loading ? "asset-node--loading" : ""} ${isError ? "asset-node--error" : ""}`}
           style={{

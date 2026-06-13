@@ -66,9 +66,9 @@ export function FeaturesMegaMenuDesktop({
         aria-modal="true"
         aria-label={label("title")}
       >
-        <div className="grid grid-cols-4 gap-8">
+        <div className="hidden md:grid md:grid-cols-4 md:gap-8">
           <div
-            className="col-span-3 grid grid-cols-6 gap-6"
+            className="col-span-3 hidden md:grid md:grid-cols-6 md:gap-6"
             onMouseLeave={() => setPromoVariant(DEFAULT_FEATURE_PROMO)}
           >
             {LANDING_FEATURES_MENU.map((category) => (
@@ -89,7 +89,7 @@ export function FeaturesMegaMenuDesktop({
               </div>
             ))}
           </div>
-          <div className="col-span-1 min-w-0 self-stretch">
+          <div className="col-span-1 hidden min-w-0 self-stretch md:block">
             <FeaturesPromoCard variant={promoVariant} onNavigate={onClose} />
           </div>
         </div>

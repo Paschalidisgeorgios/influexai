@@ -2,6 +2,14 @@
   background: #08080a;
 }
 
+.canvas-flow--touch .react-flow__pane {
+  touch-action: none;
+}
+
+.canvas-flow--touch .react-flow__node {
+  touch-action: manipulation;
+}
+
 .canvas-flow .react-flow__edge-path {
   stroke-width: 2;
 }

@@ -8,7 +8,7 @@ type AuthTwoColumnShellProps = {
 
 export function AuthTwoColumnShell({ children }: AuthTwoColumnShellProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#050505] p-4">
+    <div className="flex min-h-[100dvh] items-center justify-center overflow-x-clip bg-[#050505] p-4">
       <div className="relative grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-2xl border border-zinc-700/60 bg-zinc-950/50 shadow-2xl backdrop-blur-xl md:grid-cols-2">
         <div className="relative flex flex-col justify-center p-8 md:p-12">
           <div className="absolute top-4 right-4 z-10">

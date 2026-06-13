@@ -26,7 +26,7 @@ export function HeroKineticHeadline() {
   const activeWord = HERO_KINETIC_WORDS[wordIndex];
 
   return (
-    <h1 className="mb-8 font-sans text-5xl font-extrabold uppercase tracking-tight text-white antialiased md:text-6xl">
+    <h1 className="mb-6 font-sans text-3xl font-extrabold uppercase tracking-tight text-white antialiased sm:text-4xl md:mb-8 md:text-5xl lg:text-6xl">
       <span className="block text-white">{LANDING_HERO_2026.headline.staticPrefix}</span>
       <span className="relative mt-1 block min-h-[1.2em] w-full max-w-full">
         <span className="invisible block whitespace-nowrap" aria-hidden>

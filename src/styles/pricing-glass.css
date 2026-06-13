@@ -176,8 +176,9 @@
   gap: 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scroll-padding-inline: 1rem;
-  padding-bottom: 0.75rem;
+  padding-bottom: 1.5rem;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -210,6 +211,7 @@
 .pricing-plans-grid > * {
   flex: 0 0 min(88vw, 300px);
   scroll-snap-align: center;
+  scroll-snap-stop: always;
 }
 
 @media (min-width: 768px) {

@@ -1,8 +1,16 @@
 "use client";
 
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import type { FeatureMenuCategory } from "@/lib/landing-features-menu";
 import { useFeaturesMenuLabel } from "@/lib/features-menu-i18n";
 import { FeatureItem } from "./FeatureItem";
+
+const accordionVariants = {
+  collapsed: { height: 0, opacity: 0 },
+  open: { height: "auto", opacity: 1 },
+};
 
 type Props = {
   category: FeatureMenuCategory;
@@ -18,28 +26,38 @@ export function FeatureCategory({
   defaultOpen = false,
 }: Props) {
   const { label } = useFeaturesMenuLabel();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   if (variant === "mobile") {
     return (
-      <details className="features-mega-accordion" open={defaultOpen}>
-        <summary className="features-mega-accordion__summary">
+      <div className="border-b border-zinc-800/60">
+        <button
+          type="button"
+          onClick={() => setIsOpen((v) => !v)}
+          aria-expanded={isOpen}
+          className="flex min-h-12 w-full items-center justify-between py-3 text-left font-mono text-[11px] font-bold uppercase tracking-widest text-zinc-400"
+        >
           {label(`categories.${category.id}`)}
-        </summary>
-        <div className="features-mega-accordion__body">
-          {category.groups.map((group) => {
-            const Icon = group.icon;
-            return (
-              <div key={group.id} className="mb-5 last:mb-0">
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="features-mega-icon features-mega-icon--sm">
-                    <Icon className="h-4 w-4" strokeWidth={1.6} />
-                  </span>
-                  <span className="text-sm font-semibold text-white/90">
-                    {label(`groups.${group.id}.title`)}
-                  </span>
-                </div>
-                <div className="space-y-1 pl-1">
-                  {group.items.map((item) => (
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
+              isOpen ? "rotate-180 text-[#ccff00]" : "text-zinc-500"
+            }`}
+            strokeWidth={2}
+          />
+        </button>
+        <AnimatePresence initial={false}>
+          {isOpen ? (
+            <motion.div
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              variants={accordionVariants}
+              transition={{ duration: 0.28, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="pb-2">
+                {category.groups.map((group) =>
+                  group.items.map((item) => (
                     <FeatureItem
                       key={item.id}
                       href={item.href}
@@ -47,13 +65,13 @@ export function FeatureCategory({
                       onNavigate={onNavigate}
                       variant="mobile"
                     />
-                  ))}
-                </div>
+                  ))
+                )}
               </div>
-            );
-          })}
-        </div>
-      </details>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
     );
   }
 

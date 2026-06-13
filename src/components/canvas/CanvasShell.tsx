@@ -9,6 +9,7 @@ import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
 import { resolveToolIdFromPath } from "@/lib/canvas/toolApiSchema";
 import { useCanvasStore } from "@/lib/canvas/canvas-store";
 import { CanvasSidebar } from "./CanvasSidebar";
+import { CanvasMobileNav } from "./CanvasMobileNav";
 import { CanvasHeader } from "./CanvasHeader";
 import { InfiniteCanvas } from "./InfiniteCanvas";
 import { OnboardingAgentShell } from "./onboarding/OnboardingAgentShell";
@@ -63,7 +64,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
       <PlanGateProvider>
         <ReactFlowProvider>
           <OnboardingAgentShell>
-            <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-white">
+            <div className="flex h-[100dvh] w-full flex-col overflow-x-clip overflow-y-hidden bg-[#050505] text-white">
               <div className="studio-glass-dot-grid relative flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="glass-ambient-layer" aria-hidden>
                   <div className="glass-ambient-glow glass-ambient-glow--violet" />
@@ -72,11 +73,12 @@ export function CanvasShell({ children }: CanvasShellProps) {
                 <div className="studio-glass-glow studio-glass-glow--violet pointer-events-none" aria-hidden />
                 <div className="studio-glass-glow studio-glass-glow--green pointer-events-none" aria-hidden />
                 <CanvasHeader />
-                <div className="relative z-[1] flex min-h-0 flex-1">
+                <div className="relative z-[1] flex min-h-0 flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
                   <CanvasSidebar />
                   <div className="relative min-w-0 flex-1">
                     <InfiniteCanvas />
                   </div>
+                  <CanvasMobileNav />
                 </div>
               </div>
             </div>
