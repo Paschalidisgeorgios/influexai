@@ -146,20 +146,34 @@ export function AgencyLandingPage() {
             <span className="studio-glass-kicker">{t("how.kicker")}</span>
             <h2 className="landing-heading text-4xl mb-12">{t("how.headline")}</h2>
           </RevealUp>
-          <div className="relative pl-8 border-l border-[#ccff00]/25 space-y-10">
+          <div className="relative">
             {STEP_KEYS.map((key, i) => (
               <RevealUp key={key} delay={i * 0.06}>
-                <div className="relative">
+                <div className="relative mb-8 flex items-start gap-6 last:mb-0">
+                  {i < STEP_KEYS.length - 1 ? (
+                    <span
+                      className="pointer-events-none absolute left-5 top-10 z-0 h-[calc(100%+2rem-2.5rem)] w-px -translate-x-1/2 bg-zinc-800"
+                      aria-hidden
+                    />
+                  ) : null}
                   <span
-                    className="absolute -left-[calc(2rem+5px)] top-0 w-10 h-10 rounded-full font-bold flex items-center justify-center text-sm text-black"
-                    style={{ background: NEON }}
+                    className="relative z-[1] flex h-10 w-10 min-w-[40px] shrink-0 items-center justify-center rounded-full bg-[#ccff00] font-mono text-sm font-bold text-black"
+                    aria-hidden
                   >
                     {i + 1}
                   </span>
-                  <h3 className="font-bold text-[#F0EFE8] mb-1">
-                    {t(`how.${key}_title`)}
-                  </h3>
-                  <p className="text-sm text-white/80">{t(`how.${key}_text`)}</p>
+                  <div className="relative z-[1] min-w-0 flex-1 pt-0.5">
+                    <p
+                      role="heading"
+                      aria-level={3}
+                      className="mb-1 block font-sans text-lg font-extrabold uppercase tracking-wide leading-snug text-white"
+                    >
+                      {t(`how.${key}_title`)}
+                    </p>
+                    <p className="font-sans text-sm font-normal leading-relaxed text-zinc-400">
+                      {t(`how.${key}_text`)}
+                    </p>
+                  </div>
                 </div>
               </RevealUp>
             ))}
