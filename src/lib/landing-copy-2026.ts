@@ -16,13 +16,19 @@ export type LandingFeatureCardCopy = {
   videoSrc?: string;
 };
 
+export const HERO_KINETIC_WORDS = [
+  "VIRALE HOOKS.",
+  "KI-AVATARE.",
+  "CINEMATIC VIDEOS.",
+  "FOTOREALISTISCHE VISUALS.",
+  "AUTOMATISIERTEN CONTENT.",
+  "PRODUKT-KAMPAGNEN.",
+] as const;
+
 export const LANDING_HERO_2026 = {
   kicker: "Infinite Workspace · Creator Studio 2026",
   headline: {
-    line1: "DEIN",
-    line2: "INFINITE",
-    line3: "WORKSPACE.",
-    accentLine: 3 as const,
+    staticPrefix: "DEIN STUDIO FÜR ",
   },
   subline:
     "Vom viralen Skript bis zum filmischen B-Roll-Video — auf einem unendlichen Canvas, gesteuert von Claude, optimiert durch den Viral-Predictor und gerendert mit Seedance & Kling. Ein Studio. Null Kontextwechsel.",

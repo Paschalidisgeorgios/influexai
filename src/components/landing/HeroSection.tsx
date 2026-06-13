@@ -10,6 +10,7 @@ import {
   type ConciergeToolId,
 } from "@/lib/claude-concierge";
 import { LandingHeroBackground } from "./LandingHeroBackground";
+import { HeroKineticHeadline } from "./HeroKineticHeadline";
 import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
 import "@/styles/canvas.css";
 
@@ -106,13 +107,7 @@ export function HeroSection() {
             {LANDING_HERO_2026.kicker}
           </p>
 
-          <h1 className="landing-glass-heading mb-4 text-[clamp(2rem,6.5vw,4.25rem)] leading-[1.02] text-white">
-            {LANDING_HERO_2026.headline.line1}
-            <br />
-            {LANDING_HERO_2026.headline.line2}
-            <br />
-            <span className="text-[#ccff00]">{LANDING_HERO_2026.headline.line3}</span>
-          </h1>
+          <HeroKineticHeadline />
 
           <p
             className="mb-8 max-w-lg text-base leading-relaxed text-white/70 md:max-w-none"
