@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sanitizeAuthRedirect } from "@/lib/auth-redirect";
 
-export type OAuthProvider = "google" | "apple";
+export type OAuthProvider = "google";
 
 export function buildOAuthCallbackUrl(redirectPath?: string | null): string {
   if (typeof window === "undefined") return "/auth/callback";
