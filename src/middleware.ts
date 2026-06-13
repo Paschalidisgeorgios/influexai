@@ -8,7 +8,12 @@ import {
   isTenantAccessible,
 } from "@/lib/tenant";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
-import { isValidLocale, locales, resolveLocaleFromRequest } from "@/lib/locale";
+import {
+  defaultLocale,
+  isValidLocale,
+  locales,
+  resolveLocaleFromRequest,
+} from "@/lib/locale";
 import {
   REFERRAL_REF_COOKIE,
   REFERRAL_REF_MAX_AGE,
@@ -326,10 +331,12 @@ export async function middleware(request: NextRequest) {
       sameSite: "lax",
     });
   } else if (!existingLocale) {
-    const locale = resolveLocaleFromRequest(
-      undefined,
-      request.headers.get("accept-language")
-    );
+    const locale = isPlatformHost
+      ? defaultLocale
+      : resolveLocaleFromRequest(
+          undefined,
+          request.headers.get("accept-language")
+        );
     supabaseResponse.cookies.set("locale", locale, {
       maxAge: 60 * 60 * 24 * 365,
       path: "/",

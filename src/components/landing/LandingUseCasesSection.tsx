@@ -96,7 +96,7 @@ function UseCaseGlassNode({
         {subtitle}
       </p>
       <p
-        className="mb-5 flex-1 text-sm leading-relaxed text-white/55"
+        className="mb-5 flex-1 text-sm leading-relaxed text-white/65"
         style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
       >
         {desc}

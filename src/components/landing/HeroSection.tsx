@@ -111,7 +111,7 @@ export function HeroSection() {
 
       <div className="relative z-20 w-full px-5 pt-24 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
         <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(560px,38vw)] md:text-left">
-          <p className="landing-neon-kicker mb-6 font-mono text-[11px] tracking-[0.14em]">
+          <p className="landing-neon-kicker mb-6 font-mono text-[11px] tracking-[0.14em] drop-shadow-[0_1px_10px_rgba(0,0,0,0.9)]">
             {LANDING_HERO_2026.kicker}
           </p>
 

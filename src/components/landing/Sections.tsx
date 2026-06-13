@@ -288,7 +288,7 @@ export function PricingSection() {
   const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
 
   return (
-    <section id="pricing" className="relative bg-transparent py-4 text-white">
+    <section id="pricing" className="relative bg-transparent px-4 py-4 text-white sm:px-6">
       <div className="mx-auto max-w-[1200px] text-center">
         <SpringReveal>
           <span className="pricing-glass-kicker mb-2 block">{t("kicker")}</span>
@@ -385,23 +385,20 @@ function LandingPreFooterCta() {
           <br />
           <span className="acid-highlight">{t("headline3")}</span>
         </h2>
-        <p
-          className="mb-6 text-[0.9rem] leading-[1.65]"
-          style={{ color: "var(--wd)" }}
-        >
+        <p className="mb-6 text-[0.9rem] leading-[1.65] text-white/75">
           {t("sub1")}
           <br />
           {t("sub2")}
         </p>
         <div className="flex flex-col flex-wrap justify-center gap-2.5 sm:flex-row">
-          <AcidMotionButton href="/auth/sign-up" className="btn-acid justify-center">
+          <Link href="/auth/sign-up" className="landing-glass-btn-cta justify-center no-underline">
             {t("primary", priceParams)}
-          </AcidMotionButton>
-          <a href="#brands" className="btn-ghost justify-center">
+          </Link>
+          <a href="#brands" className="landing-neon-btn-secondary justify-center">
             {t("secondary")}
           </a>
         </div>
-        <p className="mt-3 text-[0.75rem]" style={{ color: "var(--grey)" }}>
+        <p className="mt-3 text-[0.75rem] text-white/55">
           {t("note", priceParams)}
         </p>
       </div>
@@ -454,7 +451,7 @@ const FOOTER_COL_HEADING_CLASS =
   "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-white/60";
 
 const FOOTER_SOCIAL_CLASS =
-  "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
+  "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-white/55 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
 
 const trustHighlight = {
   accent: (chunks: React.ReactNode) => (
@@ -528,7 +525,7 @@ export function LandingFooter() {
                   </span>
                 </span>
               </Link>
-              <p className="mt-1 max-w-[210px] font-sans text-xs text-zinc-500">
+              <p className="mt-1 max-w-[210px] font-sans text-xs text-white/55">
                 {t("tagline")}
               </p>
             </div>
@@ -563,7 +560,7 @@ export function LandingFooter() {
             </div>
           </div>
 
-          <div className="mb-6 mt-8 grid w-full grid-cols-1 gap-4 rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4 font-sans text-xs text-zinc-400 backdrop-blur-xl md:grid-cols-2">
+          <div className="mb-6 mt-8 grid w-full grid-cols-1 gap-4 rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4 font-sans text-xs text-white/60 backdrop-blur-xl md:grid-cols-2">
             <p>
               {t.rich("trust.operated_from_germany", trustHighlight)}
             </p>
@@ -583,11 +580,12 @@ export function LandingFooter() {
           <PoweredByFooter />
 
           <div className="flex flex-col items-center gap-4 border-t border-zinc-800/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="order-3 font-mono text-[11px] text-zinc-600 sm:order-1 sm:text-left">
+            <p className="order-3 font-mono text-[11px] text-white/50 sm:order-1 sm:text-left">
               © 2026 InfluexAI · Hechingen, DE
             </p>
             <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
               {[
+                { href: "/pricing", label: "Preise" },
                 { href: "/datenschutz", label: "Datenschutz" },
                 { href: "/impressum", label: "Impressum" },
                 { href: "/agb", label: "AGB" },

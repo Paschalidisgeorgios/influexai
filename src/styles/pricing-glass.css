@@ -231,7 +231,7 @@
   flex-direction: column;
   border-radius: 1rem;
   border: 1px solid rgba(63, 63, 70, 0.6);
-  background: rgba(9, 9, 11, 0.6);
+  background: rgba(9, 9, 11, 0.72);
   padding: clamp(1.25rem, 3vw, 1.75rem);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -403,7 +403,7 @@
   text-align: center;
   font-family: var(--font-dm), "DM Sans", sans-serif;
   font-size: 0.83rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .pricing-glass-footnote a {

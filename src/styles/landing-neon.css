@@ -176,7 +176,7 @@
   background: var(--surface-glass);
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
   backdrop-filter: blur(12px);
   transition:
