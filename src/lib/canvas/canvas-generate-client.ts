@@ -60,8 +60,11 @@ function buildRequestBody(
       return { input: params.input ?? params.prompt ?? params.topic };
     case "trend-script":
       return {
-        topic: params.topic ?? params.prompt,
-        plattform: params.plattform ?? "TikTok",
+        topic: params.trend_thema ?? params.topic ?? params.prompt,
+        platform: params.plattform ?? "TikTok",
+        videoLength: params.video_laenge ?? "60s",
+        scriptInput: params.script_input,
+        toolId: "trend-script",
       };
     default:
       return { ...params };
@@ -110,13 +113,20 @@ function parseApiResponse(
   const text =
     typeof body.text === "string"
       ? body.text
-      : typeof body.output === "string"
-        ? body.output
-        : Array.isArray(body.hooks)
-          ? (body.hooks as string[]).join("\n\n")
-          : undefined;
+      : typeof body.script === "string"
+        ? body.script
+        : typeof body.output === "string"
+          ? body.output
+          : Array.isArray(body.hooks)
+            ? (body.hooks as string[]).join("\n\n")
+            : undefined;
 
-  return { text, url, previewUrl, data: body.data };
+  const data =
+    body.data && typeof body.data === "object"
+      ? body.data
+      : undefined;
+
+  return { text, url, previewUrl, data };
 }
 
 async function mockGeneration(

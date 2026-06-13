@@ -1,0 +1,69 @@
+{
+  "updated": "2026-06-03",
+  "trending_keywords": [
+    { "term": "POV", "weight": 8, "tags": ["shorts", "tiktok", "ugc", "storytelling"] },
+    { "term": "Cinematic", "weight": 9, "tags": ["video", "film", "reels"] },
+    { "term": "UGC", "weight": 8, "tags": ["ads", "authentic", "social"] },
+    { "term": "Cyberpunk", "weight": 7, "tags": ["visuals", "neon", "tech"] },
+    { "term": "Aesthetic", "weight": 7, "tags": ["visuals", "lifestyle", "mood"] },
+    { "term": "Day in my life", "weight": 6, "tags": ["vlog", "creator", "routine"] },
+    { "term": "Get ready with me", "weight": 6, "tags": ["beauty", "lifestyle", "shorts"] },
+    { "term": "Storytime", "weight": 7, "tags": ["hooks", "narrative", "tiktok"] },
+    { "term": "Behind the scenes", "weight": 6, "tags": ["brand", "authentic", "bts"] },
+    { "term": "AI Workflow", "weight": 8, "tags": ["tech", "automation", "creator"] }
+  ],
+  "viral_niches": [
+    {
+      "id": "greek-aesthetic",
+      "label": "Griechische Ästhetik",
+      "aliases": ["greek aesthetic", "greekcore", "mediterranean", "santorini vibe", "griechisch"],
+      "boost": 25,
+      "tags": ["visuals", "lifestyle", "travel"]
+    },
+    {
+      "id": "crypto-lifestyle",
+      "label": "Krypto-Lifestyle",
+      "aliases": ["crypto lifestyle", "web3 creator", "bitcoin lifestyle", "krypto", "defi content"],
+      "boost": 25,
+      "tags": ["finance", "tech", "luxury"]
+    },
+    {
+      "id": "ai-automation",
+      "label": "AI-Automations",
+      "aliases": ["ai automation", "ki automatisierung", "ai tools", "creator ai stack", "no-code ai"],
+      "boost": 25,
+      "tags": ["tech", "saas", "productivity"]
+    },
+    {
+      "id": "fitness-biohacking",
+      "label": "Fitness Biohacking",
+      "aliases": ["biohacking", "fitness creator", "gym aesthetic", "longevity"],
+      "boost": 22,
+      "tags": ["health", "fitness", "routine"]
+    },
+    {
+      "id": "quiet-luxury",
+      "label": "Quiet Luxury",
+      "aliases": ["quiet luxury", "old money aesthetic", "stealth wealth", "minimal luxury"],
+      "boost": 20,
+      "tags": ["fashion", "lifestyle", "brand"]
+    },
+    {
+      "id": "solopreneur",
+      "label": "Solopreneur Content",
+      "aliases": ["solopreneur", "one person business", "indie hacker", "creator business"],
+      "boost": 22,
+      "tags": ["business", "startup", "creator"]
+    }
+  ],
+  "boost_modifiers": [
+    { "term": "hyper-realistic", "weight": 5, "aliases": ["hyperrealistic", "photorealistic", "8k"] },
+    { "term": "moody lighting", "weight": 5, "aliases": ["dramatic light", "low key", "neon glow"] },
+    { "term": "slow motion", "weight": 4, "aliases": ["slowmo", "slow-mo", "120fps"] },
+    { "term": "viral hook", "weight": 6, "aliases": ["scroll stopper", "pattern interrupt", "hook"] },
+    { "term": "raw authentic", "weight": 5, "aliases": ["authentic", "unfiltered", "real talk"] },
+    { "term": "trending audio", "weight": 4, "aliases": ["viral sound", "trend sound", "tiktok sound"] },
+    { "term": "vertical 9:16", "weight": 4, "aliases": ["9:16", "shorts format", "reels format"] },
+    { "term": "faceless", "weight": 4, "aliases": ["faceless channel", "no face", "screen recording"] }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "updated": "2026-06-03",
+  "vectors": [
+    {
+      "id": "broll-coffee-pour",
+      "visualPrompt": "Cinematic slow-motion pour-over coffee, steam rising, warm golden morning light, shallow depth of field, 4K B-roll",
+      "tags": ["coffee", "morning", "routine", "lifestyle", "warm", "b-roll"],
+      "trendWeight": 0.93
+    },
+    {
+      "id": "broll-city-night",
+      "visualPrompt": "Neon-lit cyberpunk city street at night, rain reflections, handheld gimbal walk, moody teal and magenta grade",
+      "tags": ["city", "night", "cyberpunk", "neon", "urban", "cinematic"],
+      "trendWeight": 0.91
+    },
+    {
+      "id": "broll-gym-macro",
+      "visualPrompt": "Macro shot of hands chalking up before deadlift, gritty gym atmosphere, high contrast, slow motion",
+      "tags": ["fitness", "gym", "workout", "macro", "motivation", "sport"],
+      "trendWeight": 0.89
+    },
+    {
+      "id": "broll-laptop-cafe",
+      "visualPrompt": "Over-shoulder shot of creator typing on laptop in aesthetic café, soft bokeh, natural daylight, UGC authenticity",
+      "tags": ["creator", "work", "laptop", "cafe", "ugc", "solopreneur"],
+      "trendWeight": 0.88
+    },
+    {
+      "id": "broll-product-unbox",
+      "visualPrompt": "Top-down product unboxing on marble surface, satisfying peel of protective film, crisp product hero lighting",
+      "tags": ["product", "unboxing", "ecommerce", "ads", "commercial", "b-roll"],
+      "trendWeight": 0.9
+    },
+    {
+      "id": "broll-coast-drone",
+      "visualPrompt": "Aerial drone glide over Mediterranean coastline, Greek white architecture, turquoise water, golden hour",
+      "tags": ["travel", "greece", "aesthetic", "drone", "coast", "lifestyle"],
+      "trendWeight": 0.92
+    },
+    {
+      "id": "broll-ai-dashboard",
+      "visualPrompt": "Screen capture style AI analytics dashboard with glowing charts, dark UI, green accent data pulses, tech B-roll",
+      "tags": ["ai", "tech", "automation", "saas", "dashboard", "crypto"],
+      "trendWeight": 0.87
+    },
+    {
+      "id": "broll-skincare-routine",
+      "visualPrompt": "Soft beauty B-roll of skincare routine application, dewy skin close-up, pastel bathroom, gentle camera push-in",
+      "tags": ["beauty", "skincare", "routine", "grwm", "aesthetic", "ugc"],
+      "trendWeight": 0.86
+    },
+    {
+      "id": "broll-food-sizzle",
+      "visualPrompt": "Sizzling pan close-up with steam and oil splash, overhead hero food shot, vibrant colors, appetizing macro",
+      "tags": ["food", "cooking", "restaurant", "macro", "commercial", "b-roll"],
+      "trendWeight": 0.88
+    },
+    {
+      "id": "broll-crypto-lifestyle",
+      "visualPrompt": "Luxury minimalist apartment, creator reviewing charts on phone, sunset through floor-to-ceiling windows, aspirational",
+      "tags": ["crypto", "finance", "lifestyle", "luxury", "trading", "wealth"],
+      "trendWeight": 0.9
+    }
+  ]
+}

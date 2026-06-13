@@ -13,8 +13,10 @@ import {
 } from "@xyflow/react";
 import { getToolDefinition, type ToolId } from "./toolApiSchema";
 import { canConnect, applyConnectionToParams } from "./connection-rules";
+import type { BrollMatch } from "@/utils/brollSearch";
+import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
 
-export type NodeKind = "control" | "asset";
+export type NodeKind = "control" | "asset" | "broll-recommend";
 
 export interface ControlNodeData {
   kind: "control";
@@ -49,7 +51,15 @@ export interface AssetNodeData extends AssetOutput {
   [key: string]: unknown;
 }
 
-export type CanvasNodeData = ControlNodeData | AssetNodeData;
+export interface BrollRecommendNodeData {
+  kind: "broll-recommend";
+  sourceAssetId: string;
+  segmentLabel: string;
+  match: BrollMatch;
+  [key: string]: unknown;
+}
+
+export type CanvasNodeData = ControlNodeData | AssetNodeData | BrollRecommendNodeData;
 
 export type CanvasNode = Node<CanvasNodeData>;
 export type CanvasEdge = Edge;
@@ -100,6 +110,22 @@ interface CanvasState {
     sourceAssetId: string,
     targetControlId: string,
     paramKey: string
+  ) => void;
+  spawnBrollRecommendNodes: (
+    sourceAssetId: string,
+    matches: BrollMatch[],
+    anchor: { x: number; y: number }
+  ) => void;
+  removeBrollForSource: (sourceAssetId: string) => void;
+  spawnVideoFromBroll: (
+    sourceAssetId: string,
+    match: BrollMatch,
+    recommendNodeId?: string
+  ) => string;
+  spawnPremiumVideoTiles: (
+    sourceAssetId: string,
+    segments: PremiumBrollSegment[],
+    anchor: { x: number; y: number }
   ) => void;
 }
 
@@ -299,11 +325,26 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       ),
     }),
 
-  removeNode: (nodeId) =>
+  removeNode: (nodeId) => {
+    const removed = get().nodes.find((n) => n.id === nodeId);
+    const orphanBroll =
+      removed?.data.kind === "asset"
+        ? get().nodes.filter(
+            (n) =>
+              n.data.kind === "broll-recommend" &&
+              (n.data as BrollRecommendNodeData).sourceAssetId === nodeId
+          )
+        : [];
+
+    const removeIds = new Set([nodeId, ...orphanBroll.map((n) => n.id)]);
+
     set({
-      nodes: get().nodes.filter((n) => n.id !== nodeId),
-      edges: get().edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
-    }),
+      nodes: get().nodes.filter((n) => !removeIds.has(n.id)),
+      edges: get().edges.filter(
+        (e) => !removeIds.has(e.source) && !removeIds.has(e.target)
+      ),
+    });
+  },
 
   spawnFollowUp: (assetNodeId, followUpToolId) => {
     const asset = get().nodes.find((n) => n.id === assetNodeId);
@@ -319,6 +360,158 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       get().applyDropConnection(assetNodeId, controlId, param.key);
     }
     return controlId;
+  },
+
+  spawnBrollRecommendNodes: (sourceAssetId, matches, anchor) => {
+    const newNodes: CanvasNode[] = matches.map((match, index) => ({
+      id: `broll-rec-${sourceAssetId}-${match.segmentIndex}-${Date.now()}-${index}`,
+      type: "brollRecommend",
+      position: { x: anchor.x, y: anchor.y + index * 168 },
+      data: {
+        kind: "broll-recommend",
+        sourceAssetId,
+        segmentLabel: `Abschnitt ${match.segmentIndex + 1}`,
+        match,
+      },
+      draggable: true,
+      selectable: true,
+    }));
+
+    const newEdges: CanvasEdge[] = matches.map((match, index) =>
+      laserEdge(
+        `e-broll-${sourceAssetId}-${match.segmentIndex}-${index}`,
+        sourceAssetId,
+        newNodes[index]!.id,
+        "broll-match"
+      )
+    );
+
+    set((s) => ({
+      nodes: [...s.nodes, ...newNodes],
+      edges: [...s.edges, ...newEdges],
+    }));
+  },
+
+  removeBrollForSource: (sourceAssetId) => {
+    const brollIds = get()
+      .nodes.filter(
+        (n) =>
+          n.data.kind === "broll-recommend" &&
+          (n.data as BrollRecommendNodeData).sourceAssetId === sourceAssetId
+      )
+      .map((n) => n.id);
+
+    if (brollIds.length === 0) return;
+
+    const removeSet = new Set(brollIds);
+    set({
+      nodes: get().nodes.filter((n) => !removeSet.has(n.id)),
+      edges: get().edges.filter(
+        (e) => !removeSet.has(e.source) && !removeSet.has(e.target)
+      ),
+    });
+  },
+
+  spawnVideoFromBroll: (sourceAssetId, match, recommendNodeId) => {
+    const source = get().nodes.find((n) => n.id === sourceAssetId);
+    const recommend = recommendNodeId
+      ? get().nodes.find((n) => n.id === recommendNodeId)
+      : null;
+
+    const pos = recommend
+      ? { x: recommend.position.x + 320, y: recommend.position.y }
+      : source
+        ? { x: source.position.x + 760, y: source.position.y }
+        : nextSpawnPosition(get(), undefined);
+
+    const controlId = get().spawnControlNode("seedance-video", pos);
+    get().updateControlParams(controlId, { prompt: match.visualPrompt });
+    get().applyDropConnection(sourceAssetId, controlId, "script_ref");
+
+    if (recommendNodeId) {
+      set((s) => ({
+        edges: [
+          ...s.edges,
+          laserEdge(
+            `e-broll-launch-${recommendNodeId}-${controlId}`,
+            recommendNodeId,
+            controlId,
+            "video-pipeline"
+          ),
+        ],
+      }));
+    }
+
+    return controlId;
+  },
+
+  spawnPremiumVideoTiles: (sourceAssetId, segments, anchor) => {
+    if (segments.length === 0) return;
+
+    get().removeBrollForSource(sourceAssetId);
+
+    const newEdges: CanvasEdge[] = [];
+    const newNodes: CanvasNode[] = [];
+
+    segments.forEach((segment, index) => {
+      const pos = { x: anchor.x, y: anchor.y + index * 200 };
+      const controlId = `control-seedance-video-${Date.now()}-${index}`;
+      const node: CanvasNode = {
+        id: controlId,
+        type: "control",
+        position: pos,
+        data: {
+          kind: "control",
+          toolId: "seedance-video",
+          params: {
+            ...defaultParams("seedance-video"),
+            prompt: segment.broll_prompt,
+          },
+          isGenerating: false,
+        },
+      };
+      newNodes.push(node);
+      newEdges.push(
+        laserEdge(
+          `e-premium-${sourceAssetId}-${controlId}`,
+          sourceAssetId,
+          controlId,
+          "premium-broll"
+        )
+      );
+    });
+
+    set((s) => ({
+      nodes: [...s.nodes, ...newNodes],
+      edges: [...s.edges, ...newEdges],
+    }));
+
+    const source = get().nodes.find((n) => n.id === sourceAssetId);
+    if (!source || source.data.kind !== "asset") return;
+
+    const assetData = source.data as AssetNodeData;
+    const scriptValue = applyConnectionToParams("script_ref", {
+      type: assetData.outputType as never,
+      text: assetData.text,
+      url: assetData.url,
+      data: assetData.data,
+    });
+
+    set({
+      nodes: get().nodes.map((n) => {
+        if (!newNodes.some((created) => created.id === n.id)) return n;
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            params: {
+              ...(n.data as ControlNodeData).params,
+              script_ref: scriptValue,
+            },
+          },
+        };
+      }),
+    });
   },
 
   applyDropConnection: (sourceAssetId, targetControlId, paramKey) => {

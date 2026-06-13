@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { Sparkles } from "lucide-react";
 import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
@@ -19,6 +19,26 @@ import {
 import { ParamFields } from "./ParamFields";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
+import { ViralPredictorPanel } from "@/components/canvas/ViralPredictorPanel";
+import { useCreatorProfile } from "@/hooks/useCreatorProfile";
+import {
+  appendKeywordToPrompt,
+  buildPromptFromParams,
+  computeViralPrediction,
+  getPrimaryPromptParamKey,
+} from "@/utils/viralPredictor";
+import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
+
+function isPremiumScriptData(
+  data: unknown
+): data is { brollSegments: PremiumBrollSegment[]; source?: string } {
+  return (
+    !!data &&
+    typeof data === "object" &&
+    Array.isArray((data as { brollSegments?: unknown }).brollSegments) &&
+    (data as { brollSegments: unknown[] }).brollSegments.length > 0
+  );
+}
 
 function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "control">>) {
   const nodeData = data;
@@ -27,11 +47,56 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
   const updateControlParams = useCanvasStore((s) => s.updateControlParams);
   const setControlGenerating = useCanvasStore((s) => s.setControlGenerating);
   const spawnAssetNode = useCanvasStore((s) => s.spawnAssetNode);
+  const spawnPremiumVideoTiles = useCanvasStore((s) => s.spawnPremiumVideoTiles);
   const updateAssetNode = useCanvasStore((s) => s.updateAssetNode);
   const recordGeneration = useCanvasAnalyticsStore((s) => s.recordGeneration);
   const [topUpOpen, setTopUpOpen] = useState(false);
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
+  const { profile } = useCreatorProfile();
+
+  const promptText = useMemo(
+    () => buildPromptFromParams(nodeData.params, tool?.params ?? []),
+    [nodeData.params, tool?.params]
+  );
+
+  const promptParamKey = useMemo(
+    () => getPrimaryPromptParamKey(tool?.params ?? []),
+    [tool?.params]
+  );
+
+  const studioContext = useMemo(
+    () => ({
+      nische: profile?.nische,
+      zielgruppe: profile?.zielgruppe,
+      plattformen: profile?.plattformen,
+      tonalitaet: profile?.tonalitaet,
+    }),
+    [profile?.nische, profile?.plattformen, profile?.tonalitaet, profile?.zielgruppe]
+  );
+
+  const viralPrediction = useMemo(
+    () =>
+      computeViralPrediction(promptText, studioContext, {
+        outputType: tool?.outputType,
+        keywordLimit: 3,
+      }),
+    [promptText, studioContext, tool?.outputType]
+  );
+
+  const handleTrendKeyword = useCallback(
+    (keyword: string) => {
+      if (!promptParamKey) return;
+      const current =
+        typeof nodeData.params[promptParamKey] === "string"
+          ? (nodeData.params[promptParamKey] as string)
+          : promptText;
+      updateControlParams(id, {
+        [promptParamKey]: appendKeywordToPrompt(current, keyword),
+      });
+    },
+    [id, nodeData.params, promptParamKey, promptText, updateControlParams]
+  );
 
   const handleChange = useCallback(
     (key: string, value: unknown) => updateControlParams(id, { [key]: value }),
@@ -96,6 +161,16 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
         data: result.data,
       });
 
+      if (isPremiumScriptData(result.data)) {
+        const assetNode = useCanvasStore.getState().nodes.find((n) => n.id === assetId);
+        if (assetNode) {
+          spawnPremiumVideoTiles(assetId, result.data.brollSegments, {
+            x: assetNode.position.x + 340,
+            y: assetNode.position.y,
+          });
+        }
+      }
+
       recordGeneration({
         toolId: tool.id,
         toolLabel: tool.label,
@@ -148,6 +223,7 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
     setControlGenerating,
     showCreditsToast,
     spawnAssetNode,
+    spawnPremiumVideoTiles,
     tool,
     updateAssetNode,
   ]);
@@ -236,6 +312,13 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
             });
           }}
         />
+
+        {promptParamKey ? (
+          <ViralPredictorPanel
+            prediction={viralPrediction}
+            onKeywordClick={handleTrendKeyword}
+          />
+        ) : null}
 
         {insufficient && !topUpOpen ? (
           <p className="mt-3 text-[10px] font-medium text-[#ccff00]/80">

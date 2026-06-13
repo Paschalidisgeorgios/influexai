@@ -14,10 +14,12 @@ import {
 import type { Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import "@/styles/canvas.css";
-import { useCanvasStore, type AssetNodeData, type ControlNodeData } from "@/lib/canvas/canvas-store";
+import { useCanvasStore, type AssetNodeData, type ControlNodeData, type BrollRecommendNodeData } from "@/lib/canvas/canvas-store";
 import { useCanvasShortcuts } from "@/hooks/useCanvasShortcuts";
 import { ControlNode } from "./ControlNode";
 import { AssetNode } from "./AssetNode";
+import { BrollRecommendNode } from "./BrollRecommendNode";
+import { CanvasIntelligenceBridge } from "./CanvasIntelligenceBridge";
 import { LaserEdge } from "./LaserEdge";
 import { CanvasShortcutsHelp } from "./CanvasShortcutsHelp";
 import { CanvasAnalyticsPanel } from "./CanvasAnalyticsPanel";
@@ -44,9 +46,20 @@ const SafeAssetNode = memo(function SafeAssetNode(
   );
 });
 
+const SafeBrollRecommendNode = memo(function SafeBrollRecommendNode(
+  props: NodeProps<Node<BrollRecommendNodeData, "brollRecommend">>
+) {
+  return (
+    <CanvasNodeErrorBoundary fallbackLabel="B-Roll">
+      <BrollRecommendNode {...props} />
+    </CanvasNodeErrorBoundary>
+  );
+});
+
 const nodeTypes: NodeTypes = {
   control: SafeControlNode,
   asset: SafeAssetNode,
+  brollRecommend: SafeBrollRecommendNode,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -121,11 +134,13 @@ export function InfiniteCanvas() {
         <MiniMap
           nodeColor={(n) => {
             if (n.type === "control") return "rgba(183,255,0,0.4)";
+            if (n.type === "brollRecommend") return "rgba(204,255,0,0.35)";
             return "rgba(0,213,255,0.4)";
           }}
           maskColor="rgba(0,0,0,0.75)"
           className="!rounded-xl !border !border-zinc-800/60 !bg-zinc-950/80"
         />
+        <CanvasIntelligenceBridge />
       </ReactFlow>
       <CanvasShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
       <div className="pointer-events-none absolute inset-0 z-20">

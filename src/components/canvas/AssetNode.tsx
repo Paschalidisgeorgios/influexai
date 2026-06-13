@@ -8,6 +8,8 @@ import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
 import { useCanvasStore, type AssetNodeData } from "@/lib/canvas/canvas-store";
 import { AssetMediaReveal } from "./AssetMediaReveal";
 import { AssetSharePanel } from "./AssetSharePanel";
+import { ThumbnailCtrBadge } from "./ThumbnailCtrBadge";
+import { useThumbnailCtrStore } from "@/lib/canvas/thumbnail-ctr-store";
 
 function isAssetLoading(status: AssetNodeData["status"]): boolean {
   return status === "loading" || status === "processing";
@@ -31,6 +33,7 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
   const prevStatusRef = useRef(nodeData.status);
   const removeNode = useCanvasStore((s) => s.removeNode);
   const spawnFollowUp = useCanvasStore((s) => s.spawnFollowUp);
+  const ctrEntry = useThumbnailCtrStore((s) => s.ratings[id]);
 
   const loading = isAssetLoading(nodeData.status);
   const isError = nodeData.status === "error";
@@ -190,7 +193,12 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
                 {nodeData.label}
               </p>
 
-              <AssetMediaReveal
+              <div className="relative">
+                {nodeData.outputType === "image" && nodeData.status === "success" ? (
+                  <ThumbnailCtrBadge entry={ctrEntry} />
+                ) : null}
+
+                <AssetMediaReveal
                 nodeData={nodeData}
                 accent={accent}
                 accentRgb={accentRgb}
@@ -198,6 +206,7 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
                 justCompleted={justCompleted}
                 onErrorDismiss={isError ? handleErrorDismiss : undefined}
               />
+              </div>
 
               <AnimatePresence initial={false}>
                 {shareOpen && shareable ? (

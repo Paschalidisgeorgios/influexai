@@ -29,6 +29,7 @@
     "test": "vitest run && playwright test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
     "@fal-ai/client": "^1.10.1",
     "@sentry/nextjs": "^10.56.0",
     "@stripe/react-stripe-js": "^6.6.0",

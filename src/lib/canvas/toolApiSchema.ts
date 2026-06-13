@@ -153,7 +153,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     accentRgb: "255,216,77",
     outputDescription: "Sprecher-Skript + B-Roll Regie",
     followUpTools: ["avatar-studio", "seedance-video", "melodia-studio"],
-    apiRoute: "/api/trend-script",
+    apiRoute: "/api/generate",
     params: [
       { key: "trend_thema", label: "Trend-Thema", type: "string", required: true },
       {
