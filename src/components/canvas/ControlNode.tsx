@@ -17,11 +17,8 @@ import {
   shouldRefundCredits,
   userMessageForCanvasError,
 } from "@/lib/canvas/canvas-api-errors";
+import Link from "next/link";
 import { ParamFields } from "./ParamFields";
-import {
-  AgentAutopilotNodeExtras,
-  AGENT_AI_MODEL_OPTIONS,
-} from "./AgentAutopilotNodeExtras";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
 import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
@@ -38,9 +35,7 @@ import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 
 function isPrimaryParam(field: ToolParamSchema, isAgentAutopilot: boolean): boolean {
-  if (isAgentAutopilot && (field.key === "ai_model" || field.key === "reference_image")) {
-    return false;
-  }
+  if (isAgentAutopilot && field.key === "platforms") return true;
   if (field.type === "textarea") return true;
   if (field.key === "prompt") return true;
   if (field.type === "node-ref" && field.required) return true;
@@ -354,24 +349,7 @@ function ControlNodeComponent({
     tool.id === "produkt-werbung";
   const creditCostLabel = dynamicCost ? `~${coins} Credits` : `${coins} Credits`;
   const isAgentAutopilot = nodeData.toolId === "agent-autopilot";
-  const visibleParams =
-    tool?.params.filter(
-      (field) =>
-        !isAgentAutopilot ||
-        (field.key !== "ai_model" && field.key !== "reference_image")
-    ) ?? [];
-  const aiModel =
-    typeof nodeData.params.ai_model === "string"
-      ? nodeData.params.ai_model
-      : AGENT_AI_MODEL_OPTIONS[0].value;
-  const referenceImage =
-    typeof nodeData.params.reference_image === "string"
-      ? nodeData.params.reference_image
-      : undefined;
-  const referenceImageName =
-    typeof nodeData.params.reference_image_name === "string"
-      ? nodeData.params.reference_image_name
-      : undefined;
+  const visibleParams = tool?.params ?? [];
 
   const hasResult = useMemo(() => {
     const linkedAssetIds = canvasEdges
@@ -458,7 +436,7 @@ function ControlNodeComponent({
           }}
         />
 
-        {(isAgentAutopilot || visibleParams.some((f) => !isPrimaryParam(f, isAgentAutopilot))) ? (
+        {visibleParams.some((f) => !isPrimaryParam(f, isAgentAutopilot)) ? (
           <>
             <button
               type="button"
@@ -471,21 +449,6 @@ function ControlNodeComponent({
 
             {showAdvanced ? (
               <div className="mt-3 flex flex-col gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-                {isAgentAutopilot ? (
-                  <AgentAutopilotNodeExtras
-                    aiModel={aiModel}
-                    referenceImage={referenceImage}
-                    referenceImageName={referenceImageName}
-                    accent={tool.accent}
-                    onModelChange={(model) => handleChange("ai_model", model)}
-                    onReferenceImageChange={(dataUrl, fileName) => {
-                      updateControlParams(id, {
-                        reference_image: dataUrl,
-                        reference_image_name: fileName,
-                      });
-                    }}
-                  />
-                ) : null}
                 <ParamFields
                   params={visibleParams.filter(
                     (field) => !isPrimaryParam(field, isAgentAutopilot)
@@ -527,6 +490,18 @@ function ControlNodeComponent({
           <p className="mt-3 text-[10px] font-medium text-[#ccff00]/80">
             Nicht genug Credits ({remaining}/{coins}) — Top-Up öffnet sich beim Generieren.
           </p>
+        ) : null}
+
+        {isAgentAutopilot ? (
+          <Link
+            href="/dashboard/campaign-autopilot"
+            className="mb-3 mt-4 flex items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.02] px-4 py-2.5 text-[12px] text-white/50 no-underline transition-all hover:border-white/15 hover:text-white/80"
+          >
+            <span>Volle Kampagne planen?</span>
+            <span className="flex items-center gap-1 text-[#B4FF00]">
+              Campaign Autopilot →
+            </span>
+          </Link>
         ) : null}
 
         <button

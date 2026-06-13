@@ -287,29 +287,34 @@ function FieldInput({
   if (field.type === "multiselect") {
     const selected = Array.isArray(value) ? (value as string[]) : [];
     return (
-      <div className="flex flex-wrap gap-1.5">
-        {field.options?.map((o) => {
-          const active = selected.includes(o.value);
-          return (
-            <button
-              key={o.value}
-              type="button"
-              className="rounded-full border px-2 py-0.5 text-[10px] transition-colors"
-              style={{
-                borderColor: active ? accent : "rgba(255,255,255,0.1)",
-                background: active ? `${accent}22` : "transparent",
-                color: active ? accent : "rgba(255,255,255,0.5)",
-              }}
-              onClick={() => {
-                onChange(
-                  active ? selected.filter((v) => v !== o.value) : [...selected, o.value]
-                );
-              }}
-            >
-              {o.label}
-            </button>
-          );
-        })}
+      <div>
+        <div className="flex flex-wrap gap-1.5">
+          {field.options?.map((o) => {
+            const active = selected.includes(o.value);
+            return (
+              <button
+                key={o.value}
+                type="button"
+                className="rounded-full border px-2 py-0.5 text-[10px] transition-colors"
+                style={{
+                  borderColor: active ? accent : "rgba(255,255,255,0.1)",
+                  background: active ? `${accent}22` : "transparent",
+                  color: active ? accent : "rgba(255,255,255,0.5)",
+                }}
+                onClick={() => {
+                  onChange(
+                    active ? selected.filter((v) => v !== o.value) : [...selected, o.value]
+                  );
+                }}
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
+        {field.placeholder ? (
+          <p className="mt-1.5 text-[10px] text-white/35">{field.placeholder}</p>
+        ) : null}
       </div>
     );
   }

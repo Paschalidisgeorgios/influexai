@@ -126,24 +126,10 @@ function buildRequestBody(
       const platforms = Array.isArray(params.platforms)
         ? (params.platforms as string[]).filter(Boolean)
         : [];
-      const automation =
-        typeof params.automation_level === "string"
-          ? params.automation_level
-          : "";
-      const aiModel =
-        typeof params.ai_model === "string" ? params.ai_model.trim() : "";
 
       let message = goal;
       if (platforms.length > 0) {
-        message += `\n\nPlattformen: ${platforms.join(", ")}.`;
-      }
-      if (automation === "vollautomatisch") {
-        message += "\nAutomatisierung: Vollautomatisch.";
-      } else if (automation === "review-required") {
-        message += "\nAutomatisierung: Review erforderlich.";
-      }
-      if (aiModel) {
-        message += `\nBevorzugtes Modell: ${aiModel}.`;
+        message += `\n\nKontext: ${platforms.join(", ")}.`;
       }
       return { message };
     }
