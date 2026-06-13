@@ -10,7 +10,7 @@ import {
 } from "@/lib/auth-last-used";
 
 const googleButtonClass =
-  "relative w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-black transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3";
+  "relative flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-black transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 function GoogleIcon() {
   return (

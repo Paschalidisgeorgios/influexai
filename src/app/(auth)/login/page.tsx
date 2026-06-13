@@ -10,9 +10,7 @@ import {
   authInputClass,
   authLabelClass,
   authButtonClass,
-  authLinkAccentClass,
   authForgotLinkClass,
-  authTitleClass,
 } from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import {
@@ -95,69 +93,69 @@ function LoginPageInner() {
 
   return (
     <div className="w-full">
-      <h1 className={authTitleClass}>{t("login_title")}</h1>
+      <h1 className="mb-2 font-sans text-2xl font-extrabold uppercase tracking-wide text-white">
+        {t("login_title")}
+      </h1>
 
-      <p className="mb-6 text-sm text-zinc-400">{t("login_subtitle")}</p>
+      <p className="mb-8 font-sans text-sm font-normal text-zinc-400">
+        {t("login_subtitle")}
+      </p>
 
-      {error && (
+      {error ? (
         <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
         </div>
-      )}
+      ) : null}
 
       <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
         onError={(message) => setError(message)}
       >
         <form className="space-y-4" onSubmit={handleLogin}>
-        <div>
-          <label className={authLabelClass}>{t("email")}</label>
-          <input
-            type="email"
-            data-testid="auth-email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="deine@email.com"
-            className={authInputClass}
-            autoComplete="email"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between mb-1.5">
-            <label className={authLabelClass}>{t("password")}</label>
-            <Link
-              href="/forgot-password"
-              className={authForgotLinkClass}
-            >
-              {t("forgot_password")}
-            </Link>
+          <div>
+            <label className={authLabelClass}>{t("email")}</label>
+            <input
+              type="email"
+              data-testid="auth-email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="deine@email.com"
+              className={authInputClass}
+              autoComplete="email"
+            />
           </div>
-          <input
-            type="password"
-            data-testid="auth-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className={authInputClass}
-            autoComplete="current-password"
-            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-          />
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={authButtonClass}
-        >
-          {loading ? "…" : t("login_button")}
-        </button>
-      </form>
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className={`${authLabelClass} mb-0`}>{t("password")}</label>
+              <Link href="/forgot-password" className={authForgotLinkClass}>
+                {t("forgot_password")}
+              </Link>
+            </div>
+            <input
+              type="password"
+              data-testid="auth-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className={authInputClass}
+              autoComplete="current-password"
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            />
+          </div>
+
+          <button type="submit" disabled={loading} className={authButtonClass}>
+            {loading ? "…" : t("login_button")}
+          </button>
+        </form>
       </AuthCredentialSection>
 
-      <p className="mt-8 text-center text-sm text-zinc-500">
+      <p className="mt-6 text-center text-xs text-zinc-500 transition-colors">
         {t("no_account")}{" "}
-        <Link href="/auth/sign-up" className={authLinkAccentClass}>
+        <Link
+          href="/auth/sign-up"
+          className="transition-colors hover:text-white"
+        >
           {t("signup_link")}
         </Link>
       </p>
@@ -167,11 +165,7 @@ function LoginPageInner() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="w-full text-white/60 text-sm">…</div>
-      }
-    >
+    <Suspense fallback={<div className="w-full text-sm text-white/60">…</div>}>
       <LoginPageInner />
     </Suspense>
   );
