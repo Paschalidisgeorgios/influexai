@@ -512,7 +512,7 @@ export default function SettingsPage() {
         )}
 
         {/* Passwort */}
-        <div className="settings-glass-card flex flex-col gap-3.5 rounded-2xl border border-zinc-800/50 bg-zinc-950/40 p-6 backdrop-blur-md">
+        <div className="settings-glass-card flex flex-col gap-3.5 rounded-2xl p-6">
           <h2
             style={{
               fontFamily: "var(--font-bebas), sans-serif",

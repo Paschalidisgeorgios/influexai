@@ -102,8 +102,8 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
           transition={{ duration: 0.22, ease: "easeOut" }}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
-          className={`relative w-[min(320px,88vw)] rounded-2xl border bg-zinc-950/60 backdrop-blur-xl transition-shadow duration-500 ${
-            justCompleted ? "asset-node--revealed" : "border-zinc-800/50"
+          className={`canvas-glass-node relative w-[min(320px,88vw)] rounded-2xl transition-shadow duration-500 ${
+            justCompleted ? "asset-node--revealed" : ""
           } ${loading ? "asset-node--loading" : ""} ${isError ? "asset-node--error" : ""}`}
           style={{
             boxShadow: justCompleted

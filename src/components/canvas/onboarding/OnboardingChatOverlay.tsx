@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Send, X } from "lucide-react";
+import { glassSurfaceClass } from "@/lib/glass-classes";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 
 function OnboardingChatOverlayComponent() {
@@ -41,7 +42,7 @@ function OnboardingChatOverlayComponent() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 12, scale: 0.98 }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed bottom-6 right-6 z-50 flex h-96 w-80 flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 shadow-2xl backdrop-blur-xl"
+          className={`${glassSurfaceClass} fixed bottom-6 right-6 z-50 flex h-96 w-80 flex-col overflow-hidden rounded-2xl p-4 shadow-2xl`}
           role="dialog"
           aria-label="Live-Co-Pilot Chat"
         >

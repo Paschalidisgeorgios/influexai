@@ -65,6 +65,10 @@ export function CanvasShell({ children }: CanvasShellProps) {
           <OnboardingAgentShell>
             <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-white">
               <div className="studio-glass-dot-grid relative flex min-h-0 flex-1 flex-col overflow-hidden">
+                <div className="glass-ambient-layer" aria-hidden>
+                  <div className="glass-ambient-glow glass-ambient-glow--violet" />
+                  <div className="glass-ambient-glow glass-ambient-glow--green" />
+                </div>
                 <div className="studio-glass-glow studio-glass-glow--violet pointer-events-none" aria-hidden />
                 <div className="studio-glass-glow studio-glass-glow--green pointer-events-none" aria-hidden />
                 <CanvasHeader />

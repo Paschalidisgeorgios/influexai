@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useCanvasGreeting } from "@/hooks/useCanvasGreeting";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
@@ -17,7 +18,7 @@ function CanvasHeaderComponent() {
   const showHeaderHelp = isInactive && !chatOpen && !greetingVisible;
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800/50 bg-zinc-950/40 px-4 backdrop-blur-md">
+    <header className={`flex h-14 shrink-0 items-center justify-between border-b px-4 ${glassSurfaceStaticClass}`}>
       <BrandWordmark href="/" />
 
       <div className="relative flex min-h-[1.5rem] min-w-[12rem] items-center justify-end">

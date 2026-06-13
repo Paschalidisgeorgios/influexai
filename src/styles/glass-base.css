@@ -1,0 +1,114 @@
+/* Global Fluid Glassmorphism — contrast & ambient lighting (2026) */
+
+:root {
+  --glass-surface-bg: rgba(9, 9, 11, 0.6);
+  --glass-surface-border: rgba(63, 63, 70, 0.6);
+  --glass-surface-border-hover: rgb(113, 113, 122);
+  --glass-surface-border-accent: rgba(204, 255, 0, 0.4);
+  --glass-inset-shine: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  --glass-blur-xl: 24px;
+  --glass-input-bg: rgba(0, 0, 0, 0.4);
+  --glass-input-border: rgba(63, 63, 70, 0.8);
+  --glass-bg: var(--glass-surface-bg);
+  --glass-border: var(--glass-surface-border);
+}
+
+/* —— Surfaces —— */
+.glass-surface {
+  border: 1px solid var(--glass-surface-border);
+  background: var(--glass-surface-bg);
+  backdrop-filter: blur(var(--glass-blur-xl));
+  -webkit-backdrop-filter: blur(var(--glass-blur-xl));
+  box-shadow: var(--glass-inset-shine);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.glass-surface:hover,
+.glass-surface:focus-within {
+  border-color: var(--glass-surface-border-hover);
+}
+
+.glass-surface--accent:hover,
+.glass-surface--accent:focus-within {
+  border-color: var(--glass-surface-border-accent);
+}
+
+.glass-surface--static:hover,
+.glass-surface--static:focus-within {
+  border-color: var(--glass-surface-border);
+}
+
+/* —— Inputs —— */
+.glass-input {
+  background: var(--glass-input-bg);
+  border: 1px solid var(--glass-input-border);
+  color: #fff;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.glass-input::placeholder {
+  color: rgb(113, 113, 122);
+}
+
+.glass-input:focus {
+  border-color: #ccff00;
+  box-shadow:
+    0 0 0 1px rgba(204, 255, 0, 0.22),
+    0 0 18px rgba(204, 255, 0, 0.1);
+}
+
+/* —— UI brightness boost (icons, progress, small graphics) —— */
+.glass-ui-boost {
+  filter: brightness(1.15) contrast(1.05);
+}
+
+/* —— Ambient background lighting —— */
+.glass-ambient-layer {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.glass-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(140px);
+  will-change: transform;
+}
+
+.glass-ambient-glow--green {
+  left: 12%;
+  top: 18%;
+  width: min(62vw, 660px);
+  height: min(62vw, 660px);
+  background: #ccff00;
+  opacity: 0.08;
+}
+
+.glass-ambient-glow--violet {
+  right: 4%;
+  top: 32%;
+  width: min(58vw, 600px);
+  height: min(58vw, 600px);
+  background: radial-gradient(
+    circle,
+    rgba(139, 93, 255, 0.24) 0%,
+    rgba(88, 28, 135, 0.14) 48%,
+    transparent 72%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-surface {
+    transition: border-color 0.2s ease;
+  }
+}

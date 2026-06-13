@@ -1,5 +1,5 @@
 export const authInputClass =
-  "w-full rounded-xl border border-zinc-800/80 bg-black/30 p-3 text-sm text-white placeholder-zinc-600 transition-all focus:border-[#ccff00] focus:outline-none";
+  "glass-input w-full rounded-xl border border-zinc-700/80 bg-black/40 p-3 text-sm text-white placeholder-zinc-500 transition-all focus:border-[#ccff00] focus:outline-none";
 
 export const authLabelClass = "mb-1.5 block text-sm text-white/70";
 

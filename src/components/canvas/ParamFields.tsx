@@ -2,6 +2,7 @@
 
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
+import { glassInputClass } from "@/lib/glass-classes";
 
 interface ParamFieldsProps {
   params: ToolParamSchema[];
@@ -57,7 +58,7 @@ function FieldInput({
   onAssetDrop?: (asset: AssetNodeData) => void;
 }) {
   const base =
-    "w-full rounded-lg border border-zinc-800/60 bg-black/40 px-3 py-2 text-xs text-zinc-100 outline-none transition-colors focus:border-zinc-600";
+    `${glassInputClass} rounded-lg px-3 py-2 text-xs text-zinc-100`;
 
   if (field.type === "node-ref") {
     return (

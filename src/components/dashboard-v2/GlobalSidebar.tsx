@@ -7,6 +7,7 @@ import { ChevronDown, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { SIDEBAR_TOOL_CATEGORIES, type NavItem } from "@/lib/dashboard-flows";
 import { useDashboardV2Optional } from "@/contexts/DashboardV2Context";
+import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
 
@@ -64,7 +65,7 @@ export function GlobalSidebar({ mobile = false }: { mobile?: boolean }) {
 
   return (
     <aside
-      className={`flex h-full flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md ${
+      className={`flex h-full flex-col border-r ${glassSurfaceStaticClass} ${
         mobile ? "w-full" : "w-[240px] shrink-0"
       }`}
       style={{ borderRightWidth: "0.5px" }}

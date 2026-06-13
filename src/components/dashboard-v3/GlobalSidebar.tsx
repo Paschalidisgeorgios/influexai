@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDown, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TOOL_CATEGORIES, WORKSPACE_TOOLS } from "@/lib/dashboard-v3/registry";
+import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useDashboardV3 } from "@/lib/dashboard-v3/context";
 
@@ -75,7 +76,7 @@ export function GlobalSidebar() {
       )}
 
       <aside
-        className={`fixed z-40 flex h-full w-[240px] shrink-0 flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
+        className={`fixed z-40 flex h-full w-[240px] shrink-0 flex-col border-r transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${glassSurfaceStaticClass} ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ borderRightWidth: "0.5px" }}

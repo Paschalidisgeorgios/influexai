@@ -289,7 +289,7 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
   return (
     <div className={`relative w-[min(340px,90vw)]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
       <div
-        className="rounded-2xl border border-zinc-800/50 bg-zinc-950/60 p-4 shadow-2xl backdrop-blur-xl"
+        className="canvas-glass-node rounded-2xl p-4 shadow-2xl"
         style={{
           boxShadow: `0 0 40px rgba(${tool.accentRgb}, 0.12), 0 8px 32px rgba(0,0,0,0.5)`,
         }}

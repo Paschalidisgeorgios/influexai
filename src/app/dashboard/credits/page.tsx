@@ -10,13 +10,11 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   type CreditPackageId,
 } from "@/lib/credit-packages";
+import { GLASS_CARD } from "@/lib/glass-classes";
 import "@/styles/credits-glass.css";
 import "@/styles/studio-glass.css";
 
 type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
-
-const GLASS_CARD =
-  "rounded-xl border border-zinc-800/50 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-md";
 
 const GHOST_BTN =
   "inline-flex items-center justify-center rounded-lg border border-zinc-700/60 bg-transparent px-4 py-2.5 font-sans text-sm font-medium text-zinc-300 no-underline transition-colors hover:border-white/30 hover:bg-white/5 hover:text-white";
@@ -65,6 +63,11 @@ export default function CreditsPage() {
 
   return (
     <div className="studio-glass-dot-grid relative mx-auto box-border w-full min-w-0 max-w-[960px] px-4 py-6 sm:px-6">
+      <div className="glass-ambient-layer" aria-hidden>
+        <div className="glass-ambient-glow glass-ambient-glow--violet" />
+        <div className="glass-ambient-glow glass-ambient-glow--green" />
+      </div>
+      <div className="relative z-[1]">
       {showUrgent && (
         <div className="mb-4 rounded-xl border border-red-500/30 bg-red-950/10 px-4 py-3 font-sans text-sm text-red-300 backdrop-blur-md">
           ⚠️ Credits fast leer — jetzt aufladen
@@ -281,6 +284,7 @@ export default function CreditsPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

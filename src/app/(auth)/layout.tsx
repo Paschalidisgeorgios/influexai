@@ -15,6 +15,10 @@ export default function AuthLayout({
       </div>
 
       <div className="auth-form-side w-full lg:w-[42%] relative flex flex-col justify-center items-center px-4 sm:px-6 py-10 sm:py-12 min-h-screen">
+        <div className="glass-ambient-layer" aria-hidden>
+          <div className="glass-ambient-glow glass-ambient-glow--green" />
+          <div className="glass-ambient-glow glass-ambient-glow--violet" />
+        </div>
         <div
           className="auth-canvas-teaser absolute inset-0 opacity-30 lg:hidden pointer-events-none"
           aria-hidden

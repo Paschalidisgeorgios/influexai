@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CREDIT_CALCULATOR_TIERS } from "@/lib/credit-packages";
+import { GLASS_CARD } from "@/lib/glass-classes";
 import "@/styles/credits-glass.css";
 
 const USE_CASES = [
@@ -21,13 +22,9 @@ const HIGHLIGHT_BY_TYPE: Record<string, string> = {
   "video-remix": "scripts",
 };
 
-const GLASS_CARD =
-  "rounded-xl border border-zinc-800/50 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-md";
-
 type Props = {
   topFeatureType?: string | null;
 };
-
 export function CreditCalculator({ topFeatureType }: Props) {
   const [tierIndex, setTierIndex] = useState(1);
   const credits = CREDIT_CALCULATOR_TIERS[tierIndex];
@@ -109,9 +106,9 @@ export function CreditCalculator({ topFeatureType }: Props) {
                   {row.count}
                 </span>
               </div>
-              <div className="h-px w-full overflow-hidden rounded-full bg-zinc-800/70">
+              <div className="h-px w-full overflow-hidden rounded-full bg-zinc-700/70">
                 <div
-                  className="h-full rounded-full bg-[#ccff00] transition-[width] duration-500 ease-out"
+                  className="glass-ui-boost h-full rounded-full bg-[#ccff00] transition-[width] duration-500 ease-out"
                   style={{
                     width: `${fillPercent}%`,
                     opacity: row.highlight ? 1 : 0.72,

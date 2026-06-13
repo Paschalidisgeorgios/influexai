@@ -13,6 +13,7 @@ import { useCredits } from "@/components/credits/BuyCreditsProvider";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { creditsDisplayColor } from "@/lib/credits-display-color";
 import { createClient } from "@/lib/supabase/client";
+import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 
 export function CanvasSidebar() {
   const spawnControlNode = useCanvasStore((s) => s.spawnControlNode);
@@ -29,7 +30,7 @@ export function CanvasSidebar() {
   };
 
   return (
-    <aside className="relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md">
+    <aside className={`relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r ${glassSurfaceStaticClass}`}>
       <nav className="flex-1 overflow-y-auto px-2 py-3 font-sans">
         <Link
           href="/"

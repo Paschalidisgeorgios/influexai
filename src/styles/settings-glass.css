@@ -1,33 +1,41 @@
 .settings-glass-card {
   contain: layout style;
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  background: rgba(9, 9, 11, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  transition: border-color 0.3s ease;
+}
+
+.settings-glass-card:hover {
+  border-color: rgb(113, 113, 122);
 }
 
 .settings-glass-input {
   width: 100%;
   padding: 12px 16px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid transparent;
-  color: #f0efe8;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  color: #fff;
   font-size: 0.95rem;
   outline: none;
   font-family: var(--font-dm), sans-serif;
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
 .settings-glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.28);
+  color: rgb(113, 113, 122);
 }
 
 .settings-glass-input:focus {
-  border-color: rgba(204, 255, 0, 0.45);
+  border-color: #ccff00;
   box-shadow:
-    0 0 0 1px rgba(204, 255, 0, 0.2),
-    0 0 20px rgba(204, 255, 0, 0.08);
-  background: rgba(0, 0, 0, 0.45);
+    0 0 0 1px rgba(204, 255, 0, 0.22),
+    0 0 18px rgba(204, 255, 0, 0.1);
 }
 
 .settings-glass-input:disabled {
