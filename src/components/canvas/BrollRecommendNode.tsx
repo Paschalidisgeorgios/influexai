@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { Clapperboard, Sparkles } from "lucide-react";
 import { useCanvasStore, type BrollRecommendNodeData } from "@/lib/canvas/canvas-store";
+import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 
 function BrollRecommendNodeComponent({
   id,
   data,
+  selected,
 }: NodeProps<Node<BrollRecommendNodeData, "brollRecommend">>) {
   const spawnVideoFromBroll = useCanvasStore((s) => s.spawnVideoFromBroll);
 
@@ -16,11 +18,13 @@ function BrollRecommendNodeComponent({
   const similarityPct = Math.round(match.similarity * 100);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -12 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.28, ease: "easeOut" }}
-      className="broll-recommend-node w-[min(280px,82vw)] rounded-2xl border border-zinc-800/40 bg-zinc-950/40 p-3 shadow-2xl backdrop-blur-2xl"
+    <div className="relative">
+      {selected ? <CanvasNodeAmbientGlow accentRgb="204,255,0" /> : null}
+      <motion.div
+        initial={{ opacity: 0, x: -12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+        className="broll-recommend-node w-[min(280px,82vw)] rounded-2xl border border-zinc-700/80 bg-zinc-950/40 p-3 shadow-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] backdrop-blur-2xl"
       style={{
         boxShadow:
           "0 0 32px rgba(204,255,0,0.08), inset 0 1px 0 rgba(255,255,255,0.04)",
@@ -72,6 +76,7 @@ function BrollRecommendNodeComponent({
         Video-Node starten
       </button>
     </motion.div>
+    </div>
   );
 }
 

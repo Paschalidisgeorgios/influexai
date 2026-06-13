@@ -18,6 +18,7 @@ import {
 } from "@/lib/canvas/canvas-api-errors";
 import { ParamFields } from "./ParamFields";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
+import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
 import { ViralPredictorPanel } from "@/components/canvas/ViralPredictorPanel";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
@@ -41,7 +42,7 @@ function isPremiumScriptData(
   );
 }
 
-function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "control">>) {
+function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNodeData, "control">>) {
   const nodeData = data;
   const tool = getToolDefinition(nodeData.toolId);
   const { credits, addCreditsOptimistic, refreshCredits, showCreditsToast } = useCredits();
@@ -288,8 +289,9 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
 
   return (
     <div className={`relative w-[min(340px,90vw)]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
+      {selected ? <CanvasNodeAmbientGlow accentRgb={tool.accentRgb} /> : null}
       <div
-        className="canvas-glass-node rounded-2xl p-4 shadow-2xl"
+        className="canvas-glass-node rounded-2xl border-zinc-700/80 p-4 shadow-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
         style={{
           boxShadow: `0 0 40px rgba(${tool.accentRgb}, 0.12), 0 8px 32px rgba(0,0,0,0.5)`,
         }}

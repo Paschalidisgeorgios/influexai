@@ -8,6 +8,7 @@ import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
 import { useCanvasStore, type AssetNodeData } from "@/lib/canvas/canvas-store";
 import { AssetMediaReveal } from "./AssetMediaReveal";
 import { AssetSharePanel } from "./AssetSharePanel";
+import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { ThumbnailCtrBadge } from "./ThumbnailCtrBadge";
 import { useThumbnailCtrStore } from "@/lib/canvas/thumbnail-ctr-store";
 
@@ -23,7 +24,7 @@ function isShareableAsset(nodeData: AssetNodeData): boolean {
   );
 }
 
-function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">>) {
+function AssetNodeComponent({ id, data, selected }: NodeProps<Node<AssetNodeData, "asset">>) {
   const nodeData = data;
   const tool = getToolDefinition(nodeData.toolId);
   const [hover, setHover] = useState(false);
@@ -102,7 +103,11 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
           transition={{ duration: 0.22, ease: "easeOut" }}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
-          className={`canvas-glass-node relative w-[min(320px,88vw)] rounded-2xl transition-shadow duration-500 ${
+          className="relative"
+        >
+          {selected ? <CanvasNodeAmbientGlow accentRgb={accentRgb} /> : null}
+          <div
+          className={`canvas-glass-node relative w-[min(320px,88vw)] rounded-2xl border-zinc-700/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-shadow duration-500 ${
             justCompleted ? "asset-node--revealed" : ""
           } ${loading ? "asset-node--loading" : ""} ${isError ? "asset-node--error" : ""}`}
           style={{
@@ -218,6 +223,7 @@ function AssetNodeComponent({ id, data }: NodeProps<Node<AssetNodeData, "asset">
                 ) : null}
               </AnimatePresence>
             </div>
+          </div>
           </div>
         </motion.div>
       )}

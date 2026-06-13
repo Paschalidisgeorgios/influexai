@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, LogOut } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Home, LogOut } from "lucide-react";
 import {
   TOOL_CATEGORIES,
   getToolsByCategory,
+  type ToolCategory,
   type ToolId,
 } from "@/lib/canvas/toolApiSchema";
 import { useCanvasStore } from "@/lib/canvas/canvas-store";
@@ -15,10 +17,15 @@ import { creditsDisplayColor } from "@/lib/credits-display-color";
 import { createClient } from "@/lib/supabase/client";
 import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 
+const accordionVariants = {
+  collapsed: { height: 0, opacity: 0 },
+  open: { height: "auto", opacity: 1 },
+};
+
 export function CanvasSidebar() {
   const spawnControlNode = useCanvasStore((s) => s.spawnControlNode);
   const { credits, isOptimistic, openBuyModal } = useCredits();
-  const [openCategory, setOpenCategory] = useState<string | null>("ERSTELLEN");
+  const [openSection, setOpenSection] = useState<ToolCategory | null>("ERSTELLEN");
   const supabase = createClient();
 
   const creditColor =
@@ -29,73 +36,104 @@ export function CanvasSidebar() {
     window.location.href = "/";
   };
 
+  const toggleSection = (category: ToolCategory) => {
+    setOpenSection((current) => (current === category ? null : category));
+  };
+
   return (
-    <aside className={`relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r ${glassSurfaceStaticClass}`}>
+    <aside
+      className={`relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-700/70 bg-zinc-950/75 ${glassSurfaceStaticClass}`}
+    >
       <nav className="flex-1 overflow-y-auto px-2 py-3 font-sans">
         <Link
           href="/"
-          className="mb-3 flex w-full items-center gap-2 rounded-lg border border-zinc-800/50 bg-transparent px-3 py-2 text-xs tracking-wide text-zinc-400 no-underline transition-all hover:border-zinc-700 hover:text-zinc-300"
+          className="mb-3 flex w-full items-center gap-2 rounded-lg border border-zinc-700/60 bg-zinc-900/40 px-3 py-2 text-xs tracking-wide text-zinc-300 no-underline transition-all hover:border-zinc-600 hover:text-white"
         >
-          <Home className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={1.75} />
+          <Home className="h-3.5 w-3.5 shrink-0 opacity-80" strokeWidth={1.75} />
           Zur Hauptseite
         </Link>
+
         {TOOL_CATEGORIES.map((category) => {
           const tools = getToolsByCategory(category);
-          const isOpen = openCategory === category;
+          const isOpen = openSection === category;
+
           return (
-            <div key={category} className="mb-1">
+            <div key={category} className="mb-0.5">
               <button
                 type="button"
-                onClick={() => setOpenCategory(isOpen ? null : category)}
-                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[10px] font-bold tracking-[0.12em] text-zinc-500 uppercase hover:bg-zinc-900/60 hover:text-zinc-300"
+                onClick={() => toggleSection(category)}
+                aria-expanded={isOpen}
+                className={`flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-3 text-left font-sans text-xs font-bold uppercase tracking-widest transition-colors duration-300 ${
+                  isOpen
+                    ? "text-[#ccff00] hover:text-[#ccff00]"
+                    : "text-zinc-200 hover:text-white"
+                }`}
               >
                 {category}
-                <span className="text-zinc-600">{isOpen ? "−" : "+"}</span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 transition-transform duration-300 ease-in-out ${
+                    isOpen ? "rotate-180 text-[#ccff00]" : "text-zinc-400"
+                  }`}
+                  strokeWidth={2}
+                />
               </button>
-              {isOpen && (
-                <ul className="mb-2 space-y-0.5 pl-1">
-                  {tools.map((tool) => (
-                    <li key={tool.id}>
-                      <button
-                        type="button"
-                        onClick={() => spawnControlNode(tool.id as ToolId)}
-                        className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-zinc-900/80"
-                      >
-                        <span
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm"
-                          style={{
-                            borderColor: `rgba(${tool.accentRgb}, 0.25)`,
-                            background: `rgba(${tool.accentRgb}, 0.06)`,
-                            boxShadow: `0 0 12px rgba(${tool.accentRgb}, 0.08)`,
-                          }}
-                        >
-                          {tool.icon}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-xs font-medium text-zinc-200 group-hover:text-white">
-                            {tool.label}
-                          </span>
-                          <span className="block truncate text-[9px] text-zinc-600">
-                            ab {tool.baseCoins} Coins
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+
+              <AnimatePresence initial={false}>
+                {isOpen ? (
+                  <motion.div
+                    key={`${category}-panel`}
+                    initial="collapsed"
+                    animate="open"
+                    exit="collapsed"
+                    variants={accordionVariants}
+                    transition={{ duration: 0.28, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <ul className="mb-2 space-y-0.5 pb-1">
+                      {tools.map((tool) => (
+                        <li key={tool.id}>
+                          <button
+                            type="button"
+                            onClick={() => spawnControlNode(tool.id as ToolId)}
+                            className="group flex w-full items-center gap-2.5 rounded-lg border-l-2 border-transparent py-2.5 pl-3 pr-3 text-left transition-all duration-200 hover:border-[#ccff00] hover:bg-zinc-900/90 hover:shadow-[inset_0_0_16px_rgba(204,255,0,0.06)]"
+                          >
+                            <span
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm"
+                              style={{
+                                borderColor: `rgba(${tool.accentRgb}, 0.35)`,
+                                background: `rgba(${tool.accentRgb}, 0.1)`,
+                                boxShadow: `0 0 14px rgba(${tool.accentRgb}, 0.12)`,
+                              }}
+                            >
+                              {tool.icon}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-xs font-medium text-zinc-100 group-hover:text-white">
+                                {tool.label}
+                              </span>
+                              <span className="block truncate text-[9px] text-zinc-400 group-hover:text-zinc-300">
+                                ab {tool.baseCoins} Coins
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </div>
           );
         })}
       </nav>
 
-      <div className="border-t border-zinc-800/60 p-3">
+      <div className="border-t border-zinc-700/60 p-3">
         <button
           type="button"
           onClick={() => openBuyModal()}
-          className="mb-2 flex w-full items-center justify-between rounded-xl border border-zinc-800/80 bg-black/30 px-3 py-2.5 transition-colors hover:border-[#ccff00]/30 hover:bg-[#ccff00]/5"
+          className="mb-2 flex w-full items-center justify-between rounded-xl border border-zinc-700/80 bg-black/40 px-3 py-2.5 transition-colors hover:border-[#ccff00]/30 hover:bg-[#ccff00]/5"
         >
-          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
             Credits
           </span>
           <span className="flex items-center gap-1.5 text-sm font-bold tabular-nums">
@@ -110,20 +148,20 @@ export function CanvasSidebar() {
         </button>
         <Link
           href="/dashboard/settings"
-          className="block rounded-lg px-3 py-2 text-xs text-zinc-500 no-underline hover:bg-zinc-900/60 hover:text-zinc-300"
+          className="block rounded-lg px-3 py-2 text-xs text-zinc-400 no-underline hover:bg-zinc-900/60 hover:text-zinc-200"
         >
           Einstellungen
         </Link>
         <Link
           href="/dashboard/credits"
-          className="mt-1 block rounded-lg px-3 py-2 text-xs text-zinc-500 no-underline hover:bg-zinc-900/60 hover:text-zinc-300"
+          className="mt-1 block rounded-lg px-3 py-2 text-xs text-zinc-400 no-underline hover:bg-zinc-900/60 hover:text-zinc-200"
         >
           Credits
         </Link>
         <button
           type="button"
           onClick={() => void handleLogout()}
-          className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-zinc-500 transition-all duration-300 hover:border-red-900/30 hover:bg-red-950/20 hover:text-red-400"
+          className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-zinc-400 transition-all duration-300 hover:border-red-900/30 hover:bg-red-950/20 hover:text-red-400"
         >
           <LogOut className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={1.75} />
           Abmelden

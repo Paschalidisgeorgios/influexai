@@ -112,7 +112,7 @@ export function InfiniteCanvas() {
 
   return (
     <div
-      className={`canvas-flow canvas-dot-grid relative h-full w-full${
+      className={`canvas-flow relative h-full w-full${
         spacePressed ? " canvas-flow--space-pan" : ""
       }`}
     >
@@ -141,9 +141,9 @@ export function InfiniteCanvas() {
       >
         <Background
           variant={BackgroundVariant.Dots}
-          gap={24}
+          gap={20}
           size={1}
-          color="rgba(255,255,255,0.06)"
+          color="#27272a"
         />
         <Controls showInteractive={false} position="bottom-right" />
         <MiniMap
