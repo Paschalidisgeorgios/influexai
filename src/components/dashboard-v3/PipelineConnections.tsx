@@ -4,14 +4,10 @@ import { useEffect, useRef, useCallback } from "react";
 import type { RefObject } from "react";
 import type { NodeOutput } from "@/lib/dashboard-v3/usePipeline";
 
-interface PanelRef {
-  id: string;
-  element: HTMLDivElement | null;
-}
-
 interface PipelineConnectionsProps {
   outputs: NodeOutput[];
-  panelRefs: PanelRef[];
+  panelRefsMap: RefObject<Map<string, HTMLDivElement>>;
+  panelIds: string[];
   containerRef: RefObject<HTMLDivElement | null>;
   themeRgb: string;
 }
@@ -27,7 +23,8 @@ function bezierPoint(p0: number, p1: number, p2: number, p3: number, t: number) 
 
 export function PipelineConnections({
   outputs,
-  panelRefs,
+  panelRefsMap,
+  panelIds,
   containerRef,
   themeRgb,
 }: PipelineConnectionsProps) {
@@ -50,6 +47,11 @@ export function PipelineConnections({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     progressRef.current = (progressRef.current + 0.008) % 1;
+
+    const panelRefs = panelIds.map((id) => ({
+      id,
+      element: panelRefsMap.current.get(id) ?? null,
+    }));
 
     outputs.forEach((output) => {
       const fromIndex = panelRefs.findIndex((p) => p.id === output.panelId);
@@ -110,7 +112,7 @@ export function PipelineConnections({
     });
 
     animFrameRef.current = requestAnimationFrame(draw);
-  }, [outputs, panelRefs, containerRef, themeRgb]);
+  }, [outputs, panelIds, panelRefsMap, containerRef, themeRgb]);
 
   useEffect(() => {
     animFrameRef.current = requestAnimationFrame(draw);

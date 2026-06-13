@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useReducer, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import type { Node, NodeProps } from "@xyflow/react";
 import {
   useCanvasStore,
@@ -41,7 +41,6 @@ function CanvasPanelStripViewComponent() {
   const pipeline = usePipelineStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const panelRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
-  const [refVersion, bumpRefs] = useReducer((n: number) => n + 1, 0);
 
   const sorted = useMemo(() => {
     return [...nodes].sort((a, b) => {
@@ -63,15 +62,6 @@ function CanvasPanelStripViewComponent() {
     [controlPanels]
   );
 
-  const panelRefList = useMemo(
-    () =>
-      controlPanelIds.map((id) => ({
-        id,
-        element: panelRefsMap.current.get(id) ?? null,
-      })),
-    [controlPanelIds, refVersion]
-  );
-
   const setPanelRef = useCallback(
     (panelId: string, element: HTMLDivElement | null) => {
       if (element) {
@@ -79,7 +69,6 @@ function CanvasPanelStripViewComponent() {
       } else {
         panelRefsMap.current.delete(panelId);
       }
-      bumpRefs();
     },
     []
   );
@@ -107,7 +96,8 @@ function CanvasPanelStripViewComponent() {
       >
         <PipelineConnections
           outputs={pipeline.getAllOutputs()}
-          panelRefs={panelRefList}
+          panelRefsMap={panelRefsMap}
+          panelIds={controlPanelIds}
           containerRef={scrollRef}
           themeRgb={themeRgb}
         />
