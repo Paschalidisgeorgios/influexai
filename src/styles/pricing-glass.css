@@ -388,6 +388,11 @@
   color: #ccff00;
 }
 
+.pricing-glass-check--excluded {
+  color: rgba(255, 255, 255, 0.22);
+  font-weight: 500;
+}
+
 .pricing-glass-footnote {
   margin-top: 1.25rem;
   text-align: center;

@@ -11,6 +11,11 @@ import {
   formatPlanPrice,
   type BillingInterval,
 } from "@/lib/subscription-plans";
+import {
+  SUBSCRIPTION_PLAN_FEATURES,
+  getPlanCreditsLabel,
+  getPlanDeltaLabel,
+} from "@/lib/subscription-plan-features";
 
 const PLAN_MOBILE_ORDER: Record<
   (typeof SUBSCRIPTION_PLAN_ORDER)[number],
@@ -21,21 +26,6 @@ const PLAN_MOBILE_ORDER: Record<
   pro: "order-3",
   business: "order-4",
 };
-
-const ALL_PLAN_TOOL_KEYS = [
-  "all_tools_f1",
-  "all_tools_f2",
-  "all_tools_f3",
-  "all_tools_f4",
-  "all_tools_f5",
-  "all_tools_f6",
-  "all_tools_f7",
-  "all_tools_f8",
-  "all_tools_f9",
-  "all_tools_f10",
-  "all_tools_f11",
-  "all_tools_f12",
-] as const;
 
 function EuroPrice({ amount }: { amount: number }) {
   return (
@@ -76,8 +66,6 @@ export function PricingPlans({
   const [yearly, setYearly] = useState(false);
   const interval: BillingInterval = yearly ? "yearly" : "monthly";
 
-  const sharedFeatures = [t("credits_included"), ...ALL_PLAN_TOOL_KEYS.map((key) => t(key))];
-
   const planContent = (key: (typeof SUBSCRIPTION_PLAN_ORDER)[number]) => {
     const config = SUBSCRIPTION_PLANS[key];
     const price =
@@ -90,17 +78,11 @@ export function PricingPlans({
       hot: config.popular ?? false,
       price,
       name: t(`${key}_name`),
-      credits:
-        key === "business"
-          ? "2.500 Credits / Monat"
-          : t(`${key}_credits`),
+      credits: getPlanCreditsLabel(key),
       desc: t(`${key}_desc`),
-      delta:
-        key === "business"
-          ? "2.500 Credits · Unbegrenzte Workspaces · Server-Priorität"
-          : t(`plan_delta_${key}`),
+      delta: getPlanDeltaLabel(key),
       cta: t(`${key}_cta`),
-      features: sharedFeatures,
+      features: SUBSCRIPTION_PLAN_FEATURES[key],
     };
   };
 
@@ -229,16 +211,27 @@ export function PricingPlans({
                   )}
 
                   <ul className="flex list-none flex-col gap-2.5">
-                    {plan.features.map((f) => (
+                    {plan.features.map((feature, featureIndex) => (
                       <li
-                        key={f}
-                        className="flex items-start gap-2.5 text-[0.84rem] text-white/80"
+                        key={`${plan.key}-${featureIndex}`}
+                        className={`flex items-start gap-2.5 text-[0.84rem] ${
+                          feature.included
+                            ? "text-white/80"
+                            : "text-white/35"
+                        }`}
                         style={{ fontFamily: "var(--font-dm), sans-serif" }}
                       >
-                        <span className="pricing-glass-check" aria-hidden>
-                          ✓
+                        <span
+                          className={
+                            feature.included
+                              ? "pricing-glass-check"
+                              : "pricing-glass-check pricing-glass-check--excluded"
+                          }
+                          aria-hidden
+                        >
+                          {feature.included ? "✓" : "✗"}
                         </span>
-                        {f}
+                        {feature.text}
                       </li>
                     ))}
                   </ul>
