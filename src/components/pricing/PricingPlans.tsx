@@ -189,7 +189,7 @@ export function PricingPlans({
                     {plan.desc}
                   </div>
                   <p
-                    className="mb-4 text-[0.75rem] leading-[1.5] text-white/45"
+                    className="mb-4 text-[0.75rem] leading-[1.5] text-white/60"
                     style={{ fontFamily: "var(--font-dm), sans-serif" }}
                   >
                     {plan.delta}
@@ -221,7 +221,7 @@ export function PricingPlans({
                         className={`flex items-start gap-2.5 text-[0.84rem] ${
                           feature.included
                             ? "text-white/80"
-                            : "text-white/35"
+                            : "text-white/45"
                         }`}
                         style={{ fontFamily: "var(--font-dm), sans-serif" }}
                       >

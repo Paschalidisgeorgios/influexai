@@ -98,7 +98,7 @@ export default function PricingPage() {
   const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
   const headlineFallback = t("headline");
   const sublineFallback = t("page_subtitle");
-  const ctaFallback = t("creator_cta");
+  const ctaFallback = t("starter_cta");
 
   return (
     <div className="pricing-glass-page landing-root min-h-screen">

@@ -34,7 +34,7 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
   ],
   business: [
     { text: "2.500 Credits / Monat", included: true },
-    { text: "Unbegrenzte Team-Mitglieder & Workspaces", included: true },
+    { text: "Team-Zugriff & mehrere Workspaces", included: true },
     { text: "Voller Developer API Zugriff", included: true },
     { text: "Niche Analyzer & Deep Outlier Detector", included: true },
     { text: "Whitelabel-Management & VIP-Support", included: true },

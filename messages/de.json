@@ -692,7 +692,7 @@
       "headline3": "Deine Kampagne.",
       "kicker": "Jetzt starten",
       "note": "Ab €{price}/Monat · Credits inklusive · DSGVO-konform",
-      "primary": "→ Jetzt starten — ab €{price}",
+      "primary": "Studio starten",
       "secondary": "Für Marken →",
       "sub1": "Für Creator, die schneller produzieren wollen.",
       "sub2": "Für Marken und Agenturen, die Kampagnen skalieren möchten."
@@ -1221,7 +1221,7 @@
       "company_about": "Über uns",
       "company_blog": "Blog",
       "company_guides": "Guides",
-      "company_business": "Business",
+      "company_business": "Unternehmen",
       "company_faq": "FAQ",
       "company_press": "Presse",
       "legal": "Rechtliches",
@@ -1249,8 +1249,8 @@
     },
     "pricing": {
       "business_credits": "2.500 Credits/Monat",
-      "business_cta": "Business starten",
-      "business_desc": "Für Marken, KMUs und Agenturen.",
+      "business_cta": "Plan auswählen",
+      "business_desc": "Für Teams, Marken und Agenturen mit mehr Volumen und erweiterten Funktionen.",
       "business_f1": "Alles aus InfluexAI Pro",
       "business_f2": "10 Team-Charaktere",
       "business_f3": "Brand-Konsistenz-Tools",
@@ -1258,8 +1258,8 @@
       "business_f5": "API + Priority Support",
       "business_name": "InfluexAI Business",
       "creator_credits": "300 Credits/Monat",
-      "creator_cta": "Creator werden",
-      "creator_desc": "Für Creator und Freelancer.",
+      "creator_cta": "Plan auswählen",
+      "creator_desc": "Für regelmäßige Content-Produktion mit Visuals, Video und Agent.",
       "creator_f1": "Alles aus InfluExAi Starter",
       "creator_f2": "Video Remix",
       "creator_f3": "KI-Ich & Face Swap",
@@ -1278,10 +1278,10 @@
       "plan_delta_starter": "50 Credits · Alle Basis-Tools · Text & Bilder",
       "plan_delta_creator": "300 Credits · + Agent Autopilot · + Video Tools",
       "plan_delta_pro": "800 Credits · + Alle Video-Tools · + Priorität",
-      "plan_delta_business": "Unbegrenzt · + Team · + Alle 20+ Tools",
+      "plan_delta_business": "Team-Zugriff & mehrere Workspaces · API & Whitelabel",
       "starter_credits": "50 Credits/Monat",
-      "starter_cta": "Jetzt starten",
-      "starter_desc": "Einstieg für gelegentliche Creator.",
+      "starter_cta": "Plan auswählen",
+      "starter_desc": "Für erste Tests und gelegentliche Inhalte.",
       "starter_f1": "Script Generator",
       "starter_f2": "Niche Analyzer",
       "starter_f3": "Outlier Detector",
@@ -1319,8 +1319,8 @@
       "starter_m3": "Live Creator",
       "pro_name": "InfluexAI Pro",
       "pro_credits": "800 Credits/Monat",
-      "pro_cta": "Pro starten",
-      "pro_desc": "Für professionelle Creator & Streamer.",
+      "pro_cta": "Plan auswählen",
+      "pro_desc": "Für professionelle Workflows mit Avatar, Stimme, LoRA und höherer Qualität.",
       "pro_f1": "Alles aus InfluexAI Creator",
       "pro_f2": "Live Creator inklusive",
       "pro_f3": "Musik-Studio",
@@ -1374,9 +1374,9 @@
       "trust_3": "DSGVO-bewusst",
       "trust_4": "Credits transparent",
       "pricing_bridge": "Starte mit einem Plan ab €{price} und teste zuerst die kostenlose Plan-Vorschau.",
-      "cta_choose_plan": "Plan wählen",
+      "cta_choose_plan": "Plan auswählen",
       "cta_free_plan": "Kostenlos planen",
-      "cta_dashboard": "Dashboard öffnen",
+      "cta_dashboard": "App Studio öffnen",
       "cta_workflow": "Workflow ansehen",
       "cards": {
         "tiktok_script": {
@@ -1407,8 +1407,8 @@
       }
     },
     "useCases": {
-      "kicker": "Für wen?",
-      "headline": "Ein Studio. Drei Welten.",
+      "kicker": "Für wen ist InfluexAI?",
+      "headline": "Ein Studio. Drei Zielgruppen.",
       "creator_title": "Content Creator",
       "creator_subtitle": "Regelmäßig sichtbar, ohne jeden Tag von vorn zu starten.",
       "creator_desc": "Hooks, Skripte, Visuals und Content-Kalender — schnell generiert. Agent Autopilot unterstützt dich bei der Wochenplanung.",
@@ -1451,7 +1451,7 @@
       "feature_f1": "Erkennt Hooks, Skripte und Video-Anforderungen",
       "feature_f2": "Nutzt passende Tools aus dem Studio",
       "feature_f3": "Erstellt Campaign-Packs aus einem Briefing",
-      "cta": "Agent Autopilot öffnen →",
+      "cta": "Agent starten",
       "demo_user": "Erstelle einen 7-Tage Content-Plan für mein Café auf Instagram",
       "demo_line_1": "> Briefing erkannt: Food & Lifestyle · Instagram",
       "demo_line_2": "> CreatorDNA geladen · Tonalität: Authentisch",
@@ -1466,7 +1466,7 @@
     "value": {
       "headline": "Agent Autopilot — dein Content-Studio.",
       "body": "Beschreibe dein Ziel und lass Agent Autopilot die passenden Tools wählen. Hooks, Videos, Kampagnen — alles aus einem Befehl.",
-      "cta_primary": "Agent Autopilot starten",
+      "cta_primary": "Agent starten",
       "cta_secondary": "Preise ansehen"
     },
     "launchBanner": "Frisch gestartet 2026 — sei einer der ersten Creator",
@@ -1634,7 +1634,7 @@
       },
       "pack": {
         "kicker": "So funktioniert es",
-        "headline": "Ein Briefing. Mehrere Assets.",
+        "headline": "Ein Briefing. Ein Workflow. Fertige Assets.",
         "subheadline": "Agent Autopilot liest dein Briefing und koordiniert die passenden Tools im Studio.",
         "briefing_label": "Dein Briefing",
         "briefing_content": "Fitness-Coach · Instagram · motivierend · Zielgruppe Frauen 25-40",
@@ -1658,7 +1658,7 @@
         "plan_desc": "30-Tage Kalender",
         "score_pill": "Creative Score: 94/100 (Beispiel)",
         "score_note": "Qualität wird automatisch bewertet und bei Bedarf optimiert.",
-        "cta": "Agent Autopilot öffnen →"
+        "cta": "Agent starten"
       },
       "audience": {
         "kicker": "Zielgruppen",

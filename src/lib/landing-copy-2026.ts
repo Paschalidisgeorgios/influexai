@@ -16,20 +16,13 @@ export type LandingFeatureCardCopy = {
   videoSrc?: string;
 };
 
-export const HERO_KINETIC_WORDS = [
-  "VIRALE HOOKS.",
-  "KI-AVATARE.",
-  "CINEMATIC VIDEOS.",
-  "FOTOREALISTISCHE VISUALS.",
-  "AUTOMATISIERTEN CONTENT.",
-  "PRODUKT-KAMPAGNEN.",
-] as const;
-
 export const LANDING_HERO_2026 = {
   kicker: "App Studio · KI-Creator-Plattform 2026",
-  headline: {
-    staticPrefix: "DEIN STUDIO FÜR ",
-  },
+  headline: "Dein Studio für KI-Visuals, Videos und virale Hooks.",
+  subheadline:
+    "InfluexAI bündelt Hooks, Visuals, Videos, Avatare und Kampagnen-Workflows in einem Studio.",
+  ctaPrimary: "Studio starten",
+  ctaSecondary: "So funktioniert es",
   welcomeStudio: (name: string) =>
     `Willkommen, ${name}. Dein App Studio ist bereit.`,
 } as const;

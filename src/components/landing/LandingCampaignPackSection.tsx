@@ -139,7 +139,7 @@ export function LandingCampaignPackSection() {
               {t("score_pill")}
             </span>
             <p
-              className="text-sm text-white/45"
+              className="text-sm text-white/60"
               style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
             >
               {t("score_note")}

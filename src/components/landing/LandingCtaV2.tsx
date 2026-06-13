@@ -38,10 +38,10 @@ export function LandingCtaV2({ reveal = true }: LandingCtaV2Props) {
           Starte jetzt und erstelle deine ersten Inhalte direkt im Studio.
         </p>
         <IntentLink href="/signup" className="landing-glass-btn-cta mt-8 h-14 px-10 text-lg">
-          Jetzt kostenlos starten
+          Studio starten
           <ArrowRight size={18} aria-hidden />
         </IntentLink>
-        <p className="mt-4 text-xs text-white/45">Flexible Pläne · Monatlich kündbar</p>
+        <p className="mt-4 text-xs text-white/60">Flexible Pläne · Monatlich kündbar</p>
       </div>
     </section>
   );

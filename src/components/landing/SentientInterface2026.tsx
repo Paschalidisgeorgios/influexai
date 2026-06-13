@@ -310,7 +310,7 @@ export default function SentientInterface2026() {
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <IntentLink href="/signup" className="landing-glass-btn-cta">
-            App Studio öffnen <ArrowRight size={15} aria-hidden="true" />
+            Studio starten <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
         </div>
 

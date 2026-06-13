@@ -319,7 +319,7 @@ export function PricingSection() {
               )}
             </div>
             <p
-              className="mt-4 font-mono text-[0.72rem] tracking-wide text-white/40"
+              className="mt-4 font-mono text-[0.72rem] tracking-wide text-white/60"
               style={{ fontFamily: "var(--font-dm), sans-serif" }}
             >
               {t("credits_demo_note")}
@@ -448,10 +448,10 @@ const FOOTER_LINK_HREF: Partial<
 const SUPPORT_EMAIL = "info@influexaicreator.com";
 
 const FOOTER_LINK_CLASS =
-  "block font-sans text-sm text-zinc-400 transition-all hover:translate-x-0.5 hover:text-white";
+  "block font-sans text-sm text-white/60 transition-all hover:translate-x-0.5 hover:text-white";
 
 const FOOTER_COL_HEADING_CLASS =
-  "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500";
+  "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-white/60";
 
 const FOOTER_SOCIAL_CLASS =
   "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
@@ -598,7 +598,7 @@ export function LandingFooter() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-[12px] text-zinc-500 no-underline transition-colors duration-150 hover:text-white hover:underline"
+                  className="text-[12px] text-white/60 no-underline transition-colors duration-150 hover:text-white hover:underline"
                 >
                   {link.label}
                 </a>

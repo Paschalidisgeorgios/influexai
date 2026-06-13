@@ -122,7 +122,7 @@ export function HeroSection() {
               (badge) => (
                 <span
                   key={badge}
-                  className="rounded-full border border-zinc-700/60 bg-zinc-950/40 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-zinc-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] backdrop-blur-md"
+                  className="rounded-full border border-zinc-700/60 bg-zinc-950/40 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-white/60 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] backdrop-blur-md"
                 >
                   {badge}
                 </span>
@@ -132,10 +132,10 @@ export function HeroSection() {
 
           <div className="mb-0 flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink href="/signup" className="landing-glass-btn-cta">
-              Jetzt kostenlos starten →
+              {LANDING_HERO_2026.ctaPrimary}
             </IntentLink>
             <a href="#bento-features" className="landing-neon-btn-secondary">
-              So funktioniert es
+              {LANDING_HERO_2026.ctaSecondary}
             </a>
           </div>
 
@@ -152,7 +152,7 @@ export function HeroSection() {
                 autoComplete="off"
                 maxLength={400}
                 aria-label="Frage an das Studio-Gehirn"
-                className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-zinc-400 focus:outline-none disabled:opacity-60"
+                className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-white/60 focus:outline-none disabled:opacity-60"
               />
               <button
                 type="submit"
@@ -205,7 +205,7 @@ export function HeroSection() {
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="landing-glass-surface mt-4 rounded-xl border border-zinc-700/60 bg-zinc-950/50 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 hover:border-zinc-500"
                 >
-                  <p className="text-left font-sans text-sm leading-relaxed tracking-wide text-zinc-300">
+                  <p className="text-left font-sans text-sm leading-relaxed tracking-wide text-white/80">
                     {result.answer}
                   </p>
 
