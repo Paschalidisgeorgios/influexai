@@ -11,6 +11,7 @@ import {
   authLabelClass,
   authButtonClass,
   authForgotLinkClass,
+  authFooterClass,
 } from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import {
@@ -93,11 +94,11 @@ function LoginPageInner() {
 
   return (
     <div className="w-full">
-      <h1 className="mb-2 font-sans text-2xl font-extrabold uppercase tracking-wide text-white">
+      <h1 className="mb-2 font-sans text-2xl font-extrabold uppercase tracking-wider text-white antialiased">
         {t("login_title")}
       </h1>
 
-      <p className="mb-8 font-sans text-sm font-normal text-zinc-400">
+      <p className="mb-8 font-sans text-xs font-normal tracking-wide text-zinc-400">
         {t("login_subtitle")}
       </p>
 
@@ -126,7 +127,7 @@ function LoginPageInner() {
           </div>
 
           <div>
-            <div className="mb-1.5 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between">
               <label className={`${authLabelClass} mb-0`}>{t("password")}</label>
               <Link href="/forgot-password" className={authForgotLinkClass}>
                 {t("forgot_password")}
@@ -150,11 +151,11 @@ function LoginPageInner() {
         </form>
       </AuthCredentialSection>
 
-      <p className="mt-6 text-center text-xs text-zinc-500 transition-colors">
+      <p className={`mt-6 text-center ${authFooterClass}`}>
         {t("no_account")}{" "}
         <Link
           href="/auth/sign-up"
-          className="transition-colors hover:text-white"
+          className="transition-colors hover:text-[#ccff00]"
         >
           {t("signup_link")}
         </Link>
