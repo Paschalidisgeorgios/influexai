@@ -35,23 +35,24 @@ export function SmartCapsule({
 
   return (
     <div
-      className="pointer-events-none fixed top-5 left-1/2 z-50 select-none overflow-hidden"
-      style={{ transform: "translateX(-50%)", maxWidth: "calc(100vw - 2rem)" }}
+      className="pointer-events-none fixed left-1/2 z-50 max-w-[min(92vw,520px)] -translate-x-1/2 select-none"
+      style={{ top: isScrolled ? "3.75rem" : "4.25rem" }}
     >
       <div
         className="flex items-center gap-2 overflow-hidden rounded-full border"
         style={{
           padding: isScrolled ? "4px 12px" : "5px 16px",
           background: isFlashing
-            ? `rgba(${rgb},0.12)`
+            ? `rgba(${rgb},0.14)`
             : isScrolled
-              ? "rgba(9,9,11,0.3)"
-              : "rgba(18,18,20,0.7)",
-          backdropFilter: isScrolled ? "blur(40px)" : "blur(24px)",
-          borderColor: `rgba(${rgb},${isScrolled ? 0.2 : 0.25})`,
+              ? "rgba(8,8,10,0.42)"
+              : "rgba(8,8,10,0.28)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderColor: `rgba(${rgb},${isScrolled ? 0.22 : 0.28})`,
           boxShadow: isFlashing
-            ? `0 0 24px rgba(${rgb},0.25), inset 0 0.5px 0 rgba(255,255,255,0.06)`
-            : `0 0 12px rgba(${rgb},0.12), inset 0 0.5px 0 rgba(255,255,255,0.06)`,
+            ? `0 0 20px rgba(${rgb},0.2), inset 0 0.5px 0 rgba(255,255,255,0.08)`
+            : `0 2px 16px rgba(0,0,0,0.22), inset 0 0.5px 0 rgba(255,255,255,0.06)`,
           transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
         }}
       >

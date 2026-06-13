@@ -117,7 +117,7 @@ export function HeroSection() {
     <>
       <SmartCapsule rgb={rgb} message={capsuleMsg} isFlashing={isFlashing} />
 
-      <section className="relative flex h-screen min-h-[620px] items-center overflow-hidden bg-[#08080a]">
+      <section className="relative flex h-screen min-h-[620px] items-center overflow-hidden bg-transparent">
         <Hero3DScene rgb={rgb} />
 
         <div className="pointer-events-none relative z-20 w-full px-5 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">

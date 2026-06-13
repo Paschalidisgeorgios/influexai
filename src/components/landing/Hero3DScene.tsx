@@ -37,8 +37,8 @@ export function Hero3DScene({ rgb }: Hero3DSceneProps) {
         className="absolute inset-0"
         style={{
           background: `
-            linear-gradient(105deg, rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.78) 28%, rgba(8,8,10,0.45) 55%, rgba(8,8,10,0.72) 100%),
-            linear-gradient(to bottom, rgba(8,8,10,0.55) 0%, transparent 35%, rgba(8,8,10,0.85) 100%)
+            linear-gradient(105deg, rgba(8,8,10,0.82) 0%, rgba(8,8,10,0.62) 28%, rgba(8,8,10,0.22) 55%, rgba(8,8,10,0.55) 100%),
+            linear-gradient(to bottom, rgba(8,8,10,0.15) 0%, transparent 22%, rgba(8,8,10,0.75) 100%)
           `,
         }}
       />
