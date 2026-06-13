@@ -36,7 +36,7 @@ export function LandingPageV2() {
         <div
           id="pricing"
           data-landing-glow="pricing"
-          className="pricing-glass-section landing-v2-pricing relative overflow-hidden px-6 py-20 md:px-12"
+          className="pricing-glass-section landing-v2-pricing relative overflow-x-clip overflow-y-visible px-6 py-20 md:px-12"
         >
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <div className="landing-glass-dot-grid absolute inset-0 opacity-60" />

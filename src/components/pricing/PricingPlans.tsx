@@ -150,10 +150,14 @@ export function PricingPlans({
                 className={`${PLAN_MOBILE_ORDER[plan.key]} h-full md:order-none`}
               >
                 <div
-                  className={`pricing-glass-card ${plan.hot ? "pricing-glass-card--featured" : ""}`}
+                  className={`pricing-glass-card border border-zinc-700/60 ${
+                    plan.hot ? "pricing-glass-card--featured" : ""
+                  }`}
                 >
                   {plan.hot && (
-                    <div className="pricing-glass-badge">{t("most_popular")}</div>
+                    <div className="pricing-glass-badge absolute -top-3 left-1/2 -translate-x-1/2">
+                      {t("most_popular")}
+                    </div>
                   )}
                   <div className="pricing-glass-plan-name">{plan.name}</div>
                   <div className="pricing-glass-price">
