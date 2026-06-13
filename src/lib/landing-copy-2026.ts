@@ -32,10 +32,10 @@ export const LANDING_HERO_2026 = {
   },
   subline:
     "Vom viralen Skript bis zum filmischen B-Roll-Video — auf einem unendlichen Canvas, gesteuert von Claude, optimiert durch den Viral-Predictor und gerendert mit Seedance & Kling. Ein Studio. Null Kontextwechsel.",
-  trust: [
-    "Infinite Canvas + Claude Brain",
-    "Auto B-Roll & CTR-Predictor",
-    "Seedance · Kling · Avatar Studio",
+  microBadges: [
+    "Claude 3.5 Brain",
+    "Seedance & Kling Motion",
+    "Predictive Analytics",
   ],
   welcomeStudio: (name: string) =>
     `Willkommen, ${name}. Dein Infinite Workspace ist bereit.`,

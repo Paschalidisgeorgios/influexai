@@ -15,7 +15,7 @@ import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
 import "@/styles/canvas.css";
 
 const CONCIERGE_PLACEHOLDER =
-  "Frag unser Studio-Gehirn (z.B. Wie erstelle ich Content für meine Modemarke?)...";
+  "Frage unser Studio-Gehirn... (z.B. Wie erstelle ich Content für meine Modemarke?)";
 
 type ConciergeState = {
   answer: string;
@@ -116,7 +116,7 @@ export function HeroSection() {
             {LANDING_HERO_2026.subline}
           </p>
 
-          <div className="mb-8 flex flex-wrap justify-center gap-3 md:justify-start">
+          <div className="flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink href="/signup" className="landing-glass-btn-cta">
               Jetzt kostenlos starten →
             </IntentLink>
@@ -125,16 +125,13 @@ export function HeroSection() {
             </a>
           </div>
 
-          <div
-            className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.1em] text-white/45 md:justify-start"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-          >
-            {LANDING_HERO_2026.trust.map((item, index) => (
-              <span key={item} className="inline-flex items-center gap-6">
-                {index > 0 ? (
-                  <span className="hidden h-3 w-px bg-white/10 sm:inline-block" aria-hidden />
-                ) : null}
-                <span>{item}</span>
+          <div className="mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
+            {LANDING_HERO_2026.microBadges.map((badge) => (
+              <span
+                key={badge}
+                className="rounded-full border border-zinc-800/60 bg-zinc-950/40 px-3 py-1 font-mono text-[10px] tracking-widest text-zinc-400 uppercase backdrop-blur-md"
+              >
+                {badge}
               </span>
             ))}
           </div>
@@ -143,7 +140,7 @@ export function HeroSection() {
             onSubmit={(e) => void handleSubmit(e)}
             className="relative z-20 mt-8 w-full max-w-xl md:max-w-none"
           >
-            <div className="landing-neon-input-wrap">
+            <div className="flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-950/20 p-3 backdrop-blur-md transition-colors focus-within:border-[#ccff00]/40">
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -152,20 +149,17 @@ export function HeroSection() {
                 autoComplete="off"
                 maxLength={400}
                 aria-label="Frage an das Studio-Gehirn"
+                className="min-w-0 flex-1 border border-transparent bg-transparent px-2 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-[#ccff00] focus:rounded-lg disabled:opacity-60"
               />
               <button
                 type="submit"
                 disabled={loading || !question.trim()}
                 aria-label="Frage senden"
-                className="landing-neon-input-submit"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 text-sm text-zinc-400 transition-colors hover:border-[#ccff00]/50 hover:bg-[#ccff00]/10 hover:text-[#ccff00] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 ↵
               </button>
             </div>
-
-            <p className="mt-2 text-left text-xs text-white/50">
-              {loading ? "KI-Berater analysiert…" : "Enter — Antwort in Sekunden"}
-            </p>
 
             <AnimatePresence mode="wait">
               {loading ? (
@@ -228,7 +222,7 @@ export function HeroSection() {
                         if (ctaRoute) setIntent(ctaRoute.intent);
                       }}
                     >
-                      Dieses Tool jetzt im unendlichen Canvas testen
+                      Dieses Tool jetzt testen →
                       <ArrowRight size={15} aria-hidden />
                     </IntentLink>
                   </motion.div>
