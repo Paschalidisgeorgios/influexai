@@ -1,8 +1,8 @@
-import { CLAUDE_JSON_SYSTEM_RULE, parseClaudeJson } from "@/lib/anthropic";
+import { CLAUDE_35_SONNET_MODEL, CLAUDE_JSON_SYSTEM_RULE, parseClaudeJson } from "@/lib/anthropic";
 
 /** Claude 3.5 Sonnet — Premium Script + B-Roll pipeline. */
 export const CLAUDE_PREMIUM_MODEL =
-  process.env.ANTHROPIC_PREMIUM_MODEL?.trim() || "claude-3-5-sonnet-20241022";
+  process.env.ANTHROPIC_PREMIUM_MODEL?.trim() || CLAUDE_35_SONNET_MODEL;
 
 export const PREMIUM_GENERATE_CREDIT_COST = 2;
 

@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { getAnthropicConfigError, anthropicUserErrorFromStatus } from "@/lib/anthropic";
+import { getAnthropicConfigError, logAnthropicFailure, mapAnthropicSdkError } from "@/lib/anthropic";
 import { addCredits, deductCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
@@ -46,30 +46,7 @@ function resolveTopic(body: RequestBody): string {
 }
 
 function mapSdkError(err: unknown): { status: number; message: string } {
-  if (err instanceof Anthropic.APIError) {
-    const message = anthropicUserErrorFromStatus(err.status, err.message);
-    if (err.status === 429) return { status: 429, message };
-    if (err.status === 401 || err.status === 403) return { status: 503, message };
-    if (err.status === 404) return { status: 503, message: "Claude-Modell nicht verfügbar." };
-    if (err.status >= 500) return { status: 502, message };
-    return { status: 502, message };
-  }
-
-  if (err instanceof Anthropic.APIConnectionError) {
-    return {
-      status: 503,
-      message: "Netzwerkfehler bei der KI-Anfrage. Bitte erneut versuchen.",
-    };
-  }
-
-  if (err instanceof Error) {
-    if (/JSON|parse|Hook|Body|CTA|B-Roll/i.test(err.message)) {
-      return { status: 502, message: "KI-Antwort konnte nicht verarbeitet werden." };
-    }
-    return { status: 500, message: err.message };
-  }
-
-  return { status: 500, message: "Unbekannter Fehler bei der Generierung." };
+  return mapAnthropicSdkError(err, CLAUDE_PREMIUM_MODEL);
 }
 
 async function refundPremiumCredits(
@@ -173,7 +150,7 @@ export async function POST(request: Request) {
     const premiumScript = parsePremiumScriptFromClaude(rawText);
     payload = buildPremiumGeneratePayload(premiumScript);
   } catch (err) {
-    console.error("[api/generate] Claude:", err);
+    logAnthropicFailure("api/generate", CLAUDE_PREMIUM_MODEL, err);
     await refundPremiumCredits(supabase, userId);
     const mapped = mapSdkError(err);
     return NextResponse.json(

@@ -1,5 +1,8 @@
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
+/** Claude 3.5 Sonnet — landing concierge, demo & premium canvas pipeline. */
+export const CLAUDE_35_SONNET_MODEL = "claude-3-5-sonnet-latest";
+
 /** Script Generator — Sonnet 4 (claude-sonnet-4-20250514 returns 404 on current API). */
 export const SCRIPT_GENERATOR_MODEL = "claude-sonnet-4-5-20250929";
 
@@ -58,6 +61,73 @@ export function anthropicUserErrorFromStatus(status: number, body?: string): str
     return "KI-Server vorübergehend nicht erreichbar. Bitte später erneut versuchen.";
   }
   return "KI-Anfrage fehlgeschlagen. Bitte später erneut versuchen.";
+}
+
+export function logAnthropicFailure(
+  context: string,
+  model: string,
+  err: unknown
+): void {
+  if (isAnthropicApiError(err)) {
+    console.error(
+      `[${context}] Anthropic model=${model} status=${err.status}:`,
+      err.message
+    );
+    return;
+  }
+  if (err instanceof Error) {
+    console.error(`[${context}] Anthropic model=${model}:`, err.message);
+    if (err.stack) console.error(err.stack);
+    return;
+  }
+  console.error(`[${context}] Anthropic model=${model}:`, err);
+}
+
+function isAnthropicApiError(err: unknown): err is { status: number; message: string } {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "status" in err &&
+    typeof (err as { status: unknown }).status === "number"
+  );
+}
+
+/** Maps Anthropic SDK / fetch errors to HTTP status + user-facing German message. */
+export function mapAnthropicSdkError(
+  err: unknown,
+  model?: string
+): { status: number; message: string } {
+  if (isAnthropicApiError(err)) {
+    const userMessage = anthropicUserErrorFromStatus(err.status, err.message);
+    if (err.status === 404) {
+      return {
+        status: 503,
+        message: model
+          ? `KI-Modell „${model}“ ist derzeit nicht verfügbar. Bitte später erneut versuchen.`
+          : userMessage,
+      };
+    }
+    if (err.status === 429) return { status: 429, message: userMessage };
+    if (err.status === 401 || err.status === 403) return { status: 503, message: userMessage };
+    if (err.status >= 500) return { status: 502, message: userMessage };
+    return { status: 502, message: userMessage };
+  }
+
+  if (err instanceof Error && err.constructor.name === "APIConnectionError") {
+    return {
+      status: 503,
+      message: "Netzwerkfehler bei der KI-Anfrage. Bitte erneut versuchen.",
+    };
+  }
+
+  if (err instanceof Error) {
+    if (/JSON|parse|Hook|Body|CTA|B-Roll|Leere/i.test(err.message)) {
+      return { status: 502, message: "KI-Antwort konnte nicht verarbeitet werden." };
+    }
+    return { status: 500, message: err.message };
+  }
+
+  return { status: 500, message: "Unbekannter Fehler bei der KI-Anfrage." };
 }
 
 export type AnthropicContentBlock =

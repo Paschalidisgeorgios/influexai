@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
-import { getAnthropicConfigError, anthropicUserErrorFromStatus } from "@/lib/anthropic";
+import { getAnthropicConfigError, logAnthropicFailure, mapAnthropicSdkError } from "@/lib/anthropic";
 import {
   buildLandingDemoUserPrompt,
   LANDING_DEMO_MODEL,
@@ -41,19 +41,7 @@ function checkRateLimit(key: string): boolean {
 }
 
 function mapSdkError(err: unknown): { status: number; message: string } {
-  if (err instanceof Anthropic.APIError) {
-    const message = anthropicUserErrorFromStatus(err.status, err.message);
-    if (err.status === 429) return { status: 429, message };
-    if (err.status === 401 || err.status === 403) return { status: 503, message };
-    return { status: 502, message };
-  }
-  if (err instanceof Anthropic.APIConnectionError) {
-    return { status: 503, message: "Netzwerkfehler. Bitte erneut versuchen." };
-  }
-  if (err instanceof Error) {
-    return { status: 502, message: "KI-Antwort konnte nicht verarbeitet werden." };
-  }
-  return { status: 500, message: "Unbekannter Fehler." };
+  return mapAnthropicSdkError(err, LANDING_DEMO_MODEL);
 }
 
 export async function POST(request: Request) {
@@ -114,7 +102,7 @@ export async function POST(request: Request) {
     const idea = parseLandingDemoIdea(rawText);
     return NextResponse.json({ success: true, idea });
   } catch (err) {
-    console.error("[api/generate/demo]", err);
+    logAnthropicFailure("api/generate/demo", LANDING_DEMO_MODEL, err);
     const mapped = mapSdkError(err);
     return NextResponse.json({ success: false, error: mapped.message }, { status: mapped.status });
   }
