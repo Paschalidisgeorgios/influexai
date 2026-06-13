@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CREDIT_CALCULATOR_TIERS } from "@/lib/credit-packages";
+import "@/styles/credits-glass.css";
 
 const USE_CASES = [
   { key: "scripts", icon: "📝", label: "Scripts", divisor: 2 },
@@ -19,6 +20,9 @@ const HIGHLIGHT_BY_TYPE: Record<string, string> = {
   produkt: "ads",
   "video-remix": "scripts",
 };
+
+const GLASS_CARD =
+  "rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-xl";
 
 type Props = {
   topFeatureType?: string | null;
@@ -42,28 +46,22 @@ export function CreditCalculator({ topFeatureType }: Props) {
     [credits, highlightKey]
   );
 
+  const maxCount = useMemo(
+    () => Math.max(...rows.map((row) => row.count), 1),
+    [rows]
+  );
+
   return (
-    <div
-      style={{
-        padding: 22,
-        borderRadius: 16,
-        background: "#0f0f12",
-        border: "1px solid rgba(255,255,255,0.07)",
-        marginBottom: 28,
-      }}
-    >
-      <h2
-        style={{
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-          fontSize: "1.35rem",
-          letterSpacing: "0.02em",
-          color: "#F0EFE8",
-          marginBottom: 6,
-        }}
-      >
-        Was kannst du mit {credits} Credits machen?
+    <div className={`${GLASS_CARD} mb-6`}>
+      <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+        Credit Rechner
+      </p>
+      <h2 className="mb-2 font-sans text-xl font-extrabold uppercase tracking-tight text-white md:text-2xl">
+        Was kannst du mit{" "}
+        <span className="font-mono font-bold text-[#ccff00]">{credits}</span> Credits
+        machen?
       </h2>
-      <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.65)", marginBottom: 18 }}>
+      <p className="mb-6 font-sans text-sm leading-relaxed text-zinc-400">
         Ziehe den Slider — sieh live, wie viele Creationen möglich sind.
       </p>
 
@@ -76,80 +74,53 @@ export function CreditCalculator({ topFeatureType }: Props) {
         step={1}
         value={tierIndex}
         onChange={(e) => setTierIndex(Number(e.target.value))}
-        style={{
-          width: "100%",
-          marginBottom: 20,
-          accentColor: "#B4FF00",
-        }}
+        className="credits-glass-slider mb-4"
       />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: "0.72rem",
-          color: "rgba(255,255,255,0.65)",
-          marginTop: -12,
-          marginBottom: 16,
-        }}
-      >
+
+      <div className="mb-6 flex justify-between font-mono text-[10px] text-zinc-500">
         {CREDIT_CALCULATOR_TIERS.map((n) => (
           <span
             key={n}
-            style={{
-              fontWeight: credits === n ? 700 : 400,
-              color: credits === n ? "#B4FF00" : "rgba(255,255,255,0.65)",
-            }}
+            className={
+              credits === n ? "font-bold text-[#ccff00]" : "text-zinc-500"
+            }
           >
             {n}
           </span>
         ))}
       </div>
 
-      <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-        {rows.map((row) => (
-          <li
-            key={row.key}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "10px 12px",
-              marginBottom: 6,
-              borderRadius: 10,
-              background: row.highlight
-                ? "rgba(180,255,0,0.08)"
-                : "rgba(255,255,255,0.02)",
-              border: row.highlight
-                ? "1px solid rgba(180,255,0,0.2)"
-                : "1px solid transparent",
-            }}
-          >
-            <span style={{ fontSize: "0.85rem", color: "#F0EFE8" }}>
-              {row.icon} {row.label}
-              {row.highlight && (
-                <span
-                  style={{
-                    marginLeft: 8,
-                    fontSize: "0.62rem",
-                    color: "#B4FF00",
-                    fontWeight: 700,
-                  }}
-                >
-                  Dein Favorit
+      <ul className="space-y-4">
+        {rows.map((row) => {
+          const fillPercent = Math.round((row.count / maxCount) * 100);
+
+          return (
+            <li key={row.key}>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <span className="font-sans text-sm text-zinc-300">
+                  {row.icon} {row.label}
+                  {row.highlight ? (
+                    <span className="ml-2 font-mono text-[9px] font-bold uppercase tracking-wider text-[#ccff00]">
+                      Dein Favorit
+                    </span>
+                  ) : null}
                 </span>
-              )}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "1.25rem",
-                color: row.highlight ? "#B4FF00" : "#F0EFE8",
-              }}
-            >
-              {row.count}
-            </span>
-          </li>
-        ))}
+                <span className="shrink-0 font-mono text-sm font-bold text-zinc-400">
+                  {row.count}
+                </span>
+              </div>
+              <div className="h-px w-full overflow-hidden rounded-full bg-zinc-800/70">
+                <div
+                  className="h-full rounded-full bg-[#ccff00] transition-[width] duration-500 ease-out"
+                  style={{
+                    width: `${fillPercent}%`,
+                    opacity: row.highlight ? 1 : 0.72,
+                  }}
+                />
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

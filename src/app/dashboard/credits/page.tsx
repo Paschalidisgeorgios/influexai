@@ -10,8 +10,19 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   type CreditPackageId,
 } from "@/lib/credit-packages";
+import "@/styles/credits-glass.css";
+import "@/styles/studio-glass.css";
 
 type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
+
+const GLASS_CARD =
+  "rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-xl";
+
+const GHOST_BTN =
+  "inline-flex items-center justify-center rounded-lg border border-zinc-700/60 bg-transparent px-4 py-2.5 font-sans text-sm font-medium text-zinc-300 no-underline transition-colors hover:border-white/30 hover:bg-white/5 hover:text-white";
+
+const PREMIUM_BTN =
+  "w-full rounded-lg bg-[#ccff00] py-3 font-sans text-xs font-bold uppercase tracking-wider text-black transition-all duration-300 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function CreditsPage() {
   const t = useTranslations("credits");
@@ -53,290 +64,108 @@ export default function CreditsPage() {
   const showFirstPurchase = stats && !stats.hasPurchased;
 
   return (
-    <div className="w-full min-w-0 max-w-[960px] mx-auto box-border">
+    <div className="studio-glass-dot-grid relative mx-auto box-border w-full min-w-0 max-w-[960px] px-4 py-6 sm:px-6">
       {showUrgent && (
-        <div
-          style={{
-            marginBottom: 16,
-            padding: "12px 16px",
-            borderRadius: 10,
-            background: "rgba(239,68,68,0.12)",
-            border: "1px solid rgba(239,68,68,0.35)",
-            color: "#ff6b7a",
-            fontSize: "0.88rem",
-            fontWeight: 700,
-          }}
-        >
+        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-950/10 px-4 py-3 font-sans text-sm text-red-300 backdrop-blur-md">
           ⚠️ Credits fast leer — jetzt aufladen
         </div>
       )}
 
       {showFirstPurchase && (
-        <div
-          style={{
-            marginBottom: 16,
-            padding: "12px 16px",
-            borderRadius: 10,
-            background: "rgba(180,255,0,0.06)",
-            border: "1px solid rgba(180,255,0,0.2)",
-            fontSize: "0.85rem",
-            color: "#F0EFE8",
-          }}
-        >
+        <div className="mb-4 rounded-xl border border-[#ccff00]/20 bg-[#ccff00]/5 px-4 py-3 font-sans text-sm text-zinc-200 backdrop-blur-md">
           🎁 Erster Kauf? Benutze Code{" "}
-          <strong style={{ color: "#B4FF00" }}>FIRST20</strong> für 20% Rabatt
-          im Checkout.
+          <strong className="font-mono font-bold text-[#ccff00]">FIRST20</strong>{" "}
+          für 20% Rabatt im Checkout.
         </div>
       )}
 
-      {/* Header */}
-      <div
-        className="credits-balance-card"
-        style={{
-          padding: "clamp(16px, 4vw, 28px)",
-          borderRadius: 18,
-          marginBottom: 24,
-          background: "#0f0f12",
-          border: "1px solid rgba(180,255,0,0.15)",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.65)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            marginBottom: 8,
-          }}
-        >
+      <div className={`${GLASS_CARD} mb-6`}>
+        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           {t("balance")}
-        </div>
-        <div
-          data-testid="credits-balance"
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(3.5rem, 8vw, 5rem)",
-            letterSpacing: "0.02em",
-            color: "#B4FF00",
-            lineHeight: 1,
-            marginBottom: 12,
-          }}
-        >
-          {stats ? credits.toLocaleString("de-DE") : "…"}
-          <span
-            style={{
-              fontSize: "1.25rem",
-              color: "rgba(255,255,255,0.65)",
-              marginLeft: 10,
-              fontFamily: "var(--font-dm), sans-serif",
-              fontWeight: 500,
-            }}
-          >
-            Credits
-          </span>
-        </div>
-        <p
-          style={{ margin: "0 0 16px", fontSize: "0.88rem", color: "rgba(255,255,255,0.65)" }}
-        >
-          Du hast diesen Monat{" "}
-          <strong style={{ color: "#F0EFE8" }}>
-            {stats?.usedThisMonth ?? 0} Credits
-          </strong>{" "}
-          verbraucht
         </p>
         <div
-          style={{
-            marginBottom: 6,
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: "0.72rem",
-            color: "rgba(255,255,255,0.65)",
-          }}
+          data-testid="credits-balance"
+          className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"
         >
+          <span className="font-mono text-5xl font-bold leading-none text-[#ccff00] sm:text-6xl">
+            {stats ? credits.toLocaleString("de-DE") : "…"}
+          </span>
+          <span className="font-sans text-lg font-medium text-zinc-400">Credits</span>
+        </div>
+        <p className="mb-5 font-sans text-sm leading-relaxed text-zinc-400">
+          Du hast diesen Monat{" "}
+          <span className="font-mono font-bold text-white">
+            {stats?.usedThisMonth ?? 0} Credits
+          </span>{" "}
+          verbraucht
+        </p>
+        <div className="mb-2 flex justify-between font-sans text-xs text-zinc-500">
           <span>Verbleibend</span>
-          <span>
+          <span className="font-mono font-bold text-white">
             {credits} / {stats?.capacity ?? 0}
           </span>
         </div>
-        <div
-          style={{
-            height: 8,
-            background: "#222228",
-            borderRadius: 99,
-            overflow: "hidden",
-          }}
-        >
+        <div className="h-px overflow-hidden rounded-full bg-zinc-800/70">
           <div
+            className="h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${stats?.progressPercent ?? 0}%`,
-              height: "100%",
               background:
                 credits < 10
                   ? "linear-gradient(90deg, #ff6b7a, #ef4444)"
-                  : "#B4FF00",
-              borderRadius: 99,
-              transition: "width 0.4s ease",
+                  : "#ccff00",
             }}
           />
         </div>
       </div>
 
-      <div
-        style={{
-          marginBottom: 24,
-          padding: "16px 18px",
-          borderRadius: 14,
-          background: "rgba(180,255,0,0.04)",
-          border: "1px solid rgba(180,255,0,0.15)",
-        }}
-      >
-        <p
-          style={{
-            margin: "0 0 6px",
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            color: "#B4FF00",
-          }}
-        >
+      <div className={`${GLASS_CARD} mb-6`}>
+        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
           {tBuy("credit_outcome_title")}
         </p>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.86rem",
-            color: "rgba(255,255,255,0.72)",
-            lineHeight: 1.55,
-            maxWidth: 560,
-          }}
-        >
+        <p className="max-w-xl font-sans text-sm leading-relaxed text-zinc-400">
           {tBuy("credit_outcome_body")}
         </p>
       </div>
 
       <CreditCalculator topFeatureType={stats?.topFeatureType} />
 
-      <div
-        style={{
-          marginBottom: 24,
-          padding: 24,
-          borderRadius: 18,
-          background: "#0f0f12",
-          border: "1px solid rgba(180,255,0,0.2)",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.65)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            marginBottom: 8,
-          }}
-        >
+      <div className={`${GLASS_CARD} mb-6`}>
+        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           API Access
-        </div>
-        <h3
-          style={{
-            fontFamily: "var(--font-bebas), sans-serif",
-            fontSize: "1.75rem",
-            color: "#F0EFE8",
-            margin: "0 0 8px",
-          }}
-        >
+        </p>
+        <h3 className="mb-2 font-sans text-xl font-extrabold uppercase tracking-tight text-white">
           Developer API
         </h3>
-        <p
-          style={{
-            fontSize: "0.88rem",
-            color: "rgba(255,255,255,0.85)",
-            margin: "0 0 12px",
-            lineHeight: 1.5,
-          }}
-        >
-          Für Entwickler und Agenturen — dieselben Credits, Nutzung über REST
-          API. Kein extra API-Fee, gleicher Preis pro Credit wie im Dashboard.
+        <p className="mb-4 font-sans text-sm leading-relaxed text-zinc-400">
+          Für Entwickler und Agenturen — dieselben Credits, Nutzung über REST API.
+          Kein extra API-Fee, gleicher Preis pro Credit wie im Dashboard.
         </p>
-        <ul
-          style={{
-            margin: "0 0 16px",
-            paddingLeft: 18,
-            color: "rgba(255,255,255,0.65)",
-            fontSize: "0.82rem",
-            lineHeight: 1.7,
-          }}
-        >
+        <ul className="mb-5 space-y-1.5 pl-4 font-sans text-sm leading-relaxed text-zinc-500">
           <li>Script, Niche, Outlier & Thumbnail per API</li>
           <li>60 Requests/Minute · Bearer-Auth</li>
           <li>Credits geteilt mit deinem Konto</li>
         </ul>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <a
-            href="/dashboard/api"
-            style={{
-              padding: "10px 18px",
-              borderRadius: 10,
-              background: "#B4FF00",
-              color: "#060608",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              textDecoration: "none",
-            }}
-          >
+        <div className="flex flex-wrap gap-3">
+          <a href="/dashboard/api" className={GHOST_BTN}>
             API Keys verwalten
           </a>
-          <a
-            href="/docs"
-            style={{
-              padding: "10px 18px",
-              borderRadius: 10,
-              border: "1px solid rgba(180,255,0,0.3)",
-              color: "#B4FF00",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              textDecoration: "none",
-            }}
-          >
+          <a href="/docs" className={GHOST_BTN}>
             API Docs ansehen →
           </a>
         </div>
       </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <h2
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "1.75rem",
-            color: "#F0EFE8",
-            margin: "0 0 8px",
-          }}
-        >
+      <div className="mb-6">
+        <h2 className="mb-2 font-sans text-xl font-extrabold uppercase tracking-tight text-white md:text-2xl">
           {tBuy("pricing_title")}
         </h2>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.88rem",
-            color: "rgba(255,255,255,0.65)",
-            lineHeight: 1.55,
-            maxWidth: 560,
-          }}
-        >
+        <p className="max-w-xl font-sans text-sm leading-relaxed text-zinc-400">
           {tBuy("pricing_subtitle")}
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
-          gap: 16,
-          alignItems: "stretch",
-        }}
-      >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CREDIT_PACKAGES.map((pkg) => {
           const isPopular = pkg.popular;
           const highlighted =
@@ -348,100 +177,29 @@ export default function CreditsPage() {
             <div
               key={pkg.id}
               data-testid="pricing-card"
-              className={isPopular ? "credit-pack-card credit-pack-card--popular" : "credit-pack-card"}
-              style={{
-                padding: isPopular ? "clamp(20px, 4vw, 28px)" : "clamp(16px, 3.5vw, 24px)",
-                borderRadius: 18,
-                border: isPopular
-                  ? "2px solid rgba(180,255,0,0.5)"
-                  : "1px solid rgba(255,255,255,0.07)",
-                background: isPopular ? "rgba(180,255,0,0.04)" : "#0f0f12",
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
-                transform: isPopular ? "scale(1.02)" : "none",
-                minWidth: 0,
-                maxWidth: "100%",
-              }}
+              className={`relative flex min-w-0 flex-col ${GLASS_CARD} ${
+                isPopular ? "credits-pack-popular pt-7" : ""
+              }`}
             >
               {isPopular && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -12,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: "#B4FF00",
-                    color: "#060608",
-                    fontSize: "0.65rem",
-                    fontWeight: 800,
-                    padding: "4px 14px",
-                    borderRadius: 99,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  ★ MOST POPULAR
+                <div className="credits-popular-badge absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ccff00]/40 bg-[#ccff00]/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-[#ccff00] backdrop-blur-md">
+                  ★ Most Popular
                 </div>
               )}
 
-              <div
-                style={{
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  color: "rgba(255,255,255,0.65)",
-                  marginBottom: 8,
-                }}
-              >
+              <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
                 {pkg.label}
-              </div>
+              </p>
 
-              <div
-                style={{
-                  fontFamily: "var(--font-bebas), sans-serif",
-                  fontSize: "2rem",
-                  color: "#F0EFE8",
-                  lineHeight: 1,
-                  marginBottom: 4,
-                }}
-              >
+              <p className="mb-1 font-mono text-2xl font-bold text-white">
                 €{pkg.priceEur.toFixed(2).replace(".", ",")}
-              </div>
+              </p>
 
-              <div
-                style={{
-                  fontFamily: "var(--font-bebas), sans-serif",
-                  fontSize: "2.2rem",
-                  color: "#B4FF00",
-                  lineHeight: 1,
-                  marginBottom: 6,
-                }}
-              >
+              <p className="mb-1 font-mono text-2xl font-bold text-[#ccff00]">
                 {pkg.credits} Credits
-                {pkg.popular && (
-                  <span
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "#B4FF00",
-                      marginLeft: 8,
-                      fontFamily: "var(--font-dm), sans-serif",
-                    }}
-                  >
-                    Beliebt
-                  </span>
-                )}
-              </div>
+              </p>
 
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  color: "rgba(255,255,255,0.65)",
-                  marginBottom: 20,
-                  lineHeight: 1.4,
-                  flex: 1,
-                }}
-              >
+              <p className="mb-6 flex-1 font-sans text-sm text-zinc-500">
                 €{pkg.pricePerCredit.toFixed(3).replace(".", ",")} / Credit
               </p>
 
@@ -449,24 +207,11 @@ export default function CreditsPage() {
                 type="button"
                 onClick={() => handleCheckout(pkg.id)}
                 disabled={loading === pkg.id}
-                style={{
-                  width: "100%",
-                  minHeight: 44,
-                  padding: "12px",
-                  borderRadius: 10,
-                  border: "none",
-                  background:
-                    loading === pkg.id
-                      ? "rgba(255,255,255,0.1)"
-                      : highlighted
-                        ? "#B4FF00"
-                        : "rgba(255,255,255,0.08)",
-                  color: highlighted ? "#060608" : "#F0EFE8",
-                  fontWeight: 700,
-                  fontSize: "0.88rem",
-                  cursor: loading === pkg.id ? "default" : "pointer",
-                  fontFamily: "var(--font-dm), sans-serif",
-                }}
+                className={`${PREMIUM_BTN} ${
+                  !highlighted && !loading
+                    ? "bg-zinc-800/80 text-zinc-200 hover:bg-[#ccff00] hover:text-black"
+                    : ""
+                }`}
               >
                 {loading === pkg.id
                   ? "Wird geladen…"
@@ -477,18 +222,7 @@ export default function CreditsPage() {
         })}
       </div>
 
-      <div
-        style={{
-          marginTop: 24,
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: "8px 20px",
-          fontSize: 13,
-          color: "rgba(255,255,255,0.65)",
-          textAlign: "center",
-        }}
-      >
+      <div className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-center font-sans text-sm text-zinc-500">
         {[
           tBuy("trust_footer_no_expire"),
           tBuy("trust_footer_one_time"),
@@ -496,102 +230,51 @@ export default function CreditsPage() {
           tBuy("trust_footer_instant"),
           tBuy("trust_footer_stripe"),
         ].map((line, i) => (
-          <span
-            key={line}
-            style={{ display: "inline-flex", alignItems: "center" }}
-          >
-            {i > 0 && (
-              <span style={{ margin: "0 10px", color: "#2a2a2e" }} aria-hidden>
+          <span key={line} className="inline-flex items-center">
+            {i > 0 ? (
+              <span className="mr-5 hidden text-zinc-700 sm:inline" aria-hidden>
                 ·
               </span>
-            )}
+            ) : null}
             <span>
-              <span style={{ color: "#B4FF00" }}>✓ </span>
+              <span className="text-[#ccff00]">✓ </span>
               {line}
             </span>
           </span>
         ))}
       </div>
 
-      <p
-        style={{
-          marginTop: 16,
-          fontSize: 12,
-          color: "rgba(255,255,255,0.5)",
-          textAlign: "center",
-          lineHeight: 1.55,
-          maxWidth: 640,
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
+      <p className="mx-auto mt-4 max-w-xl text-center font-sans text-xs leading-relaxed text-zinc-600">
         {tBuy("pricing_footnote")}
       </p>
 
       {showBlock && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-            background: "rgba(6,6,8,0.92)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-          }}
-        >
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#050505]/90 p-6 backdrop-blur-md">
           <div
-            style={{
-              maxWidth: 480,
-              width: "100%",
-              padding: 28,
-              borderRadius: 18,
-              background: "#0f0f12",
-              border: "1px solid rgba(180,255,0,0.25)",
-              textAlign: "center",
-            }}
+            className={`${GLASS_CARD} w-full max-w-md text-center`}
           >
-            <h2
-              style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "2rem",
-                color: "#F0EFE8",
-                marginBottom: 12,
-              }}
-            >
+            <h2 className="mb-3 font-sans text-2xl font-extrabold uppercase tracking-tight text-white">
               Keine Credits mehr
             </h2>
-            <p
-              style={{ color: "rgba(255,255,255,0.65)", marginBottom: 24, fontSize: "0.9rem" }}
-            >
+            <p className="mb-6 font-sans text-sm text-zinc-400">
               Alle Features sind pausiert. Wähle ein Paket, um weiterzumachen.
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="flex flex-col gap-3">
               {CREDIT_PACKAGES.map((pkg) => (
                 <button
                   key={pkg.id}
                   type="button"
                   onClick={() => handleCheckout(pkg.id)}
                   disabled={!!loading}
-                  style={{
-                    padding: "12px",
-                    minHeight: 44,
-                    borderRadius: 10,
-                    border: pkg.popular
-                      ? "none"
-                      : "1px solid rgba(255,255,255,0.1)",
-                    background: pkg.popular
-                      ? "#B4FF00"
-                      : "rgba(255,255,255,0.06)",
-                    color: pkg.popular ? "#060608" : "#F0EFE8",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                  }}
+                  className={
+                    pkg.popular
+                      ? PREMIUM_BTN
+                      : `${GHOST_BTN} w-full justify-center`
+                  }
                 >
-                  {pkg.label} — {pkg.credits} Credits (€
-                  {pkg.priceEur.toFixed(2).replace(".", ",")})
+                  {pkg.label} —{" "}
+                  <span className="font-mono font-bold">{pkg.credits} Credits</span>{" "}
+                  (€{pkg.priceEur.toFixed(2).replace(".", ",")})
                 </button>
               ))}
             </div>
