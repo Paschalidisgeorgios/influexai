@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import {
   authInputClass,
@@ -13,6 +12,7 @@ import {
   authButtonClass,
   authLinkAccentClass,
   authForgotLinkClass,
+  authTitleClass,
 } from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import {
@@ -95,17 +95,9 @@ function LoginPageInner() {
 
   return (
     <div className="w-full">
-      <div className="mb-8 font-[family-name:var(--font-bebas)] text-xl font-bold tracking-wide text-[#ccff00] lg:hidden">
-        InfluexAI
-      </div>
+      <h1 className={authTitleClass}>{t("login_title")}</h1>
 
-      <h1 className="mb-2 text-2xl font-semibold uppercase tracking-wider text-white">
-        {t("login_title")}
-      </h1>
-
-      <AuthGreetingLine />
-
-      <p className="mb-5 text-sm text-white/60">{t("login_subtitle")}</p>
+      <p className="mb-6 text-sm text-zinc-400">{t("login_subtitle")}</p>
 
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
@@ -163,7 +155,7 @@ function LoginPageInner() {
       </form>
       </AuthCredentialSection>
 
-      <p className="mt-8 text-center text-sm text-white/50">
+      <p className="mt-8 text-center text-sm text-zinc-500">
         {t("no_account")}{" "}
         <Link href="/auth/sign-up" className={authLinkAccentClass}>
           {t("signup_link")}

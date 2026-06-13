@@ -9,13 +9,13 @@ import { registerReferralOnSignup } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { trackAbEvent } from "@/lib/ab-tracking";
 import { applyBetaOnSignup } from "@/app/actions/beta";
-import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import {
   authInputClass,
   authLabelClass,
   authButtonClass,
   authLinkAccentClass,
+  authTitleClass,
 } from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
@@ -277,17 +277,9 @@ function SignupPageInner() {
 
   return (
     <div className="w-full">
-      <div className="mb-8 font-[family-name:var(--font-bebas)] text-xl font-bold tracking-wide text-[#ccff00] lg:hidden">
-        InfluexAI
-      </div>
+      <h1 className={authTitleClass}>{t("signup_title")}</h1>
 
-      <h1 className="mb-2 text-2xl font-semibold uppercase tracking-wider text-white">
-        {t("signup_title")}
-      </h1>
-
-      <AuthGreetingLine />
-
-      <p className="mb-5 text-sm text-white/60">{t("signup_subtitle")}</p>
+      <p className="mb-6 text-sm text-zinc-400">{t("signup_subtitle")}</p>
 
       <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
@@ -421,7 +413,7 @@ function SignupPageInner() {
       </p>
       </AuthCredentialSection>
 
-      <p className="mt-8 text-center text-sm text-white/50">
+      <p className="mt-8 text-center text-sm text-zinc-500">
         {t("has_account")}{" "}
         <Link href="/auth/sign-in" className={authLinkAccentClass}>
           {t("login_link")}

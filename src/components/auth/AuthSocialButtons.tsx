@@ -10,7 +10,7 @@ import {
 } from "@/lib/auth-last-used";
 
 const googleButtonClass =
-  "relative w-full flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white py-3 text-xs font-medium text-zinc-900 shadow-[0_1px_0_rgba(255,255,255,0.08)_inset] transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50";
+  "relative w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-black transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3";
 
 function GoogleIcon() {
   return (
@@ -80,7 +80,7 @@ export function AuthSocialButtons({
       aria-busy={loading}
     >
       {showLastUsed ? (
-        <span className="absolute -top-2.5 right-3 rounded-full border border-zinc-700/60 bg-zinc-900 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-zinc-300">
+        <span className="absolute -top-2 right-4 rounded-full bg-blue-600 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white">
           {t("last_used")}
         </span>
       ) : null}
