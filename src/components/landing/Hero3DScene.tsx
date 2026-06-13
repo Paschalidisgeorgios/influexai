@@ -4,11 +4,7 @@ import { useEffect, useRef } from "react";
 
 const HERO_BG_VIDEO = "/videos/landing/feature-4.mp4";
 
-interface Hero3DSceneProps {
-  rgb: string;
-}
-
-export function Hero3DScene({ rgb }: Hero3DSceneProps) {
+export function Hero3DScene() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -29,45 +25,35 @@ export function Hero3DScene({ rgb }: Hero3DSceneProps) {
         loop
         playsInline
         preload="auto"
-        style={{ opacity: 0.42 }}
+        style={{ opacity: 0.44 }}
       />
 
-      {/* Dark base + left-weighted gradient for headline legibility */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            linear-gradient(105deg, rgba(8,8,10,0.82) 0%, rgba(8,8,10,0.62) 28%, rgba(8,8,10,0.22) 55%, rgba(8,8,10,0.55) 100%),
-            linear-gradient(to bottom, rgba(8,8,10,0.15) 0%, transparent 22%, rgba(8,8,10,0.75) 100%)
+            linear-gradient(105deg, rgba(5,6,8,0.84) 0%, rgba(5,6,8,0.58) 28%, rgba(5,6,8,0.18) 55%, rgba(5,6,8,0.52) 100%),
+            linear-gradient(to bottom, rgba(5,6,8,0.12) 0%, transparent 22%, rgba(5,6,8,0.72) 100%)
           `,
         }}
       />
 
-      {/* Vignette */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 70% at 22% 50%, transparent 0%, rgba(8,8,10,0.55) 100%)",
+            "radial-gradient(ellipse 80% 70% at 22% 50%, transparent 0%, rgba(5,6,8,0.5) 100%)",
         }}
       />
 
-      {/* Subtle theme accent glow — left side */}
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 45% 55% at 12% 45%, rgba(${rgb},0.12), transparent 70%)`,
-          transition: "background 1.2s ease",
-        }}
-      />
-
-      {/* Light film grain / blur wash on video edges */}
-      <div
-        className="absolute inset-0 backdrop-blur-[1px]"
-        style={{
-          maskImage: "linear-gradient(to right, black 0%, transparent 45%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, black 0%, transparent 45%, transparent 100%)",
+          background: `
+            radial-gradient(ellipse 40% 50% at 12% 40%, rgba(var(--ai-green-rgb), 0.14), transparent 70%),
+            radial-gradient(ellipse 35% 45% at 88% 25%, rgba(var(--ai-blue-rgb), 0.1), transparent 70%),
+            radial-gradient(ellipse 30% 40% at 70% 90%, rgba(var(--ai-yellow-rgb), 0.06), transparent 70%)
+          `,
         }}
       />
     </div>

@@ -310,11 +310,11 @@ export function PricingSection() {
           <div
             className="mx-auto mt-8 max-w-[720px] rounded-[12px] border p-5 text-left md:mt-10 md:p-6"
             style={{
-              borderColor: "rgba(180,255,0,0.18)",
+              borderColor: "rgba(var(--ai-green-rgb), 0.18)",
               background: "rgba(255,255,255,0.02)",
             }}
           >
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-[#B4FF00]">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--ai-green)]">
               {t("credits_usage_kicker")}
             </p>
             <p className="mb-4 text-[0.88rem] leading-[1.6] text-white/75">
@@ -327,8 +327,8 @@ export function PricingSection() {
                     key={key}
                     className="rounded-full px-3 py-1 text-[0.72rem] font-semibold"
                     style={{
-                      background: "rgba(180,255,0,0.08)",
-                      border: "1px solid rgba(180,255,0,0.22)",
+                      background: "rgba(var(--ai-green-rgb), 0.08)",
+                      border: "1px solid rgba(var(--ai-green-rgb), 0.22)",
                       color: "rgba(255,255,255,0.78)",
                     }}
                   >
@@ -346,12 +346,12 @@ export function PricingSection() {
           <div
             className="mx-auto mt-10 flex max-w-[960px] flex-col items-center justify-between gap-4 rounded-[14px] border p-5 text-left md:mt-12 md:flex-row md:p-6"
             style={{
-              borderColor: "color-mix(in srgb, var(--accent,#B4FF00) 20%, transparent)",
+              borderColor: "color-mix(in srgb, var(--accent, var(--ai-green)) 20%, transparent)",
               background: "var(--bg-2)",
             }}
           >
             <div>
-              <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent,#B4FF00)]">
+              <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent,var(--ai-green))]">
                 White Label
               </p>
               <h3 className="landing-heading mb-1 text-xl md:text-2xl">
@@ -393,7 +393,7 @@ function LandingPreFooterCta() {
           width: 480,
           height: 480,
           background:
-            "radial-gradient(circle, rgba(180,255,0,0.06), transparent 70%)",
+            "radial-gradient(circle, rgba(var(--ai-green-rgb), 0.06), transparent 70%)",
         }}
         aria-hidden
       />
@@ -485,7 +485,7 @@ export function LandingFooter() {
         <div className="mx-auto mb-8 grid max-w-[1160px] grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <Link href="/" className="mb-2 flex items-center gap-2 no-underline">
-              <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--accent,#B4FF00)] text-sm leading-none text-[#060608] font-[family-name:var(--font-bebas)]">
+              <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--accent,var(--ai-green))] text-sm leading-none text-[var(--bg-primary)] font-[family-name:var(--font-bebas)]">
                 I
               </div>
               <span
@@ -591,7 +591,7 @@ export function LandingFooter() {
               <a
                 key={icon}
                 href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[#B4FF00]/35 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[color:rgba(var(--ai-blue-rgb),0.35)] hover:text-white"
               >
                 {icon}
               </a>

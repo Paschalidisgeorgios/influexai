@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { IntentLink, useCardDwell, type IntentKey } from "@/hooks/useIntentTracking";
 import {
   Video,
@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Palette,
 } from "lucide-react";
+import { LANDING_BENTO_ACCENT_RGB, LANDING_NEON } from "@/lib/landing-neon-theme";
 
 interface BentoCard {
   icon: React.ReactNode;
@@ -90,34 +91,23 @@ const BENTO_CARDS: BentoCard[] = [
   },
 ];
 
-const ACCENT_BORDER: Record<BentoCard["accent"], string> = {
-  green: "border-[#00FF66]/20 hover:border-[#00FF66]/50",
-  blue: "border-[#0066FF]/20 hover:border-[#0066FF]/50",
-  gold: "border-[#E0A951]/20 hover:border-[#E0A951]/50",
-};
-
-const ACCENT_ICON_BG: Record<BentoCard["accent"], string> = {
-  green: "bg-[#00FF66]/10 text-[#00FF66]",
-  blue: "bg-[#0066FF]/10 text-[#0066FF]",
-  gold: "bg-[#E0A951]/10 text-[#E0A951]",
-};
-
-const ACCENT_TAG: Record<BentoCard["accent"], string> = {
-  green: "bg-[#00FF66]/10 text-[#00FF66]",
-  blue: "bg-[#0066FF]/10 text-[#0066FF]",
-  gold: "bg-[#E0A951]/10 text-[#E0A951]",
-};
-
-const ACCENT_GLOW: Record<BentoCard["accent"], string> = {
-  green: "hover:shadow-[0_0_32px_rgba(0,255,102,0.08)]",
-  blue: "hover:shadow-[0_0_32px_rgba(0,102,255,0.08)]",
-  gold: "hover:shadow-[0_0_32px_rgba(224,169,81,0.08)]",
-};
+function bentoAccentStyle(accent: BentoCard["accent"]): CSSProperties {
+  return { "--bento-accent-rgb": LANDING_BENTO_ACCENT_RGB[accent] } as CSSProperties;
+}
 
 function HeroPreview() {
   return (
-    <div className="relative mx-auto mt-14 w-full max-w-4xl overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0e] shadow-2xl">
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+    <div
+      className="relative mx-auto mt-14 w-full max-w-4xl overflow-hidden rounded-2xl border shadow-2xl"
+      style={{
+        borderColor: "var(--border-soft)",
+        background: "rgba(10, 13, 18, 0.9)",
+      }}
+    >
+      <div
+        className="flex items-center justify-between border-b px-5 py-3"
+        style={{ borderColor: "var(--border-soft)" }}
+      >
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
@@ -131,24 +121,38 @@ function HeroPreview() {
           ))}
         </div>
         <div className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00FF66]" />
-          <span className="font-mono text-[9px] text-[#00FF66]/70">LIVE</span>
+          <span
+            className="h-1.5 w-1.5 animate-pulse rounded-full"
+            style={{ background: LANDING_NEON.green }}
+          />
+          <span className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.green}B3` }}>
+            LIVE
+          </span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
-        <div className="border-b border-white/[0.06] p-5 md:border-b-0 md:border-r">
+        <div
+          className="border-b p-5 md:border-b-0 md:border-r"
+          style={{ borderColor: "var(--border-soft)" }}
+        >
           <p className="mb-3 font-mono text-[10px] tracking-widest text-white/30 uppercase">
             AI Command
           </p>
-          <div className="rounded-xl border border-white/[0.06] bg-[#050507] p-4">
+          <div
+            className="rounded-xl border p-4"
+            style={{ borderColor: "var(--border-soft)", background: LANDING_NEON.bgPrimary }}
+          >
             <p className="font-mono text-sm leading-relaxed text-white/70">
-              <span className="text-[#00FF66]">→</span> Erstelle eine 7-Tage-Kampagne für ein Café
-              auf Instagram
+              <span style={{ color: LANDING_NEON.green }}>→</span> Erstelle eine 7-Tage-Kampagne
+              für ein Café auf Instagram
             </p>
             <div className="mt-4 flex items-center gap-2">
               <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-                <div className="h-full rounded-full bg-[#00FF66]" style={{ width: "72%" }} />
+                <div
+                  className="h-full rounded-full"
+                  style={{ width: "72%", background: LANDING_NEON.green }}
+                />
               </div>
               <span className="font-mono text-[9px] text-white/30">72%</span>
             </div>
@@ -181,11 +185,15 @@ function HeroPreview() {
                 className="flex items-center gap-3 rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2"
               >
                 <span
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] ${
+                  className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px]"
+                  style={
                     done
-                      ? "bg-[#00FF66]/15 text-[#00FF66]"
-                      : "border border-white/10 text-transparent"
-                  }`}
+                      ? {
+                          background: `rgba(${LANDING_NEON.greenRgb}, 0.15)`,
+                          color: LANDING_NEON.green,
+                        }
+                      : { border: "1px solid rgba(255,255,255,0.1)", color: "transparent" }
+                  }
                 >
                   {done ? "✓" : ""}
                 </span>
@@ -197,8 +205,11 @@ function HeroPreview() {
                     {[0, 1, 2].map((i) => (
                       <span
                         key={i}
-                        className="h-1 w-1 animate-bounce rounded-full bg-[#0066FF]/60"
-                        style={{ animationDelay: `${i * 150}ms` }}
+                        className="h-1 w-1 animate-bounce rounded-full"
+                        style={{
+                          background: `rgba(${LANDING_NEON.blueRgb}, 0.6)`,
+                          animationDelay: `${i * 150}ms`,
+                        }}
                       />
                     ))}
                   </div>
@@ -206,8 +217,14 @@ function HeroPreview() {
               </div>
             ))}
           </div>
-          <div className="mt-4 rounded-xl border border-[#00FF66]/15 bg-[#00FF66]/5 p-3">
-            <p className="font-mono text-[9px] text-[#00FF66]/70">
+          <div
+            className="mt-4 rounded-xl border p-3"
+            style={{
+              borderColor: `rgba(${LANDING_NEON.cyanRgb}, 0.2)`,
+              background: `rgba(${LANDING_NEON.greenRgb}, 0.05)`,
+            }}
+          >
+            <p className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.cyan}B3` }}>
               Creative Score: 94/100 · Export bereit
             </p>
           </div>
@@ -225,18 +242,17 @@ function BentoCardItem({ card }: { card: BentoCard }) {
       ref={ref}
       onPointerEnter={() => startDwell(card.intentKey)}
       onPointerLeave={() => cancelDwell(card.intentKey)}
-      className={`group relative flex flex-col gap-4 rounded-2xl border bg-[#0a0a0e] p-6 transition-all duration-300 ${ACCENT_BORDER[card.accent]} ${ACCENT_GLOW[card.accent]}`}
+      className="landing-neon-bento-card group relative flex flex-col gap-4 rounded-2xl p-6"
+      style={bentoAccentStyle(card.accent)}
     >
       <div className="flex items-start justify-between">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-xl ${ACCENT_ICON_BG[card.accent]}`}
+          className="landing-neon-bento-icon flex h-10 w-10 items-center justify-center rounded-xl"
         >
           {card.icon}
         </div>
         {card.tag && (
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wide ${ACCENT_TAG[card.accent]}`}
-          >
+          <span className="landing-neon-bento-tag rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wide">
             {card.tag}
           </span>
         )}
@@ -270,19 +286,19 @@ export default function SentientInterface2026() {
   const statusMessage = STATUS_MESSAGES[badgeIndex];
 
   return (
-    <section className="relative overflow-x-hidden bg-[#050507] text-white">
+    <section className="relative overflow-x-hidden bg-transparent text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div
           className="absolute left-[-10%] top-[-5%] h-[500px] w-[500px] rounded-full opacity-25 blur-[120px]"
-          style={{ background: "#00FF66" }}
+          style={{ background: LANDING_NEON.green }}
         />
         <div
           className="absolute right-[-8%] top-[20%] h-[400px] w-[400px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: "#0066FF" }}
+          style={{ background: LANDING_NEON.blue }}
         />
         <div
           className="absolute bottom-[-5%] left-[30%] h-[350px] w-[350px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: "#E0A951" }}
+          style={{ background: LANDING_NEON.yellow }}
         />
         <div
           className="absolute inset-0 opacity-[0.025]"
@@ -295,16 +311,24 @@ export default function SentientInterface2026() {
       </div>
 
       <div className="relative z-10 px-6 pt-20 pb-16 text-center md:px-12 md:pt-28">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[11px] text-white/50 backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00FF66]" aria-hidden="true" />
+        <div
+          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] text-white/50 backdrop-blur-sm"
+          style={{
+            borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.25)`,
+            background: `rgba(${LANDING_NEON.violetRgb}, 0.06)`,
+          }}
+        >
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: LANDING_NEON.cyan }}
+            aria-hidden="true"
+          />
           {statusMessage}
         </div>
 
         <h2 className="mx-auto max-w-3xl text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-tight text-white">
           Deine Idee.{" "}
-          <span className="bg-gradient-to-r from-[#00FF66] via-[#0066FF] to-[#E0A951] bg-clip-text text-transparent">
-            Von KI zur Kampagne.
-          </span>
+          <span className="landing-neon-headline-accent">Von KI zur Kampagne.</span>
         </h2>
 
         <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/45">
@@ -313,16 +337,10 @@ export default function SentientInterface2026() {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <IntentLink
-            href="/dashboard"
-            className="flex items-center gap-2 rounded-xl bg-[#00FF66] px-7 py-3.5 text-[14px] font-semibold text-[#050507] no-underline transition-all hover:bg-[#00FF66]/90 hover:shadow-[0_0_32px_rgba(0,255,102,0.3)]"
-          >
+          <IntentLink href="/dashboard" className="landing-neon-btn-primary">
             Studio starten <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
-          <a
-            href="#bento-features"
-            className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-3.5 text-[14px] text-white/70 no-underline backdrop-blur-sm transition-all hover:border-white/30 hover:text-white"
-          >
+          <a href="#bento-features" className="landing-neon-btn-secondary">
             <Play size={14} aria-hidden="true" /> Demo ansehen
           </a>
         </div>
@@ -332,8 +350,11 @@ export default function SentientInterface2026() {
 
       <div id="bento-features" className="relative z-10 px-6 pb-24 md:px-12">
         <div className="mx-auto max-w-6xl">
+          <div className="landing-neon-divider-glow mb-12" aria-hidden />
           <div className="mb-10 text-center">
-            <p className="mb-2 font-mono text-[11px] tracking-[3px] text-[#00FF66]/60 uppercase">
+            <p
+              className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2"
+            >
               Features
             </p>
             <h2 className="text-[clamp(28px,4vw,44px)] font-bold tracking-tight text-white">

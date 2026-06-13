@@ -4,6 +4,8 @@ import { IntentLink } from "@/hooks/useIntentTracking";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
+import { LANDING_NEON } from "@/lib/landing-neon-theme";
+import type { CSSProperties } from "react";
 
 const OUTPUT_KEYS = [
   "hooks",
@@ -14,21 +16,31 @@ const OUTPUT_KEYS = [
   "plan",
 ] as const;
 
+const OUTPUT_ACCENTS = [
+  LANDING_NEON.greenRgb,
+  LANDING_NEON.blueRgb,
+  LANDING_NEON.cyanRgb,
+  LANDING_NEON.yellowRgb,
+  LANDING_NEON.violetRgb,
+  LANDING_NEON.magentaRgb,
+] as const;
+
 export function LandingCampaignPackSection() {
   const t = useTranslations("landingPage.campaignStudio.pack");
 
   return (
     <section
       id="campaign-pack"
-      className="border-y border-[#B4FF00]/[0.08] bg-[#08080a] px-4 py-16 md:px-10 md:py-20"
+      className="border-y px-4 py-16 md:px-10 md:py-20"
+      style={{
+        borderColor: `rgba(${LANDING_NEON.blueRgb}, 0.12)`,
+        background: "var(--bg-primary)",
+      }}
       aria-labelledby="campaign-pack-heading"
     >
       <div className="mx-auto w-full max-w-[1100px]">
         <SpringReveal>
-          <p
-            className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#B4FF00]"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-          >
+          <p className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2">
             {t("kicker")}
           </p>
           <h2
@@ -38,8 +50,11 @@ export function LandingCampaignPackSection() {
             {t("headline")}
           </h2>
           <p
-            className="mt-4 max-w-[560px] text-sm leading-relaxed text-white/50 md:text-base"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+            className="mt-4 max-w-[560px] text-sm leading-relaxed md:text-base"
+            style={{
+              fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+              color: "var(--text-secondary)",
+            }}
           >
             {t("subheadline")}
           </p>
@@ -47,10 +62,15 @@ export function LandingCampaignPackSection() {
 
         <div className="mt-10 flex flex-col items-stretch gap-6 lg:flex-row lg:items-center lg:gap-8">
           <SpringReveal className="w-full shrink-0 lg:max-w-[280px]">
-            <div className="rounded-xl border border-[#B4FF00]/20 bg-[#0d0d0f] p-4">
+            <div
+              className="rounded-xl border p-4"
+              style={{
+                borderColor: `rgba(${LANDING_NEON.greenRgb}, 0.25)`,
+                background: "var(--bg-secondary)",
+              }}
+            >
               <span
-                className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]/80"
-                style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+                className="landing-neon-section-kicker landing-neon-section-kicker--green text-[0.65rem]"
               >
                 {t("briefing_label")}
               </span>
@@ -64,20 +84,27 @@ export function LandingCampaignPackSection() {
           </SpringReveal>
 
           <div
-            className="flex shrink-0 items-center justify-center text-[#B4FF00]"
+            className="flex shrink-0 items-center justify-center"
+            style={{ color: LANDING_NEON.cyan }}
             aria-hidden
           >
             <ArrowDown className="h-6 w-6 animate-pulse lg:hidden" strokeWidth={2} />
-            <ArrowRight
-              className="hidden h-8 w-8 animate-pulse lg:block"
-              strokeWidth={2}
-            />
+            <ArrowRight className="hidden h-8 w-8 animate-pulse lg:block" strokeWidth={2} />
           </div>
 
           <div className="grid w-full flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {OUTPUT_KEYS.map((key, i) => (
               <SpringReveal key={key} delay={i * 0.05}>
-                <div className="h-full rounded-xl border border-white/[0.06] bg-[#111113] p-3">
+                <div
+                  className="h-full rounded-xl border p-3 transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(var(--card-accent-rgb),0.12)]"
+                  style={
+                    {
+                      "--card-accent-rgb": OUTPUT_ACCENTS[i],
+                      borderColor: `rgba(${OUTPUT_ACCENTS[i]}, 0.15)`,
+                      background: "rgba(10, 13, 18, 0.85)",
+                    } as CSSProperties
+                  }
+                >
                   <span className="text-lg" aria-hidden>
                     {t(`${key}_icon`)}
                   </span>
@@ -101,7 +128,13 @@ export function LandingCampaignPackSection() {
 
         <SpringReveal delay={0.2}>
           <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <span className="inline-flex rounded-full bg-[#B4FF00]/10 px-4 py-1.5 text-sm font-semibold text-[#B4FF00]">
+            <span
+              className="inline-flex rounded-full px-4 py-1.5 text-sm font-semibold"
+              style={{
+                background: `rgba(${LANDING_NEON.yellowRgb}, 0.1)`,
+                color: LANDING_NEON.yellow,
+              }}
+            >
               {t("score_pill")}
             </span>
             <p
@@ -112,10 +145,7 @@ export function LandingCampaignPackSection() {
             </p>
           </div>
 
-          <IntentLink
-            href="/dashboard"
-            className="btn-acid mt-8 inline-flex min-h-[48px] items-center justify-center rounded-full px-8 py-3 text-sm font-semibold no-underline transition-transform hover:scale-[1.02]"
-          >
+          <IntentLink href="/dashboard" className="landing-neon-btn-primary mt-8">
             {t("cta")}
           </IntentLink>
         </SpringReveal>

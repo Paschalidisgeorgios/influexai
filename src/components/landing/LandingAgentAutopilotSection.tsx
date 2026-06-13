@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
-import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { useIntentTracking } from "@/hooks/useIntentTracking";
+import { LANDING_NEON } from "@/lib/landing-neon-theme";
+import Link from "next/link";
 
 const RESPONSE_LINES = [
   "line_1",
@@ -64,15 +65,16 @@ export function LandingAgentAutopilotSection() {
     <section
       ref={sectionRef}
       id="agent-autopilot"
-      className="border-y border-[#B4FF00]/10 bg-[#0a0a0c] px-4 py-8 md:px-6 md:py-10 lg:px-10 lg:py-16"
+      className="border-y px-4 py-8 md:px-6 md:py-10 lg:px-10 lg:py-16"
+      style={{
+        borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.12)`,
+        background: "var(--bg-secondary)",
+      }}
       aria-labelledby="agent-autopilot-heading"
     >
       <div className="mx-auto grid w-full max-w-[1160px] grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
         <SpringReveal>
-          <p
-            className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-[#B4FF00]"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-          >
+          <p className="landing-neon-section-kicker landing-neon-section-kicker--violet mb-3">
             {t("kicker")}
           </p>
           <h2
@@ -82,44 +84,56 @@ export function LandingAgentAutopilotSection() {
             {t("headline")}
           </h2>
           <p
-            className="mt-5 max-w-[52ch] text-sm leading-relaxed text-white/60 md:text-[0.95rem]"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+            className="mt-5 max-w-[52ch] text-sm leading-relaxed md:text-[0.95rem]"
+            style={{
+              fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+              color: "var(--text-secondary)",
+            }}
           >
             {t("description")}
           </p>
           <ul className="mt-6 space-y-3">
-            {FEATURE_KEYS.map((key) => (
-              <li
-                key={key}
-                className="flex items-start gap-3 text-sm text-white/75"
-                style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-              >
-                <span
-                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#B4FF00]"
-                  aria-hidden
-                />
-                {t(`feature_${key}`)}
-              </li>
-            ))}
+            {FEATURE_KEYS.map((key, i) => {
+              const dotColors = [LANDING_NEON.violet, LANDING_NEON.blue, LANDING_NEON.green];
+              return (
+                <li
+                  key={key}
+                  className="flex items-start gap-3 text-sm text-white/75"
+                  style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+                >
+                  <span
+                    className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                    style={{ background: dotColors[i] }}
+                    aria-hidden
+                  />
+                  {t(`feature_${key}`)}
+                </li>
+              );
+            })}
           </ul>
-          <AcidMotionButton
-            href={getIntentHref("/dashboard")}
-            className="btn-acid mt-8 min-h-[48px] w-full justify-center md:w-auto"
-          >
+          <Link href={getIntentHref("/dashboard")} className="landing-neon-btn-primary mt-8">
             {t("cta")}
-          </AcidMotionButton>
+          </Link>
         </SpringReveal>
 
         <SpringReveal delay={0.12}>
           <div
-            className="rounded-2xl border border-[#B4FF00]/15 bg-[#0d0d0f] p-5 md:p-6"
+            className="rounded-2xl border p-5 md:p-6"
+            style={{
+              borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.2)`,
+              background: "rgba(10, 13, 18, 0.9)",
+            }}
             role="presentation"
           >
             <div
-              className="mb-4 rounded-xl border border-white/[0.08] bg-[#B4FF00]/[0.06] px-4 py-3 text-sm text-white/85"
-              style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
+              className="mb-4 rounded-xl border px-4 py-3 text-sm text-white/85"
+              style={{
+                fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+                borderColor: "var(--border-soft)",
+                background: `rgba(${LANDING_NEON.magentaRgb}, 0.06)`,
+              }}
             >
-              <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]/80">
+              <span className="landing-neon-section-kicker landing-neon-section-kicker--violet text-[0.65rem]">
                 Du
               </span>
               <p className="mt-1 leading-relaxed">{t("demo_user")}</p>
@@ -157,9 +171,8 @@ export function LandingAgentAutopilotSection() {
 
             <div className="mt-4 flex items-center gap-2 text-[0.72rem] text-white/45">
               <span
-                className={`h-2 w-2 rounded-full bg-[#B4FF00] ${
-                  active ? "animate-pulse" : ""
-                }`}
+                className={`h-2 w-2 rounded-full ${active ? "animate-pulse" : ""}`}
+                style={{ background: LANDING_NEON.cyan }}
                 aria-hidden
               />
               <span style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}>

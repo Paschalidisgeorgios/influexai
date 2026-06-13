@@ -1,24 +1,22 @@
 "use client";
 
+import "@/styles/landing-neon.css";
+
 import { HeroSection } from "@/components/landing/HeroSection";
 import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
 import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
 import { LandingCtaV2 } from "@/components/landing/LandingCtaV2";
+import { LandingNeonAmbient } from "@/components/landing/LandingNeonAmbient";
 import SentientInterface2026 from "@/components/landing/SentientInterface2026";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
 import { LandingFooter, PricingSection } from "@/components/landing/Sections";
 
 export function LandingPageV2() {
   return (
-    <div className="min-h-screen overflow-x-clip bg-[#08080a] text-white">
-      <style jsx global>{`
-        .landing-v2-pricing .pc-hot {
-          box-shadow: 0 0 40px rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.12) !important;
-          border-color: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.28) !important;
-        }
-      `}</style>
+    <div className="landing-neon landing-root relative min-h-screen overflow-x-clip">
+      <LandingNeonAmbient />
 
-      <main>
+      <main className="relative z-10">
         <HeroSection />
 
         <SentientInterface2026 />
@@ -27,7 +25,7 @@ export function LandingPageV2() {
         <LandingCampaignPackSection />
         <LandingAgentAutopilotSection />
 
-        <div id="pricing" className="landing-v2-pricing border-t border-white/[0.06]">
+        <div id="pricing" className="landing-v2-pricing border-t border-[color:var(--border-soft)]">
           <PricingSection />
         </div>
 

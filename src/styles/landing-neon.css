@@ -1,0 +1,492 @@
+/* ─── InfluexAI Landing — Neon AI Color System ─────────────────────────── */
+
+.landing-neon {
+  --ai-green: #b7ff00;
+  --ai-blue: #00d5ff;
+  --ai-yellow: #ffd84d;
+  --ai-cyan: #00f0ff;
+  --ai-violet: #8b5dff;
+  --ai-magenta: #ff4ddf;
+
+  --ai-green-rgb: 183, 255, 0;
+  --ai-blue-rgb: 0, 213, 255;
+  --ai-yellow-rgb: 255, 216, 77;
+  --ai-cyan-rgb: 0, 240, 255;
+  --ai-violet-rgb: 139, 93, 255;
+  --ai-magenta-rgb: 255, 77, 223;
+
+  --bg-primary: #050608;
+  --bg-secondary: #0a0d12;
+  --surface-glass: rgba(255, 255, 255, 0.05);
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --text-primary: #f5f7fa;
+  --text-secondary: rgba(255, 255, 255, 0.68);
+
+  --accent: var(--ai-green);
+  --acid: var(--ai-green);
+
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+.landing-neon .landing-neon-ambient {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.landing-neon .landing-neon-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: landing-neon-drift 28s ease-in-out infinite alternate;
+}
+
+.landing-neon .landing-neon-orb--green {
+  top: -8%;
+  left: -6%;
+  width: min(52vw, 520px);
+  height: min(52vw, 520px);
+  background: rgba(var(--ai-green-rgb), 0.22);
+}
+
+.landing-neon .landing-neon-orb--blue {
+  top: 8%;
+  right: -8%;
+  width: min(48vw, 480px);
+  height: min(48vw, 480px);
+  background: rgba(var(--ai-blue-rgb), 0.18);
+  animation-delay: -8s;
+}
+
+.landing-neon .landing-neon-orb--yellow {
+  bottom: -10%;
+  left: 28%;
+  width: min(44vw, 440px);
+  height: min(44vw, 440px);
+  background: rgba(var(--ai-yellow-rgb), 0.12);
+  animation-delay: -14s;
+}
+
+.landing-neon .landing-neon-orb--violet {
+  bottom: 18%;
+  right: 12%;
+  width: min(36vw, 360px);
+  height: min(36vw, 360px);
+  background: rgba(var(--ai-violet-rgb), 0.1);
+  animation-delay: -20s;
+}
+
+@keyframes landing-neon-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(2%, 3%) scale(1.06);
+  }
+}
+
+@keyframes landing-neon-gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes landing-neon-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.landing-neon-headline-accent {
+  background: linear-gradient(
+    90deg,
+    var(--ai-green) 0%,
+    var(--ai-cyan) 35%,
+    var(--ai-blue) 55%,
+    var(--ai-yellow) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: landing-neon-gradient-shift 12s ease infinite;
+  filter: drop-shadow(0 0 24px rgba(var(--ai-green-rgb), 0.25));
+}
+
+.landing-neon-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(var(--ai-violet-rgb), 0.35);
+  background: rgba(var(--ai-violet-rgb), 0.08);
+  padding: 0.375rem 1rem;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(var(--ai-cyan-rgb), 0.9);
+  box-shadow: 0 0 20px rgba(var(--ai-violet-rgb), 0.12);
+}
+
+.landing-neon-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.75rem 1.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--ai-green) 0%, var(--ai-yellow) 100%);
+  box-shadow: 0 4px 28px rgba(var(--ai-green-rgb), 0.28);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+  cursor: default;
+}
+
+.landing-neon-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 32px rgba(var(--ai-green-rgb), 0.35),
+    0 0 24px rgba(var(--ai-blue-rgb), 0.15);
+  filter: brightness(1.05);
+}
+
+.landing-neon-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-glass);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.landing-neon-btn-secondary:hover {
+  border-color: rgba(var(--ai-blue-rgb), 0.35);
+  color: var(--text-primary);
+  box-shadow: 0 0 20px rgba(var(--ai-blue-rgb), 0.12);
+}
+
+.landing-neon-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(var(--ai-blue-rgb), 0.22);
+  background: rgba(5, 6, 8, 0.55);
+  padding: 0.5rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 30px rgba(var(--ai-green-rgb), 0.08);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-neon-input-wrap:focus-within {
+  border-color: rgba(var(--ai-cyan-rgb), 0.45);
+  box-shadow:
+    0 0 0 1px rgba(var(--ai-green-rgb), 0.2),
+    0 0 32px rgba(var(--ai-blue-rgb), 0.18),
+    0 0 48px rgba(var(--ai-green-rgb), 0.1);
+}
+
+.landing-neon-input-wrap input {
+  min-width: 0;
+  flex: 1;
+  height: 3rem;
+  border: 0;
+  background: transparent;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.landing-neon-input-wrap input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.landing-neon-input-submit {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, var(--ai-green), var(--ai-cyan));
+  color: var(--bg-primary);
+  font-weight: 700;
+  transition:
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.landing-neon-input-submit:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 0 16px rgba(var(--ai-cyan-rgb), 0.35);
+}
+
+.landing-neon-input-submit:disabled {
+  opacity: 0.4;
+}
+
+.landing-neon-ai-status {
+  margin-top: 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(var(--ai-violet-rgb), 0.3);
+  background: rgba(5, 6, 8, 0.45);
+  padding: 0.75rem 1.25rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(var(--ai-cyan-rgb), 0.92);
+  backdrop-filter: blur(16px);
+  animation: landing-neon-glow-pulse 4s ease-in-out infinite;
+}
+
+.landing-neon-stat {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.landing-neon-stat-divider {
+  height: 0.75rem;
+  width: 1px;
+  background: var(--border-soft);
+}
+
+.landing-neon-section {
+  background: var(--bg-secondary);
+  border-color: var(--border-soft);
+}
+
+.landing-neon-accent-green {
+  --section-accent: var(--ai-green);
+  --section-accent-rgb: var(--ai-green-rgb);
+}
+
+.landing-neon-accent-blue {
+  --section-accent: var(--ai-blue);
+  --section-accent-rgb: var(--ai-blue-rgb);
+}
+
+.landing-neon-accent-violet {
+  --section-accent: var(--ai-violet);
+  --section-accent-rgb: var(--ai-violet-rgb);
+}
+
+.landing-neon-accent-yellow {
+  --section-accent: var(--ai-yellow);
+  --section-accent-rgb: var(--ai-yellow-rgb);
+}
+
+.landing-neon-card {
+  border: 1px solid var(--border-soft);
+  background: var(--surface-glass);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-neon-card:hover {
+  border-color: rgba(var(--section-accent-rgb), 0.35);
+  box-shadow: 0 0 28px rgba(var(--section-accent-rgb), 0.1);
+}
+
+.landing-neon .landing-v2-pricing .pc-hot {
+  box-shadow: 0 0 40px rgba(var(--ai-green-rgb), 0.14) !important;
+  border-color: rgba(var(--ai-green-rgb), 0.28) !important;
+}
+
+/* Map legacy landing tokens used by Sections / pricing */
+.landing-neon {
+  --bg: var(--bg-primary);
+  --bg-1: var(--bg-secondary);
+  --bg-2: rgba(255, 255, 255, 0.03);
+  --border: var(--border-soft);
+  --white: var(--text-primary);
+  --wd: var(--text-secondary);
+  --grey: rgba(255, 255, 255, 0.45);
+}
+
+.landing-neon .btn-acid {
+  background: linear-gradient(135deg, var(--ai-green) 0%, var(--ai-yellow) 100%);
+  color: var(--bg-primary);
+  box-shadow: 0 4px 24px rgba(var(--ai-green-rgb), 0.22);
+}
+
+.landing-neon .btn-acid:hover {
+  background: linear-gradient(135deg, var(--ai-yellow) 0%, var(--ai-green) 100%);
+  box-shadow:
+    0 6px 28px rgba(var(--ai-green-rgb), 0.28),
+    0 0 20px rgba(var(--ai-blue-rgb), 0.12);
+}
+
+.landing-neon.landing-root .acid-highlight,
+.landing-neon.landing-root h1 .acid-highlight,
+.landing-neon.landing-root h2 .acid-highlight {
+  background: linear-gradient(
+    90deg,
+    var(--ai-green) 0%,
+    var(--ai-cyan) 40%,
+    var(--ai-blue) 70%,
+    var(--ai-yellow) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: landing-neon-gradient-shift 14s ease infinite;
+  text-shadow: none !important;
+  filter: none;
+}
+
+.landing-neon .acid-highlight {
+  background: linear-gradient(
+    90deg,
+    var(--ai-green) 0%,
+    var(--ai-cyan) 40%,
+    var(--ai-blue) 70%,
+    var(--ai-yellow) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: landing-neon-gradient-shift 14s ease infinite;
+}
+
+.landing-neon .kicker {
+  color: rgba(var(--ai-cyan-rgb), 0.92);
+}
+
+.landing-neon-section-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: var(--font-dm), "DM Sans", sans-serif;
+}
+
+.landing-neon-section-kicker--green {
+  color: var(--ai-green);
+}
+
+.landing-neon-section-kicker--blue {
+  color: var(--ai-blue);
+}
+
+.landing-neon-section-kicker--violet {
+  color: var(--ai-violet);
+}
+
+.landing-neon-section-kicker--yellow {
+  color: var(--ai-yellow);
+}
+
+.landing-neon-bento-card {
+  --bento-accent-rgb: var(--ai-green-rgb);
+  border: 1px solid rgba(var(--bento-accent-rgb), 0.2);
+  background: rgba(10, 13, 18, 0.85);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-neon-bento-card:hover {
+  border-color: rgba(var(--bento-accent-rgb), 0.45);
+  box-shadow: 0 0 32px rgba(var(--bento-accent-rgb), 0.1);
+}
+
+.landing-neon-bento-icon {
+  background: rgba(var(--bento-accent-rgb), 0.1);
+  color: rgb(var(--bento-accent-rgb));
+}
+
+.landing-neon-bento-tag {
+  background: rgba(var(--bento-accent-rgb), 0.1);
+  color: rgb(var(--bento-accent-rgb));
+}
+
+.landing-neon-use-case-card {
+  --section-accent-rgb: var(--ai-green-rgb);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-glass);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-neon-use-case-card:hover {
+  border-color: rgba(var(--section-accent-rgb), 0.35);
+  box-shadow: 0 0 28px rgba(var(--section-accent-rgb), 0.1);
+}
+
+.landing-neon-use-case-icon {
+  border: 1px solid rgba(var(--section-accent-rgb), 0.25);
+  background: rgba(var(--section-accent-rgb), 0.1);
+  color: rgb(var(--section-accent-rgb));
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.landing-neon-use-case-card:hover .landing-neon-use-case-icon {
+  border-color: rgba(var(--section-accent-rgb), 0.5);
+  background: rgba(var(--section-accent-rgb), 0.15);
+}
+
+.landing-neon-use-case-pill {
+  border: 1px solid rgba(var(--section-accent-rgb), 0.2);
+  background: rgba(var(--section-accent-rgb), 0.06);
+  color: rgb(var(--section-accent-rgb));
+}
+
+.landing-neon-cta-section {
+  border-color: rgba(var(--ai-violet-rgb), 0.15);
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    rgba(var(--ai-violet-rgb), 0.06) 45%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.landing-neon-divider-glow {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--ai-green-rgb), 0.35),
+    rgba(var(--ai-blue-rgb), 0.35),
+    rgba(var(--ai-violet-rgb), 0.25),
+    transparent
+  );
+}
