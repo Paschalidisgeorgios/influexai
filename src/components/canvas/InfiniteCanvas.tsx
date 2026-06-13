@@ -24,6 +24,7 @@ import { LaserEdge } from "./LaserEdge";
 import { CanvasShortcutsHelp } from "./CanvasShortcutsHelp";
 import { CanvasAnalyticsPanel } from "./CanvasAnalyticsPanel";
 import { CanvasNodeErrorBoundary } from "./CanvasNodeErrorBoundary";
+import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 
 const SafeControlNode = memo(function SafeControlNode(
   props: NodeProps<Node<ControlNodeData, "control">>
@@ -72,6 +73,7 @@ export function InfiniteCanvas() {
   const onEdgesChange = useCanvasStore((s) => s.onEdgesChange);
   const onConnect = useCanvasStore((s) => s.onConnect);
   const setViewportCenter = useCanvasStore((s) => s.setViewportCenter);
+  const touchActivity = useOnboardingStore((s) => s.touchActivity);
   const { spacePressed, helpOpen, setHelpOpen, onPaneMouseMove } = useCanvasShortcuts();
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
@@ -82,13 +84,26 @@ export function InfiniteCanvas() {
     []
   );
 
+  const handlePaneMouseMove = useCallback(
+    (event: React.MouseEvent) => {
+      touchActivity();
+      onPaneMouseMove(event);
+    },
+    [onPaneMouseMove, touchActivity]
+  );
+
+  const handlePaneClick = useCallback(() => {
+    touchActivity();
+  }, [touchActivity]);
+
   const onMoveEnd = useCallback(
     (_: unknown, viewport: { x: number; y: number; zoom: number }) => {
+      touchActivity();
       const cx = (-viewport.x + window.innerWidth / 2) / viewport.zoom;
       const cy = (-viewport.y + window.innerHeight / 2) / viewport.zoom;
       setViewportCenter({ x: cx, y: cy });
     },
-    [setViewportCenter]
+    [setViewportCenter, touchActivity]
   );
 
   useEffect(() => {
@@ -108,7 +123,8 @@ export function InfiniteCanvas() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onMoveEnd={onMoveEnd}
-        onPaneMouseMove={onPaneMouseMove}
+        onPaneMouseMove={handlePaneMouseMove}
+        onPaneClick={handlePaneClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}

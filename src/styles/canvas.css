@@ -263,6 +263,35 @@
   contain: layout style;
 }
 
+@keyframes canvas-onboarding-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(204, 255, 0, 0.35),
+      0 0 24px rgba(204, 255, 0, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px rgba(204, 255, 0, 0),
+      0 0 32px rgba(204, 255, 0, 0.28);
+  }
+}
+
+.canvas-onboarding-pulse > div:first-child {
+  border-color: rgba(204, 255, 0, 0.45) !important;
+  animation: canvas-onboarding-pulse 2s ease-in-out infinite;
+}
+
+.canvas-onboarding-help {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-onboarding-pulse > div:first-child {
+    animation: none;
+  }
+}
+
 /* Sidebar logo → landing page (override global Bebas h1) */
 .canvas-logo-link {
   position: relative;

@@ -11,6 +11,7 @@ import { useCanvasStore } from "@/lib/canvas/canvas-store";
 import { CanvasSidebar } from "./CanvasSidebar";
 import { CanvasHeader } from "./CanvasHeader";
 import { InfiniteCanvas } from "./InfiniteCanvas";
+import { OnboardingAgentShell } from "./onboarding/OnboardingAgentShell";
 
 const LEGACY_CHILD_ROUTES = [
   "/dashboard/settings",
@@ -61,19 +62,21 @@ export function CanvasShell({ children }: CanvasShellProps) {
     <BuyCreditsProvider>
       <PlanGateProvider>
         <ReactFlowProvider>
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#050505] text-white">
-            <div className="studio-glass-dot-grid relative flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="studio-glass-glow studio-glass-glow--violet pointer-events-none" aria-hidden />
-              <div className="studio-glass-glow studio-glass-glow--green pointer-events-none" aria-hidden />
-              <CanvasHeader />
-              <div className="relative z-[1] flex min-h-0 flex-1">
-                <CanvasSidebar />
-                <div className="relative min-w-0 flex-1">
-                  <InfiniteCanvas />
+          <OnboardingAgentShell>
+            <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-white">
+              <div className="studio-glass-dot-grid relative flex min-h-0 flex-1 flex-col overflow-hidden">
+                <div className="studio-glass-glow studio-glass-glow--violet pointer-events-none" aria-hidden />
+                <div className="studio-glass-glow studio-glass-glow--green pointer-events-none" aria-hidden />
+                <CanvasHeader />
+                <div className="relative z-[1] flex min-h-0 flex-1">
+                  <CanvasSidebar />
+                  <div className="relative min-w-0 flex-1">
+                    <InfiniteCanvas />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </OnboardingAgentShell>
         </ReactFlowProvider>
       </PlanGateProvider>
     </BuyCreditsProvider>

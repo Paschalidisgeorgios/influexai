@@ -28,6 +28,7 @@ import {
   getPrimaryPromptParamKey,
 } from "@/utils/viralPredictor";
 import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
+import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 
 function isPremiumScriptData(
   data: unknown
@@ -54,6 +55,10 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const { profile } = useCreatorProfile();
+  const highlightedToolId = useOnboardingStore((s) => s.highlightedToolId);
+  const recordCanvasAction = useOnboardingStore((s) => s.recordCanvasAction);
+  const touchActivity = useOnboardingStore((s) => s.touchActivity);
+  const isHighlighted = highlightedToolId === nodeData.toolId;
 
   const promptText = useMemo(
     () => buildPromptFromParams(nodeData.params, tool?.params ?? []),
@@ -99,8 +104,14 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
   );
 
   const handleChange = useCallback(
-    (key: string, value: unknown) => updateControlParams(id, { [key]: value }),
-    [id, updateControlParams]
+    (key: string, value: unknown) => {
+      updateControlParams(id, { [key]: value });
+      touchActivity();
+      if (typeof value === "string" ? value.trim().length > 0 : value != null && value !== "") {
+        recordCanvasAction("params_changed", nodeData.toolId, id);
+      }
+    },
+    [id, nodeData.toolId, recordCanvasAction, touchActivity, updateControlParams]
   );
 
   const runGenerate = useCallback(async () => {
@@ -115,6 +126,8 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
     let creditsReserved = false;
 
     setControlGenerating(id, true);
+    touchActivity();
+    recordCanvasAction("generate_clicked", nodeData.toolId, id);
 
     const assetId = spawnAssetNode(
       nodeData.toolId,
@@ -218,6 +231,7 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
     id,
     nodeData.params,
     nodeData.toolId,
+    recordCanvasAction,
     recordGeneration,
     refreshCredits,
     setControlGenerating,
@@ -225,6 +239,7 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
     spawnAssetNode,
     spawnPremiumVideoTiles,
     tool,
+    touchActivity,
     updateAssetNode,
   ]);
 
@@ -272,7 +287,7 @@ function ControlNodeComponent({ id, data }: NodeProps<Node<ControlNodeData, "con
   const insufficient = credits !== null && remaining < coins;
 
   return (
-    <div className="relative w-[min(340px,90vw)]">
+    <div className={`relative w-[min(340px,90vw)]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
       <div
         className="rounded-2xl border border-zinc-800/50 bg-zinc-950/60 p-4 shadow-2xl backdrop-blur-xl"
         style={{
