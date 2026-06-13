@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
@@ -62,6 +62,8 @@ type PricingPlansProps = {
   onSubscribe?: (plan: string, interval: BillingInterval) => void;
   subscribeLoading?: string | null;
   className?: string;
+  /** Optional intent-personalized label for the popular plan CTA */
+  primaryCtaLabel?: ReactNode;
 };
 
 export function PricingPlans({
@@ -69,6 +71,7 @@ export function PricingPlans({
   onSubscribe,
   subscribeLoading = null,
   className,
+  primaryCtaLabel,
 }: PricingPlansProps) {
   const t = useTranslations("landingPage.pricing");
   const locale = useLocale();
@@ -154,7 +157,15 @@ export function PricingPlans({
         {plans.map((plan, planIndex) => {
           const loading = subscribeLoading === `${plan.key}-${interval}`;
           const staggerDelays = [0, 0.15, 0.3, 0.45];
-          const ctaContent = <>{loading ? "…" : plan.cta}</>;
+          const ctaContent = (
+            <>
+              {loading
+                ? "…"
+                : plan.hot && primaryCtaLabel
+                  ? primaryCtaLabel
+                  : plan.cta}
+            </>
+          );
           const yearlyTotal = formatPlanPrice(plan.price * 12, locale);
 
           return (

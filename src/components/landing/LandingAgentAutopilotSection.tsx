@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { useIntentTracking } from "@/hooks/useIntentTracking";
 
 const RESPONSE_LINES = [
   "line_1",
@@ -20,6 +21,7 @@ const FEATURE_KEYS = ["f1", "f2", "f3"] as const;
 
 export function LandingAgentAutopilotSection() {
   const t = useTranslations("landingPage.agentAutopilot");
+  const { getIntentHref } = useIntentTracking();
   const [visibleLines, setVisibleLines] = useState(0);
   const [active, setActive] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
@@ -101,7 +103,7 @@ export function LandingAgentAutopilotSection() {
             ))}
           </ul>
           <AcidMotionButton
-            href="/dashboard"
+            href={getIntentHref("/dashboard")}
             className="btn-acid mt-8 min-h-[48px] w-full justify-center md:w-auto"
           >
             {t("cta")}

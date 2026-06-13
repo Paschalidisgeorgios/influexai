@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { IntentLink } from "@/hooks/useIntentTracking";
 
 const NAV_LINKS = [
   { label: "Features", href: "#studio-showcase" },
@@ -46,13 +47,13 @@ export function LandingNavV2() {
         >
           Login
         </Link>
-        <Link
+        <IntentLink
           href="/signup"
           className="rounded-lg px-4 py-2 text-[13px] font-semibold no-underline transition-all duration-300"
           style={{ background: "#B4FF00", color: "#08080a" }}
         >
           Studio starten
-        </Link>
+        </IntentLink>
       </div>
     </header>
   );

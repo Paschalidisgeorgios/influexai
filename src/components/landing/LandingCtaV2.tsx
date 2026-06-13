@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { IntentLink } from "@/hooks/useIntentTracking";
 
 type LandingCtaV2Props = {
   reveal?: boolean;
@@ -29,7 +29,7 @@ export function LandingCtaV2({ reveal = true }: LandingCtaV2Props) {
       <p className="mx-auto mt-4 max-w-md text-base text-white/45">
         Starte heute. Dein erstes Asset ist in 30 Sekunden fertig.
       </p>
-      <Link
+      <IntentLink
         href="/signup"
         className="mt-8 inline-flex h-14 items-center justify-center gap-2 rounded-[10px] px-10 font-display text-lg tracking-wide no-underline transition-all duration-300 hover:brightness-110"
         style={{
@@ -40,7 +40,7 @@ export function LandingCtaV2({ reveal = true }: LandingCtaV2Props) {
       >
         Studio starten
         <ArrowRight size={18} />
-      </Link>
+      </IntentLink>
       <p className="mt-4 text-xs text-white/30">Keine Kreditkarte nötig</p>
     </section>
   );

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
+import { IntentLink } from "@/hooks/useIntentTracking";
 import { Hero3DScene } from "./Hero3DScene";
 import { SmartCapsule } from "./SmartCapsule";
 import { useThemeCycle } from "@/hooks/useThemeCycle";
-import { useScrollDepth } from "@/hooks/useScrollDepth";
 import { applyThemeToRoot, getLandingTheme } from "@/hooks/useTheme";
 
 type DialogStep = 0 | 1 | 2 | 3;
@@ -17,10 +16,7 @@ declare global {
 }
 
 export function HeroSection() {
-  const { rgb, scene, sceneIdx, themeKey, lockTheme } = useThemeCycle(4000);
-  const scrollDepth = useScrollDepth();
-  const [baseDepth, setBaseDepth] = useState(0);
-  const [impulse, setImpulse] = useState(0);
+  const { rgb, themeKey, lockTheme } = useThemeCycle(4000);
   const [dialogStep, setDialogStep] = useState<DialogStep>(0);
   const [userName, setUserName] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -31,8 +27,6 @@ export function HeroSection() {
   const capMsgTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
-
-  const depthProgress = Math.max(baseDepth, 0.3 + scrollDepth * 0.7);
 
   const showCapsuleMsg = useCallback(
     (msg: string, duration = 4000) => {
@@ -50,11 +44,6 @@ export function HeroSection() {
   useEffect(() => {
     applyThemeToRoot(getLandingTheme(themeKey));
   }, [themeKey]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setBaseDepth(1), 600);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     window.__landingCapsuleShow = showCapsuleMsg;
@@ -80,11 +69,6 @@ export function HeroSection() {
     []
   );
 
-  const triggerImpulse = useCallback((amount: number) => {
-    setImpulse(amount);
-    setTimeout(() => setImpulse(0), 300);
-  }, []);
-
   const handleSubmit = useCallback(() => {
     const val = inputValue.trim();
     if (!val) return;
@@ -94,7 +78,6 @@ export function HeroSection() {
       setInputValue("");
       lockTheme("blue");
       showCapsuleMsg(`${val}! Starker Name. Freut mich auf Augenhöhe! 🤝`, 5000);
-      triggerImpulse(40);
 
       setTimeout(() => {
         setInputPlaceholder(`Ein Cyberpunk-Video? Ein 3D-Logo? Schreib es mir, ${val}...`);
@@ -106,7 +89,6 @@ export function HeroSection() {
       }, 1800);
     } else if (dialogStep === 2) {
       lockTheme("violet");
-      triggerImpulse(60);
       showCapsuleMsg(
         `Geisteskranke Idee, ${userName}. Ich liebe es! Prozessoren übertaktet. 🚀`,
         8000
@@ -122,7 +104,6 @@ export function HeroSection() {
     userName,
     lockTheme,
     showCapsuleMsg,
-    triggerImpulse,
   ]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -136,16 +117,11 @@ export function HeroSection() {
     <>
       <SmartCapsule rgb={rgb} message={capsuleMsg} isFlashing={isFlashing} />
 
-      <section className="relative flex h-screen min-h-[620px] items-center justify-center overflow-hidden bg-[#08080a]">
-        <Hero3DScene
-          scene={scene}
-          sceneIdx={sceneIdx}
-          rgb={rgb}
-          depthProgress={depthProgress}
-          impulse={impulse}
-        />
+      <section className="relative flex h-screen min-h-[620px] items-center overflow-hidden bg-[#08080a]">
+        <Hero3DScene rgb={rgb} />
 
-        <div className="pointer-events-none relative z-20 mx-auto w-full max-w-3xl px-4 text-center sm:px-6">
+        <div className="pointer-events-none relative z-20 w-full px-5 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
+          <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(520px,36vw)] md:text-left lg:max-w-[min(560px,34vw)]">
           <div
             className="mb-6 inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-1.5 backdrop-blur-md"
             style={{
@@ -206,7 +182,7 @@ export function HeroSection() {
           </h1>
 
           <p
-            className="mx-auto mb-7 max-w-lg text-base leading-relaxed"
+            className="mb-7 max-w-lg text-base leading-relaxed md:max-w-none"
             style={{
               fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
               fontSize: "16px",
@@ -217,8 +193,8 @@ export function HeroSection() {
             erstellt Social-Media-Assets für Creator, Marken und Agenturen.
           </p>
 
-          <div className="pointer-events-auto mb-6 flex flex-wrap justify-center gap-3">
-            <Link
+          <div className="pointer-events-auto mb-6 flex flex-wrap justify-center gap-3 md:justify-start">
+            <IntentLink
               href="/dashboard"
               className="rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03]"
               style={{
@@ -229,7 +205,7 @@ export function HeroSection() {
               }}
             >
               Studio starten →
-            </Link>
+            </IntentLink>
             <button
               type="button"
               className="rounded-full border border-white/12 px-6 py-3 text-sm text-white/45 transition-all duration-200 hover:border-white/30 hover:text-white/80"
@@ -239,7 +215,7 @@ export function HeroSection() {
           </div>
 
           <div
-            className="pointer-events-none mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em]"
+            className="pointer-events-none mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] md:justify-start"
             style={{
               fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
               color: "rgba(255,255,255,0.35)",
@@ -285,9 +261,10 @@ export function HeroSection() {
             </button>
           </div>
 
-          <p className="mt-2 text-[9px] tracking-wider text-white/15">
+          <p className="mt-2 text-[9px] tracking-wider text-white/15 md:text-left">
             Enter zum Senden
           </p>
+          </div>
         </div>
       </section>
 

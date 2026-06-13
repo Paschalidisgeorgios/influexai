@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { IntentLink, useCardDwell, type IntentKey } from "@/hooks/useIntentTracking";
 import {
   Video,
   LayoutGrid,
@@ -20,6 +20,7 @@ interface BentoCard {
   description: string;
   accent: "green" | "blue" | "gold";
   tag?: string;
+  intentKey: IntentKey;
 }
 
 const STATUS_MESSAGES = [
@@ -40,6 +41,7 @@ const BENTO_CARDS: BentoCard[] = [
       "Ein Briefing. Hooks, Skript, Visuals, Captions und Content-Plan — vollautomatisch generiert.",
     accent: "green",
     tag: "Automation",
+    intentKey: "agent-autopilot",
   },
   {
     icon: <Star size={20} />,
@@ -48,6 +50,7 @@ const BENTO_CARDS: BentoCard[] = [
       "Dein eigener KI-Avatar. Einmal trainiert, unbegrenzt nutzbar — in jedem Format und Style.",
     accent: "gold",
     tag: "Avatar",
+    intentKey: "avatar-live",
   },
   {
     icon: <Video size={20} />,
@@ -56,6 +59,7 @@ const BENTO_CARDS: BentoCard[] = [
       "Bild zu Video, Text zu Video, Lipsync und Video-Übersetzung — alle Modelle in einem Studio.",
     accent: "blue",
     tag: "Video",
+    intentKey: "video-film",
   },
   {
     icon: <Palette size={20} />,
@@ -64,6 +68,7 @@ const BENTO_CARDS: BentoCard[] = [
       "Deine Markenstimme, Ästhetik und Tonalität werden in jeden Output eingebettet.",
     accent: "gold",
     tag: "Branding",
+    intentKey: "visuals",
   },
   {
     icon: <TrendingUp size={20} />,
@@ -72,6 +77,7 @@ const BENTO_CARDS: BentoCard[] = [
       "Jeder Output wird automatisch bewertet und bei Bedarf mit Auto-Retry optimiert.",
     accent: "green",
     tag: "Quality AI",
+    intentKey: "werbung",
   },
   {
     icon: <Layers size={20} />,
@@ -80,6 +86,7 @@ const BENTO_CARDS: BentoCard[] = [
       "fal.ai, Akool, ElevenLabs und mehr — alles unter einer Oberfläche, ohne Switching.",
     accent: "blue",
     tag: "20+ Tools",
+    intentKey: "audio",
   },
 ];
 
@@ -211,8 +218,13 @@ function HeroPreview() {
 }
 
 function BentoCardItem({ card }: { card: BentoCard }) {
+  const { ref, startDwell, cancelDwell } = useCardDwell(card.intentKey);
+
   return (
     <div
+      ref={ref}
+      onPointerEnter={() => startDwell(card.intentKey)}
+      onPointerLeave={() => cancelDwell(card.intentKey)}
       className={`group relative flex flex-col gap-4 rounded-2xl border bg-[#0a0a0e] p-6 transition-all duration-300 ${ACCENT_BORDER[card.accent]} ${ACCENT_GLOW[card.accent]}`}
     >
       <div className="flex items-start justify-between">
@@ -301,12 +313,12 @@ export default function SentientInterface2026() {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <Link
+          <IntentLink
             href="/dashboard"
             className="flex items-center gap-2 rounded-xl bg-[#00FF66] px-7 py-3.5 text-[14px] font-semibold text-[#050507] no-underline transition-all hover:bg-[#00FF66]/90 hover:shadow-[0_0_32px_rgba(0,255,102,0.3)]"
           >
             Studio starten <ArrowRight size={15} aria-hidden="true" />
-          </Link>
+          </IntentLink>
           <a
             href="#bento-features"
             className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-3.5 text-[14px] text-white/70 no-underline backdrop-blur-sm transition-all hover:border-white/30 hover:text-white"

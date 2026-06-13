@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { IntentLink } from "@/hooks/useIntentTracking";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
@@ -112,12 +112,12 @@ export function LandingCampaignPackSection() {
             </p>
           </div>
 
-          <Link
+          <IntentLink
             href="/dashboard"
             className="btn-acid mt-8 inline-flex min-h-[48px] items-center justify-center rounded-full px-8 py-3 text-sm font-semibold no-underline transition-transform hover:scale-[1.02]"
           >
             {t("cta")}
-          </Link>
+          </IntentLink>
         </SpringReveal>
       </div>
     </section>
