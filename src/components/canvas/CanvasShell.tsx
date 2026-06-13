@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { ReactFlowProvider } from "@xyflow/react";
+import "@/styles/studio-glass.css";
 import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
 import { resolveToolIdFromPath } from "@/lib/canvas/toolApiSchema";
@@ -45,7 +46,11 @@ export function CanvasShell({ children }: CanvasShellProps) {
     return (
       <BuyCreditsProvider>
         <PlanGateProvider>
-          <div className="min-h-[100dvh] bg-[#030304] text-white">{children}</div>
+          <div className="studio-glass-root studio-glass-dot-grid min-h-[100dvh] text-white">
+            <div className="studio-glass-glow studio-glass-glow--violet" aria-hidden />
+            <div className="studio-glass-glow studio-glass-glow--green" aria-hidden />
+            <div className="studio-glass-legacy-content">{children}</div>
+          </div>
         </PlanGateProvider>
       </BuyCreditsProvider>
     );
@@ -55,7 +60,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
     <BuyCreditsProvider>
       <PlanGateProvider>
         <ReactFlowProvider>
-          <div className="flex h-[100dvh] w-full overflow-hidden bg-[#030304] text-white">
+          <div className="flex h-[100dvh] w-full overflow-hidden bg-[#050505] text-white">
             <CanvasSidebar />
             <div className="relative min-w-0 flex-1">
               <InfiniteCanvas />

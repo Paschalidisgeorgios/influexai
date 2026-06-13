@@ -5,6 +5,8 @@ import Link from "next/link";
 import { AGENCY_PLANS, type AgencyPlanId } from "@/lib/agency-plans";
 import { createClient } from "@/lib/supabase/client";
 
+import "@/styles/studio-glass.css";
+
 export function WhiteLabelPageContent() {
   const [checkoutPlan, setCheckoutPlan] = useState<AgencyPlanId | null>(null);
   const [agencyName, setAgencyName] = useState("");
@@ -70,19 +72,17 @@ export function WhiteLabelPageContent() {
       </header>
 
       <section className="text-center mb-10">
-        <div
-          className="max-w-md mx-auto text-left p-5 rounded-xl border border-white/10 bg-[#0f0f12]"
-        >
-          <label className="block mb-3 text-sm text-[rgba(255,255,255,0.65)]">
+        <div className="max-w-md mx-auto text-left p-5 studio-glass-card">
+          <label className="block mb-3 text-sm text-white/65">
             Agentur-Name
             <input
               value={agencyName}
               onChange={(e) => setAgencyName(e.target.value)}
               placeholder="Studio Neon"
-              className="mt-2 w-full px-3 py-2.5 rounded-lg border border-white/10 bg-[#18181d] text-[#F0EFE8]"
+              className="studio-glass-input mt-2"
             />
           </label>
-          <label className="block text-sm text-[rgba(255,255,255,0.65)]">
+          <label className="block text-sm text-white/65">
             Subdomain (z.B. neon → neon.influexaicreator.com)
             <input
               value={slug}
@@ -90,7 +90,7 @@ export function WhiteLabelPageContent() {
                 setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
               }
               placeholder="neon"
-              className="mt-2 w-full px-3 py-2.5 rounded-lg border border-white/10 bg-[#18181d] text-[#F0EFE8]"
+              className="studio-glass-input mt-2"
             />
           </label>
         </div>
@@ -100,15 +100,14 @@ export function WhiteLabelPageContent() {
         {Object.values(AGENCY_PLANS).map((plan) => (
           <div
             key={plan.id}
-            className="p-7 rounded-2xl border bg-[#0f0f12]"
-            style={{
-              borderColor:
-                plan.id === "pro"
-                  ? "rgba(180,255,0,0.4)"
-                  : "rgba(255,255,255,0.08)",
-              background:
-                plan.id === "pro" ? "rgba(180,255,0,0.04)" : "#0f0f12",
-            }}
+            className={`p-7 rounded-2xl studio-glass-card ${
+              plan.id === "pro" ? "border-[#ccff00]/40" : ""
+            }`}
+            style={
+              plan.id === "pro"
+                ? { background: "rgba(204,255,0,0.04)" }
+                : undefined
+            }
           >
             <div className="text-xs text-[rgba(255,255,255,0.65)] font-bold">
               {plan.name.toUpperCase()}

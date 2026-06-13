@@ -11,22 +11,22 @@
 }
 
 :root {
-  --accent: #b4ff00;
+  --accent: #ccff00;
   --glow-x: 50%;
   --glow-y: 18%;
   --glow-strength: 1;
-  --background: #060608;
-  --bg: #060608;
-  --obsidian: #060608;
-  --glass-bg: rgba(20, 20, 20, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --background: #050505;
+  --bg: #050505;
+  --obsidian: #050505;
+  --glass-bg: rgba(9, 9, 11, 0.4);
+  --glass-border: rgba(39, 39, 42, 0.6);
   --bg-1: #0f0f12;
   --bg-2: #18181d;
   --bg-3: #222228;
-  --acid: #b4ff00;
-  --acid-glow: rgba(180, 255, 0, 0.15);
-  --acid-d: rgba(180, 255, 0, 0.1);
-  --acid-dd: rgba(180, 255, 0, 0.05);
+  --acid: #ccff00;
+  --acid-glow: rgba(204, 255, 0, 0.15);
+  --acid-d: rgba(204, 255, 0, 0.1);
+  --acid-dd: rgba(204, 255, 0, 0.05);
   --white: #ffffff;
   --wd: rgba(255, 255, 255, 0.85);
   --grey: rgba(255, 255, 255, 0.65);
@@ -3168,21 +3168,24 @@ header.site-header.site-header--scrolled {
 .features-mega-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(6, 6, 8, 0.45);
+  background: rgba(5, 5, 5, 0.55);
+  backdrop-filter: blur(4px);
   border: none;
   cursor: default;
 }
 
 .features-mega-panel {
   position: absolute;
-  top: var(--landing-nav-height, 5.75rem);
+  top: var(--landing-nav-height, 3.5rem);
   left: 0;
   right: 0;
-  max-height: calc(100dvh - var(--landing-nav-height, 5.75rem));
+  max-height: calc(100dvh - var(--landing-nav-height, 3.5rem));
   overflow-y: auto;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: #f7f7f4;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(39, 39, 42, 0.6);
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
 }
 
 .features-mega-panel__inner {
@@ -3221,7 +3224,7 @@ header.site-header.site-header--scrolled {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.38);
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .features-mega-icon {
@@ -3253,14 +3256,14 @@ header.site-header.site-header--scrolled {
   padding: 5px 0;
   font-size: 13px;
   line-height: 1.35;
-  color: rgba(10, 10, 10, 0.55);
+  color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
 .features-mega-item:hover,
 .features-mega-item:focus-visible {
-  color: #0a0a0a;
+  color: #ccff00;
 }
 
 .features-mega-item--mobile {

@@ -2090,6 +2090,22 @@
       "workspace": "Creator Workspace",
       "placeholder": "Generierter Content erscheint hier"
     },
+    "whitelabel": {
+      "kicker": "Live-Vorschau",
+      "headline": "Dein White Label in Echtzeit",
+      "subline": "Tippe deinen Agenturnamen ein und wähle drei Akzentfarben — die Vorschau passt sich sofort an.",
+      "name_label": "Agentur-Name",
+      "name_placeholder": "Studio Neon",
+      "default_name": "Deine Agentur",
+      "colors_label": "Markenfarben",
+      "color_1": "Primär",
+      "color_2": "Akzent",
+      "color_3": "Highlight",
+      "color_picker": "Farbe {index}",
+      "powered_by": "Powered by deine Marke",
+      "workspace_label": "Creator Workspace",
+      "canvas_placeholder": "Infinite Canvas · Live Preview"
+    },
     "pricing": {
       "kicker": "Agentur-Preise",
       "headline": "Skaliere deine KI-Agentur",

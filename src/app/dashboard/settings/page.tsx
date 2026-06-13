@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
 import "@/styles/settings-glass.css";
+import "@/styles/studio-glass.css";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
@@ -211,8 +212,8 @@ export default function SettingsPage() {
     width: "100%",
     padding: "12px 16px",
     borderRadius: 10,
-    background: "#18181d",
-    border: "1px solid rgba(255,255,255,0.09)",
+    background: "rgba(24, 24, 27, 0.6)",
+    border: "1px solid rgba(39, 39, 42, 0.6)",
     color: "#F0EFE8",
     fontSize: "0.95rem",
     outline: "none",
@@ -236,19 +237,7 @@ export default function SettingsPage() {
   );
 
   const card = (children: React.ReactNode) => (
-    <div
-      style={{
-        padding: 24,
-        borderRadius: 16,
-        background: "#0f0f12",
-        border: "1px solid rgba(255,255,255,0.07)",
-        display: "flex",
-        flexDirection: "column" as const,
-        gap: 14,
-      }}
-    >
-      {children}
-    </div>
+    <div className="studio-glass-card flex flex-col gap-3.5 p-6">{children}</div>
   );
 
   return (

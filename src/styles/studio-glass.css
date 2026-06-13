@@ -1,0 +1,198 @@
+/* InfluexAI Studio — Fluid Glassmorphism 2026 (global) */
+
+.studio-glass-root {
+  position: relative;
+  background-color: #050505;
+  color: #f0efe8;
+  overflow-x: clip;
+}
+
+.studio-glass-dot-grid {
+  background-color: #050505;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.studio-glass-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.studio-glass-glow--violet {
+  left: -12%;
+  top: 8%;
+  width: min(62vw, 680px);
+  height: min(62vw, 680px);
+  background: radial-gradient(circle, rgba(139, 93, 255, 0.26) 0%, transparent 70%);
+  animation: studio-glass-glow-a 22s ease-in-out infinite alternate;
+}
+
+.studio-glass-glow--green {
+  right: -10%;
+  top: 22%;
+  width: min(58vw, 620px);
+  height: min(58vw, 620px);
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.16) 0%, transparent 72%);
+  animation: studio-glass-glow-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes studio-glass-glow-a {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(4%, 6%) scale(1.08);
+  }
+}
+
+@keyframes studio-glass-glow-b {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-5%, 4%) scale(1.06);
+  }
+}
+
+.studio-glass-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(39, 39, 42, 0.6);
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.studio-glass-card--hover:hover {
+  border-color: rgba(204, 255, 0, 0.25);
+  transition: border-color 0.2s ease;
+}
+
+.studio-glass-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: #ccff00;
+  color: #000;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.studio-glass-btn-primary:hover:not(:disabled) {
+  transform: scale(1.03);
+  box-shadow: 0 0 24px rgba(204, 255, 0, 0.35);
+}
+
+.studio-glass-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.studio-glass-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f0efe8;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.studio-glass-btn-ghost:hover {
+  transform: scale(1.02);
+  border-color: rgba(204, 255, 0, 0.3);
+}
+
+.studio-glass-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(24, 24, 27, 0.6);
+  color: #f0efe8;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.studio-glass-input:focus {
+  border-color: rgba(204, 255, 0, 0.4);
+}
+
+.studio-glass-kicker {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(204, 255, 0, 0.25);
+  background: rgba(204, 255, 0, 0.08);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ccff00;
+}
+
+.studio-glass-faq-item {
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(39, 39, 42, 0.6);
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(16px);
+}
+
+.studio-glass-faq-trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 1.25rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #f0efe8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.studio-glass-faq-body {
+  padding: 0 1.25rem 1.125rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.studio-glass-accent {
+  color: #ccff00;
+}
+
+.studio-glass-icon-wrap {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(204, 255, 0, 0.1);
+  color: #ccff00;
+}
+
+.studio-glass-legacy-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  padding: clamp(1rem, 3vw, 2rem);
+}

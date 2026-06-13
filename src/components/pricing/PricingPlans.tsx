@@ -90,9 +90,15 @@ export function PricingPlans({
       hot: config.popular ?? false,
       price,
       name: t(`${key}_name`),
-      credits: t(`${key}_credits`),
+      credits:
+        key === "business"
+          ? "2.500 Credits / Monat"
+          : t(`${key}_credits`),
       desc: t(`${key}_desc`),
-      delta: t(`plan_delta_${key}`),
+      delta:
+        key === "business"
+          ? "2.500 Credits · Unbegrenzte Workspaces · Server-Priorität"
+          : t(`plan_delta_${key}`),
       cta: t(`${key}_cta`),
       features: sharedFeatures,
     };

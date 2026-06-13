@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import type { FeatureMenuCategory } from "@/lib/landing-features-menu";
+import { useFeaturesMenuLabel } from "@/lib/features-menu-i18n";
 import { FeatureItem } from "./FeatureItem";
 
 type Props = {
@@ -17,13 +17,13 @@ export function FeatureCategory({
   variant = "desktop",
   defaultOpen = false,
 }: Props) {
-  const t = useTranslations("landingPage.featuresMenu");
+  const { label } = useFeaturesMenuLabel();
 
   if (variant === "mobile") {
     return (
       <details className="features-mega-accordion" open={defaultOpen}>
         <summary className="features-mega-accordion__summary">
-          {t(`categories.${category.id}`)}
+          {label(`categories.${category.id}`)}
         </summary>
         <div className="features-mega-accordion__body">
           {category.groups.map((group) => {
@@ -35,7 +35,7 @@ export function FeatureCategory({
                     <Icon className="h-4 w-4" strokeWidth={1.6} />
                   </span>
                   <span className="text-sm font-semibold text-white/90">
-                    {t(`groups.${group.id}.title`)}
+                    {label(`groups.${group.id}.title`)}
                   </span>
                 </div>
                 <div className="space-y-0.5 pl-1">
@@ -43,7 +43,7 @@ export function FeatureCategory({
                     <FeatureItem
                       key={item.id}
                       href={item.href}
-                      label={t(`items.${item.id}`)}
+                      label={label(`items.${item.id}`)}
                       onNavigate={onNavigate}
                       variant="mobile"
                     />
@@ -59,7 +59,7 @@ export function FeatureCategory({
 
   return (
     <div className="features-mega-category min-w-0">
-      <p className="features-mega-category__title">{t(`categories.${category.id}`)}</p>
+      <p className="features-mega-category__title">{label(`categories.${category.id}`)}</p>
       <div className="mt-4 space-y-6">
         {category.groups.map((group) => {
           const Icon = group.icon;
@@ -69,8 +69,8 @@ export function FeatureCategory({
                 <span className="features-mega-icon">
                   <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
                 </span>
-                <p className="text-[13px] font-semibold leading-snug text-[#0a0a0a]">
-                  {t(`groups.${group.id}.title`)}
+                <p className="text-[13px] font-semibold leading-snug text-white/85">
+                  {label(`groups.${group.id}.title`)}
                 </p>
               </div>
               <ul className="space-y-0.5 pl-[38px]">
@@ -78,7 +78,7 @@ export function FeatureCategory({
                   <li key={item.id}>
                     <FeatureItem
                       href={item.href}
-                      label={t(`items.${item.id}`)}
+                      label={label(`items.${item.id}`)}
                       onNavigate={onNavigate}
                     />
                   </li>

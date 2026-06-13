@@ -13,11 +13,12 @@ import { useTranslations } from "next-intl";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { LandingFooter } from "@/components/landing/Sections";
 import { SpringReveal } from "@/components/ui/SpringReveal";
+import { StudioGlassShell } from "@/components/ui/StudioGlassShell";
 import { SUBSCRIPTION_PLANS } from "@/lib/subscription-plans";
 
 const GOLD = "#E0A951";
-const ACID = "#B4FF00";
-const BG = "#060608";
+const ACID = "#ccff00";
+const BG = "#050505";
 
 const COMPARE_KEYS = ["wait", "budget", "assets"] as const;
 
@@ -29,11 +30,11 @@ const FEATURE_KEYS = [
 ] as const;
 
 const PRICING_FEATURES = [
-  "pricing_f1",
-  "pricing_f2",
-  "pricing_f3",
-  "pricing_f4",
-  "pricing_f5",
+  "2.500 Credits / Monat",
+  "Unbegrenzte Workspaces",
+  "Server-Priorität",
+  "Alle 20+ KI-Tools",
+  "Team-Zugang & Analytics",
 ] as const;
 
 const HERO_CARDS = ["card1", "card2", "card3"] as const;
@@ -189,10 +190,7 @@ export function BusinessLandingPage() {
   const business = SUBSCRIPTION_PLANS.business;
 
   return (
-    <div
-      className="landing-root min-h-screen overflow-x-clip text-[#F0EFE8]"
-      style={{ background: BG }}
-    >
+    <StudioGlassShell className="landing-root overflow-x-clip">
       <LandingNav />
 
       {/* Hero */}
@@ -262,7 +260,7 @@ export function BusinessLandingPage() {
           <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-5">
             {COMPARE_KEYS.map((key, i) => (
               <SpringReveal key={key} delay={i * 0.08}>
-                <div className="flex h-full flex-col items-center rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 text-center">
+                <div className="flex h-full flex-col items-center studio-glass-card p-6 text-center">
                   <div className="mb-3 flex w-full flex-col items-center gap-3">
                     <span className="text-2xl" aria-hidden>
                       {t(`compare.${key}_pain_icon`)}
@@ -325,16 +323,9 @@ export function BusinessLandingPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {FEATURE_KEYS.map(({ key, icon: Icon }, i) => (
               <SpringReveal key={key} delay={i * 0.07}>
-                <article className="group flex h-full flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-all duration-300 hover:border-[#E0A951]/45 hover:bg-[rgba(224,169,81,0.04)]">
-                  <div
-                    className="flex h-11 w-11 items-center justify-center rounded-lg border transition-colors group-hover:border-[#E0A951]/50"
-                    style={{
-                      borderColor: "rgba(224,169,81,0.3)",
-                      background: "rgba(224,169,81,0.1)",
-                      color: GOLD,
-                    }}
-                  >
-                    <Icon size={22} strokeWidth={2} />
+                <article className="group flex h-full flex-col gap-3 studio-glass-card studio-glass-card--hover p-6 transition-all duration-300">
+                  <div className="studio-glass-icon-wrap">
+                    <Icon size={22} strokeWidth={2} color={ACID} />
                   </div>
                   <h3
                     style={{
@@ -381,23 +372,8 @@ export function BusinessLandingPage() {
               <SectionHeading>{t("pricing.headline")}</SectionHeading>
             </div>
 
-            <div
-              className="relative rounded-2xl border p-8 text-left md:p-10"
-              style={{
-                borderColor: GOLD,
-                background:
-                  "linear-gradient(160deg, rgba(224,169,81,0.12) 0%, rgba(255,255,255,0.02) 55%)",
-                boxShadow: "0 0 56px rgba(224,169,81,0.1)",
-              }}
-            >
-              <div
-                className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.08em]"
-                style={{
-                  background: GOLD,
-                  color: BG,
-                  fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
-                }}
-              >
+            <div className="relative studio-glass-card border-[#ccff00]/30 p-8 text-left md:p-10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#ccff00] px-4 py-1 text-xs font-bold uppercase tracking-[0.08em] text-black">
                 {t("pricing.badge")}
               </div>
 
@@ -433,16 +409,16 @@ export function BusinessLandingPage() {
               </p>
 
               <ul className="mb-8 flex flex-col gap-2.5">
-                {PRICING_FEATURES.map((fKey) => (
+                {PRICING_FEATURES.map((feature) => (
                   <li
-                    key={fKey}
+                    key={feature}
                     className="flex items-start gap-2 text-sm text-white/90"
                     style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
                   >
-                    <span style={{ color: GOLD }} aria-hidden>
+                    <span className="text-[#ccff00]" aria-hidden>
                       ✓
                     </span>
-                    {t(fKey)}
+                    {feature}
                   </li>
                 ))}
               </ul>
@@ -511,6 +487,6 @@ export function BusinessLandingPage() {
       </section>
 
       <LandingFooter />
-    </div>
+    </StudioGlassShell>
   );
 }

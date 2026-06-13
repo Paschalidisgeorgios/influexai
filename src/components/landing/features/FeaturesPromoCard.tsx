@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import type { FeaturePromoVariant } from "@/lib/landing-features-menu";
+import { useFeaturesMenuLabel } from "@/lib/features-menu-i18n";
 
 type Props = {
   variant: FeaturePromoVariant;
@@ -15,7 +15,7 @@ export function FeaturesPromoCard({
   compact = false,
   onNavigate,
 }: Props) {
-  const t = useTranslations("landingPage.featuresMenu.promo");
+  const { promo } = useFeaturesMenuLabel();
 
   return (
     <article
@@ -25,15 +25,15 @@ export function FeaturesPromoCard({
     >
       <div className="features-mega-promo__visual" aria-hidden />
       <div className="features-mega-promo__content">
-        <span className="features-mega-promo__label">{t(`${variant}.label`)}</span>
-        <h3 className="features-mega-promo__headline">{t(`${variant}.headline`)}</h3>
-        <p className="features-mega-promo__desc">{t(`${variant}.description`)}</p>
+        <span className="features-mega-promo__label">{promo(`${variant}.label`)}</span>
+        <h3 className="features-mega-promo__headline">{promo(`${variant}.headline`)}</h3>
+        <p className="features-mega-promo__desc">{promo(`${variant}.description`)}</p>
         <Link
-          href={t(`${variant}.href`)}
+          href={promo(`${variant}.href`)}
           className="features-mega-promo__cta"
           onClick={onNavigate}
         >
-          {t(`${variant}.cta`)}
+          {promo(`${variant}.cta`)}
         </Link>
       </div>
     </article>

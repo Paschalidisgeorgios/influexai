@@ -15,7 +15,7 @@ import { LandingFooter, PricingSection } from "@/components/landing/Sections";
 
 export function LandingPageV2() {
   return (
-    <div className="landing-neon landing-root relative min-h-screen overflow-x-clip bg-[#030304]">
+    <div className="landing-neon landing-root relative min-h-screen overflow-x-clip bg-[#050505]">
       <LandingNavV2 />
 
       <main className="relative z-10">

@@ -12,6 +12,22 @@
       "powered_by": "Powered by Your Agency",
       "workspace": "Creator Workspace"
     },
+    "whitelabel": {
+      "kicker": "Live preview",
+      "headline": "Your white label in real time",
+      "subline": "Type your agency name and pick three accent colors — the preview updates instantly.",
+      "name_label": "Agency name",
+      "name_placeholder": "Studio Neon",
+      "default_name": "Your Agency",
+      "colors_label": "Brand colors",
+      "color_1": "Primary",
+      "color_2": "Accent",
+      "color_3": "Highlight",
+      "color_picker": "Color {index}",
+      "powered_by": "Powered by your brand",
+      "workspace_label": "Creator Workspace",
+      "canvas_placeholder": "Infinite Canvas · Live Preview"
+    },
     "faq": {
       "a1": "No — except on Starter, where a subtle powered-by appears.",
       "a2": "Yes, you decide what to charge your clients.",

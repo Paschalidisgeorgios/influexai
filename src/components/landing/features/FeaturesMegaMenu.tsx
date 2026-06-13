@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
 import {
   DEFAULT_FEATURE_PROMO,
   FEATURE_PROMO_BY_CATEGORY,
   LANDING_FEATURES_MENU,
   type FeaturePromoVariant,
 } from "@/lib/landing-features-menu";
+import { useFeaturesMenuLabel, NAV_LABELS_DE } from "@/lib/features-menu-i18n";
 import { FeatureCategory } from "./FeatureCategory";
 import { FeaturesPromoCard } from "./FeaturesPromoCard";
 
@@ -17,7 +17,7 @@ type DesktopProps = {
 };
 
 export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
-  const t = useTranslations("landingPage.featuresMenu");
+  const { label } = useFeaturesMenuLabel();
   const panelRef = useRef<HTMLDivElement>(null);
   const [promoVariant, setPromoVariant] = useState<FeaturePromoVariant>(
     DEFAULT_FEATURE_PROMO
@@ -48,7 +48,7 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
       <button
         type="button"
         className="features-mega-backdrop"
-        aria-label={t("close")}
+        aria-label={label("close")}
         onClick={onClose}
       />
       <div
@@ -56,7 +56,7 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
         className="features-mega-panel"
         role="dialog"
         aria-modal="true"
-        aria-label={t("title")}
+        aria-label={label("title")}
       >
         <div className="features-mega-panel__inner">
           <div
@@ -94,12 +94,12 @@ type MobileProps = {
 };
 
 export function FeaturesMegaMenuMobile({ onNavigate }: MobileProps) {
-  const t = useTranslations("landingPage.featuresMenu");
+  const { label } = useFeaturesMenuLabel();
 
   return (
     <div className="features-mega-mobile md:hidden">
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
-        {t("title")}
+        {label("title") || NAV_LABELS_DE.features}
       </p>
       <div className="space-y-2">
         {LANDING_FEATURES_MENU.map((category, index) => (

@@ -1,13 +1,13 @@
 /* Landing — Fluid Glassmorphism 2026 */
 
 .landing-hero-dot-grid {
-  background-color: #030304;
+  background-color: #050505;
   background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .landing-glass-dot-grid {
-  background-color: #030304;
+  background-color: #050505;
   background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 24px 24px;
 }
