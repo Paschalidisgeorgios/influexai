@@ -529,18 +529,10 @@ function ControlNodeComponent({
           type="button"
           disabled={nodeData.isGenerating}
           onClick={() => void handleGenerate()}
-          className={`mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 ${
-            creditExempt
-              ? "bg-gradient-to-r from-[#ccff00] to-[#00D5FF] text-black shadow-[0_0_24px_rgba(204,255,0,0.35)]"
-              : "text-black"
-          }`}
-          style={
-            creditExempt
-              ? { boxShadow: "0 0 0 1px rgba(255,100,0,0.4), 0 0 24px rgba(204,255,0,0.35)" }
-              : {
-                  background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
-                }
-          }
+          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+          style={{
+            background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
+          }}
         >
           <Zap size={16} aria-hidden="true" />
           {nodeData.isGenerating ? (
@@ -552,7 +544,7 @@ function ControlNodeComponent({
                 {creditCostLabel}
               </span>
               {creditExempt ? (
-                <span className="ml-1.5 rounded px-1.5 py-0.5 text-[8px] bg-black/20">
+                <span className="ml-1.5 rounded bg-black/20 px-1.5 py-0.5 text-[8px] text-white/50">
                   ADMIN
                 </span>
               ) : null}

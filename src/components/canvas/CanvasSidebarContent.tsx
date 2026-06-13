@@ -151,9 +151,9 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
           </span>
           <span className="flex items-center gap-1.5 text-sm font-bold tabular-nums">
             {creditExempt ? (
-              <span className="font-mono text-[10px] uppercase tracking-wider text-red-400">
-                ∞ Bypass
-              </span>
+              <p className="text-[10px] text-white/20 tracking-widest uppercase">
+                ∞ Admin
+              </p>
             ) : (
               <>
                 <span style={{ color: creditColor }}>⚡</span>

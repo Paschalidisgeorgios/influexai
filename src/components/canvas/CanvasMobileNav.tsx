@@ -83,8 +83,8 @@ export function CanvasMobileNav() {
         >
           <Sparkles className="h-5 w-5" strokeWidth={1.75} />
           {creditExempt ? (
-            <span className="font-mono text-[9px] uppercase tracking-wider text-red-400">
-              Admin
+            <span className="text-[10px] text-white/20 tracking-widest uppercase">
+              ∞ Admin
             </span>
           ) : (
             <span style={{ color: creditColor }}>

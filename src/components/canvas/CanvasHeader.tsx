@@ -47,7 +47,7 @@ function CanvasHeaderComponent() {
                 <span>{tail}</span>
               </p>
               {isAdmin ? (
-                <span className="rounded border border-red-500/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-red-400">
+                <span className="rounded px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/30">
                   [ADMIN]
                 </span>
               ) : null}
