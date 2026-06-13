@@ -15,7 +15,7 @@ import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { DynamicDashboardEngine } from "@/components/dashboard/DynamicDashboardEngine";
-import { useDashboardTool, useSyncDashboardPayload } from "@/contexts/DashboardToolContext";
+import { useDashboardTool } from "@/contexts/DashboardToolContext";
 import { buildToolPayload } from "@/lib/tools/tool-registry";
 
 function StoryCreatorWorkspace() {
@@ -52,8 +52,6 @@ function StoryCreatorWorkspace() {
     });
   }, [activeModel, activeParams, prompt, duration, resolution, modelId]);
 
-  useSyncDashboardPayload(livePayload);
-
   useEffect(() => {
     fetch("/api/akool/text-to-video")
       .then((r) => r.json())
@@ -88,6 +86,7 @@ function StoryCreatorWorkspace() {
   };
 
   return (
+    <DynamicDashboardEngine toolId="story-creator" payloadOverride={livePayload}>
     <AkoolToolShell
       icon={Clapperboard}
       title="STORY CREATOR"
@@ -168,13 +167,10 @@ function StoryCreatorWorkspace() {
       </button>
       {(err || error) && <p className="text-sm text-[#ff6b7a]">{err || error}</p>}
     </AkoolToolShell>
+    </DynamicDashboardEngine>
   );
 }
 
 export default function TextToVideoPage() {
-  return (
-    <DynamicDashboardEngine toolId="story-creator">
-      <StoryCreatorWorkspace />
-    </DynamicDashboardEngine>
-  );
+  return <StoryCreatorWorkspace />;
 }

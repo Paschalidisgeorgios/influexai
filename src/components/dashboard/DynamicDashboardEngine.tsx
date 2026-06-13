@@ -15,6 +15,8 @@ type DynamicDashboardEngineProps = {
   /** Hide registry model panel when the child renders its own studio UI */
   hideModelPanel?: boolean;
   className?: string;
+  /** Live payload from page-local state (avoids context sync loops) */
+  payloadOverride?: Record<string, unknown> | null;
 };
 
 function RegistryModelPanel({ models }: { models: ToolModel[] }) {
@@ -130,6 +132,7 @@ export function DynamicDashboardEngine({
   children,
   hideModelPanel = false,
   className = "",
+  payloadOverride,
 }: DynamicDashboardEngineProps) {
   const {
     activeTool,
@@ -167,9 +170,11 @@ export function DynamicDashboardEngine({
     />
   );
 
+  const displayPayload = payloadOverride ?? realtimePayload;
+
   const payloadPanel =
     showPayload && activeTool === toolId ? (
-      <ApiPayloadPreview payload={realtimePayload} />
+      <ApiPayloadPreview payload={displayPayload} />
     ) : null;
 
   if (layout === "agent") {

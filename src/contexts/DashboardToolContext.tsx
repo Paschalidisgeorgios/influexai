@@ -49,7 +49,6 @@ type DashboardToolContextValue = {
   setParams: (params: ToolParams) => void;
   setUpload: (field: string, url: string) => void;
   removeUpload: (field: string) => void;
-  setExternalPayload: (payload: Record<string, unknown> | null) => void;
   notifyGenerate: (creditCost?: number) => void;
   notifyParamBurst: () => void;
   showBadge: (text: string, duration?: number, priority?: number) => void;
@@ -69,9 +68,6 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   const [activeParams, setActiveParams] = useState<ToolParams>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({});
   const [prompt, setPrompt] = useState("");
-  const [externalPayload, setExternalPayload] = useState<Record<string, unknown> | null>(
-    null
-  );
   const [credits, setCredits] = useState<number | null>(null);
   const [userName, setUserName] = useState("Georg");
   const badgeHandler = useRef<
@@ -102,7 +98,6 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
     setActiveModelIdState(defaultModel?.id ?? null);
     setActiveParams(defaultModel ? getDefaultParamsForModel(defaultModel) : {});
     setUploadedFiles({});
-    setExternalPayload(null);
   }, [activeTool, toolConfig]);
 
   useEffect(() => {
@@ -245,7 +240,6 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   );
 
   const realtimePayload = useMemo(() => {
-    if (externalPayload) return externalPayload;
     if (!activeTool) return { tool: null, prompt: prompt || null };
     return buildToolPayload(
       activeTool,
@@ -254,14 +248,7 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
       activeParams,
       uploadedFiles
     );
-  }, [
-    externalPayload,
-    activeTool,
-    prompt,
-    activeModel,
-    activeParams,
-    uploadedFiles,
-  ]);
+  }, [activeTool, prompt, activeModel, activeParams, uploadedFiles]);
 
   const value = useMemo<DashboardToolContextValue>(
     () => ({
@@ -283,7 +270,6 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
       setParams,
       setUpload,
       removeUpload,
-      setExternalPayload,
       notifyGenerate,
       notifyParamBurst,
       showBadge,
@@ -328,27 +314,4 @@ export function useDashboardTool() {
 
 export function useDashboardToolOptional() {
   return useContext(DashboardToolContext);
-}
-
-/** Sync external tool state into the dashboard engine payload. */
-export function useSyncDashboardPayload(payload: Record<string, unknown> | null) {
-  const ctx = useDashboardToolOptional();
-  const prevKey = useRef("");
-  const ctxRef = useRef(ctx);
-
-  useEffect(() => {
-    ctxRef.current = ctx;
-  }, [ctx]);
-
-  useEffect(() => {
-    if (!ctxRef.current) return;
-    const key = payload ? JSON.stringify(payload) : "";
-    if (key === prevKey.current) return;
-    prevKey.current = key;
-    ctxRef.current.setExternalPayload(payload);
-    return () => {
-      prevKey.current = "";
-      ctxRef.current?.setExternalPayload(null);
-    };
-  }, [payload]);
 }
