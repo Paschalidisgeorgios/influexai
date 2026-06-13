@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import "@/styles/settings-glass.css";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
@@ -24,6 +25,7 @@ export default function SettingsPage() {
     text: string;
   } | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [isAgencyOwner, setIsAgencyOwner] = useState(false);
   const [creatorNische, setCreatorNische] = useState("");
@@ -490,7 +492,7 @@ export default function SettingsPage() {
                 {msgCreatorMemory.text}
               </div>
             )}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => void saveCreatorMemory()}
@@ -510,18 +512,9 @@ export default function SettingsPage() {
               </button>
               <button
                 type="button"
-                onClick={() => void resetCreatorMemory()}
+                onClick={() => setResetConfirmOpen(true)}
                 disabled={savingCreatorMemory}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: 10,
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "transparent",
-                  color: "#F0EFE8",
-                  fontWeight: 600,
-                  fontSize: "0.9rem",
-                  cursor: savingCreatorMemory ? "default" : "pointer",
-                }}
+                className="settings-memory-reset-btn"
               >
                 Gedächtnis zurücksetzen
               </button>
@@ -530,132 +523,130 @@ export default function SettingsPage() {
         )}
 
         {/* Passwort */}
-        {card(
-          <>
-            <h2
+        <div className="settings-glass-card flex flex-col gap-3.5 rounded-2xl border border-zinc-800/50 bg-zinc-950/40 p-6 backdrop-blur-md">
+          <h2
+            style={{
+              fontFamily: "var(--font-bebas), sans-serif",
+              fontSize: "1.2rem",
+              letterSpacing: "0.02em",
+              color: "#F0EFE8",
+              margin: 0,
+            }}
+          >
+            Passwort ändern
+          </h2>
+          <div>
+            {label("Neues Passwort")}
+            <input
+              type="password"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              placeholder="Mindestens 6 Zeichen"
+              className="settings-glass-input"
+            />
+          </div>
+          <div>
+            {label("Passwort bestätigen")}
+            <input
+              type="password"
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              placeholder="Passwort wiederholen"
+              className="settings-glass-input"
+            />
+          </div>
+          {msgPw && (
+            <div
               style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "1.2rem",
-                letterSpacing: "0.02em",
-                color: "#F0EFE8",
+                padding: "10px 14px",
+                borderRadius: 9,
+                fontSize: "0.85rem",
+                background:
+                  msgPw.type === "ok"
+                    ? "rgba(180,255,0,0.08)"
+                    : "rgba(255,71,87,0.08)",
+                border: `1px solid ${msgPw.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
+                color: msgPw.type === "ok" ? "#B4FF00" : "#ff6b7a",
               }}
             >
-              Passwort ändern
-            </h2>
-            <div>
-              {label("Neues Passwort")}
-              <input
-                type="password"
-                value={newPw}
-                onChange={(e) => setNewPw(e.target.value)}
-                placeholder="Mindestens 6 Zeichen"
-                style={inputStyle}
-                onFocus={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(180,255,0,0.4)")
-                }
-                onBlur={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(255,255,255,0.09)")
-                }
-              />
+              {msgPw.text}
             </div>
-            <div>
-              {label("Passwort bestätigen")}
-              <input
-                type="password"
-                value={confirmPw}
-                onChange={(e) => setConfirmPw(e.target.value)}
-                placeholder="Passwort wiederholen"
-                style={inputStyle}
-                onFocus={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(180,255,0,0.4)")
-                }
-                onBlur={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(255,255,255,0.09)")
-                }
-              />
-            </div>
-            {msgPw && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 9,
-                  fontSize: "0.85rem",
-                  background:
-                    msgPw.type === "ok"
-                      ? "rgba(180,255,0,0.08)"
-                      : "rgba(255,71,87,0.08)",
-                  border: `1px solid ${msgPw.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
-                  color: msgPw.type === "ok" ? "#B4FF00" : "#ff6b7a",
-                }}
-              >
-                {msgPw.text}
-              </div>
-            )}
-            <button
-              onClick={savePw}
-              disabled={savingPw}
-              style={{
-                padding: "12px",
-                borderRadius: 10,
-                background: savingPw ? "#2a2a2a" : "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.09)",
-                color: savingPw ? "rgba(255,255,255,0.65)" : "#F0EFE8",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                cursor: savingPw ? "default" : "pointer",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              {savingPw ? "Wird gespeichert..." : "Passwort ändern"}
-            </button>
-          </>
-        )}
+          )}
+          <button
+            type="button"
+            onClick={() => void savePw()}
+            disabled={savingPw}
+            className="settings-glass-btn-outline w-full"
+          >
+            {savingPw ? "Wird gespeichert..." : "Passwort ändern"}
+          </button>
+        </div>
 
         {/* Danger Zone */}
-        {card(
-          <>
-            <h2
-              style={{
-                fontFamily: "var(--font-bebas), sans-serif",
-                fontSize: "1.2rem",
-                letterSpacing: "0.02em",
-                color: "#ff6b7a",
-              }}
+        <div className="settings-danger-card settings-glass-card flex flex-col gap-3.5 rounded-2xl border border-red-900/30 bg-red-950/5 p-6 backdrop-blur-md">
+          <h2 className="m-0 font-mono text-sm font-bold tracking-[0.2em] text-red-400 [text-shadow:0_0_14px_rgba(248,113,113,0.35)]">
+            GEFAHRENZONE
+          </h2>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "rgba(255,255,255,0.65)",
+              lineHeight: 1.65,
+              margin: 0,
+            }}
+          >
+            {tDelete("danger_desc")}
+          </p>
+          <button
+            type="button"
+            className="settings-danger-delete-btn"
+            onClick={() => setDeleteModalOpen(true)}
+          >
+            {tDelete("danger_button")}
+          </button>
+        </div>
+
+        {resetConfirmOpen ? (
+          <div
+            className="settings-confirm-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-memory-title"
+            onClick={() => setResetConfirmOpen(false)}
+          >
+            <div
+              className="w-full max-w-sm rounded-xl border border-zinc-800/60 bg-zinc-950/80 p-5 shadow-[0_12px_48px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              Gefahrenzone
-            </h2>
-            <p
-              style={{
-                fontSize: "0.875rem",
-                color: "rgba(255,255,255,0.65)",
-                lineHeight: 1.65,
-              }}
-            >
-              {tDelete("danger_desc")}
-            </p>
-            <button
-              type="button"
-              style={{
-                padding: "11px",
-                borderRadius: 10,
-                cursor: "pointer",
-                background: "rgba(255,71,87,0.08)",
-                border: "1px solid rgba(255,71,87,0.25)",
-                color: "#ff6b7a",
-                fontWeight: 700,
-                fontSize: "0.875rem",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-              onClick={() => setDeleteModalOpen(true)}
-            >
-              {tDelete("danger_button")}
-            </button>
-          </>
-        )}
+              <p
+                id="reset-memory-title"
+                className="m-0 text-sm leading-relaxed text-zinc-300"
+              >
+                Bist du sicher? Die KI vergisst deine Nische und Tonalität
+                vollständig.
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setResetConfirmOpen(false)}
+                  className="settings-glass-btn-outline !px-3 !py-2 text-xs"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResetConfirmOpen(false);
+                    void resetCreatorMemory();
+                  }}
+                  className="settings-memory-reset-btn !px-3 !py-2 text-xs"
+                >
+                  Zurücksetzen
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <DeleteAccountModal
           open={deleteModalOpen}
