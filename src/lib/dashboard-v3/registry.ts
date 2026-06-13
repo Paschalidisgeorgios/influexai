@@ -39,7 +39,7 @@ export const AI_MODELS: AIModel[] = [
     supportsStart: true,
     supportsEnd: true,
     supportsAudio: false,
-    sampleMediaUrl: "/videos/landing/feature-1.mp4",
+    sampleMediaUrl: "/videos/landing/seedance-2-0.mp4",
     params: {
       cameraMovement: ["Keiner", "Rotate Around", "Zoom In", "Zoom Out", "Pan Left", "Pan Right"],
       shotType: ["Keiner", "Wide", "Medium", "Close-Up"],
@@ -62,7 +62,7 @@ export const AI_MODELS: AIModel[] = [
     supportsStart: true,
     supportsEnd: true,
     supportsAudio: true,
-    sampleMediaUrl: "/videos/landing/feature-2.mp4",
+    sampleMediaUrl: "/videos/landing/ki-influencer.mp4",
     params: {
       cameraMovement: [
         "Keiner",
@@ -94,7 +94,7 @@ export const AI_MODELS: AIModel[] = [
     supportsStart: true,
     supportsEnd: false,
     supportsAudio: false,
-    sampleMediaUrl: "/videos/landing/feature-3.mp4",
+    sampleMediaUrl: "/videos/landing/lora-training.mp4",
     params: {
       aspectRatio: ["16:9", "9:16", "1:1"],
     },
@@ -112,7 +112,7 @@ export const AI_MODELS: AIModel[] = [
     supportsStart: true,
     supportsEnd: true,
     supportsAudio: true,
-    sampleMediaUrl: "/videos/landing/feature-1.mp4",
+    sampleMediaUrl: "/videos/landing/ki-avatar.mp4",
     params: {
       cameraMovement: ["Static", "Rotate", "Zoom In", "Zoom Out", "Pan", "Crane"],
       shotType: ["Wide", "Medium", "Close-Up", "Cinematic"],

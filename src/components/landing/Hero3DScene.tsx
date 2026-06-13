@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const HERO_BG_VIDEO = "/videos/landing/feature-4.mp4";
+const HERO_BG_VIDEO = "/videos/landing/seedance-2-0.mp4";
 
 export function Hero3DScene() {
   const videoRef = useRef<HTMLVideoElement>(null);

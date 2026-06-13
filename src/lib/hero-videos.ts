@@ -8,22 +8,22 @@ export interface HeroScene {
 /** Local clips from /public/videos/landing/ — served at /videos/landing/*.mp4 */
 export const HERO_SCENES: HeroScene[] = [
   {
-    id: "scene-1",
-    videoUrl: "/videos/landing/feature-1.mp4",
-    label: "KI-Ich Studio",
-    theme: "green",
+    id: "ki-influencer",
+    videoUrl: "/videos/landing/ki-influencer.mp4",
+    label: "KI Influencer",
+    theme: "violet",
   },
   {
-    id: "scene-2",
-    videoUrl: "/videos/landing/feature-2.mp4",
-    label: "Szenen Generator",
+    id: "seedance",
+    videoUrl: "/videos/landing/seedance-2-0.mp4",
+    label: "Seedance Video",
     theme: "blue",
   },
   {
-    id: "scene-3",
-    videoUrl: "/videos/landing/feature-3.mp4",
-    label: "Agent Autopilot",
-    theme: "violet",
+    id: "ki-avatar",
+    videoUrl: "/videos/landing/ki-avatar.mp4",
+    label: "KI Avatar",
+    theme: "green",
   },
 ];
 

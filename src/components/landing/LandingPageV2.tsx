@@ -8,6 +8,7 @@ import { LandingCampaignPackSection } from "@/components/landing/LandingCampaign
 import { LandingCtaV2 } from "@/components/landing/LandingCtaV2";
 import { LandingNeonAmbient } from "@/components/landing/LandingNeonAmbient";
 import SentientInterface2026 from "@/components/landing/SentientInterface2026";
+import { LandingMediaSection } from "@/components/landing/LandingMediaSection";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
 import { LandingFooter, PricingSection } from "@/components/landing/Sections";
 
@@ -22,6 +23,7 @@ export function LandingPageV2() {
         <SentientInterface2026 />
 
         <LandingUseCasesSection />
+        <LandingMediaSection />
         <LandingCampaignPackSection />
         <LandingAgentAutopilotSection />
 
