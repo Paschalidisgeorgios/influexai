@@ -292,7 +292,7 @@ export async function middleware(request: NextRequest) {
     }
 
     const gate = getRouteGate(pathname);
-    if (gate && !isRouteAllowed(pathname, profile ?? { plan: "free" })) {
+    if (gate && !isRouteAllowed(pathname, accessUser)) {
       requestHeaders.set("x-plan-upgrade-required", gate.minPlan);
     }
   }

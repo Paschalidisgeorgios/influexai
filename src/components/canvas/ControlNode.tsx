@@ -285,7 +285,8 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
 
   const coins = calculateToolCoins(tool, nodeData.params);
   const remaining = credits ?? 0;
-  const insufficient = credits !== null && remaining < coins;
+  const creditExempt = isClientCreditExempt();
+  const insufficient = !creditExempt && credits !== null && remaining < coins;
 
   return (
     <div className={`relative w-[90vw] max-w-[360px]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
@@ -341,6 +342,10 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           <p className="mt-3 text-[10px] font-medium text-[#ccff00]/80">
             Nicht genug Credits ({remaining}/{coins}) — Top-Up öffnet sich beim Generieren.
           </p>
+        ) : creditExempt ? (
+          <p className="mt-3 font-mono text-[9px] uppercase tracking-wider text-red-400/80">
+            Admin-Bypass aktiv — unbegrenzte Generierung
+          </p>
         ) : null}
 
         <button
@@ -353,7 +358,11 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           }}
         >
           <Sparkles size={14} />
-          {nodeData.isGenerating ? "Generiere…" : `Generieren · ${coins} Coins`}
+          {nodeData.isGenerating
+            ? "Generiere…"
+            : creditExempt
+              ? "Generieren (Admin-Bypass) ⚡"
+              : `Generieren · ${coins} Coins`}
         </button>
       </div>
 

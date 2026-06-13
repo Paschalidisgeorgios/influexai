@@ -1,4 +1,4 @@
-import { hasActivePlan, type AccessUser } from "@/lib/access";
+import { hasActivePlan, isPlatformAdmin, type AccessUser } from "@/lib/access";
 
 /** Legacy feature ids — API routes still reference these; all require any active plan. */
 export type GatedFeature =
@@ -60,6 +60,7 @@ export function isRouteAllowed(
     typeof user === "string" || user === null || user === undefined
       ? { plan: user ?? "free" }
       : user;
+  if (isPlatformAdmin(accessUser)) return true;
   return hasActivePlan(accessUser);
 }
 

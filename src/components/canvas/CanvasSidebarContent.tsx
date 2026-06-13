@@ -16,6 +16,7 @@ import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { creditsDisplayColor } from "@/lib/credits-display-color";
 import { createClient } from "@/lib/supabase/client";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
+import { isClientCreditExempt } from "@/lib/client-credits-ui";
 
 const accordionVariants = {
   collapsed: { height: 0, opacity: 0 },
@@ -32,6 +33,7 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
   const [openSection, setOpenSection] = useState<ToolCategory | null>("ERSTELLEN");
   const supabase = createClient();
   const { canInstall, install } = usePwaInstall();
+  const creditExempt = isClientCreditExempt();
 
   const creditColor =
     typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
@@ -139,20 +141,30 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
       <div className="border-t border-zinc-700/60 p-3">
         <button
           type="button"
-          onClick={() => openBuyModal()}
+          onClick={() => {
+            if (!creditExempt) openBuyModal();
+          }}
           className="mb-2 flex min-h-11 w-full items-center justify-between rounded-xl border border-zinc-700/80 bg-black/40 px-3 py-2.5 transition-colors hover:border-[#ccff00]/30 hover:bg-[#ccff00]/5"
         >
           <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-            Credits
+            {creditExempt ? "Admin" : "Credits"}
           </span>
           <span className="flex items-center gap-1.5 text-sm font-bold tabular-nums">
-            <span style={{ color: creditColor }}>⚡</span>
-            <AnimatedCredits value={credits} style={{ color: creditColor }} />
-            {isOptimistic ? (
-              <span className="text-[8px] font-bold uppercase text-[#ccff00]/70">
-                live
+            {creditExempt ? (
+              <span className="font-mono text-[10px] uppercase tracking-wider text-red-400">
+                ∞ Bypass
               </span>
-            ) : null}
+            ) : (
+              <>
+                <span style={{ color: creditColor }}>⚡</span>
+                <AnimatedCredits value={credits} style={{ color: creditColor }} />
+                {isOptimistic ? (
+                  <span className="text-[8px] font-bold uppercase text-[#ccff00]/70">
+                    live
+                  </span>
+                ) : null}
+              </>
+            )}
           </span>
         </button>
         <Link

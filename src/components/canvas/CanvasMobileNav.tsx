@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { LayoutGrid, Settings, Sparkles, X } from "lucide-react";
 import { useCredits } from "@/components/credits/BuyCreditsProvider";
+import { isClientCreditExempt } from "@/lib/client-credits-ui";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { creditsDisplayColor } from "@/lib/credits-display-color";
 import { CanvasSidebarContent } from "./CanvasSidebarContent";
@@ -12,6 +13,7 @@ import { CanvasSidebarContent } from "./CanvasSidebarContent";
 export function CanvasMobileNav() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { credits, openBuyModal } = useCredits();
+  const creditExempt = isClientCreditExempt();
   const creditColor =
     typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
 
@@ -74,13 +76,21 @@ export function CanvasMobileNav() {
         </button>
         <button
           type="button"
-          onClick={() => openBuyModal()}
+          onClick={() => {
+            if (!creditExempt) openBuyModal();
+          }}
           className="flex min-h-11 min-w-[72px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[10px] font-medium text-zinc-300 active:text-[#ccff00]"
         >
           <Sparkles className="h-5 w-5" strokeWidth={1.75} />
-          <span style={{ color: creditColor }}>
-            <AnimatedCredits value={credits} />
-          </span>
+          {creditExempt ? (
+            <span className="font-mono text-[9px] uppercase tracking-wider text-red-400">
+              Admin
+            </span>
+          ) : (
+            <span style={{ color: creditColor }}>
+              <AnimatedCredits value={credits} />
+            </span>
+          )}
         </button>
         <Link
           href="/dashboard/settings"

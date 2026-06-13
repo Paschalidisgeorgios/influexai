@@ -1,5 +1,6 @@
 /** Default allowlist when `ADMIN_EMAIL_ALLOWLIST` is unset (server + client UI fallback). */
 export const DEFAULT_ADMIN_EMAIL_ALLOWLIST = [
+  "paschalidisgeorgios38@gmail.com",
   "paschalidis.georgio38@gmail.com",
 ] as const;
 
