@@ -3,12 +3,12 @@ export const FEATURES_MENU_FALLBACK_DE: Record<string, unknown> = {
   title: "Features",
   close: "Features-Menü schließen",
   categories: {
-    create: "Create",
-    visuals: "Visuals",
-    video: "Video",
-    avatar: "Avatar & Audio",
-    intelligence: "Intelligence",
-    workflow: "Workflow",
+    create: "CREATE",
+    visuals: "VISUALS",
+    video: "VIDEO",
+    avatar: "AVATAR & AUDIO",
+    intelligence: "INTELLIGENCE",
+    workflow: "WORKFLOW",
   },
   groups: {
     scripts: { title: "Scripts & Hooks" },
@@ -77,7 +77,7 @@ export const FEATURES_MENU_FALLBACK_DE: Record<string, unknown> = {
       href: "/dashboard/script-generator",
     },
     visuals: {
-      label: "Visual Studio",
+      label: "VISUAL STUDIO",
       headline: "Brand Assets in Sekunden.",
       description: "KI-Bilder, Avatare und UGC-Look für Social.",
       cta: "Bild generieren",

@@ -33,39 +33,35 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
   useEffect(() => {
     if (!open) return;
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-      document.body.style.overflowX = "clip";
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, handleKeyDown]);
 
   if (!open) return null;
 
   return (
-    <div className="features-mega-root hidden md:block" role="presentation">
+    <>
       <button
         type="button"
-        className="features-mega-backdrop"
+        className="fixed inset-0 z-[90] cursor-default border-none bg-black/30 backdrop-blur-[2px] hidden md:block"
         aria-label={label("close")}
         onClick={onClose}
       />
       <div
         ref={panelRef}
-        className="features-mega-panel"
+        className="fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.5rem)] z-[100] hidden w-[1100px] max-w-[95vw] -translate-x-1/2 rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl md:block"
         role="dialog"
         aria-modal="true"
         aria-label={label("title")}
       >
-        <div className="features-mega-panel__inner">
+        <div className="grid grid-cols-4 gap-8">
           <div
-            className="features-mega-grid"
+            className="col-span-3 grid grid-cols-6 gap-6"
             onMouseLeave={() => setPromoVariant(DEFAULT_FEATURE_PROMO)}
           >
             {LANDING_FEATURES_MENU.map((category) => (
               <div
                 key={category.id}
+                className="min-w-0"
                 onMouseEnter={() =>
                   setPromoVariant(
                     FEATURE_PROMO_BY_CATEGORY[category.id] ?? DEFAULT_FEATURE_PROMO
@@ -80,12 +76,12 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
               </div>
             ))}
           </div>
-          <div className="features-mega-promo-wrap">
+          <div className="col-span-1 min-w-0 self-stretch">
             <FeaturesPromoCard variant={promoVariant} onNavigate={onClose} />
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

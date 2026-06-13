@@ -3431,6 +3431,31 @@ header.site-header.site-header--scrolled {
   align-self: start;
 }
 
+.features-mega-promo-cta {
+  animation: features-mega-cta-pulse 2.4s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.45);
+}
+
+@keyframes features-mega-cta-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(204, 255, 0, 0.35),
+      0 4px 18px rgba(204, 255, 0, 0.18);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(204, 255, 0, 0),
+      0 6px 28px rgba(204, 255, 0, 0.32);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .features-mega-promo-cta {
+    animation: none;
+  }
+}
+
 @keyframes szenen-gen-pulse {
   0%,
   100% {

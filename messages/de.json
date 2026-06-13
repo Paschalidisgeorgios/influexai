@@ -1686,12 +1686,12 @@
         "title": "Features",
         "close": "Features-Menü schließen",
         "categories": {
-          "create": "Create",
-          "visuals": "Visuals",
-          "video": "Video",
-          "avatar": "Avatar & Audio",
-          "intelligence": "Intelligence",
-          "workflow": "Workflow"
+          "create": "CREATE",
+          "visuals": "VISUALS",
+          "video": "VIDEO",
+          "avatar": "AVATAR & AUDIO",
+          "intelligence": "INTELLIGENCE",
+          "workflow": "WORKFLOW"
         },
         "groups": {
           "scripts": { "title": "Scripts & Hooks" },
@@ -1760,7 +1760,7 @@
             "href": "/dashboard/script-generator"
           },
           "visuals": {
-            "label": "Visual Studio",
+            "label": "VISUAL STUDIO",
             "headline": "Brand Assets in Sekunden.",
             "description": "KI-Bilder, Avatare und UGC-Look für Social.",
             "cta": "Bild generieren",

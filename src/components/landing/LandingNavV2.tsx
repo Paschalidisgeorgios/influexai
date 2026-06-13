@@ -44,7 +44,7 @@ export function LandingNavV2() {
   return (
     <>
       <header
-        className={`landing-glass-header fixed inset-x-0 top-0 z-50 flex h-14 w-full items-center px-4 transition-[background,border-color] duration-300 sm:px-6 lg:px-10 ${
+        className={`landing-glass-header relative overflow-visible fixed inset-x-0 top-0 z-50 flex h-14 w-full items-center px-4 transition-[background,border-color] duration-300 sm:px-6 lg:px-10 ${
           scrolled || featuresOpen ? "landing-glass-header--scrolled" : ""
         }`}
         style={{ ["--landing-nav-height" as string]: "3.5rem" }}

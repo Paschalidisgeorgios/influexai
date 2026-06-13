@@ -38,7 +38,7 @@ export function FeatureCategory({
                     {label(`groups.${group.id}.title`)}
                   </span>
                 </div>
-                <div className="space-y-0.5 pl-1">
+                <div className="space-y-1 pl-1">
                   {group.items.map((item) => (
                     <FeatureItem
                       key={item.id}
@@ -58,34 +58,24 @@ export function FeatureCategory({
   }
 
   return (
-    <div className="features-mega-category min-w-0">
-      <p className="features-mega-category__title">{label(`categories.${category.id}`)}</p>
-      <div className="mt-4 space-y-6">
+    <div className="min-w-0">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-zinc-500">
+        {label(`categories.${category.id}`)}
+      </p>
+      <div className="mt-4 space-y-4">
         {category.groups.map((group) => {
           const Icon = group.icon;
-          return (
-            <div key={group.id}>
-              <div className="mb-2.5 flex items-start gap-2.5">
-                <span className="features-mega-icon">
-                  <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
-                </span>
-                <p className="text-[13px] font-semibold leading-snug text-white/85">
-                  {label(`groups.${group.id}.title`)}
-                </p>
-              </div>
-              <ul className="space-y-0.5 pl-[38px]">
-                {group.items.map((item) => (
-                  <li key={item.id}>
-                    <FeatureItem
-                      href={item.href}
-                      label={label(`items.${item.id}`)}
-                      onNavigate={onNavigate}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
+          const groupTitle = label(`groups.${group.id}.title`);
+          return group.items.map((item) => (
+            <FeatureItem
+              key={item.id}
+              href={item.href}
+              label={label(`items.${item.id}`)}
+              subtitle={groupTitle}
+              icon={Icon}
+              onNavigate={onNavigate}
+            />
+          ));
         })}
       </div>
     </div>

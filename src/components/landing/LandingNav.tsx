@@ -164,7 +164,10 @@ export function LandingNav({
 
   return (
     <>
-      <header className={headerShellClass}>
+      <header
+        className={`${headerShellClass} relative overflow-visible`}
+        style={{ ["--landing-nav-height" as string]: "4rem" }}
+      >
         <nav className={navBarClass} aria-label="Hauptnavigation">
           <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 no-underline">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B4FF00] font-[family-name:var(--font-bebas)] text-lg leading-none text-[#060608]">
