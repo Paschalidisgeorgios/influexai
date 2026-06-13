@@ -6,10 +6,10 @@ import { Rocket } from "lucide-react";
 import { generateTrendScript } from "@/app/actions/generate-trend-script";
 import {
   trendToThumbnailTopic,
-  TREND_SCRIPT_CREDIT_COST,
   type GenerateTrendScriptInput,
   type TrendScriptResult,
 } from "@/lib/trend-script-analysis";
+import { getCanvasToolBaseCoins } from "@/lib/canvas/tool-credit-costs";
 import { parseScriptBlocks } from "@/lib/script-format";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
@@ -19,7 +19,7 @@ import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { TrendScriptResultSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
-const CREDIT_COST = TREND_SCRIPT_CREDIT_COST;
+const CREDIT_COST = getCanvasToolBaseCoins("trend-script");
 
 type Step = "input" | "loading" | "results";
 

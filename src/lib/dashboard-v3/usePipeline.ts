@@ -30,6 +30,7 @@ export const TOOL_OUTPUT_TYPE: Record<string, NodeOutput["type"]> = {
   "viral-hook": "text",
   "content-kalender": "text",
   "trend-script": "script",
+  "script-generator": "script",
   "produkt-werbung": "script",
   "agent-autopilot": "script",
   "flux-image": "image_url",

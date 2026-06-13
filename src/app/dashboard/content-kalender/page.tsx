@@ -6,12 +6,12 @@ import { Calendar } from "lucide-react";
 import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import {
   calendarToExportText,
-  CONTENT_CALENDAR_CREDIT_COST,
   type ContentCalendarDay,
   type ContentCalendarResult,
   type ContentCalendarFrequency,
   type GenerateContentCalendarInput,
 } from "@/lib/content-calendar-analysis";
+import { getCanvasToolBaseCoins } from "@/lib/canvas/tool-credit-costs";
 import { scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
@@ -21,7 +21,7 @@ import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { ContentCalendarResultSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
-const CREDIT_COST = CONTENT_CALENDAR_CREDIT_COST;
+const CREDIT_COST = getCanvasToolBaseCoins("content-kalender");
 
 type Step = "input" | "loading" | "results";
 

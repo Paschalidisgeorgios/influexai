@@ -344,7 +344,14 @@ function ControlNodeComponent({
   const remaining = credits ?? 0;
   const creditExempt = isClientCreditExempt();
   const insufficient = !creditExempt && credits !== null && remaining < coins;
-  const dynamicCost = tool.id === "seedance-video" || tool.id === "flux-image" || tool.id === "lora-training";
+  const dynamicCost =
+    tool.id === "seedance-video" ||
+    tool.id === "flux-image" ||
+    tool.id === "lora-training" ||
+    tool.id === "video-uebersetzer" ||
+    tool.id === "agent-autopilot" ||
+    tool.id === "avatar-studio" ||
+    tool.id === "produkt-werbung";
   const creditCostLabel = dynamicCost ? `~${coins} Credits` : `${coins} Credits`;
   const isAgentAutopilot = nodeData.toolId === "agent-autopilot";
   const visibleParams =

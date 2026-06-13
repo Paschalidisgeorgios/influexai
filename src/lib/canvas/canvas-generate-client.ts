@@ -56,8 +56,34 @@ function buildRequestBody(
         generate_audio: params.generate_audio ?? true,
       };
     }
-    case "viral-hook":
-      return { input: params.input ?? params.prompt ?? params.topic };
+    case "viral-hook": {
+      const nische = params.nische ?? params.input ?? params.prompt ?? params.topic;
+      const plattform = params.plattform ?? "TikTok";
+      const tonfall = params.tonfall;
+      const parts = [
+        typeof nische === "string" ? nische : "",
+        plattform ? `Plattform: ${plattform}` : "",
+        tonfall ? `Tonfall: ${tonfall}` : "",
+      ].filter(Boolean);
+      return { input: parts.join(" · ") || String(nische ?? "") };
+    }
+    case "script-generator":
+      return {
+        topic: params.topic,
+        videoLength: params.video_laenge ?? "60s",
+        tone: params.tonfall,
+        language: params.sprache,
+        toolId: "script-generator",
+      };
+    case "produkt-werbung":
+      return {
+        productName: params.produkt_name,
+        productDescription: params.usps,
+        audience: params.zielgruppe ?? "Allgemein",
+        platform: params.plattform ?? "tiktok",
+        style: params.werbe_ziel ?? "lifestyle",
+        language: params.sprache ?? "de",
+      };
     case "trend-script":
       return {
         topic: params.trend_thema ?? params.topic ?? params.prompt,
@@ -136,7 +162,7 @@ async function mockGeneration(
   await new Promise((r) => setTimeout(r, 900 + Math.random() * 400));
   const mockText = `[${tool.label}] Output\n${JSON.stringify(params, null, 2).slice(0, 400)}`;
 
-  if (tool.outputType === "text" || tool.outputType === "agent") {
+  if (tool.outputType === "text" || tool.outputType === "script" || tool.outputType === "agent") {
     return { text: mockText };
   }
   if (tool.outputType === "image") {

@@ -24,9 +24,7 @@ import { ProgrammaticToolLink } from "@/components/tools/programmatic-tool-link"
 import { createClient } from "@/lib/supabase/client";
 import { resolveNicheSlug } from "@/lib/programmatic-seo";
 import { getSafeSearchParam } from "@/lib/safe-url-param";
-
-const GENERATE_COST = 2;
-const REGENERATE_COST = 1;
+import { getCanvasToolBaseCoins } from "@/lib/canvas/tool-credit-costs";
 import {
   countWords,
   parseScriptBlocks,
@@ -34,6 +32,9 @@ import {
   scriptToPlainText,
   isBRollLine,
 } from "@/lib/script-format";
+
+const GENERATE_COST = getCanvasToolBaseCoins("script-generator");
+const REGENERATE_COST = 1;
 
 type Step = "input" | "loading" | "results";
 

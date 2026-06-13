@@ -1,3 +1,5 @@
+import { getCanvasToolBaseCoins } from "@/lib/canvas/tool-credit-costs";
+
 export type ThemeKey = "green" | "blue" | "violet";
 
 export const THEME_COLORS = {
@@ -144,7 +146,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "📝",
     route: "/dashboard/script-generator",
     category: "ERSTELLEN",
-    creditCost: 2,
+    creditCost: getCanvasToolBaseCoins("script-generator"),
   },
   {
     id: "viral-hook",
@@ -152,7 +154,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "⚡",
     route: "/dashboard/viral-hook",
     category: "ERSTELLEN",
-    creditCost: 3,
+    creditCost: getCanvasToolBaseCoins("viral-hook"),
   },
   {
     id: "trend-script",
@@ -160,7 +162,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "📈",
     route: "/dashboard/trend-to-script",
     category: "ERSTELLEN",
-    creditCost: 4,
+    creditCost: getCanvasToolBaseCoins("trend-script"),
   },
   {
     id: "content-kalender",
@@ -168,7 +170,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "📅",
     route: "/dashboard/content-kalender",
     category: "ERSTELLEN",
-    creditCost: 5,
+    creditCost: getCanvasToolBaseCoins("content-kalender"),
   },
   {
     id: "produkt-werbung",
@@ -176,7 +178,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "📢",
     route: "/dashboard/produkt",
     category: "ERSTELLEN",
-    creditCost: 75,
+    creditCost: getCanvasToolBaseCoins("produkt-werbung"),
   },
   {
     id: "ad-creator",
@@ -201,7 +203,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🎨",
     route: "/dashboard/image-generator",
     category: "VISUALS",
-    creditCost: 5,
+    creditCost: getCanvasToolBaseCoins("flux-image"),
     dynamicCreditCost: true,
   },
   {
@@ -210,7 +212,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "👤",
     route: "/dashboard/ki-influencer",
     category: "VISUALS",
-    creditCost: 8,
+    creditCost: getCanvasToolBaseCoins("ki-ich"),
   },
   {
     id: "lora-training",
@@ -218,7 +220,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🧬",
     route: "/dashboard/lora-training",
     category: "VISUALS",
-    creditCost: 10,
+    creditCost: getCanvasToolBaseCoins("lora-training"),
     dynamicCreditCost: true,
   },
   {
@@ -261,7 +263,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     route: "/dashboard/szenen-generator",
     category: "VIDEO & FILM",
     defaultModelId: "seedance-2.0-fast",
-    creditCost: 5,
+    creditCost: getCanvasToolBaseCoins("seedance-video"),
     dynamicCreditCost: true,
   },
   {
@@ -270,7 +272,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🎭",
     route: "/dashboard/video-transformer",
     category: "VIDEO & FILM",
-    creditCost: 6,
+    creditCost: getCanvasToolBaseCoins("video-transformer"),
   },
   {
     id: "video-remix",
@@ -294,7 +296,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🌐",
     route: "/dashboard/video-uebersetzer",
     category: "VIDEO & FILM",
-    creditCost: 5,
+    creditCost: getCanvasToolBaseCoins("video-uebersetzer"),
     dynamicCreditCost: true,
   },
   // AVATAR & LIVE
@@ -313,7 +315,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🤖",
     route: "/dashboard/avatar-studio",
     category: "AVATAR & LIVE",
-    creditCost: 9,
+    creditCost: getCanvasToolBaseCoins("avatar-studio"),
     dynamicCreditCost: true,
   },
   {
@@ -330,7 +332,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "💋",
     route: "/dashboard/lipsync-studio",
     category: "AVATAR & LIVE",
-    creditCost: 6,
+    creditCost: getCanvasToolBaseCoins("lipsync-studio"),
   },
   {
     id: "face-studio",
@@ -348,7 +350,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "🎵",
     route: "/dashboard/melodia",
     category: "AUDIO",
-    creditCost: 3,
+    creditCost: getCanvasToolBaseCoins("melodia-studio"),
   },
   // INTELLIGENCE
   {
@@ -357,7 +359,7 @@ export const WORKSPACE_TOOLS: WorkspaceTool[] = [
     icon: "⭐",
     route: "/dashboard/ki-agent",
     category: "INTELLIGENCE",
-    creditCost: 5,
+    creditCost: getCanvasToolBaseCoins("agent-autopilot"),
     dynamicCreditCost: true,
   },
   {

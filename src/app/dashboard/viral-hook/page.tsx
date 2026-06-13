@@ -6,10 +6,10 @@ import { Zap } from "lucide-react";
 import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import {
   viralHookToScriptTopic,
-  VIRAL_HOOK_CREDIT_COST,
   type ExtractViralHookInput,
   type ViralHookResult,
 } from "@/lib/viral-hook-analysis";
+import { getCanvasToolBaseCoins } from "@/lib/canvas/tool-credit-costs";
 import { scriptGeneratorTopicUrl } from "@/lib/safe-url-param";
 import { onGenerationActionResult, shouldShowInlineGenerationError } from "@/lib/handle-generation-result";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
@@ -19,7 +19,7 @@ import { getSafeSearchParam } from "@/lib/safe-url-param";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { ViralHookResultSkeleton } from "@/components/skeletons/tool-output-skeletons";
 
-const CREDIT_COST = VIRAL_HOOK_CREDIT_COST;
+const CREDIT_COST = getCanvasToolBaseCoins("viral-hook");
 
 type Step = "input" | "loading" | "results";
 type InputMode = "url" | "manual";
