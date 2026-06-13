@@ -1,161 +1,62 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, type KeyboardEvent } from "react";
 import { IntentLink } from "@/hooks/useIntentTracking";
 import { Hero3DScene } from "./Hero3DScene";
-import { SmartCapsule } from "./SmartCapsule";
-import { useThemeCycle } from "@/hooks/useThemeCycle";
 import { applyThemeToRoot, getLandingTheme } from "@/hooks/useTheme";
 
-type DialogStep = 0 | 1 | 2 | 3;
-
-declare global {
-  interface Window {
-    __landingCapsuleShow?: (msg: string, duration?: number) => void;
-  }
-}
+const DEFAULT_RGB = "180,255,0";
 
 export function HeroSection() {
-  const { rgb, themeKey, lockTheme } = useThemeCycle(4000);
-  const [dialogStep, setDialogStep] = useState<DialogStep>(0);
-  const [userName, setUserName] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const [capsuleMsg, setCapsuleMsg] = useState("AI CORE: ACTIVE [INITIALIZING]");
-  const [isFlashing, setIsFlashing] = useState(false);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Dein Name hier...");
-  const [inputDisabled, setInputDisabled] = useState(false);
-  const capMsgTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
-
-  const showCapsuleMsg = useCallback(
-    (msg: string, duration = 4000) => {
-      if (capMsgTimerRef.current) clearTimeout(capMsgTimerRef.current);
-      setIsFlashing(true);
-      setTimeout(() => setIsFlashing(false), 600);
-      setCapsuleMsg(msg);
-      capMsgTimerRef.current = setTimeout(() => {
-        setCapsuleMsg(`AI CORE: ACTIVE [${themeKey.toUpperCase()}_MODE]`);
-      }, duration);
-    },
-    [themeKey]
-  );
+  const [name, setName] = useState("");
+  const [hasSubmittedName, setHasSubmittedName] = useState(false);
+  const [aiText, setAiText] = useState("");
+  const [isPulsing, setIsPulsing] = useState(false);
+  const [accentRgb, setAccentRgb] = useState(DEFAULT_RGB);
 
   useEffect(() => {
-    applyThemeToRoot(getLandingTheme(themeKey));
-  }, [themeKey]);
+    applyThemeToRoot(getLandingTheme("green"));
+  }, []);
 
-  useEffect(() => {
-    window.__landingCapsuleShow = showCapsuleMsg;
-    return () => {
-      delete window.__landingCapsuleShow;
-    };
-  }, [showCapsuleMsg]);
+  const handleNameSubmit = useCallback(() => {
+    const trimmed = name.trim();
+    if (!trimmed || hasSubmittedName) return;
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      showCapsuleMsg(
-        "Hey... genau du vor dem Bildschirm. Klick ins Eingabefeld und verrat mir, wie du heißt. 👇",
-        6000
-      );
-    }, 1600);
-    return () => clearTimeout(t);
-  }, [showCapsuleMsg]);
+    setHasSubmittedName(true);
+    setAiText(`${trimmed}! Starker Name. Freut mich — dein Studio ist bereit. 🤝`);
+    setAccentRgb("40,160,255");
+    applyThemeToRoot(getLandingTheme("blue"));
+    setIsPulsing(true);
+    window.setTimeout(() => setIsPulsing(false), 450);
+  }, [name, hasSubmittedName]);
 
-  useEffect(
-    () => () => {
-      if (capMsgTimerRef.current) clearTimeout(capMsgTimerRef.current);
-    },
-    []
-  );
-
-  const handleSubmit = useCallback(() => {
-    const val = inputValue.trim();
-    if (!val) return;
-
-    if (dialogStep === 0) {
-      setUserName(val);
-      setInputValue("");
-      lockTheme("blue");
-      showCapsuleMsg(`${val}! Starker Name. Freut mich auf Augenhöhe! 🤝`, 5000);
-
-      setTimeout(() => {
-        setInputPlaceholder(`Ein Cyberpunk-Video? Ein 3D-Logo? Schreib es mir, ${val}...`);
-        showCapsuleMsg(
-          `Sag mal, ${val}, was willst du heute Erstaunliches erschaffen? 🔥`,
-          6000
-        );
-        setDialogStep(2);
-      }, 1800);
-    } else if (dialogStep === 2) {
-      lockTheme("violet");
-      showCapsuleMsg(
-        `Geisteskranke Idee, ${userName}. Ich liebe es! Prozessoren übertaktet. 🚀`,
-        8000
-      );
-      setInputValue("");
-      setInputPlaceholder(`${userName}'s Studio ist bereit. 🚀`);
-      setInputDisabled(true);
-      setDialogStep(3);
-    }
-  }, [
-    inputValue,
-    dialogStep,
-    userName,
-    lockTheme,
-    showCapsuleMsg,
-  ]);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
       e.preventDefault();
-      handleSubmit();
+      handleNameSubmit();
     }
   };
 
   return (
-    <>
-      <SmartCapsule rgb={rgb} message={capsuleMsg} isFlashing={isFlashing} />
+    <section
+      className={`relative flex min-h-screen items-center overflow-hidden bg-transparent transition-transform duration-200 ${
+        isPulsing ? "scale-[1.003]" : "scale-100"
+      }`}
+    >
+      <Hero3DScene rgb={accentRgb} />
 
-      <section className="relative flex h-screen min-h-[620px] items-center overflow-hidden bg-transparent">
-        <Hero3DScene rgb={rgb} />
-
-        <div className="pointer-events-none relative z-20 w-full px-5 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
-          <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(520px,36vw)] md:text-left lg:max-w-[min(560px,34vw)]">
-          <div
-            className="mb-6 inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-1.5 backdrop-blur-md"
+      <div className="relative z-20 w-full px-5 pt-12 pb-16 sm:px-8 sm:pt-16 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
+        <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(520px,36vw)] md:text-left lg:max-w-[min(560px,34vw)]">
+          <p
+            className="mb-6 inline-flex items-center rounded-full border px-4 py-1.5 text-[10px] tracking-[2px] uppercase backdrop-blur-md"
             style={{
-              background: `rgba(${rgb},0.07)`,
-              borderColor: `rgba(${rgb},0.2)`,
-              color: `rgba(${rgb},0.65)`,
-              transition: "all 0.8s ease",
-              fontSize: "10px",
-              letterSpacing: "2px",
-              textTransform: "uppercase",
+              background: `rgba(${accentRgb},0.07)`,
+              borderColor: `rgba(${accentRgb},0.2)`,
+              color: `rgba(${accentRgb},0.65)`,
             }}
           >
-            <span
-              className="relative flex shrink-0 items-center justify-center overflow-hidden"
-              style={{ width: "12px", height: "12px" }}
-            >
-              <span
-                className="absolute inset-0 animate-ping rounded-full"
-                style={{
-                  background: `rgba(${rgb},0.4)`,
-                  animationDuration: "2s",
-                }}
-              />
-              <span
-                className="relative rounded-full"
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  background: `rgb(${rgb})`,
-                }}
-              />
-            </span>
             AI CAMPAIGN STUDIO · 2026
-          </div>
+          </p>
 
           <h1
             className="mb-4 font-bold leading-[1.04] tracking-tight text-white"
@@ -193,29 +94,28 @@ export function HeroSection() {
             erstellt Social-Media-Assets für Creator, Marken und Agenturen.
           </p>
 
-          <div className="pointer-events-auto mb-6 flex flex-wrap justify-center gap-3 md:justify-start">
+          <div className="mb-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink
               href="/dashboard"
               className="rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03]"
               style={{
-                background: `rgb(${rgb})`,
+                background: `rgb(${accentRgb})`,
                 color: "#08080a",
-                boxShadow: `0 4px 24px rgba(${rgb},0.3)`,
-                transition: "background 0.8s ease, box-shadow 0.3s ease",
+                boxShadow: `0 4px 24px rgba(${accentRgb},0.3)`,
               }}
             >
               Studio starten →
             </IntentLink>
-            <button
-              type="button"
-              className="rounded-full border border-white/12 px-6 py-3 text-sm text-white/45 transition-all duration-200 hover:border-white/30 hover:text-white/80"
+            <a
+              href="#bento-features"
+              className="rounded-full border border-white/12 px-6 py-3 text-sm text-white/45 no-underline transition-all duration-200 hover:border-white/30 hover:text-white/80"
             >
               Demo ansehen
-            </button>
+            </a>
           </div>
 
           <div
-            className="pointer-events-none mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] md:justify-start"
+            className="mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] md:justify-start"
             style={{
               fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
               color: "rgba(255,255,255,0.35)",
@@ -228,64 +128,60 @@ export function HeroSection() {
             <span>Kein Abo-Trick · Monatlich kündbar</span>
           </div>
 
-          <div className="pointer-events-auto relative mx-auto max-w-[480px]">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={inputPlaceholder}
-              disabled={inputDisabled}
-              className="w-full rounded-xl border px-4 py-3 pr-12 font-sans text-sm text-white outline-none transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{
-                background: "rgba(8,8,10,0.72)",
-                backdropFilter: "blur(12px)",
-                borderColor: inputDisabled
-                  ? "rgba(255,255,255,0.06)"
-                  : `rgba(${rgb},0.2)`,
-                boxShadow: inputDisabled ? "none" : `0 0 0 3px rgba(${rgb},0.06)`,
-                fontSize: "13px",
-              }}
-            />
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={inputDisabled}
-              className="absolute top-1/2 right-2 -translate-y-1/2 rounded-lg px-3 py-1.5 text-xs font-semibold text-[#08080a] transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-0"
-              style={{
-                background: `rgb(${rgb})`,
-                transition: "background 0.8s ease",
-              }}
+          <div className="w-full max-w-md md:max-w-none">
+            <label
+              htmlFor="hero-name-input"
+              className="mb-2 block text-left text-[11px] font-medium tracking-wider text-white/40 uppercase"
             >
-              ↵
-            </button>
-          </div>
+              Wie heißt du?
+            </label>
+            <div className="flex items-stretch overflow-hidden rounded-xl border border-white/10 bg-[rgba(8,8,10,0.72)] backdrop-blur-md">
+              <input
+                id="hero-name-input"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Dein Name"
+                disabled={hasSubmittedName}
+                autoComplete="name"
+                className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/25 disabled:opacity-60"
+                style={{ cursor: hasSubmittedName ? "default" : "text" }}
+              />
+              <button
+                type="button"
+                onClick={handleNameSubmit}
+                disabled={hasSubmittedName || !name.trim()}
+                className="shrink-0 border-l border-white/10 px-5 text-xs font-semibold transition-opacity disabled:opacity-40"
+                style={{
+                  background: `rgb(${accentRgb})`,
+                  color: "#08080a",
+                  cursor: "default",
+                }}
+                aria-label="Name bestätigen"
+              >
+                Enter ↵
+              </button>
+            </div>
+            <p className="mt-2 text-left text-[10px] tracking-wide text-white/20">
+              {hasSubmittedName ? "Name gespeichert" : "Enter zum Bestätigen"}
+            </p>
 
-          <p className="mt-2 text-[9px] tracking-wider text-white/15 md:text-left">
-            Enter zum Senden
-          </p>
+            {hasSubmittedName && aiText && (
+              <p
+                className="mt-4 rounded-xl border border-white/[0.08] bg-black/30 px-4 py-3 text-left text-sm leading-relaxed backdrop-blur-sm"
+                style={{
+                  color: `rgba(${accentRgb},0.9)`,
+                  fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
+                }}
+                role="status"
+              >
+                {aiText}
+              </p>
+            )}
           </div>
         </div>
-      </section>
-
-      <style jsx global>{`
-        @keyframes scanLine {
-          0% {
-            top: 0;
-            opacity: 0;
-          }
-          5% {
-            opacity: 1;
-          }
-          95% {
-            opacity: 1;
-          }
-          100% {
-            top: 100%;
-            opacity: 0;
-          }
-        }
-      `}</style>
-    </>
+      </div>
+    </section>
   );
 }
