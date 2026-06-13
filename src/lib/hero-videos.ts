@@ -5,6 +5,9 @@ export interface HeroScene {
   theme: "green" | "blue" | "violet";
 }
 
+/** Fullscreen hero background on the landing page */
+export const HERO_BACKGROUND_VIDEO = "/videos/landing/hero-creator-studio.mp4";
+
 /** Local clips from /public/videos/landing/ — served at /videos/landing/*.mp4 */
 export const HERO_SCENES: HeroScene[] = [
   {
