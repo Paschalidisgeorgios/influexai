@@ -223,7 +223,8 @@
 
 /* Glass plan card */
 .pricing-glass-card {
-  contain: layout style paint;
+  contain: layout style;
+  overflow: visible;
   position: relative;
   display: flex;
   height: 100%;

@@ -117,6 +117,19 @@ export function HeroSection() {
 
           <HeroKineticHeadline />
 
+          <div className="mb-6 flex flex-wrap justify-center gap-2 md:justify-start">
+            {["Viral Hooks", "KI-Avatare", "Stripe · DE", "Canvas Studio"].map(
+              (badge) => (
+                <span
+                  key={badge}
+                  className="rounded-full border border-zinc-700/60 bg-zinc-950/40 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-zinc-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] backdrop-blur-md"
+                >
+                  {badge}
+                </span>
+              )
+            )}
+          </div>
+
           <div className="mb-0 flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink href="/signup" className="landing-glass-btn-cta">
               Jetzt kostenlos starten →

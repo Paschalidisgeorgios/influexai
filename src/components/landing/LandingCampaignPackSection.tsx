@@ -31,7 +31,7 @@ export function LandingCampaignPackSection() {
   return (
     <section
       id="campaign-pack"
-      data-landing-glow="pricing"
+      data-landing-glow="video"
       className="border-y px-4 py-16 md:px-10 md:py-20"
       style={{
         borderColor: `rgba(${LANDING_NEON.blueRgb}, 0.12)`,

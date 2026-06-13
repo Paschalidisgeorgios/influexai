@@ -75,6 +75,7 @@ export function InfiniteCanvas() {
   const onConnect = useCanvasStore((s) => s.onConnect);
   const setViewportCenter = useCanvasStore((s) => s.setViewportCenter);
   const touchActivity = useOnboardingStore((s) => s.touchActivity);
+  const dismissGreeting = useOnboardingStore((s) => s.dismissGreeting);
   const { spacePressed, helpOpen, setHelpOpen, onPaneMouseMove } = useCanvasShortcuts();
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const isTouchCanvas = useCoarsePointer();
@@ -98,14 +99,19 @@ export function InfiniteCanvas() {
     touchActivity();
   }, [touchActivity]);
 
+  const onMove = useCallback(() => {
+    dismissGreeting();
+  }, [dismissGreeting]);
+
   const onMoveEnd = useCallback(
     (_: unknown, viewport: { x: number; y: number; zoom: number }) => {
       touchActivity();
+      dismissGreeting();
       const cx = (-viewport.x + window.innerWidth / 2) / viewport.zoom;
       const cy = (-viewport.y + window.innerHeight / 2) / viewport.zoom;
       setViewportCenter({ x: cx, y: cy });
     },
-    [setViewportCenter, touchActivity]
+    [dismissGreeting, setViewportCenter, touchActivity]
   );
 
   useEffect(() => {
@@ -124,6 +130,7 @@ export function InfiniteCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onMove={onMove}
         onMoveEnd={onMoveEnd}
         onPaneMouseMove={handlePaneMouseMove}
         onPaneClick={handlePaneClick}

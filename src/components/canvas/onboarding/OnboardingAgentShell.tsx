@@ -25,12 +25,16 @@ export function OnboardingAgentShell({ children }: { children: React.ReactNode }
 
     const onGlobalActivity = () => touchActivity();
     window.addEventListener("keydown", onGlobalActivity);
+    window.addEventListener("wheel", onGlobalActivity, { passive: true });
+    window.addEventListener("pointerdown", onGlobalActivity);
 
     return () => {
       window.clearTimeout(hideTimer);
       window.removeEventListener("scroll", onScroll);
       window.clearInterval(inactivityTimer);
       window.removeEventListener("keydown", onGlobalActivity);
+      window.removeEventListener("wheel", onGlobalActivity);
+      window.removeEventListener("pointerdown", onGlobalActivity);
     };
   }, [dismissGreeting, evaluateInactivity, touchActivity]);
 

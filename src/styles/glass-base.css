@@ -1,7 +1,7 @@
 /* Global Fluid Glassmorphism — contrast & ambient lighting (2026) */
 
 :root {
-  --glass-surface-bg: rgba(9, 9, 11, 0.6);
+  --glass-surface-bg: rgba(9, 9, 11, 0.4);
   --glass-surface-border: rgba(63, 63, 70, 0.6);
   --glass-surface-border-hover: rgb(113, 113, 122);
   --glass-surface-border-accent: rgba(204, 255, 0, 0.4);

@@ -18,10 +18,12 @@ function CanvasHeaderComponent() {
   const showHeaderHelp = isInactive && !chatOpen && !greetingVisible;
 
   return (
-    <header className={`flex h-14 shrink-0 items-center justify-between border-b px-4 ${glassSurfaceStaticClass}`}>
+    <header
+      className={`relative grid h-14 shrink-0 grid-cols-[1fr_auto_1fr] items-center border-b px-4 ${glassSurfaceStaticClass}`}
+    >
       <BrandWordmark href="/" />
 
-      <div className="relative flex min-h-[1.5rem] min-w-[12rem] items-center justify-end">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 flex min-h-[1.5rem] w-max max-w-[min(420px,calc(100vw-8rem))] -translate-x-1/2 -translate-y-1/2 items-center justify-center">
         <AnimatePresence mode="wait">
           {greetingVisible ? (
             <motion.p
@@ -30,7 +32,7 @@ function CanvasHeaderComponent() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
-              className="canvas-greeting max-w-[min(420px,calc(100vw-12rem))] text-right font-sans text-[13px] font-normal leading-snug tracking-wide text-zinc-300 antialiased sm:text-sm"
+              className="pointer-events-auto text-center font-sans text-[13px] font-normal leading-snug tracking-wide text-zinc-300 antialiased sm:text-sm"
               aria-live="polite"
             >
               <span>{lead}</span>
@@ -51,13 +53,15 @@ function CanvasHeaderComponent() {
                 touchActivity();
                 openChat();
               }}
-              className="rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-3 py-1.5 font-sans text-xs font-medium tracking-wide text-[#ccff00] shadow-[0_0_16px_rgba(204,255,0,0.15)] transition-transform hover:scale-[1.02]"
+              className="canvas-onboarding-help pointer-events-auto rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-3 py-1.5 font-sans text-xs font-medium tracking-wide text-[#ccff00] shadow-[0_0_16px_rgba(204,255,0,0.15)] transition-transform hover:scale-[1.02]"
             >
               Brauchst du Hilfe? 💬
             </motion.button>
           ) : null}
         </AnimatePresence>
       </div>
+
+      <div aria-hidden className="justify-self-end" />
     </header>
   );
 }

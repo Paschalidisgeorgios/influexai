@@ -3,11 +3,11 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 /** Claude 3.5 Sonnet — landing concierge, demo & premium canvas pipeline. */
 export const CLAUDE_35_SONNET_MODEL = "claude-3-5-sonnet-latest";
 
-/** Script Generator — Sonnet 4 (claude-sonnet-4-20250514 returns 404 on current API). */
-export const SCRIPT_GENERATOR_MODEL = "claude-sonnet-4-5-20250929";
+/** Script Generator & default API routes — Claude 3.5 Sonnet. */
+export const SCRIPT_GENERATOR_MODEL = CLAUDE_35_SONNET_MODEL;
 
 /** Default Claude model for dashboard text tools and API routes. */
-export const ANTHROPIC_MODEL = SCRIPT_GENERATOR_MODEL;
+export const ANTHROPIC_MODEL = CLAUDE_35_SONNET_MODEL;
 
 export const CLAUDE_JSON_SYSTEM_RULE =
   "Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.";

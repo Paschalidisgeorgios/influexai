@@ -70,7 +70,7 @@ export function CreditPacksSection() {
               )}
 
               <span
-                className="text-4xl font-bold text-[#B4FF00] leading-none mt-2"
+                className="text-4xl font-bold text-[#ccff00] leading-none mt-2"
                 style={{ fontFamily: "var(--font-bebas), sans-serif" }}
               >
                 {pkg.credits}
@@ -92,13 +92,11 @@ export function CreditPacksSection() {
                 type="button"
                 disabled={loadingId !== null}
                 onClick={() => void handleCheckout(pkg.id)}
-                className="mt-auto w-full min-h-[44px] py-2.5 rounded-lg text-sm font-bold disabled:opacity-60"
-                style={{
-                  background: isPopular ? "#B4FF00" : "rgba(180,255,0,0.12)",
-                  color: isPopular ? "#060608" : "#B4FF00",
-                  border: "none",
-                  cursor: loadingId ? "default" : "pointer",
-                }}
+                className={`mt-auto w-full min-h-[44px] rounded-xl text-sm font-bold transition-all disabled:opacity-60 ${
+                  isPopular
+                    ? "pricing-glass-btn-primary"
+                    : "pricing-glass-btn-secondary"
+                }`}
               >
                 {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
               </button>

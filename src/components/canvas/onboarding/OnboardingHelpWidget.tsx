@@ -11,7 +11,7 @@ function OnboardingHelpWidgetComponent() {
   const openChat = useOnboardingStore((s) => s.openChat);
   const touchActivity = useOnboardingStore((s) => s.touchActivity);
 
-  const visible = isInactive && !chatOpen && greetingVisible;
+  const visible = isInactive && !chatOpen && !greetingVisible;
 
   return (
     <AnimatePresence>

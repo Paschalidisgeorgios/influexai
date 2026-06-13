@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Home, LogOut } from "lucide-react";
+import { ChevronDown, Download, Home, LogOut } from "lucide-react";
 import {
   TOOL_CATEGORIES,
   getToolsByCategory,
@@ -15,6 +15,7 @@ import { useCredits } from "@/components/credits/BuyCreditsProvider";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { creditsDisplayColor } from "@/lib/credits-display-color";
 import { createClient } from "@/lib/supabase/client";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 const accordionVariants = {
   collapsed: { height: 0, opacity: 0 },
@@ -30,6 +31,7 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
   const { credits, isOptimistic, openBuyModal } = useCredits();
   const [openSection, setOpenSection] = useState<ToolCategory | null>("ERSTELLEN");
   const supabase = createClient();
+  const { canInstall, install } = usePwaInstall();
 
   const creditColor =
     typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
@@ -167,6 +169,16 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
         >
           Credits
         </Link>
+        {canInstall ? (
+          <button
+            type="button"
+            onClick={() => void install()}
+            className="mt-2 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-lg border border-zinc-700/60 bg-zinc-950/40 px-3 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:border-[#ccff00]/40 hover:text-[#ccff00]"
+          >
+            <Download className="h-3.5 w-3.5 shrink-0 opacity-80" strokeWidth={1.75} />
+            App installieren
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={() => void handleLogout()}

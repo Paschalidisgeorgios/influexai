@@ -12,7 +12,7 @@ import { FeatureCategory } from "./FeatureCategory";
 import { FeaturesPromoCard } from "./FeaturesPromoCard";
 
 const PANEL_SURFACE_CLASS =
-  "hidden w-[1150px] max-w-[95vw] rounded-2xl border border-zinc-700/60 bg-zinc-950/95 p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl md:block isolate";
+  "hidden w-[1100px] max-w-[95vw] rounded-2xl border border-zinc-700/60 bg-zinc-950/95 p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl md:block isolate";
 
 type DesktopProps = {
   open: boolean;

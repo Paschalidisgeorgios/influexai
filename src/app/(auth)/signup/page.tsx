@@ -16,6 +16,7 @@ import {
   authButtonClass,
   authLinkAccentClass,
   authTitleClass,
+  authFooterClass,
 } from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
@@ -279,7 +280,9 @@ function SignupPageInner() {
     <div className="w-full">
       <h1 className={authTitleClass}>{t("signup_title")}</h1>
 
-      <p className="mb-6 text-sm text-zinc-400">{t("signup_subtitle")}</p>
+      <p className="mb-8 font-sans text-xs font-normal tracking-wide text-zinc-400">
+        {t("signup_subtitle")}
+      </p>
 
       <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
@@ -413,9 +416,9 @@ function SignupPageInner() {
       </p>
       </AuthCredentialSection>
 
-      <p className="mt-8 text-center text-sm text-zinc-500">
+      <p className={`mt-8 text-center ${authFooterClass}`}>
         {t("has_account")}{" "}
-        <Link href="/auth/sign-in" className={authLinkAccentClass}>
+        <Link href="/auth/sign-in" className="transition-colors hover:text-[#ccff00]">
           {t("login_link")}
         </Link>
       </p>
