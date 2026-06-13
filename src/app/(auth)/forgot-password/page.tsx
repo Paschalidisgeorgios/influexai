@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import {
   authInputClass,
   authLabelClass,
+  authButtonClass,
+  authLinkAccentClass,
 } from "@/components/auth/auth-input-classes";
 
 export default function ForgotPasswordPage() {
@@ -40,24 +41,20 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto relative">
-      <div className="absolute top-0 right-0 lg:-top-2">
-        <LanguageSwitcher compact />
-      </div>
-
-      <h1 className="text-white text-2xl font-semibold mb-2">
+    <div className="w-full">
+      <h1 className="mb-2 text-2xl font-semibold text-white">
         {t("forgot_title")}
       </h1>
-      <p className="text-white/70 text-sm mb-8">{t("forgot_subtitle")}</p>
+      <p className="mb-8 text-sm text-white/60">{t("forgot_subtitle")}</p>
 
       {sent ? (
-        <div className="p-4 rounded-xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 text-[#B4FF00] text-sm mb-6">
+        <div className="mb-6 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-4 text-sm text-[#ccff00]">
           {t("forgot_sent")}
         </div>
       ) : (
         <>
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
+            <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
               {error}
             </div>
           )}
@@ -74,19 +71,15 @@ export default function ForgotPasswordPage() {
                 autoComplete="email"
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#B4FF00] text-black font-semibold py-3 rounded-xl hover:bg-[#c8ff33] active:scale-[0.98] transition-all text-sm disabled:opacity-60"
-            >
+            <button type="submit" disabled={loading} className={authButtonClass}>
               {loading ? "…" : t("forgot_submit")}
             </button>
           </form>
         </>
       )}
 
-      <p className="text-center text-white/70 text-sm mt-8">
-        <Link href="/auth/sign-in" className="text-[#B4FF00] hover:underline">
+      <p className="mt-8 text-center text-sm text-white/50">
+        <Link href="/auth/sign-in" className={authLinkAccentClass}>
           {t("login_link")}
         </Link>
       </p>

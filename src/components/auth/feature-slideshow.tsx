@@ -2,39 +2,45 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AuthFloatingPreview } from "@/components/auth/auth-floating-preview";
 
 function ScriptVisual() {
   return (
-    <div className="rounded-xl bg-white/5 border border-white/10 p-5 max-w-sm">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs bg-[#B4FF00]/20 text-[#B4FF00] px-2 py-1 rounded-full font-medium">
-          HOOK
-        </span>
-        <span className="text-white/70 text-xs">Morning Routine Script</span>
-      </div>
-      <div className="space-y-2 mb-4">
-        <div className="h-2 bg-[#B4FF00]/40 rounded-full w-3/4" />
-        <div className="h-2 bg-white/10 rounded-full w-full" />
-        <div className="h-2 bg-white/10 rounded-full w-5/6" />
-      </div>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs bg-white/10 text-white/80 px-2 py-1 rounded-full">
-          MAIN
-        </span>
-      </div>
-      <div className="space-y-2 mb-4">
-        <div className="h-2 bg-white/10 rounded-full w-full" />
-        <div className="h-2 bg-white/10 rounded-full w-4/5" />
-        <div className="h-2 bg-white/10 rounded-full w-full" />
-        <div className="h-2 bg-white/10 rounded-full w-3/4" />
-      </div>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">
-          CTA
-        </span>
-      </div>
-      <div className="space-y-2">
-        <div className="h-2 bg-white/10 rounded-full w-2/3" />
+    <div className="auth-canvas-asset-node p-5 max-w-sm">
+      <div className="auth-canvas-asset-shine" aria-hidden />
+      <div className="relative">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="auth-badge auth-badge--hook">HOOK</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-white/45">
+              Script · Asset
+            </span>
+          </div>
+          <span className="h-2 w-2 rounded-full bg-[#ccff00]/80 shadow-[0_0_8px_#ccff00]" />
+        </div>
+        <p className="mb-4 text-sm font-semibold text-white/90">
+          Morning Routine Script
+        </p>
+        <div className="mb-4 space-y-2">
+          <div className="h-2 w-3/4 rounded-full bg-[#ccff00]/45" />
+          <div className="h-2 w-full rounded-full bg-white/10" />
+          <div className="h-2 w-5/6 rounded-full bg-white/10" />
+        </div>
+        <div className="mb-3 flex items-center gap-2">
+          <span className="auth-badge auth-badge--main">MAIN</span>
+        </div>
+        <div className="mb-4 space-y-2">
+          <div className="h-2 w-full rounded-full bg-white/10" />
+          <div className="h-2 w-4/5 rounded-full bg-white/10" />
+          <div className="h-2 w-full rounded-full bg-white/10" />
+          <div className="h-2 w-3/4 rounded-full bg-white/10" />
+        </div>
+        <div className="mb-3 flex items-center gap-2">
+          <span className="auth-badge auth-badge--cta">CTA</span>
+        </div>
+        <div className="space-y-2">
+          <div className="h-2 w-2/3 rounded-full bg-white/10" />
+        </div>
       </div>
     </div>
   );
@@ -46,39 +52,44 @@ function NicheVisual() {
       name: "Fitness Biohacking",
       competition: "Niedrig",
       stars: 5,
-      color: "text-green-400 bg-green-500/20",
+      color: "text-green-400 bg-green-500/15 border-green-500/25",
     },
     {
       name: "Budget Meal Prep",
       competition: "Mittel",
       stars: 4,
-      color: "text-amber-400 bg-amber-500/20",
+      color: "text-amber-400 bg-amber-500/15 border-amber-500/25",
     },
     {
       name: "AI Productivity",
       competition: "Niedrig",
       stars: 5,
-      color: "text-green-400 bg-green-500/20",
+      color: "text-green-400 bg-green-500/15 border-green-500/25",
     },
   ];
   return (
-    <div className="space-y-3 max-w-sm">
-      {items.map((item) => (
-        <div
-          key={item.name}
-          className="flex items-center justify-between bg-white/5 rounded-xl p-4 border border-white/10"
-        >
-          <span className="text-white text-sm font-medium">{item.name}</span>
-          <div className="flex items-center gap-2">
-            <span className={`text-xs px-2 py-0.5 rounded-full ${item.color}`}>
-              {item.competition}
-            </span>
-            <span className="text-[#B4FF00] text-xs">
-              {"⭐".repeat(item.stars)}
-            </span>
+    <div className="auth-canvas-asset-node max-w-sm space-y-2.5 p-4">
+      <div className="auth-canvas-asset-shine" aria-hidden />
+      <div className="relative space-y-2.5">
+        {items.map((item) => (
+          <div
+            key={item.name}
+            className="flex items-center justify-between rounded-xl border border-zinc-800/50 bg-black/30 px-4 py-3"
+          >
+            <span className="text-sm font-medium text-white">{item.name}</span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${item.color}`}
+              >
+                {item.competition}
+              </span>
+              <span className="text-xs text-[#ccff00]">
+                {"⭐".repeat(item.stars)}
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -90,26 +101,29 @@ function OutlierVisual() {
     "List Format (viral)",
   ];
   return (
-    <div className="bg-white/5 rounded-xl border border-white/10 p-5 max-w-sm">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <p className="text-white font-medium text-sm">
-            &quot;5 Fehler die 99% machen&quot;
-          </p>
-          <p className="text-white/70 text-xs mt-1">Fitness · Micro Channel</p>
-        </div>
-        <div className="text-right">
-          <p className="text-3xl font-bold text-[#B4FF00]">9.2</p>
-          <p className="text-white/70 text-xs">/ 10</p>
-        </div>
-      </div>
-      <div className="space-y-2 mt-4">
-        {tags.map((tag) => (
-          <div key={tag} className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#B4FF00] flex-shrink-0" />
-            <span className="text-white/80 text-xs">{tag}</span>
+    <div className="auth-canvas-asset-node max-w-sm p-5">
+      <div className="auth-canvas-asset-shine" aria-hidden />
+      <div className="relative">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-white">
+              &quot;5 Fehler die 99% machen&quot;
+            </p>
+            <p className="mt-1 text-xs text-white/50">Fitness · Micro Channel</p>
           </div>
-        ))}
+          <div className="text-right">
+            <p className="text-3xl font-bold text-[#ccff00]">9.2</p>
+            <p className="text-xs text-white/50">/ 10</p>
+          </div>
+        </div>
+        <div className="mt-4 space-y-2">
+          {tags.map((tag) => (
+            <div key={tag} className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#ccff00] shadow-[0_0_6px_#ccff00]" />
+              <span className="text-xs text-white/75">{tag}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -117,29 +131,32 @@ function OutlierVisual() {
 
 function ThumbnailVisual() {
   return (
-    <div className="max-w-sm space-y-3">
-      <div
-        className="aspect-video rounded-xl overflow-hidden relative border border-white/10"
-        style={{
-          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-between px-6">
-          <div className="space-y-2">
-            <div className="h-6 w-32 bg-[#B4FF00] rounded opacity-90" />
-            <div className="h-4 w-24 bg-white/80 rounded" />
-            <div className="h-3 w-20 bg-white/40 rounded" />
-          </div>
-          <div className="w-20 h-20 rounded-full bg-white/10 border-2 border-[#B4FF00]/50 flex items-center justify-center">
-            <span className="text-2xl">😱</span>
+    <div className="auth-canvas-asset-node max-w-sm space-y-3 p-4">
+      <div className="auth-canvas-asset-shine" aria-hidden />
+      <div className="relative space-y-3">
+        <div
+          className="relative aspect-video overflow-hidden rounded-xl border border-zinc-800/50"
+          style={{
+            background: "linear-gradient(135deg, #0a0a0f 0%, #12121a 100%)",
+          }}
+        >
+          <div className="absolute inset-0 flex items-center justify-between px-6">
+            <div className="space-y-2">
+              <div className="h-6 w-32 rounded bg-[#ccff00] opacity-90 shadow-[0_0_16px_rgba(204,255,0,0.35)]" />
+              <div className="h-4 w-24 rounded bg-white/80" />
+              <div className="h-3 w-20 rounded bg-white/40" />
+            </div>
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#ccff00]/45 bg-white/5">
+              <span className="text-2xl">😱</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex gap-2 items-center">
-        <div className="h-4 w-6 rounded bg-[#B4FF00]" />
-        <div className="h-4 w-6 rounded bg-blue-500" />
-        <div className="h-4 w-6 rounded bg-white" />
-        <span className="text-white/70 text-xs ml-1">Farbpalette</span>
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-6 rounded bg-[#ccff00]" />
+          <div className="h-4 w-6 rounded bg-blue-500" />
+          <div className="h-4 w-6 rounded bg-white" />
+          <span className="ml-1 text-xs text-white/50">Farbpalette</span>
+        </div>
       </div>
     </div>
   );
@@ -153,23 +170,26 @@ function KiIchVisual() {
     t("ki_ich_benefit_3"),
   ];
   return (
-    <div className="bg-white/5 rounded-xl border border-white/10 p-5 max-w-sm">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-16 h-16 rounded-full bg-white/10 border-2 border-dashed border-[#B4FF00]/40 flex items-center justify-center">
-          <span className="text-xl">📷</span>
-        </div>
-        <div>
-          <div className="h-4 w-28 bg-white/80 rounded mb-1" />
-          <div className="h-3 w-20 bg-white/40 rounded" />
-        </div>
-      </div>
-      <div className="space-y-3">
-        {benefits.map((text) => (
-          <div key={text} className="flex items-center gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#B4FF00] flex-shrink-0" />
-            <span className="text-white/80 text-sm">{text}</span>
+    <div className="auth-canvas-asset-node max-w-sm p-5">
+      <div className="auth-canvas-asset-shine" aria-hidden />
+      <div className="relative">
+        <div className="mb-4 flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[#ccff00]/35 bg-black/40">
+            <span className="text-xl">📷</span>
           </div>
-        ))}
+          <div>
+            <div className="mb-1 h-4 w-28 rounded bg-white/80" />
+            <div className="h-3 w-20 rounded bg-white/35" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          {benefits.map((text) => (
+            <div key={text} className="flex items-center gap-3">
+              <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#ccff00]" />
+              <span className="text-sm text-white/75">{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -218,47 +238,72 @@ export function FeatureSlideshow() {
   const Visual = slide.Visual;
 
   return (
-    <div className="flex flex-col h-full px-10 py-8">
-      <div className="text-[#B4FF00] font-bold text-xl mb-auto pt-4 font-[family-name:var(--font-bebas)] tracking-wide">
-        InfluexAI
-      </div>
-
+    <div className="auth-canvas-teaser relative flex h-full flex-col overflow-hidden">
       <div
-        className={`flex-1 flex flex-col justify-center transition-all duration-300 ${
-          fading ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
-        }`}
-      >
-        <p className="text-white/70 text-sm mb-2 uppercase tracking-widest">
-          {slide.badge}
-        </p>
-        <h2 className="text-white text-3xl font-semibold mb-3 leading-tight">
-          {slide.heading}
-        </h2>
-        <p className="text-white/80 text-base mb-8 leading-relaxed max-w-md">
-          {slide.description}
-        </p>
-        <Visual />
-      </div>
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/55 via-black/35 to-black/60"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse at 30% 40%, rgba(204,255,0,0.06) 0%, transparent 55%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
 
-      <div className="flex items-center gap-2 pb-4">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`Slide ${i + 1}`}
-            onClick={() => goTo(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === current
-                ? "bg-[#B4FF00] w-6"
-                : "bg-white/20 w-2 hover:bg-white/40"
-            }`}
-          />
-        ))}
-      </div>
+      <div className="relative z-10 flex h-full flex-col px-8 py-8 xl:px-10">
+        <div className="mb-auto pt-4 font-[family-name:var(--font-bebas)] text-xl font-bold tracking-wide text-[#ccff00]">
+          InfluexAI
+        </div>
 
-      <p className="text-white/25 text-xs text-center pb-2">
-        {t("social_proof")}
-      </p>
+        <div
+          className={`flex flex-1 flex-col justify-center transition-all duration-300 ${
+            fading ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
+          }`}
+        >
+          <p className="mb-2 text-sm uppercase tracking-widest text-white/50">
+            {slide.badge}
+          </p>
+          <h2 className="mb-3 max-w-md text-3xl font-semibold leading-tight text-white">
+            {slide.heading}
+          </h2>
+          <p className="mb-8 max-w-md text-base leading-relaxed text-white/70">
+            {slide.description}
+          </p>
+          <AuthFloatingPreview>
+            <Visual />
+          </AuthFloatingPreview>
+        </div>
+
+        <div className="flex items-center gap-2 pb-4">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Slide ${i + 1}`}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-6 bg-[#ccff00] shadow-[0_0_10px_rgba(204,255,0,0.45)]"
+                  : "w-2 bg-white/20 hover:bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
+
+        <p className="pb-2 text-center text-xs text-white/25">
+          {t("social_proof")}
+        </p>
+      </div>
     </div>
   );
 }

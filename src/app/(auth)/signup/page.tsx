@@ -9,11 +9,12 @@ import { registerReferralOnSignup } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { trackAbEvent } from "@/lib/ab-tracking";
 import { applyBetaOnSignup } from "@/app/actions/beta";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
 import {
   authInputClass,
   authLabelClass,
+  authButtonClass,
+  authLinkAccentClass,
 } from "@/components/auth/auth-input-classes";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import {
@@ -235,23 +236,23 @@ function SignupPageInner() {
 
   if (success) {
     return (
-      <div className="w-full max-w-sm mx-auto text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 mb-5">
+      <div className="w-full text-center">
+        <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-[#ccff00]/25 bg-[#ccff00]/10">
           <span className="text-2xl" aria-hidden>
             ✉
           </span>
         </div>
-        <h2 className="text-white text-2xl font-semibold mb-3">
+        <h2 className="mb-3 text-2xl font-semibold text-white">
           {t("verify_email_title")}
         </h2>
-        <p className="text-white/80 text-sm leading-relaxed mb-6">
+        <p className="mb-6 text-sm leading-relaxed text-white/75">
           {t("verify_email_body")}{" "}
           <strong className="text-white">{email}</strong>
           {betaCode && (
             <>
               <br />
               <br />
-              <span className="text-[#B4FF00]">50% Erstkauf-Rabatt</span> und
+              <span className="text-[#ccff00]">50% Erstkauf-Rabatt</span> und
               Lifetime-Rabatt werden nach der Bestätigung aktiviert.
             </>
           )}
@@ -259,15 +260,12 @@ function SignupPageInner() {
             <>
               <br />
               <br />
-              <span className="text-[#B4FF00]">5 Bonus-Credits</span> nach
+              <span className="text-[#ccff00]">5 Bonus-Credits</span> nach
               Bestätigung.
             </>
           )}
         </p>
-        <Link
-          href="/auth/sign-in"
-          className="inline-block w-full bg-[#B4FF00] text-black font-semibold py-3 rounded-xl text-sm"
-        >
+        <Link href="/auth/sign-in" className={`inline-block ${authButtonClass}`}>
           {t("login_link")}
         </Link>
       </div>
@@ -275,37 +273,33 @@ function SignupPageInner() {
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto relative">
-      <div className="absolute top-0 right-0 lg:-top-2">
-        <LanguageSwitcher compact />
-      </div>
-
-      <div className="lg:hidden text-[#B4FF00] font-bold text-xl mb-8 font-[family-name:var(--font-bebas)] tracking-wide">
+    <div className="w-full">
+      <div className="mb-8 font-[family-name:var(--font-bebas)] text-xl font-bold tracking-wide text-[#ccff00] lg:hidden">
         InfluexAI
       </div>
 
       <AuthGreetingLine />
 
-      <h1 className="text-white text-2xl font-semibold mb-2">
+      <h1 className="mb-2 text-2xl font-semibold text-white">
         {t("signup_title")}
       </h1>
-      <p className="text-white/70 text-sm mb-6">{t("signup_subtitle")}</p>
+      <p className="mb-6 text-sm text-white/60">{t("signup_subtitle")}</p>
 
       {betaCode && (
-        <div className="mb-4 p-3 rounded-xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 text-sm">
-          <p className="text-[#B4FF00] font-semibold">
+        <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
+          <p className="font-semibold text-[#ccff00]">
             🔥 Beta — 50% Erstkauf + 20% Lifetime
           </p>
-          <p className="text-white/70 text-xs mt-1">Code: {betaCode}</p>
+          <p className="mt-1 text-xs text-white/60">Code: {betaCode}</p>
         </div>
       )}
 
       {referralCode && (
-        <div className="mb-4 p-3 rounded-xl bg-[#B4FF00]/10 border border-[#B4FF00]/25 text-sm">
-          <p className="text-[#B4FF00] font-semibold">
+        <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
+          <p className="font-semibold text-[#ccff00]">
             🎁 5 Bonus-Credits — Einladung
           </p>
-          <p className="text-white/70 text-xs mt-1">Code: {referralCode}</p>
+          <p className="mt-1 text-xs text-white/60">Code: {referralCode}</p>
         </div>
       )}
 
@@ -323,13 +317,13 @@ function SignupPageInner() {
           <div className="flex flex-col sm:flex-row gap-2">
             <Link
               href="/auth/sign-in"
-              className="flex-1 text-center py-2.5 rounded-lg bg-[#B4FF00] text-black text-sm font-semibold hover:bg-[#c8ff33] transition-colors"
+              className="flex-1 rounded-lg bg-[#ccff00] py-2.5 text-center text-sm font-bold text-black transition-transform hover:scale-[1.02]"
             >
               {t("signup.emailAlreadyExists.login")}
             </Link>
             <Link
               href="/forgot-password"
-              className="flex-1 text-center py-2.5 rounded-lg border border-white/15 bg-white/5 text-[#F0EFE8] text-sm font-semibold hover:border-[#B4FF00]/40 transition-colors"
+              className="flex-1 rounded-lg border border-zinc-800/60 bg-white/[0.03] py-2.5 text-center text-sm font-semibold text-[#F0EFE8] transition-colors hover:border-[#ccff00]/40"
             >
               {t("signup.emailAlreadyExists.resetPassword")}
             </Link>
@@ -403,34 +397,30 @@ function SignupPageInner() {
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-[#B4FF00] text-black font-semibold py-3 rounded-xl hover:bg-[#c8ff33] active:scale-[0.98] transition-all text-sm mt-2 disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className={authButtonClass}>
           {loading ? "…" : t("signup_button")}
         </button>
       </form>
 
-      <p className="text-center text-white/65 text-xs mt-4 leading-relaxed">
+      <p className="mt-4 text-center text-xs leading-relaxed text-white/45">
         {t("terms_text")}{" "}
         <Link
           href="/terms"
-          className="text-white/70 underline hover:text-[#B4FF00]"
+          className="text-white/55 underline transition-colors hover:text-[#ccff00]"
         >
           {t("terms_link")}
         </Link>
       </p>
 
-      <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-white/10" />
-        <span className="text-white/20 text-xs">{t("divider")}</span>
-        <div className="flex-1 h-px bg-white/10" />
+      <div className="my-6 flex items-center gap-3">
+        <div className="auth-glass-divider" />
+        <span className="text-xs text-white/25">{t("divider")}</span>
+        <div className="auth-glass-divider" />
       </div>
 
-      <p className="text-center text-white/70 text-sm">
+      <p className="text-center text-sm text-white/50">
         {t("has_account")}{" "}
-        <Link href="/auth/sign-in" className="text-[#B4FF00] hover:underline">
+        <Link href="/auth/sign-in" className={authLinkAccentClass}>
           {t("login_link")}
         </Link>
       </p>
@@ -442,7 +432,7 @@ export default function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full max-w-sm mx-auto text-white/70 text-sm">…</div>
+        <div className="w-full text-white/60 text-sm">…</div>
       }
     >
       <SignupPageInner />
