@@ -13,6 +13,7 @@ import { CanvasMobileNav } from "./CanvasMobileNav";
 import { CanvasHeader } from "./CanvasHeader";
 import { InfiniteCanvas } from "./InfiniteCanvas";
 import { OnboardingAgentShell } from "./onboarding/OnboardingAgentShell";
+import { PipelineProvider } from "./PipelineProvider";
 
 const LEGACY_CHILD_ROUTES = [
   "/dashboard/settings",
@@ -64,6 +65,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
       <PlanGateProvider>
         <ReactFlowProvider>
           <OnboardingAgentShell>
+            <PipelineProvider>
             <div className="flex h-[100dvh] w-full flex-col overflow-x-clip overflow-y-hidden bg-[#050505] text-white">
               <div className="studio-glass-dot-grid studio-glass-glow-host relative flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="glass-ambient-layer" aria-hidden>
@@ -82,6 +84,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
                 </div>
               </div>
             </div>
+            </PipelineProvider>
           </OnboardingAgentShell>
         </ReactFlowProvider>
       </PlanGateProvider>

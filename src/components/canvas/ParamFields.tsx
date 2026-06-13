@@ -1,8 +1,12 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
 import { glassInputClass } from "@/lib/glass-classes";
+import { usePipelineContextOptional } from "@/lib/dashboard-v3/PipelineContext";
+import { InheritedInputBadge } from "@/components/dashboard-v3/InheritedInputBadge";
+import { PIPELINE_COMPATIBILITY } from "@/lib/dashboard-v3/usePipeline";
 
 interface ParamFieldsProps {
   params: ToolParamSchema[];
@@ -10,6 +14,19 @@ interface ParamFieldsProps {
   accent: string;
   onChange: (key: string, value: unknown) => void;
   onAssetDrop?: (paramKey: string, asset: AssetNodeData) => void;
+  disconnectedFields?: Set<string>;
+  onDisconnectField?: (key: string) => void;
+  onReconnectField?: (key: string) => void;
+  /** When true, renders all params without progressive-disclosure wrapper */
+  flat?: boolean;
+}
+
+function isPrimaryField(field: ToolParamSchema): boolean {
+  if (field.type === "textarea") return true;
+  if (field.key === "prompt") return true;
+  if (field.type === "node-ref" && field.required) return true;
+  if (field.type === "string" && field.required) return true;
+  return false;
 }
 
 export function ParamFields({
@@ -18,28 +35,136 @@ export function ParamFields({
   accent,
   onChange,
   onAssetDrop,
+  disconnectedFields: disconnectedProp,
+  onDisconnectField,
+  onReconnectField,
+  flat = false,
 }: ParamFieldsProps) {
+  const pipeline = usePipelineContextOptional();
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [localDisconnected, setLocalDisconnected] = useState<Set<string>>(
+    () => new Set()
+  );
+  const disconnectedFields = disconnectedProp ?? localDisconnected;
+
+  const { primaryFields, advancedFields } = useMemo(() => {
+    const primary: ToolParamSchema[] = [];
+    const advanced: ToolParamSchema[] = [];
+    for (const field of params) {
+      if (isPrimaryField(field)) primary.push(field);
+      else advanced.push(field);
+    }
+    return { primaryFields: primary, advancedFields: advanced };
+  }, [params]);
+
+  const renderField = (field: ToolParamSchema) => {
+    const inherited =
+      pipeline && PIPELINE_COMPATIBILITY[field.key] && !disconnectedFields.has(field.key)
+        ? pipeline.getInheritedValue(
+            field.key,
+            pipeline.panelIndex,
+            pipeline.allPanelIds
+          )
+        : null;
+
+    const manualValue = values[field.key];
+    const hasManualValue =
+      typeof manualValue === "string"
+        ? manualValue.trim().length > 0
+        : manualValue != null && manualValue !== "" && manualValue !== false;
+
+    const useInherited = Boolean(inherited && !hasManualValue);
+
+    return (
+      <div key={field.key}>
+        {useInherited && inherited ? (
+          <>
+            <InheritedInputBadge
+              label={inherited.label}
+              value={inherited.value}
+              themeRgb={pipeline?.themeRgb ?? "204,255,0"}
+              onClear={() => {
+                if (onDisconnectField) {
+                  onDisconnectField(field.key);
+                } else {
+                  setLocalDisconnected((prev) => new Set(prev).add(field.key));
+                }
+              }}
+            />
+            {disconnectedFields.has(field.key) ? null : (
+              <input type="hidden" name={field.key} value={inherited.value} readOnly />
+            )}
+          </>
+        ) : (
+          <>
+            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+              {field.label}
+              {field.required && <span className="text-red-400/80"> *</span>}
+            </label>
+            <FieldInput
+              field={field}
+              value={values[field.key]}
+              accent={accent}
+              onChange={(v) => onChange(field.key, v)}
+              onAssetDrop={
+                field.acceptsOutputTypes?.length && onAssetDrop
+                  ? (asset) => onAssetDrop(field.key, asset)
+                  : undefined
+              }
+            />
+            {inherited && disconnectedFields.has(field.key) ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (onReconnectField) {
+                    onReconnectField(field.key);
+                  } else {
+                    setLocalDisconnected((prev) => {
+                      const next = new Set(prev);
+                      next.delete(field.key);
+                      return next;
+                    });
+                  }
+                }}
+                className="mt-1.5 text-[10px] text-white/30 underline underline-offset-2 transition-colors hover:text-white/60"
+              >
+                Pipeline neu verbinden ↩
+              </button>
+            ) : null}
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-3">
-      {params.map((field) => (
-        <div key={field.key}>
-          <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-            {field.label}
-            {field.required && <span className="text-red-400/80"> *</span>}
-          </label>
-          <FieldInput
-            field={field}
-            value={values[field.key]}
-            accent={accent}
-            onChange={(v) => onChange(field.key, v)}
-            onAssetDrop={
-              field.acceptsOutputTypes?.length && onAssetDrop
-                ? (asset) => onAssetDrop(field.key, asset)
-                : undefined
-            }
-          />
-        </div>
-      ))}
+      {flat ? (
+        params.map(renderField)
+      ) : (
+        <>
+          {primaryFields.map(renderField)}
+
+          {advancedFields.length > 0 ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setShowAdvanced((v) => !v)}
+                className="flex items-center gap-1.5 self-start text-[11px] text-white/30 transition-colors hover:text-white/60"
+              >
+                <span aria-hidden="true">⚙️</span>
+                {showAdvanced ? "Weniger Optionen" : "Erweiterte Einstellungen"}
+              </button>
+
+              {showAdvanced ? (
+                <div className="flex flex-col gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  {advancedFields.map(renderField)}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
@@ -74,7 +199,7 @@ function FieldInput({
         {value ? (
           <span className="text-zinc-300">✓ Asset verbunden</span>
         ) : (
-          <span>Asset hierher ziehen</span>
+          <span>Asset hierher ziehen oder Pipeline-Verbindung nutzen</span>
         )}
       </div>
     );

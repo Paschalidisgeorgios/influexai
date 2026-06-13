@@ -35,6 +35,24 @@ import {
 } from "@/utils/viralPredictor";
 import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
+import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
+
+function isPrimaryParam(field: ToolParamSchema, isAgentAutopilot: boolean): boolean {
+  if (isAgentAutopilot && (field.key === "ai_model" || field.key === "reference_image")) {
+    return false;
+  }
+  if (field.type === "textarea") return true;
+  if (field.key === "prompt") return true;
+  if (field.type === "node-ref" && field.required) return true;
+  if (field.type === "string" && field.required) return true;
+  return false;
+}
+import { usePipelineContextOptional } from "@/lib/dashboard-v3/PipelineContext";
+import { usePipelineStoreOptional } from "./PipelineProvider";
+import {
+  buildEffectiveParams,
+  resolvePipelineOutput,
+} from "@/lib/canvas/pipeline-output";
 
 function isPremiumScriptData(
   data: unknown
@@ -66,6 +84,10 @@ function ControlNodeComponent({
   const canvasEdges = useCanvasStore((s) => s.edges);
   const recordGeneration = useCanvasAnalyticsStore((s) => s.recordGeneration);
   const [topUpOpen, setTopUpOpen] = useState(false);
+  const [pipelineDisconnected, setPipelineDisconnected] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const { profile } = useCreatorProfile();
@@ -73,6 +95,8 @@ function ControlNodeComponent({
   const recordCanvasAction = useOnboardingStore((s) => s.recordCanvasAction);
   const touchActivity = useOnboardingStore((s) => s.touchActivity);
   const isHighlighted = highlightedToolId === nodeData.toolId;
+  const pipelinePanel = usePipelineContextOptional();
+  const pipelineStore = usePipelineStoreOptional();
 
   const promptText = useMemo(
     () => buildPromptFromParams(nodeData.params, tool?.params ?? []),
@@ -135,7 +159,19 @@ function ControlNodeComponent({
     const abortController = new AbortController();
     abortRef.current = abortController;
 
-    const coins = calculateToolCoins(tool, nodeData.params);
+    const generationParams =
+      pipelinePanel && tool.params
+        ? buildEffectiveParams(
+            nodeData.params,
+            tool.params,
+            pipelinePanel.getInheritedValue,
+            pipelinePanel.panelIndex,
+            pipelinePanel.allPanelIds,
+            pipelineDisconnected
+          )
+        : nodeData.params;
+
+    const coins = calculateToolCoins(tool, generationParams);
     const creditExempt = isClientCreditExempt();
     let creditsReserved = false;
 
@@ -174,7 +210,7 @@ function ControlNodeComponent({
     }, 180);
 
     try {
-      const result = await runCanvasGeneration(tool, nodeData.params, {
+      const result = await runCanvasGeneration(tool, generationParams, {
         signal: abortController.signal,
       });
 
@@ -187,6 +223,11 @@ function ControlNodeComponent({
         previewUrl: result.previewUrl,
         data: result.data,
       });
+
+      const pipelineOutput = resolvePipelineOutput(id, tool.id, tool.label, result);
+      if (pipelineOutput && pipelineStore) {
+        pipelineStore.registerOutput(pipelineOutput);
+      }
 
       if (isPremiumScriptData(result.data)) {
         const assetNode = useCanvasStore.getState().nodes.find((n) => n.id === assetId);
@@ -245,6 +286,9 @@ function ControlNodeComponent({
     id,
     nodeData.params,
     nodeData.toolId,
+    pipelineDisconnected,
+    pipelinePanel,
+    pipelineStore,
     recordCanvasAction,
     recordGeneration,
     refreshCredits,
@@ -353,7 +397,10 @@ function ControlNodeComponent({
         <div className="relative mb-3 border-b border-white/[0.06] pb-3">
           <button
             type="button"
-            onClick={() => closeControlPanel(id)}
+            onClick={() => {
+              closeControlPanel(id);
+              pipelineStore?.removeOutputsForPanels([id]);
+            }}
             className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/40 transition-all hover:bg-white/[0.12] hover:text-white"
             aria-label="Panel schließen"
           >
@@ -376,10 +423,21 @@ function ControlNodeComponent({
         </div>
 
         <ParamFields
-          params={visibleParams}
+          params={visibleParams.filter((field) => isPrimaryParam(field, isAgentAutopilot))}
           values={nodeData.params}
           accent={tool.accent}
           onChange={handleChange}
+          disconnectedFields={pipelineDisconnected}
+          onDisconnectField={(key) =>
+            setPipelineDisconnected((prev) => new Set(prev).add(key))
+          }
+          onReconnectField={(key) =>
+            setPipelineDisconnected((prev) => {
+              const next = new Set(prev);
+              next.delete(key);
+              return next;
+            })
+          }
           onAssetDrop={(key, asset) => {
             updateControlParams(id, {
               [key]: asset.text ?? asset.url ?? "connected",
@@ -387,26 +445,68 @@ function ControlNodeComponent({
           }}
         />
 
+        {(isAgentAutopilot || visibleParams.some((f) => !isPrimaryParam(f, isAgentAutopilot))) ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              className="mt-3 flex items-center gap-1.5 self-start text-[11px] text-white/30 transition-colors hover:text-white/60"
+            >
+              <span aria-hidden="true">⚙️</span>
+              {showAdvanced ? "Weniger Optionen" : "Erweiterte Einstellungen"}
+            </button>
+
+            {showAdvanced ? (
+              <div className="mt-3 flex flex-col gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                {isAgentAutopilot ? (
+                  <AgentAutopilotNodeExtras
+                    aiModel={aiModel}
+                    referenceImage={referenceImage}
+                    referenceImageName={referenceImageName}
+                    accent={tool.accent}
+                    onModelChange={(model) => handleChange("ai_model", model)}
+                    onReferenceImageChange={(dataUrl, fileName) => {
+                      updateControlParams(id, {
+                        reference_image: dataUrl,
+                        reference_image_name: fileName,
+                      });
+                    }}
+                  />
+                ) : null}
+                <ParamFields
+                  params={visibleParams.filter(
+                    (field) => !isPrimaryParam(field, isAgentAutopilot)
+                  )}
+                  values={nodeData.params}
+                  accent={tool.accent}
+                  flat
+                  onChange={handleChange}
+                  disconnectedFields={pipelineDisconnected}
+                  onDisconnectField={(key) =>
+                    setPipelineDisconnected((prev) => new Set(prev).add(key))
+                  }
+                  onReconnectField={(key) =>
+                    setPipelineDisconnected((prev) => {
+                      const next = new Set(prev);
+                      next.delete(key);
+                      return next;
+                    })
+                  }
+                  onAssetDrop={(key, asset) => {
+                    updateControlParams(id, {
+                      [key]: asset.text ?? asset.url ?? "connected",
+                    });
+                  }}
+                />
+              </div>
+            ) : null}
+          </>
+        ) : null}
+
         {promptParamKey && hasResult ? (
           <ViralPredictorPanel
             prediction={viralPrediction}
             onKeywordClick={handleTrendKeyword}
-          />
-        ) : null}
-
-        {isAgentAutopilot ? (
-          <AgentAutopilotNodeExtras
-            aiModel={aiModel}
-            referenceImage={referenceImage}
-            referenceImageName={referenceImageName}
-            accent={tool.accent}
-            onModelChange={(model) => handleChange("ai_model", model)}
-            onReferenceImageChange={(dataUrl, fileName) => {
-              updateControlParams(id, {
-                reference_image: dataUrl,
-                reference_image_name: fileName,
-              });
-            }}
           />
         ) : null}
 
