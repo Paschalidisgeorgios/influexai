@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Home } from "lucide-react";
 import {
   TOOL_CATEGORIES,
   getToolsByCategory,
@@ -23,14 +24,29 @@ export function CanvasSidebar() {
   return (
     <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/60 bg-zinc-950/90 backdrop-blur-xl">
       <div className="border-b border-zinc-800/60 px-4 py-4">
-        <Link href="/dashboard" className="no-underline">
-          <span className="text-xs font-bold tracking-[0.2em] text-zinc-500">INFLUEX</span>
-          <h1 className="text-lg font-semibold text-white">Creator Studio 2026</h1>
+        <Link
+          href="/"
+          className="canvas-logo-link group block no-underline"
+          aria-label="Zurück zur Startseite"
+        >
+          <span className="canvas-logo-brand text-xs font-bold tracking-[0.2em] text-zinc-500 transition-colors duration-300 group-hover:text-[#ccff00]">
+            INFLUEX
+          </span>
+          <h1 className="canvas-logo-title text-lg font-semibold text-white transition-[color,text-shadow] duration-300 group-hover:text-[#ccff00] group-hover:[text-shadow:0_0_20px_rgba(204,255,0,0.45)]">
+            Creator Studio 2026
+          </h1>
         </Link>
         <p className="mt-1 text-[10px] text-zinc-500">Infinite Canvas Workspace</p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
+        <Link
+          href="/"
+          className="mb-3 flex w-full items-center gap-2 rounded-lg border border-zinc-800 bg-transparent px-3 py-2 text-xs text-gray-400 no-underline transition-all hover:border-zinc-600 hover:text-white"
+        >
+          <Home className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={1.75} />
+          Zur Hauptseite
+        </Link>
         {TOOL_CATEGORIES.map((category) => {
           const tools = getToolsByCategory(category);
           const isOpen = openCategory === category;
