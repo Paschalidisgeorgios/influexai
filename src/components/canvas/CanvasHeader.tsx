@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { memo } from "react";
 import { useCanvasGreeting } from "@/hooks/useCanvasGreeting";
@@ -15,14 +14,12 @@ function CanvasHeaderComponent() {
         className="flex shrink-0 items-center no-underline"
         aria-label="Zur Startseite"
       >
-        <Image
-          src="/images/examples/logo.png"
-          alt="InfluexAI Logo"
-          width={140}
-          height={36}
-          className="h-9 w-auto"
-          priority
-        />
+        <span className="font-sans text-xl uppercase font-extrabold tracking-widest text-white antialiased">
+          INFLUEX{" "}
+          <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.5)]">
+            AI
+          </span>
+        </span>
       </Link>
 
       <p
