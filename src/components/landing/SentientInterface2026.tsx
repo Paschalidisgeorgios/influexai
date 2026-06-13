@@ -55,10 +55,11 @@ function CopySegments({ segments }: { segments: LandingCopySegment[] }) {
 
 function HeroPreview() {
   return (
-    <div className="landing-glass-node relative mx-auto mt-14 w-full max-w-4xl overflow-hidden">
+    <div className="landing-glass-node relative mx-auto mt-14 w-full max-w-4xl overflow-hidden transition-all duration-300">
       <span className="landing-glass-node-shine" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--left" aria-hidden />
       <span className="landing-glass-node-handle landing-glass-node-handle--right" aria-hidden />
+      <div className="brightness-110 contrast-105 saturate-110">
       <div
         className="flex items-center justify-between border-b px-5 py-3"
         style={{ borderColor: "var(--border-soft)" }}
@@ -186,6 +187,7 @@ function HeroPreview() {
           </div>
         </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -263,11 +265,13 @@ export default function SentientInterface2026() {
     <section id="studio-showcase" className="relative overflow-x-hidden bg-transparent text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="landing-glass-dot-grid absolute inset-0 opacity-50" />
+        <div className="landing-hero-content-glow landing-hero-content-glow--green left-1/2 top-[42%] -translate-x-1/2 blur-[120px]" />
+        <div className="landing-hero-content-glow landing-hero-content-glow--cyan-violet left-1/2 top-[48%] -translate-x-1/3 blur-[120px]" />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 38%, rgba(3,3,4,0.8) 100%)",
+              "radial-gradient(ellipse at center, transparent 42%, rgba(3,3,4,0.65) 100%)",
           }}
         />
       </div>

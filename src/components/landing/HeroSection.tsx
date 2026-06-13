@@ -101,6 +101,14 @@ export function HeroSection() {
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#030304]">
       <LandingHeroBackground />
 
+      <div
+        className="pointer-events-none absolute inset-0 z-[15] overflow-hidden"
+        aria-hidden
+      >
+        <div className="landing-hero-content-glow landing-hero-content-glow--green blur-[120px]" />
+        <div className="landing-hero-content-glow landing-hero-content-glow--cyan-violet blur-[120px]" />
+      </div>
+
       <div className="relative z-20 w-full px-5 pt-24 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
         <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(560px,38vw)] md:text-left">
           <p className="landing-neon-kicker mb-6 font-mono text-[11px] tracking-[0.14em]">
@@ -122,7 +130,7 @@ export function HeroSection() {
             onSubmit={(e) => void handleSubmit(e)}
             className="relative z-20 w-full"
           >
-            <div className="mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-950/40 p-3 shadow-xl backdrop-blur-md transition-colors focus-within:border-[#ccff00]/35">
+            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-700/60 bg-zinc-950/40 p-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 hover:border-zinc-500 focus-within:border-[#ccff00]/35">
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -182,7 +190,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="mt-4 rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-4 backdrop-blur-md"
+                  className="landing-glass-surface mt-4 rounded-xl border border-zinc-700/60 bg-zinc-950/50 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 hover:border-zinc-500"
                 >
                   <p className="text-left font-sans text-sm leading-relaxed tracking-wide text-zinc-300">
                     {result.answer}

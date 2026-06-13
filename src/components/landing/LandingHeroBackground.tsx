@@ -37,8 +37,8 @@ export function LandingHeroBackground() {
         preload="auto"
       />
 
-      <div className="absolute inset-0 bg-black/55" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent" />
+      <div className="absolute inset-0 bg-black/45" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
 
       <div className="landing-hero-dot-grid absolute inset-0 opacity-30" />
       <div className="landing-hero-glow landing-hero-glow--violet" />
