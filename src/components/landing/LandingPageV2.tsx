@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
-import { LandingBentoShowcase } from "@/components/landing/LandingBentoShowcase";
 import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
 import { LandingCtaV2 } from "@/components/landing/LandingCtaV2";
+import SentientInterface2026 from "@/components/landing/SentientInterface2026";
 import { LandingNavV2 } from "@/components/landing/LandingNavV2";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
 import { LandingFooter, PricingSection } from "@/components/landing/Sections";
@@ -84,12 +84,6 @@ export function LandingPageV2() {
     }, [pushBehavior]),
   });
 
-  const handleBentoLongHover = useCallback(() => {
-    pushBehavior(
-      "Ich sehe dich... Keine Sorge, du darfst das Design anfassen (klicken). 👀"
-    );
-  }, [pushBehavior]);
-
   return (
     <div className="min-h-screen overflow-x-clip bg-[#08080a] text-white">
       <style jsx global>{`
@@ -106,9 +100,10 @@ export function LandingPageV2() {
           <HeroSection />
         </div>
 
+        <SentientInterface2026 />
+
         <LandingUseCasesSection />
         <LandingCampaignPackSection />
-        <LandingBentoShowcase onBentoLongHover={handleBentoLongHover} />
         <LandingAgentAutopilotSection />
 
         <div id="pricing" className="landing-v2-pricing border-t border-white/[0.06]">
