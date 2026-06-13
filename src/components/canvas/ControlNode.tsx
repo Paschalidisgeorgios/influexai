@@ -7,6 +7,7 @@ import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
 import { calculateToolCoins } from "@/lib/canvas/coin-calculator";
 import {
   useCanvasStore,
+  type AssetNodeData,
   type ControlNodeData,
 } from "@/lib/canvas/canvas-store";
 import { useCredits } from "@/components/credits/BuyCreditsProvider";
@@ -46,7 +47,12 @@ function isPremiumScriptData(
   );
 }
 
-function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNodeData, "control">>) {
+function ControlNodeComponent({
+  id,
+  data,
+  selected,
+  embedded = false,
+}: NodeProps<Node<ControlNodeData, "control">> & { embedded?: boolean }) {
   const nodeData = data;
   const tool = getToolDefinition(nodeData.toolId);
   const { credits, addCreditsOptimistic, refreshCredits, showCreditsToast } = useCredits();
@@ -55,6 +61,9 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
   const spawnAssetNode = useCanvasStore((s) => s.spawnAssetNode);
   const spawnPremiumVideoTiles = useCanvasStore((s) => s.spawnPremiumVideoTiles);
   const updateAssetNode = useCanvasStore((s) => s.updateAssetNode);
+  const closeControlPanel = useCanvasStore((s) => s.closeControlPanel);
+  const canvasNodes = useCanvasStore((s) => s.nodes);
+  const canvasEdges = useCanvasStore((s) => s.edges);
   const recordGeneration = useCanvasAnalyticsStore((s) => s.recordGeneration);
   const [topUpOpen, setTopUpOpen] = useState(false);
   const resumeGenerationRef = useRef(false);
@@ -311,35 +320,59 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
       ? nodeData.params.reference_image_name
       : undefined;
 
+  const hasResult = useMemo(() => {
+    const linkedAssetIds = canvasEdges
+      .filter((edge) => edge.source === id)
+      .map((edge) => edge.target);
+    return canvasNodes.some(
+      (node) =>
+        linkedAssetIds.includes(node.id) &&
+        node.type === "asset" &&
+        (node.data as AssetNodeData).status === "success"
+    );
+  }, [canvasEdges, canvasNodes, id]);
+
   return (
-    <div className={`relative w-[90vw] max-w-[360px]${isHighlighted ? " canvas-onboarding-pulse" : ""}`}>
+    <div
+      className={`relative${embedded ? " h-full w-full" : " w-[90vw] max-w-[360px]"}${isHighlighted ? " canvas-onboarding-pulse" : ""}`}
+    >
       {selected ? <CanvasNodeAmbientGlow accentRgb={tool.accentRgb} /> : null}
       <div
-        className="canvas-glass-node rounded-2xl border-zinc-700/80 p-4 shadow-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
+        className={`canvas-glass-node rounded-2xl border-zinc-700/80 p-4 shadow-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]${embedded ? " h-full" : ""}`}
         style={{
           boxShadow: `0 0 40px rgba(${tool.accentRgb}, 0.12), 0 8px 32px rgba(0,0,0,0.5)`,
         }}
       >
-        <Handle type="target" position={Position.Left} className="!h-2 !w-2 !border-zinc-600 !bg-zinc-900" />
-        <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-zinc-600 !bg-zinc-900" />
+        {!embedded ? (
+          <>
+            <Handle type="target" position={Position.Left} className="!h-2 !w-2 !border-zinc-600 !bg-zinc-900" />
+            <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-zinc-600 !bg-zinc-900" />
+          </>
+        ) : null}
 
-        <div className="mb-3 flex items-start justify-between gap-2">
-          <div>
-            <span
-              className="mb-1 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-              style={{
-                borderColor: `rgba(${tool.accentRgb}, 0.35)`,
-                color: tool.accent,
-                background: `rgba(${tool.accentRgb}, 0.08)`,
-              }}
-            >
-              {tool.category}
-            </span>
-            <h3 className="text-sm font-semibold text-white">
-              {tool.icon} {tool.label}
-            </h3>
-            <p className="mt-0.5 text-[10px] leading-snug text-zinc-500">{tool.description}</p>
-          </div>
+        <div className="relative mb-3 border-b border-white/[0.06] pb-3">
+          <button
+            type="button"
+            onClick={() => closeControlPanel(id)}
+            className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/40 transition-all hover:bg-white/[0.12] hover:text-white"
+            aria-label="Panel schließen"
+          >
+            ✕
+          </button>
+          <span
+            className="mb-2 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+            style={{
+              borderColor: `rgba(${tool.accentRgb}, 0.35)`,
+              color: tool.accent,
+              background: `rgba(${tool.accentRgb}, 0.08)`,
+            }}
+          >
+            {tool.category}
+          </span>
+          <h3 className="pr-8 text-[16px] font-bold text-white">
+            {tool.icon} {tool.label}
+          </h3>
+          <p className="mt-1 text-[12px] leading-snug text-white/40">{tool.description}</p>
         </div>
 
         <ParamFields
@@ -354,7 +387,7 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           }}
         />
 
-        {promptParamKey ? (
+        {promptParamKey && hasResult ? (
           <ViralPredictorPanel
             prediction={viralPrediction}
             onKeywordClick={handleTrendKeyword}
@@ -381,10 +414,6 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           <p className="mt-3 text-[10px] font-medium text-[#ccff00]/80">
             Nicht genug Credits ({remaining}/{coins}) — Top-Up öffnet sich beim Generieren.
           </p>
-        ) : creditExempt ? (
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-wider text-red-400/80">
-            Admin-Bypass aktiv — unbegrenzte Generierung
-          </p>
         ) : null}
 
         <button
@@ -398,18 +427,23 @@ function ControlNodeComponent({ id, data, selected }: NodeProps<Node<ControlNode
           }`}
           style={
             creditExempt
-              ? undefined
+              ? { boxShadow: "0 0 0 1px rgba(255,100,0,0.4), 0 0 24px rgba(204,255,0,0.35)" }
               : {
                   background: `linear-gradient(135deg, ${tool.accent}, rgba(${tool.accentRgb}, 0.7))`,
                 }
           }
         >
           <Sparkles size={14} />
-          {nodeData.isGenerating
-            ? "Generiere…"
-            : creditExempt
-              ? "⚡ Generieren (Admin-Bypass) ⚡"
-              : `Generieren · ${coins} Coins`}
+          {nodeData.isGenerating ? (
+            "Generiere…"
+          ) : creditExempt ? (
+            <>
+              Generieren ⚡
+              <span className="ml-2 rounded px-1 py-0.5 text-[8px] bg-black/20">ADMIN</span>
+            </>
+          ) : (
+            `Generieren · ${coins} Coins`
+          )}
         </button>
       </div>
 

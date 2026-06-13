@@ -105,6 +105,7 @@ interface CanvasState {
   updateControlParams: (nodeId: string, params: Record<string, unknown>) => void;
   setControlGenerating: (nodeId: string, isGenerating: boolean) => void;
   removeNode: (nodeId: string) => void;
+  closeControlPanel: (controlId: string) => void;
   spawnFollowUp: (assetNodeId: string, followUpToolId: ToolId) => string;
   applyDropConnection: (
     sourceAssetId: string,
@@ -341,6 +342,31 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({
       nodes: get().nodes.filter((n) => !removeIds.has(n.id)),
       edges: get().edges.filter(
+        (e) => !removeIds.has(e.source) && !removeIds.has(e.target)
+      ),
+    });
+  },
+
+  closeControlPanel: (controlId) => {
+    const { nodes, edges } = get();
+    const control = nodes.find((n) => n.id === controlId && n.data.kind === "control");
+    if (!control) return;
+
+    const removeIds = new Set<string>([controlId]);
+    let expanded = true;
+    while (expanded) {
+      expanded = false;
+      for (const edge of edges) {
+        if (removeIds.has(edge.source) && !removeIds.has(edge.target)) {
+          removeIds.add(edge.target);
+          expanded = true;
+        }
+      }
+    }
+
+    set({
+      nodes: nodes.filter((n) => !removeIds.has(n.id)),
+      edges: edges.filter(
         (e) => !removeIds.has(e.source) && !removeIds.has(e.target)
       ),
     });

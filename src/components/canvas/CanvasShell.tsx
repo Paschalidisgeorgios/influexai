@@ -65,7 +65,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
         <ReactFlowProvider>
           <OnboardingAgentShell>
             <div className="flex h-[100dvh] w-full flex-col overflow-x-clip overflow-y-hidden bg-[#050505] text-white">
-              <div className="studio-glass-dot-grid relative flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="studio-glass-dot-grid studio-glass-glow-host relative flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="glass-ambient-layer" aria-hidden>
                   <div className="glass-ambient-glow glass-ambient-glow--violet" />
                   <div className="glass-ambient-glow glass-ambient-glow--green" />
@@ -75,7 +75,7 @@ export function CanvasShell({ children }: CanvasShellProps) {
                 <CanvasHeader />
                 <div className="relative z-[1] flex min-h-0 flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
                   <CanvasSidebar />
-                  <div className="relative min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain md:overflow-hidden">
+                  <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
                     <InfiniteCanvas />
                   </div>
                   <CanvasMobileNav />

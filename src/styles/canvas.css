@@ -2,6 +2,28 @@
   background: #08080a;
 }
 
+.canvas-flow--panel-strip {
+  background: #08080a;
+}
+
+.canvas-panel-strip {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.canvas-panel-strip .react-flow__handle {
+  display: none;
+}
+
+.studio-glass-glow-host .studio-glass-glow {
+  position: absolute;
+}
+
+.studio-glass-glow-host .studio-glass-glow--green {
+  right: -14%;
+  top: 8%;
+}
+
 .canvas-flow--mobile-stack {
   background: #08080a;
 }
