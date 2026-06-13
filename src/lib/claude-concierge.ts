@@ -59,7 +59,7 @@ export const CONCIERGE_TOOL_ROUTES: Record<
   canvas: {
     href: "/signup",
     intent: "agent-autopilot",
-    label: "Infinite Canvas",
+    label: "App Studio",
   },
 };
 

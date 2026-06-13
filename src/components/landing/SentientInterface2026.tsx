@@ -69,7 +69,7 @@ function HeroPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
         </div>
         <div className="flex items-center gap-4">
-          {(["INFINITE_CANVAS_v2", "FPS: 60", "NODES: 12"] as const).map((stat) => (
+          {(["APP_STUDIO", "FPS: 60", "NODES: 12"] as const).map((stat) => (
             <span key={stat} className="font-mono text-[9px] tracking-wider text-white/25">
               {stat}
             </span>
@@ -302,7 +302,7 @@ export default function SentientInterface2026() {
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <IntentLink href="/signup" className="landing-glass-btn-cta">
-            Infinite Workspace öffnen <ArrowRight size={15} aria-hidden="true" />
+            App Studio öffnen <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
         </div>
 

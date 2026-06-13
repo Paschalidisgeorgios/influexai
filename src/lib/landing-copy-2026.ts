@@ -26,24 +26,24 @@ export const HERO_KINETIC_WORDS = [
 ] as const;
 
 export const LANDING_HERO_2026 = {
-  kicker: "Infinite Workspace · Creator Studio 2026",
+  kicker: "App Studio · Creator Studio 2026",
   headline: {
     staticPrefix: "DEIN STUDIO FÜR ",
   },
   subline:
-    "Vom viralen Skript bis zum filmischen B-Roll-Video — auf einem unendlichen Canvas, gesteuert von Claude, optimiert durch den Viral-Predictor und gerendert mit Seedance & Kling. Ein Studio. Null Kontextwechsel.",
+    "Vom viralen Skript bis zum filmischen B-Roll-Video — in deinem App Studio, gesteuert von Claude, optimiert durch den Viral-Predictor und gerendert mit Seedance & Kling. Ein Studio. Null Kontextwechsel.",
   microBadges: [
     "Claude 3.5 Brain",
     "Seedance & Kling Motion",
     "Predictive Analytics",
   ],
   welcomeStudio: (name: string) =>
-    `Willkommen, ${name}. Dein Infinite Workspace ist bereit.`,
+    `Willkommen, ${name}. Dein App Studio ist bereit.`,
 } as const;
 
 export const LANDING_STUDIO_SECTION_2026 = {
   statusMessages: [
-    "Infinite Canvas bereit",
+    "App Studio bereit",
     "Claude Script Engine online",
     "B-Roll Matcher aktiv",
     "Viral-Predictor synchronisiert",
@@ -52,7 +52,7 @@ export const LANDING_STUDIO_SECTION_2026 = {
   headline: "Briefing rein.",
   headlineAccent: "Pipeline raus.",
   subline:
-    "Skript, Score, B-Roll und Video — als verbundene Nodes auf deinem Canvas, nicht als lose Tabs.",
+    "Skript, Score, B-Roll und Video — als verbundene Nodes in deinem App Studio, nicht als lose Tabs.",
   featuresKicker: "Core Stack · 2026",
   featuresTitle: "Vier Säulen. Ein Flow.",
   featuresSubline:
@@ -62,14 +62,14 @@ export const LANDING_STUDIO_SECTION_2026 = {
 export const LANDING_FEATURE_CARDS_2026: LandingFeatureCardCopy[] = [
   {
     id: "infinite-canvas",
-    title: "Infinite Canvas",
-    tag: "Workspace",
+    title: "App Studio",
+    tag: "Studio",
     accent: "green",
     intentKey: "agent-autopilot",
     segments: [
-      { text: "Verbinde Skripte, Flux-Bilder und Video-Nodes auf einem " },
+      { text: "Verbinde Skripte, Flux-Bilder und Video-Nodes in deinem " },
       {
-        text: "unendlichen KI-Canvas",
+        text: "App Studio",
         highlight: true,
       },
       {

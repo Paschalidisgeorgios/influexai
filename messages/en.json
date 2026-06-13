@@ -10,7 +10,7 @@
       "kicker": "Preview",
       "placeholder": "Generated content appears here",
       "powered_by": "Powered by Your Agency",
-      "workspace": "Creator Workspace"
+      "workspace": "App Studio"
     },
     "whitelabel": {
       "kicker": "Live preview",
@@ -25,8 +25,8 @@
       "color_3": "Highlight",
       "color_picker": "Color {index}",
       "powered_by": "Powered by your brand",
-      "workspace_label": "Creator Workspace",
-      "canvas_placeholder": "Infinite Canvas · Live Preview"
+      "workspace_label": "App Studio",
+      "canvas_placeholder": "App Studio · Live Preview"
     },
     "faq": {
       "a1": "No — except on Starter, where a subtle powered-by appears.",

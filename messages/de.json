@@ -2087,7 +2087,7 @@
       "headline": "So sehen deine Clients das Studio",
       "agency_name": "Deine Agentur",
       "powered_by": "Powered by Deine Agentur",
-      "workspace": "Creator Workspace",
+      "workspace": "App Studio",
       "placeholder": "Generierter Content erscheint hier"
     },
     "whitelabel": {
@@ -2103,8 +2103,8 @@
       "color_3": "Highlight",
       "color_picker": "Farbe {index}",
       "powered_by": "Powered by deine Marke",
-      "workspace_label": "Creator Workspace",
-      "canvas_placeholder": "Infinite Canvas · Live Preview"
+      "workspace_label": "App Studio",
+      "canvas_placeholder": "App Studio · Live Preview"
     },
     "pricing": {
       "kicker": "Agentur-Preise",

@@ -175,7 +175,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
         className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-[#ccff00] no-underline transition-opacity hover:opacity-80"
         onClick={() => setIntent(DEMO_INTENT)}
       >
-        Im unendlichen Canvas weiterbearbeiten
+        Im App Studio weiterbearbeiten
         <ArrowRight size={12} aria-hidden />
       </Link>
     </article>
