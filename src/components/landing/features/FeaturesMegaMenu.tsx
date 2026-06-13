@@ -1,36 +1,102 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import {
-  DEFAULT_FEATURE_PROMO,
-  FEATURE_PROMO_BY_CATEGORY,
-  LANDING_FEATURES_MENU,
-  type FeaturePromoVariant,
-} from "@/lib/landing-features-menu";
+  FEATURES_MEGA_MENU_SECTIONS,
+  FEATURES_MEGA_PROMO,
+} from "@/lib/landing-features-mega-v2";
 import { useFeaturesMenuLabel, NAV_LABELS_DE } from "@/lib/features-menu-i18n";
-import { FeatureCategory } from "./FeatureCategory";
-import { FeaturesPromoCard } from "./FeaturesPromoCard";
 
-const PANEL_SURFACE_CLASS =
-  "hidden w-[1100px] max-w-[95vw] rounded-2xl border border-zinc-700/60 bg-zinc-950/95 p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl md:block isolate";
+const PANEL_CLASS =
+  "hidden w-full max-w-[1100px] rounded-2xl border border-zinc-800/60 bg-zinc-950/50 shadow-2xl backdrop-blur-2xl md:block isolate";
 
 type DesktopProps = {
   open: boolean;
   onClose: () => void;
-  /** Position dropdown under nav trigger instead of fixed viewport center */
+  /** @deprecated All desktop panels use fixed viewport centering under the navbar */
   anchored?: boolean;
 };
+
+function MegaMenuColumn({
+  label,
+  items,
+  onNavigate,
+}: {
+  label: string;
+  items: (typeof FEATURES_MEGA_MENU_SECTIONS)[number]["items"];
+  onNavigate?: () => void;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="border-b border-zinc-900 pb-2 font-mono text-[11px] tracking-widest text-zinc-500 uppercase">
+        {label}
+      </p>
+      <ul className="mt-4 space-y-5">
+        {items.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              onClick={onNavigate}
+              className="group block no-underline"
+            >
+              <span className="flex items-start gap-2">
+                <span className="mt-0.5 text-base leading-none" aria-hidden>
+                  {item.emoji}
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-medium text-zinc-200 transition-colors group-hover:text-[#ccff00]">
+                    {item.title}
+                  </span>
+                  <span className="mt-0.5 block pl-7 font-sans text-zinc-500">
+                    {item.subtitle}
+                  </span>
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function MegaMenuPromoTeaser({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link
+      href={FEATURES_MEGA_PROMO.href}
+      onClick={onNavigate}
+      className="group relative block h-full min-h-[320px] w-full cursor-pointer overflow-hidden no-underline md:min-h-0 md:w-[340px]"
+    >
+      <Image
+        src={FEATURES_MEGA_PROMO.imageSrc}
+        alt=""
+        fill
+        sizes="340px"
+        className="object-cover grayscale brightness-[0.7] contrast-125 transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10"
+        aria-hidden
+      />
+      <div className="absolute inset-x-0 bottom-0 z-[1] p-6">
+        <p className="font-sans text-sm leading-snug font-bold text-white">
+          {FEATURES_MEGA_PROMO.prompt}
+        </p>
+        <span className="mt-4 inline-flex rounded-xl border border-white/20 bg-white/10 px-4 py-2 font-sans text-xs font-semibold text-white backdrop-blur-md transition-all group-hover:bg-white group-hover:text-black">
+          {FEATURES_MEGA_PROMO.cta}
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export function FeaturesMegaMenuDesktop({
   open,
   onClose,
-  anchored = false,
 }: DesktopProps) {
   const { label } = useFeaturesMenuLabel();
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [promoVariant, setPromoVariant] = useState<FeaturePromoVariant>(
-    DEFAULT_FEATURE_PROMO
-  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -47,10 +113,6 @@ export function FeaturesMegaMenuDesktop({
 
   if (!open) return null;
 
-  const panelPositionClass = anchored
-    ? "absolute top-full left-1/2 z-[100] mt-3 -translate-x-1/2"
-    : "fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.75rem)] z-[100] -translate-x-1/2";
-
   return (
     <>
       <button
@@ -60,37 +122,25 @@ export function FeaturesMegaMenuDesktop({
         onClick={onClose}
       />
       <div
-        ref={panelRef}
-        className={`${panelPositionClass} ${PANEL_SURFACE_CLASS}`}
+        className={`fixed top-16 left-1/2 z-[100] -translate-x-1/2 ${PANEL_CLASS}`}
         role="dialog"
         aria-modal="true"
         aria-label={label("title")}
       >
-        <div className="hidden md:grid md:grid-cols-4 md:gap-8">
-          <div
-            className="col-span-3 hidden md:grid md:grid-cols-6 md:gap-6"
-            onMouseLeave={() => setPromoVariant(DEFAULT_FEATURE_PROMO)}
-          >
-            {LANDING_FEATURES_MENU.map((category) => (
-              <div
-                key={category.id}
-                className="min-w-0"
-                onMouseEnter={() =>
-                  setPromoVariant(
-                    FEATURE_PROMO_BY_CATEGORY[category.id] ?? DEFAULT_FEATURE_PROMO
-                  )
-                }
-              >
-                <FeatureCategory
-                  category={category}
-                  onNavigate={onClose}
-                  variant="desktop"
-                />
-              </div>
+        <div className="flex flex-col md:flex-row">
+          <div className="grid flex-1 grid-cols-1 gap-10 p-8 sm:grid-cols-3">
+            {FEATURES_MEGA_MENU_SECTIONS.map((section) => (
+              <MegaMenuColumn
+                key={section.id}
+                label={section.label}
+                items={section.items}
+                onNavigate={onClose}
+              />
             ))}
           </div>
-          <div className="col-span-1 hidden min-w-0 self-stretch md:block">
-            <FeaturesPromoCard variant={promoVariant} onNavigate={onClose} />
+
+          <div className="relative border-t border-zinc-900 p-6 md:w-[340px] md:shrink-0 md:border-t-0 md:border-l">
+            <MegaMenuPromoTeaser onNavigate={onClose} />
           </div>
         </div>
       </div>
@@ -107,26 +157,21 @@ export function FeaturesMegaMenuMobile({ onNavigate }: MobileProps) {
 
   return (
     <div className="features-mega-mobile md:hidden">
-      <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+      <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
         {label("title") || NAV_LABELS_DE.features}
       </p>
-      <div className="space-y-3">
-        {LANDING_FEATURES_MENU.map((category, index) => (
-          <FeatureCategory
-            key={category.id}
-            category={category}
+      <div className="space-y-6">
+        {FEATURES_MEGA_MENU_SECTIONS.map((section) => (
+          <MegaMenuColumn
+            key={section.id}
+            label={section.label}
+            items={section.items}
             onNavigate={onNavigate}
-            variant="mobile"
-            defaultOpen={index === 0}
           />
         ))}
       </div>
-      <div className="mt-5">
-        <FeaturesPromoCard
-          variant={DEFAULT_FEATURE_PROMO}
-          compact
-          onNavigate={onNavigate}
-        />
+      <div className="mt-6 overflow-hidden rounded-xl border border-zinc-800/60">
+        <MegaMenuPromoTeaser onNavigate={onNavigate} />
       </div>
     </div>
   );
