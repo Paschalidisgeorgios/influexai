@@ -23,24 +23,6 @@ export function CanvasSidebar() {
 
   return (
     <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/60 bg-zinc-950/90 backdrop-blur-xl">
-      <div className="border-b border-zinc-800/60 px-4 py-4">
-        <Link
-          href="/"
-          className="canvas-logo-link group block no-underline"
-          aria-label="Zurück zur Startseite"
-        >
-          <span className="canvas-logo-brand font-sans text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500 transition-colors duration-300 group-hover:text-[#ccff00]">
-            INFLUEX
-          </span>
-          <h1 className="canvas-logo-title mt-0.5 font-sans text-[15px] font-extrabold uppercase tracking-tighter leading-none text-white transition-[color,text-shadow] duration-300 group-hover:text-[#ccff00] group-hover:[text-shadow:0_0_20px_rgba(204,255,0,0.45)]">
-            Creator Studio 2026
-          </h1>
-        </Link>
-        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
-          Infinite Canvas Workspace
-        </p>
-      </div>
-
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         <Link
           href="/"

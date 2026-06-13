@@ -9,6 +9,7 @@ import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
 import { resolveToolIdFromPath } from "@/lib/canvas/toolApiSchema";
 import { useCanvasStore } from "@/lib/canvas/canvas-store";
 import { CanvasSidebar } from "./CanvasSidebar";
+import { CanvasHeader } from "./CanvasHeader";
 import { InfiniteCanvas } from "./InfiniteCanvas";
 
 const LEGACY_CHILD_ROUTES = [
@@ -60,10 +61,13 @@ export function CanvasShell({ children }: CanvasShellProps) {
     <BuyCreditsProvider>
       <PlanGateProvider>
         <ReactFlowProvider>
-          <div className="flex h-[100dvh] w-full overflow-hidden bg-[#050505] text-white">
-            <CanvasSidebar />
-            <div className="relative min-w-0 flex-1">
-              <InfiniteCanvas />
+          <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-white">
+            <CanvasHeader />
+            <div className="flex min-h-0 flex-1">
+              <CanvasSidebar />
+              <div className="relative min-w-0 flex-1">
+                <InfiniteCanvas />
+              </div>
             </div>
           </div>
         </ReactFlowProvider>

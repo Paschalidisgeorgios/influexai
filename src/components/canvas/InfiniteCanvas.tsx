@@ -23,7 +23,6 @@ import { CanvasIntelligenceBridge } from "./CanvasIntelligenceBridge";
 import { LaserEdge } from "./LaserEdge";
 import { CanvasShortcutsHelp } from "./CanvasShortcutsHelp";
 import { CanvasAnalyticsPanel } from "./CanvasAnalyticsPanel";
-import { CanvasGreeting } from "./CanvasGreeting";
 import { CanvasNodeErrorBoundary } from "./CanvasNodeErrorBoundary";
 
 const SafeControlNode = memo(function SafeControlNode(
@@ -144,7 +143,6 @@ export function InfiniteCanvas() {
       </ReactFlow>
       <CanvasShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
       <div className="pointer-events-none absolute inset-0 z-20">
-        <CanvasGreeting />
         <CanvasAnalyticsPanel open={analyticsOpen} onOpenChange={setAnalyticsOpen} />
       </div>
     </div>
