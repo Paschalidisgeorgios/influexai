@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Node, NodeProps } from "@xyflow/react";
 import {
   useCanvasStore,
@@ -36,11 +36,16 @@ function mockNodeProps<T extends Record<string, unknown>, TNodeType extends stri
   } as NodeProps<Node<T, TNodeType>>;
 }
 
+const panelStripItemClass =
+  "relative z-20 flex h-full w-full shrink-0 snap-center overflow-y-auto rounded-2xl md:w-[clamp(320px,28vw,420px)] md:snap-start";
+
 function CanvasPanelStripViewComponent() {
   const nodes = useCanvasStore((s) => s.nodes);
   const pipeline = usePipelineStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const panelRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
+  const panelObserverRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const sorted = useMemo(() => {
     return [...nodes].sort((a, b) => {
@@ -62,12 +67,19 @@ function CanvasPanelStripViewComponent() {
     [controlPanels]
   );
 
-  const setPanelRef = useCallback(
-    (panelId: string, element: HTMLDivElement | null) => {
+  const registerPanelRef = useCallback(
+    (panelId: string, element: HTMLDivElement | null, isControl: boolean) => {
+      if (isControl) {
+        if (element) {
+          panelRefsMap.current.set(panelId, element);
+        } else {
+          panelRefsMap.current.delete(panelId);
+        }
+      }
       if (element) {
-        panelRefsMap.current.set(panelId, element);
+        panelObserverRefs.current.set(panelId, element);
       } else {
-        panelRefsMap.current.delete(panelId);
+        panelObserverRefs.current.delete(panelId);
       }
     },
     []
@@ -76,6 +88,56 @@ function CanvasPanelStripViewComponent() {
   const fitToScreen = useCallback(() => {
     scrollRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    setActiveIndex((current) =>
+      sorted.length === 0 ? 0 : Math.min(current, sorted.length - 1)
+    );
+  }, [sorted.length]);
+
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    if (!scrollEl || sorted.length === 0) return;
+
+    const panelIndexById = new Map(sorted.map((node, index) => [node.id, index]));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let bestIndex = -1;
+        let bestRatio = 0;
+
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const panelId = entry.target.getAttribute("data-panel-id");
+          if (!panelId) continue;
+          const index = panelIndexById.get(panelId);
+          if (index === undefined) continue;
+          if (entry.intersectionRatio > bestRatio) {
+            bestRatio = entry.intersectionRatio;
+            bestIndex = index;
+          }
+        }
+
+        if (bestIndex >= 0) {
+          setActiveIndex(bestIndex);
+        }
+      },
+      {
+        root: scrollEl,
+        threshold: [0.35, 0.5, 0.65, 0.85, 1],
+      }
+    );
+
+    for (const node of sorted) {
+      const element = panelObserverRefs.current.get(node.id);
+      if (element) {
+        element.setAttribute("data-panel-id", node.id);
+        observer.observe(element);
+      }
+    }
+
+    return () => observer.disconnect();
+  }, [sorted]);
 
   if (sorted.length === 0) {
     return (
@@ -91,8 +153,7 @@ function CanvasPanelStripViewComponent() {
     <div className="relative h-full w-full overflow-hidden">
       <div
         ref={scrollRef}
-        className="canvas-panel-strip relative flex h-full gap-4 overflow-x-auto overflow-y-hidden px-6 py-6"
-        style={{ scrollSnapType: "x mandatory" }}
+        className="canvas-panel-strip relative flex h-full snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden px-6 py-6"
       >
         <PipelineConnections
           outputs={pipeline.getAllOutputs()}
@@ -110,12 +171,8 @@ function CanvasPanelStripViewComponent() {
             return (
               <div
                 key={node.id}
-                ref={(el) => setPanelRef(node.id, el)}
-                className="relative z-20 flex h-full flex-shrink-0 overflow-y-auto rounded-2xl"
-                style={{
-                  width: "clamp(320px, 28vw, 420px)",
-                  scrollSnapAlign: "start",
-                }}
+                ref={(el) => registerPanelRef(node.id, el, true)}
+                className={panelStripItemClass}
               >
                 <PipelineContextProvider
                   value={{
@@ -143,11 +200,8 @@ function CanvasPanelStripViewComponent() {
           return (
             <div
               key={node.id}
-              className="relative z-20 flex h-full flex-shrink-0 overflow-y-auto rounded-2xl"
-              style={{
-                width: "clamp(320px, 28vw, 420px)",
-                scrollSnapAlign: "start",
-              }}
+              ref={(el) => registerPanelRef(node.id, el, false)}
+              className={panelStripItemClass}
             >
               {node.type === "asset" ? (
                 <CanvasNodeErrorBoundary fallbackLabel="Asset">
@@ -173,6 +227,22 @@ function CanvasPanelStripViewComponent() {
           );
         })}
       </div>
+
+      {sorted.length > 1 ? (
+        <div
+          className="pointer-events-none fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex -translate-x-1/2 gap-1.5 md:hidden"
+          aria-hidden
+        >
+          {sorted.map((panel, i) => (
+            <div
+              key={panel.id}
+              className={`h-1.5 rounded-full transition-all ${
+                i === activeIndex ? "w-6 bg-[#B4FF00]" : "w-1.5 bg-white/20"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <div className="pointer-events-none absolute right-4 bottom-4 z-30 flex items-center gap-2">
         <button

@@ -131,7 +131,7 @@ export function PipelineConnections({
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-10"
+      className="pointer-events-none absolute inset-0 z-10 hidden md:block"
       style={{ willChange: "transform" }}
     />
   );

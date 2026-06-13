@@ -410,7 +410,11 @@ function ControlNodeComponent({
               closeControlPanel(id);
               pipelineStore?.removeOutputsForPanels([id]);
             }}
-            className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/40 transition-all hover:bg-white/[0.12] hover:text-white"
+            className={`absolute flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-[11px] text-white/40 transition-all hover:bg-white/[0.12] hover:text-white ${
+              embedded
+                ? "top-[calc(0.75rem+env(safe-area-inset-top,0px))] right-3 md:top-0 md:right-0"
+                : "top-0 right-0"
+            }`}
             aria-label="Panel schließen"
           >
             ✕
