@@ -11,11 +11,16 @@ import { LandingNavV2 } from "@/components/landing/LandingNavV2";
 import SentientInterface2026 from "@/components/landing/SentientInterface2026";
 import { LandingMediaSection } from "@/components/landing/LandingMediaSection";
 import { LandingUseCasesSection } from "@/components/landing/LandingUseCasesSection";
+import { LandingSectionGlowBackground } from "@/components/landing/LandingSectionGlowBackground";
 import { LandingFooter, PricingSection } from "@/components/landing/Sections";
+import { useSectionGlow } from "@/hooks/useSectionGlow";
 
 export function LandingPageV2() {
+  const { activeSection } = useSectionGlow();
+
   return (
     <div className="landing-neon landing-root relative min-h-screen overflow-x-clip bg-[#050505]">
+      <LandingSectionGlowBackground activeSection={activeSection} />
       <LandingNavV2 />
 
       <main className="relative z-10">
@@ -28,7 +33,11 @@ export function LandingPageV2() {
         <LandingCampaignPackSection />
         <LandingAgentAutopilotSection />
 
-        <div id="pricing" className="pricing-glass-section landing-v2-pricing relative overflow-hidden px-6 py-20 md:px-12">
+        <div
+          id="pricing"
+          data-landing-glow="pricing"
+          className="pricing-glass-section landing-v2-pricing relative overflow-hidden px-6 py-20 md:px-12"
+        >
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <div className="landing-glass-dot-grid absolute inset-0 opacity-60" />
             <div className="pricing-glass-glow pricing-glass-glow--violet" />

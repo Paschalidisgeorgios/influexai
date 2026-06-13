@@ -262,7 +262,11 @@ export default function SentientInterface2026() {
   const statusMessage = statusMessages[badgeIndex];
 
   return (
-    <section id="studio-showcase" className="relative overflow-x-hidden bg-transparent text-white">
+    <section
+      id="studio-showcase"
+      data-landing-glow="create"
+      className="relative overflow-x-hidden bg-transparent text-white"
+    >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="landing-glass-dot-grid absolute inset-0 opacity-50" />
         <div className="landing-hero-content-glow landing-hero-content-glow--green left-1/2 top-[42%] -translate-x-1/2 blur-[120px]" />

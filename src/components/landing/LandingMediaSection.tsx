@@ -60,6 +60,7 @@ export function LandingMediaSection() {
     <section
       ref={sectionRef}
       id="landing-media"
+      data-landing-glow="video"
       className="landing-media-theatre relative min-h-[72vh] overflow-hidden bg-black py-24 md:min-h-[85vh] md:py-32"
       aria-labelledby="landing-media-heading"
       onMouseEnter={() => {

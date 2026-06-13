@@ -122,6 +122,7 @@ export function LandingUseCasesSection() {
   return (
     <section
       id="use-cases"
+      data-landing-glow="visuals"
       className="relative border-t border-zinc-800/50 px-4 py-12 md:px-6 md:py-16 lg:px-10 lg:py-20"
       aria-labelledby="use-cases-heading"
     >
