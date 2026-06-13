@@ -15,7 +15,7 @@ import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
 import "@/styles/canvas.css";
 
 const CONCIERGE_PLACEHOLDER =
-  "Frage unser Studio-Gehirn... (z.B. Wie erstelle ich Content für meine Modemarke?)";
+  "Frage unser Studio-Gehirn (z.B. Wie erstelle ich Content für meine Modemarke?)...";
 
 type ConciergeState = {
   answer: string;
@@ -95,7 +95,7 @@ export function HeroSection() {
   };
 
   const ctaRoute = result ? CONCIERGE_TOOL_ROUTES[result.tool] : null;
-  const ctaHref = ctaRoute ? getIntentHref(ctaRoute.href) : "/signup";
+  const ctaHref = ctaRoute ? getIntentHref(ctaRoute.href) : getIntentHref("/signup");
 
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#030304]">
@@ -109,14 +109,7 @@ export function HeroSection() {
 
           <HeroKineticHeadline />
 
-          <p
-            className="mb-8 max-w-lg text-base leading-relaxed text-white/70 md:max-w-none"
-            style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-          >
-            {LANDING_HERO_2026.subline}
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+          <div className="mb-0 flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink href="/signup" className="landing-glass-btn-cta">
               Jetzt kostenlos starten →
             </IntentLink>
@@ -125,22 +118,11 @@ export function HeroSection() {
             </a>
           </div>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
-            {LANDING_HERO_2026.microBadges.map((badge) => (
-              <span
-                key={badge}
-                className="rounded-full border border-zinc-800/60 bg-zinc-950/40 px-3 py-1 font-mono text-[10px] tracking-widest text-zinc-400 uppercase backdrop-blur-md"
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
-
           <form
             onSubmit={(e) => void handleSubmit(e)}
-            className="relative z-20 mt-8 w-full max-w-xl md:max-w-none"
+            className="relative z-20 w-full"
           >
-            <div className="flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-950/20 p-3 backdrop-blur-md transition-colors focus-within:border-[#ccff00]/40">
+            <div className="mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-950/40 p-3 shadow-xl backdrop-blur-md transition-colors focus-within:border-[#ccff00]/35">
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -149,15 +131,15 @@ export function HeroSection() {
                 autoComplete="off"
                 maxLength={400}
                 aria-label="Frage an das Studio-Gehirn"
-                className="min-w-0 flex-1 border border-transparent bg-transparent px-2 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-[#ccff00] focus:rounded-lg disabled:opacity-60"
+                className="min-w-0 flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none disabled:opacity-60"
               />
               <button
                 type="submit"
                 disabled={loading || !question.trim()}
                 aria-label="Frage senden"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 text-sm text-zinc-400 transition-colors hover:border-[#ccff00]/50 hover:bg-[#ccff00]/10 hover:text-[#ccff00] disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ccff00]/40 bg-[#ccff00]/10 text-[#ccff00] transition-all hover:border-[#ccff00]/70 hover:bg-[#ccff00]/20 hover:shadow-[0_0_16px_rgba(204,255,0,0.45)] disabled:cursor-not-allowed disabled:opacity-40"
               >
-                ↵
+                <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
               </button>
             </div>
 
@@ -188,7 +170,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mt-4 text-left text-xs leading-relaxed text-red-400/90"
+                  className="mt-4 text-left font-sans text-xs leading-relaxed text-red-400/90"
                 >
                   {error}
                 </motion.p>
@@ -202,10 +184,7 @@ export function HeroSection() {
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="mt-4 rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-4 backdrop-blur-md"
                 >
-                  <p
-                    className="text-left text-sm leading-relaxed text-white/85"
-                    style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-                  >
+                  <p className="text-left font-sans text-sm leading-relaxed tracking-wide text-zinc-300">
                     {result.answer}
                   </p>
 
@@ -217,12 +196,12 @@ export function HeroSection() {
                   >
                     <IntentLink
                       href={ctaHref}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ccff00] px-4 py-3 text-sm font-bold text-black no-underline transition-transform hover:scale-[1.02] sm:w-auto"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ccff00] px-4 py-3 text-sm font-bold text-black no-underline transition-all hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(204,255,0,0.35)] sm:w-auto"
                       onClick={() => {
                         if (ctaRoute) setIntent(ctaRoute.intent);
                       }}
                     >
-                      Dieses Tool jetzt testen →
+                      App Studio öffnen →
                       <ArrowRight size={15} aria-hidden />
                     </IntentLink>
                   </motion.div>

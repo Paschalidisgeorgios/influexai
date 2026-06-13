@@ -30,13 +30,6 @@ export const LANDING_HERO_2026 = {
   headline: {
     staticPrefix: "DEIN STUDIO FÜR ",
   },
-  subline:
-    "Vom viralen Skript bis zum filmischen B-Roll-Video — in deinem App Studio, gesteuert von Claude, optimiert durch den Viral-Predictor und gerendert mit Seedance & Kling. Ein Studio. Null Kontextwechsel.",
-  microBadges: [
-    "Claude 3.5 Brain",
-    "Seedance & Kling Motion",
-    "Predictive Analytics",
-  ],
   welcomeStudio: (name: string) =>
     `Willkommen, ${name}. Dein App Studio ist bereit.`,
 } as const;

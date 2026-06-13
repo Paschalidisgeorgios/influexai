@@ -9,6 +9,9 @@ import {
 
 const ROTATE_MS = 2500;
 
+/** Longest rotating phrase — reserves space to prevent CLS during word swaps. */
+const KINETIC_SPACER = "FOTOREALISTISCHE VISUALS.";
+
 export function HeroKineticHeadline() {
   const [wordIndex, setWordIndex] = useState(0);
 
@@ -23,16 +26,16 @@ export function HeroKineticHeadline() {
   const activeWord = HERO_KINETIC_WORDS[wordIndex];
 
   return (
-    <h1 className="mb-4 font-sans text-5xl font-extrabold uppercase tracking-tight text-white antialiased md:text-6xl">
-      <span className="text-white">{LANDING_HERO_2026.headline.staticPrefix}</span>
-      <span className="relative inline-block min-h-[1.15em] min-w-[min(100%,18ch)] align-bottom">
+    <h1 className="mb-8 font-sans text-5xl font-extrabold uppercase tracking-tight text-white antialiased md:text-6xl">
+      <span className="block text-white">{LANDING_HERO_2026.headline.staticPrefix}</span>
+      <span className="relative mt-1 block min-h-[1.2em] w-full max-w-full">
         <span className="invisible block whitespace-nowrap" aria-hidden>
-          FOTOREALISTISCHE VISUALS.
+          {KINETIC_SPACER}
         </span>
         <AnimatePresence mode="wait">
           <motion.span
             key={activeWord}
-            className="absolute inset-x-0 top-0 block whitespace-nowrap text-[#ccff00]"
+            className="absolute inset-x-0 top-0 block whitespace-nowrap text-[#ccff00] drop-shadow-[0_0_12px_rgba(204,255,0,0.35)]"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
