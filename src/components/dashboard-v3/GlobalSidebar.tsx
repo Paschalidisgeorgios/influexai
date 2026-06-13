@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { TOOL_CATEGORIES, WORKSPACE_TOOLS } from "@/lib/dashboard-v3/registry";
+import {
+  TOOL_CATEGORIES,
+  WORKSPACE_TOOLS,
+  formatWorkspaceToolCredits,
+} from "@/lib/dashboard-v3/registry";
 import { glassSurfaceStaticClass } from "@/lib/glass-classes";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useDashboardV3 } from "@/lib/dashboard-v3/context";
@@ -26,6 +30,13 @@ export function GlobalSidebar() {
   );
   const [displayCredits, setDisplayCredits] = useState(credits);
   const [displayName, setDisplayName] = useState(userName || "Creator");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!toastMessage) return;
+    const id = window.setTimeout(() => setToastMessage(null), 2800);
+    return () => window.clearTimeout(id);
+  }, [toastMessage]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -64,6 +75,15 @@ export function GlobalSidebar() {
 
   const initial = displayName.charAt(0).toUpperCase();
 
+  const handleToolClick = (toolId: string, comingSoon?: boolean) => {
+    if (comingSoon) {
+      setToastMessage("Bald verfügbar");
+      return;
+    }
+    selectTool(toolId);
+    setSidebarOpen(false);
+  };
+
   return (
     <>
       {sidebarOpen && (
@@ -74,6 +94,15 @@ export function GlobalSidebar() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {toastMessage ? (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full border border-white/10 bg-[#0d0d10]/95 px-4 py-2 text-[11px] text-white/80 shadow-lg backdrop-blur-md"
+        >
+          {toastMessage}
+        </div>
+      ) : null}
 
       <aside
         className={`fixed z-40 flex h-full w-[240px] shrink-0 flex-col border-r transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${glassSurfaceStaticClass} ${
@@ -136,25 +165,35 @@ export function GlobalSidebar() {
                         tool.id === activeToolId ||
                         pathname === tool.route ||
                         pathname.startsWith(`${tool.route}/`);
+                      const creditLabel = formatWorkspaceToolCredits(tool);
+                      const disabled = Boolean(tool.comingSoon);
+
                       return (
                         <button
                           key={tool.id}
                           type="button"
-                          onClick={() => {
-                            selectTool(tool.id);
-                            setSidebarOpen(false);
-                          }}
+                          disabled={disabled}
+                          onClick={() => handleToolClick(tool.id, tool.comingSoon)}
                           className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[11px] transition-colors ${
-                            active
-                              ? "bg-white/[0.06] font-medium text-white"
-                              : "text-white/40 hover:bg-white/[0.03]"
+                            disabled
+                              ? "cursor-not-allowed text-white/25"
+                              : active
+                                ? "bg-white/[0.06] font-medium text-white"
+                                : "text-white/40 hover:bg-white/[0.03]"
                           }`}
                           style={{
-                            borderLeft: active ? "2px solid #B4FF00" : "2px solid transparent",
+                            borderLeft: active && !disabled ? "2px solid #B4FF00" : "2px solid transparent",
                           }}
                         >
-                          <span className="text-sm">{tool.icon}</span>
-                          <span className="truncate">{tool.label}</span>
+                          <span className={`text-sm ${disabled ? "opacity-50" : ""}`}>{tool.icon}</span>
+                          <span className="min-w-0 flex-1 truncate">{tool.label}</span>
+                          {tool.comingSoon ? (
+                            <span className="shrink-0 rounded-full bg-white/[0.06] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white/35">
+                              Bald
+                            </span>
+                          ) : creditLabel ? (
+                            <span className="shrink-0 font-mono text-[8px] text-white/30">{creditLabel}</span>
+                          ) : null}
                         </button>
                       );
                     })}

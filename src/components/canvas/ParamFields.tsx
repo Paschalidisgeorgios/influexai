@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
 import { glassInputClass } from "@/lib/glass-classes";
@@ -185,6 +185,18 @@ function FieldInput({
   const base =
     `${glassInputClass} rounded-lg px-3 py-2 text-xs text-zinc-100`;
 
+  if (field.type === "file" || field.type === "file-list") {
+    return (
+      <FileUploadField
+        field={field}
+        value={value}
+        accent={accent}
+        onChange={onChange}
+        onAssetDrop={onAssetDrop}
+      />
+    );
+  }
+
   if (field.type === "node-ref") {
     return (
       <div
@@ -351,26 +363,163 @@ function FieldInput({
     );
   }
 
-  if (field.type === "file" || field.type === "file-list") {
-    return (
-      <input
-        type="file"
-        className={`${base} file:mr-2 file:rounded file:border-0 file:bg-zinc-800 file:px-2 file:py-1 file:text-[10px] file:text-zinc-200`}
-        multiple={field.type === "file-list"}
-        onChange={(e) => {
-          const files = e.target.files;
-          if (!files?.length) return;
-          onChange(field.type === "file-list" ? Array.from(files) : files[0]);
-        }}
-      />
-    );
-  }
-
   return (
     <input
       className={base}
       value={String(value ?? "")}
       onChange={(e) => onChange(e.target.value)}
     />
+  );
+}
+
+function FileUploadField({
+  field,
+  value,
+  accent,
+  onChange,
+  onAssetDrop,
+}: {
+  field: ToolParamSchema;
+  value: unknown;
+  accent: string;
+  onChange: (v: unknown) => void;
+  onAssetDrop?: (asset: AssetNodeData) => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const isMulti = field.type === "file-list";
+  const maxFiles = isMulti ? 4 : 1;
+
+  const previews = useMemo(() => {
+    if (isMulti) {
+      if (Array.isArray(value)) {
+        return value.map((item) =>
+          item instanceof File ? URL.createObjectURL(item) : String(item)
+        );
+      }
+      return value ? [String(value)] : [];
+    }
+    if (value instanceof File) return [URL.createObjectURL(value)];
+    return value ? [String(value)] : [];
+  }, [isMulti, value]);
+
+  useEffect(() => {
+    return () => {
+      for (const url of previews) {
+        if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+      }
+    };
+  }, [previews]);
+
+  const handleFiles = useCallback(
+    (files: FileList | null) => {
+      if (!files?.length) return;
+      const picked = Array.from(files).slice(0, maxFiles);
+      onChange(isMulti ? picked : picked[0] ?? null);
+    },
+    [isMulti, maxFiles, onChange]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+
+      const raw = e.dataTransfer.getData("application/influex-asset");
+      if (raw && onAssetDrop) {
+        onAssetDrop(JSON.parse(raw) as AssetNodeData);
+        return;
+      }
+
+      handleFiles(e.dataTransfer.files);
+    },
+    [handleFiles, onAssetDrop]
+  );
+
+  const handleRemove = useCallback(
+    (index: number) => {
+      if (isMulti && Array.isArray(value)) {
+        const next = value.filter((_, i) => i !== index);
+        onChange(next.length > 0 ? next : null);
+      } else {
+        onChange(null);
+      }
+    },
+    [isMulti, onChange, value]
+  );
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragging(true);
+      }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={handleDrop}
+      className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200 ${
+        isDragging
+          ? "border-[#0066FF] bg-[#0066FF]/10"
+          : previews.length > 0
+            ? "border-[#0066FF]/40 bg-[#0066FF]/5"
+            : "border-white/10 bg-white/[0.02] hover:border-white/20"
+      }`}
+      style={{ minHeight: previews.length > 0 ? "auto" : "90px" }}
+    >
+      <input
+        type="file"
+        accept="image/*,video/*,audio/*"
+        multiple={isMulti}
+        onChange={(e) => handleFiles(e.target.files)}
+        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+        aria-label={field.label}
+      />
+
+      {previews.length === 0 ? (
+        <div className="pointer-events-none flex flex-col items-center justify-center px-4 py-6 text-center text-zinc-400">
+          <span className="mb-1.5 text-2xl" aria-hidden="true">
+            🖼
+          </span>
+          <span className="text-[11px] text-white/60">
+            {field.label} hochladen oder hierher ziehen
+          </span>
+          {field.acceptsOutputTypes?.length ? (
+            <span className="mt-1 text-[9px] text-white/40">
+              Oder Asset aus der Pipeline verbinden
+            </span>
+          ) : null}
+        </div>
+      ) : (
+        <div className="pointer-events-none grid grid-cols-4 gap-1.5 p-2">
+          {previews.map((url, i) => (
+            <div
+              key={`${url}-${i}`}
+              className="relative aspect-square overflow-hidden rounded-lg bg-black/40"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`Vorschau ${i + 1}`} className="h-full w-full object-cover" />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRemove(i);
+                }}
+                className="pointer-events-auto absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[10px] text-white/70 hover:text-white"
+                aria-label="Entfernen"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {isMulti && previews.length < maxFiles && (
+            <div
+              className="flex aspect-square items-center justify-center rounded-lg border border-dashed text-[10px] text-white/30"
+              style={{ borderColor: `${accent}44` }}
+            >
+              + weitere
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

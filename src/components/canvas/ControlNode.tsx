@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
-import { Sparkles } from "lucide-react";
+import { Zap } from "lucide-react";
 import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
 import { calculateToolCoins } from "@/lib/canvas/coin-calculator";
 import {
@@ -344,6 +344,8 @@ function ControlNodeComponent({
   const remaining = credits ?? 0;
   const creditExempt = isClientCreditExempt();
   const insufficient = !creditExempt && credits !== null && remaining < coins;
+  const dynamicCost = tool.id === "seedance-video" || tool.id === "flux-image" || tool.id === "lora-training";
+  const creditCostLabel = dynamicCost ? `~${coins} Credits` : `${coins} Credits`;
   const isAgentAutopilot = nodeData.toolId === "agent-autopilot";
   const visibleParams =
     tool?.params.filter(
@@ -533,16 +535,21 @@ function ControlNodeComponent({
                 }
           }
         >
-          <Sparkles size={14} />
+          <Zap size={16} aria-hidden="true" />
           {nodeData.isGenerating ? (
             "Generiere…"
-          ) : creditExempt ? (
-            <>
-              Generieren ⚡
-              <span className="ml-2 rounded px-1 py-0.5 text-[8px] bg-black/20">ADMIN</span>
-            </>
           ) : (
-            `Generieren · ${coins} Coins`
+            <>
+              Generieren
+              <span className="ml-2 rounded-full bg-black/20 px-2 py-0.5 font-mono text-[10px]">
+                {creditCostLabel}
+              </span>
+              {creditExempt ? (
+                <span className="ml-1.5 rounded px-1.5 py-0.5 text-[8px] bg-black/20">
+                  ADMIN
+                </span>
+              ) : null}
+            </>
           )}
         </button>
       </div>

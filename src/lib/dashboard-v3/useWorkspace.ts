@@ -68,7 +68,7 @@ export function useWorkspace() {
   const selectTool = useCallback(
     (toolId: string) => {
       const tool = WORKSPACE_TOOLS.find((t) => t.id === toolId);
-      if (!tool) return;
+      if (!tool || tool.comingSoon) return;
       setState((prev) => ({
         ...prev,
         activeToolId: toolId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ModelApiSchema, SchemaField } from "@/lib/api-schemas/toolApiSchema";
 
 interface DynamicParamFieldsProps {
@@ -227,53 +227,156 @@ function UploadField({
 }: {
   field: SchemaField;
   value: unknown;
-  onChange: (v: string | null) => void;
+  onChange: (v: string | string[] | null) => void;
 }) {
-  const hasFile = value !== null && value !== undefined && value !== "";
+  const [isDragging, setIsDragging] = useState(false);
   const isMulti = field.type === "multi_image_upload";
+  const maxFiles = field.maxFiles ?? (isMulti ? 4 : 1);
+
+  const previews: string[] = isMulti
+    ? Array.isArray(value)
+      ? (value as string[])
+      : value
+        ? [String(value)]
+        : []
+    : value
+      ? [String(value)]
+      : [];
+
+  useEffect(() => {
+    return () => {
+      for (const url of previews) {
+        if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+      }
+    };
+  }, [previews]);
+
+  const handleFiles = useCallback(
+    (files: FileList | null) => {
+      if (!files || files.length === 0) return;
+      const urls: string[] = [];
+      Array.from(files)
+        .slice(0, maxFiles)
+        .forEach((file) => {
+          urls.push(URL.createObjectURL(file));
+        });
+
+      if (isMulti) {
+        const next = [...previews, ...urls].slice(0, maxFiles);
+        onChange(next);
+      } else {
+        onChange(urls[0] ?? null);
+      }
+    },
+    [isMulti, maxFiles, onChange, previews]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+      handleFiles(e.dataTransfer.files);
+    },
+    [handleFiles]
+  );
+
+  const handleRemove = useCallback(
+    (index: number) => {
+      if (isMulti) {
+        const next = previews.filter((_, i) => i !== index);
+        onChange(next.length > 0 ? next : null);
+      } else {
+        onChange(null);
+      }
+    },
+    [isMulti, onChange, previews]
+  );
 
   return (
     <div>
       <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
         className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200 ${
-          hasFile
-            ? "border-[#0066FF]/40 bg-[#0066FF]/5"
-            : "border-white/10 bg-white/[0.02] hover:border-white/20"
+          isDragging
+            ? "border-[#0066FF] bg-[#0066FF]/10"
+            : previews.length > 0
+              ? "border-[#0066FF]/40 bg-[#0066FF]/5"
+              : "border-white/10 bg-white/[0.02] hover:border-white/20"
         }`}
-        style={{ minHeight: "80px" }}
+        style={{ minHeight: previews.length > 0 ? "auto" : "90px" }}
       >
         <input
           type="file"
-          accept={field.acceptedFormats?.map((f) => `.${f}`).join(",")}
+          accept={field.acceptedFormats?.map((f) => `.${f}`).join(",") ?? "image/*"}
           multiple={isMulti}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) onChange(URL.createObjectURL(file));
-          }}
-          className="absolute inset-0 h-full w-full opacity-0"
-          style={{ cursor: "default" }}
+          onChange={(e) => handleFiles(e.target.files)}
+          className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
           aria-label={field.label}
         />
-        <div className="flex flex-col items-center justify-center px-4 py-5 text-center">
-          <span className="mb-1.5 text-2xl" aria-hidden="true">
-            {field.type === "video_upload"
-              ? "🎬"
-              : field.type === "audio_upload"
-                ? "🎵"
-                : "🖼"}
-          </span>
-          <span className="text-[11px] text-white/40">
-            {hasFile ? "✓ Datei geladen — klicken zum Ersetzen" : `${field.label} hochladen`}
-          </span>
-          {field.acceptedFormats && (
-            <span className="mt-0.5 text-[9px] text-white/50">
-              {field.acceptedFormats.join(", ").toUpperCase()}
-              {field.maxFileSizeMB ? ` — max. ${field.maxFileSizeMB}MB` : ""}
-              {isMulti && field.maxFiles ? ` — max. ${field.maxFiles} Dateien` : ""}
+
+        {previews.length === 0 ? (
+          <div className="pointer-events-none flex flex-col items-center justify-center px-4 py-6 text-center">
+            <span className="mb-1.5 text-2xl" aria-hidden="true">
+              {field.type === "video_upload"
+                ? "🎬"
+                : field.type === "audio_upload"
+                  ? "🎵"
+                  : "🖼"}
             </span>
-          )}
-        </div>
+            <span className="text-[11px] text-white/60">
+              {field.label} hochladen oder hierher ziehen
+            </span>
+            {field.acceptedFormats && (
+              <span className="mt-0.5 text-[9px] text-white/40">
+                {field.acceptedFormats.join(", ").toUpperCase()}
+                {field.maxFileSizeMB ? ` — max. ${field.maxFileSizeMB}MB` : ""}
+                {isMulti && field.maxFiles ? ` — bis zu ${field.maxFiles} Dateien` : ""}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="pointer-events-none grid grid-cols-4 gap-1.5 p-2">
+            {previews.map((url, i) => (
+              <div
+                key={`${url}-${i}`}
+                className="relative aspect-square overflow-hidden rounded-lg bg-black/40"
+              >
+                {field.type === "video_upload" ? (
+                  <video src={url} className="h-full w-full object-cover" muted />
+                ) : field.type === "audio_upload" ? (
+                  <div className="flex h-full items-center justify-center text-lg">🎵</div>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={url} alt={`Vorschau ${i + 1}`} className="h-full w-full object-cover" />
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemove(i);
+                  }}
+                  className="pointer-events-auto absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[10px] text-white/70 hover:text-white"
+                  aria-label="Entfernen"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {isMulti && previews.length < maxFiles && (
+              <div className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-white/10 text-[10px] text-white/30">
+                + weitere
+              </div>
+            )}
+          </div>
+        )}
       </div>
+      {field.hint && <p className="mt-1.5 text-[10px] text-white/40">{field.hint}</p>}
     </div>
   );
 }

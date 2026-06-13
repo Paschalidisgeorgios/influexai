@@ -69,7 +69,7 @@ export const LANDING_FEATURES_MENU: FeatureMenuCategory[] = [
         icon: ImageIcon,
         items: [
           { id: "imageGen", href: "/dashboard/image-generator" },
-          { id: "kiIch", href: "/dashboard/ki-ich" },
+          { id: "kiIch", href: "/dashboard/ki-influencer" },
           { id: "lora", href: "/dashboard/lora-training" },
           { id: "upscaler", href: "/dashboard/upscaler" },
         ],
@@ -93,8 +93,8 @@ export const LANDING_FEATURES_MENU: FeatureMenuCategory[] = [
         items: [
           { id: "story", href: "/dashboard/story-creator" },
           { id: "scene", href: "/dashboard/szenen-generator" },
-          { id: "seedance", href: "/dashboard/seedance" },
-          { id: "textToVideo", href: "/dashboard/text-to-video" },
+          { id: "seedance", href: "/dashboard/szenen-generator" },
+          { id: "textToVideo", href: "/dashboard/szenen-generator" },
         ],
       },
       {
