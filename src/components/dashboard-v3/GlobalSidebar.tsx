@@ -137,7 +137,7 @@ export function GlobalSidebar() {
                 <button
                   type="button"
                   onClick={() => setOpenCats((o) => ({ ...o, [cat]: !o[cat] }))}
-                  className="flex w-full items-center justify-between px-2 py-1.5 text-[9px] tracking-[2px] text-white/20 uppercase"
+                  className="flex w-full items-center justify-between px-2 py-1.5 text-[9px] tracking-[2px] text-white/45 uppercase"
                 >
                   {cat}
                   <ChevronDown
@@ -189,7 +189,7 @@ export function GlobalSidebar() {
             href="/pricing"
             className="block w-full rounded-lg bg-gradient-to-r from-[#0066FF] to-[#0044cc] py-2.5 text-center text-[11px] font-semibold text-white no-underline"
           >
-            Upgrade
+            Plan upgraden
           </Link>
           <div className="flex items-center gap-2.5 px-1">
             <div

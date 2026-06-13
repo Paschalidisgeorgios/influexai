@@ -34,10 +34,10 @@ export function PromptCapsule() {
     if (dialogStep === 0 && prompt.trim() && !userName) {
       setUserName(prompt.trim());
       nameSubmittedRef.current = true;
-      capsule.showMessage(`${prompt.trim()}! Guter Name. Lass uns die Welt verändern. 🤝`, 5000, 8);
+      capsule.showMessage(`${prompt.trim()} — schön, ${prompt.trim()}! Was möchtest du erstellen?`, 5000, 8);
       window.setTimeout(() => {
         capsule.showMessage(
-          `Was erschaffen wir heute, ${prompt.trim()}? Schreib es in die Box!`,
+          `Beschreibe deine Idee, ${prompt.trim()} — wir starten von hier.`,
           6000,
           7
         );
@@ -50,7 +50,7 @@ export function PromptCapsule() {
 
     if (dialogStep >= 1 && prompt.trim()) {
       capsule.showMessage(
-        `Geisteskranke Idee, ${userName || "Creator"}. Prozessoren übertaktet. Klick auf GENERIEREN! 🔥`,
+        `Gute Idee, ${userName || "Creator"}. Prüfe die Einstellungen und klicke auf Generieren.`,
         6000,
         8
       );
@@ -63,7 +63,7 @@ export function PromptCapsule() {
 
     setIsGenerating(true);
     capsule.showMessage(
-      `Berechne ${activeModel.name} für ${userName || "Creator"}... Quantenprozessoren bei 100%! 🔥`,
+      `Generiere mit ${activeModel.name} für ${userName || "Creator"}…`,
       5000,
       9
     );
@@ -71,12 +71,12 @@ export function PromptCapsule() {
 
     window.setTimeout(() => {
       setIsGenerating(false);
-      capsule.showMessage(`Fertig, ${userName || "Creator"}! Dein Output wartet auf dich. ✨`, 5000, 8);
+      capsule.showMessage(`Fertig, ${userName || "Creator"}. Dein Ergebnis ist bereit.`, 5000, 8);
     }, 2500);
 
     if (credits < 20) {
       capsule.showMessage(
-        `Achtung ${userName || "Creator"}! Nur noch ${credits} Credits! 💳`,
+        `Hinweis: Nur noch ${credits} Credits verfügbar.`,
         5000,
         10
       );
@@ -149,13 +149,11 @@ export function PromptCapsule() {
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={
             dialogStep === 0
-              ? "Dein Name hier..."
-              : dialogStep === 1
-                ? "Beschreibe dein Video..."
-                : "Beschreibe dein Video..."
+              ? "Wie heißt du?"
+              : "Beschreibe deine Idee…"
           }
           rows={1}
-          className="w-full resize-none bg-transparent px-4 pt-3.5 pb-2 font-sans text-sm text-white outline-none placeholder:text-white/25"
+          className="w-full resize-none bg-transparent px-4 pt-3.5 pb-2 font-sans text-sm text-white outline-none placeholder:text-white/45"
           style={{ fontSize: "14px", minHeight: "44px", maxHeight: "72px" }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -299,7 +297,7 @@ function UploadSlot({
 }) {
   return (
     <label
-      className="relative flex h-14 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed text-[9px] text-white/35 transition-colors hover:border-white/25"
+      className="relative flex h-14 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed text-[9px] text-white/60 transition-colors hover:border-white/25"
       style={{ borderColor: preview ? `rgba(${rgb},0.35)` : "rgba(255,255,255,0.12)" }}
     >
       <input

@@ -94,7 +94,7 @@ function DashboardShellInner({ children }: { children: ReactNode }) {
       mountedRef.current = true;
       const t = window.setTimeout(() => {
         capsule.showMessage(
-          "Hey... genau du vor dem Bildschirm. Klick ins Eingabefeld und sag mir wie du heißt. 👇",
+          "Willkommen im Studio. Gib zuerst deinen Namen ein.",
           6000,
           5
         );
@@ -108,7 +108,7 @@ function DashboardShellInner({ children }: { children: ReactNode }) {
     prevModelIdRef.current = activeModelId;
     const themeLabel = THEME_COLORS[activeModel.themeKey].label;
     capsule.showMessage(
-      `${activeModel.name} aktiviert. ${themeLabel}. ⚡`,
+      `${activeModel.name} aktiviert · ${themeLabel}`,
       3500,
       6
     );

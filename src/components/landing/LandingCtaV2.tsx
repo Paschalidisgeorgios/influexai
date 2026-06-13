@@ -41,13 +41,13 @@ export function LandingCtaV2({ reveal = true }: LandingCtaV2Props) {
           className="mx-auto mt-4 max-w-md text-base"
           style={{ color: "var(--text-secondary)" }}
         >
-          Starte heute. Dein erstes Asset ist in 30 Sekunden fertig.
+          Starte jetzt und erstelle deine ersten Inhalte direkt im Studio.
         </p>
         <IntentLink href="/signup" className="landing-neon-btn-primary mt-8 h-14 px-10 text-lg">
-          Studio starten
+          Jetzt starten
           <ArrowRight size={18} />
         </IntentLink>
-        <p className="mt-4 text-xs text-white/30">Keine Kreditkarte nötig</p>
+        <p className="mt-4 text-xs text-white/60">Flexible Pläne · Monatlich kündbar</p>
       </div>
     </section>
   );

@@ -194,7 +194,7 @@
     "credits_available": "Credits verfügbar",
     "credits_spent_week": "Credits diese Woche",
     "empty_script_cta": "Ersten Script erstellen",
-    "empty_script_desc": "Generiere dein erstes virales Short-Script in unter 30 Sekunden.",
+    "empty_script_desc": "Erstelle dein erstes Short-Script in wenigen Schritten.",
     "empty_script_title": "Noch keine Scripts erstellt",
     "feature_start": "Starten →",
     "growth_agent": {
@@ -214,7 +214,7 @@
     "nav_ki_ich": "KI-Ich",
     "nav_settings": "Profil",
     "nav_videos": "Videos",
-    "no_activity": "Noch keine Creations. Wähle ein Feature oben!",
+    "no_activity": "Noch keine Inhalte erstellt. Wähle ein Tool in der Sidebar.",
     "no_credits_body": "Kaufe Credits um alle KI-Features freizuschalten.",
     "no_credits_title": "Du hast noch keine Credits",
     "open_agent": "Master Agent starten",
@@ -228,7 +228,7 @@
     "quick_create": "Erstellen",
     "quick_niche": "Nische",
     "quick_script": "Script",
-    "quickstart_subtitle": "In 3 Schritten zu deinem ersten viralen Short",
+    "quickstart_subtitle": "In drei Schritten zu deinem ersten Short",
     "quickstart_title": "Erste Schritte",
     "recent_activity": "Letzte Aktivität",
     "section_analyze": "Analysieren",
@@ -237,7 +237,7 @@
     "stats_title": "Deine Woche",
     "step1_desc": "Finde profitable YouTube-Themen mit KI",
     "step1_title": "Nische analysieren",
-    "step2_desc": "Hook, Story & CTA in 30 Sekunden",
+    "step2_desc": "Hook, Story und CTA in wenigen Schritten",
     "step2_title": "Script schreiben",
     "step3_desc": "KI-Avatar oder Produkt-Werbung starten",
     "step3_title": "Video erstellen",
@@ -246,7 +246,7 @@
     "total_creations": "Gesamt erstellt",
     "trust_instant": "Sofort verfügbar",
     "trust_no_expire": "Credits verfallen nicht",
-    "trust_no_sub": "Keine Abo-Falle",
+    "trust_no_sub": "Monatlich kündbar",
     "week_created": "{scripts} Scripts · {videos} Videos · {thumbnails} Thumbnails",
     "week_created_label": "Diese Woche erstellt",
     "welcome": "Willkommen"
@@ -686,15 +686,15 @@
       "tagline": "Ein Studio. Zwei Welten."
     },
     "cta": {
-      "headline1": "Kein Gesicht.",
-      "headline2": "Kein Limit.",
-      "headline3": "Kein Warten.",
+      "headline1": "Deine Idee.",
+      "headline2": "Dein Studio.",
+      "headline3": "Deine Kampagne.",
       "kicker": "Jetzt starten",
       "note": "Ab €{price}/Monat · Credits inklusive · DSGVO-konform",
       "primary": "→ Jetzt starten — ab €{price}",
       "secondary": "Für Marken →",
-      "sub1": "Für Creator die viral gehen wollen.",
-      "sub2": "Für Marken die skalieren möchten."
+      "sub1": "Für Creator, die schneller produzieren wollen.",
+      "sub2": "Für Marken und Agenturen, die Kampagnen skalieren möchten."
     },
     "faq": {
       "a_agent1": "Ja, im Dashboard. Du gibst ein Ziel ein, der Agent wählt passende Tools und erstellt Outputs automatisch.",
@@ -1406,19 +1406,19 @@
       }
     },
     "useCases": {
-      "kicker": "FÜR WEN?",
-      "headline": "EIN STUDIO. DREI WELTEN.",
+      "kicker": "Für wen?",
+      "headline": "Ein Studio. Drei Welten.",
       "creator_title": "Content Creator",
-      "creator_subtitle": "Täglich sichtbar, ohne täglich zu arbeiten.",
-      "creator_desc": "Viral Hooks, Skripte, Visuals und Content-Kalender — in Sekunden generiert. Agent Autopilot plant die ganze Woche.",
+      "creator_subtitle": "Regelmäßig sichtbar, ohne jeden Tag von vorn zu starten.",
+      "creator_desc": "Hooks, Skripte, Visuals und Content-Kalender — schnell generiert. Agent Autopilot unterstützt dich bei der Wochenplanung.",
       "creator_tag": "Hooks · Skripte · Kalender · Agent",
       "brand_title": "Brand & Business",
       "brand_subtitle": "Professionelle Kampagnen. Ohne Agentur.",
-      "brand_desc": "Produktbilder, Ad-Copy, Video-Übersetzung und vollständige Kampagnen — vollautomatisch, on-brand, in Minuten.",
+      "brand_desc": "Produktbilder, Ad-Copy, Video-Übersetzung und Kampagnen — markenkonform und in kurzer Zeit umsetzbar.",
       "brand_tag": "Werbung · Video · Kampagnen · Ads",
       "influencer_title": "Creator & Avatar",
-      "influencer_subtitle": "Einmal trainiert. Unbegrenzt aktiv.",
-      "influencer_desc": "Eigener KI-Avatar, Szenen Generator, Story Creator — einmal einrichten, dann unbegrenzt Content in jedem Format.",
+      "influencer_subtitle": "Einmal eingerichtet. Wiederholt nutzbar.",
+      "influencer_desc": "Eigener KI-Avatar, Szenen Generator, Story Creator — einmal aufsetzen, dann Content in verschiedenen Formaten erstellen.",
       "influencer_tag": "Avatar · Video · Szenen · LoRA"
     },
     "bentoTools": {
@@ -1444,13 +1444,13 @@
       "video_uebersetzer_benefit": "Videos automatisch in andere Sprachen übersetzen mit Lipsync."
     },
     "agentAutopilot": {
-      "kicker": "AGENT AUTOPILOT",
-      "headline": "EIN BEFEHL.\nALLES FERTIG.",
-      "description": "Beschreibe was du brauchst — der Agent erkennt automatisch was nötig ist, nutzt die richtigen Tools und liefert sofort verwendbare Ergebnisse.",
-      "feature_f1": "Erkennt automatisch Hooks, Scripts, Videos",
-      "feature_f2": "Nutzt alle 20+ Tools intelligent",
-      "feature_f3": "Liefert Campaign-Packs auf Knopfdruck",
-      "cta": "Agent Autopilot starten →",
+      "kicker": "Agent Autopilot",
+      "headline": "Ein Befehl.\nMehrere Ergebnisse.",
+      "description": "Beschreibe, was du brauchst — der Agent erkennt den Kontext, wählt passende Tools und liefert verwendbare Ergebnisse.",
+      "feature_f1": "Erkennt Hooks, Skripte und Video-Anforderungen",
+      "feature_f2": "Nutzt passende Tools aus dem Studio",
+      "feature_f3": "Erstellt Campaign-Packs aus einem Briefing",
+      "cta": "Agent Autopilot öffnen →",
       "demo_user": "Erstelle einen 7-Tage Content-Plan für mein Café auf Instagram",
       "demo_line_1": "> Briefing erkannt: Food & Lifestyle · Instagram",
       "demo_line_2": "> CreatorDNA geladen · Tonalität: Authentisch",
@@ -1632,9 +1632,9 @@
         }
       },
       "pack": {
-        "kicker": "WIE ES FUNKTIONIERT",
-        "headline": "EIN BRIEFING. EIN KLICK. ALLES FERTIG.",
-        "subheadline": "Agent Autopilot liest dein Briefing und koordiniert automatisch alle nötigen Tools.",
+        "kicker": "So funktioniert es",
+        "headline": "Ein Briefing. Mehrere Assets.",
+        "subheadline": "Agent Autopilot liest dein Briefing und koordiniert die passenden Tools im Studio.",
         "briefing_label": "Dein Briefing",
         "briefing_content": "Fitness-Coach · Instagram · motivierend · Zielgruppe Frauen 25-40",
         "hooks_icon": "⚡",
@@ -1655,9 +1655,9 @@
         "plan_icon": "📅",
         "plan_title": "Content-Plan",
         "plan_desc": "30-Tage Kalender",
-        "score_pill": "✦ Creative Score: 94/100",
-        "score_note": "Automatisch bewertet und optimiert.",
-        "cta": "Agent Autopilot starten →"
+        "score_pill": "Creative Score: 94/100 (Beispiel)",
+        "score_note": "Qualität wird automatisch bewertet und bei Bedarf optimiert.",
+        "cta": "Agent Autopilot öffnen →"
       },
       "audience": {
         "kicker": "Zielgruppen",

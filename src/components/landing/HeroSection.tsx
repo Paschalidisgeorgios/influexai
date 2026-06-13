@@ -18,7 +18,7 @@ export function HeroSection() {
     if (!cleanName) return;
 
     setHasSubmittedName(true);
-    setAiText(`Willkommen, ${cleanName}. InfluexAI Studio wird initialisiert...`);
+    setAiText(`Willkommen, ${cleanName}. Dein Studio ist bereit.`);
     setIsPulsing(true);
 
     window.setTimeout(() => {
@@ -73,16 +73,16 @@ export function HeroSection() {
               color: LANDING_NEON.textSecondary,
             }}
           >
-            Vom ersten Hook bis zum fertigen Video: InfluexAI plant, schreibt und
-            erstellt Social-Media-Assets für Creator, Marken und Agenturen.
+            InfluexAI unterstützt dich dabei, aus einer Idee in wenigen Schritten
+            fertige Social-Media-Assets für Creator, Marken und Agenturen zu erstellen.
           </p>
 
           <div className="mb-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <IntentLink href="/dashboard" className="landing-neon-btn-primary">
-              Studio starten →
+              Studio öffnen →
             </IntentLink>
             <a href="#bento-features" className="landing-neon-btn-secondary">
-              Demo ansehen
+              So funktioniert es
             </a>
           </div>
 
@@ -90,11 +90,11 @@ export function HeroSection() {
             className="mb-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.08em] md:justify-start"
             style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           >
-            <span className="landing-neon-stat">20+ Tools</span>
+            <span className="landing-neon-stat">20+ KI-Tools</span>
             <span className="landing-neon-stat-divider hidden sm:inline-block" aria-hidden />
-            <span className="landing-neon-stat">30s Bis zum ersten Content</span>
+            <span className="landing-neon-stat">Erste Inhalte in wenigen Sekunden</span>
             <span className="landing-neon-stat-divider hidden sm:inline-block" aria-hidden />
-            <span className="landing-neon-stat">Kein Abo-Trick · Monatlich kündbar</span>
+            <span className="landing-neon-stat">Monatlich kündbar</span>
           </div>
 
           <form
@@ -105,7 +105,7 @@ export function HeroSection() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Dein Name hier..."
+                placeholder="Wie heißt du?"
                 disabled={hasSubmittedName}
                 autoComplete="name"
                 style={{ cursor: hasSubmittedName ? "default" : "text" }}
@@ -120,8 +120,8 @@ export function HeroSection() {
               </button>
             </div>
 
-            <p className="mt-2 text-left text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-              {hasSubmittedName ? "Name gespeichert" : "Enter zum Senden"}
+            <p className="mt-2 text-left text-xs text-white/60">
+              {hasSubmittedName ? "Name gespeichert" : "Enter zum Bestätigen"}
             </p>
 
             {hasSubmittedName && aiText && (

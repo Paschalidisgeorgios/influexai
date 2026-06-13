@@ -25,7 +25,7 @@ export default function KiAgentPage() {
       if (velocity > 15 && now - scrollCooldownRef.current > 6000) {
         scrollCooldownRef.current = now;
         capsuleShow(
-          `Hey ${userName}, nicht so schnell durch den Autopiloten! Quantenprozessoren noch am warmrechnen! 🧠`,
+          `${userName}, bitte etwas langsamer scrollen.`,
           4000
         );
       }

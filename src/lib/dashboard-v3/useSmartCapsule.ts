@@ -9,7 +9,7 @@ interface CapsuleMessage {
 }
 
 export function useSmartCapsule() {
-  const [displayText, setDisplayText] = useState("AI CORE: ACTIVE");
+  const [displayText, setDisplayText] = useState("Bereit");
   const [textOpacity, setTextOpacity] = useState(1);
   const [isFlashing, setIsFlashing] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,7 +41,7 @@ export function useSmartCapsule() {
     timerRef.current = window.setTimeout(() => {
       setTextOpacity(0);
       window.setTimeout(() => {
-        setDisplayText("AI CORE: ACTIVE");
+        setDisplayText("Bereit");
         setTextOpacity(1);
         processQueueRef.current();
       }, 200);

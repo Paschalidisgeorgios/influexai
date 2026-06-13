@@ -1,9 +1,9 @@
 export type ThemeKey = "green" | "blue" | "violet";
 
 export const THEME_COLORS = {
-  green: { r: 0, g: 255, b: 102, hex: "#00FF66", rgb: "0,255,102", label: "Fast Mode" },
-  blue: { r: 0, g: 102, b: 255, hex: "#0066FF", rgb: "0,102,255", label: "Pro Mode" },
-  violet: { r: 153, g: 0, b: 255, hex: "#9900FF", rgb: "153,0,255", label: "Lite Mode" },
+  green: { r: 0, g: 255, b: 102, hex: "#00FF66", rgb: "0,255,102", label: "Schnellmodus" },
+  blue: { r: 0, g: 102, b: 255, hex: "#0066FF", rgb: "0,102,255", label: "Profi-Modus" },
+  violet: { r: 153, g: 0, b: 255, hex: "#9900FF", rgb: "153,0,255", label: "Leichtmodus" },
 } as const;
 
 export type ThemeColor = (typeof THEME_COLORS)[ThemeKey];

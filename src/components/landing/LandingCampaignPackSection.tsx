@@ -115,7 +115,7 @@ export function LandingCampaignPackSection() {
                     {t(`${key}_title`)}
                   </p>
                   <p
-                    className="mt-0.5 text-xs leading-snug text-white/45"
+                    className="mt-0.5 text-xs leading-snug text-white/65"
                     style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
                   >
                     {t(`${key}_desc`)}

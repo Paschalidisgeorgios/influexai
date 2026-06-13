@@ -46,9 +46,9 @@ export function ApiPayloadPreview({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between p-3 font-mono text-xs tracking-wider text-white/30 transition-colors hover:text-white/50"
+        className="flex w-full items-center justify-between p-3 font-mono text-xs tracking-wider text-white/60 transition-colors hover:text-white/80"
       >
-        <span>{"{ } API PAYLOAD PREVIEW"}</span>
+        <span>Technische Vorschau</span>
         <ChevronDown
           size={14}
           className={`transition-transform ${open ? "rotate-180" : ""}`}

@@ -33,7 +33,7 @@ export function WorkspaceCanvas({ children }: { children: ReactNode }) {
 
   const onFastScroll = useCallback(() => {
     capsule.showMessage(
-      `Hey ${userName || "Creator"}, nicht so hastig! Meine Quantenprozessoren kommen nicht mit! 🧠`,
+      `${userName || "Creator"}, bitte etwas langsamer scrollen.`,
       4000,
       6
     );
@@ -53,8 +53,8 @@ export function WorkspaceCanvas({ children }: { children: ReactNode }) {
           >
             ☰
           </button>
-          <p className="font-sans text-[12px] text-white/35">
-            {pathname === "/dashboard" ? "Agent Autopilot" : "Studio"}
+          <p className="font-sans text-[12px] text-white/60">
+            {pathname === "/dashboard" ? "Agent Autopilot" : "Werkzeug"}
           </p>
           <div
             className="rounded-full border px-3 py-1 font-mono text-[11px]"
@@ -104,9 +104,9 @@ export function WorkspaceCanvas({ children }: { children: ReactNode }) {
         >
           ☰
         </button>
-        <div className="hidden font-sans text-[12px] text-white/35 lg:block">
-          Model{" "}
-          <span className="font-medium text-white/75">{activeModel.name}</span>
+        <div className="hidden font-sans text-[12px] text-white/60 lg:block">
+          Modell{" "}
+          <span className="font-medium text-white/85">{activeModel.name}</span>
         </div>
         <button
           type="button"

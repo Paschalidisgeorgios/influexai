@@ -42,7 +42,7 @@ export function PayloadPanel({ payload, rgb, embedded = false }: PayloadPanelPro
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex h-8 w-full items-center justify-between px-4 font-mono text-[9px] tracking-wider text-white/35"
+        className="flex h-8 w-full items-center justify-between px-4 font-mono text-[9px] tracking-wider text-white/60"
         style={{
           background: open ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.35)",
           backdropFilter: open ? "blur(4px)" : undefined,
@@ -54,7 +54,7 @@ export function PayloadPanel({ payload, rgb, embedded = false }: PayloadPanelPro
             className="h-1.5 w-1.5 animate-pulse rounded-full"
             style={{ background: `rgb(${rgb})` }}
           />
-          {"{ API PAYLOAD PREVIEW }"}
+          Technische Vorschau
         </span>
         <span className={`transition-transform ${open ? "rotate-180" : ""}`}>▼</span>
       </button>
@@ -64,7 +64,7 @@ export function PayloadPanel({ payload, rgb, embedded = false }: PayloadPanelPro
           <button
             type="button"
             onClick={handleCopy}
-            className="absolute top-2 right-3 z-10 rounded border border-white/10 px-2 py-0.5 font-mono text-[8px] text-white/45 hover:text-white/70"
+            className="absolute top-2 right-3 z-10 rounded border border-white/10 px-2 py-0.5 font-mono text-[8px] text-white/70 hover:text-white/90"
           >
             Kopieren
           </button>

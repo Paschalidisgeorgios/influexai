@@ -39,7 +39,7 @@ export function ModelSelector() {
 
   const onFastScroll = useCallback(() => {
     capsule.showMessage(
-      "Hey, scroll nicht so schnell! Meine Quantenprozessoren kommen nicht mit! 🧠",
+      "Bitte etwas langsamer scrollen.",
       4000,
       5
     );
@@ -55,14 +55,14 @@ export function ModelSelector() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Modelle suchen..."
-          className="w-full rounded-xl border bg-white/[0.04] px-3 py-2 text-sm text-white outline-none placeholder:text-white/25"
+          className="w-full rounded-xl border bg-white/[0.04] px-3 py-2 text-sm text-white outline-none placeholder:text-white/45"
           style={{ borderColor: "rgba(255,255,255,0.08)", fontSize: "14px" }}
         />
       </div>
       <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto py-2">
         {providers.map((provider) => (
           <div key={provider}>
-            <p className="px-4 py-2 text-[9px] tracking-[2px] text-white/20 uppercase">
+            <p className="px-4 py-2 text-[9px] tracking-[2px] text-white/45 uppercase">
               {provider}
             </p>
             {filtered
@@ -79,7 +79,7 @@ export function ModelSelector() {
                   }}
                   onLongHover={() =>
                     capsule.showMessage(
-                      "Ich sehe dich... Keine Sorge, klick einfach! 👀",
+                      "Tipp: Modell antippen zum Auswählen.",
                       3000,
                       2
                     )

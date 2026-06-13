@@ -68,7 +68,7 @@ export function AgentAutopilotV2() {
       return;
     }
     setIsGenerating(true);
-    capsuleShow("AI Core berechnet... Quantenprozessoren bei 100%! 🔥", 3000);
+    capsuleShow("Agent berechnet deine Anfrage…", 3000);
     router.push(
       `/dashboard/ki-agent/chat?prompt=${encodeURIComponent(prompt.trim())}&tool=${activeTool}`
     );
@@ -264,7 +264,7 @@ export function AgentAutopilotV2() {
         >
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-[#B4FF00] opacity-60" />
-            <span>{"{ API PAYLOAD PREVIEW }"}</span>
+            <span>Technische Vorschau</span>
           </div>
           <span
             className={`transition-transform duration-200 ${payloadOpen ? "rotate-180" : ""}`}

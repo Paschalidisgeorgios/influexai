@@ -153,11 +153,11 @@ function SliderField({
         />
       </div>
       <div className="mt-1 flex justify-between">
-        <span className="text-[9px] text-white/20">
+        <span className="text-[9px] text-white/50">
           {min}
           {field.unit ?? ""}
         </span>
-        <span className="text-[9px] text-white/20">
+        <span className="text-[9px] text-white/50">
           {max}
           {field.unit ?? ""}
         </span>
@@ -266,7 +266,7 @@ function UploadField({
             {hasFile ? "✓ Datei geladen — klicken zum Ersetzen" : `${field.label} hochladen`}
           </span>
           {field.acceptedFormats && (
-            <span className="mt-0.5 text-[9px] text-white/20">
+            <span className="mt-0.5 text-[9px] text-white/50">
               {field.acceptedFormats.join(", ").toUpperCase()}
               {field.maxFileSizeMB ? ` — max. ${field.maxFileSizeMB}MB` : ""}
               {isMulti && field.maxFiles ? ` — max. ${field.maxFiles} Dateien` : ""}
@@ -378,7 +378,7 @@ export function DynamicParamFields({
         )}
 
         {field.hint && field.type !== "prompt" && (
-          <p className="mt-1.5 text-[10px] leading-relaxed text-white/25">{field.hint}</p>
+          <p className="mt-1.5 text-[10px] leading-relaxed text-white/60">{field.hint}</p>
         )}
       </div>
     );

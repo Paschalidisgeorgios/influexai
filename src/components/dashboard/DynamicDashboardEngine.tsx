@@ -84,7 +84,7 @@ function RegistryParamPanel({ model }: { model: ToolModel }) {
 
   return (
     <div className="space-y-3 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-      <p className="text-[11px] uppercase tracking-[1.2px] text-white/30">Parameter</p>
+      <p className="text-[11px] uppercase tracking-[1.2px] text-white/60">Einstellungen</p>
       {Object.entries(model.params).map(([key, schema]) => {
         if (Array.isArray(schema)) {
           const value = String(activeParams[key] ?? schema[0] ?? "");
@@ -204,7 +204,7 @@ export function DynamicDashboardEngine({
         {showRegistryPanel && activeModel && (
           <aside className="hidden w-[300px] shrink-0 border-l border-white/[0.06] p-4 lg:block">
             <label className="mb-4 flex flex-col gap-2">
-              <span className="text-[11px] text-white/35">Prompt</span>
+              <span className="text-[11px] text-white/70">Beschreibung</span>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}

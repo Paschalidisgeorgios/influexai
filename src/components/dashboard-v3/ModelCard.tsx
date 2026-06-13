@@ -39,9 +39,9 @@ export function ModelCard({ model, theme, active, onSelect, onLongHover }: Model
         >
           {model.name}
         </span>
-        <span className="font-mono text-[10px] text-white/35">{model.creditCost}</span>
+        <span className="font-mono text-[10px] text-white/60">{model.creditCost}</span>
       </div>
-      <p className="mt-1 text-[10px] leading-snug text-white/35">{model.description}</p>
+      <p className="mt-1 text-[10px] leading-snug text-white/60">{model.description}</p>
       <div className="mt-2 flex flex-wrap gap-1">
         {model.tags.map((tag) => (
           <span

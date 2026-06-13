@@ -151,7 +151,7 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!activeTool || !toolConfig) return;
     if (prevTool.current && prevTool.current !== activeTool) {
-      showBadge(`Wechsel zu ${toolConfig.label}... Capabilities werden geladen!`, 4000, 8);
+      showBadge(`Wechsel zu ${toolConfig.label}…`, 4000, 8);
     }
     prevTool.current = activeTool;
   }, [activeTool, toolConfig, showBadge]);
@@ -159,7 +159,7 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!activeModel) return;
     if (prevModelId.current && prevModelId.current !== activeModel.id) {
-      showBadge(`${activeModel.name} aktiviert. Prozessoren kalibriert.`, 3500, 7);
+      showBadge(`${activeModel.name} aktiviert.`, 3500, 7);
     }
     prevModelId.current = activeModel.id;
   }, [activeModel, showBadge]);
@@ -167,7 +167,7 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (credits !== null && credits < 20 && !creditWarned.current) {
       creditWarned.current = true;
-      showBadge(`Achtung ${userName}! Nur noch ${credits} Credits!`, 5000, 9);
+      showBadge(`Nur noch ${credits} Credits verfügbar.`, 5000, 9);
     }
     if (credits !== null && credits >= 20) {
       creditWarned.current = false;

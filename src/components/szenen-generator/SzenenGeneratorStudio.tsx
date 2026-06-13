@@ -54,18 +54,18 @@ import {
 import { createClient } from "@/lib/supabase/client";
 
 const BUTTON_LOADING_MESSAGES = [
-  "GENERIEREN...",
-  "AI CORE AKTIV...",
-  "FAST FERTIG...",
+  "Generiere…",
+  "Szene wird berechnet…",
+  "Fast fertig…",
 ];
 
 function loadingMessages(name: string) {
   return [
-    "AI Core berechnet Szene...",
-    "Neuronale Pfade werden aktiviert...",
-    "Video-Matrix wird generiert...",
-    "Quantenprozessoren bei 98%...",
-    `Fast fertig, ${name}...`,
+    "Szene wird vorbereitet…",
+    "Video wird erstellt…",
+    "Render läuft…",
+    "Qualität wird geprüft…",
+    `Fast fertig, ${name}…`,
   ];
 }
 
@@ -278,7 +278,7 @@ export function SzenenGeneratorStudio() {
   useEffect(() => {
     if (!isFast) return;
     showMessage(
-      `Hey ${userName}, nicht so hastig! Die Quantenprozessoren kommen bei dem Tempo nicht mit! 🧠`,
+      `${userName}, bitte etwas langsamer scrollen.`,
       4000,
       5
     );
@@ -287,7 +287,7 @@ export function SzenenGeneratorStudio() {
   useMouseVelocity(canvasRef, {
     onWobble: useCallback(() => {
       showMessage(
-        `Alles okay bei dir, ${userName}? Suchst du die Credits oder testest du nur meine Framerate? ⏱️`,
+        `Alles in Ordnung, ${userName}?`,
         4000,
         3
       );
@@ -385,7 +385,7 @@ export function SzenenGeneratorStudio() {
       setDialogStep(1);
       applyTheme("violet");
       showMessage(
-        `Geisteskranke Idee, ${userName}. Ich liebe es! Prozessoren übertaktet. Klick auf GENERIEREN! 🔥`,
+        `Gute Idee, ${userName}. Prüfe die Einstellungen und klicke auf Generieren.`,
         6000,
         10
       );
@@ -420,7 +420,7 @@ export function SzenenGeneratorStudio() {
       if (validationError.includes("Startbild")) {
         setUploadError(true);
         showMessage(
-          "Bitte lade zuerst ein Startbild hoch — ohne geht die Magie nicht! 🖼️",
+          "Bitte lade zuerst ein Startbild hoch.",
           4000,
           6
         );

@@ -8,7 +8,6 @@ import {
   Star,
   Layers,
   ArrowRight,
-  Play,
   ChevronRight,
   TrendingUp,
   Palette,
@@ -25,11 +24,11 @@ interface BentoCard {
 }
 
 const STATUS_MESSAGES = [
-  "AI CORE: ACTIVE",
-  "RENDERING ENGINE: ONLINE",
-  "CAMPAIGN PACK: READY",
-  "MODEL_COMPUTING...",
-  "SYNTHESIZING OUTPUT",
+  "Studio bereit",
+  "Render-Engine online",
+  "Campaign Pack verfügbar",
+  "Modell wird geladen…",
+  "Ausgabe wird vorbereitet",
 ];
 
 const TOOL_CHIPS = ["Image", "Video", "Voice", "Campaign Pack"];
@@ -39,7 +38,7 @@ const BENTO_CARDS: BentoCard[] = [
     icon: <LayoutGrid size={20} />,
     title: "Campaign Packs",
     description:
-      "Ein Briefing. Hooks, Skript, Visuals, Captions und Content-Plan — vollautomatisch generiert.",
+      "Ein Briefing. Hooks, Skript, Visuals, Captions und Content-Plan — strukturiert generiert.",
     accent: "green",
     tag: "Automation",
     intentKey: "agent-autopilot",
@@ -48,7 +47,7 @@ const BENTO_CARDS: BentoCard[] = [
     icon: <Star size={20} />,
     title: "KI-Influencer",
     description:
-      "Dein eigener KI-Avatar. Einmal trainiert, unbegrenzt nutzbar — in jedem Format und Style.",
+      "Dein eigener KI-Avatar. Einmal trainiert, flexibel nutzbar — in verschiedenen Formaten und Styles.",
     accent: "gold",
     tag: "Avatar",
     intentKey: "avatar-live",
@@ -136,8 +135,8 @@ function HeroPreview() {
           className="border-b p-5 md:border-b-0 md:border-r"
           style={{ borderColor: "var(--border-soft)" }}
         >
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/30 uppercase">
-            AI Command
+          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
+            KI-Befehl
           </p>
           <div
             className="rounded-xl border p-4"
@@ -154,7 +153,7 @@ function HeroPreview() {
                   style={{ width: "72%", background: LANDING_NEON.green }}
                 />
               </div>
-              <span className="font-mono text-[9px] text-white/30">72%</span>
+              <span className="font-mono text-[9px] text-white/50">72%</span>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -170,8 +169,8 @@ function HeroPreview() {
         </div>
 
         <div className="p-5">
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/30 uppercase">
-            Output Preview
+          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
+            Vorschau
           </p>
           <div className="space-y-2">
             {[
@@ -197,7 +196,7 @@ function HeroPreview() {
                 >
                   {done ? "✓" : ""}
                 </span>
-                <span className={`text-xs ${done ? "text-white/70" : "text-white/30"}`}>
+                <span className={`text-xs ${done ? "text-white/80" : "text-white/55"}`}>
                   {label}
                 </span>
                 {!done && (
@@ -224,8 +223,8 @@ function HeroPreview() {
               background: `rgba(${LANDING_NEON.greenRgb}, 0.05)`,
             }}
           >
-            <p className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.cyan}B3` }}>
-              Creative Score: 94/100 · Export bereit
+            <p className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.cyan}CC` }}>
+              Creative Score: 94/100 · Export bereit (Beispiel)
             </p>
           </div>
         </div>
@@ -327,22 +326,19 @@ export default function SentientInterface2026() {
         </div>
 
         <h2 className="mx-auto max-w-3xl text-[clamp(36px,6vw,72px)] font-bold leading-[1.06] tracking-tight text-white">
-          Deine Idee.{" "}
-          <span className="landing-neon-headline-accent">Von KI zur Kampagne.</span>
+          Briefing rein.{" "}
+          <span className="landing-neon-headline-accent">Assets raus.</span>
         </h2>
 
-        <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/45">
-          InfluexAI plant, schreibt und erstellt Social-Media-Assets für Creator, Marken und
-          Agenturen.
+        <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/70">
+          Vom KI-Befehl bis zum exportfertigen Ergebnis — Bild, Video, Text und Kampagnen
+          in einem Workflow.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <IntentLink href="/dashboard" className="landing-neon-btn-primary">
-            Studio starten <ArrowRight size={15} aria-hidden="true" />
+            Studio öffnen <ArrowRight size={15} aria-hidden="true" />
           </IntentLink>
-          <a href="#bento-features" className="landing-neon-btn-secondary">
-            <Play size={14} aria-hidden="true" /> Demo ansehen
-          </a>
         </div>
 
         <HeroPreview />
@@ -360,8 +356,8 @@ export default function SentientInterface2026() {
             <h2 className="text-[clamp(28px,4vw,44px)] font-bold tracking-tight text-white">
               Alles in einem Studio.
             </h2>
-            <p className="mx-auto mt-3 max-w-md text-[14px] text-white/40">
-              Über 20 Tools. Ein Workspace. Vollständig auf Creator und Marken ausgerichtet.
+            <p className="mx-auto mt-3 max-w-md text-[14px] text-white/65">
+              Über 20 Tools. Ein Workspace. Für Creator, Marken und Agenturen.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

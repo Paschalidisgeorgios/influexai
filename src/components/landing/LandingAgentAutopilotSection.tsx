@@ -143,7 +143,7 @@ export function LandingAgentAutopilotSection() {
               className="max-h-[240px] overflow-y-auto rounded-xl border border-white/[0.08] bg-black/30 px-4 py-3 md:max-h-none"
               style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
             >
-              <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-white/45">
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-white/60">
                 Agent Autopilot
               </span>
               <div className="mt-2 space-y-1.5 text-[0.82rem] leading-relaxed text-white/80">
