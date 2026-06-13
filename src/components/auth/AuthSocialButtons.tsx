@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithOAuthProvider } from "@/lib/auth-oauth.client";
+import {
+  getLastAuthProvider,
+  setLastAuthProvider,
+} from "@/lib/auth-last-used";
 
 const googleButtonClass =
-  "w-full flex items-center justify-center gap-2 rounded-xl border border-zinc-700/60 bg-zinc-950/40 py-3 text-xs font-medium text-white transition-all hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50";
+  "relative w-full flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white py-3 text-xs font-medium text-zinc-900 shadow-[0_1px_0_rgba(255,255,255,0.08)_inset] transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 function GoogleIcon() {
   return (
@@ -43,11 +48,18 @@ export function AuthSocialButtons({
   redirectPath,
   onError,
 }: AuthSocialButtonsProps) {
+  const t = useTranslations("auth");
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
+  const [showLastUsed, setShowLastUsed] = useState(false);
+
+  useEffect(() => {
+    setShowLastUsed(getLastAuthProvider() === "google");
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setLastAuthProvider("google");
     const { error } = await signInWithOAuthProvider(
       supabase,
       "google",
@@ -67,6 +79,11 @@ export function AuthSocialButtons({
       className={googleButtonClass}
       aria-busy={loading}
     >
+      {showLastUsed ? (
+        <span className="absolute -top-2.5 right-3 rounded-full border border-zinc-700/60 bg-zinc-900 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-zinc-300">
+          {t("last_used")}
+        </span>
+      ) : null}
       <GoogleIcon />
       Google
     </button>

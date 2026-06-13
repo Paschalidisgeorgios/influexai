@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 export function AuthGreetingLine() {
   const locale = useLocale();
   return (
-    <p className="text-white/60 text-sm mb-6">
+    <p className="mb-4 text-sm text-white/60">
       {getGreeting(locale)}! {getGreetingEmoji()}
     </p>
   );

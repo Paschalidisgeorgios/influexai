@@ -71,6 +71,7 @@
   "auth": {
     "bad_credentials": "Falsche E-Mail oder falsches Passwort.",
     "divider": "oder",
+    "last_used": "Zuletzt genutzt",
     "email": "E-Mail",
     "fill_fields": "Bitte alle Felder ausfüllen.",
     "forgot_password": "Vergessen?",

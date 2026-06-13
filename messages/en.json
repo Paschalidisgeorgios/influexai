@@ -238,6 +238,7 @@
   "auth": {
     "bad_credentials": "Incorrect email or password.",
     "divider": "or",
+    "last_used": "Last used",
     "email": "Email",
     "fill_fields": "Please fill in all fields.",
     "forgot_password": "Forgot?",

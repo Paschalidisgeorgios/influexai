@@ -6,8 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
-import { AuthOrDivider } from "@/components/auth/AuthOrDivider";
-import { AuthSocialButtons } from "@/components/auth/AuthSocialButtons";
+import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import {
   authInputClass,
   authLabelClass,
@@ -15,6 +14,7 @@ import {
   authLinkAccentClass,
   authForgotLinkClass,
 } from "@/components/auth/auth-input-classes";
+import { setLastAuthProvider } from "@/lib/auth-last-used";
 import {
   agencyWorkspaceAccessFromRows,
   isTenantAccessibleForAgency,
@@ -48,6 +48,8 @@ function LoginPageInner() {
       setLoading(false);
       return;
     }
+
+    setLastAuthProvider("email");
 
     const {
       data: { user },
@@ -103,7 +105,7 @@ function LoginPageInner() {
 
       <AuthGreetingLine />
 
-      <p className="mb-6 text-sm text-white/60">{t("login_subtitle")}</p>
+      <p className="mb-5 text-sm text-white/60">{t("login_subtitle")}</p>
 
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
@@ -111,14 +113,11 @@ function LoginPageInner() {
         </div>
       )}
 
-      <AuthSocialButtons
+      <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
         onError={(message) => setError(message)}
-      />
-
-      <AuthOrDivider />
-
-      <form className="space-y-4" onSubmit={handleLogin}>
+      >
+        <form className="space-y-4" onSubmit={handleLogin}>
         <div>
           <label className={authLabelClass}>{t("email")}</label>
           <input
@@ -162,6 +161,7 @@ function LoginPageInner() {
           {loading ? "…" : t("login_button")}
         </button>
       </form>
+      </AuthCredentialSection>
 
       <p className="mt-8 text-center text-sm text-white/50">
         {t("no_account")}{" "}

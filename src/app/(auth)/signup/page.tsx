@@ -10,14 +10,14 @@ import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { trackAbEvent } from "@/lib/ab-tracking";
 import { applyBetaOnSignup } from "@/app/actions/beta";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
-import { AuthOrDivider } from "@/components/auth/AuthOrDivider";
-import { AuthSocialButtons } from "@/components/auth/AuthSocialButtons";
+import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import {
   authInputClass,
   authLabelClass,
   authButtonClass,
   authLinkAccentClass,
 } from "@/components/auth/auth-input-classes";
+import { setLastAuthProvider } from "@/lib/auth-last-used";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import {
   agencyWorkspaceAccessFromRows,
@@ -194,6 +194,7 @@ function SignupPageInner() {
     }
 
     if (data.session && data.user) {
+      setLastAuthProvider("email");
       void trackAbEvent("signup_complete");
       const { data: profile } = await supabase
         .from("profiles")
@@ -286,15 +287,12 @@ function SignupPageInner() {
 
       <AuthGreetingLine />
 
-      <p className="mb-6 text-sm text-white/60">{t("signup_subtitle")}</p>
+      <p className="mb-5 text-sm text-white/60">{t("signup_subtitle")}</p>
 
-      <AuthSocialButtons
+      <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
         onError={(message) => setError(message)}
-      />
-
-      <AuthOrDivider />
-
+      >
       {betaCode && (
         <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
           <p className="font-semibold text-[#ccff00]">
@@ -421,6 +419,7 @@ function SignupPageInner() {
           {t("terms_link")}
         </Link>
       </p>
+      </AuthCredentialSection>
 
       <p className="mt-8 text-center text-sm text-white/50">
         {t("has_account")}{" "}
