@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Home, LogOut } from "lucide-react";
 import {
   TOOL_CATEGORIES,
   getToolsByCategory,
@@ -12,14 +12,21 @@ import { useCanvasStore } from "@/lib/canvas/canvas-store";
 import { useCredits } from "@/components/credits/BuyCreditsProvider";
 import { AnimatedCredits } from "@/components/ui/AnimatedCredits";
 import { creditsDisplayColor } from "@/lib/credits-display-color";
+import { createClient } from "@/lib/supabase/client";
 
 export function CanvasSidebar() {
   const spawnControlNode = useCanvasStore((s) => s.spawnControlNode);
   const { credits, isOptimistic, openBuyModal } = useCredits();
   const [openCategory, setOpenCategory] = useState<string | null>("ERSTELLEN");
+  const supabase = createClient();
 
   const creditColor =
     typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
 
   return (
     <aside className="relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md">
@@ -112,6 +119,14 @@ export function CanvasSidebar() {
         >
           Credits
         </Link>
+        <button
+          type="button"
+          onClick={() => void handleLogout()}
+          className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-zinc-500 transition-all duration-300 hover:border-red-900/30 hover:bg-red-950/20 hover:text-red-400"
+        >
+          <LogOut className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={1.75} />
+          Abmelden
+        </button>
       </div>
     </aside>
   );
