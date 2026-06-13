@@ -6,11 +6,14 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
+import { AuthOrDivider } from "@/components/auth/AuthOrDivider";
+import { AuthSocialButtons } from "@/components/auth/AuthSocialButtons";
 import {
   authInputClass,
   authLabelClass,
   authButtonClass,
   authLinkAccentClass,
+  authForgotLinkClass,
 } from "@/components/auth/auth-input-classes";
 import {
   agencyWorkspaceAccessFromRows,
@@ -94,18 +97,26 @@ function LoginPageInner() {
         InfluexAI
       </div>
 
-      <AuthGreetingLine />
-
-      <h1 className="mb-2 text-2xl font-semibold text-white">
+      <h1 className="mb-2 text-2xl font-semibold uppercase tracking-wider text-white">
         {t("login_title")}
       </h1>
-      <p className="mb-8 text-sm text-white/60">{t("login_subtitle")}</p>
+
+      <AuthGreetingLine />
+
+      <p className="mb-6 text-sm text-white/60">{t("login_subtitle")}</p>
 
       {error && (
-        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
+        <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
         </div>
       )}
+
+      <AuthSocialButtons
+        redirectPath={searchParams.get("redirect")}
+        onError={(message) => setError(message)}
+      />
+
+      <AuthOrDivider />
 
       <form className="space-y-4" onSubmit={handleLogin}>
         <div>
@@ -126,7 +137,7 @@ function LoginPageInner() {
             <label className={authLabelClass}>{t("password")}</label>
             <Link
               href="/forgot-password"
-              className="auth-glass-link-muted text-xs hover:text-[#ccff00] transition-colors"
+              className={authForgotLinkClass}
             >
               {t("forgot_password")}
             </Link>
@@ -152,13 +163,7 @@ function LoginPageInner() {
         </button>
       </form>
 
-      <div className="my-6 flex items-center gap-3">
-        <div className="auth-glass-divider" />
-        <span className="text-xs text-white/25">{t("divider")}</span>
-        <div className="auth-glass-divider" />
-      </div>
-
-      <p className="text-center text-sm text-white/50">
+      <p className="mt-8 text-center text-sm text-white/50">
         {t("no_account")}{" "}
         <Link href="/auth/sign-up" className={authLinkAccentClass}>
           {t("signup_link")}

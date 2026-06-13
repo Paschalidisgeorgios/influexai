@@ -10,6 +10,8 @@ import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { trackAbEvent } from "@/lib/ab-tracking";
 import { applyBetaOnSignup } from "@/app/actions/beta";
 import { AuthGreetingLine } from "@/components/auth/auth-greeting-line";
+import { AuthOrDivider } from "@/components/auth/AuthOrDivider";
+import { AuthSocialButtons } from "@/components/auth/AuthSocialButtons";
 import {
   authInputClass,
   authLabelClass,
@@ -278,12 +280,20 @@ function SignupPageInner() {
         InfluexAI
       </div>
 
-      <AuthGreetingLine />
-
-      <h1 className="mb-2 text-2xl font-semibold text-white">
+      <h1 className="mb-2 text-2xl font-semibold uppercase tracking-wider text-white">
         {t("signup_title")}
       </h1>
+
+      <AuthGreetingLine />
+
       <p className="mb-6 text-sm text-white/60">{t("signup_subtitle")}</p>
+
+      <AuthSocialButtons
+        redirectPath={searchParams.get("redirect")}
+        onError={(message) => setError(message)}
+      />
+
+      <AuthOrDivider />
 
       {betaCode && (
         <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
@@ -412,13 +422,7 @@ function SignupPageInner() {
         </Link>
       </p>
 
-      <div className="my-6 flex items-center gap-3">
-        <div className="auth-glass-divider" />
-        <span className="text-xs text-white/25">{t("divider")}</span>
-        <div className="auth-glass-divider" />
-      </div>
-
-      <p className="text-center text-sm text-white/50">
+      <p className="mt-8 text-center text-sm text-white/50">
         {t("has_account")}{" "}
         <Link href="/auth/sign-in" className={authLinkAccentClass}>
           {t("login_link")}
