@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, RotateCcw } from "lucide-react";
-import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
+import type { ToolParamSchema, ParamOption } from "@/lib/canvas/toolApiSchema";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
 import {
   uploadCanvasFile,
@@ -13,6 +13,12 @@ import { glassInputClass } from "@/lib/glass-classes";
 import { usePipelineContextOptional } from "@/lib/dashboard-v3/PipelineContext";
 import { InheritedInputBadge } from "@/components/dashboard-v3/InheritedInputBadge";
 import { PIPELINE_COMPATIBILITY } from "@/lib/dashboard-v3/usePipeline";
+
+export type ParamFieldOverride = {
+  options?: ParamOption[];
+  placeholder?: string;
+  disabled?: boolean;
+};
 
 interface ParamFieldsProps {
   params: ToolParamSchema[];
@@ -25,6 +31,8 @@ interface ParamFieldsProps {
   onReconnectField?: (key: string) => void;
   /** When true, renders all params without progressive-disclosure wrapper */
   flat?: boolean;
+  /** Runtime overrides for dynamic select options (e.g. seedance models) */
+  fieldOverrides?: Record<string, ParamFieldOverride>;
 }
 
 function isPrimaryField(field: ToolParamSchema): boolean {
@@ -45,6 +53,7 @@ export function ParamFields({
   onDisconnectField,
   onReconnectField,
   flat = false,
+  fieldOverrides,
 }: ParamFieldsProps) {
   const pipeline = usePipelineContextOptional();
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -111,6 +120,7 @@ export function ParamFields({
               field={field}
               value={values[field.key]}
               accent={accent}
+              override={fieldOverrides?.[field.key]}
               onChange={(v) => onChange(field.key, v)}
               onAssetDrop={
                 field.acceptsOutputTypes?.length && onAssetDrop
@@ -179,12 +189,14 @@ function FieldInput({
   field,
   value,
   accent,
+  override,
   onChange,
   onAssetDrop,
 }: {
   field: ToolParamSchema;
   value: unknown;
   accent: string;
+  override?: ParamFieldOverride;
   onChange: (v: unknown) => void;
   onAssetDrop?: (asset: AssetNodeData) => void;
 }) {
@@ -275,13 +287,21 @@ function FieldInput({
   }
 
   if (field.type === "select") {
+    const options = override?.options ?? field.options ?? [];
+    const placeholder = override?.placeholder ?? field.placeholder;
     return (
       <select
         className={base}
-        value={String(value ?? "")}
+        value={String(value ?? field.defaultValue ?? "")}
+        disabled={override?.disabled}
         onChange={(e) => onChange(e.target.value)}
       >
-        {field.options?.map((o) => (
+        {options.length === 0 ? (
+          <option value="">
+            {placeholder ?? "Bitte wählen…"}
+          </option>
+        ) : null}
+        {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
           </option>

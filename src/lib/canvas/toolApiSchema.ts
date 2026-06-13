@@ -408,6 +408,14 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     params: [
       { key: "prompt", label: "Szenen-Beschreibung", type: "textarea", required: true },
       {
+        key: "modelId",
+        label: "Modell",
+        type: "select",
+        required: true,
+        defaultValue: "",
+        options: [],
+      },
+      {
         key: "duration",
         label: "Dauer (Sek.)",
         type: "slider",
@@ -416,11 +424,19 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
         step: 1,
         defaultValue: 8,
       },
+      {
+        key: "resolution",
+        label: "Auflösung",
+        type: "select",
+        defaultValue: "720p",
+        options: [],
+      },
       { key: "generate_audio", label: "Audio generieren", type: "boolean", defaultValue: true },
       {
         key: "images_list",
         label: "Referenzbilder (bis 4)",
         type: "file-list",
+        required: true,
         acceptsOutputTypes: ["image"],
       },
       {

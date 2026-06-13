@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { Zap } from "lucide-react";
 import { getToolDefinition } from "@/lib/canvas/toolApiSchema";
@@ -12,13 +12,23 @@ import {
 } from "@/lib/canvas/canvas-store";
 import { useCredits } from "@/components/credits/BuyCreditsProvider";
 import { isClientCreditExempt } from "@/lib/client-credits-ui";
-import { runCanvasGeneration } from "@/lib/canvas/canvas-generate-client";
+import {
+  runCanvasGeneration,
+  validateSeedanceParams,
+  CANVAS_ASYNC_JOB_START_TIMEOUT_MS,
+} from "@/lib/canvas/canvas-generate-client";
 import {
   shouldRefundCredits,
   userMessageForCanvasError,
 } from "@/lib/canvas/canvas-api-errors";
 import Link from "next/link";
-import { ParamFields } from "./ParamFields";
+import { ParamFields, type ParamFieldOverride } from "./ParamFields";
+import {
+  pickDefaultSeedanceModel,
+  pickDefaultSeedanceResolution,
+  useSeedanceModels,
+} from "@/hooks/canvas/useSeedanceModels";
+import { useJobPolling } from "@/hooks/canvas/useJobPolling";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
 import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
@@ -34,8 +44,18 @@ import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
 
-function isPrimaryParam(field: ToolParamSchema, isAgentAutopilot: boolean): boolean {
+function isPrimaryParam(
+  field: ToolParamSchema,
+  isAgentAutopilot: boolean,
+  toolId?: string
+): boolean {
   if (isAgentAutopilot && field.key === "platforms") return true;
+  if (
+    toolId === "seedance-video" &&
+    (field.key === "modelId" || field.key === "images_list")
+  ) {
+    return true;
+  }
   if (field.type === "textarea") return true;
   if (field.key === "prompt") return true;
   if (field.type === "node-ref" && field.required) return true;
@@ -83,6 +103,9 @@ function ControlNodeComponent({
     () => new Set()
   );
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [seedanceValidationError, setSeedanceValidationError] = useState<string | null>(
+    null
+  );
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const { profile } = useCreatorProfile();
@@ -92,6 +115,87 @@ function ControlNodeComponent({
   const isHighlighted = highlightedToolId === nodeData.toolId;
   const pipelinePanel = usePipelineContextOptional();
   const pipelineStore = usePipelineStoreOptional();
+  const isSeedanceTool = nodeData.toolId === "seedance-video";
+  const seedanceModels = useSeedanceModels();
+  const jobPolling = useJobPolling();
+
+  const seedanceFieldOverrides = useMemo((): Record<string, ParamFieldOverride> | undefined => {
+    if (!isSeedanceTool) return undefined;
+
+    const modelOptions = seedanceModels.models.map((model) => ({
+      value: model.value,
+      label: model.label,
+    }));
+    const selectedModel = seedanceModels.models.find(
+      (model) => model.value === nodeData.params.modelId
+    );
+    const resolutionOptions =
+      selectedModel?.resolutionList.map((item) => ({
+        value: item.value,
+        label: item.label,
+      })) ?? [];
+
+    return {
+      modelId: {
+        options: modelOptions,
+        placeholder: seedanceModels.loading ? "Lade Modelle…" : "Modell wählen",
+        disabled: seedanceModels.loading || modelOptions.length === 0,
+      },
+      resolution: {
+        options: resolutionOptions,
+        disabled: resolutionOptions.length === 0,
+      },
+    };
+  }, [isSeedanceTool, nodeData.params.modelId, seedanceModels.loading, seedanceModels.models]);
+
+  useEffect(() => {
+    if (!isSeedanceTool || seedanceModels.loading || seedanceModels.models.length === 0) {
+      return;
+    }
+
+    const patches: Record<string, unknown> = {};
+    const currentModelId =
+      typeof nodeData.params.modelId === "string" ? nodeData.params.modelId : "";
+
+    if (!currentModelId) {
+      const defaultModel = pickDefaultSeedanceModel(seedanceModels.models);
+      if (defaultModel) patches.modelId = defaultModel.value;
+    }
+
+    const effectiveModelId =
+      typeof patches.modelId === "string" ? patches.modelId : currentModelId;
+    const model = seedanceModels.models.find((item) => item.value === effectiveModelId);
+    const currentResolution =
+      typeof nodeData.params.resolution === "string" ? nodeData.params.resolution : "";
+    const resolutionValid = model?.resolutionList.some(
+      (item) => item.value === currentResolution
+    );
+
+    if (model && !resolutionValid) {
+      const defaultResolution = pickDefaultSeedanceResolution(model);
+      if (defaultResolution) patches.resolution = defaultResolution;
+    }
+
+    if (Object.keys(patches).length > 0) {
+      updateControlParams(id, patches);
+    }
+  }, [
+    id,
+    isSeedanceTool,
+    nodeData.params.modelId,
+    nodeData.params.resolution,
+    seedanceModels.loading,
+    seedanceModels.models,
+    updateControlParams,
+  ]);
+
+  useEffect(() => {
+    if (!isSeedanceTool) {
+      jobPolling.reset();
+      setSeedanceValidationError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset when leaving seedance tool only
+  }, [isSeedanceTool]);
 
   const promptText = useMemo(
     () => buildPromptFromParams(nodeData.params, tool?.params ?? []),
@@ -166,6 +270,16 @@ function ControlNodeComponent({
           )
         : nodeData.params;
 
+    if (tool.id === "seedance-video") {
+      const validationError = validateSeedanceParams(generationParams);
+      if (validationError) {
+        setSeedanceValidationError(validationError);
+        showCreditsToast(validationError, "error");
+        return;
+      }
+      setSeedanceValidationError(null);
+    }
+
     const coins = calculateToolCoins(tool, generationParams);
     const creditExempt = isClientCreditExempt();
     let creditsReserved = false;
@@ -207,19 +321,38 @@ function ControlNodeComponent({
     try {
       const result = await runCanvasGeneration(tool, generationParams, {
         signal: abortController.signal,
+        timeoutMs:
+          tool.id === "seedance-video"
+            ? CANVAS_ASYNC_JOB_START_TIMEOUT_MS
+            : undefined,
       });
+
+      let finalUrl = result.url;
+
+      if (tool.id === "seedance-video" && result.jobId) {
+        updateAssetNode(assetId, { status: "processing", progress: 35 });
+        const polled = await jobPolling.waitForJob(
+          result.jobId,
+          "/api/seedance/status",
+          abortController.signal
+        );
+        finalUrl = polled.url;
+      }
 
       updateAssetNode(assetId, {
         status: "success",
         progress: 100,
         errorMessage: undefined,
         text: result.text,
-        url: result.url,
-        previewUrl: result.previewUrl,
+        url: finalUrl,
+        previewUrl: result.previewUrl ?? finalUrl,
         data: result.data,
       });
 
-      const pipelineOutput = resolvePipelineOutput(id, tool.id, tool.label, result);
+      const pipelineOutput = resolvePipelineOutput(id, tool.id, tool.label, {
+        ...result,
+        url: finalUrl,
+      });
       if (pipelineOutput && pipelineStore) {
         pipelineStore.registerOutput(pipelineOutput);
       }
@@ -279,6 +412,7 @@ function ControlNodeComponent({
   }, [
     addCreditsOptimistic,
     id,
+    jobPolling,
     nodeData.params,
     nodeData.toolId,
     pipelineDisconnected,
@@ -414,10 +548,13 @@ function ControlNodeComponent({
         </div>
 
         <ParamFields
-          params={visibleParams.filter((field) => isPrimaryParam(field, isAgentAutopilot))}
+          params={visibleParams.filter((field) =>
+            isPrimaryParam(field, isAgentAutopilot, nodeData.toolId)
+          )}
           values={nodeData.params}
           accent={tool.accent}
           onChange={handleChange}
+          fieldOverrides={seedanceFieldOverrides}
           disconnectedFields={pipelineDisconnected}
           onDisconnectField={(key) =>
             setPipelineDisconnected((prev) => new Set(prev).add(key))
@@ -436,7 +573,9 @@ function ControlNodeComponent({
           }}
         />
 
-        {visibleParams.some((f) => !isPrimaryParam(f, isAgentAutopilot)) ? (
+        {visibleParams.some(
+          (f) => !isPrimaryParam(f, isAgentAutopilot, nodeData.toolId)
+        ) ? (
           <>
             <button
               type="button"
@@ -451,12 +590,14 @@ function ControlNodeComponent({
               <div className="mt-3 flex flex-col gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                 <ParamFields
                   params={visibleParams.filter(
-                    (field) => !isPrimaryParam(field, isAgentAutopilot)
+                    (field) =>
+                      !isPrimaryParam(field, isAgentAutopilot, nodeData.toolId)
                   )}
                   values={nodeData.params}
                   accent={tool.accent}
                   flat
                   onChange={handleChange}
+                  fieldOverrides={seedanceFieldOverrides}
                   disconnectedFields={pipelineDisconnected}
                   onDisconnectField={(key) =>
                     setPipelineDisconnected((prev) => new Set(prev).add(key))
@@ -484,6 +625,28 @@ function ControlNodeComponent({
             prediction={viralPrediction}
             onKeywordClick={handleTrendKeyword}
           />
+        ) : null}
+
+        {isSeedanceTool && seedanceModels.error ? (
+          <p className="mt-3 text-[10px] text-red-400/80">{seedanceModels.error}</p>
+        ) : null}
+
+        {seedanceValidationError ? (
+          <p className="mt-3 text-[10px] text-red-400/80">{seedanceValidationError}</p>
+        ) : null}
+
+        {isSeedanceTool && jobPolling.status === "processing" ? (
+          <div className="mt-3 flex items-center gap-2 text-[12px] text-white/40">
+            <span
+              className="h-2 w-2 animate-pulse rounded-full bg-[#0066FF]"
+              aria-hidden
+            />
+            Video wird generiert… (kann 1–3 Minuten dauern)
+          </div>
+        ) : null}
+
+        {isSeedanceTool && jobPolling.status === "failed" && jobPolling.error ? (
+          <div className="mt-3 text-[12px] text-red-400/70">{jobPolling.error}</div>
         ) : null}
 
         {insufficient && !topUpOpen ? (

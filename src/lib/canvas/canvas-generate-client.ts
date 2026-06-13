@@ -9,10 +9,16 @@ export type CanvasGenerationResult = {
   url?: string;
   previewUrl?: string;
   data?: unknown;
+  jobId?: string;
+  generationId?: string;
+  status?: string;
 };
 
 /** Default for synchronous tools; async job tools should pass a higher `timeoutMs`. */
 export const DEFAULT_CANVAS_GENERATION_TIMEOUT_MS = 120_000;
+
+/** Shorter timeout for async job POST endpoints that return `{ jobId }` immediately. */
+export const CANVAS_ASYNC_JOB_START_TIMEOUT_MS = 60_000;
 
 export type RunCanvasGenerationOptions = {
   signal?: AbortSignal;
@@ -42,6 +48,31 @@ function mapHttpError(status: number, body: Record<string, unknown>): CanvasGene
   );
 }
 
+function resolveSeedanceImageUrl(images: unknown): string | undefined {
+  if (typeof images === "string" && images.trim()) {
+    return images.trim();
+  }
+  if (Array.isArray(images)) {
+    const first = images.find(
+      (item): item is string => typeof item === "string" && item.trim().length > 0
+    );
+    return first?.trim();
+  }
+  return undefined;
+}
+
+export function validateSeedanceParams(
+  params: Record<string, unknown>
+): string | null {
+  const imageUrl = resolveSeedanceImageUrl(params.images_list);
+  const modelId =
+    typeof params.modelId === "string" ? params.modelId.trim() : "";
+  if (!imageUrl || !modelId) {
+    return "Bitte Bild hochladen und Modell wählen";
+  }
+  return null;
+}
+
 function buildRequestBody(
   tool: ToolApiDefinition,
   params: Record<string, unknown>
@@ -55,13 +86,16 @@ function buildRequestBody(
         platform: "tiktok",
       };
     case "seedance-video": {
-      const images = params.images_list;
-      const imageUrl = Array.isArray(images) ? images[0] : undefined;
+      const imageUrl = resolveSeedanceImageUrl(params.images_list);
+      const resolution =
+        typeof params.resolution === "string" ? params.resolution.trim() : "";
       return {
         prompt: params.prompt,
         imageUrl,
+        modelId: params.modelId,
         duration: params.duration ?? 8,
         generate_audio: params.generate_audio ?? true,
+        ...(resolution ? { resolution } : {}),
       };
     }
     case "viral-hook": {
@@ -171,12 +205,16 @@ function parseApiResponse(
         ? body.image_url
         : undefined;
 
+  const jobId = typeof body.jobId === "string" ? body.jobId : undefined;
+  const responseStatus = typeof body.status === "string" ? body.status : undefined;
+  const isAsyncProcessing = responseStatus === "processing" && !!jobId;
+
   const url =
     videoUrl ??
     imageUrl ??
-    (generationId && tool.outputType === "video"
+    (!isAsyncProcessing && generationId && tool.outputType === "video"
       ? `/api/generated-video/${generationId}`
-      : generationId && tool.outputType === "image"
+      : !isAsyncProcessing && generationId && tool.outputType === "image"
         ? `/api/generated-image/${generationId}?variant=final`
         : undefined);
 
@@ -217,7 +255,7 @@ function parseApiResponse(
     };
   }
 
-  return { text, url, previewUrl, data };
+  return { text, url, previewUrl, data, jobId, generationId, status: responseStatus };
 }
 
 type SseStreamResult = {
