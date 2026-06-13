@@ -1,6 +1,10 @@
 /** App Studio — data-driven tool & API configuration for the canvas workspace */
 
 import {
+  CONTENT_KALENDER_FREQUENCIES,
+  CONTENT_KALENDER_PLATFORMS,
+} from "@/lib/content-kalender-tool";
+import {
   CANVAS_TOOL_BASE_COINS,
   CANVAS_TOOL_HIGH_RES_COINS,
 } from "./tool-credit-costs";
@@ -132,18 +136,37 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     followUpTools: ["trend-script", "flux-image"],
     apiRoute: "/api/content-kalender",
     params: [
-      { key: "monat", label: "Monat", type: "string", required: true, placeholder: "z.B. März 2026" },
       {
-        key: "post_frequenz",
+        key: "nische",
+        label: "Nische",
+        type: "string",
+        required: true,
+        placeholder: "z.B. Fitness, SaaS, Food",
+      },
+      {
+        key: "zielgruppe",
+        label: "Zielgruppe",
+        type: "string",
+        placeholder: "z.B. Creator 25–35 (optional)",
+      },
+      {
+        key: "plattform",
+        label: "Plattform",
+        type: "select",
+        required: true,
+        defaultValue: "TikTok",
+        options: CONTENT_KALENDER_PLATFORMS.map((p) => ({ value: p, label: p })),
+      },
+      {
+        key: "frequenz",
         label: "Post-Frequenz",
         type: "select",
-        defaultValue: "täglich",
-        options: [
-          { value: "täglich", label: "Täglich" },
-          { value: "3x woche", label: "3× pro Woche" },
-        ],
+        defaultValue: "taeglich",
+        options: CONTENT_KALENDER_FREQUENCIES.map((f) => ({
+          value: f.id,
+          label: f.label,
+        })),
       },
-      { key: "zielgruppe", label: "Zielgruppe", type: "string", required: true, placeholder: "z.B. Creator 25–35" },
     ],
   },
   "trend-script": {
@@ -562,7 +585,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     followUpTools: ["avatar-studio", "lipsync-studio", "seedance-video"],
     apiRoute: "/api/melodia",
     params: [
-      { key: "prompt", label: "Musik / SFX Beschreibung", type: "textarea", required: true },
+      { key: "message", label: "Musik / SFX Beschreibung", type: "textarea", required: true },
       {
         key: "duration",
         label: "Dauer",

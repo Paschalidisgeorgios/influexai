@@ -92,6 +92,61 @@ function buildRequestBody(
         scriptInput: params.script_input,
         toolId: "trend-script",
       };
+    case "content-kalender": {
+      const nischeInput =
+        typeof params.nische === "string" ? params.nische.trim() : "";
+      const zielgruppe =
+        typeof params.zielgruppe === "string" ? params.zielgruppe.trim() : "";
+      const nische = zielgruppe
+        ? `${nischeInput} (Zielgruppe: ${zielgruppe})`
+        : nischeInput;
+      return {
+        nische,
+        plattform: params.plattform ?? "TikTok",
+        frequenz: params.frequenz ?? "taeglich",
+      };
+    }
+    case "melodia-studio": {
+      const base =
+        typeof params.message === "string" ? params.message.trim() : "";
+      const context: string[] = [];
+      if (params.duration) context.push(`Dauer: ${String(params.duration)}`);
+      if (typeof params.bpm === "number" && params.bpm > 0) {
+        context.push(`BPM: ${params.bpm}`);
+      }
+      const message =
+        context.length > 0 ? `${base}\n\n${context.join("\n")}` : base;
+      return { message };
+    }
+    case "agent-autopilot": {
+      const goal =
+        typeof params.campaign_goal === "string"
+          ? params.campaign_goal.trim()
+          : "";
+      const platforms = Array.isArray(params.platforms)
+        ? (params.platforms as string[]).filter(Boolean)
+        : [];
+      const automation =
+        typeof params.automation_level === "string"
+          ? params.automation_level
+          : "";
+      const aiModel =
+        typeof params.ai_model === "string" ? params.ai_model.trim() : "";
+
+      let message = goal;
+      if (platforms.length > 0) {
+        message += `\n\nPlattformen: ${platforms.join(", ")}.`;
+      }
+      if (automation === "vollautomatisch") {
+        message += "\nAutomatisierung: Vollautomatisch.";
+      } else if (automation === "review-required") {
+        message += "\nAutomatisierung: Review erforderlich.";
+      }
+      if (aiModel) {
+        message += `\nBevorzugtes Modell: ${aiModel}.`;
+      }
+      return { message };
+    }
     default:
       return { ...params };
   }
@@ -152,7 +207,129 @@ function parseApiResponse(
       ? body.data
       : undefined;
 
+  if (Array.isArray(body.entries)) {
+    const entries = body.entries as Array<{
+      tag?: string;
+      idee?: string;
+      format?: string;
+    }>;
+    const calendarText = entries
+      .map((e) => `${e.tag ?? ""}: ${e.idee ?? ""} (${e.format ?? ""})`.trim())
+      .filter(Boolean)
+      .join("\n");
+    return {
+      text: calendarText || text,
+      data: { entries },
+    };
+  }
+
   return { text, url, previewUrl, data };
+}
+
+type SseStreamResult = {
+  text: string;
+  error?: string;
+};
+
+async function consumeSseResponse(
+  res: Response,
+  signal?: AbortSignal
+): Promise<SseStreamResult> {
+  const reader = res.body?.getReader();
+  if (!reader) {
+    throw new CanvasGenerationError(
+      "Leere Server-Antwort.",
+      "provider_error",
+      { creditsRefunded: true }
+    );
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+  let error: string | undefined;
+
+  try {
+    while (true) {
+      if (signal?.aborted) {
+        throw new DOMException("Aborted", "AbortError");
+      }
+
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        if (!line.startsWith("data: ")) continue;
+        const payload = line.slice(6).trim();
+        if (!payload) continue;
+
+        let event: Record<string, unknown>;
+        try {
+          event = JSON.parse(payload) as Record<string, unknown>;
+        } catch {
+          continue;
+        }
+
+        if (event.type === "text_delta" && typeof event.text === "string") {
+          text += event.text;
+        } else if (event.type === "error" && typeof event.message === "string") {
+          error = event.message;
+        } else if (
+          event.type === "done" &&
+          typeof event.summary === "string" &&
+          event.summary.trim()
+        ) {
+          if (!text.trim()) text = event.summary;
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return { text: text.trim(), error };
+}
+
+async function parseCanvasResponse(
+  tool: ToolApiDefinition,
+  res: Response,
+  signal?: AbortSignal
+): Promise<CanvasGenerationResult> {
+  const contentType = res.headers.get("content-type") ?? "";
+
+  if (contentType.includes("text/event-stream")) {
+    if (!res.ok) {
+      const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      throw mapHttpError(res.status, body);
+    }
+
+    const streamed = await consumeSseResponse(res, signal);
+    if (streamed.error) {
+      throw new CanvasGenerationError(streamed.error, "provider_error", {
+        creditsRefunded: true,
+      });
+    }
+    if (!streamed.text) {
+      throw new CanvasGenerationError(
+        "Leere KI-Antwort.",
+        "provider_error",
+        { creditsRefunded: true }
+      );
+    }
+    return { text: streamed.text };
+  }
+
+  const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+
+  if (!res.ok) {
+    throw mapHttpError(res.status, body);
+  }
+
+  return parseApiResponse(tool, body);
 }
 
 async function mockGeneration(
@@ -204,13 +381,7 @@ export async function runCanvasGeneration(
       signal: controller.signal,
     });
 
-    const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-
-    if (!res.ok) {
-      throw mapHttpError(res.status, body);
-    }
-
-    return parseApiResponse(tool, body);
+    return parseCanvasResponse(tool, res, controller.signal);
   } catch (err) {
     if (err instanceof CanvasGenerationError) throw err;
     if (err instanceof DOMException && err.name === "AbortError") {
