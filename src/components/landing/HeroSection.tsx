@@ -143,7 +143,7 @@ export function HeroSection() {
             onSubmit={(e) => void handleSubmit(e)}
             className="relative z-20 w-full"
           >
-            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-zinc-700/60 bg-zinc-950/40 p-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 hover:border-zinc-500 focus-within:border-[#ccff00]/35">
+            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-[#ccff00]/40 bg-zinc-950/40 p-3 shadow-[0_0_15px_rgba(204,255,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 focus-within:border-[#ccff00] focus-within:shadow-[0_0_25px_rgba(204,255,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.05)]">
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -152,13 +152,13 @@ export function HeroSection() {
                 autoComplete="off"
                 maxLength={400}
                 aria-label="Frage an das Studio-Gehirn"
-                className="min-w-0 flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none disabled:opacity-60"
+                className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-zinc-400 focus:outline-none disabled:opacity-60"
               />
               <button
                 type="submit"
                 disabled={loading || !question.trim()}
                 aria-label="Frage senden"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ccff00]/40 bg-[#ccff00]/10 text-[#ccff00] transition-all hover:border-[#ccff00]/70 hover:bg-[#ccff00]/20 hover:shadow-[0_0_16px_rgba(204,255,0,0.45)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ccff00]/50 bg-[#ccff00]/10 text-[#ccff00] transition-all duration-300 hover:scale-105 hover:border-[#ccff00] hover:bg-[#ccff00]/20 hover:shadow-[0_0_20px_rgba(204,255,0,0.45)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 disabled:hover:shadow-none"
               >
                 <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
               </button>
