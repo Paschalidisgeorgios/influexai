@@ -18,7 +18,15 @@ export type LandingFeatureCardCopy = {
 
 export const LANDING_HERO_2026 = {
   kicker: "App Studio · KI-Creator-Plattform 2026",
-  headline: "Dein Studio für KI-Visuals, Videos und virale Hooks.",
+  headlineStatic: "Dein Studio für",
+  headlineRotating: [
+    "KI-Visuals",
+    "Videos",
+    "virale Hooks",
+    "KI-Avatare",
+    "Kampagnen",
+    "Content-Workflows",
+  ] as const,
   subheadline:
     "InfluexAI bündelt Hooks, Visuals, Videos, Avatare und Kampagnen-Workflows in einem Studio.",
   ctaPrimary: "Studio starten",
