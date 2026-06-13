@@ -25,7 +25,7 @@ export function BrandWordmark({
       className={`font-sans uppercase font-extrabold text-white antialiased ${SIZE_CLASS[size]} ${className}`}
     >
       INFLUEX{" "}
-      <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.5)]">
+      <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.5)] transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(204,255,0,0.5)]">
         AI
       </span>
     </span>
@@ -36,7 +36,7 @@ export function BrandWordmark({
   return (
     <Link
       href={href}
-      className="flex shrink-0 items-center no-underline"
+      className="group flex shrink-0 cursor-pointer items-center no-underline transition-all duration-300"
       aria-label={ariaLabel}
       onClick={onClick}
     >
