@@ -697,10 +697,10 @@
     "blog": "Blog",
     "guides": "Guides",
     "trust": {
-      "operated_from_germany": "InfluexAI is operated from Germany.",
-      "secure_payments": "Secure payments via Stripe.",
+      "operated_from_germany": "InfluexAI is operated from <accent>Germany</accent>.",
+      "secure_payments": "Secure payments via <neon>Stripe</neon>.",
       "support": "Support:",
-      "cancel_anytime": "Cancel anytime from your dashboard."
+      "cancel_anytime": "Cancel anytime from your <neon>Dashboard</neon>."
     }
   },
   "gallery": {

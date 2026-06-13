@@ -447,6 +447,63 @@ const FOOTER_LINK_HREF: Partial<
 
 const SUPPORT_EMAIL = "info@influexaicreator.com";
 
+const FOOTER_LINK_CLASS =
+  "block font-sans text-sm text-zinc-400 transition-all hover:translate-x-0.5 hover:text-white";
+
+const FOOTER_COL_HEADING_CLASS =
+  "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500";
+
+const FOOTER_SOCIAL_CLASS =
+  "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
+
+const trustHighlight = {
+  accent: (chunks: React.ReactNode) => (
+    <span className="text-white">{chunks}</span>
+  ),
+  neon: (chunks: React.ReactNode) => (
+    <span className="text-[#ccff00]">{chunks}</span>
+  ),
+};
+
+function FooterXIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function FooterLinkedinIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 114.126 0 2.063 2.063 0 01-2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
+function FooterYoutubeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
+
 export function LandingFooter() {
   const t = useTranslations("footer");
   const tc = useTranslations("landingPage.footer_cols");
@@ -454,123 +511,115 @@ export function LandingFooter() {
   return (
     <>
       <LandingPreFooterCta />
-      <footer
-        className="px-4 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] pt-8 md:px-6 md:pb-6 md:pt-12 lg:px-10"
-        style={{
-          background: "var(--bg-1)",
-          borderTop: "1px solid var(--border)",
-        }}
-      >
-        <div className="mx-auto mb-8 grid max-w-[1160px] grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link href="/" className="mb-2 flex items-center gap-2 no-underline">
-              <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--accent,var(--ai-green))] text-sm leading-none text-[var(--bg-primary)] font-[family-name:var(--font-bebas)]">
-                I
-              </div>
-              <span className="font-sans text-[0.9rem] uppercase font-extrabold tracking-widest text-white antialiased">
-                INFLUEX{" "}
-                <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.5)]">
-                  AI
-                </span>
-              </span>
-            </Link>
-            <p
-              className="max-w-[210px] text-[0.83rem] leading-[1.65] text-[#888888]"
-            >
-              {t("tagline")}
-            </p>
-          </div>
-          {FOOTER_COLS.map(({ col, links }) => (
-            <div key={col}>
-              <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#888888]">
-                {tc(col)}
-              </h5>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                {links.map((link) => (
-                  <a
-                    key={link}
-                    href={FOOTER_LINK_HREF[link] ?? "#"}
-                    className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-white"
-                  >
-                    {tc(link)}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div>
-            <h5 className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#888888]">
-              {t("partner")}
-            </h5>
-            <a
-              href="/agency"
-              className="text-[0.84rem] text-[#888888] no-underline transition-colors duration-150 hover:text-white"
-            >
-              {t("for_agencies")}
-            </a>
-            <div className="mt-3">
-              <LanguageSwitcher compact />
-            </div>
-          </div>
-        </div>
+      <footer className="relative overflow-hidden border-t border-zinc-800/60 bg-[#050505] px-4 pb-[calc(6rem+env(safe-area-inset-bottom,0px))] pt-8 md:px-6 md:pb-6 md:pt-12 lg:px-10">
         <div
-          className="mx-auto mb-6 max-w-[1160px] rounded-xl border px-4 py-3 sm:px-5"
-          style={{
-            borderColor: "var(--border)",
-            background: "rgba(255,255,255,0.02)",
-          }}
-        >
-          <ul className="flex flex-col gap-1.5 text-[0.78rem] leading-relaxed text-[#888888] sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-1.5">
-            <li>{t("trust.operated_from_germany")}</li>
-            <li>{t("trust.secure_payments")}</li>
-            <li>
+          className="landing-glass-dot-grid pointer-events-none absolute inset-0 opacity-50"
+          aria-hidden
+        />
+
+        <div className="relative z-10 mx-auto max-w-[1160px]">
+          <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <Link href="/" className="mb-2 inline-block no-underline">
+                <span className="font-sans text-lg font-extrabold uppercase tracking-widest text-white">
+                  INFLUEX{" "}
+                  <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.4)]">
+                    AI
+                  </span>
+                </span>
+              </Link>
+              <p className="mt-1 max-w-[210px] font-sans text-xs text-zinc-500">
+                {t("tagline")}
+              </p>
+            </div>
+
+            {FOOTER_COLS.map(({ col, links }) => (
+              <div key={col}>
+                <h5 className={FOOTER_COL_HEADING_CLASS}>{tc(col)}</h5>
+                <nav className="space-y-2">
+                  {links.map((link) => (
+                    <a
+                      key={link}
+                      href={FOOTER_LINK_HREF[link] ?? "#"}
+                      className={FOOTER_LINK_CLASS}
+                    >
+                      {tc(link)}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            ))}
+
+            <div>
+              <h5 className={FOOTER_COL_HEADING_CLASS}>{t("partner")}</h5>
+              <nav className="space-y-2">
+                <a href="/agency" className={FOOTER_LINK_CLASS}>
+                  {t("for_agencies")}
+                </a>
+              </nav>
+              <div className="mt-4">
+                <LanguageSwitcher compact />
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6 mt-8 grid w-full grid-cols-1 gap-4 rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4 font-sans text-xs text-zinc-400 backdrop-blur-xl md:grid-cols-2">
+            <p>
+              {t.rich("trust.operated_from_germany", trustHighlight)}
+            </p>
+            <p>{t.rich("trust.secure_payments", trustHighlight)}</p>
+            <p>
               {t("trust.support")}{" "}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-[#888888] no-underline transition-colors hover:text-white"
+                className="text-[#ccff00] hover:underline"
               >
                 {SUPPORT_EMAIL}
               </a>
-            </li>
-            <li>{t("trust.cancel_anytime")}</li>
-          </ul>
-        </div>
-        <PoweredByFooter />
-        <div
-          className="mx-auto flex max-w-[1160px] flex-col items-center gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between"
-          style={{ borderTop: "1px solid var(--border)" }}
-        >
-          <p className="order-3 text-center text-[0.78rem] text-[#666666] sm:order-1 sm:text-left">
-            © 2026 InfluexAI · Hechingen, DE
-          </p>
-          <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
-            {[
-              { href: "/datenschutz", label: "Datenschutz" },
-              { href: "/impressum", label: "Impressum" },
-              { href: "/agb", label: "AGB" },
-              { href: "/widerruf", label: "Widerruf" },
-              { href: "/faq", label: "FAQ" },
-              { href: "/cookies", label: "Cookies" },
-            ].map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-[12px] text-[#888888] no-underline transition-colors duration-150 hover:text-white hover:underline"
-              >
-                {link.label}
-              </a>
-            ))}
+            </p>
+            <p>{t.rich("trust.cancel_anytime", trustHighlight)}</p>
           </div>
-          <div className="order-2 flex gap-2 sm:order-3">
-            {["𝕏", "in", "▶"].map((icon) => (
-              <a
-                key={icon}
-                href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[0.8rem] text-[#888888] no-underline transition-all duration-150 hover:border-[color:rgba(var(--ai-blue-rgb),0.35)] hover:text-white"
-              >
-                {icon}
-              </a>
-            ))}
+
+          <PoweredByFooter />
+
+          <div className="flex flex-col items-center gap-4 border-t border-zinc-800/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="order-3 font-mono text-[11px] text-zinc-600 sm:order-1 sm:text-left">
+              © 2026 InfluexAI · Hechingen, DE
+            </p>
+            <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
+              {[
+                { href: "/datenschutz", label: "Datenschutz" },
+                { href: "/impressum", label: "Impressum" },
+                { href: "/agb", label: "AGB" },
+                { href: "/widerruf", label: "Widerruf" },
+                { href: "/faq", label: "FAQ" },
+                { href: "/cookies", label: "Cookies" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-[12px] text-zinc-500 no-underline transition-colors duration-150 hover:text-white hover:underline"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <div className="order-2 flex gap-2 sm:order-3">
+              {[
+                { href: "#", label: "X", icon: FooterXIcon },
+                { href: "#", label: "LinkedIn", icon: FooterLinkedinIcon },
+                { href: "#", label: "YouTube", icon: FooterYoutubeIcon },
+              ].map(({ href, label, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className={FOOTER_SOCIAL_CLASS}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </footer>

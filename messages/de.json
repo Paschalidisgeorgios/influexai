@@ -526,15 +526,15 @@
     "partner": "Partner",
     "powered_by": "Powered by InfluexAI",
     "privacy": "Datenschutz",
-    "tagline": "Das KI Studio für virale Shorts.",
+    "tagline": "Das KI-Studio für virale Shorts.",
     "terms": "AGB",
     "blog": "Blog",
     "guides": "Guides",
     "trust": {
-      "operated_from_germany": "InfluexAI wird aus Deutschland betrieben.",
-      "secure_payments": "Sichere Zahlungen über Stripe.",
+      "operated_from_germany": "InfluexAI wird aus <accent>Deutschland</accent> betrieben.",
+      "secure_payments": "Sichere Zahlungen über <neon>Stripe</neon>.",
       "support": "Support:",
-      "cancel_anytime": "Jederzeit im Dashboard kündbar."
+      "cancel_anytime": "Jederzeit im <neon>Dashboard</neon> kündbar."
     }
   },
   "founding": {
