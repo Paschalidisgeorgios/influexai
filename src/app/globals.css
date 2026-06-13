@@ -418,10 +418,10 @@ html[data-world="brand"] {
     .landing-nav-bar--mobile,
     .landing-nav-bar.landing-nav-bar--scrolled,
     .landing-nav-bar--mobile.landing-nav-bar--scrolled {
-      background: rgba(239, 239, 234, 0.95) !important;
+      background: rgba(9, 9, 11, 0.55) !important;
       backdrop-filter: blur(12px) !important;
       -webkit-backdrop-filter: blur(12px) !important;
-      border: none !important;
+      border: 1px solid rgba(39, 39, 42, 0.5) !important;
       box-shadow: none !important;
       border-radius: 0 !important;
       padding: 10px 0 !important;
@@ -429,18 +429,18 @@ html[data-world="brand"] {
       max-height: 72px;
     }
     .landing-nav-bar .landing-nav-logo-text {
-      color: #060608 !important;
+      color: #ffffff !important;
     }
     .landing-nav-bar .landing-nav-logo-text span {
-      color: #5a7300 !important;
+      color: #ccff00 !important;
     }
     .landing-nav-menu-btn {
-      color: rgba(6, 6, 8, 0.82) !important;
-      border: 1px solid rgba(6, 6, 8, 0.12);
-      background: rgba(6, 6, 8, 0.04);
+      color: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(39, 39, 42, 0.6);
+      background: rgba(255, 255, 255, 0.04);
     }
     .landing-nav-menu-btn:hover {
-      background: rgba(6, 6, 8, 0.07) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
     }
     .dashboard-mobile-top-shell {
       position: sticky;
@@ -484,13 +484,11 @@ html[data-world="brand"] {
     gap: 12px;
     padding: 12px clamp(14px, 3vw, 22px);
     border-radius: 16px;
-    border: 1px solid rgba(6, 6, 8, 0.12);
-    background: rgba(245, 244, 239, 0.94);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.72) inset,
-      0 1px 2px rgba(6, 6, 8, 0.06);
-    backdrop-filter: blur(0);
-    -webkit-backdrop-filter: blur(0);
+    border: 1px solid rgba(39, 39, 42, 0.5);
+    background: rgba(9, 9, 11, 0.4);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition:
       padding 0.3s ease,
       box-shadow 0.3s ease,
@@ -501,19 +499,19 @@ html[data-world="brand"] {
   .landing-nav-bar--scrolled {
     padding-top: 10px;
     padding-bottom: 10px;
-    border-color: rgba(6, 6, 8, 0.16);
-    background: rgba(245, 244, 239, 0.88);
+    border-color: rgba(39, 39, 42, 0.6);
+    background: rgba(9, 9, 11, 0.55);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.75) inset,
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
       0 12px 40px rgba(0, 0, 0, 0.32),
       0 4px 12px rgba(0, 0, 0, 0.14);
   }
   .landing-nav-bar .nav-item {
     position: relative;
     display: inline-flex;
-    color: rgba(6, 6, 8, 0.78);
+    color: rgba(255, 255, 255, 0.72);
     background: transparent;
     border-radius: 8px;
     text-decoration: none;
@@ -526,42 +524,44 @@ html[data-world="brand"] {
     bottom: 2px;
     height: 2px;
     border-radius: 1px;
-    background: #b4ff00;
+    background: #ccff00;
     transform: scaleX(0);
     transform-origin: center center;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .landing-nav-bar .nav-item:hover,
   .landing-nav-bar .nav-item.nav-item--active {
-    color: #060608;
-    background: transparent;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
   }
   .landing-nav-bar .nav-item:hover::after,
   .landing-nav-bar .nav-item.nav-item--active::after {
     transform: scaleX(1);
   }
   .landing-nav-auth-link {
-    color: rgba(6, 6, 8, 0.72);
+    color: rgba(255, 255, 255, 0.72);
   }
   .landing-nav-auth-link:hover {
-    color: #060608;
+    color: #ffffff;
   }
   .landing-nav-menu-btn {
-    color: rgba(6, 6, 8, 0.82);
+    color: rgba(255, 255, 255, 0.85);
     min-width: 44px;
     min-height: 44px;
+    border: 1px solid rgba(39, 39, 42, 0.6);
+    background: rgba(255, 255, 255, 0.04);
   }
   .landing-nav-menu-btn:hover {
-    background: rgba(6, 6, 8, 0.06);
+    background: rgba(255, 255, 255, 0.08);
   }
   .landing-nav-lang-btn {
-    border-color: rgba(6, 6, 8, 0.12) !important;
-    background: rgba(6, 6, 8, 0.04) !important;
-    color: #060608 !important;
+    border-color: rgba(39, 39, 42, 0.6) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
   }
   .landing-nav-lang-btn:hover {
-    border-color: rgba(6, 6, 8, 0.2) !important;
-    background: rgba(6, 6, 8, 0.07) !important;
+    border-color: rgba(39, 39, 42, 0.8) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
   }
   .feat-card {
     @apply relative overflow-hidden transition-all duration-200;

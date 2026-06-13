@@ -198,15 +198,15 @@
 }
 
 .landing-glass-header {
-  background: rgba(3, 3, 4, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(39, 39, 42, 0.45);
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(39, 39, 42, 0.5);
 }
 
 .landing-glass-header--scrolled {
-  background: rgba(9, 9, 11, 0.72);
-  border-bottom-color: rgba(63, 63, 70, 0.45);
+  background: rgba(9, 9, 11, 0.55);
+  border-bottom-color: rgba(39, 39, 42, 0.6);
 }
 
 @media (prefers-reduced-motion: reduce) {

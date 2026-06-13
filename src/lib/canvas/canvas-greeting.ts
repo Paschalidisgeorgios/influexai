@@ -34,7 +34,7 @@ function greetingSlot(hour: number): Omit<CanvasGreetingParts, "name"> {
   };
 }
 
-/** Time-of-day greeting for the Infinite Canvas — computed fresh on each call. */
+/** Time-of-day greeting for App Studio — computed fresh on each call. */
 export function getCanvasGreeting(
   displayName?: string | null,
   date: Date = new Date()

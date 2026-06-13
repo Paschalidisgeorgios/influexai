@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDown, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TOOL_CATEGORIES, WORKSPACE_TOOLS } from "@/lib/dashboard-v3/registry";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useDashboardV3 } from "@/lib/dashboard-v3/context";
 
 export function GlobalSidebar() {
@@ -17,7 +18,6 @@ export function GlobalSidebar() {
     userName,
     sidebarOpen,
     setSidebarOpen,
-    theme,
   } = useDashboardV3();
 
   const [openCats, setOpenCats] = useState<Record<string, boolean>>(() =>
@@ -75,30 +75,13 @@ export function GlobalSidebar() {
       )}
 
       <aside
-        className={`fixed z-40 flex h-full w-[240px] shrink-0 flex-col border-r transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
+        className={`fixed z-40 flex h-full w-[240px] shrink-0 flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{
-          background: "#050507",
-          borderRightWidth: "0.5px",
-          borderColor: "rgba(255,255,255,0.05)",
-        }}
+        style={{ borderRightWidth: "0.5px" }}
       >
-        <div
-          className="flex items-center justify-between border-b px-4 py-4"
-          style={{ borderColor: "rgba(255,255,255,0.05)" }}
-        >
-          <Link href="/dashboard" className="flex items-center gap-2 no-underline">
-            <div
-              className="flex h-7 w-7 items-center justify-center rounded-lg font-display text-sm text-[#050507]"
-              style={{ background: `rgb(${theme.rgb})` }}
-            >
-              I
-            </div>
-            <span className="font-display text-base tracking-wide text-white">
-              INFLUEX<span style={{ color: `rgb(${theme.rgb})` }}>AI</span>
-            </span>
-          </Link>
+        <div className="flex items-center justify-between border-b border-zinc-800/50 px-4 py-4">
+          <BrandWordmark href="/dashboard" ariaLabel="Zum Dashboard" size="sm" />
           <button
             type="button"
             className="text-white/40 lg:hidden"

@@ -11,12 +11,21 @@ import { useFeaturesMenuLabel, NAV_LABELS_DE } from "@/lib/features-menu-i18n";
 import { FeatureCategory } from "./FeatureCategory";
 import { FeaturesPromoCard } from "./FeaturesPromoCard";
 
+const PANEL_CLASS =
+  "hidden w-[1100px] max-w-[95vw] rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl md:block";
+
 type DesktopProps = {
   open: boolean;
   onClose: () => void;
+  /** Position dropdown under nav trigger instead of fixed viewport center */
+  anchored?: boolean;
 };
 
-export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
+export function FeaturesMegaMenuDesktop({
+  open,
+  onClose,
+  anchored = false,
+}: DesktopProps) {
   const { label } = useFeaturesMenuLabel();
   const panelRef = useRef<HTMLDivElement>(null);
   const [promoVariant, setPromoVariant] = useState<FeaturePromoVariant>(
@@ -38,6 +47,10 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
 
   if (!open) return null;
 
+  const panelPositionClass = anchored
+    ? "absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2"
+    : "fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.5rem)] z-[100] -translate-x-1/2";
+
   return (
     <>
       <button
@@ -48,7 +61,7 @@ export function FeaturesMegaMenuDesktop({ open, onClose }: DesktopProps) {
       />
       <div
         ref={panelRef}
-        className="fixed left-1/2 top-[calc(var(--landing-nav-height,3.5rem)+0.5rem)] z-[100] hidden w-[1100px] max-w-[95vw] -translate-x-1/2 rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl md:block"
+        className={`${panelPositionClass} ${PANEL_CLASS}`}
         role="dialog"
         aria-modal="true"
         aria-label={label("title")}
@@ -94,7 +107,7 @@ export function FeaturesMegaMenuMobile({ onNavigate }: MobileProps) {
 
   return (
     <div className="features-mega-mobile md:hidden">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+      <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
         {label("title") || NAV_LABELS_DE.features}
       </p>
       <div className="space-y-2">

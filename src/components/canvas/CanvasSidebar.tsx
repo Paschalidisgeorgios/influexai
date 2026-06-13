@@ -22,11 +22,11 @@ export function CanvasSidebar() {
     typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
 
   return (
-    <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/60 bg-zinc-950/90 backdrop-blur-xl">
-      <nav className="flex-1 overflow-y-auto px-2 py-3">
+    <aside className="relative z-[1] flex h-full w-[280px] shrink-0 flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md">
+      <nav className="flex-1 overflow-y-auto px-2 py-3 font-sans">
         <Link
           href="/"
-          className="mb-3 flex w-full items-center gap-2 rounded-lg border border-zinc-800 bg-transparent px-3 py-2 text-xs text-gray-400 no-underline transition-all hover:border-zinc-600 hover:text-white"
+          className="mb-3 flex w-full items-center gap-2 rounded-lg border border-zinc-800/50 bg-transparent px-3 py-2 text-xs tracking-wide text-zinc-400 no-underline transition-all hover:border-zinc-700 hover:text-zinc-300"
         >
           <Home className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={1.75} />
           Zur Hauptseite

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import {
   FeaturesMegaMenuDesktop,
   FeaturesMegaMenuMobile,
@@ -35,7 +36,7 @@ const LANDING_NAV_LINK =
   "nav-item relative inline-flex items-center whitespace-nowrap text-[0.875rem] font-medium leading-none px-3 py-1.5 rounded-lg transition-colors duration-150";
 
 const HEADER_CLASS =
-  "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell backdrop-blur-md";
+  "mobile-top-shell sticky top-0 z-50 w-full max-w-[100vw] overflow-x-clip landing-nav-shell landing-nav-shell--dark border-b border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md";
 
 export function LandingNav({
   agencyMode = false,
@@ -146,21 +147,12 @@ export function LandingNav({
 
   const navLinks = darkNav && !agencyMode ? CAMPAIGN_NAV_LINKS : NAV_LINKS;
 
-  const headerShellClass = `${HEADER_CLASS}${
-    darkNav
-      ? " landing-nav-shell--dark bg-[#060608]/80 border-b border-white/[0.06]"
-      : " bg-[#EFEFEA]/95"
-  }`;
+  const headerShellClass = HEADER_CLASS;
 
-  const navLinkClass = `${LANDING_NAV_LINK} ${
-    darkNav
-      ? "text-white/70 hover:text-white hover:bg-white/[0.06]"
-      : "text-[#1a1a1a] hover:text-[#060608] hover:bg-black/[0.04]"
-  }`;
+  const navLinkClass = `${LANDING_NAV_LINK} text-white/70 hover:text-white hover:bg-white/[0.06]`;
 
-  const navBarClass = `landing-nav-bar landing-nav-bar--mobile${
-    darkNav ? " landing-nav-bar--dark" : " !bg-[#EFEFEA]/95 !backdrop-blur-md"
-  }${mounted && scrolled ? " landing-nav-bar--scrolled" : ""}`;
+  const navBarClass =
+    "landing-nav-bar landing-nav-bar--mobile landing-nav-bar--dark landing-nav-bar--glass";
 
   return (
     <>
@@ -168,19 +160,8 @@ export function LandingNav({
         className={`${headerShellClass} relative overflow-visible`}
         style={{ ["--landing-nav-height" as string]: "4rem" }}
       >
-        <nav className={navBarClass} aria-label="Hauptnavigation">
-          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 no-underline">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B4FF00] font-[family-name:var(--font-bebas)] text-lg leading-none text-[#060608]">
-              I
-            </div>
-            <span
-              className={`landing-nav-logo-text truncate font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] ${
-                darkNav ? "text-white" : "text-[#060608]"
-              }`}
-            >
-              Influex<span className={darkNav ? "text-[#B4FF00]" : "text-[#5a7300]"}>AI</span>
-            </span>
-          </Link>
+        <nav className={`${navBarClass}${mounted && scrolled ? " landing-nav-bar--scrolled" : ""}`} aria-label="Hauptnavigation">
+          <BrandWordmark href="/" />
 
           <div className="hidden md:flex items-center gap-1 min-w-0 flex-1 justify-center">
             {agencyMode ? (
@@ -199,21 +180,28 @@ export function LandingNav({
                     {t("nav_showcase")}
                   </a>
                 ) : null}
-                <button
-                  type="button"
-                  className={`${navLinkClass}${featuresOpen && !darkNav ? " bg-black/[0.06]" : ""}${
-                    featuresOpen && darkNav ? " bg-white/[0.08] text-white" : ""
-                  }`}
-                  aria-expanded={featuresOpen}
-                  aria-haspopup="dialog"
-                  onClick={toggleFeatures}
-                >
-                  {t("nav_features")}
-                  <ChevronDown
-                    className={`ml-1 h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
-                    strokeWidth={2}
-                  />
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className={`${navLinkClass}${featuresOpen ? " bg-white/[0.08] text-white" : ""}`}
+                    aria-expanded={featuresOpen}
+                    aria-haspopup="dialog"
+                    onClick={toggleFeatures}
+                  >
+                    {t("nav_features")}
+                    <ChevronDown
+                      className={`ml-1 h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
+                      strokeWidth={2}
+                    />
+                  </button>
+                  {!agencyMode ? (
+                    <FeaturesMegaMenuDesktop
+                      open={featuresOpen}
+                      onClose={closeFeatures}
+                      anchored
+                    />
+                  ) : null}
+                </div>
                 {navLinks.map((l) =>
                   l.external ? (
                     <Link key={l.href} href={l.href} className={navLinkClass}>
@@ -334,9 +322,6 @@ export function LandingNav({
             </button>
           </div>
         </nav>
-        {!agencyMode ? (
-          <FeaturesMegaMenuDesktop open={featuresOpen} onClose={closeFeatures} />
-        ) : null}
       </header>
 
       {mounted && menuOpen ? (

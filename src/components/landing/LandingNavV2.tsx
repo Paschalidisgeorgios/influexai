@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { IntentLink } from "@/hooks/useIntentTracking";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { NAV_LABELS_DE } from "@/lib/features-menu-i18n";
 import {
   FeaturesMegaMenuDesktop,
@@ -49,34 +50,34 @@ export function LandingNavV2() {
         }`}
         style={{ ["--landing-nav-height" as string]: "3.5rem" }}
       >
-        <Link
-          href="/"
-          className="shrink-0 font-[family-name:var(--font-bebas)] text-lg tracking-wide text-white no-underline"
-          onClick={closeMenu}
-        >
-          INFLUEX
-          <span className="text-[#ccff00]">AI</span>
-        </Link>
+        <BrandWordmark href="/" onClick={closeMenu} />
 
         <nav
-          className="mx-auto hidden items-center gap-6 md:flex"
+          className="relative mx-auto hidden items-center gap-6 md:flex"
           aria-label="Hauptnavigation"
         >
-          <button
-            type="button"
-            className={`landing-glass-nav-link inline-flex items-center gap-1 bg-transparent border-none cursor-pointer ${
-              featuresOpen ? "text-[#ccff00]" : ""
-            }`}
-            aria-expanded={featuresOpen}
-            aria-haspopup="dialog"
-            onClick={toggleFeatures}
-          >
-            {NAV_LABELS_DE.features}
-            <ChevronDown
-              className={`h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
-              strokeWidth={2}
+          <div className="relative">
+            <button
+              type="button"
+              className={`landing-glass-nav-link inline-flex items-center gap-1 bg-transparent border-none cursor-pointer ${
+                featuresOpen ? "text-[#ccff00]" : ""
+              }`}
+              aria-expanded={featuresOpen}
+              aria-haspopup="dialog"
+              onClick={toggleFeatures}
+            >
+              {NAV_LABELS_DE.features}
+              <ChevronDown
+                className={`h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
+                strokeWidth={2}
+              />
+            </button>
+            <FeaturesMegaMenuDesktop
+              open={featuresOpen}
+              onClose={closeFeatures}
+              anchored
             />
-          </button>
+          </div>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -129,8 +130,6 @@ export function LandingNavV2() {
             )}
           </button>
         </div>
-
-        <FeaturesMegaMenuDesktop open={featuresOpen} onClose={closeFeatures} />
       </header>
 
       {menuOpen ? (

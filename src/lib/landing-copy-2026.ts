@@ -26,7 +26,7 @@ export const HERO_KINETIC_WORDS = [
 ] as const;
 
 export const LANDING_HERO_2026 = {
-  kicker: "App Studio · Creator Studio 2026",
+  kicker: "App Studio · KI-Creator-Plattform 2026",
   headline: {
     staticPrefix: "DEIN STUDIO FÜR ",
   },

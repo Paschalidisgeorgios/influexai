@@ -16,7 +16,7 @@ import "@/styles/studio-glass.css";
 type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
 
 const GLASS_CARD =
-  "rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-xl";
+  "rounded-xl border border-zinc-800/50 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-md";
 
 const GHOST_BTN =
   "inline-flex items-center justify-center rounded-lg border border-zinc-700/60 bg-transparent px-4 py-2.5 font-sans text-sm font-medium text-zinc-300 no-underline transition-colors hover:border-white/30 hover:bg-white/5 hover:text-white";
@@ -167,7 +167,7 @@ export default function CreditsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CREDIT_PACKAGES.map((pkg) => {
-          const isPopular = pkg.popular;
+          const isPopular = pkg.id === "large";
           const highlighted =
             isPopular ||
             preselect === pkg.id ||

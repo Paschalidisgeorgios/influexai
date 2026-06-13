@@ -1,4 +1,4 @@
-/** Creator Studio 2026 — data-driven tool & API configuration for Infinite Canvas */
+/** App Studio — data-driven tool & API configuration for the canvas workspace */
 
 export type ToolOutputType = "text" | "image" | "video" | "audio" | "train" | "agent" | "calendar";
 

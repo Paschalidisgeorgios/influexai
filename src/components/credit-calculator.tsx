@@ -22,7 +22,7 @@ const HIGHLIGHT_BY_TYPE: Record<string, string> = {
 };
 
 const GLASS_CARD =
-  "rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-xl";
+  "rounded-xl border border-zinc-800/50 bg-zinc-950/40 p-6 shadow-2xl backdrop-blur-md";
 
 type Props = {
   topFeatureType?: string | null;

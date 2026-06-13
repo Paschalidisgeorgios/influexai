@@ -7,6 +7,7 @@ import { ChevronDown, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { SIDEBAR_TOOL_CATEGORIES, type NavItem } from "@/lib/dashboard-flows";
 import { useDashboardV2Optional } from "@/contexts/DashboardV2Context";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
 
 const DEFAULT_OPEN: Record<string, boolean> = {
@@ -63,18 +64,13 @@ export function GlobalSidebar({ mobile = false }: { mobile?: boolean }) {
 
   return (
     <aside
-      className={`flex h-full flex-col border-r border-white/[0.06] bg-[#08080a] ${
+      className={`flex h-full flex-col border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-md ${
         mobile ? "w-full" : "w-[240px] shrink-0"
       }`}
       style={{ borderRightWidth: "0.5px" }}
     >
-      <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-4">
-        <Link
-          href="/dashboard"
-          className="font-display text-lg tracking-wide text-white no-underline"
-        >
-          INFLUEX<span style={{ color: `rgb(${rgb})` }}>AI</span>
-        </Link>
+      <div className="flex items-center gap-2 border-b border-zinc-800/50 px-4 py-4">
+        <BrandWordmark href="/dashboard" ariaLabel="Zum Dashboard" size="sm" />
       </div>
 
       <nav className="dashboard-v2-scroll min-h-0 flex-1 overflow-y-auto px-2 py-3">

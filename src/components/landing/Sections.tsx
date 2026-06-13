@@ -467,15 +467,11 @@ export function LandingFooter() {
               <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--accent,var(--ai-green))] text-sm leading-none text-[var(--bg-primary)] font-[family-name:var(--font-bebas)]">
                 I
               </div>
-              <span
-                className="text-[0.9rem]"
-                style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-                  letterSpacing: "0.04em",
-                  color: "var(--white)",
-                }}
-              >
-                Influex<span style={{ color: "var(--acid)" }}>AI</span>
+              <span className="font-sans text-[0.9rem] uppercase font-extrabold tracking-widest text-white antialiased">
+                INFLUEX{" "}
+                <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.5)]">
+                  AI
+                </span>
               </span>
             </Link>
             <p
