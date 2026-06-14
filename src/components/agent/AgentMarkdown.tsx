@@ -1,36 +1,43 @@
 "use client";
 
-import { marked } from "marked";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import {
+  parseAgentResponse,
+  type ParsedToolCall,
+} from "@/lib/agent/parseAgentResponse";
 
 type Props = {
   content: string;
   className?: string;
 };
 
-marked.setOptions({ breaks: true, gfm: true });
-marked.use({
-  renderer: {
-    html({ text }) {
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    },
-  },
-});
-
 export function AgentMarkdown({ content, className = "" }: Props) {
-  const html = useMemo(() => {
-    return marked.parse(content, { async: false }) as string;
-  }, [content]);
+  const parsed = useMemo(() => parseAgentResponse(content), [content]);
+  const [toolCalls, setToolCalls] = useState<ParsedToolCall[]>([]);
+
+  useEffect(() => {
+    setToolCalls(parsed.toolCalls);
+  }, [parsed.toolCalls]);
+
+  void toolCalls;
 
   return (
-    <div
-      className={`agent-markdown text-sm leading-relaxed text-white ${className}`}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className={`agent-markdown text-sm leading-relaxed text-white ${className}`}>
+      <ReactMarkdown
+        components={{
+          a: ({ href, children }) => (
+            <a href={href} className="agent-markdown-link">
+              {children}
+            </a>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-semibold text-[#B4FF00]">{children}</strong>
+          ),
+        }}
+      >
+        {parsed.cleanText}
+      </ReactMarkdown>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   accentForOutputType,
 } from "./AssetLoadingShader";
 import type { AssetNodeData } from "@/lib/canvas/canvas-store";
+import { AgentMarkdown } from "@/components/agent/AgentMarkdown";
 import { AssetErrorState } from "./AssetErrorState";
 
 type AssetMediaRevealProps = {
@@ -89,9 +90,9 @@ function AssetMediaRevealComponent({
       ) : null}
 
       {nodeData.outputType === "text" || nodeData.outputType === "agent" ? (
-        <pre className="max-h-[200px] overflow-auto rounded-lg bg-black/50 p-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap text-zinc-300">
-          {nodeData.text}
-        </pre>
+        <div className="max-h-[280px] overflow-auto rounded-lg bg-black/50 p-3">
+          <AgentMarkdown content={nodeData.text ?? ""} />
+        </div>
       ) : null}
 
       {nodeData.outputType === "image" && nodeData.previewUrl ? (

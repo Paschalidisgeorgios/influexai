@@ -2160,8 +2160,20 @@ header.site-header.site-header--scrolled {
 }
 
 .agent-markdown strong {
-  color: #ffffff;
+  color: #b4ff00;
   font-weight: 600;
+}
+
+.agent-markdown a,
+.agent-markdown-link {
+  color: #b4ff00;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.agent-markdown a:hover,
+.agent-markdown-link:hover {
+  color: #ccff00;
 }
 
 .agent-markdown ol {
