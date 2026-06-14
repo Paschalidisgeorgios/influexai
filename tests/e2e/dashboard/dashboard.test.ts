@@ -51,17 +51,7 @@ test.describe("Main Dashboard", () => {
     await expect(page.getByTestId("mobile-bottom-nav")).toBeVisible();
   });
 
-  test("shows low credits warning when credits < 10", async ({
-    page,
-    request,
-  }) => {
-    await page.addInitScript(() => {
-      sessionStorage.removeItem("influexai_credits_banner_dismissed");
-    });
-    await setTestCredits(request, 5);
-    await page.reload();
-    await expect(page.getByTestId("credits-warning-banner")).toBeVisible({
-      timeout: 15000,
-    });
-  });
+  // Low-credit banner test removed (Tier 1 Wave B): CreditsWarningBanner lived only
+  // in the deleted dashboard-v2 shell. Re-introducing a low-credit warning in
+  // CanvasShell is a separate future UX task.
 });
