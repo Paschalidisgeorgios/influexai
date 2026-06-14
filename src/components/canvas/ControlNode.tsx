@@ -411,6 +411,7 @@ function ControlNodeComponent({
         progress: 5,
         status: "loading",
         statusLabel: "Agent startet…",
+        text: "",
       });
     } else {
       let progress = 0;
@@ -425,6 +426,7 @@ function ControlNodeComponent({
 
     let agentProgress = 5;
     let agentToolStartCount = 0;
+    let accumulatedText = "";
 
     try {
       const result = await runCanvasGeneration(tool, generationParams, {
@@ -435,7 +437,14 @@ function ControlNodeComponent({
             : undefined,
         onProgress: isAgentAutopilot
           ? (event) => {
-              if (event.type === "tool_start") {
+              if (event.type === "text_delta" && event.text) {
+                accumulatedText += event.text;
+                updateAssetNode(assetId, {
+                  text: accumulatedText,
+                  status: "processing",
+                  progress: Math.min(95, agentProgress + 2),
+                });
+              } else if (event.type === "tool_start") {
                 agentToolStartCount += 1;
                 agentProgress = Math.min(85, 15 + agentToolStartCount * 15);
                 updateAssetNode(assetId, {
@@ -472,7 +481,9 @@ function ControlNodeComponent({
         progress: 100,
         statusLabel: undefined,
         errorMessage: undefined,
-        text: result.text,
+        text: isAgentAutopilot
+          ? accumulatedText.trim() || result.text
+          : result.text,
         url: finalUrl,
         previewUrl: result.previewUrl ?? finalUrl,
         data: result.data,
@@ -503,11 +514,12 @@ function ControlNodeComponent({
             : promptText;
 
         if (userMessage && result.text) {
+          const assistantText = accumulatedText.trim() || result.text;
           setChatHistory([
             { role: "user", content: userMessage },
-            { role: "assistant", content: result.text },
+            { role: "assistant", content: assistantText },
           ]);
-          setLatestToolCalls(parseAgentResponse(result.text).toolCalls);
+          setLatestToolCalls(parseAgentResponse(assistantText).toolCalls);
         }
 
         agentPrimaryAssetIdRef.current = assetId;
@@ -637,7 +649,7 @@ function ControlNodeComponent({
         });
       }
 
-      let streamedText = "";
+      let accumulatedText = "";
       let agentProgress = 5;
       let agentToolStartCount = 0;
       let streamFailed = false;
@@ -682,10 +694,10 @@ function ControlNodeComponent({
 
         await consumeAgentStream(res, {
           onTextDelta: (chunk) => {
-            streamedText += chunk;
+            accumulatedText += chunk;
             if (primaryAssetId) {
               updateAssetNode(primaryAssetId, {
-                text: streamedText,
+                text: accumulatedText,
                 status: "processing",
                 progress: Math.min(95, agentProgress + 5),
               });
@@ -733,7 +745,7 @@ function ControlNodeComponent({
             window.dispatchEvent(new Event("credits-updated"));
           },
           onDone: (summary) => {
-            const finalText = streamedText.trim() || summary;
+            const finalText = accumulatedText.trim() || summary;
             if (primaryAssetId) {
               updateAssetNode(primaryAssetId, {
                 status: "success",

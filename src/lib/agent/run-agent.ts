@@ -98,8 +98,10 @@ export async function* runMasterAgentStream(
     }
 
     if (turn.turn.text) {
-      yield* emitTextChunks(turn.turn.text);
-      finalSummary += turn.turn.text;
+      const segment =
+        finalSummary.length > 0 ? `\n\n${turn.turn.text}` : turn.turn.text;
+      yield* emitTextChunks(segment);
+      finalSummary += segment;
     }
 
     if (turn.turn.toolUses.length === 0) {

@@ -92,7 +92,10 @@ function AssetMediaRevealComponent({
 
       {nodeData.outputType === "text" || nodeData.outputType === "agent" ? (
         <div className="nodrag nowheel max-h-[280px] select-text overflow-auto rounded-lg bg-black/50 p-3">
-          <AgentMarkdown content={nodeData.text ?? ""} />
+          <AgentMarkdown
+            content={nodeData.text ?? ""}
+            className="agent-markdown--canvas"
+          />
         </div>
       ) : null}
 

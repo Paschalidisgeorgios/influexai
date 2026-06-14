@@ -28,10 +28,11 @@ export type RunCanvasGenerationOptions = {
 };
 
 export type CanvasSseProgressEvent = {
-  type: "tool_start" | "tool_done" | "tool_error" | "estimate";
+  type: "tool_start" | "tool_done" | "tool_error" | "estimate" | "text_delta";
   tool?: string;
   label?: string;
   toolsDone?: number;
+  text?: string;
 };
 
 export type CanvasSseProgressHandler = (event: CanvasSseProgressEvent) => void;
@@ -354,6 +355,7 @@ async function consumeSseResponse(
 
         if (event.type === "text_delta" && typeof event.text === "string") {
           text += event.text;
+          onProgress?.({ type: "text_delta", text: event.text });
         } else if (event.type === "error" && typeof event.message === "string") {
           error = event.message;
         } else if (

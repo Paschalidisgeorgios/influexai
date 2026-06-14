@@ -2208,11 +2208,29 @@ header.site-header.site-header--scrolled {
 .agent-markdown h1,
 .agent-markdown h2,
 .agent-markdown h3 {
-  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
+  font-family: inherit;
   font-size: 1rem;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   margin: 0.75rem 0 0.35rem;
   color: #b4ff00;
+}
+
+.agent-markdown--canvas {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.agent-markdown--canvas h1,
+.agent-markdown--canvas h2,
+.agent-markdown--canvas h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.agent-markdown--canvas p {
+  margin: 0.4rem 0;
 }
 
 /* Dashboard mobile sidebar drawer */

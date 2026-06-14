@@ -125,7 +125,7 @@ export function formatCreatorProfileForPrompt(
   if (profile.produkte?.length)
     parts.push(`Produkte: ${profile.produkte.join(", ")}`);
   if (!parts.length) return "";
-  return `Das weißt du über diesen Creator:\n${parts.join("\n")}`;
+  return `Hinweis: Falls relevant, kannst du dich auf folgende Angaben aus dem Profil des Nutzers beziehen (referenziere sie explizit als 'laut deinem Profil', frage aber NICHT danach und behandle sie NICHT als allgemein bekannte Fakten über den Nutzer, wenn die aktuelle Anfrage nicht danach verlangt):\n${parts.join("\n")}`;
 }
 
 export async function extractCreatorFactsFromChat(
