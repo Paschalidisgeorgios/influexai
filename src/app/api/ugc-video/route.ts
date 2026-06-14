@@ -25,6 +25,10 @@ import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { uploadAudioDataUrlToFal } from "@/lib/upload-audio-fal";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { createGenerationRecord } from "@/lib/generation-assets";
+import {
+  finalizeGenerationVideoFromUrl,
+} from "@/lib/generation-protected-url";
+import { unsafeExternalUrlMessage } from "@/lib/security/url-validation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -93,9 +97,24 @@ export async function GET(request: NextRequest) {
     }
 
     const generation = await getGenerationForJob(supabase, userId, jobId);
-    const resultMeta = (generation?.result ?? {}) as Record<string, unknown>;
+    if (!generation) {
+      return NextResponse.json(
+        { error: "Generierung nicht gefunden." },
+        { status: 404 }
+      );
+    }
 
-    if (generation && resultMeta.notified !== true) {
+    const resultMeta = (generation.result ?? {}) as Record<string, unknown>;
+
+    const videoUrl = await finalizeGenerationVideoFromUrl(
+      supabase,
+      userId,
+      generation.id,
+      resultMeta,
+      job.video
+    );
+
+    if (resultMeta.notified !== true) {
       notifyGenerationCompletePush(
         userId,
         "UGC Video",
@@ -121,7 +140,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       status: "completed",
-      videoUrl: job.video,
+      videoUrl,
+      generationId: generation.id,
       progress: 100,
       creditsLeft: profile?.credits ?? undefined,
     });
@@ -177,6 +197,13 @@ export async function POST(request: NextRequest) {
       },
       { status: 400 }
     );
+  }
+
+  if (customPhotoUrl) {
+    const unsafeUrl = unsafeExternalUrlMessage(customPhotoUrl, "Bild-URL");
+    if (unsafeUrl) {
+      return NextResponse.json({ error: unsafeUrl }, { status: 400 });
+    }
   }
 
   if (!isAkoolConfigured()) {

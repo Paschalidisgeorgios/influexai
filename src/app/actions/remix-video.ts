@@ -4,6 +4,7 @@ import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   e2eMockRemixes,
   isE2eMockGenerationsEnabled,
@@ -105,6 +106,15 @@ export async function remixVideo(
     originalLabel = input.originalTitle?.trim()
       ? `${input.originalTitle.trim()}\n\n${desc}`
       : desc;
+  }
+
+  try {
+    checkAgentInputSafety(`${originalLabel}\n${niche}`);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const urlContext = originalUrl

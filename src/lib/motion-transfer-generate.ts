@@ -19,6 +19,7 @@ import {
   MOTION_TRANSFER_MODEL,
   MOTION_TRANSFER_UI_NAME,
 } from "@/lib/motion-transfer-config";
+import { isSafeExternalUrl } from "@/lib/security/url-validation";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 type MotionTransferOutput = {
@@ -99,6 +100,11 @@ async function resolveMediaUrl(
   }
 
   if (trimmed.startsWith("https://")) {
+    if (!isSafeExternalUrl(trimmed)) {
+      throw new Error(
+        kind === "image" ? "Ungültiges Bild-Format." : "Ungültiges Video-Format."
+      );
+    }
     return trimmed;
   }
 

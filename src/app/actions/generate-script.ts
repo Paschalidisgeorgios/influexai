@@ -16,6 +16,7 @@ import {
   parseClaudeJson,
   SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 const GENERATE_COST = 2;
 const REGENERATE_COST = 1;
@@ -178,6 +179,15 @@ export async function generateScript(
     };
   }
 
+  try {
+    checkAgentInputSafety(topic);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
+  }
+
   const access = await requireKiToolAccessForAction(GENERATE_COST);
   if (!access.ok) {
     if (access.credits !== undefined) {
@@ -257,6 +267,15 @@ export async function regenerateScript(
       success: false,
       error: "Bitte gib ein Thema oder einen Titel ein.",
     };
+  }
+
+  try {
+    checkAgentInputSafety(topic);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const access = await requireKiToolAccessForAction(REGENERATE_COST);

@@ -5,6 +5,7 @@ import { getFalKey } from "@/lib/fal-image";
 import { runMotionTransferGeneration } from "@/lib/motion-transfer-generate";
 import { MOTION_TRANSFER_CREDIT_COST } from "@/lib/motion-transfer-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,14 @@ export async function POST(request: NextRequest) {
       { error: "Bild und Video erforderlich." },
       { status: 400 }
     );
+  }
+
+  const unsafeUrl = firstUnsafeExternalUrlMessage([
+    { value: sourceImage, label: "Bild-/Video-URL" },
+    { value: referenceVideo, label: "Video-URL" },
+  ]);
+  if (unsafeUrl) {
+    return NextResponse.json({ error: unsafeUrl }, { status: 400 });
   }
 
   if (!getFalKey()) {

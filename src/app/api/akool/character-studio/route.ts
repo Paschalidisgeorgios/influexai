@@ -5,6 +5,7 @@ import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
 import { getFalKey } from "@/lib/fal-image";
 import { resolveImageUrlForSeedance } from "@/lib/seedance-generate";
+import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -39,6 +40,13 @@ export async function POST(request: NextRequest) {
       { error: "Charakterbild und Video erforderlich" },
       { status: 400 }
     );
+  }
+
+  const unsafeUrl = firstUnsafeExternalUrlMessage([
+    { value: videoUrl, label: "Video-URL" },
+  ]);
+  if (unsafeUrl) {
+    return NextResponse.json({ error: unsafeUrl }, { status: 400 });
   }
 
   return runAkoolAsyncPost({

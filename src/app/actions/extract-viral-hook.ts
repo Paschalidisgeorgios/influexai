@@ -8,6 +8,7 @@ import {
   createAnthropicMessage,
   SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { extractYouTubeVideoId, isYouTubeUrl } from "@/lib/youtube";
 import { fetchYouTubeVideoSnippet } from "@/lib/youtube-metadata";
 import {
@@ -90,6 +91,18 @@ export async function extractViralHook(
     title = "Manuelle Video-Beschreibung";
     description = manual;
     channelTitle = "Creator";
+  }
+
+  const safetyInput = [title, description, input.userNiche?.trim()]
+    .filter(Boolean)
+    .join("\n");
+  try {
+    checkAgentInputSafety(safetyInput);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const locale = (await getLocale()) as Locale;

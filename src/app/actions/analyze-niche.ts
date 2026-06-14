@@ -13,6 +13,7 @@ import {
   createAnthropicMessage,
   parseClaudeJson,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 const CREDIT_COST = 2;
 
@@ -77,6 +78,15 @@ export async function analyzeNiche(
 ): Promise<AnalyzeSuccess | AnalyzeFailure> {
   if (!topic?.trim()) {
     return { success: false, error: "Bitte gib ein Thema ein." };
+  }
+
+  try {
+    checkAgentInputSafety(topic.trim());
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const access = await requireKiToolAccessForAction(CREDIT_COST);

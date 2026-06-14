@@ -8,6 +8,7 @@ import {
   createAnthropicMessage,
   SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildContentCalendarUserPrompt,
   CONTENT_CALENDAR_SYSTEM_PROMPT,
@@ -37,6 +38,15 @@ export async function generateContentCalendar(
   const niche = input.niche?.trim();
   if (!niche) {
     return { success: false, error: "Bitte gib deine Nische ein." };
+  }
+
+  try {
+    checkAgentInputSafety(niche);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const access = await requireKiToolAccessForAction(CONTENT_CALENDAR_CREDIT_COST);

@@ -18,6 +18,8 @@ import { assertGatedFeature } from "@/lib/access.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { createGenerationRecord } from "@/lib/generation-assets";
+import { finalizeGenerationVideoFromUrl } from "@/lib/generation-protected-url";
 
 export const dynamic = "force-dynamic";
 
@@ -26,19 +28,19 @@ export const maxDuration = 300;
 const CREDIT_COST = 10;
 const JOB_PROMPT_PREFIX = "akool-job:";
 
-async function generationExistsForJob(
+async function getGenerationForJob(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
   userId: string,
   jobId: string
-): Promise<boolean> {
+) {
   const { data } = await supabase
     .from("generations")
-    .select("id")
+    .select("id, result")
     .eq("user_id", userId)
     .eq("type", "live-creator")
     .eq("prompt", `${JOB_PROMPT_PREFIX}${jobId}`)
     .maybeSingle();
-  return !!data;
+  return data;
 }
 
 /** GET ?jobId= — poll status and deduct credits once when video is ready */
@@ -69,14 +71,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const alreadyCharged = await generationExistsForJob(
-      supabase,
-      user.id,
-      jobId
-    );
-
+    let generation = await getGenerationForJob(supabase, user.id, jobId);
     let creditsLeft: number | undefined;
-    if (!alreadyCharged) {
+
+    if (!generation) {
       const deduction = await deductCredits(
         supabase,
         user.id,
@@ -84,7 +82,8 @@ export async function GET(request: NextRequest) {
         "Live Creator",
         {
           generationType: "live-creator",
-          prompt: job.video.slice(0, 500),
+          prompt: `${JOB_PROMPT_PREFIX}${jobId}`,
+          skipGenerationLog: true,
         }
       );
       if (!deduction.success) {
@@ -94,6 +93,22 @@ export async function GET(request: NextRequest) {
         );
       }
       creditsLeft = deduction.remainingCredits;
+
+      const generationId = await createGenerationRecord(
+        supabase,
+        user.id,
+        "live-creator",
+        {
+          jobId,
+          paid: true,
+          downloadPaid: true,
+          assetKind: "video",
+          mode: "final",
+        },
+        CREDIT_COST,
+        `${JOB_PROMPT_PREFIX}${jobId}`
+      );
+      generation = { id: generationId, result: { jobId, paid: true } };
       notifyGenerationCompletePush(
         user.id,
         "Talking Avatar Video",
@@ -108,10 +123,20 @@ export async function GET(request: NextRequest) {
       creditsLeft = profile?.credits ?? undefined;
     }
 
+    const resultMeta = (generation.result ?? {}) as Record<string, unknown>;
+    const videoUrl = await finalizeGenerationVideoFromUrl(
+      supabase,
+      user.id,
+      generation.id,
+      resultMeta,
+      job.video
+    );
+
     return NextResponse.json({
       success: true,
       status: "completed",
-      videoUrl: job.video,
+      videoUrl,
+      generationId: generation.id,
       progress: 100,
       creditsLeft,
     });

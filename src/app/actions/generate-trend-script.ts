@@ -8,6 +8,7 @@ import {
   createAnthropicMessage,
   SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildTrendScriptUserPrompt,
   parseTrendScriptResult,
@@ -41,6 +42,15 @@ export async function generateTrendScript(
   }
   if (!niche) {
     return { success: false, error: "Bitte gib deine Nische ein." };
+  }
+
+  try {
+    checkAgentInputSafety(`${trend}\n${niche}`);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const access = await requireKiToolAccessForAction(TREND_SCRIPT_CREDIT_COST);

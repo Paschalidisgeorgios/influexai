@@ -19,6 +19,7 @@ import {
   type ProductAdScript,
 } from "@/lib/product-ad-script";
 import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { generateKlingProductVideo, parseFalVideoError } from "@/lib/fal-video";
 import {
   configureFalClient,
@@ -254,6 +255,17 @@ export async function POST(request: NextRequest) {
   }
   if (!isValidStyle(style)) {
     return NextResponse.json({ error: "Invalid style" }, { status: 400 });
+  }
+
+  try {
+    checkAgentInputSafety(
+      [productName, productDescription, audience].filter(Boolean).join("\n")
+    );
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   if (!getFalKey()) {

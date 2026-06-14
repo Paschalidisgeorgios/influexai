@@ -5,6 +5,7 @@ import { deductCredits } from "@/lib/credits";
 import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   e2eMockOutliers,
   isE2eMockGenerationsEnabled,
@@ -48,6 +49,15 @@ export async function detectOutliers(
       success: false,
       error: "Ungültige Nische (1-200 Zeichen).",
     };
+  }
+
+  try {
+    checkAgentInputSafety(trimmedNiche);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const lang = normalizeOutlierLanguage(language);

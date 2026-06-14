@@ -10,6 +10,7 @@ import {
   VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
   VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
 } from "@/lib/viral-hook-extraktor";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,15 @@ export async function POST(request: Request) {
       { success: false, error: "Eingabe zu lang (max. 8000 Zeichen)." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(input);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const access = await assertKiToolAccess(VIRAL_HOOK_EXTRACTOR_CREDIT_COST);

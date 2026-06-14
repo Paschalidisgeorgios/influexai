@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
 import { getAnthropicConfigError, logAnthropicFailure, mapAnthropicSdkError } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildLandingDemoUserPrompt,
   LANDING_DEMO_MODEL,
@@ -64,6 +65,15 @@ export async function POST(request: Request) {
       { success: false, error: "Nische ist zu lang (max. 80 Zeichen)." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(niche);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const configError = getAnthropicConfigError();

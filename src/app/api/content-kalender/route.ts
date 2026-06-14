@@ -14,6 +14,7 @@ import {
   type ContentKalenderEntry,
   type ContentKalenderFrequency,
 } from "@/lib/content-kalender-tool";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,15 @@ export async function POST(request: Request) {
       { success: false, error: "Bitte wähle eine gültige Posting-Frequenz." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(nische);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const access = await assertKiToolAccess(CONTENT_KALENDER_TOOL_CREDIT_COST);

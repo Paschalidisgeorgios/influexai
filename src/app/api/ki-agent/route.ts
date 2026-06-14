@@ -29,6 +29,7 @@ import {
   STUDIO_KNOWLEDGE,
 } from "@/lib/agent/studioKnowledge";
 import { detectIntent } from "@/lib/agent/router";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -425,6 +426,15 @@ export async function POST(request: Request) {
       { success: false, error: "Mindestens eine Nutzer-Nachricht erforderlich." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(lastUser.content.trim());
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const access = await assertKiToolAccess(KI_AGENT_CREDIT_COST);

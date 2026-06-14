@@ -5,6 +5,7 @@ import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 const CREDIT_COST = 1;
 
@@ -232,6 +233,15 @@ export async function generateThumbnailConcepts(input: {
       success: false,
       error: "Bitte gib einen Video-Titel oder ein Thema ein.",
     };
+  }
+
+  try {
+    checkAgentInputSafety(topic);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return { success: false, error: err.message };
+    }
+    throw err;
   }
 
   const access = await requireKiToolAccessForAction(CREDIT_COST);

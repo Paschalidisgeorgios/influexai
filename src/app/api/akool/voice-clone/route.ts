@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { createAkoolSyncResult } from "@/lib/akool-status";
 import { runAkoolSyncPost } from "@/lib/akool-async-route";
+import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -29,6 +31,22 @@ export async function POST(request: NextRequest) {
       { error: "Text und Stimm-Sample erforderlich" },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(text);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
+  const unsafeUrl = firstUnsafeExternalUrlMessage([
+    { value: voiceUrl, label: "Audio-URL" },
+  ]);
+  if (unsafeUrl) {
+    return NextResponse.json({ error: unsafeUrl }, { status: 400 });
   }
 
   return runAkoolSyncPost({

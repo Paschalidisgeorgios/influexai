@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
+import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -37,6 +38,13 @@ export async function POST(request: NextRequest) {
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Video-URL erforderlich" }, { status: 400 });
+  }
+
+  const unsafeUrl = firstUnsafeExternalUrlMessage([
+    { value: videoUrl, label: "Video-URL" },
+  ]);
+  if (unsafeUrl) {
+    return NextResponse.json({ error: unsafeUrl }, { status: 400 });
   }
 
   const creditCost = minutes * AKOOL_TOOL_CREDITS.videoTranslationPerMinute;

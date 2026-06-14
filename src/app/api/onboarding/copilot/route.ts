@@ -6,6 +6,7 @@ import {
   logAnthropicFailure,
   mapAnthropicSdkError,
 } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildOnboardingUserPrompt,
   ONBOARDING_COPILOT_MODEL,
@@ -59,6 +60,15 @@ export async function POST(request: Request) {
       { success: false, error: "Nachricht ist zu lang (max. 500 Zeichen)." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(message);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const configError = getAnthropicConfigError();

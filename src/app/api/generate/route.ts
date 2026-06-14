@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
 import { getAnthropicConfigError, logAnthropicFailure, mapAnthropicSdkError } from "@/lib/anthropic";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { addCredits, deductCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
@@ -73,6 +74,23 @@ export async function POST(request: Request) {
       { success: false, error: "Bitte gib ein Thema oder Trend-Thema an." },
       { status: 400 }
     );
+  }
+
+  const safetyText = [
+    topic,
+    body.scriptInput?.trim() || body.script_input?.trim(),
+    body.niche?.trim() || body.nische?.trim(),
+    body.targetAudience?.trim() || body.zielgruppe?.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n");
+  try {
+    checkAgentInputSafety(safetyText);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const configError = getAnthropicConfigError();

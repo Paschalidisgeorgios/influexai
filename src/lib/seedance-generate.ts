@@ -27,8 +27,9 @@ import {
   updateGenerationResult,
 } from "@/lib/generation-assets";
 import { isAkoolConfigured } from "@/lib/akool-env";
-import { SEEDANCE_UI_NAME } from "@/lib/seedance-config";
+import { isSafeExternalUrl } from "@/lib/security/url-validation";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { SEEDANCE_UI_NAME } from "@/lib/seedance-config";
 
 export type SeedanceParams = {
   imageUrl: string;
@@ -146,13 +147,10 @@ export async function resolveImageUrlForSeedance(
   }
 
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    if (!trimmed.startsWith("https://")) {
+    if (!isSafeExternalUrl(trimmed)) {
       throw new Error(
         "Bild-URL muss https:// sein (localhost nicht erlaubt)"
       );
-    }
-    if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
-      throw new Error("localhost-URLs funktionieren nicht für Video-Upload");
     }
     return trimmed;
   }
@@ -181,11 +179,8 @@ export async function resolveAudioUrlForAkool(
   }
 
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    if (!trimmed.startsWith("https://")) {
+    if (!isSafeExternalUrl(trimmed)) {
       throw new Error("Audio-URL muss https:// sein");
-    }
-    if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
-      throw new Error("localhost-URLs funktionieren nicht für Audio-Upload");
     }
     return trimmed;
   }

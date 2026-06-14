@@ -11,6 +11,7 @@ import {
   VIRAL_SCORE_SYSTEM_PROMPT,
   type ViralScoreResult,
 } from "@/lib/viral-score";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { assertGatedFeature } from "@/lib/access.server";
 
 export const dynamic = "force-dynamic";
@@ -67,6 +68,15 @@ export async function POST(request: Request) {
       { success: false, error: "Bitte gib eine Nische ein." },
       { status: 400 }
     );
+  }
+
+  try {
+    checkAgentInputSafety(`${script}\n${thumbnailIdea}\n${niche}`);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   const supabase = await createServerSupabaseClient();

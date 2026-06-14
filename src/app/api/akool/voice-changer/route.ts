@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { createAkoolSyncResult } from "@/lib/akool-status";
 import { runAkoolSyncPost } from "@/lib/akool-async-route";
+import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -28,6 +29,13 @@ export async function POST(request: NextRequest) {
       { error: "Audio und Zielstimme erforderlich" },
       { status: 400 }
     );
+  }
+
+  const unsafeUrl = firstUnsafeExternalUrlMessage([
+    { value: audioUrl, label: "Audio-URL" },
+  ]);
+  if (unsafeUrl) {
+    return NextResponse.json({ error: unsafeUrl }, { status: 400 });
   }
 
   return runAkoolSyncPost({
