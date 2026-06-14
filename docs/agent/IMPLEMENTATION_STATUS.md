@@ -9,7 +9,9 @@
 - /api/agent/publish (Guard vorbereitet)
 - Supabase: agent_executions, campaign_results, agent_feedback, agent_jobs
 - GuardModal + guards.ts
-- Campaign Autopilot UI (4 Modi, Polling)
+- Campaign Autopilot UI (4 Modi, Polling). Live — charges real credits per
+  CAMPAIGN_SPECS (weekly: ~81, monthly: ~293). UI shows cost estimate before
+  start (fixed in Sprint 2 Wave A).
 - KI Agent Dashboard UI
 - toolOrchestrator.ts (Route-Mapping)
 - jobQueue.ts (Schwellenwert + async)

@@ -20,7 +20,11 @@ import type {
   ContentItem,
   ContentScores,
 } from "@/lib/agent/types";
-import { CAMPAIGN_SPECS, CAMPAIGN_STEPS } from "@/lib/agent/campaignPlanner";
+import {
+  CAMPAIGN_AUTOPILOT_IS_PREVIEW,
+  CAMPAIGN_SPECS,
+  CAMPAIGN_STEPS,
+} from "@/lib/agent/campaignPlanner";
 import { qualityDecision } from "@/lib/agent/qualityScoring";
 import { needsGuard, type GuardConfig } from "@/lib/agent/guards";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
@@ -554,10 +558,23 @@ export default function CampaignAutopilot() {
           color: "rgba(255,255,255,0.72)",
         }}
       >
-        <strong style={{ color: "#B4FF00" }}>Demo / Preview:</strong> Keine
-        Live-Recherche, keine autonome Ausführung und{" "}
-        <strong style={{ color: "#B4FF00" }}>0 Credits</strong> für
-        Beispiel-Ergebnisse.
+        {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? (
+          <p>
+            <strong style={{ color: "#B4FF00" }}>Preview:</strong> Keine
+            Live-Recherche, keine autonome Ausführung —{" "}
+            <strong style={{ color: "#B4FF00" }}>0 Credits</strong> für
+            Beispiel-Ergebnisse.
+          </p>
+        ) : (
+          <p>
+            Diese Kampagne nutzt echte KI-Generierung über mehrere Tools.
+            Geschätzte Kosten:{" "}
+            <strong style={{ color: "#B4FF00" }}>
+              ~{estimatedCredits} Credits
+            </strong>{" "}
+            für „{modeLabel}".
+          </p>
+        )}
       </div>
 
       {/* Abschnitt 1 — Eingabe */}
@@ -610,14 +627,20 @@ export default function CampaignAutopilot() {
             className="shrink-0 text-[10px]"
             style={{ color: "rgba(255,255,255,0.38)" }}
           >
-            Preview · 0 Credits
+            {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+              ? "Preview · 0 Credits"
+              : `~${estimatedCredits} Credits`}
           </span>
 
           <button
             type="button"
             disabled={phase === "running" || !canStart}
             onClick={handleStartRequest}
-            aria-label="Beispiel-Struktur starten"
+            aria-label={
+              CAMPAIGN_AUTOPILOT_IS_PREVIEW
+                ? "Vorschau generieren"
+                : `Kampagne starten · ~${estimatedCredits} Credits`
+            }
             className="flex shrink-0 items-center justify-center transition-opacity disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             style={{
               borderRadius: 4,
@@ -714,7 +737,9 @@ export default function CampaignAutopilot() {
           fontSize: 13,
         }}
       >
-        Beispiel-Struktur anzeigen · 0 Credits
+        {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+          ? "Vorschau generieren"
+          : `Kampagne starten · ~${estimatedCredits} Credits`}
       </button>
 
       {startError && (
@@ -1088,8 +1113,21 @@ function CampaignResultCard({
             className="mb-4 text-[10px] leading-[1.5]"
             style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            Preview — 0 Credits verbraucht. Beispiel-Inhalte sind Platzhalter,
-            keine veröffentlichten oder recherchierten Ergebnisse.
+            {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? (
+              <>
+                Preview — 0 Credits verbraucht. Beispiel-Inhalte sind
+                Platzhalter, keine veröffentlichten oder recherchierten
+                Ergebnisse.
+              </>
+            ) : (
+              <>
+                {result.usedCredits > 0
+                  ? `${result.usedCredits} Credits verbraucht.`
+                  : "Kampagne abgeschlossen."}{" "}
+                Inhalte wurden per KI generiert — vor Veröffentlichung bitte
+                prüfen.
+              </>
+            )}
           </p>
 
           <div className="mb-4 flex items-center gap-2">
