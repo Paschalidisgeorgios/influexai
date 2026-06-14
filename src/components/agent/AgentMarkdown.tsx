@@ -9,11 +9,22 @@ type Props = {
 };
 
 marked.setOptions({ breaks: true, gfm: true });
+marked.use({
+  renderer: {
+    html({ text }) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    },
+  },
+});
 
 export function AgentMarkdown({ content, className = "" }: Props) {
   const html = useMemo(() => {
-    const raw = marked.parse(content) as string;
-    return raw;
+    return marked.parse(content, { async: false }) as string;
   }, [content]);
 
   return (

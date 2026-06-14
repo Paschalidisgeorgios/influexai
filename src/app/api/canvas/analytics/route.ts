@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
+  calculateCanvasToolCoins,
+  getCanvasToolBaseCoins,
+} from "@/lib/canvas/tool-credit-costs";
+import {
   fetchCanvasAnalytics,
   recordCanvasGeneration,
 } from "@/lib/canvas/analytics-server";
@@ -41,10 +45,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ungültiger Body" }, { status: 400 });
   }
 
-  const { toolId, creditsUsed, prompt } = body as Record<string, unknown>;
-  if (typeof toolId !== "string" || typeof creditsUsed !== "number") {
-    return NextResponse.json({ error: "toolId und creditsUsed erforderlich" }, { status: 400 });
+  const { toolId, prompt } = body as Record<string, unknown>;
+  if (typeof toolId !== "string") {
+    return NextResponse.json({ error: "toolId erforderlich" }, { status: 400 });
   }
+
+  const params =
+    body.params && typeof body.params === "object" && !Array.isArray(body.params)
+      ? (body.params as Record<string, unknown>)
+      : {};
+
+  const creditsUsed = calculateCanvasToolCoins(
+    { id: toolId, baseCoins: getCanvasToolBaseCoins(toolId) },
+    params
+  );
 
   try {
     await recordCanvasGeneration(supabase, user.id, {

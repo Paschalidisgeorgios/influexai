@@ -9,6 +9,7 @@ import {
   relativeTimeDe,
 } from "@/lib/beta";
 import { sendBetaWelcomeEmail } from "@/lib/beta-email";
+import { assertSessionUserId } from "@/lib/server-action-auth";
 import {
   getOrCreateBetaFirstPurchaseCouponId,
   getOrCreateBetaLifetimeCouponId,
@@ -199,6 +200,11 @@ export async function applyBetaOnSignup(
   userId: string,
   codeRaw: string
 ): Promise<{ ok: boolean; error?: string }> {
+  const auth = await assertSessionUserId(userId);
+  if (!auth.ok) {
+    return { ok: false, error: auth.error };
+  }
+
   const code = codeRaw.trim().toUpperCase();
   if (!code.startsWith("BETA-")) {
     return { ok: false, error: "Ungültiger Beta-Code." };

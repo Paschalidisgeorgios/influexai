@@ -1,13 +1,16 @@
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
-/** Claude 3.5 Sonnet — landing concierge, demo & premium canvas pipeline. */
+/** Claude Sonnet 4.5 — project default for text tools and API routes. */
+export const CLAUDE_SONNET_45_MODEL = "claude-sonnet-4-5-20250929";
+
+/** @deprecated Legacy alias — prefer CLAUDE_SONNET_45_MODEL. */
 export const CLAUDE_35_SONNET_MODEL = "claude-3-5-sonnet-latest";
 
-/** Script Generator & default API routes — Claude 3.5 Sonnet. */
-export const SCRIPT_GENERATOR_MODEL = CLAUDE_35_SONNET_MODEL;
+/** Script Generator & default API routes. */
+export const SCRIPT_GENERATOR_MODEL = CLAUDE_SONNET_45_MODEL;
 
 /** Default Claude model for dashboard text tools and API routes. */
-export const ANTHROPIC_MODEL = CLAUDE_35_SONNET_MODEL;
+export const ANTHROPIC_MODEL = CLAUDE_SONNET_45_MODEL;
 
 export const CLAUDE_JSON_SYSTEM_RULE =
   "Antworte NUR mit validem JSON, ohne Markdown-Backticks oder zusätzlichen Text.";

@@ -250,7 +250,8 @@ export async function fetchPublicCreatorByUsername(
   const { count } = await supabase
     .from("generations")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", profile.id);
+    .eq("user_id", profile.id)
+    .eq("is_pinned", true);
 
   const { data: pinned } = await supabase
     .from("generations")

@@ -551,6 +551,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true, duplicate: true });
   }
 
+  const { error: claimError } = await supabaseAdmin
+    .from("stripe_events")
+    .insert({ id: event.id, type: event.type });
+
+  if (claimError) {
+    if (claimError.code === "23505") {
+      console.log("[webhook] Event race duplicate:", event.id);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    throw new Error(`stripe_events insert failed: ${claimError.message}`);
+  }
+
   try {
     if (event.type === "payment_intent.succeeded") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
@@ -607,18 +619,6 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", tenant.id);
       }
-    }
-
-    const { error: markError } = await supabaseAdmin
-      .from("stripe_events")
-      .insert({ id: event.id, type: event.type });
-
-    if (markError) {
-      if (markError.code === "23505") {
-        console.log("[webhook] Event race duplicate:", event.id);
-        return NextResponse.json({ received: true, duplicate: true });
-      }
-      throw new Error(`stripe_events insert failed: ${markError.message}`);
     }
 
     return NextResponse.json({ received: true });

@@ -5,16 +5,8 @@ import {
   isPlatformAdmin,
 } from "@/lib/access";
 
-/** Canonical platform owner email (case-insensitive match). */
-export const PLATFORM_OWNER_EMAIL = "paschalidisgeorgios38@gmail.com";
-
 export function normalizeUserEmail(email?: string | null): string {
   return email?.trim().toLowerCase() ?? "";
-}
-
-/** Exact match for the primary platform owner account. */
-export function isPlatformOwnerEmail(email?: string | null): boolean {
-  return normalizeUserEmail(email) === normalizeUserEmail(PLATFORM_OWNER_EMAIL);
 }
 
 /**
@@ -26,9 +18,9 @@ export function isAdmin(user: AccessUser | null | undefined): boolean {
   return isPlatformAdmin(user);
 }
 
-/** Admin from session email only (allowlist + owner email). */
+/** Admin from session email only (DEFAULT_ADMIN_ALLOWLIST via isCreditExemptEmail). */
 export function isAdminFromEmail(email?: string | null): boolean {
-  return isCreditExemptEmail(email) || isPlatformOwnerEmail(email);
+  return isCreditExemptEmail(email);
 }
 
 export { isAdminEmail, isCreditExemptEmail, isPlatformAdmin };

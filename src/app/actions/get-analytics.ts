@@ -1,6 +1,7 @@
 "use server";
 
 import { getCachedAnalytics } from "@/lib/cache";
+import { assertSessionUserId } from "@/lib/server-action-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type AnalyticsDateRange = "7d" | "30d" | "90d" | "all";
@@ -197,6 +198,11 @@ export async function getAnalyticsUncached(
   userId: string,
   range: AnalyticsDateRange = "7d"
 ): Promise<AnalyticsResult> {
+  const auth = await assertSessionUserId(userId);
+  if (!auth.ok) {
+    return { error: auth.error };
+  }
+
   const supabase = await createServerSupabaseClient();
   const rangeFrom = rangeStart(range);
 

@@ -458,7 +458,7 @@ function ControlNodeComponent({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           toolId: tool.id,
-          creditsUsed: coins,
+          params: nodeData.params,
           prompt: nodeData.params.prompt,
         }),
       }).catch(() => undefined);

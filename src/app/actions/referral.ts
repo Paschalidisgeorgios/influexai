@@ -8,11 +8,11 @@ import {
   SITE_URL,
 } from "@/lib/referral-code";
 import { isReferralUserId } from "@/lib/referral-ref-cookie";
+import { assertSessionUserId } from "@/lib/server-action-auth";
 import {
   awardReferredSignupBonus,
   awardReferrerSignupBonus,
   processReferralPurchase,
-  type ReferralRow,
 } from "@/lib/referral-rewards";
 
 async function resolveReferrerId(
@@ -96,6 +96,11 @@ export async function registerReferralOnSignup(
   userId: string,
   referrerCodeRaw?: string | null
 ): Promise<{ success: boolean; error?: string }> {
+  const auth = await assertSessionUserId(userId);
+  if (!auth.ok) {
+    return { success: false, error: auth.error };
+  }
+
   const supabase = await getAdminClient();
   await ensureUniqueReferralCode(supabase, userId);
 
@@ -136,8 +141,6 @@ export async function registerReferralOnSignup(
     .update({ referred_by: referrerCode })
     .eq("id", userId);
 
-  await awardReferredSignupBonus(supabase, userId);
-
   const { data: inserted, error: insertError } = await supabase
     .from("referrals")
     .insert({
@@ -155,11 +158,6 @@ export async function registerReferralOnSignup(
     return { success: false, error: insertError.message };
   }
 
-  if (inserted) {
-    await awardReferrerSignupBonus(supabase, inserted as ReferralRow);
-    await invokeProcessReferralEdge(inserted.id, "insert");
-  }
-
   return { success: true };
 }
 
@@ -167,6 +165,11 @@ export async function registerReferralOnSignup(
 export async function confirmReferralRewards(
   userId: string
 ): Promise<{ success: boolean }> {
+  const auth = await assertSessionUserId(userId);
+  if (!auth.ok) {
+    return { success: false };
+  }
+
   const supabase = await getAdminClient();
 
   const { data: referral } = await supabase
@@ -176,6 +179,8 @@ export async function confirmReferralRewards(
     .maybeSingle();
 
   if (!referral) return { success: true };
+
+  await awardReferredSignupBonus(supabase, userId);
 
   const awarded = await awardReferrerSignupBonus(supabase, referral);
   if (awarded.ok) {
