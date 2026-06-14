@@ -104,12 +104,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await chargeAvatarCredits(
+    const charged = await chargeAvatarCredits(
       supabase,
       user.id,
       job.estimated_credits,
       jobId
     );
+
+    if (charged === null) {
+      await supabase
+        .from("avatar_render_jobs")
+        .update({
+          status: "failed",
+          error: "Credit-Abzug fehlgeschlagen.",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", jobId);
+
+      return NextResponse.json(
+        { error: "Credit-Abzug fehlgeschlagen. Bitte erneut versuchen." },
+        { status: 402 }
+      );
+    }
 
     await supabase
       .from("avatar_render_jobs")

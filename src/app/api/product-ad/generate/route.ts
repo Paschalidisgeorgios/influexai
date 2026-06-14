@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { addCredits, deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { invalidateUserGenerations } from "@/lib/cache";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
@@ -298,6 +298,12 @@ export async function POST(request: NextRequest) {
         ? Math.floor(Math.random() * 999999)
         : undefined;
 
+  const deductMeta = {
+    generationType: "product_ad",
+    prompt: productName.slice(0, 500),
+    skipGenerationLog: true,
+  } as const;
+
   try {
     if (batch) {
       const focuses: ProductAdVariationFocus[] = [
@@ -308,65 +314,113 @@ export async function POST(request: NextRequest) {
       const falImageUrl = await resolveImageUrl(imageUrl);
 
       const results = await Promise.all(
-        focuses.map((focus) =>
-          runSingleGeneration(
+        focuses.map(async (focus) => {
+          const deduction = await deductCredits(
             supabase,
             user.id,
-            {
-              productName,
-              productDescription,
-              imageUrl,
-              falImageUrl,
-              audience,
-              platform,
-              style,
-              language,
-              ctaText,
-              upscale,
-              variationFocus: focus,
-            },
             perItemCost,
-            batchId
-          )
-        )
+            "Product Ad — 3 variations",
+            deductMeta
+          );
+
+          if (!deduction.success) {
+            return {
+              ok: false as const,
+              error: deduction.error ?? "Not enough credits",
+              variationFocus: focus,
+            };
+          }
+
+          try {
+            const result = await runSingleGeneration(
+              supabase,
+              user.id,
+              {
+                productName,
+                productDescription,
+                imageUrl,
+                falImageUrl,
+                audience,
+                platform,
+                style,
+                language,
+                ctaText,
+                upscale,
+                variationFocus: focus,
+              },
+              perItemCost,
+              batchId
+            );
+            return {
+              ok: true as const,
+              result,
+              variationFocus: focus,
+              creditsLeft: deduction.remainingCredits,
+            };
+          } catch (e) {
+            await addCredits(
+              supabase,
+              user.id,
+              perItemCost,
+              "Product Ad — 3 variations — Refund"
+            );
+            const message =
+              e instanceof Error
+                ? parseFalVideoError(e)
+                : "Generation failed";
+            return {
+              ok: false as const,
+              error: message,
+              variationFocus: focus,
+            };
+          }
+        })
       );
 
-      const deduction = await deductCredits(
-        supabase,
-        user.id,
-        creditCost,
-        "Product Ad — 3 variations",
-        {
-          generationType: "product_ad",
-          prompt: productName.slice(0, 500),
-          skipGenerationLog: true,
-        }
-      );
+      const variations = results
+        .filter((r): r is Extract<typeof r, { ok: true }> => r.ok)
+        .map((r) => r.result);
+      const creditsUsed = variations.length * perItemCost;
+      const lastCreditsLeft = [...results]
+        .reverse()
+        .find((r): r is Extract<typeof r, { ok: true }> => r.ok)?.creditsLeft;
 
-      if (!deduction.success) {
-        return NextResponse.json(
-          { error: deduction.error ?? "Not enough credits" },
-          { status: 402 }
+      if (variations.length > 0) {
+        await invalidateUserGenerations(user.id);
+        notifyGenerationCompletePush(
+          user.id,
+          "Product Ad Videos",
+          "/dashboard/product-ad"
         );
       }
 
-      await invalidateUserGenerations(user.id);
-
-      notifyGenerationCompletePush(
-        user.id,
-        "Product Ad Videos",
-        "/dashboard/product-ad"
-      );
-
       return NextResponse.json({
-        success: true,
+        success: variations.length > 0,
         batch: true,
         batchId,
-        variations: results,
-        creditsUsed: creditCost,
-        creditsLeft: deduction.remainingCredits,
+        variations,
+        results,
+        creditsUsed,
+        creditsLeft: lastCreditsLeft,
         generationTimeMs: Date.now() - started,
       });
+    }
+
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      creditCost,
+      isVariation ? "Product Ad — Variation" : "Product Ad — Video",
+      deductMeta
+    );
+
+    if (!deduction.success) {
+      const status =
+        deduction.error === "Nicht genug Credits." ? 402 : 500;
+      return NextResponse.json(
+        { error: deduction.error ?? "Not enough credits" },
+        { status }
+      );
     }
 
     const falImageUrl =
@@ -374,62 +428,53 @@ export async function POST(request: NextRequest) {
         ? await resolveImageUrl(imageUrl)
         : undefined;
 
-    const result = await runSingleGeneration(
-      supabase,
-      user.id,
-      {
-        productName,
-        productDescription,
-        imageUrl,
-        falImageUrl,
-        audience,
-        platform,
-        style,
-        language,
-        ctaText,
-        upscale,
-        variationFocus: body.variationFocus ?? "default",
-        editedScript: body.editedScript,
-        seed,
-      },
-      perItemCost
-    );
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      creditCost,
-      isVariation ? "Product Ad — Variation" : "Product Ad — Video",
-      {
-        generationType: "product_ad",
-        prompt: productName.slice(0, 500),
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Not enough credits" },
-        { status: 402 }
+    try {
+      const result = await runSingleGeneration(
+        supabase,
+        user.id,
+        {
+          productName,
+          productDescription,
+          imageUrl,
+          falImageUrl,
+          audience,
+          platform,
+          style,
+          language,
+          ctaText,
+          upscale,
+          variationFocus: body.variationFocus ?? "default",
+          editedScript: body.editedScript,
+          seed,
+        },
+        perItemCost
       );
+
+      await invalidateUserGenerations(user.id);
+
+      notifyGenerationCompletePush(
+        user.id,
+        "Product Ad Video",
+        `/dashboard/product-ad?generation=${result.generationId}`
+      );
+
+      return NextResponse.json({
+        success: true,
+        ...result,
+        creditsUsed: creditCost,
+        creditsLeft: deduction.remainingCredits,
+        generationTimeMs: Date.now() - started,
+        seed,
+      });
+    } catch (e) {
+      await addCredits(
+        supabase,
+        user.id,
+        creditCost,
+        isVariation ? "Product Ad — Variation — Refund" : "Product Ad — Video — Refund"
+      );
+      throw e;
     }
-
-    await invalidateUserGenerations(user.id);
-
-    notifyGenerationCompletePush(
-      user.id,
-      "Product Ad Video",
-      `/dashboard/product-ad?generation=${result.generationId}`
-    );
-
-    return NextResponse.json({
-      success: true,
-      ...result,
-      creditsUsed: creditCost,
-      creditsLeft: deduction.remainingCredits,
-      generationTimeMs: Date.now() - started,
-      seed,
-    });
   } catch (error) {
     console.error("product-ad/generate:", error);
     return NextResponse.json(

@@ -73,6 +73,69 @@ async function claimInvoice(
   return { claimed: true };
 }
 
+/**
+ * Grant credits before inserting the dedup claim row.
+ *
+ * Strictly better than claim-then-grant (where addCredits failure permanently
+ * blocks Stripe retries). Remaining edge cases without a pending/completed
+ * status column on claim tables:
+ * - Concurrent duplicate deliveries may double-grant before either claim insert.
+ * - Crash after addCredits but before claim may double-grant on Stripe retry.
+ */
+async function grantCreditsThenClaimCheckout(
+  supabaseAdmin: SupabaseClient,
+  sessionId: string,
+  userId: string,
+  credits: number,
+  claimData: ClaimCheckoutSessionData,
+  description: string
+): Promise<{ granted: boolean; duplicate: boolean }> {
+  const result = await addCredits(supabaseAdmin, userId, credits, description);
+  if (!result.success) {
+    throw new Error(result.error ?? "Credit grant failed");
+  }
+
+  const { claimed } = await claimCheckoutSession(
+    supabaseAdmin,
+    sessionId,
+    claimData
+  );
+  if (!claimed) {
+    console.warn(
+      "[webhook] checkout session already claimed after grant:",
+      sessionId
+    );
+    return { granted: true, duplicate: true };
+  }
+
+  return { granted: true, duplicate: false };
+}
+
+async function grantCreditsThenClaimInvoice(
+  supabaseAdmin: SupabaseClient,
+  invoiceId: string,
+  userId: string,
+  credits: number,
+  claimData: ClaimInvoiceData,
+  description: string
+): Promise<{ granted: boolean; duplicate: boolean }> {
+  const result = await addCredits(supabaseAdmin, userId, credits, description);
+  if (!result.success) {
+    throw new Error(result.error ?? "Credit grant failed");
+  }
+
+  const { claimed } = await claimInvoice(supabaseAdmin, invoiceId, claimData);
+  if (!claimed) {
+    console.warn(
+      "[webhook] invoice already claimed after grant:",
+      invoiceId
+    );
+    return { granted: true, duplicate: true };
+  }
+
+  return { granted: true, duplicate: false };
+}
+
 async function handleAgencySubscription(
   supabaseAdmin: SupabaseClient,
   session: Stripe.Checkout.Session
@@ -208,13 +271,6 @@ async function handlePlatformSubscription(
 
   if (!profile) return;
 
-  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
-    checkout_type: "platform_subscription",
-    user_id: userId,
-    credits_granted: monthlyCredits,
-  });
-  if (!claimed) return;
-
   const { error: planError } = await supabaseAdmin
     .from("profiles")
     .update({
@@ -230,16 +286,20 @@ async function handlePlatformSubscription(
     );
   }
 
-  const result = await addCredits(
+  const grant = await grantCreditsThenClaimCheckout(
     supabaseAdmin,
+    session.id,
     userId,
     monthlyCredits,
+    {
+      checkout_type: "platform_subscription",
+      user_id: userId,
+      credits_granted: monthlyCredits,
+    },
     `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan — +${monthlyCredits} Credits`
   );
 
-  if (!result.success) {
-    throw new Error(result.error ?? "Platform subscription addCredits failed");
-  }
+  if (grant.duplicate) return;
 
   await markReferralPurchased(userId);
 }
@@ -271,23 +331,20 @@ async function handleSubscriptionRenewal(
 
   const monthlyCredits = SUBSCRIPTION_PLANS[plan].monthlyCredits;
 
-  const { claimed } = await claimInvoice(supabaseAdmin, invoice.id, {
-    stripe_subscription_id: subscriptionId,
-    user_id: profile.id,
-    credits_granted: monthlyCredits,
-  });
-  if (!claimed) return;
-
-  const result = await addCredits(
+  const grant = await grantCreditsThenClaimInvoice(
     supabaseAdmin,
+    invoice.id,
     profile.id,
     monthlyCredits,
+    {
+      stripe_subscription_id: subscriptionId,
+      user_id: profile.id,
+      credits_granted: monthlyCredits,
+    },
     `Plan-Verlängerung — +${monthlyCredits} Credits`
   );
 
-  if (!result.success) {
-    throw new Error(result.error ?? "Subscription renewal addCredits failed");
-  }
+  if (grant.duplicate) return;
 }
 
 async function handlePlatformSubscriptionChange(
@@ -405,23 +462,20 @@ async function handleCreditPackPurchase(
   const credits = await resolveCreditPurchaseAmount(session);
   if (credits <= 0) return;
 
-  const { claimed } = await claimCheckoutSession(supabaseAdmin, session.id, {
-    checkout_type: "credit_pack",
-    user_id: userId,
-    credits_granted: credits,
-  });
-  if (!claimed) return;
-
-  const result = await addCredits(
+  const grant = await grantCreditsThenClaimCheckout(
     supabaseAdmin,
+    session.id,
     userId,
     credits,
+    {
+      checkout_type: "credit_pack",
+      user_id: userId,
+      credits_granted: credits,
+    },
     `${credits} Credits gekauft`
   );
 
-  if (!result.success) {
-    throw new Error(result.error ?? "Credit pack purchase addCredits failed");
-  }
+  if (grant.duplicate) return;
 
   await markReferralPurchased(userId);
 
@@ -482,23 +536,20 @@ async function handleCreditPackPaymentIntentGrant(
   userId: string,
   credits: number
 ) {
-  const { claimed } = await claimCheckoutSession(supabaseAdmin, paymentIntent.id, {
-    checkout_type: "credit_pack",
-    user_id: userId,
-    credits_granted: credits,
-  });
-  if (!claimed) return;
-
-  const result = await addCredits(
+  const grant = await grantCreditsThenClaimCheckout(
     supabaseAdmin,
+    paymentIntent.id,
     userId,
     credits,
+    {
+      checkout_type: "credit_pack",
+      user_id: userId,
+      credits_granted: credits,
+    },
     `${credits} Credits gekauft`
   );
 
-  if (!result.success) {
-    throw new Error(result.error ?? "Credit pack payment intent addCredits failed");
-  }
+  if (grant.duplicate) return;
 
   await markReferralPurchased(userId);
 
