@@ -400,6 +400,8 @@ function LandingPreFooterCta() {
         </div>
         <p className="mt-3 text-[0.75rem] text-white/55">
           {t("note", priceParams)}
+          {" · "}
+          {t("secondaryNote")}
         </p>
       </div>
     </div>

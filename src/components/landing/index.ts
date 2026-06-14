@@ -3,7 +3,6 @@ export { LandingNavV2 } from "./LandingNavV2";
 export { LandingHeroV2 } from "./LandingHeroV2";
 export { LandingBadge } from "./LandingBadge";
 export { LandingBentoShowcase } from "./LandingBentoShowcase";
-export { LandingCtaV2 } from "./LandingCtaV2";
 export { LandingAgentAutopilotSection } from "./LandingAgentAutopilotSection";
 export { LandingBentoToolsSection } from "./LandingBentoToolsSection";
 export { LandingUseCasesSection } from "./LandingUseCasesSection";

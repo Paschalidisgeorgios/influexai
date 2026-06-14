@@ -6,7 +6,6 @@ import "@/styles/pricing-glass.css";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
 import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
-import { LandingCtaV2 } from "@/components/landing/LandingCtaV2";
 import { LandingNavV2 } from "@/components/landing/LandingNavV2";
 import SentientInterface2026 from "@/components/landing/SentientInterface2026";
 import { LandingMediaSection } from "@/components/landing/LandingMediaSection";
@@ -48,8 +47,6 @@ export function LandingPageV2() {
             <PricingSection />
           </div>
         </div>
-
-        <LandingCtaV2 />
       </main>
 
       <LandingFooter />
