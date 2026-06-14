@@ -44,6 +44,8 @@ export interface AssetNodeData extends AssetOutput {
   createdAt: number;
   status: AssetNodeStatus;
   progress?: number;
+  /** Live status line during agent-autopilot SSE runs */
+  statusLabel?: string;
   /** Original generation prompt from the linked control node */
   sourcePrompt?: string;
   /** User-facing error when status === "error" */
@@ -91,6 +93,7 @@ interface CanvasState {
         AssetNodeData,
         | "status"
         | "progress"
+        | "statusLabel"
         | "text"
         | "url"
         | "previewUrl"

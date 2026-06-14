@@ -386,14 +386,28 @@ function ControlNodeComponent({
       creditsReserved = true;
     }
 
-    let progress = 0;
-    const progressTimer = window.setInterval(() => {
-      progress = Math.min(92, progress + 4 + Math.random() * 6);
+    const isAgentAutopilot = tool.id === "agent-autopilot";
+    let progressTimer: number | undefined;
+
+    if (isAgentAutopilot) {
       updateAssetNode(assetId, {
-        progress,
-        status: progress >= 55 ? "processing" : "loading",
+        progress: 5,
+        status: "loading",
+        statusLabel: "Agent startet…",
       });
-    }, 180);
+    } else {
+      let progress = 0;
+      progressTimer = window.setInterval(() => {
+        progress = Math.min(92, progress + 4 + Math.random() * 6);
+        updateAssetNode(assetId, {
+          progress,
+          status: progress >= 55 ? "processing" : "loading",
+        });
+      }, 180);
+    }
+
+    let agentProgress = 5;
+    let agentToolStartCount = 0;
 
     try {
       const result = await runCanvasGeneration(tool, generationParams, {
@@ -402,6 +416,26 @@ function ControlNodeComponent({
           tool.id === "seedance-video"
             ? CANVAS_ASYNC_JOB_START_TIMEOUT_MS
             : undefined,
+        onProgress: isAgentAutopilot
+          ? (event) => {
+              if (event.type === "tool_start") {
+                agentToolStartCount += 1;
+                agentProgress = Math.min(85, 15 + agentToolStartCount * 15);
+                updateAssetNode(assetId, {
+                  progress: agentProgress,
+                  status: "processing",
+                  statusLabel: event.label ? `${event.label}…` : "Agent arbeitet…",
+                });
+              } else if (event.type === "tool_done") {
+                agentProgress = Math.min(90, agentProgress + 5);
+                updateAssetNode(assetId, { progress: agentProgress });
+              } else if (event.type === "tool_error") {
+                updateAssetNode(assetId, {
+                  statusLabel: `Fehler bei ${event.tool ?? "Tool"}`,
+                });
+              }
+            }
+          : undefined,
       });
 
       let finalUrl = result.url;
@@ -419,6 +453,7 @@ function ControlNodeComponent({
       updateAssetNode(assetId, {
         status: "success",
         progress: 100,
+        statusLabel: undefined,
         errorMessage: undefined,
         text: result.text,
         url: finalUrl,
@@ -499,7 +534,9 @@ function ControlNodeComponent({
       showCreditsToast(message, "error");
       void refreshCredits();
     } finally {
-      window.clearInterval(progressTimer);
+      if (progressTimer !== undefined) {
+        window.clearInterval(progressTimer);
+      }
       setControlGenerating(id, false);
       if (abortRef.current === abortController) {
         abortRef.current = null;

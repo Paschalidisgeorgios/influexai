@@ -7,6 +7,7 @@ export type AssetShaderAccent = "green" | "violet";
 type AssetLoadingShaderProps = {
   progress: number;
   label?: string;
+  statusLabel?: string;
   accent?: AssetShaderAccent;
   className?: string;
 };
@@ -26,6 +27,7 @@ export { accentForOutputType };
 function AssetLoadingShaderComponent({
   progress,
   label = "Rendering",
+  statusLabel,
   accent = "green",
   className = "",
 }: AssetLoadingShaderProps) {
@@ -33,6 +35,9 @@ function AssetLoadingShaderComponent({
   const { primary, rgb } = ACCENT_COLORS[accent];
   const calm = clamped / 100;
   const animationDuration = `${Math.max(1.8, 3.4 - calm * 1.6)}s`;
+  const progressLine = statusLabel
+    ? `${statusLabel} · ${Math.round(clamped)}%`
+    : `${label}: ${Math.round(clamped)}%`;
 
   return (
     <div
@@ -47,7 +52,7 @@ function AssetLoadingShaderComponent({
       }
       role="status"
       aria-live="polite"
-      aria-label={`${label}: ${Math.round(clamped)} Prozent`}
+      aria-label={progressLine}
     >
       <div className="asset-shader-noise pointer-events-none absolute inset-0" aria-hidden />
       <div className="asset-shader-grid pointer-events-none absolute inset-0" aria-hidden />
@@ -86,7 +91,7 @@ function AssetLoadingShaderComponent({
             textShadow: `0 0 18px rgba(${rgb}, 0.55)`,
           }}
         >
-          {label}: {Math.round(clamped)}%
+          {progressLine}
         </p>
         <p className="text-[9px] uppercase tracking-[0.14em] text-white/35">
           KI berechnet…

@@ -24,7 +24,17 @@ export const CANVAS_ASYNC_JOB_START_TIMEOUT_MS = 60_000;
 export type RunCanvasGenerationOptions = {
   signal?: AbortSignal;
   timeoutMs?: number;
+  onProgress?: CanvasSseProgressHandler;
 };
+
+export type CanvasSseProgressEvent = {
+  type: "tool_start" | "tool_done" | "tool_error" | "estimate";
+  tool?: string;
+  label?: string;
+  toolsDone?: number;
+};
+
+export type CanvasSseProgressHandler = (event: CanvasSseProgressEvent) => void;
 
 const DEFAULT_TIMEOUT_MS = DEFAULT_CANVAS_GENERATION_TIMEOUT_MS;
 
@@ -293,11 +303,13 @@ function parseApiResponse(
 type SseStreamResult = {
   text: string;
   error?: string;
+  outputs?: Record<string, unknown>;
 };
 
 async function consumeSseResponse(
   res: Response,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onProgress?: CanvasSseProgressHandler
 ): Promise<SseStreamResult> {
   const reader = res.body?.getReader();
   if (!reader) {
@@ -312,6 +324,8 @@ async function consumeSseResponse(
   let buffer = "";
   let text = "";
   let error: string | undefined;
+  let outputs: Record<string, unknown> | undefined;
+  let toolsCompletedCount = 0;
 
   try {
     while (true) {
@@ -348,6 +362,32 @@ async function consumeSseResponse(
           event.summary.trim()
         ) {
           if (!text.trim()) text = event.summary;
+        } else if (event.type === "tool_start") {
+          onProgress?.({
+            type: "tool_start",
+            tool: typeof event.tool === "string" ? event.tool : undefined,
+            label: typeof event.label === "string" ? event.label : undefined,
+          });
+        } else if (event.type === "tool_done") {
+          toolsCompletedCount += 1;
+          onProgress?.({
+            type: "tool_done",
+            tool: typeof event.tool === "string" ? event.tool : undefined,
+            toolsDone: toolsCompletedCount,
+          });
+        } else if (event.type === "tool_error") {
+          onProgress?.({
+            type: "tool_error",
+            tool: typeof event.tool === "string" ? event.tool : undefined,
+          });
+        } else if (
+          event.type === "outputs" &&
+          event.outputs &&
+          typeof event.outputs === "object"
+        ) {
+          outputs = event.outputs as Record<string, unknown>;
+        } else if (event.type === "estimate") {
+          onProgress?.({ type: "estimate" });
         }
       }
     }
@@ -355,13 +395,14 @@ async function consumeSseResponse(
     reader.releaseLock();
   }
 
-  return { text: text.trim(), error };
+  return { text: text.trim(), error, outputs };
 }
 
 async function parseCanvasResponse(
   tool: ToolApiDefinition,
   res: Response,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onProgress?: CanvasSseProgressHandler
 ): Promise<CanvasGenerationResult> {
   const contentType = res.headers.get("content-type") ?? "";
 
@@ -371,7 +412,7 @@ async function parseCanvasResponse(
       throw mapHttpError(res.status, body);
     }
 
-    const streamed = await consumeSseResponse(res, signal);
+    const streamed = await consumeSseResponse(res, signal, onProgress);
     if (streamed.error) {
       throw new CanvasGenerationError(streamed.error, "provider_error", {
         creditsRefunded: true,
@@ -384,7 +425,10 @@ async function parseCanvasResponse(
         { creditsRefunded: true }
       );
     }
-    return { text: streamed.text };
+    return {
+      text: streamed.text,
+      data: streamed.outputs,
+    };
   }
 
   const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
@@ -445,7 +489,7 @@ export async function runCanvasGeneration(
       signal: controller.signal,
     });
 
-    return parseCanvasResponse(tool, res, controller.signal);
+    return parseCanvasResponse(tool, res, controller.signal, options?.onProgress);
   } catch (err) {
     if (err instanceof CanvasGenerationError) throw err;
     if (err instanceof DOMException && err.name === "AbortError") {

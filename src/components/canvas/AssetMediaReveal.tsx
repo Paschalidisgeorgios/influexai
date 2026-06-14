@@ -41,6 +41,7 @@ function AssetMediaRevealComponent({
         label={
           nodeData.status === "processing" ? "Processing" : "Rendering"
         }
+        statusLabel={nodeData.statusLabel}
         accent={shaderAccent}
         className={isVisual ? "aspect-video w-full" : "min-h-[160px] w-full"}
       />
