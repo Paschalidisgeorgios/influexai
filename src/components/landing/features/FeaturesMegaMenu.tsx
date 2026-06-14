@@ -30,7 +30,7 @@ function MegaMenuColumn({
 }) {
   return (
     <div className="min-w-0">
-      <p className="border-b border-zinc-900 pb-2 font-mono text-[11px] tracking-widest text-zinc-500 uppercase">
+      <p className="border-b border-zinc-900 pb-2 font-mono text-[11px] tracking-widest text-zinc-400 uppercase">
         {label}
       </p>
       <ul className="mt-4 space-y-5">
@@ -49,7 +49,7 @@ function MegaMenuColumn({
                   <span className="block font-medium text-zinc-200 transition-colors group-hover:text-[#ccff00]">
                     {item.title}
                   </span>
-                  <span className="mt-0.5 block pl-7 font-sans text-zinc-500">
+                  <span className="mt-0.5 block pl-7 font-sans text-zinc-400">
                     {item.subtitle}
                   </span>
                 </span>
@@ -157,7 +157,7 @@ export function FeaturesMegaMenuMobile({ onNavigate }: MobileProps) {
 
   return (
     <div className="features-mega-mobile md:hidden">
-      <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+      <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
         {label("title") || NAV_LABELS_DE.features}
       </p>
       <div className="space-y-6">

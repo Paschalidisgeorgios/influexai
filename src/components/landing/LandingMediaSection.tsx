@@ -208,7 +208,7 @@ export function LandingMediaSection() {
                     <span aria-hidden>→</span>
                   </Link>
                 ) : null}
-                <span className="font-mono text-xs text-white/50">
+                <span className="font-mono text-xs text-white/60">
                   {String(activeIndex + 1).padStart(2, "0")} /{" "}
                   {String(landingMedia.length).padStart(2, "0")}
                 </span>
@@ -270,7 +270,7 @@ export function LandingMediaSection() {
         </div>
 
         <p
-          className="mt-5 text-xs text-white/45"
+          className="mt-5 text-xs text-white/60"
           style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
           aria-live="polite"
         >

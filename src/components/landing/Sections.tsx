@@ -34,7 +34,7 @@ export function TrustBarSection() {
       aria-label={tProof("trust_bar_label")}
     >
       <div className="mx-auto max-w-[1160px] px-[clamp(16px,5vw,64px)] py-3 md:py-3.5">
-        <p className="mb-2 text-center text-[0.68rem] leading-snug text-white/45">
+        <p className="mb-2 text-center text-[0.68rem] leading-snug text-white/60">
           {t("launchBanner")}
         </p>
         <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.72rem] leading-snug text-white/68 sm:gap-x-4">
@@ -398,7 +398,7 @@ function LandingPreFooterCta() {
             {t("secondary")}
           </a>
         </div>
-        <p className="mt-3 text-[0.75rem] text-white/55">
+        <p className="mt-3 text-[0.75rem] text-white/60">
           {t("note", priceParams)}
           {" · "}
           {t("secondaryNote")}
@@ -453,7 +453,7 @@ const FOOTER_COL_HEADING_CLASS =
   "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-white/60";
 
 const FOOTER_SOCIAL_CLASS =
-  "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-white/55 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
+  "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-white/60 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
 
 const trustHighlight = {
   accent: (chunks: React.ReactNode) => (
@@ -527,7 +527,7 @@ export function LandingFooter() {
                   </span>
                 </span>
               </Link>
-              <p className="mt-1 max-w-[210px] font-sans text-xs text-white/55">
+              <p className="mt-1 max-w-[210px] font-sans text-xs text-white/60">
                 {t("tagline")}
               </p>
             </div>
@@ -582,7 +582,7 @@ export function LandingFooter() {
           <PoweredByFooter />
 
           <div className="flex flex-col items-center gap-4 border-t border-zinc-800/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="order-3 font-mono text-[11px] text-white/50 sm:order-1 sm:text-left">
+            <p className="order-3 font-mono text-[11px] text-white/60 sm:order-1 sm:text-left">
               © 2026 InfluexAI · Hechingen, DE
             </p>
             <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">

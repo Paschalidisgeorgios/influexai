@@ -194,7 +194,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mt-4 text-left font-sans text-xs leading-relaxed text-red-400/90"
+                  className="mt-4 text-left font-sans text-xs leading-relaxed text-red-400"
                 >
                   {error}
                 </motion.p>

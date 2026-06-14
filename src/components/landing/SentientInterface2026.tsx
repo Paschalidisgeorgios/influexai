@@ -37,7 +37,7 @@ function bentoAccentStyle(accent: LandingFeatureCardCopy["accent"]): CSSProperti
 function CopySegments({ segments }: { segments: LandingCopySegment[] }) {
   return (
     <p
-      className="text-[13px] leading-relaxed text-white/55"
+      className="text-[13px] leading-relaxed text-white/60"
       style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
     >
       {segments.map((segment, index) =>
@@ -92,7 +92,7 @@ function HeroPreview() {
           className="border-b p-5 md:border-b-0 md:border-r"
           style={{ borderColor: "var(--border-soft)" }}
         >
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
+          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/60 uppercase">
             Claude · Skript + B-Roll
           </p>
           <div
@@ -111,14 +111,14 @@ function HeroPreview() {
                   style={{ width: "86%", background: LANDING_NEON.green }}
                 />
               </div>
-              <span className="font-mono text-[9px] text-white/50">86%</span>
+              <span className="font-mono text-[9px] text-white/60">86%</span>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {TOOL_CHIPS.map((chip) => (
               <span
                 key={chip}
-                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-white/50"
+                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-white/60"
               >
                 {chip}
               </span>
@@ -127,7 +127,7 @@ function HeroPreview() {
         </div>
 
         <div className="p-5">
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/50 uppercase">
+          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/60 uppercase">
             Canvas Pipeline
           </p>
           <div className="space-y-2">
@@ -154,7 +154,7 @@ function HeroPreview() {
                 >
                   {done ? "✓" : ""}
                 </span>
-                <span className={`text-xs ${done ? "text-white/80" : "text-white/55"}`}>
+                <span className={`text-xs ${done ? "text-white/80" : "text-white/60"}`}>
                   {label}
                 </span>
                 {!done && (
@@ -282,7 +282,7 @@ export default function SentientInterface2026() {
 
       <div className="relative z-10 px-6 pt-20 pb-16 text-center md:px-12 md:pt-28">
         <div
-          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[11px] text-white/50 backdrop-blur-sm"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[11px] text-white/60 backdrop-blur-sm"
           style={{
             borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.25)`,
             background: `rgba(${LANDING_NEON.violetRgb}, 0.06)`,

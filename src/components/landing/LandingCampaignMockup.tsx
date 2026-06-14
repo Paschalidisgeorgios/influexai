@@ -11,7 +11,7 @@ export function LandingCampaignMockup() {
       <div className="campaign-mockup relative rounded-2xl border border-white/[0.08] bg-[#0a0a0c]/90 p-4 shadow-[0_0_80px_rgba(180,255,0,0.06)] backdrop-blur-xl md:p-5">
         <div className="mb-3 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-[#B4FF00] shadow-[0_0_8px_rgba(180,255,0,0.8)]" />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">
             {t("promptLabel")}
           </span>
         </div>
@@ -36,7 +36,7 @@ export function LandingCampaignMockup() {
           </div>
           <div className="campaign-mockup-card col-span-2 min-h-[56px] sm:col-span-1">
             <span className="campaign-mockup-card__label">{t("outputCaption")}</span>
-            <p className="mt-1 text-[11px] leading-snug text-white/55 line-clamp-2">
+            <p className="mt-1 text-[11px] leading-snug text-white/60 line-clamp-2">
               {t("captionPreview")}
             </p>
           </div>
@@ -46,7 +46,7 @@ export function LandingCampaignMockup() {
           <span className="text-xs font-medium text-white/60">{t("scoreLabel")}</span>
           <span className="font-[family-name:var(--font-bebas)] text-2xl leading-none text-[#B4FF00]">
             {t("scoreValue")}
-            <span className="text-sm text-white/35">/100</span>
+            <span className="text-sm text-white/60">/100</span>
           </span>
         </div>
       </div>

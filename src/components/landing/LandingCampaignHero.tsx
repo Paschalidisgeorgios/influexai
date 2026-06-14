@@ -28,7 +28,7 @@ export function LandingCampaignHero() {
             <h1 className="mx-auto max-w-[900px] font-[family-name:var(--font-bebas)] text-[clamp(2.5rem,8vw,4.75rem)] leading-[0.95] tracking-[0.01em] text-white">
               {t("headline")}
             </h1>
-            <p className="mx-auto mt-5 max-w-[560px] text-base leading-relaxed text-white/55 md:text-lg">
+            <p className="mx-auto mt-5 max-w-[560px] text-base leading-relaxed text-white/60 md:text-lg">
               {t("subheadline")}
             </p>
           </SpringReveal>
@@ -45,7 +45,7 @@ export function LandingCampaignHero() {
             </Link>
           </SpringReveal>
 
-          <p className="mt-4 text-xs text-white/30">{t("note", priceParams)}</p>
+          <p className="mt-4 text-xs text-white/60">{t("note", priceParams)}</p>
         </div>
       </div>
     </section>

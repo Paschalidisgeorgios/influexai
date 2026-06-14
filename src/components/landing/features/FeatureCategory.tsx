@@ -48,7 +48,7 @@ export function FeatureCategory({
           {label(`categories.${category.id}`)}
           <ChevronDown
             className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
-              isOpen ? "rotate-180 text-[#ccff00]" : "text-zinc-500"
+              isOpen ? "rotate-180 text-[#ccff00]" : "text-zinc-400"
             }`}
             strokeWidth={2}
           />
@@ -85,7 +85,7 @@ export function FeatureCategory({
 
   return (
     <div className="min-w-0">
-      <p className="mb-4 border-b border-zinc-800/60 pb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+      <p className="mb-4 border-b border-zinc-800/60 pb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400">
         {label(`categories.${category.id}`)}
       </p>
       <div className="space-y-4">

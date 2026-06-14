@@ -76,7 +76,7 @@ function ProofDemoCard({
           className="rounded-[8px] border px-3 py-2 text-[0.78rem] leading-[1.5] text-white/62"
           style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)" }}
         >
-          <span className="text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white/40">
+          <span className="text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white/60">
             Prompt ·{" "}
           </span>
           {prompt}
@@ -94,7 +94,7 @@ function ProofDemoCard({
           >
             {ctaWorkflow}
           </Link>
-          <p className="text-center text-[0.68rem] leading-snug text-white/42">{previewNote}</p>
+          <p className="text-center text-[0.68rem] leading-snug text-white/60">{previewNote}</p>
         </div>
       </div>
     </article>

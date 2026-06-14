@@ -167,7 +167,7 @@ export function LandingAgentAutopilotSection() {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-2 text-[0.72rem] text-white/45">
+            <div className="mt-4 flex items-center gap-2 text-[0.72rem] text-white/60">
               <span
                 className={`h-2 w-2 rounded-full ${active ? "animate-pulse" : ""}`}
                 style={{ background: LANDING_NEON.cyan }}

@@ -202,7 +202,7 @@ export function LandingHeroV2({
           aussieht.
         </h1>
 
-        <p className="mt-4 max-w-[540px] text-base text-white/40">
+        <p className="mt-4 max-w-[540px] text-base text-white/60">
           Von viralen Hooks bis zum fertigen Video — Agent Autopilot erledigt alles.
           Über 20 Tools in einem Studio.
         </p>
@@ -259,7 +259,7 @@ export function LandingHeroV2({
           </Link>
         )}
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[11px] text-white/20 sm:gap-3">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[11px] text-white/60 sm:gap-3">
           <span>📝 Beschreibe dein Ziel</span>
           <span aria-hidden>→</span>
           <span>🤖 Agent plant & erstellt</span>
@@ -268,7 +268,7 @@ export function LandingHeroV2({
         </div>
 
         {userName && dialogStep >= 1 && dialogStep < 3 && (
-          <p className="mt-3 text-xs text-white/30">Schön, {userName}.</p>
+          <p className="mt-3 text-xs text-white/60">Schön, {userName}.</p>
         )}
       </div>
     </section>

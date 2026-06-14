@@ -161,7 +161,7 @@ function useDemoSteps(): DemoStep[] {
                       {row.day}
                     </td>
                     <td className="py-1 pr-2 align-top">{row.topic}</td>
-                    <td className="py-1 align-top whitespace-nowrap text-white/55">
+                    <td className="py-1 align-top whitespace-nowrap text-white/60">
                       {row.format}
                     </td>
                   </tr>
@@ -418,7 +418,7 @@ function MobileStepCard({
         className="mb-4 rounded-[10px] p-3 text-[0.8rem] text-white/70"
         style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
-        <span className="text-[0.66rem] font-bold uppercase text-white/48">
+        <span className="text-[0.66rem] font-bold uppercase text-white/60">
           {labels.input} ·{" "}
         </span>
         {step.input}
@@ -427,7 +427,7 @@ function MobileStepCard({
         className="mb-4 rounded-[10px] p-3 text-[0.78rem] text-white/72"
         style={{ border: "1px solid rgba(180,255,0,0.12)" }}
       >
-        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/48">
+        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/60">
           {labels.agentDecision}
         </p>
         <ul className="m-0 flex flex-col gap-1 p-0">
@@ -439,13 +439,13 @@ function MobileStepCard({
         </ul>
       </div>
       <p
-        className="mb-2 text-[0.66rem] font-bold uppercase text-white/48"
+        className="mb-2 text-[0.66rem] font-bold uppercase text-white/60"
       >
         {labels.output}
       </p>
       <div className="mb-4 text-[0.82rem] leading-relaxed text-white/85">{step.output}</div>
       <div className="mb-4">
-        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/48">{labels.score}</p>
+        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/60">{labels.score}</p>
         <ScoreRow scores={step.scores} />
       </div>
       <AgentPill>{step.badge}</AgentPill>

@@ -208,7 +208,7 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
         >
           {card.title}
         </h3>
-        <p className="text-sm leading-relaxed text-white/50">{card.description}</p>
+        <p className="text-sm leading-relaxed text-white/60">{card.description}</p>
 
         {card.checkItems && (
           <div

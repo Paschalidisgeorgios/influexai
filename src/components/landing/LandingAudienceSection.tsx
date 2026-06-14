@@ -59,7 +59,7 @@ export function LandingPricingCtaSection() {
           <h2 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,5vw,3rem)] leading-[0.95] text-white">
             {t("headline")}
           </h2>
-          <p className="mx-auto mt-4 max-w-[480px] text-sm leading-relaxed text-white/50 md:text-base">
+          <p className="mx-auto mt-4 max-w-[480px] text-sm leading-relaxed text-white/60 md:text-base">
             {t("subheadline")}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

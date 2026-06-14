@@ -102,7 +102,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
             }}
             placeholder="Deine Nische (z.B. Krypto, Fitness, Fashion)..."
             disabled={loading}
-            className="w-full rounded-lg border border-zinc-800 bg-black/40 p-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#ccff00] focus:outline-none disabled:opacity-60"
+            className="w-full rounded-lg border border-zinc-800 bg-black/40 p-2.5 text-xs text-white placeholder:text-white/60 focus:border-[#ccff00] focus:outline-none disabled:opacity-60"
             maxLength={80}
             aria-label="Deine Nische"
           />
@@ -171,7 +171,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
               key="error"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[11px] leading-relaxed text-red-400/90"
+              className="text-[11px] leading-relaxed text-red-400"
             >
               {error}
             </motion.p>
@@ -180,7 +180,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
               key="hint"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[11px] leading-relaxed text-white/40"
+              className="text-[11px] leading-relaxed text-white/60"
             >
               Claude analysiert deine Nische und liefert einen scroll-stoppenden Hook — ohne
               Registrierung.
