@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
@@ -18,6 +19,8 @@ export function FeaturesMobileMenuOverlay({
   onClose,
   navLinks,
 }: FeaturesMobileMenuOverlayProps) {
+  const tNav = useTranslations("landingPage.nav");
+
   if (!open) return null;
 
   return (
@@ -56,22 +59,15 @@ export function FeaturesMobileMenuOverlay({
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/auth/sign-in"
-            onClick={onClose}
-            className="block min-h-11 rounded-lg border-b border-zinc-900 px-1 py-3 text-sm text-zinc-200 no-underline active:text-[#ccff00]"
-          >
-            {NAV_LABELS_DE.login}
-          </Link>
         </div>
       </div>
 
       <Link
-        href="/signup"
+        href="/auth/sign-in"
         onClick={onClose}
         className="landing-glass-btn-cta mt-6 block w-full py-3.5 text-center text-sm no-underline"
       >
-        {NAV_LABELS_DE.signup}
+        {tNav("ctaAuth")}
       </Link>
     </div>
   );

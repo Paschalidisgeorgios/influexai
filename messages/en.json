@@ -912,6 +912,9 @@
     "nav_tools": "Studio"
   },
   "landingPage": {
+    "nav": {
+      "ctaAuth": "Log In / Sign Up"
+    },
     "achieve": {
       "headline": "What you can achieve with InfluexAI",
       "p1_text": "Script, hook and CTA — without hours of writing.",

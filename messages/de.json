@@ -660,6 +660,9 @@
     "menu_close": "Menü schließen"
   },
   "landingPage": {
+    "nav": {
+      "ctaAuth": "Login / Registrieren"
+    },
     "brands": {
       "ex1_cat": "Beauty Brand",
       "ex1_sub": "URL → 5 TikTok-Ads · 3 Min.",

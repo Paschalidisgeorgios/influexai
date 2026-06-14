@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
-import { IntentLink } from "@/hooks/useIntentTracking";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { NAV_LABELS_DE } from "@/lib/features-menu-i18n";
@@ -18,6 +18,7 @@ const NAV_LINKS = [
 ] as const;
 
 export function LandingNavV2() {
+  const tNav = useTranslations("landingPage.nav");
   const [scrolled, setScrolled] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,7 +51,7 @@ export function LandingNavV2() {
   return (
     <>
       <header
-        className={`landing-glass-header relative overflow-visible fixed inset-x-0 top-0 z-50 flex h-14 w-full items-center px-4 transition-[background,border-color] duration-300 sm:px-6 lg:px-10 ${
+        className={`landing-glass-header sticky top-0 z-50 flex h-14 w-full items-center overflow-visible px-4 transition-[background,border-color] duration-300 sm:px-6 lg:px-10 ${
           scrolled || featuresOpen ? "landing-glass-header--scrolled" : ""
         }`}
         style={{ ["--landing-nav-height" as string]: "3.5rem" }}
@@ -101,16 +102,10 @@ export function LandingNavV2() {
           </div>
           <Link
             href="/auth/sign-in"
-            className="landing-glass-nav-link hidden px-2 py-2 sm:inline-flex"
-          >
-            {NAV_LABELS_DE.login}
-          </Link>
-          <IntentLink
-            href="/signup"
             className="landing-glass-btn-cta !px-4 !py-2 text-[13px]"
           >
-            {NAV_LABELS_DE.signup}
-          </IntentLink>
+            {tNav("ctaAuth")}
+          </Link>
           <button
             type="button"
             className="flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-800/60 text-white md:hidden"

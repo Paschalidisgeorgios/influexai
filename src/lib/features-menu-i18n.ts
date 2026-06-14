@@ -69,7 +69,7 @@ export const NAV_LABELS_DE = {
   pricing: "Preise",
   dashboard: "Dashboard",
   login: "Login",
-  signup: "Studio starten",
+  signup: "Login / Registrieren",
   menuOpen: "Menü öffnen",
   menuClose: "Menü schließen",
 } as const;
