@@ -105,9 +105,8 @@ export function mapAnthropicSdkError(
     if (err.status === 404) {
       return {
         status: 503,
-        message: model
-          ? `KI-Modell „${model}“ ist derzeit nicht verfügbar. Bitte später erneut versuchen.`
-          : userMessage,
+        message:
+          "KI-Dienst ist derzeit nicht verfügbar. Bitte später erneut versuchen.",
       };
     }
     if (err.status === 429) return { status: 429, message: userMessage };
