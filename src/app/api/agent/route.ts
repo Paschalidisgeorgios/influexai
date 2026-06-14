@@ -4,9 +4,11 @@ import { assertGatedFeature } from "@/lib/access.server";
 import {
   estimateAgentCredits,
   fullPipelineCreditSum,
+  ORCHESTRATOR_BASE_COST,
 } from "@/lib/agent/credits";
 import { runMasterAgentStream } from "@/lib/agent/run-agent";
 import type { AgentChatMessage, AgentStreamEvent } from "@/lib/agent/types";
+import { addCredits, deductCredits } from "@/lib/credits";
 
 export const dynamic = "force-dynamic";
 
@@ -101,9 +103,35 @@ export async function POST(request: Request) {
 
   const history = Array.isArray(body.history) ? body.history.slice(-12) : [];
 
+  const baseDeduction = await deductCredits(
+    supabase,
+    user.id,
+    ORCHESTRATOR_BASE_COST,
+    "master_agent_orchestrator",
+    { skipGenerationLog: true }
+  );
+  if (!baseDeduction.success) {
+    return Response.json(
+      { error: baseDeduction.error ?? "Nicht genug Credits." },
+      { status: 402 }
+    );
+  }
+
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
+      let anyOutputDelivered = false;
+
+      const maybeRefundBaseCost = async () => {
+        if (anyOutputDelivered) return;
+        await addCredits(
+          supabase,
+          user.id,
+          ORCHESTRATOR_BASE_COST,
+          "master_agent_orchestrator_refund"
+        );
+      };
+
       try {
         const estimate = estimateAgentCredits(message);
         controller.enqueue(
@@ -119,13 +147,23 @@ export async function POST(request: Request) {
         );
 
         for await (const event of runMasterAgentStream(message, history)) {
+          if (
+            event.type === "text_delta" ||
+            event.type === "tool_done" ||
+            event.type === "outputs"
+          ) {
+            anyOutputDelivered = true;
+          }
+
           controller.enqueue(encoder.encode(sseLine(event)));
-          if (event.type === "credits") {
-            // client can refresh credits
+
+          if (event.type === "error") {
+            await maybeRefundBaseCost();
           }
         }
       } catch (e) {
         console.error("[agent] stream:", e);
+        await maybeRefundBaseCost();
         controller.enqueue(
           encoder.encode(
             sseLine({

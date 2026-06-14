@@ -9,6 +9,9 @@ import { VIRAL_SCORE_CREDIT_COST } from "@/lib/viral-score";
 import type { AgentExecutableToolName, AgentTextToolRun } from "./types";
 import type { CampaignPlanStep } from "./campaignPlanner";
 
+/** Flat credit cost per Master Agent invocation (orchestrator LLM turns). */
+export const ORCHESTRATOR_BASE_COST = 1;
+
 /** Credit costs for executable tools (shown before run). */
 export const AGENT_TOOL_CREDITS: Record<AgentExecutableToolName, number> = {
   analyze_niche: 2,

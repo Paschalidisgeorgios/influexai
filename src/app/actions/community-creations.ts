@@ -608,7 +608,8 @@ export async function fetchPublicProfileByUsername(
   const { count: generationCount } = await supabase
     .from("generations")
     .select("id", { count: "exact", head: true })
-    .eq("user_id", profile.id);
+    .eq("user_id", profile.id)
+    .eq("is_public", true);
 
   const { data: publicRows } = await supabase
     .from("generations")
@@ -628,6 +629,7 @@ export async function fetchPublicProfileByUsername(
     .from("generations")
     .select("result")
     .eq("user_id", profile.id)
+    .eq("is_public", true)
     .eq("type", "viral_score");
 
   const scores: number[] = [];

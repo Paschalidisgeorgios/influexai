@@ -3,7 +3,7 @@ const CACHE_VERSION = "influexai-v2";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
-const SHELL_URLS = ["/", "/dashboard", "/offline.html"];
+const SHELL_URLS = ["/", "/offline.html"];
 
 const STATIC_URLS = [
   "/manifest.json",
@@ -79,6 +79,17 @@ self.addEventListener("fetch", (event) => {
 });
 
 async function navigationHandler(request) {
+  const url = new URL(request.url);
+  if (url.pathname.startsWith("/dashboard")) {
+    try {
+      return await fetch(request);
+    } catch {
+      const offline = await caches.match("/offline.html");
+      if (offline) return offline;
+      return new Response("Offline", { status: 503, statusText: "Offline" });
+    }
+  }
+
   try {
     const response = await fetch(request);
     const cache = await caches.open(SHELL_CACHE);
@@ -147,8 +158,16 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const raw = event.notification.data?.url || "/dashboard";
-  const target =
-    raw.startsWith("http") ? raw : new URL(raw, self.location.origin).href;
+  const target = new URL(raw, self.location.origin).href;
+
+  if (!target.startsWith(self.location.origin)) {
+    event.waitUntil(
+      clients.openWindow
+        ? clients.openWindow(`${self.location.origin}/dashboard`)
+        : Promise.resolve()
+    );
+    return;
+  }
 
   event.waitUntil(
     clients

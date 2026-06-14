@@ -1,5 +1,5 @@
-import SentientDashboard from "@/components/dashboard/SentientDashboard";
+import { redirect } from "next/navigation";
 
 export default function DemoPage() {
-  return <SentientDashboard />;
+  redirect("/");
 }
