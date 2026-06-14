@@ -30,7 +30,42 @@ export async function awardReferredSignupBonus(
   );
 }
 
-/** Award 10 credits to referrer after referred user confirms email. */
+async function notifyReferrerSignupJoined(
+  supabase: SupabaseClient,
+  referral: ReferralRow
+): Promise<void> {
+  const { data: referred } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", referral.referred_id)
+    .single();
+  const name = referred?.full_name?.trim().split(/\s+/)[0] ?? "Ein Freund";
+  void invokePushNotification({
+    userId: referral.referrer_id,
+    type: "REFERRAL_JOINED",
+    variables: { name },
+  });
+}
+
+/** Award referrer signup bonus after atomic claim in confirmReferralSignupRewards. */
+export async function grantReferrerSignupBonusAfterClaim(
+  supabase: SupabaseClient,
+  referral: ReferralRow
+): Promise<{ ok: boolean }> {
+  const result = await addCredits(
+    supabase,
+    referral.referrer_id,
+    REFERRAL_SIGNUP_BONUS_REFERRER,
+    `${REFERRAL_TX_LABEL} (Invite signup)`
+  );
+
+  if (!result.success) return { ok: false };
+
+  await notifyReferrerSignupJoined(supabase, referral);
+  return { ok: true };
+}
+
+/** Award referrer signup bonus (edge function / legacy path with flag check). */
 export async function awardReferrerSignupBonus(
   supabase: SupabaseClient,
   referral: ReferralRow
@@ -54,18 +89,7 @@ export async function awardReferrerSignupBonus(
     })
     .eq("id", referral.id);
 
-  const { data: referred } = await supabase
-    .from("profiles")
-    .select("full_name")
-    .eq("id", referral.referred_id)
-    .single();
-  const name = referred?.full_name?.trim().split(/\s+/)[0] ?? "Ein Freund";
-  void invokePushNotification({
-    userId: referral.referrer_id,
-    type: "REFERRAL_JOINED",
-    variables: { name },
-  });
-
+  await notifyReferrerSignupJoined(supabase, referral);
   return { ok: true };
 }
 

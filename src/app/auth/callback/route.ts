@@ -1,10 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { applyBetaOnSignup } from "@/app/actions/beta";
+import { confirmBetaSignup } from "@/app/actions/beta";
 import {
   confirmReferralRewards,
-  registerReferralOnSignup,
+  recordReferralIntent,
 } from "@/app/actions/referral";
 import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
 import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
@@ -48,12 +48,13 @@ export async function GET(request: NextRequest) {
         const refFromCookie = cookieStore.get(REFERRAL_REF_COOKIE)?.value?.trim();
         const ref = referredBy?.trim() || refFromCookie;
         if (ref) {
-          await registerReferralOnSignup(user.id, ref);
+          await recordReferralIntent(user.id, ref);
         }
         await confirmReferralRewards(user.id);
+
         const betaCode = user.user_metadata?.beta_code as string | undefined;
         if (betaCode) {
-          await applyBetaOnSignup(user.id, betaCode);
+          await confirmBetaSignup(user.id, betaCode);
         }
         void invokeWelcomeNurtureEmail(user.id);
 

@@ -195,6 +195,46 @@ export async function joinBetaWaitlist(input: {
   return { success: true };
 }
 
+/** Read-only beta code validation (signup page — no perk application). */
+export async function validateBetaCode(
+  codeRaw: string
+): Promise<{ valid: boolean; error?: string }> {
+  const code = codeRaw.trim().toUpperCase();
+  if (!code.startsWith("BETA-")) {
+    return { valid: false, error: "Ungültiger Beta-Code." };
+  }
+
+  const supabase = await getAdminSupabase();
+  const { data: beta } = await supabase
+    .from("beta_signups")
+    .select("id, converted_to_user, user_id, status")
+    .eq("code", code)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (!beta) {
+    return { valid: false, error: "Beta-Code nicht gefunden." };
+  }
+
+  if (beta.converted_to_user && beta.user_id) {
+    return { valid: false, error: "Code wurde bereits verwendet." };
+  }
+
+  return { valid: true };
+}
+
+/** Apply beta perks after email confirmation (auth callback only). */
+export async function confirmBetaSignup(
+  userId: string,
+  betaCodeRaw?: string | null
+): Promise<{ ok: boolean; error?: string }> {
+  const code = betaCodeRaw?.trim().toUpperCase();
+  if (!code) {
+    return { ok: true };
+  }
+  return applyBetaOnSignup(userId, code);
+}
+
 /** Apply beta perks when user completes signup with ?beta=CODE */
 export async function applyBetaOnSignup(
   userId: string,

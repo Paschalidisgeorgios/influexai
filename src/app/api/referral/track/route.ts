@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 import { NextResponse } from "next/server";
-import { registerReferralOnSignup } from "@/app/actions/referral";
+import { recordReferralIntent } from "@/app/actions/referral";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = await registerReferralOnSignup(user.id, ref);
+  const result = await recordReferralIntent(user.id, ref);
 
   if (!result.success) {
     return NextResponse.json(

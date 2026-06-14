@@ -28,15 +28,8 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setError("");
     const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      email.trim(),
-      { redirectTo }
-    );
+    await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo });
     setLoading(false);
-    if (resetError) {
-      setError(resetError.message);
-      return;
-    }
     setSent(true);
   };
 

@@ -79,6 +79,7 @@
     "forgot_submit": "Link senden",
     "forgot_subtitle": "Wir senden dir einen Link per E-Mail zum Zurücksetzen deines Passworts.",
     "forgot_title": "Passwort zurücksetzen",
+    "forgot_generic_error": "Anfrage konnte nicht gesendet werden. Bitte später erneut versuchen.",
     "has_account": "Bereits registriert?",
     "login_button": "Jetzt anmelden",
     "login_link": "Anmelden →",

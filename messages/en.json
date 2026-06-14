@@ -246,6 +246,7 @@
     "forgot_submit": "Send link",
     "forgot_subtitle": "We'll email you a link to reset your password.",
     "forgot_title": "Reset password",
+    "forgot_generic_error": "Could not send the request. Please try again later.",
     "has_account": "Already have an account?",
     "login_button": "Sign in",
     "login_link": "Sign in →",

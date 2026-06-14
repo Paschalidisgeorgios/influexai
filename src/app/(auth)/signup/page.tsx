@@ -5,13 +5,8 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  registerReferralOnSignup,
-  confirmReferralRewards,
-} from "@/app/actions/referral";
-import { invokeWelcomeNurtureEmail } from "@/lib/nurture-email";
+import { validateBetaCode } from "@/app/actions/beta";
 import { trackAbEvent } from "@/lib/ab-tracking";
-import { applyBetaOnSignup } from "@/app/actions/beta";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import {
   authInputClass,
@@ -111,8 +106,12 @@ function SignupPageInner() {
       setError(t("fill_fields"));
       return;
     }
-    if (password.length < 6) {
+    if (password.length < 8) {
       setError(t("password_too_short"));
+      return;
+    }
+    if (getPasswordStrength(password) < 2) {
+      setError(t("password_weak"));
       return;
     }
     setLoading(true);
@@ -130,6 +129,15 @@ function SignupPageInner() {
       (typeof window !== "undefined"
         ? localStorage.getItem(BETA_STORAGE_KEY)
         : null);
+
+    if (beta) {
+      const betaValidation = await validateBetaCode(beta.trim().toUpperCase());
+      if (!betaValidation.valid) {
+        setError(betaValidation.error ?? t("signup.generic_error"));
+        setLoading(false);
+        return;
+      }
+    }
 
     const redirectAfterConfirm =
       typeof window !== "undefined"
@@ -167,36 +175,12 @@ function SignupPageInner() {
       return;
     }
 
-    if (data.user) {
-      void invokeWelcomeNurtureEmail(data.user.id);
-    }
-
     if (data.session && data.user) {
-      if (ref) {
-        await registerReferralOnSignup(data.user.id, ref);
-        try {
-          await fetch("/api/referral/track", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ref }),
-          });
-        } catch {
-          /* registerReferralOnSignup already ran */
-        }
-        try {
-          localStorage.removeItem(REFERRAL_STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
-      }
-      await confirmReferralRewards(data.user.id);
-      if (beta) {
-        await applyBetaOnSignup(data.user.id, beta.trim().toUpperCase());
-        try {
-          localStorage.removeItem(BETA_STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
+      try {
+        localStorage.removeItem(REFERRAL_STORAGE_KEY);
+        localStorage.removeItem(BETA_STORAGE_KEY);
+      } catch {
+        /* ignore */
       }
 
       setLastAuthProvider("email");
@@ -412,7 +396,7 @@ function SignupPageInner() {
       <p className="mt-4 text-center text-xs leading-relaxed text-white/45">
         {t("terms_text")}{" "}
         <Link
-          href="/terms"
+          href="/agb"
           className="text-white/55 underline transition-colors hover:text-[#ccff00]"
         >
           {t("terms_link")}

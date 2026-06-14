@@ -9,11 +9,8 @@ import {
 } from "@/lib/referral-code";
 import { isReferralUserId } from "@/lib/referral-ref-cookie";
 import { assertSessionUserId } from "@/lib/server-action-auth";
-import {
-  awardReferredSignupBonus,
-  awardReferrerSignupBonus,
-  processReferralPurchase,
-} from "@/lib/referral-rewards";
+import { processReferralPurchase } from "@/lib/referral-rewards";
+import { confirmReferralSignupRewards } from "@/lib/referral-signup-confirm";
 
 async function resolveReferrerId(
   supabase: Awaited<ReturnType<typeof getAdminClient>>,
@@ -91,8 +88,8 @@ async function ensureUniqueReferralCode(
   return fallback;
 }
 
-/** Call after signup (stores ref, awards 5 to new user, creates referral row). */
-export async function registerReferralOnSignup(
+/** Records referral relationship only — no credit grants (see confirmReferralRewards). */
+export async function recordReferralIntent(
   userId: string,
   referrerCodeRaw?: string | null
 ): Promise<{ success: boolean; error?: string }> {
@@ -154,14 +151,17 @@ export async function registerReferralOnSignup(
     .single();
 
   if (insertError) {
-    console.error("registerReferralOnSignup insert:", insertError.message);
+    console.error("recordReferralIntent insert:", insertError.message);
     return { success: false, error: insertError.message };
   }
 
   return { success: true };
 }
 
-/** Call on email confirmation / first session (auth callback). */
+/** @deprecated Use recordReferralIntent — kept for import compatibility. */
+export const registerReferralOnSignup = recordReferralIntent;
+
+/** Call on email confirmation / first session (auth callback only). */
 export async function confirmReferralRewards(
   userId: string
 ): Promise<{ success: boolean }> {
@@ -171,23 +171,20 @@ export async function confirmReferralRewards(
   }
 
   const supabase = await getAdminClient();
+  const result = await confirmReferralSignupRewards(supabase, userId);
 
-  const { data: referral } = await supabase
-    .from("referrals")
-    .select("*")
-    .eq("referred_id", userId)
-    .maybeSingle();
-
-  if (!referral) return { success: true };
-
-  await awardReferredSignupBonus(supabase, userId);
-
-  const awarded = await awardReferrerSignupBonus(supabase, referral);
-  if (awarded.ok) {
-    await invokeProcessReferralEdge(referral.id, "insert");
+  if (result.awarded) {
+    const { data: referral } = await supabase
+      .from("referrals")
+      .select("id")
+      .eq("referred_id", userId)
+      .maybeSingle();
+    if (referral?.id) {
+      await invokeProcessReferralEdge(referral.id, "insert");
+    }
   }
 
-  return { success: true };
+  return { success: result.success };
 }
 
 async function invokeProcessReferralEdge(
