@@ -58,6 +58,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/sign-in" + search, request.url));
   }
 
+  const legacyDashboardRedirects: Record<string, string> = {
+    "/dashboard/mein-ki-ich": "/dashboard/ki-ich",
+    "/dashboard/ki-influencer": "/dashboard/ki-ich",
+    "/dashboard/produkt-werbung": "/dashboard/produkt",
+    "/dashboard/agent": "/dashboard",
+  };
+
+  const legacyDashboardTarget = legacyDashboardRedirects[pathname];
+  if (legacyDashboardTarget) {
+    return NextResponse.redirect(
+      new URL(legacyDashboardTarget + search, request.url),
+      308
+    );
+  }
+
   // Legacy /white-label → public agency landing (logged-in users → dashboard WL)
   if (pathname === "/white-label" || pathname.startsWith("/white-label/")) {
     if (pathname !== "/white-label") {

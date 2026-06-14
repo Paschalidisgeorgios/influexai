@@ -11,6 +11,9 @@ import {
 
 export type ToolOutputType = "text" | "script" | "image" | "video" | "audio" | "train" | "agent" | "calendar";
 
+/** canvas = spawn ControlNode on infinite canvas; navigate = open standalone dashboard page */
+export type ToolSidebarMode = "canvas" | "navigate";
+
 export type ToolCategory =
   | "ERSTELLEN"
   | "VISUALS"
@@ -60,6 +63,12 @@ export interface ToolApiDefinition {
   label: string;
   icon: string;
   category: ToolCategory;
+  /** Canonical dashboard URL — single source of truth for links and redirects */
+  dashboardRoute: string;
+  /** Default canvas. Use navigate for full-page tools (Campaign, UGC, etc.). */
+  sidebarMode?: ToolSidebarMode;
+  /** Legacy paths that resolve to this tool (bookmarks, old links) */
+  routeAliases?: string[];
   outputType: ToolOutputType;
   baseCoins: number;
   highResCoins?: number;
@@ -88,6 +97,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Viral Hook",
     icon: "⚡",
     category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/viral-hook",
     outputType: "text",
     baseCoins: CANVAS_TOOL_BASE_COINS["viral-hook"],
     description: "Generiere scroll-stoppende Hooks für Short-Form Content.",
@@ -127,6 +137,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Content Kalender",
     icon: "📅",
     category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/content-kalender",
     outputType: "calendar",
     baseCoins: CANVAS_TOOL_BASE_COINS["content-kalender"],
     description: "Plane Posts mit Themen, Hooks und Zeitfenstern.",
@@ -174,6 +185,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Trend Script",
     icon: "📈",
     category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/trend-to-script",
     outputType: "text",
     baseCoins: CANVAS_TOOL_BASE_COINS["trend-script"],
     description: "Trend-Thema in fertiges Sprecher-Skript mit B-Roll-Regie.",
@@ -209,6 +221,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Script Generator",
     icon: "📝",
     category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/script-generator",
     outputType: "script",
     baseCoins: CANVAS_TOOL_BASE_COINS["script-generator"],
     description: "Vollständiges Video-Skript mit Hook, Body und CTA.",
@@ -267,6 +280,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Produkt-Werbung",
     icon: "📢",
     category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/produkt",
     outputType: "text",
     baseCoins: CANVAS_TOOL_BASE_COINS["produkt-werbung"],
     description: "Ad-Copy und Spot-Texte aus Produkt-USPs.",
@@ -295,6 +309,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Bild Generator",
     icon: "🖼",
     category: "VISUALS",
+    dashboardRoute: "/dashboard/image-generator",
     outputType: "image",
     baseCoins: CANVAS_TOOL_BASE_COINS["flux-image"],
     highResCoins: CANVAS_TOOL_HIGH_RES_COINS["flux-image"],
@@ -352,6 +367,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "KI-Ich",
     icon: "👤",
     category: "VISUALS",
+    dashboardRoute: "/dashboard/ki-ich",
+    routeAliases: ["/dashboard/ki-influencer"],
     outputType: "image",
     baseCoins: CANVAS_TOOL_BASE_COINS["ki-ich"],
     description: "Dein trainierter Avatar-Klon in neuen Szenen.",
@@ -384,6 +401,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "LoRA Training",
     icon: "🎨",
     category: "VISUALS",
+    dashboardRoute: "/dashboard/lora-training",
     outputType: "train",
     baseCoins: CANVAS_TOOL_BASE_COINS["lora-training"],
     description: "Trainiere einen wiedererkennbaren Look für deine Marke.",
@@ -403,6 +421,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Video Generator",
     icon: "🎬",
     category: "VIDEO & FILM",
+    dashboardRoute: "/dashboard/seedance",
+    routeAliases: ["/dashboard/szenen-generator"],
     outputType: "video",
     baseCoins: CANVAS_TOOL_BASE_COINS["seedance-video"],
     highResCoins: CANVAS_TOOL_HIGH_RES_COINS["seedance-video"],
@@ -459,6 +479,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Video Transformer",
     icon: "🎭",
     category: "VIDEO & FILM",
+    dashboardRoute: "/dashboard/video-transformer",
     outputType: "video",
     baseCoins: CANVAS_TOOL_BASE_COINS["video-transformer"],
     description: "Stil-Transfer und Motion auf bestehendem Footage.",
@@ -502,6 +523,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Video Übersetzer",
     icon: "🌐",
     category: "VIDEO & FILM",
+    dashboardRoute: "/dashboard/video-uebersetzer",
+    routeAliases: ["/dashboard/video-translation"],
     outputType: "video",
     baseCoins: CANVAS_TOOL_BASE_COINS["video-uebersetzer"],
     description: "Übersetze Videos mit optionaler Lipsync-Korrektur.",
@@ -545,6 +568,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Avatar Studio",
     icon: "🤖",
     category: "AVATAR & LIVE",
+    dashboardRoute: "/dashboard/avatar-studio",
     outputType: "video",
     baseCoins: CANVAS_TOOL_BASE_COINS["avatar-studio"],
     description: "Digitaler Zwilling spricht dein Skript in einer Szene.",
@@ -570,6 +594,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Lipsync Studio",
     icon: "💋",
     category: "AVATAR & LIVE",
+    dashboardRoute: "/dashboard/lipsync-studio",
+    routeAliases: ["/dashboard/lipsync"],
     outputType: "video",
     baseCoins: CANVAS_TOOL_BASE_COINS["lipsync-studio"],
     description: "Neue Stimme auf bestehendes Video legen.",
@@ -599,6 +625,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "Melodia Studio",
     icon: "🎵",
     category: "AUDIO",
+    dashboardRoute: "/dashboard/melodia",
     outputType: "audio",
     baseCoins: CANVAS_TOOL_BASE_COINS["melodia-studio"],
     description: "Musik und SFX aus Text-Prompts.",
@@ -629,6 +656,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     label: "KI Agent",
     icon: "⭐",
     category: "AUTOMATION",
+    dashboardRoute: "/dashboard/ki-agent",
+    routeAliases: ["/dashboard/agent"],
     outputType: "agent",
     baseCoins: CANVAS_TOOL_BASE_COINS["agent-autopilot"],
     description: "Stelle eine Aufgabe — der Agent erledigt sie mit den passenden Tools.",
@@ -660,6 +689,102 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
       },
     ],
   },
+  "thumbnail-concept": {
+    id: "thumbnail-concept",
+    label: "Thumbnail Konzept",
+    icon: "🖼️",
+    category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/thumbnail-concept",
+    sidebarMode: "navigate",
+    outputType: "text",
+    baseCoins: CANVAS_TOOL_BASE_COINS["thumbnail-concept"],
+    description: "Klickstarke Thumbnail-Ideen mit Text und Layout.",
+    accent: "#FFD84D",
+    accentRgb: "255,216,77",
+    outputDescription: "Thumbnail-Konzepte",
+    apiRoute: "/api/generate",
+    params: [],
+  },
+  "niche-analyzer": {
+    id: "niche-analyzer",
+    label: "Niche Analyzer",
+    icon: "🔍",
+    category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/niche-analyzer",
+    sidebarMode: "navigate",
+    outputType: "text",
+    baseCoins: CANVAS_TOOL_BASE_COINS["niche-analyzer"],
+    description: "Profitable YouTube-Nischen finden und bewerten.",
+    accent: "#00D5FF",
+    accentRgb: "0,213,255",
+    outputDescription: "Nischen-Analyse",
+    apiRoute: "/api/generate",
+    params: [],
+  },
+  "outlier-detector": {
+    id: "outlier-detector",
+    label: "Outlier Detector",
+    icon: "📊",
+    category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/outlier-detector",
+    sidebarMode: "navigate",
+    outputType: "text",
+    baseCoins: CANVAS_TOOL_BASE_COINS["outlier-detector"],
+    description: "Virale Ausreißer-Videos in einer Nische analysieren.",
+    accent: "#B7FF00",
+    accentRgb: "183,255,0",
+    outputDescription: "Outlier-Analyse",
+    apiRoute: "/api/outlier-detector",
+    params: [],
+  },
+  "viral-score": {
+    id: "viral-score",
+    label: "Viral Score",
+    icon: "🎯",
+    category: "ERSTELLEN",
+    dashboardRoute: "/dashboard/viral-score",
+    sidebarMode: "navigate",
+    outputType: "text",
+    baseCoins: CANVAS_TOOL_BASE_COINS["viral-score"],
+    description: "Content 0–100 bewerten lassen (Hook, Retention, CTR, Trend).",
+    accent: "#FF4DDF",
+    accentRgb: "255,77,223",
+    outputDescription: "Viral Score Report",
+    apiRoute: "/api/viral-score",
+    params: [],
+  },
+  "ugc-video": {
+    id: "ugc-video",
+    label: "UGC Video",
+    icon: "🎬",
+    category: "VIDEO & FILM",
+    dashboardRoute: "/dashboard/ugc-video",
+    sidebarMode: "navigate",
+    outputType: "video",
+    baseCoins: CANVAS_TOOL_BASE_COINS["ugc-video"],
+    description: "Authentisches Produktvideo mit Upload und Hooks.",
+    accent: "#B7FF00",
+    accentRgb: "183,255,0",
+    outputDescription: "UGC Werbevideo",
+    apiRoute: "/api/ugc-video",
+    params: [],
+  },
+  "campaign-autopilot": {
+    id: "campaign-autopilot",
+    label: "Autopilot Kampagne",
+    icon: "🚀",
+    category: "AUTOMATION",
+    dashboardRoute: "/dashboard/campaign-autopilot",
+    sidebarMode: "navigate",
+    outputType: "text",
+    baseCoins: CANVAS_TOOL_BASE_COINS["campaign-autopilot"],
+    description: "Komplette Kampagne (Reels, Posts, Visuals) aus einem Briefing.",
+    accent: "#B4FF00",
+    accentRgb: "180,255,0",
+    outputDescription: "Kampagnen-Plan + Assets",
+    apiRoute: "/api/agent/campaign",
+    params: [],
+  },
 };
 
 export type ToolId = keyof typeof TOOL_API_SCHEMA;
@@ -671,33 +796,37 @@ export function getToolDefinition(toolId: string): ToolApiDefinition | undefined
 }
 
 export function getToolsByCategory(category: ToolCategory): ToolApiDefinition[] {
-  return ALL_TOOL_IDS.map((id) => TOOL_API_SCHEMA[id]).filter((t) => t.category === category);
+  return ALL_TOOL_IDS.map((id) => TOOL_API_SCHEMA[id])
+    .filter((t) => t.category === category)
+    .sort((a, b) => a.label.localeCompare(b.label, "de"));
 }
 
-/** Route → canvas tool id for SPA-style spawning */
-export const ROUTE_TO_TOOL_ID: Record<string, ToolId> = {
-  "/dashboard/viral-hook": "viral-hook",
-  "/dashboard/content-kalender": "content-kalender",
-  "/dashboard/script-generator": "script-generator",
-  "/dashboard/trend-to-script": "trend-script",
-  "/dashboard/produkt": "produkt-werbung",
-  "/dashboard/image-generator": "flux-image",
-  "/dashboard/ki-influencer": "ki-ich",
-  "/dashboard/ki-ich": "ki-ich",
-  "/dashboard/lora-training": "lora-training",
-  "/dashboard/szenen-generator": "seedance-video",
-  "/dashboard/seedance": "seedance-video",
-  "/dashboard/video-transformer": "video-transformer",
-  "/dashboard/video-uebersetzer": "video-uebersetzer",
-  "/dashboard/video-translation": "video-uebersetzer",
-  "/dashboard/avatar-studio": "avatar-studio",
-  "/dashboard/lipsync": "lipsync-studio",
-  "/dashboard/lipsync-studio": "lipsync-studio",
-  "/dashboard/melodia": "melodia-studio",
-  "/dashboard/ki-agent": "agent-autopilot",
-  "/dashboard/agent": "agent-autopilot",
-  "/dashboard": "agent-autopilot",
-};
+export function isNavigateSidebarTool(tool: ToolApiDefinition): boolean {
+  return tool.sidebarMode === "navigate";
+}
+
+export function getToolDashboardRoute(toolId: ToolId): string {
+  return TOOL_API_SCHEMA[toolId].dashboardRoute;
+}
+
+/** Built from each tool's dashboardRoute + routeAliases — do not edit manually */
+function buildRouteToToolId(): Record<string, ToolId> {
+  const map: Record<string, ToolId> = {
+    "/dashboard": "agent-autopilot",
+  };
+
+  for (const id of ALL_TOOL_IDS) {
+    const tool = TOOL_API_SCHEMA[id];
+    map[tool.dashboardRoute] = id;
+    for (const alias of tool.routeAliases ?? []) {
+      map[alias] = id;
+    }
+  }
+
+  return map;
+}
+
+export const ROUTE_TO_TOOL_ID: Record<string, ToolId> = buildRouteToToolId();
 
 export function resolveToolIdFromPath(pathname: string): ToolId | null {
   if (ROUTE_TO_TOOL_ID[pathname]) return ROUTE_TO_TOOL_ID[pathname];

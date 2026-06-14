@@ -54,12 +54,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/video-generator",
-        destination: "/dashboard/szenen-generator",
-        permanent: true,
-      },
-      {
-        source: "/dashboard/seedance",
-        destination: "/dashboard/szenen-generator",
+        destination: "/dashboard/seedance",
         permanent: true,
       },
       {

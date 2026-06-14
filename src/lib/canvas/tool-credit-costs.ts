@@ -7,6 +7,8 @@ import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import { SEEDANCE_CREDIT_COST } from "@/lib/seedance-config";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
+import { UGC_VIDEO_CREDIT_COST } from "@/lib/akool-ugc";
+import { VIRAL_SCORE_CREDIT_COST } from "@/lib/viral-score";
 
 /** Matches fullPipelineCreditSum() in agent/credits — kept inline for client-safe imports. */
 const AGENT_AUTOPILOT_BASE_COINS = 10;
@@ -37,6 +39,12 @@ export const CANVAS_TOOL_BASE_COINS = {
   "lipsync-studio": AKOOL_TOOL_CREDITS.lipsync,
   "melodia-studio": 1,
   "agent-autopilot": AGENT_AUTOPILOT_BASE_COINS,
+  "thumbnail-concept": 1,
+  "niche-analyzer": 2,
+  "outlier-detector": 3,
+  "viral-score": VIRAL_SCORE_CREDIT_COST,
+  "ugc-video": UGC_VIDEO_CREDIT_COST,
+  "campaign-autopilot": 38,
 } as const;
 
 export const CANVAS_TOOL_HIGH_RES_COINS = {

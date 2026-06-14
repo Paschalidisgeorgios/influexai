@@ -103,9 +103,10 @@ export default function UgcVideoPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
+  const [elapsedSec, setElapsedSec] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -178,6 +179,10 @@ export default function UgcVideoPage() {
       clearInterval(pollRef.current);
       pollRef.current = null;
     }
+    if (elapsedRef.current) {
+      clearInterval(elapsedRef.current);
+      elapsedRef.current = null;
+    }
   }, []);
 
   useEffect(() => () => stopPolling(), [stopPolling]);
@@ -185,6 +190,10 @@ export default function UgcVideoPage() {
   const pollJob = useCallback(
     (jobId: string) => {
       stopPolling();
+      setElapsedSec(0);
+      elapsedRef.current = setInterval(() => {
+        setElapsedSec((s) => s + 1);
+      }, 1000);
       pollRef.current = setInterval(async () => {
         try {
           const res = await fetch(
@@ -193,7 +202,6 @@ export default function UgcVideoPage() {
           const data = await res.json();
           if (!res.ok) throw new Error(data.error ?? t("error_generic"));
 
-          setProgress(data.progress ?? 30);
           if (data.status === "completed" && data.videoUrl) {
             stopPolling();
             setVideoUrl(data.videoUrl);
@@ -348,7 +356,6 @@ export default function UgcVideoPage() {
     setSubmitting(true);
     setError(null);
     setVideoUrl(null);
-    setProgress(10);
     setStep("generating");
 
     try {
@@ -428,7 +435,7 @@ export default function UgcVideoPage() {
     stopPolling();
     setStep("input");
     setVideoUrl(null);
-    setProgress(0);
+    setElapsedSec(0);
     setError(null);
   };
 
@@ -460,13 +467,13 @@ export default function UgcVideoPage() {
       {step === "generating" && (
         <div className="rounded-2xl border border-white/10 bg-[#0f0f12] p-8 text-center mb-8">
           <div className="w-full max-w-md mx-auto h-2 rounded-full bg-white/10 overflow-hidden mb-4">
-            <div
-              className="h-full bg-[#B4FF00] transition-all duration-500"
-              style={{ width: `${Math.max(progress, 12)}%` }}
-            />
+            <div className="h-full w-full animate-pulse rounded-full bg-[#B4FF00]/60" />
           </div>
           <p className="text-[#B4FF00] font-semibold mb-1">{t("generating")}</p>
           <p className="text-white/65 text-sm">{POLLING_TIPS[tipIndex]}</p>
+          <p className="text-white/45 text-xs mt-2">
+            {elapsedSec}s · typisch 1–3 Minuten
+          </p>
         </div>
       )}
 

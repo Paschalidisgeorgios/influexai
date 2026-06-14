@@ -5,8 +5,10 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Download, Home, Images, LogOut } from "lucide-react";
 import {
+  ALL_TOOL_IDS,
+  TOOL_API_SCHEMA,
   TOOL_CATEGORIES,
-  getToolsByCategory,
+  isNavigateSidebarTool,
   type ToolCategory,
   type ToolId,
 } from "@/lib/canvas/toolApiSchema";
@@ -22,6 +24,9 @@ const accordionVariants = {
   collapsed: { height: 0, opacity: 0 },
   open: { height: "auto", opacity: 1 },
 };
+
+const toolItemClassName =
+  "group flex min-h-11 w-full items-center gap-2.5 rounded-lg border-l-2 border-transparent py-2.5 pl-3 pr-3 text-left transition-all duration-200 hover:border-[#ccff00] hover:bg-zinc-900/90 hover:shadow-[inset_0_0_16px_rgba(204,255,0,0.06)] active:bg-zinc-900";
 
 type CanvasSidebarContentProps = {
   onToolSelect?: () => void;
@@ -65,7 +70,9 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
         </Link>
 
         {TOOL_CATEGORIES.map((category) => {
-          const tools = getToolsByCategory(category);
+          const tools = ALL_TOOL_IDS.map((id) => TOOL_API_SCHEMA[id])
+            .filter((tool) => tool.category === category)
+            .sort((a, b) => a.label.localeCompare(b.label, "de"));
           const isOpen = openSection === category;
 
           return (
@@ -101,34 +108,65 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
                     className="overflow-hidden"
                   >
                     <ul className="mb-2 space-y-0.5 pb-1">
-                      {tools.map((tool) => (
-                        <li key={tool.id}>
-                          <button
-                            type="button"
-                            onClick={() => handleSpawn(tool.id as ToolId)}
-                            className="group flex min-h-11 w-full items-center gap-2.5 rounded-lg border-l-2 border-transparent py-2.5 pl-3 pr-3 text-left transition-all duration-200 hover:border-[#ccff00] hover:bg-zinc-900/90 hover:shadow-[inset_0_0_16px_rgba(204,255,0,0.06)] active:bg-zinc-900"
-                          >
-                            <span
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-sm"
-                              style={{
-                                borderColor: `rgba(${tool.accentRgb}, 0.35)`,
-                                background: `rgba(${tool.accentRgb}, 0.1)`,
-                                boxShadow: `0 0 14px rgba(${tool.accentRgb}, 0.12)`,
-                              }}
-                            >
-                              {tool.icon}
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-xs font-medium text-zinc-100 group-hover:text-white">
-                                {tool.label}
-                              </span>
-                              <span className="block truncate text-[9px] text-zinc-400 group-hover:text-zinc-300">
-                                ab {tool.baseCoins} Coins
-                              </span>
-                            </span>
-                          </button>
-                        </li>
-                      ))}
+                      {tools.map((tool) => {
+                        const navigate = isNavigateSidebarTool(tool);
+
+                        return (
+                          <li key={tool.id}>
+                            {navigate ? (
+                              <Link
+                                href={tool.dashboardRoute}
+                                onClick={onToolSelect}
+                                className={`${toolItemClassName} no-underline`}
+                              >
+                                <span
+                                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-sm"
+                                  style={{
+                                    borderColor: `rgba(${tool.accentRgb}, 0.35)`,
+                                    background: `rgba(${tool.accentRgb}, 0.1)`,
+                                    boxShadow: `0 0 14px rgba(${tool.accentRgb}, 0.12)`,
+                                  }}
+                                >
+                                  {tool.icon}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block truncate text-xs font-medium text-zinc-100 group-hover:text-white">
+                                    {tool.label}
+                                  </span>
+                                  <span className="block truncate text-[9px] text-zinc-400 group-hover:text-zinc-300">
+                                    Dashboard · ab {tool.baseCoins} Credits
+                                  </span>
+                                </span>
+                              </Link>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSpawn(tool.id as ToolId)}
+                                className={toolItemClassName}
+                              >
+                                <span
+                                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-sm"
+                                  style={{
+                                    borderColor: `rgba(${tool.accentRgb}, 0.35)`,
+                                    background: `rgba(${tool.accentRgb}, 0.1)`,
+                                    boxShadow: `0 0 14px rgba(${tool.accentRgb}, 0.12)`,
+                                  }}
+                                >
+                                  {tool.icon}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block truncate text-xs font-medium text-zinc-100 group-hover:text-white">
+                                    {tool.label}
+                                  </span>
+                                  <span className="block truncate text-[9px] text-zinc-400 group-hover:text-zinc-300">
+                                    ab {tool.baseCoins} Coins
+                                  </span>
+                                </span>
+                              </button>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </motion.div>
                 ) : null}

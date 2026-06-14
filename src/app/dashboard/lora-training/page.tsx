@@ -532,9 +532,15 @@ function LoraTrainingPageInner() {
           <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.6rem", color: "#F0EFE8", marginBottom: 8 }}>{t("training_title")}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem", marginBottom: 20 }}>{t("training_subtitle")}</p>
           <div style={{ height: 8, borderRadius: 99, background: "#18181d", overflow: "hidden", maxWidth: 400, margin: "0 auto 12px" }}>
-            <div style={{ height: "100%", width: `${Math.max(progress, 5)}%`, background: "#B4FF00", transition: "width 0.4s" }} />
+            {progress > 0 ? (
+              <div style={{ height: "100%", width: `${progress}%`, background: "#B4FF00", transition: "width 0.4s" }} />
+            ) : (
+              <div style={{ height: "100%", width: "100%", background: "rgba(180,255,0,0.35)", animation: "pulse 1.5s ease-in-out infinite" }} />
+            )}
           </div>
-          <p style={{ color: "#B4FF00", fontWeight: 700, marginBottom: 16 }}>{progress}%</p>
+          {progress > 0 ? (
+            <p style={{ color: "#B4FF00", fontWeight: 700, marginBottom: 16 }}>{progress}%</p>
+          ) : null}
           {logs.length > 0 && (
             <div style={{ textAlign: "left", maxWidth: 420, margin: "0 auto", padding: 12, borderRadius: 8, background: "#18181d", fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", fontFamily: "monospace", maxHeight: 120, overflow: "auto" }}>
               {logs.map((l, i) => <div key={i}>{l}</div>)}
@@ -543,7 +549,7 @@ function LoraTrainingPageInner() {
           <button type="button" onClick={resetForm} style={{ marginTop: 20, padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.09)", background: "transparent", color: "rgba(255,255,255,0.65)", cursor: "pointer" }}>
             {t("training_background")}
           </button>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } } @keyframes pulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }`}</style>
         </div>
       )}
 
