@@ -88,7 +88,9 @@ export async function POST(request: Request) {
       let failed = false;
 
       try {
-        for await (const event of streamMelodiaChat(system, messages)) {
+        for await (const event of streamMelodiaChat(system, messages, {
+          enableCaching: true,
+        })) {
           if (event.type === "text_delta") {
             fullText += event.text;
             controller.enqueue(

@@ -1,4 +1,7 @@
-import { getAnthropicConfigError } from "@/lib/anthropic";
+import {
+  ANTHROPIC_EPHEMERAL_CACHE_CONTROL,
+  getAnthropicConfigError,
+} from "@/lib/anthropic";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
@@ -17,7 +20,8 @@ export type MelodiaStreamEvent =
 
 export async function* streamMelodiaChat(
   system: string,
-  messages: MelodiaChatMessage[]
+  messages: MelodiaChatMessage[],
+  options?: { enableCaching?: boolean }
 ): AsyncGenerator<MelodiaStreamEvent> {
   const configError = getAnthropicConfigError();
   if (configError) {
@@ -37,6 +41,9 @@ export async function* streamMelodiaChat(
     body: JSON.stringify({
       model: MELODIA_MODEL,
       max_tokens: 1024,
+      ...(options?.enableCaching
+        ? { cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL }
+        : {}),
       system,
       messages,
       stream: true,

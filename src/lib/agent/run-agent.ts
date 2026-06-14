@@ -88,7 +88,9 @@ export async function* runMasterAgentStream(
     const systemPrompt =
       MASTER_AGENT_SYSTEM_PROMPT + studioGuideBlock + flowAppend;
 
-    const turn = await runAnthropicAgentTurn(systemPrompt, messages);
+    const turn = await runAnthropicAgentTurn(systemPrompt, messages, {
+      enableCaching: true,
+    });
 
     if (!turn.ok) {
       yield { type: "error", message: turn.error };

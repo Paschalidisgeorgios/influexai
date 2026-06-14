@@ -1,4 +1,8 @@
-import { getAnthropicConfigError, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
+import {
+  ANTHROPIC_EPHEMERAL_CACHE_CONTROL,
+  getAnthropicConfigError,
+  SCRIPT_GENERATOR_MODEL,
+} from "@/lib/anthropic";
 import { MASTER_AGENT_TOOLS } from "./tools-definition";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -36,7 +40,8 @@ export type AnthropicTurnResult = {
 
 export async function runAnthropicAgentTurn(
   system: string,
-  messages: AnthropicMessageParam[]
+  messages: AnthropicMessageParam[],
+  options?: { enableCaching?: boolean }
 ): Promise<
   | { ok: true; turn: AnthropicTurnResult }
   | { ok: false; error: string }
@@ -56,6 +61,9 @@ export async function runAnthropicAgentTurn(
     body: JSON.stringify({
       model: SCRIPT_GENERATOR_MODEL,
       max_tokens: 8192,
+      ...(options?.enableCaching
+        ? { cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL }
+        : {}),
       system,
       tools: MASTER_AGENT_TOOLS,
       messages,
@@ -100,7 +108,8 @@ export async function runAnthropicAgentTurn(
 /** Stream one agent turn; yields text deltas, then tool_use summary at end. */
 export async function* streamAnthropicAgentTurn(
   system: string,
-  messages: AnthropicMessageParam[]
+  messages: AnthropicMessageParam[],
+  options?: { enableCaching?: boolean }
 ): AsyncGenerator<
   | { kind: "text_delta"; text: string }
   | {
@@ -130,6 +139,9 @@ export async function* streamAnthropicAgentTurn(
     body: JSON.stringify({
       model: SCRIPT_GENERATOR_MODEL,
       max_tokens: 8192,
+      ...(options?.enableCaching
+        ? { cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL }
+        : {}),
       system,
       tools: MASTER_AGENT_TOOLS,
       messages,

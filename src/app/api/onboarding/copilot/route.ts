@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
 import {
+  ANTHROPIC_EPHEMERAL_CACHE_CONTROL,
   getAnthropicConfigError,
   logAnthropicFailure,
   mapAnthropicSdkError,
@@ -99,6 +100,7 @@ export async function POST(request: Request) {
       temperature: 0.55,
       system: ONBOARDING_SYSTEM_PROMPT,
       messages: apiMessages,
+      cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL,
     });
 
     const textBlock = response.content.find((block) => block.type === "text");

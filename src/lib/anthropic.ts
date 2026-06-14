@@ -144,12 +144,18 @@ export type AnthropicContentBlock =
       };
     };
 
+export const ANTHROPIC_EPHEMERAL_CACHE_CONTROL = {
+  type: "ephemeral" as const,
+};
+
 export type AnthropicMessageParams = {
   system: string;
   user: string | AnthropicContentBlock[];
   maxTokens?: number;
   model?: string;
   temperature?: number;
+  /** Opt-in prompt caching — top-level cache_control on the Messages API request. */
+  enableCaching?: boolean;
 };
 
 export type AnthropicMessageResult =
@@ -178,6 +184,9 @@ export async function createAnthropicMessage(
         model: params.model ?? ANTHROPIC_MODEL,
         max_tokens: params.maxTokens ?? 4096,
         ...(params.temperature != null ? { temperature: params.temperature } : {}),
+        ...(params.enableCaching
+          ? { cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL }
+          : {}),
         system: params.system,
         messages: [
           {
