@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   parseAgentResponse,
@@ -10,17 +10,15 @@ import {
 type Props = {
   content: string;
   className?: string;
+  onToolCallsParsed?: (calls: ParsedToolCall[]) => void;
 };
 
-export function AgentMarkdown({ content, className = "" }: Props) {
+export function AgentMarkdown({ content, className = "", onToolCallsParsed }: Props) {
   const parsed = useMemo(() => parseAgentResponse(content), [content]);
-  const [toolCalls, setToolCalls] = useState<ParsedToolCall[]>([]);
 
   useEffect(() => {
-    setToolCalls(parsed.toolCalls);
-  }, [parsed.toolCalls]);
-
-  void toolCalls;
+    onToolCallsParsed?.(parsed.toolCalls);
+  }, [onToolCallsParsed, parsed.toolCalls]);
 
   return (
     <div className={`agent-markdown text-sm leading-relaxed text-white ${className}`}>

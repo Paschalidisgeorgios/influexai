@@ -47,6 +47,12 @@ import {
 import type { PremiumBrollSegment } from "@/lib/claude-premium-generate";
 import { useOnboardingStore } from "@/lib/canvas/onboarding-store";
 import type { ToolParamSchema } from "@/lib/canvas/toolApiSchema";
+import { consumeAgentStream } from "@/lib/agent/consumeAgentStream";
+import type { AgentChatMessage, AgentOutputs } from "@/lib/agent/types";
+import { parseAgentResponse, type ParsedToolCall } from "@/lib/agent/parseAgentResponse";
+import { spawnAgentOutputAssets } from "@/lib/canvas/spawn-agent-output-assets";
+import { AgentCanvasFollowUpPanel } from "./AgentCanvasFollowUpPanel";
+import { openNoCreditsModal } from "@/lib/client-credits-ui";
 
 function isPrimaryParam(
   field: ToolParamSchema,
@@ -114,8 +120,15 @@ function ControlNodeComponent({
     null
   );
   const [kiIchValidationError, setKiIchValidationError] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<AgentChatMessage[]>([]);
+  const [followUpInput, setFollowUpInput] = useState("");
+  const [followUpRunning, setFollowUpRunning] = useState(false);
+  const [latestToolCalls, setLatestToolCalls] = useState<ParsedToolCall[]>([]);
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
+  const agentPrimaryAssetIdRef = useRef<string | null>(null);
+  const agentOutputSpawnIndexRef = useRef(0);
+  const chatHistoryRef = useRef<AgentChatMessage[]>([]);
   const { profile } = useCreatorProfile();
   const highlightedToolId = useOnboardingStore((s) => s.highlightedToolId);
   const recordCanvasAction = useOnboardingStore((s) => s.recordCanvasAction);
@@ -128,6 +141,10 @@ function ControlNodeComponent({
   const seedanceModels = useSeedanceModels();
   const kiInfluencerCharacters = useKiInfluencerCharacters();
   const jobPolling = useJobPolling();
+
+  useEffect(() => {
+    chatHistoryRef.current = chatHistory;
+  }, [chatHistory]);
 
   const seedanceFieldOverrides = useMemo((): Record<string, ParamFieldOverride> | undefined => {
     if (!isSeedanceTool) return undefined;
@@ -479,6 +496,37 @@ function ControlNodeComponent({
         }
       }
 
+      if (isAgentAutopilot) {
+        const userMessage =
+          typeof generationParams.campaign_goal === "string"
+            ? generationParams.campaign_goal.trim()
+            : promptText;
+
+        if (userMessage && result.text) {
+          setChatHistory([
+            { role: "user", content: userMessage },
+            { role: "assistant", content: result.text },
+          ]);
+          setLatestToolCalls(parseAgentResponse(result.text).toolCalls);
+        }
+
+        agentPrimaryAssetIdRef.current = assetId;
+        agentOutputSpawnIndexRef.current = 0;
+
+        if (result.data && typeof result.data === "object") {
+          const assetNode = useCanvasStore.getState().nodes.find((n) => n.id === assetId);
+          if (assetNode) {
+            spawnAgentOutputAssets(
+              result.data as AgentOutputs,
+              id,
+              assetNode.position,
+              spawnAssetNode,
+              agentOutputSpawnIndexRef
+            );
+          }
+        }
+      }
+
       let analyticsCredits = 0;
       if (shouldPostCanvasAnalytics(tool.id)) {
         try {
@@ -551,6 +599,7 @@ function ControlNodeComponent({
     pipelineDisconnected,
     pipelinePanel,
     pipelineStore,
+    promptText,
     recordCanvasAction,
     recordGeneration,
     refreshCredits,
@@ -562,6 +611,188 @@ function ControlNodeComponent({
     touchActivity,
     updateAssetNode,
   ]);
+
+  const sendFollowUp = useCallback(
+    async (message: string) => {
+      const trimmed = message.trim();
+      if (!trimmed || followUpRunning || tool?.id !== "agent-autopilot") return;
+
+      abortRef.current?.abort();
+      const abortController = new AbortController();
+      abortRef.current = abortController;
+
+      setFollowUpRunning(true);
+      setFollowUpInput("");
+
+      const primaryAssetId = agentPrimaryAssetIdRef.current;
+      const history = chatHistoryRef.current;
+
+      if (primaryAssetId) {
+        updateAssetNode(primaryAssetId, {
+          status: "loading",
+          progress: 5,
+          statusLabel: "Agent startet…",
+          text: "",
+          errorMessage: undefined,
+        });
+      }
+
+      let streamedText = "";
+      let agentProgress = 5;
+      let agentToolStartCount = 0;
+      let streamFailed = false;
+
+      try {
+        const res = await fetch("/api/agent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: trimmed, history }),
+          signal: abortController.signal,
+        });
+
+        const contentType = res.headers.get("content-type") ?? "";
+
+        if (!res.ok) {
+          const data = contentType.includes("json")
+            ? ((await res.json().catch(() => ({}))) as {
+                error?: string;
+                credits?: number;
+                required?: number;
+              })
+            : {};
+
+          if (res.status === 402) {
+            openNoCreditsModal({
+              required: data.required ?? 1,
+              remaining: data.credits ?? 0,
+            });
+          }
+
+          const errMsg = data.error ?? "Anfrage fehlgeschlagen.";
+          showCreditsToast(errMsg, "error");
+          if (primaryAssetId) {
+            updateAssetNode(primaryAssetId, {
+              status: "error",
+              progress: 0,
+              errorMessage: errMsg,
+            });
+          }
+          return;
+        }
+
+        await consumeAgentStream(res, {
+          onTextDelta: (chunk) => {
+            streamedText += chunk;
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, {
+                text: streamedText,
+                status: "processing",
+                progress: Math.min(95, agentProgress + 5),
+              });
+            }
+          },
+          onToolStart: (_toolName, label) => {
+            agentToolStartCount += 1;
+            agentProgress = Math.min(85, 15 + agentToolStartCount * 15);
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, {
+                progress: agentProgress,
+                status: "processing",
+                statusLabel: label ? `${label}…` : "Agent arbeitet…",
+              });
+            }
+          },
+          onToolDone: () => {
+            agentProgress = Math.min(90, agentProgress + 5);
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, { progress: agentProgress });
+            }
+          },
+          onToolError: (toolName) => {
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, {
+                statusLabel: `Fehler bei ${toolName}`,
+              });
+            }
+          },
+          onOutputs: (outputs) => {
+            const anchorNode = primaryAssetId
+              ? useCanvasStore.getState().nodes.find((n) => n.id === primaryAssetId)
+              : useCanvasStore.getState().nodes.find((n) => n.id === id);
+            if (anchorNode) {
+              spawnAgentOutputAssets(
+                outputs,
+                id,
+                anchorNode.position,
+                spawnAssetNode,
+                agentOutputSpawnIndexRef
+              );
+            }
+          },
+          onCredits: () => {
+            window.dispatchEvent(new Event("credits-updated"));
+          },
+          onDone: (summary) => {
+            const finalText = streamedText.trim() || summary;
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, {
+                status: "success",
+                progress: 100,
+                statusLabel: undefined,
+                text: finalText,
+              });
+            }
+            setChatHistory((prev) => [
+              ...prev,
+              { role: "user", content: trimmed },
+              { role: "assistant", content: finalText },
+            ]);
+            setLatestToolCalls(parseAgentResponse(finalText).toolCalls);
+          },
+          onError: (errMessage) => {
+            streamFailed = true;
+            showCreditsToast(errMessage, "error");
+            if (primaryAssetId) {
+              updateAssetNode(primaryAssetId, {
+                status: "error",
+                progress: 0,
+                errorMessage: errMessage,
+              });
+            }
+          },
+        });
+
+        if (streamFailed && primaryAssetId) {
+          return;
+        }
+      } catch (err) {
+        if (abortController.signal.aborted) return;
+        showCreditsToast("Netzwerkfehler. Bitte erneut versuchen.", "error");
+        if (primaryAssetId) {
+          updateAssetNode(primaryAssetId, {
+            status: "error",
+            progress: 0,
+            errorMessage: "Netzwerkfehler. Bitte erneut versuchen.",
+          });
+        }
+      } finally {
+        setFollowUpRunning(false);
+        if (abortRef.current === abortController) {
+          abortRef.current = null;
+        }
+        void refreshCredits();
+      }
+    },
+    [
+      followUpRunning,
+      id,
+      refreshCredits,
+      showCreditsToast,
+      spawnAssetNode,
+      tool?.id,
+      updateAssetNode,
+    ]
+  );
 
   const handleGenerate = async () => {
     if (!tool || nodeData.isGenerating) return;
@@ -850,6 +1081,16 @@ function ControlNodeComponent({
             </>
           )}
         </button>
+
+        {isAgentAutopilot && chatHistory.length > 0 ? (
+          <AgentCanvasFollowUpPanel
+            followUpInput={followUpInput}
+            onFollowUpInputChange={setFollowUpInput}
+            followUpRunning={followUpRunning}
+            toolCalls={latestToolCalls}
+            onSendFollowUp={(msg) => void sendFollowUp(msg)}
+          />
+        ) : null}
       </div>
 
       <CanvasTopUpOverlay
