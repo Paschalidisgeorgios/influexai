@@ -3,6 +3,7 @@ import {
   CanvasGenerationError,
   type CanvasApiErrorCode,
 } from "./canvas-api-errors";
+import { LANDING_VIDEOS } from "@/lib/landing-video-urls";
 
 export type CanvasGenerationResult = {
   text?: string;
@@ -407,12 +408,12 @@ async function mockGeneration(
   }
   if (tool.outputType === "image") {
     return {
-      previewUrl: "/videos/landing/ki-influencer.mp4",
-      url: "/videos/landing/ki-influencer.mp4",
+      previewUrl: LANDING_VIDEOS.kiInfluencer,
+      url: LANDING_VIDEOS.kiInfluencer,
     };
   }
   if (tool.outputType === "video") {
-    return { url: "/videos/landing/seedance-2-0.mp4" };
+    return { url: LANDING_VIDEOS.seedance20 };
   }
   if (tool.outputType === "calendar") {
     return { data: { weeks: 4, posts: 12 } };

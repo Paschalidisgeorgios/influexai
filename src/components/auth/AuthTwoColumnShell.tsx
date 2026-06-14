@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { LANDING_VIDEOS } from "@/lib/landing-video-urls";
 
 type AuthTwoColumnShellProps = {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export function AuthTwoColumnShell({ children }: AuthTwoColumnShellProps) {
 
           <div className="relative hidden h-full min-h-[480px] w-full md:block">
             <video
-              src="/videos/landing/seedance-2-0.mp4"
+              src={LANDING_VIDEOS.seedance20}
               autoPlay
               loop
               muted

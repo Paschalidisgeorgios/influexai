@@ -1,3 +1,5 @@
+import { LANDING_VIDEOS } from "@/lib/landing-video-urls";
+
 export interface HeroScene {
   id: string;
   videoUrl: string;
@@ -6,25 +8,24 @@ export interface HeroScene {
 }
 
 /** Fullscreen hero background on the landing page */
-export const HERO_BACKGROUND_VIDEO = "/videos/landing/hero-creator-studio.mp4";
+export const HERO_BACKGROUND_VIDEO = LANDING_VIDEOS.heroCreatorStudio;
 
-/** Local clips from /public/videos/landing/ — served at /videos/landing/*.mp4 */
 export const HERO_SCENES: HeroScene[] = [
   {
     id: "ki-influencer",
-    videoUrl: "/videos/landing/ki-influencer.mp4",
+    videoUrl: LANDING_VIDEOS.kiInfluencer,
     label: "KI Influencer",
     theme: "violet",
   },
   {
     id: "seedance",
-    videoUrl: "/videos/landing/seedance-2-0.mp4",
+    videoUrl: LANDING_VIDEOS.seedance20,
     label: "Seedance Video",
     theme: "blue",
   },
   {
     id: "ki-avatar",
-    videoUrl: "/videos/landing/ki-avatar.mp4",
+    videoUrl: LANDING_VIDEOS.kiAvatar,
     label: "KI Avatar",
     theme: "green",
   },

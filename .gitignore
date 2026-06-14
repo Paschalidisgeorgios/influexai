@@ -40,6 +40,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Landing videos now served from Vercel Blob (see src/lib/landing-video-urls.ts)
+public/videos/landing/*.mp4
+!public/videos/landing/.gitkeep
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
