@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import {
   configureFalClient,
   getFalKey,
@@ -134,65 +134,63 @@ export async function runImageUpscale(
   }
 
   const creditCost = IMAGE_GEN_CREDITS.upscale;
-  const creditCheck = await hasEnoughCredits(supabase, userId, creditCost);
-  if (!creditCheck.ok) {
-    return {
-      ok: false,
-      failure: { status: 402, error: "Nicht genug Credits" },
-    };
-  }
 
   try {
-    const service = createServiceSupabaseClient();
-    const { data: signed } = await service.storage
-      .from(GENERATED_ASSETS_BUCKET)
-      .createSignedUrl(sourceStoragePath(userId, generationId), 300);
-
-    if (!signed?.signedUrl) {
-      throw new Error("Quellbild nicht lesbar");
-    }
-
-    const upscaledFalUrl = await upscaleGeneratorImage(signed.signedUrl);
-    const upscaledPath = await ingestUpscaledFromUrl(
-      userId,
-      generationId,
-      upscaledFalUrl
-    );
-
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      creditCost,
-      "Bild Generator — Upscale 2x",
+    const deductionResult = await withCreditDeduction(
       {
+        supabase,
+        userId,
+        amount: creditCost,
+        description: "Bild Generator — Upscale 2x",
         generationType: "image",
         skipGenerationLog: true,
+      },
+      async () => {
+        const service = createServiceSupabaseClient();
+        const { data: signed } = await service.storage
+          .from(GENERATED_ASSETS_BUCKET)
+          .createSignedUrl(sourceStoragePath(userId, generationId), 300);
+
+        if (!signed?.signedUrl) {
+          throw new Error("Quellbild nicht lesbar");
+        }
+
+        const upscaledFalUrl = await upscaleGeneratorImage(signed.signedUrl);
+        const upscaledPath = await ingestUpscaledFromUrl(
+          userId,
+          generationId,
+          upscaledFalUrl
+        );
+
+        await updateGenerationResult(supabase, generationId, userId, {
+          upscaledPath,
+          credits_used: (row.credits_used ?? 0) + creditCost,
+        });
+
+        return {
+          generationId,
+          originalUrl: protectedImageUrl(generationId, "source"),
+          upscaledUrl: protectedImageUrl(generationId, "upscaled"),
+          creditsUsed: creditCost,
+        };
       }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return {
         ok: false,
         failure: {
-          status: 402,
-          error: deduction.error ?? "Nicht genug Credits",
+          status: deductionResult.status,
+          error: deductionResult.error,
         },
       };
     }
 
-    await updateGenerationResult(supabase, generationId, userId, {
-      upscaledPath,
-      credits_used: (row.credits_used ?? 0) + creditCost,
-    });
-
     return {
       ok: true,
       data: {
-        generationId,
-        originalUrl: protectedImageUrl(generationId, "source"),
-        upscaledUrl: protectedImageUrl(generationId, "upscaled"),
-        creditsUsed: creditCost,
-        creditsLeft: deduction.remainingCredits,
+        ...deductionResult.data,
+        creditsLeft: deductionResult.remainingCredits,
       },
     };
   } catch (error: unknown) {

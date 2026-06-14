@@ -2,6 +2,7 @@
 
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
@@ -41,10 +42,11 @@ export async function detectOutliers(
   channelSize: string,
   language?: string
 ): Promise<DetectSuccess | DetectFailure> {
-  if (!niche?.trim()) {
+  const trimmedNiche = niche?.trim() ?? "";
+  if (!trimmedNiche || trimmedNiche.length > 200) {
     return {
       success: false,
-      error: "Bitte gib eine Nische oder ein Keyword ein.",
+      error: "Ungültige Nische (1-200 Zeichen).",
     };
   }
 
@@ -60,13 +62,13 @@ export async function detectOutliers(
   const { userId, supabase } = access;
 
   if (isE2eMockGenerationsEnabled()) {
-    const outliers = e2eMockOutliers(niche.trim(), lang);
+    const outliers = e2eMockOutliers(trimmedNiche, lang);
     const deduction = await deductCredits(
       supabase,
       userId,
       CREDIT_COST,
       "Outlier Detector",
-      { generationType: "outlier-detector", prompt: niche.trim() }
+      { generationType: "outlier-detector", prompt: trimmedNiche }
     );
     if (!deduction.success) {
       return {
@@ -76,7 +78,7 @@ export async function detectOutliers(
     }
     const { error: saveError } = await supabase.from("outlier_results").insert({
       user_id: userId,
-      niche: niche.trim(),
+      niche: trimmedNiche,
       results: outliers,
     });
     if (saveError) {
@@ -98,73 +100,74 @@ export async function detectOutliers(
   }
 
   const userPrompt = buildOutlierUserPrompt({
-    niche,
+    niche: trimmedNiche,
     period,
     platform,
     channelSize,
     language: lang,
   });
 
-  try {
-    const claude = await createAnthropicMessage({
-      system: OUTLIER_SYSTEM_PROMPT,
-      user: userPrompt,
-    });
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-
-    let outliers: OutlierConcept[];
-    try {
-      outliers = parseOutlierConcepts(claude.text);
-    } catch {
-      console.error("Outlier JSON parse failed:", claude.text.slice(0, 500));
-      return {
-        success: false,
-        error: "Antwort konnte nicht gelesen werden. Bitte erneut versuchen.",
-      };
-    }
-
-    const deduction = await deductCredits(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      CREDIT_COST,
-      "Outlier Detector",
-      { generationType: "outlier-detector", prompt: niche.trim() }
-    );
+      amount: CREDIT_COST,
+      description: "Outlier Detector",
+      generationType: "outlier-detector",
+      prompt: trimmedNiche,
+    },
+    async () => {
+      const claude = await createAnthropicMessage({
+        system: OUTLIER_SYSTEM_PROMPT,
+        user: userPrompt,
+      });
+      if (!claude.ok) {
+        throw new Error(claude.error);
+      }
 
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      let outliers: OutlierConcept[];
+      try {
+        outliers = parseOutlierConcepts(claude.text);
+      } catch {
+        console.error("Outlier JSON parse failed:", claude.text.slice(0, 500));
+        throw new Error("Antwort konnte nicht gelesen werden. Bitte erneut versuchen.");
+      }
+
+      const { error: saveError } = await supabase.from("outlier_results").insert({
+        user_id: userId,
+        niche: trimmedNiche,
+        results: outliers,
+      });
+
+      if (saveError) {
+        console.error("outlier_results insert:", saveError.message, saveError.code);
+        return {
+          outliers,
+          saved: false as const,
+          saveWarning: outlierResultsSaveErrorMessage(saveError.code),
+        };
+      }
+
+      return { outliers, saved: true as const };
     }
+  );
 
-    const { error: saveError } = await supabase.from("outlier_results").insert({
-      user_id: userId,
-      niche: niche.trim(),
-      results: outliers,
-    });
-
-    if (saveError) {
-      console.error("outlier_results insert:", saveError.message, saveError.code);
-      return {
-        success: true,
-        outliers,
-        creditsLeft: deduction.remainingCredits,
-        saved: false,
-        saveWarning: outlierResultsSaveErrorMessage(saveError.code),
-      };
-    }
-
+  if (!deductionResult.ok) {
     return {
-      success: true,
-      outliers,
-      creditsLeft: deduction.remainingCredits,
-      saved: true,
+      success: false,
+      error: deductionResult.error,
+      credits: deductionResult.remainingCredits,
+      required: deductionResult.required,
     };
-  } catch (e) {
-    console.error("detectOutliers:", e);
-    return { success: false, error: "Unerwarteter Fehler bei der Analyse." };
   }
+
+  const { outliers, saved, saveWarning } = deductionResult.data;
+
+  return {
+    success: true,
+    outliers,
+    creditsLeft: deductionResult.remainingCredits,
+    saved,
+    ...(saveWarning ? { saveWarning } : {}),
+  };
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
@@ -41,9 +41,18 @@ export async function POST(request: Request) {
     );
   }
 
+  if (input.length > 8000) {
+    return NextResponse.json(
+      { success: false, error: "Eingabe zu lang (max. 8000 Zeichen)." },
+      { status: 400 }
+    );
+  }
+
   const access = await assertKiToolAccess(VIRAL_HOOK_EXTRACTOR_CREDIT_COST);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
+
+  const promptSummary = input.slice(0, 200);
 
   async function generateHooks(retryHint?: string): Promise<string[]> {
     const claude = await createAnthropicMessage({
@@ -59,54 +68,40 @@ export async function POST(request: Request) {
     return parseViralHookExtractorResult(claude.text);
   }
 
-  let hooks: string[];
-  try {
-    const picked = await runWithQualityRetry({
-      toolName: "viral-hook",
-      userGoal: input,
-      toOutputText: (items) => items.join("\n"),
-      generate: generateHooks,
-    });
-    hooks = picked.value;
-  } catch (e) {
-    console.error("[viral-hook] generate:", e);
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          e instanceof Error ? e.message : "KI-Antwort konnte nicht gelesen werden.",
-      },
-      { status: 500 }
-    );
-  }
-
-  const promptSummary = input.slice(0, 200);
-
-  const deducted = await deductCredits(
-    supabase,
-    userId,
-    VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
-    "Viral Hook Extraktor",
+  const deductionResult = await withCreditDeduction(
     {
-      generationType: "viral-hook-extraktor",
+      supabase,
+      userId,
+      amount: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
+      description: "Viral Hook Extraktor",
       skipGenerationLog: true,
+      generationType: "viral-hook-extraktor",
       prompt: promptSummary,
+    },
+    async () => {
+      const picked = await runWithQualityRetry({
+        toolName: "viral-hook",
+        userGoal: input,
+        toOutputText: (items) => items.join("\n"),
+        generate: generateHooks,
+      });
+      return picked.value;
     }
   );
 
-  if (!deducted.success) {
-    const status =
-      deducted.error === "Nicht genug Credits." ? 402 : 500;
+  if (!deductionResult.ok) {
     return NextResponse.json(
       {
         success: false,
-        error: deducted.error ?? "Credits konnten nicht abgezogen werden.",
-        credits: deducted.remainingCredits,
-        required: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
       },
-      { status }
+      { status: deductionResult.status }
     );
   }
+
+  const hooks = deductionResult.data;
 
   const { error: genErr } = await supabase.from("generations").insert({
     user_id: userId,
@@ -123,6 +118,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     hooks,
-    creditsLeft: deducted.remainingCredits,
+    creditsLeft: deductionResult.remainingCredits,
   });
 }

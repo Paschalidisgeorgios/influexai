@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { assertKiToolAccess } from "@/lib/access.server";
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { runImageUpscaleRequest } from "@/lib/upscale-image-api";
 
 export const dynamic = "force-dynamic";
@@ -27,16 +28,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const access = await assertKiToolAccess(IMAGE_GEN_CREDITS.upscale);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
-  if (!user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
-
-  const result = await runImageUpscaleRequest(supabase, user.id, {
+  const result = await runImageUpscaleRequest(supabase, userId, {
     generationId,
     imageDataUrl,
   });

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import {
   buildCompetitorUserPrompt,
   COMPETITOR_ANALYSIS_CREDIT_COST,
@@ -68,85 +69,69 @@ export async function runCompetitorAnalysis(
     };
   }
 
-  let bundle;
-  try {
-    bundle = await fetchYouTubeChannelBundle(trimmed);
-  } catch (e) {
-    const msg =
-      e instanceof Error ? e.message : "YouTube-Daten konnten nicht geladen werden.";
-    return { ok: false, failure: { status: 400, error: msg } };
-  }
+  const deductionResult = await withCreditDeduction(
+    {
+      supabase,
+      userId,
+      amount: COMPETITOR_ANALYSIS_CREDIT_COST,
+      description: "competitor_analysis",
+      skipGenerationLog: true,
+      prompt: trimmed.slice(0, 200),
+    },
+    async () => {
+      const bundle = await fetchYouTubeChannelBundle(trimmed);
 
-  const claude = await createAnthropicMessage({
-    system: COMPETITOR_ANALYSIS_SYSTEM_PROMPT,
-    user: buildCompetitorUserPrompt(bundle),
-    maxTokens: 2048,
-    model: SCRIPT_GENERATOR_MODEL,
-  });
+      const claude = await createAnthropicMessage({
+        system: COMPETITOR_ANALYSIS_SYSTEM_PROMPT,
+        user: buildCompetitorUserPrompt(bundle),
+        maxTokens: 2048,
+        model: SCRIPT_GENERATOR_MODEL,
+      });
 
-  if (!claude.ok) {
-    return {
-      ok: false,
-      failure: { status: 503, error: claude.error },
-    };
-  }
+      if (!claude.ok) {
+        throw new Error(claude.error);
+      }
 
-  let analysis;
-  try {
-    analysis = parseCompetitorAnalysis(claude.text, bundle);
-  } catch (e) {
-    console.error("[competitor] parse:", e);
-    return {
-      ok: false,
-      failure: {
-        status: 500,
-        error: "KI-Antwort konnte nicht gelesen werden.",
-      },
-    };
-  }
+      const analysis = parseCompetitorAnalysis(claude.text, bundle);
 
-  const payload: CompetitorAnalysisResponse = {
-    channel: bundle.channel,
-    topVideos: bundle.topVideos.slice(0, 5),
-    analysis,
-  };
+      const payload: CompetitorAnalysisResponse = {
+        channel: bundle.channel,
+        topVideos: bundle.topVideos.slice(0, 5),
+        analysis,
+      };
 
-  const promptSummary = `${bundle.channel.title} · ${trimmed.slice(0, 120)}`;
+      const promptSummary = `${bundle.channel.title} · ${trimmed.slice(0, 120)}`;
 
-  const deducted = await deductCredits(
-    supabase,
-    userId,
-    COMPETITOR_ANALYSIS_CREDIT_COST,
-    "competitor_analysis",
-    { skipGenerationLog: true, prompt: promptSummary }
+      const { error: genErr } = await supabase.from("generations").insert({
+        user_id: userId,
+        type: "competitor_analysis",
+        prompt: promptSummary,
+        credits_used: COMPETITOR_ANALYSIS_CREDIT_COST,
+        result: payload,
+      });
+
+      if (genErr) {
+        console.error("[competitor] generations insert:", genErr.message);
+      }
+
+      return payload;
+    }
   );
 
-  if (!deducted.success) {
+  if (!deductionResult.ok) {
     return {
       ok: false,
       failure: {
-        status: deducted.error === "Nicht genug Credits." ? 402 : 500,
-        error: deducted.error ?? "Credits konnten nicht abgezogen werden.",
-        credits: deducted.remainingCredits,
-        required: COMPETITOR_ANALYSIS_CREDIT_COST,
+        status: deductionResult.status,
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
       },
     };
-  }
-
-  const { error: genErr } = await supabase.from("generations").insert({
-    user_id: userId,
-    type: "competitor_analysis",
-    prompt: promptSummary,
-    credits_used: COMPETITOR_ANALYSIS_CREDIT_COST,
-    result: payload,
-  });
-
-  if (genErr) {
-    console.error("[competitor] generations insert:", genErr.message);
   }
 
   return {
     ok: true,
-    data: { ...payload, creditsLeft: deducted.remainingCredits },
+    data: { ...deductionResult.data, creditsLeft: deductionResult.remainingCredits },
   };
 }

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
 import { generateWithLora } from "@/lib/lora-fal";
 import { configureFalClient, getFalKey, parseFalError } from "@/lib/fal-image";
@@ -46,6 +47,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "loraId and prompt required" }, { status: 400 });
   }
 
+  if (prompt.length > 2000) {
+    return NextResponse.json(
+      { error: "Prompt zu lang (max. 2000 Zeichen)." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    checkAgentInputSafety(prompt);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   if (!getFalKey()) {
     return NextResponse.json({ error: "Generation not configured" }, { status: 503 });
   }
@@ -70,78 +87,77 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "LoRA not ready" }, { status: 400 });
   }
 
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    LORA_GENERATION_CREDIT
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json({ error: "Not enough credits" }, { status: 402 });
-  }
-
   const started = Date.now();
 
   try {
-    const result = await generateWithLora({
-      prompt,
-      loraUrl: lora.lora_url,
-      triggerWord: lora.trigger_word,
-      loraScale: body.loraScale ?? 0.9,
-      imageSize: body.imageSize ?? "portrait_16_9",
-    });
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      LORA_GENERATION_CREDIT,
-      `LoRA Generation — ${lora.name}`,
+    const deductionResult = await withCreditDeduction(
       {
+        supabase,
+        userId: user.id,
+        amount: LORA_GENERATION_CREDIT,
+        description: `LoRA Generation — ${lora.name}`,
+        skipGenerationLog: true,
         generationType: "lora_generation",
         prompt: prompt.slice(0, 500),
-        skipGenerationLog: true,
+      },
+      async () => {
+        const result = await generateWithLora({
+          prompt,
+          loraUrl: lora.lora_url,
+          triggerWord: lora.trigger_word,
+          loraScale: body.loraScale ?? 0.9,
+          imageSize: body.imageSize ?? "portrait_16_9",
+        });
+
+        const generationId = await createGenerationRecord(
+          supabase,
+          user.id,
+          "lora_generation",
+          {
+            paid: true,
+            downloadPaid: true,
+            assetKind: "image",
+            mode: "final",
+            model: "fal-ai/flux-lora",
+            width: result.width,
+            height: result.height,
+            generationTimeMs: Date.now() - started,
+          },
+          LORA_GENERATION_CREDIT,
+          `${lora.trigger_word} ${prompt}`.slice(0, 500)
+        );
+
+        const { previewPath, sourcePath, width, height } =
+          await ingestImageGeneratorAssets(user.id, generationId, result.url);
+
+        await updateGenerationResult(supabase, generationId, user.id, {
+          previewPath,
+          sourcePath,
+          width,
+          height,
+        });
+
+        return {
+          generationId,
+          imageUrl: protectedImageUrl(generationId),
+          loraId,
+          triggerWord: lora.trigger_word,
+        };
       }
     );
 
-    if (!deduction.success) {
-      return NextResponse.json({ error: "Not enough credits" }, { status: 402 });
+    if (!deductionResult.ok) {
+      return NextResponse.json(
+        { error: deductionResult.error },
+        { status: deductionResult.status }
+      );
     }
-
-    const generationId = await createGenerationRecord(
-      supabase,
-      user.id,
-      "lora_generation",
-      {
-        paid: true,
-        downloadPaid: true,
-        assetKind: "image",
-        mode: "final",
-        model: "fal-ai/flux-lora",
-        width: result.width,
-        height: result.height,
-        generationTimeMs: Date.now() - started,
-      },
-      LORA_GENERATION_CREDIT,
-      `${lora.trigger_word} ${prompt}`.slice(0, 500)
-    );
-
-    const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(user.id, generationId, result.url);
-
-    await updateGenerationResult(supabase, generationId, user.id, {
-      previewPath,
-      sourcePath,
-      width,
-      height,
-    });
 
     return NextResponse.json({
       success: true,
-      generationId,
-      imageUrl: protectedImageUrl(generationId),
+      ...deductionResult.data,
       creditsUsed: LORA_GENERATION_CREDIT,
-      creditsLeft: deduction.remainingCredits,
-      loraId,
-      triggerWord: lora.trigger_word,
+      creditsLeft: deductionResult.remainingCredits,
     });
   } catch (error) {
     console.error("lora generate:", error);

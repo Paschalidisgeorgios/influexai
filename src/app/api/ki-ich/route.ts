@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import {
   configureFalClient,
   generateKiIchPortrait,
@@ -50,9 +51,26 @@ export async function POST(request: NextRequest) {
   };
 
   const mode: FalImageMode = modeRaw === "preview" ? "preview" : "final";
+  const trimmedScene = scene?.trim() ?? "";
 
-  if (!imageUrl || !scene) {
+  if (!imageUrl || !trimmedScene) {
     return NextResponse.json({ error: "Fehlende Parameter" }, { status: 400 });
+  }
+
+  if (trimmedScene.length > 500) {
+    return NextResponse.json(
+      { error: "Szene zu lang (max. 500 Zeichen)." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    checkAgentInputSafety(trimmedScene);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
   }
 
   if (consentAccepted !== true) {
@@ -83,33 +101,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  if (mode === "final") {
-    const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-    if (!creditCheck.ok) {
-      return NextResponse.json(
-        { error: "Nicht genug Credits" },
-        { status: 402 }
+  if (mode === "preview") {
+    try {
+      const uploadedUrl = await uploadDataUrlToFal(imageUrl);
+      const falOutputUrl = await generateKiIchPortrait(
+        uploadedUrl,
+        trimmedScene,
+        "preview"
       );
-    }
-  }
 
-  try {
-    const uploadedUrl = await uploadDataUrlToFal(imageUrl);
-    const falOutputUrl = await generateKiIchPortrait(uploadedUrl, scene, mode);
-
-    if (mode === "preview") {
       const generationId = await createGenerationRecord(
         supabase,
         user.id,
         "ki-ich",
         {
-          scene,
+          scene: trimmedScene,
           paid: false,
           mode: "preview",
           assetKind: "image",
         },
         0,
-        scene.slice(0, 500)
+        trimmedScene.slice(0, 500)
       );
 
       const previewPath = await ingestPreviewFromUrl(
@@ -130,80 +142,99 @@ export async function POST(request: NextRequest) {
         creditsUsed: 0,
         locked: true,
       });
-    }
+    } catch (error: unknown) {
+      const bodyDetail =
+        error && typeof error === "object" && "body" in error
+          ? (error as { body?: unknown }).body
+          : undefined;
+      console.error("ki-ich fal error:", JSON.stringify(bodyDetail ?? error));
 
-    let generationId = existingGenerationId;
-
-    if (generationId) {
-      const existing = await getOwnedGeneration(supabase, generationId, user.id);
-      if (!existing) {
-        return NextResponse.json({ error: "Generierung nicht gefunden" }, { status: 404 });
-      }
-    } else {
-      generationId = await createGenerationRecord(
-        supabase,
-        user.id,
-        "ki-ich",
-        { scene, paid: false, mode: "preview", assetKind: "image" },
-        0,
-        scene.slice(0, 500)
-      );
-    }
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      CREDIT_COST,
-      "Mein KI-Ich – Bildgenerierung",
-      {
-        generationType: "ki-ich",
-        prompt: scene.slice(0, 500),
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
       return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
+        { success: false, error: parseFalError(error) },
+        { status: 500 }
       );
     }
+  }
 
-    const finalPath = await ingestFinalImageFromUrl(
-      user.id,
-      generationId,
-      falOutputUrl
-    );
+  const deductionResult = await withCreditDeduction(
+    {
+      supabase,
+      userId: user.id,
+      amount: CREDIT_COST,
+      description: "Mein KI-Ich – Bildgenerierung",
+      skipGenerationLog: true,
+      generationType: "ki-ich",
+      prompt: trimmedScene.slice(0, 500),
+    },
+    async () => {
+      const uploadedUrl = await uploadDataUrlToFal(imageUrl);
+      const falOutputUrl = await generateKiIchPortrait(
+        uploadedUrl,
+        trimmedScene,
+        "final"
+      );
 
-    await updateGenerationResult(supabase, generationId, user.id, {
-      scene,
-      paid: true,
-      mode: "final",
-      finalPath,
-      assetKind: "image",
-      mimeType: "image/jpeg",
-      credits_used: CREDIT_COST,
-    });
+      let generationId = existingGenerationId;
 
-    return NextResponse.json({
-      success: true,
-      generationId,
-      imageUrl: protectedImageUrl(generationId, "final"),
-      mode: "final",
-      creditsUsed: CREDIT_COST,
-      creditsLeft: deduction.remainingCredits,
-      locked: false,
-    });
-  } catch (error: unknown) {
-    const bodyDetail =
-      error && typeof error === "object" && "body" in error
-        ? (error as { body?: unknown }).body
-        : undefined;
-    console.error("ki-ich fal error:", JSON.stringify(bodyDetail ?? error));
+      if (generationId) {
+        const existing = await getOwnedGeneration(
+          supabase,
+          generationId,
+          user.id
+        );
+        if (!existing) {
+          throw new Error("Generierung nicht gefunden");
+        }
+      } else {
+        generationId = await createGenerationRecord(
+          supabase,
+          user.id,
+          "ki-ich",
+          { scene: trimmedScene, paid: false, mode: "preview", assetKind: "image" },
+          0,
+          trimmedScene.slice(0, 500)
+        );
+      }
 
+      const finalPath = await ingestFinalImageFromUrl(
+        user.id,
+        generationId,
+        falOutputUrl
+      );
+
+      await updateGenerationResult(supabase, generationId, user.id, {
+        scene: trimmedScene,
+        paid: true,
+        mode: "final",
+        finalPath,
+        assetKind: "image",
+        mimeType: "image/jpeg",
+        credits_used: CREDIT_COST,
+      });
+
+      return { generationId };
+    }
+  );
+
+  if (!deductionResult.ok) {
+    const status = deductionResult.error === "Generierung nicht gefunden"
+      ? 404
+      : deductionResult.status;
     return NextResponse.json(
-      { success: false, error: parseFalError(error) },
-      { status: 500 }
+      { success: false, error: deductionResult.error },
+      { status }
     );
   }
+
+  const { generationId } = deductionResult.data;
+
+  return NextResponse.json({
+    success: true,
+    generationId,
+    imageUrl: protectedImageUrl(generationId, "final"),
+    mode: "final",
+    creditsUsed: CREDIT_COST,
+    creditsLeft: deductionResult.remainingCredits,
+    locked: false,
+  });
 }

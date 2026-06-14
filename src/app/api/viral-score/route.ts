@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { createAnthropicMessage, SCRIPT_GENERATOR_MODEL } from "@/lib/anthropic";
 import {
   buildViralScoreUserPrompt,
@@ -15,6 +16,8 @@ import { assertGatedFeature } from "@/lib/access.server";
 export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
+
+class ClaudeApiError extends Error {}
 
 type RequestBody = {
   script?: string;
@@ -44,6 +47,12 @@ export async function POST(request: Request) {
   if (!script || script.length < 20) {
     return NextResponse.json(
       { success: false, error: "Bitte gib ein Script mit mindestens 20 Zeichen ein." },
+      { status: 400 }
+    );
+  }
+  if (script.length > 12000) {
+    return NextResponse.json(
+      { success: false, error: "Script zu lang (max. 12000 Zeichen)." },
       { status: 400 }
     );
   }
@@ -89,6 +98,7 @@ export async function POST(request: Request) {
     );
   }
 
+  const promptSummary = `${niche} · ${script.slice(0, 120)}`;
   const userPrompt = buildViralScoreUserPrompt({
     script,
     thumbnail_idea: thumbnailIdea,
@@ -96,54 +106,47 @@ export async function POST(request: Request) {
     language: body.language ?? "de",
   });
 
-  const claude = await createAnthropicMessage({
-    system: VIRAL_SCORE_SYSTEM_PROMPT,
-    user: userPrompt,
-    maxTokens: 1536,
-    model: SCRIPT_GENERATOR_MODEL,
-  });
+  const deductionResult = await withCreditDeduction(
+    {
+      supabase,
+      userId: user.id,
+      amount: VIRAL_SCORE_CREDIT_COST,
+      description: "viral_score",
+      skipGenerationLog: true,
+      prompt: promptSummary,
+    },
+    async () => {
+      const claude = await createAnthropicMessage({
+        system: VIRAL_SCORE_SYSTEM_PROMPT,
+        user: userPrompt,
+        maxTokens: 1536,
+        model: SCRIPT_GENERATOR_MODEL,
+      });
 
-  if (!claude.ok) {
-    return NextResponse.json(
-      { success: false, error: claude.error },
-      { status: 503 }
-    );
-  }
+      if (!claude.ok) {
+        throw new ClaudeApiError(claude.error);
+      }
 
-  let score: ViralScoreResult;
-  try {
-    score = parseViralScoreResult(claude.text);
-  } catch (e) {
-    console.error("[viral-score] parse:", e);
-    return NextResponse.json(
-      { success: false, error: "KI-Antwort konnte nicht gelesen werden." },
-      { status: 500 }
-    );
-  }
-
-  const promptSummary = `${niche} · ${script.slice(0, 120)}`;
-
-  const deducted = await deductCredits(
-    supabase,
-    user.id,
-    VIRAL_SCORE_CREDIT_COST,
-    "viral_score",
-    { skipGenerationLog: true, prompt: promptSummary }
+      return parseViralScoreResult(claude.text);
+    }
   );
 
-  if (!deducted.success) {
-    const status =
-      deducted.error === "Nicht genug Credits." ? 402 : 500;
+  if (!deductionResult.ok) {
+    const status = deductionResult.error.includes("Zu viele Anfragen")
+      ? 429
+      : deductionResult.status;
     return NextResponse.json(
       {
         success: false,
-        error: deducted.error ?? "Credits konnten nicht abgezogen werden.",
-        credits: deducted.remainingCredits,
-        required: VIRAL_SCORE_CREDIT_COST,
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
       },
       { status }
     );
   }
+
+  const score: ViralScoreResult = deductionResult.data;
 
   const { error: genErr } = await supabase.from("generations").insert({
     user_id: user.id,
@@ -160,6 +163,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     score,
-    creditsLeft: deducted.remainingCredits,
+    creditsLeft: deductionResult.remainingCredits,
   });
 }

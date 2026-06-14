@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import { runWithQualityRetry } from "@/lib/agent/qualityScoring";
 import {
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
   const { userId, supabase } = access;
 
   const kalenderParams = { nische, plattform, frequenz: frequenz as ContentKalenderFrequency };
+  const promptSummary = `${nische} · ${plattform} · ${frequenz}`.slice(0, 200);
 
   async function generateEntries(retryHint?: string): Promise<ContentKalenderEntry[]> {
     const claude = await createAnthropicMessage({
@@ -86,55 +87,41 @@ export async function POST(request: Request) {
     return parseContentKalenderToolResult(claude.text);
   }
 
-  let entries: ContentKalenderEntry[];
-  try {
-    const picked = await runWithQualityRetry({
-      toolName: "content-kalender",
-      userGoal: `${nische} · ${plattform} · ${frequenz}`,
-      toOutputText: (items) =>
-        items.map((e) => `${e.tag}: ${e.idee} (${e.format})`).join("\n"),
-      generate: generateEntries,
-    });
-    entries = picked.value;
-  } catch (e) {
-    console.error("[content-kalender] generate:", e);
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          e instanceof Error ? e.message : "KI-Antwort konnte nicht gelesen werden.",
-      },
-      { status: 500 }
-    );
-  }
-
-  const promptSummary = `${nische} · ${plattform} · ${frequenz}`.slice(0, 200);
-
-  const deducted = await deductCredits(
-    supabase,
-    userId,
-    CONTENT_KALENDER_TOOL_CREDIT_COST,
-    "Content Kalender KI",
+  const deductionResult = await withCreditDeduction(
     {
-      generationType: "content-kalender-tool",
+      supabase,
+      userId,
+      amount: CONTENT_KALENDER_TOOL_CREDIT_COST,
+      description: "Content Kalender KI",
       skipGenerationLog: true,
+      generationType: "content-kalender-tool",
       prompt: promptSummary,
+    },
+    async () => {
+      const picked = await runWithQualityRetry({
+        toolName: "content-kalender",
+        userGoal: `${nische} · ${plattform} · ${frequenz}`,
+        toOutputText: (items) =>
+          items.map((e) => `${e.tag}: ${e.idee} (${e.format})`).join("\n"),
+        generate: generateEntries,
+      });
+      return picked.value;
     }
   );
 
-  if (!deducted.success) {
-    const status =
-      deducted.error === "Nicht genug Credits." ? 402 : 500;
+  if (!deductionResult.ok) {
     return NextResponse.json(
       {
         success: false,
-        error: deducted.error ?? "Credits konnten nicht abgezogen werden.",
-        credits: deducted.remainingCredits,
-        required: CONTENT_KALENDER_TOOL_CREDIT_COST,
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
       },
-      { status }
+      { status: deductionResult.status }
     );
   }
+
+  const entries = deductionResult.data;
 
   const { error: genErr } = await supabase.from("generations").insert({
     user_id: userId,
@@ -151,6 +138,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     entries,
-    creditsLeft: deducted.remainingCredits,
+    creditsLeft: deductionResult.remainingCredits,
   });
 }

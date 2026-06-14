@@ -1,6 +1,8 @@
 import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
+import { assertGatedFeature } from "@/lib/access.server";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
 import {
@@ -12,7 +14,6 @@ import { configureFalClient, getFalKey, logFalAiError } from "@/lib/fal-image";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import {
   assertKiInfluencerAccess,
-  deductKiInfluencerCredits,
   kiInfluencerErrorResponse,
   logKiInfluencerError,
   mapSupabaseWriteError,
@@ -34,6 +35,9 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await assertGatedFeature("lora-training");
+  if (denied) return denied;
+
   const body = (await request.json()) as {
     characterId?: string;
     name?: string;
@@ -124,95 +128,108 @@ export async function POST(request: NextRequest) {
   const started = Date.now();
 
   try {
-    const enhanced = await enhanceImagePrompt(castingBrief, {
-      styleId: "editorial",
-      platform: "universal",
-      influencerCastingMode: true,
-    });
-
-    const falResult = await generateCategoryImage({
-      prompt: enhanced.prompt,
-      falPrompt: enhanced.prompt,
-      negativePrompt: enhanced.negative_prompt,
-      category: "portrait",
-      imageSize: platformToFalImageSize("universal"),
-      imageDimensions: { width: 1080, height: 1080 },
-      highRes: false,
-    });
-
-    const generationId = randomUUID();
-    const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(userId, generationId, falResult.url);
-
-    const castingImageUrl = generationStoragePublicUrl(supabase, sourcePath);
-
-    await createGenerationRecord(
-      supabase,
-      userId,
-      "image",
+    const deductionResult = await withCreditDeduction(
       {
-        paid: false,
-        downloadPaid: false,
-        mode: "preview",
-        assetKind: "image",
-        category: "portrait",
-        model: falResult.model,
-        width: width ?? falResult.width,
-        height: height ?? falResult.height,
-        generationTimeMs: Date.now() - started,
-        previewPath,
-        sourcePath,
-        source: "ki_influencer_casting",
-        character_id: characterId,
+        supabase,
+        userId,
+        amount: creditCost,
+        description: "KI-Influencer — Casting",
+        skipGenerationLog: true,
+        generationType: "image",
+        prompt: castingBrief.slice(0, 500),
       },
-      0,
-      castingBrief.slice(0, 500),
-      generationId
-    );
+      async () => {
+        const enhanced = await enhanceImagePrompt(castingBrief, {
+          styleId: "editorial",
+          platform: "universal",
+          influencerCastingMode: true,
+        });
 
-    await updateGenerationResult(supabase, generationId, userId, {
-      credits_used: isAdmin ? 0 : creditCost,
-    });
+        const falResult = await generateCategoryImage({
+          prompt: enhanced.prompt,
+          falPrompt: enhanced.prompt,
+          negativePrompt: enhanced.negative_prompt,
+          category: "portrait",
+          imageSize: platformToFalImageSize("universal"),
+          imageDimensions: { width: 1080, height: 1080 },
+          highRes: false,
+        });
 
-    const deduction = await deductKiInfluencerCredits(
-      supabase,
-      userId,
-      creditCost,
-      "KI-Influencer — Casting",
-      {
-        isAdmin,
-        meta: {
-          generationType: "image",
-          prompt: castingBrief.slice(0, 500),
-          skipGenerationLog: true,
-        },
+        const generationId = randomUUID();
+        const { previewPath, sourcePath, width, height } =
+          await ingestImageGeneratorAssets(userId, generationId, falResult.url);
+
+        const castingImageUrl = generationStoragePublicUrl(supabase, sourcePath);
+
+        await createGenerationRecord(
+          supabase,
+          userId,
+          "image",
+          {
+            paid: false,
+            downloadPaid: false,
+            mode: "preview",
+            assetKind: "image",
+            category: "portrait",
+            model: falResult.model,
+            width: width ?? falResult.width,
+            height: height ?? falResult.height,
+            generationTimeMs: Date.now() - started,
+            previewPath,
+            sourcePath,
+            source: "ki_influencer_casting",
+            character_id: characterId,
+          },
+          0,
+          castingBrief.slice(0, 500),
+          generationId
+        );
+
+        await updateGenerationResult(supabase, generationId, userId, {
+          credits_used: isAdmin ? 0 : creditCost,
+        });
+
+        await updateCharacter(supabase, characterId, userId, {
+          name: character.name || name,
+          description: character.description || description,
+          casting_generation_id: generationId,
+          casting_image_url: castingImageUrl,
+          status: "casting",
+        });
+
+        return {
+          generationId,
+          castingImageUrl,
+          enhancedPrompt: enhanced.prompt,
+        };
       }
     );
 
-    if (!deduction.success) {
-      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
-        credits: deduction.remainingCredits,
-        required: creditCost,
-      });
+    if (!deductionResult.ok) {
+      if (deductionResult.status === 402) {
+        return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+          credits: deductionResult.remainingCredits,
+          required: deductionResult.required,
+        });
+      }
+      return kiInfluencerErrorResponse(
+        "generation_failed",
+        deductionResult.status,
+        deductionResult.error
+      );
     }
 
-    await updateCharacter(supabase, characterId, userId, {
-      name: character.name || name,
-      description: character.description || description,
-      casting_generation_id: generationId,
-      casting_image_url: castingImageUrl,
-      status: "casting",
-    });
+    const data = deductionResult.data;
 
     return NextResponse.json({
       success: true,
       characterId,
-      generationId,
-      imageUrl: protectedImageUrl(generationId),
-      castingImageUrl,
-      enhancedPrompt: enhanced.prompt,
+      generationId: data.generationId,
+      imageUrl: protectedImageUrl(data.generationId),
+      castingImageUrl: data.castingImageUrl,
+      enhancedPrompt: data.enhancedPrompt,
       creditsUsed: isAdmin ? 0 : creditCost,
-      creditsLeft: deduction.remainingCredits,
+      creditsLeft: deductionResult.remainingCredits,
       generationTimeMs: Date.now() - started,
     });
   } catch (error) {

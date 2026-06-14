@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
   createUgcTalkingAvatarVideo,
@@ -25,6 +24,8 @@ import {
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { uploadAudioDataUrlToFal } from "@/lib/upload-audio-fal";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { createGenerationRecord } from "@/lib/generation-assets";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
@@ -52,22 +53,22 @@ async function swapCustomFaceOntoAvatar(
   return waitForFaceswapUrl(job._id);
 }
 
-async function generationExistsForJob(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+async function getGenerationForJob(
+  supabase: SupabaseClient,
   userId: string,
   jobId: string
-): Promise<boolean> {
+) {
   const { data } = await supabase
     .from("generations")
-    .select("id")
+    .select("id, result")
     .eq("user_id", userId)
     .eq("type", "ugc-video")
     .eq("prompt", `${JOB_PROMPT_PREFIX}${jobId}`)
     .maybeSingle();
-  return !!data;
+  return data;
 }
 
-/** GET ?jobId= — poll status and deduct credits once when ready */
+/** GET ?jobId= — poll status (credits deducted on POST) */
 export async function GET(request: NextRequest) {
   const jobId = request.nextUrl.searchParams.get("jobId");
   if (!jobId) {
@@ -91,51 +92,38 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const alreadyCharged = await generationExistsForJob(
-      supabase,
-      userId,
-      jobId
-    );
+    const generation = await getGenerationForJob(supabase, userId, jobId);
+    const resultMeta = (generation?.result ?? {}) as Record<string, unknown>;
 
-    let creditsLeft: number | undefined;
-    if (!alreadyCharged) {
-      const deduction = await deductCredits(
-        supabase,
-        userId,
-        UGC_VIDEO_CREDIT_COST,
-        "UGC Video",
-        {
-          generationType: "ugc-video",
-          prompt: `${JOB_PROMPT_PREFIX}${jobId}`,
-        }
-      );
-      if (!deduction.success) {
-        return NextResponse.json(
-          { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
-          { status: 402 }
-        );
-      }
-      creditsLeft = deduction.remainingCredits;
+    if (generation && resultMeta.notified !== true) {
       notifyGenerationCompletePush(
         userId,
         "UGC Video",
         "/dashboard/ugc-video"
       );
-    } else {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("credits")
-        .eq("id", userId)
-        .single();
-      creditsLeft = profile?.credits ?? undefined;
+      await supabase
+        .from("generations")
+        .update({
+          result: {
+            ...resultMeta,
+            notified: true,
+          },
+        })
+        .eq("id", generation.id);
     }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", userId)
+      .single();
 
     return NextResponse.json({
       success: true,
       status: "completed",
       videoUrl: job.video,
       progress: 100,
-      creditsLeft,
+      creditsLeft: profile?.credits ?? undefined,
     });
   } catch (err: unknown) {
     console.error("[ugc-video GET]", err);
@@ -150,7 +138,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** POST — start UGC talking avatar video */
+/** POST — start UGC talking avatar video (deduct-first) */
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     avatarId?: string;
@@ -200,81 +188,108 @@ export async function POST(request: NextRequest) {
 
   const access = await assertKiToolAccess(UGC_VIDEO_CREDIT_COST);
   if (access instanceof NextResponse) return access;
+  const { userId, supabase } = access;
 
   try {
-    const avatars = await listUgcAvatars(1, 100);
-    const lookupId =
-      customPhotoUrl && (!avatarId || avatarId === "custom")
-        ? CUSTOM_AVATAR_BASE_ID
-        : avatarId;
-    const avatar = avatars.find((a) => a.avatar_id === lookupId);
-    if (!avatar) {
-      return NextResponse.json({ error: "Avatar nicht gefunden" }, { status: 404 });
-    }
+    const deductionResult = await withCreditDeduction(
+      {
+        supabase,
+        userId,
+        amount: UGC_VIDEO_CREDIT_COST,
+        description: "UGC Video",
+        skipGenerationLog: true,
+        generationType: "ugc-video",
+        prompt: script.slice(0, 500),
+      },
+      async () => {
+        const avatars = await listUgcAvatars(1, 100);
+        const lookupId =
+          customPhotoUrl && (!avatarId || avatarId === "custom")
+            ? CUSTOM_AVATAR_BASE_ID
+            : avatarId;
+        const avatar = avatars.find((a) => a.avatar_id === lookupId);
+        if (!avatar) {
+          throw new Error("Avatar nicht gefunden");
+        }
 
-    let avatarImageUrl: string | undefined;
-    if (customPhotoUrl) {
-      const targetImageUrl = avatar.thumbnail ?? avatar.url;
-      if (!targetImageUrl) {
-        return NextResponse.json(
-          { error: "Avatar-Vorschaubild nicht verfügbar" },
-          { status: 400 }
+        let avatarImageUrl: string | undefined;
+        if (customPhotoUrl) {
+          const targetImageUrl = avatar.thumbnail ?? avatar.url;
+          if (!targetImageUrl) {
+            throw new Error("Avatar-Vorschaubild nicht verfügbar");
+          }
+          avatarImageUrl = await swapCustomFaceOntoAvatar(
+            customPhotoUrl,
+            targetImageUrl
+          );
+        }
+
+        let audioUrl: string | undefined;
+        const akoolVoiceId = voiceId || avatar.voice_id;
+
+        if (voiceSource === "elevenlabs") {
+          if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {
+            throw new Error("Ungültige Stimme");
+          }
+          if (!process.env.ELEVENLABS_API_KEY) {
+            throw new Error("ElevenLabs ist gerade nicht verfügbar.");
+          }
+          if (!getFalKey()) {
+            throw new Error("Audio-Upload ist gerade nicht verfügbar.");
+          }
+
+          const tts = await synthesizeElevenLabsSpeech(script, voiceId, 75);
+          if (!tts.ok) {
+            throw new Error(tts.error);
+          }
+          configureFalClient();
+          audioUrl = await uploadAudioDataUrlToFal(tts.audioDataUrl);
+        } else {
+          if (!akoolVoiceId) {
+            throw new Error("Bitte eine InfluexAI Voice wählen");
+          }
+        }
+
+        const job = await createUgcTalkingAvatarVideo({
+          avatar: { avatar_id: avatar.avatar_id, from: avatar.from },
+          script,
+          voiceId: akoolVoiceId ?? "",
+          aspectRatio,
+          audioUrl,
+          avatarImageUrl,
+        });
+
+        await createGenerationRecord(
+          supabase,
+          userId,
+          "ugc-video",
+          {
+            jobId: job._id,
+            paid: true,
+            assetKind: "video",
+            mode: "final",
+          },
+          UGC_VIDEO_CREDIT_COST,
+          `${JOB_PROMPT_PREFIX}${job._id}`
         );
+
+        return { jobId: job._id, status: "processing" as const };
       }
-      avatarImageUrl = await swapCustomFaceOntoAvatar(
-        customPhotoUrl,
-        targetImageUrl
+    );
+
+    if (!deductionResult.ok) {
+      const status =
+        deductionResult.error === "Avatar nicht gefunden" ? 404 : deductionResult.status;
+      return NextResponse.json(
+        { error: deductionResult.error },
+        { status }
       );
     }
 
-    let audioUrl: string | undefined;
-    const akoolVoiceId = voiceId || avatar.voice_id;
-
-    if (voiceSource === "elevenlabs") {
-      if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {
-        return NextResponse.json({ error: "Ungültige Stimme" }, { status: 400 });
-      }
-      if (!process.env.ELEVENLABS_API_KEY) {
-        return NextResponse.json(
-          { error: "ElevenLabs ist gerade nicht verfügbar." },
-          { status: 503 }
-        );
-      }
-      if (!getFalKey()) {
-        return NextResponse.json(
-          { error: "Audio-Upload ist gerade nicht verfügbar." },
-          { status: 503 }
-        );
-      }
-
-      const tts = await synthesizeElevenLabsSpeech(script, voiceId, 75);
-      if (!tts.ok) {
-        return NextResponse.json({ error: tts.error }, { status: 502 });
-      }
-      configureFalClient();
-      audioUrl = await uploadAudioDataUrlToFal(tts.audioDataUrl);
-    } else {
-      if (!akoolVoiceId) {
-        return NextResponse.json(
-          { error: "Bitte eine InfluexAI Voice wählen" },
-          { status: 400 }
-        );
-      }
-    }
-
-    const job = await createUgcTalkingAvatarVideo({
-      avatar: { avatar_id: avatar.avatar_id, from: avatar.from },
-      script,
-      voiceId: akoolVoiceId ?? "",
-      aspectRatio,
-      audioUrl,
-      avatarImageUrl,
-    });
-
     return NextResponse.json({
       success: true,
-      jobId: job._id,
-      status: "processing",
+      ...deductionResult.data,
+      creditsLeft: deductionResult.remainingCredits,
     });
   } catch (err: unknown) {
     console.error("[ugc-video POST]", err);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { AkoolFaceswapError } from "@/lib/akool-errors";
 import {
   getFaceswapResults,
@@ -206,66 +206,62 @@ export async function POST(request: NextRequest) {
     const targetFace = targetFaceFile as File;
 
     const creditCost = mode === "video" ? CREDIT_VIDEO : CREDIT_IMAGE;
-    const creditCheck = await hasEnoughCredits(supabase, user.id, creditCost);
-    if (!creditCheck.ok) {
-      return NextResponse.json(
-        { error: `Nicht genug Credits (${creditCost} benötigt)` },
-        { status: 402 }
-      );
-    }
 
-    const [sourceMediaUrl, targetFaceUrl] = await Promise.all([
-      uploadFaceswapMedia(source, user.id),
-      uploadFaceswapMedia(targetFace, user.id),
-    ]);
-
-    const job = await startFaceswapJob({
-      mode,
-      sourceMediaUrl,
-      targetFaceUrl,
-    });
-
-    const generationId = await createGenerationRecord(
-      supabase,
-      user.id,
-      "live-creator-faceswap",
+    const deductionResult = await withCreditDeduction(
       {
-        jobId: job._id,
-        paid: true,
-        assetKind: mode === "video" ? "video" : "image",
-        mode: "final",
-      },
-      creditCost,
-      `${mode}:${job._id}`
-    );
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      creditCost,
-      mode === "video"
-        ? "Live Creator Face Swap Video"
-        : "Live Creator Face Swap Foto",
-      {
+        supabase,
+        userId: user.id,
+        amount: creditCost,
+        description:
+          mode === "video"
+            ? "Live Creator Face Swap Video"
+            : "Live Creator Face Swap Foto",
         generationType: "live-creator-faceswap",
-        prompt: `${mode}:${job._id}`,
+        prompt: mode,
         skipGenerationLog: true,
+      },
+      async () => {
+        const [sourceMediaUrl, targetFaceUrl] = await Promise.all([
+          uploadFaceswapMedia(source, user.id),
+          uploadFaceswapMedia(targetFace, user.id),
+        ]);
+
+        const job = await startFaceswapJob({
+          mode,
+          sourceMediaUrl,
+          targetFaceUrl,
+        });
+
+        const generationId = await createGenerationRecord(
+          supabase,
+          user.id,
+          "live-creator-faceswap",
+          {
+            jobId: job._id,
+            paid: true,
+            assetKind: mode === "video" ? "video" : "image",
+            mode: "final",
+          },
+          creditCost,
+          `${mode}:${job._id}`
+        );
+
+        return { jobId: job._id, generationId };
       }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return NextResponse.json(
-        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
-        { status: 402 }
+        { error: deductionResult.error },
+        { status: deductionResult.status }
       );
     }
 
     return NextResponse.json({
       success: true,
-      jobId: job._id,
-      generationId,
+      ...deductionResult.data,
       status: "processing",
-      creditsLeft: deduction.remainingCredits,
+      creditsLeft: deductionResult.remainingCredits,
     });
   } catch (err: unknown) {
     console.error("[faceswap POST]", err);

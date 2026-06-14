@@ -23,7 +23,7 @@ import {
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
 import { invalidateUserGenerations } from "@/lib/cache";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 
 export type ImageGeneratorRunResult =
   | {
@@ -97,16 +97,14 @@ export async function runImageGeneratorGeneration(
     return { ok: false, error: "Bildgenerierung ist nicht konfiguriert." };
   }
 
-  if (!params.skipCreditDeduction) {
-    const creditCheck = await hasEnoughCredits(supabase, userId, creditCost);
-    if (!creditCheck.ok) {
-      return { ok: false, error: "Nicht genug Credits." };
-    }
-  }
-
   const started = Date.now();
+  const description = highRes
+    ? "Bild Generator — High-Res"
+    : "Bild Generator — Standard";
 
-  try {
+  async function runGeneration(): Promise<
+    Extract<ImageGeneratorRunResult, { ok: true }>
+  > {
     const prepared = params.preEnhanced
       ? {
           userPrompt: trimmedPrompt,
@@ -163,41 +161,48 @@ export async function runImageGeneratorGeneration(
       credits_used: creditCost,
     });
 
-    let creditsLeft = 0;
-    if (params.skipCreditDeduction) {
-      await invalidateUserGenerations(userId);
-    } else {
-      const deduction = await deductCredits(
-        supabase,
-        userId,
-        creditCost,
-        highRes ? "Bild Generator — High-Res" : "Bild Generator — Standard",
-        {
-          generationType: "image",
-          prompt: prepared.userPrompt.slice(0, 500),
-          skipGenerationLog: true,
-        }
-      );
-
-      if (!deduction.success) {
-        return {
-          ok: false,
-          error: deduction.error ?? "Credit-Abzug fehlgeschlagen.",
-        };
-      }
-
-      creditsLeft = deduction.remainingCredits ?? 0;
-      await invalidateUserGenerations(userId);
-    }
+    await invalidateUserGenerations(userId);
 
     return {
       ok: true,
       generationId,
       imageUrl: protectedImageUrl(generationId, "preview"),
       creditsUsed: params.skipCreditDeduction ? 0 : creditCost,
-      creditsLeft,
+      creditsLeft: 0,
       width: width ?? falResult.width,
       height: height ?? falResult.height,
+    };
+  }
+
+  try {
+    if (params.skipCreditDeduction) {
+      const result = await runGeneration();
+      return result;
+    }
+
+    const deductionResult = await withCreditDeduction(
+      {
+        supabase,
+        userId,
+        amount: creditCost,
+        description,
+        generationType: "image",
+        prompt: trimmedPrompt.slice(0, 500),
+        skipGenerationLog: true,
+      },
+      async () => {
+        const result = await runGeneration();
+        return result;
+      }
+    );
+
+    if (!deductionResult.ok) {
+      return { ok: false, error: deductionResult.error };
+    }
+
+    return {
+      ...deductionResult.data,
+      creditsLeft: deductionResult.remainingCredits,
     };
   } catch (error) {
     console.error("image-generator-run:", error);

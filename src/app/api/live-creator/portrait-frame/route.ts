@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { configureFalClient, getFalKey, uploadDataUrlToFal } from "@/lib/fal-image";
 import {
   FAL_LIVE_PORTRAIT_FALLBACK,
   LIVE_CREATOR_PORTRAIT_CREDIT_COST,
 } from "@/lib/live-creator-config";
+import {
+  createGenerationRecord,
+  ingestFinalAssetFromUrl,
+  updateGenerationResult,
+} from "@/lib/generation-assets";
 import { fal } from "@fal-ai/client";
 import { assertGatedFeature } from "@/lib/access.server";
 
@@ -21,7 +26,10 @@ type PortraitFrameBody = {
   consentAccepted?: boolean;
 };
 
-function extractFrameUrl(result: unknown): string | null {
+function extractFrameUrl(result: unknown): {
+  url: string | null;
+  kind: "image" | "video";
+} {
   const r = result as {
     data?: {
       image?: { url?: string };
@@ -30,13 +38,18 @@ function extractFrameUrl(result: unknown): string | null {
     image?: { url?: string };
     video?: { url?: string };
   };
-  return (
-    r.data?.image?.url ??
-    r.image?.url ??
-    r.data?.video?.url ??
-    r.video?.url ??
-    null
-  );
+  const videoUrl = r.data?.video?.url ?? r.video?.url ?? null;
+  if (videoUrl) {
+    return { url: videoUrl, kind: "video" };
+  }
+  const imageUrl = r.data?.image?.url ?? r.image?.url ?? null;
+  return { url: imageUrl, kind: "image" };
+}
+
+function protectedAssetUrl(generationId: string, kind: "image" | "video") {
+  return kind === "video"
+    ? `/api/generated-video/${generationId}`
+    : `/api/generated-image/${generationId}?variant=final`;
 }
 
 /** Fallback: poll live-portrait with webcam clip (2–5 fps). */
@@ -85,76 +98,90 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const creditCheck = await hasEnoughCredits(
-    supabase,
-    user.id,
-    LIVE_CREATOR_PORTRAIT_CREDIT_COST
-  );
-  if (!creditCheck.ok) {
-    return NextResponse.json(
-      {
-        error: `Nicht genug Credits (${LIVE_CREATOR_PORTRAIT_CREDIT_COST} benötigt)`,
-        credits: creditCheck.credits,
-      },
-      { status: 402 }
-    );
-  }
-
   try {
     configureFalClient();
 
-    const [imageUrl, drivingUrl] = await Promise.all([
-      uploadDataUrlToFal(sourceImage),
-      drivingVideoDataUrl
-        ? uploadDataUrlToFal(drivingVideoDataUrl)
-        : uploadDataUrlToFal(drivingFrame!),
-    ]);
-
-    const result = await fal.subscribe(FAL_LIVE_PORTRAIT_FALLBACK, {
-      input: {
-        image_url: imageUrl,
-        video_url: drivingUrl,
-        dsize: 512,
-        batch_size: 8,
-        flag_stitching: true,
-        flag_pasteback: true,
-        flag_relative: true,
-      },
-      logs: false,
-    });
-
-    const mediaUrl = extractFrameUrl(result);
-    if (!mediaUrl) {
-      return NextResponse.json(
-        { error: "Kein Animations-Frame erhalten" },
-        { status: 502 }
-      );
-    }
-
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      LIVE_CREATOR_PORTRAIT_CREDIT_COST,
-      "Live Creator — Portrait-Frame",
+    const deductionResult = await withCreditDeduction(
       {
+        supabase,
+        userId: user.id,
+        amount: LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+        description: "Live Creator — Portrait-Frame",
         generationType: "live-creator",
         skipGenerationLog: true,
+      },
+      async () => {
+        const [imageUrl, drivingUrl] = await Promise.all([
+          uploadDataUrlToFal(sourceImage),
+          drivingVideoDataUrl
+            ? uploadDataUrlToFal(drivingVideoDataUrl)
+            : uploadDataUrlToFal(drivingFrame!),
+        ]);
+
+        const result = await fal.subscribe(FAL_LIVE_PORTRAIT_FALLBACK, {
+          input: {
+            image_url: imageUrl,
+            video_url: drivingUrl,
+            dsize: 512,
+            batch_size: 8,
+            flag_stitching: true,
+            flag_pasteback: true,
+            flag_relative: true,
+          },
+          logs: false,
+        });
+
+        const { url: mediaUrl, kind } = extractFrameUrl(result);
+        if (!mediaUrl) {
+          throw new Error("Kein Animations-Frame erhalten");
+        }
+
+        const generationId = await createGenerationRecord(
+          supabase,
+          user.id,
+          "live-creator",
+          {
+            paid: true,
+            downloadPaid: true,
+            assetKind: kind,
+            mode: "final",
+            model: FAL_LIVE_PORTRAIT_FALLBACK,
+          },
+          LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+          "Live Creator — Portrait-Frame"
+        );
+
+        const { path: finalPath } = await ingestFinalAssetFromUrl(
+          user.id,
+          generationId,
+          mediaUrl,
+          kind
+        );
+
+        await updateGenerationResult(supabase, generationId, user.id, {
+          finalPath,
+          credits_used: LIVE_CREATOR_PORTRAIT_CREDIT_COST,
+        });
+
+        return {
+          imageUrl: protectedAssetUrl(generationId, kind),
+        };
       }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return NextResponse.json(
-        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
-        { status: 402 }
+        { error: deductionResult.error },
+        { status: deductionResult.status }
       );
     }
 
     return NextResponse.json({
       success: true,
-      imageUrl: mediaUrl,
+      imageUrl: deductionResult.data.imageUrl,
       mode: "live-portrait-fallback",
       creditsUsed: LIVE_CREATOR_PORTRAIT_CREDIT_COST,
-      creditsLeft: deduction.remainingCredits,
+      creditsLeft: deductionResult.remainingCredits,
     });
   } catch (err: unknown) {
     console.error("[live-creator/portrait-frame]", err);

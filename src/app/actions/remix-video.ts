@@ -1,7 +1,7 @@
 "use server";
 
 import { requireKiToolAccessForAction } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
@@ -107,45 +107,6 @@ export async function remixVideo(
       : desc;
   }
 
-  if (isE2eMockGenerationsEnabled()) {
-    const remixes = e2eMockRemixes(niche, remixStyle);
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      "Video Remix",
-      { generationType: "video-remix", prompt: originalLabel.slice(0, 200) }
-    );
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
-    }
-    const { error: saveError } = await supabase.from("remix_results").insert({
-      user_id: userId,
-      original_url: originalUrl,
-      results: remixes,
-    });
-    if (saveError) {
-      return {
-        success: true,
-        remixes,
-        creditsLeft: deduction.remainingCredits,
-        saved: false,
-        saveWarning: remixResultsSaveErrorMessage(saveError.code),
-        youtubeMetadataUsed,
-      };
-    }
-    return {
-      success: true,
-      remixes,
-      creditsLeft: deduction.remainingCredits,
-      saved: true,
-      youtubeMetadataUsed,
-    };
-  }
-
   const urlContext = originalUrl
     ? `URL: ${originalUrl}
 Video-ID: ${videoId}
@@ -159,68 +120,121 @@ ${youtubeMetadataUsed ? "Metadaten: von YouTube Data API geladen." : "Metadaten:
     niche,
   });
 
-  try {
-    const claude = await createAnthropicMessage({
-      system: REMIX_SYSTEM_PROMPT,
-      user: userPrompt,
-    });
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-
-    let remixes: RemixConcept[];
-    try {
-      remixes = parseRemixConcepts(claude.text);
-    } catch {
-      console.error("Remix JSON parse failed:", claude.text.slice(0, 500));
-      return {
-        success: false,
-        error: "Antwort konnte nicht gelesen werden. Bitte erneut versuchen.",
-      };
-    }
-
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      "Video Remix",
-      { generationType: "video-remix", prompt: originalLabel.slice(0, 200) }
+  if (isE2eMockGenerationsEnabled()) {
+    const deductionResult = await withCreditDeduction(
+      {
+        supabase,
+        userId,
+        amount: CREDIT_COST,
+        description: "Video Remix",
+        generationType: "video-remix",
+        prompt: originalLabel.slice(0, 200),
+      },
+      async () => {
+        return e2eMockRemixes(niche, remixStyle);
+      }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return {
         success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
       };
     }
 
+    const remixes = deductionResult.data;
     const { error: saveError } = await supabase.from("remix_results").insert({
       user_id: userId,
       original_url: originalUrl,
       results: remixes,
     });
-
     if (saveError) {
-      console.error("remix_results insert:", saveError.message, saveError.code);
       return {
         success: true,
         remixes,
-        creditsLeft: deduction.remainingCredits,
+        creditsLeft: deductionResult.remainingCredits,
         saved: false,
         saveWarning: remixResultsSaveErrorMessage(saveError.code),
         youtubeMetadataUsed,
       };
     }
-
     return {
       success: true,
       remixes,
-      creditsLeft: deduction.remainingCredits,
+      creditsLeft: deductionResult.remainingCredits,
       saved: true,
       youtubeMetadataUsed,
     };
-  } catch (e) {
-    console.error("remixVideo:", e);
-    return { success: false, error: "Unerwarteter Fehler beim Remix." };
   }
+
+  const deductionResult = await withCreditDeduction(
+    {
+      supabase,
+      userId,
+      amount: CREDIT_COST,
+      description: "Video Remix",
+      generationType: "video-remix",
+      prompt: originalLabel.slice(0, 200),
+    },
+    async () => {
+      const claude = await createAnthropicMessage({
+        system: REMIX_SYSTEM_PROMPT,
+        user: userPrompt,
+      });
+      if (!claude.ok) {
+        throw new Error(claude.error);
+      }
+
+      try {
+        return parseRemixConcepts(claude.text);
+      } catch {
+        console.error("Remix JSON parse failed:", claude.text.slice(0, 500));
+        throw new Error(
+          "Antwort konnte nicht gelesen werden. Bitte erneut versuchen."
+        );
+      }
+    }
+  );
+
+  if (!deductionResult.ok) {
+    if (deductionResult.status === 402) {
+      return {
+        success: false,
+        error: deductionResult.error,
+        credits: deductionResult.remainingCredits,
+        required: deductionResult.required,
+      };
+    }
+    return { success: false, error: deductionResult.error };
+  }
+
+  const remixes = deductionResult.data;
+
+  const { error: saveError } = await supabase.from("remix_results").insert({
+    user_id: userId,
+    original_url: originalUrl,
+    results: remixes,
+  });
+
+  if (saveError) {
+    console.error("remix_results insert:", saveError.message, saveError.code);
+    return {
+      success: true,
+      remixes,
+      creditsLeft: deductionResult.remainingCredits,
+      saved: false,
+      saveWarning: remixResultsSaveErrorMessage(saveError.code),
+      youtubeMetadataUsed,
+    };
+  }
+
+  return {
+    success: true,
+    remixes,
+    creditsLeft: deductionResult.remainingCredits,
+    saved: true,
+    youtubeMetadataUsed,
+  };
 }

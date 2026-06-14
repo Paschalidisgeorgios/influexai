@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { assertGatedFeature } from "@/lib/access.server";
+import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { enhanceImagePrompt } from "@/lib/ai/imagePromptEnhancer";
 import {
   platformToFalImageSize,
@@ -20,7 +22,6 @@ import { getOwnedCharacter } from "@/lib/ki-influencer-db";
 import { LORA_WEIGHT_DEFAULT } from "@/lib/ki-influencer-config";
 import {
   assertKiInfluencerAccess,
-  deductKiInfluencerCredits,
   kiInfluencerErrorResponse,
   logKiInfluencerError,
 } from "@/lib/ki-influencer-api";
@@ -58,6 +59,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (userPrompt.length > 2000) {
+    return NextResponse.json(
+      { error: "Prompt zu lang (max. 2000 Zeichen)." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    checkAgentInputSafety(userPrompt);
+  } catch (err) {
+    if (err instanceof AgentSafetyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   if (!getFalKey()) {
     return NextResponse.json({ error: "Generierung nicht konfiguriert." }, { status: 503 });
   }
@@ -88,84 +105,102 @@ export async function POST(request: NextRequest) {
   const started = Date.now();
 
   try {
-    const enhanced = await enhanceImagePrompt(userPrompt, { styleId, platform });
-    const triggerWord = character.trigger_word ?? lora.trigger_word;
-    const rawSize = platformToFalImageSize(platform);
-    const imageSize =
-      rawSize === "portrait_4_3" ? "portrait_16_9" : rawSize;
-
-    const result = await generateWithLora({
-      prompt: enhanced.prompt,
-      loraUrl: lora.lora_url,
-      triggerWord,
-      loraScale: LORA_WEIGHT_DEFAULT,
-      imageSize,
-    });
-
-    const deduction = await deductKiInfluencerCredits(
-      supabase,
-      userId,
-      LORA_GENERATION_CREDIT,
-      `KI-Influencer Content — ${character.name}`,
+    const deductionResult = await withCreditDeduction(
       {
-        isAdmin,
-        meta: {
-          generationType: "lora_generation",
-          prompt: userPrompt.slice(0, 500),
-          skipGenerationLog: true,
-        },
+        supabase,
+        userId,
+        amount: LORA_GENERATION_CREDIT,
+        description: `KI-Influencer Content — ${character.name}`,
+        skipGenerationLog: true,
+        generationType: "lora_generation",
+        prompt: userPrompt.slice(0, 500),
+      },
+      async () => {
+        const enhanced = await enhanceImagePrompt(userPrompt, { styleId, platform });
+        const triggerWord = character.trigger_word ?? lora.trigger_word;
+        const rawSize = platformToFalImageSize(platform);
+        const imageSize =
+          rawSize === "portrait_4_3" ? "portrait_16_9" : rawSize;
+
+        const result = await generateWithLora({
+          prompt: enhanced.prompt,
+          loraUrl: lora.lora_url,
+          triggerWord,
+          loraScale: LORA_WEIGHT_DEFAULT,
+          imageSize,
+        });
+
+        const generationId = await createGenerationRecord(
+          supabase,
+          userId,
+          "lora_generation",
+          {
+            paid: true,
+            downloadPaid: true,
+            assetKind: "image",
+            mode: "final",
+            model: "fal-ai/flux-lora",
+            width: result.width,
+            height: result.height,
+            generationTimeMs: Date.now() - started,
+            source: "ki_influencer_content",
+            character_id: characterId,
+          },
+          isAdmin ? 0 : LORA_GENERATION_CREDIT,
+          `${triggerWord} ${userPrompt}`.slice(0, 500)
+        );
+
+        const { previewPath, sourcePath, width, height } =
+          await ingestImageGeneratorAssets(userId, generationId, result.url);
+
+        await updateGenerationResult(supabase, generationId, userId, {
+          previewPath,
+          sourcePath,
+          width,
+          height,
+        });
+
+        return {
+          generationId,
+          characterId,
+          triggerWord,
+          styleId,
+          platform,
+          enhancedPrompt: enhanced.prompt,
+          width: width ?? result.width,
+          height: height ?? result.height,
+        };
       }
     );
 
-    if (!deduction.success) {
-      return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
-        credits: deduction.remainingCredits,
-        required: LORA_GENERATION_CREDIT,
-      });
+    if (!deductionResult.ok) {
+      if (deductionResult.status === 402) {
+        return kiInfluencerErrorResponse("insufficient_credits", 402, undefined, {
+          credits: deductionResult.remainingCredits,
+          required: deductionResult.required,
+        });
+      }
+      return kiInfluencerErrorResponse(
+        "generation_failed",
+        deductionResult.status,
+        deductionResult.error
+      );
     }
 
-    const generationId = await createGenerationRecord(
-      supabase,
-      userId,
-      "lora_generation",
-      {
-        paid: true,
-        downloadPaid: true,
-        assetKind: "image",
-        mode: "final",
-        model: "fal-ai/flux-lora",
-        width: result.width,
-        height: result.height,
-        generationTimeMs: Date.now() - started,
-        source: "ki_influencer_content",
-        character_id: characterId,
-      },
-      isAdmin ? 0 : LORA_GENERATION_CREDIT,
-      `${triggerWord} ${userPrompt}`.slice(0, 500)
-    );
-
-    const { previewPath, sourcePath, width, height } =
-      await ingestImageGeneratorAssets(userId, generationId, result.url);
-
-    await updateGenerationResult(supabase, generationId, userId, {
-      previewPath,
-      sourcePath,
-      width,
-      height,
-    });
+    const data = deductionResult.data;
 
     return NextResponse.json({
       success: true,
-      generationId,
-      imageUrl: protectedImageUrl(generationId),
+      generationId: data.generationId,
+      imageUrl: protectedImageUrl(data.generationId),
       creditsUsed: isAdmin ? 0 : LORA_GENERATION_CREDIT,
-      creditsLeft: deduction.remainingCredits,
-      characterId,
-      triggerWord,
+      creditsLeft: deductionResult.remainingCredits,
+      characterId: data.characterId,
+      triggerWord: data.triggerWord,
       loraWeight: LORA_WEIGHT_DEFAULT,
-      styleId,
-      platform,
-      enhancedPrompt: enhanced.prompt,
+      styleId: data.styleId,
+      platform: data.platform,
+      enhancedPrompt: data.enhancedPrompt,
       generationTimeMs: Date.now() - started,
     });
   } catch (error) {
