@@ -91,11 +91,11 @@ export function CanvasShell({ children }: CanvasShellProps) {
   if (showLegacy) {
     return (
       <ShellProviders>
-        <div className="studio-glass-root studio-glass-dot-grid min-h-[100dvh] text-white">
-          <div className="studio-glass-glow studio-glass-glow--violet" aria-hidden />
-          <div className="studio-glass-glow studio-glass-glow--green" aria-hidden />
-          <div className="studio-glass-legacy-content">{children}</div>
-        </div>
+        <StudioChrome mainClassName="overflow-y-auto">
+          <div className="studio-glass-legacy-content min-h-full px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
+            {children}
+          </div>
+        </StudioChrome>
       </ShellProviders>
     );
   }

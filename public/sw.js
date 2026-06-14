@@ -184,21 +184,6 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-/* --- Background Sync: generation queue --- */
-
-self.addEventListener("sync", (event) => {
-  if (event.tag === "sync-generations") {
-    event.waitUntil(notifyClientsSync());
-  }
-});
-
-async function notifyClientsSync() {
-  const all = await clients.matchAll({ type: "window", includeUncontrolled: true });
-  for (const client of all) {
-    client.postMessage({ type: "SYNC_GENERATIONS" });
-  }
-}
-
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") {
     self.skipWaiting();
