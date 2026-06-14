@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import brollVectors from "@/config/brollTrendVectors.json";
 
 type SegmentInput = {
@@ -65,6 +66,14 @@ function scoreSegmentAgainstVector(
 }
 
 export async function POST(req: Request) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = (await req.json()) as {
       script?: string;

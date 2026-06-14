@@ -16,7 +16,20 @@ type WebhookPayload = {
   payload_error?: string;
 };
 
+function verifyFalWebhookRequest(request: NextRequest): boolean {
+  const expected = process.env.FAL_WEBHOOK_SECRET?.trim();
+  if (!expected) return false;
+  const headerSecret = request.headers.get("x-fal-webhook-secret");
+  if (headerSecret === expected) return true;
+  const querySecret = request.nextUrl.searchParams.get("secret");
+  return querySecret === expected;
+}
+
 export async function POST(request: NextRequest) {
+  if (!verifyFalWebhookRequest(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let payload: WebhookPayload;
   try {
     payload = (await request.json()) as WebhookPayload;

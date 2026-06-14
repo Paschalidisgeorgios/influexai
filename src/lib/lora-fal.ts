@@ -16,7 +16,10 @@ export function getLoraWebhookUrl(): string {
     (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "https://influexaicreator.com");
-  return `${base}/api/lora/webhook`;
+  const path = `${base}/api/lora/webhook`;
+  const secret = process.env.FAL_WEBHOOK_SECRET?.trim();
+  if (!secret) return path;
+  return `${path}?secret=${encodeURIComponent(secret)}`;
 }
 
 type FalQueueSubmitResult = { request_id: string };

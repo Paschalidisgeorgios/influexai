@@ -1,5 +1,7 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ELEVENLABS_FALLBACK_VOICES } from "@/lib/elevenlabs-config";
 import type { ElevenLabsVoice } from "@/lib/elevenlabs-voice-types";
 
@@ -55,7 +57,7 @@ function fallbackVoices(): ElevenLabsVoice[] {
   }));
 }
 
-export async function getElevenLabsVoices(): Promise<{
+async function fetchElevenLabsVoicesFromApi(): Promise<{
   success: boolean;
   voices: ElevenLabsVoice[];
   error?: string;
@@ -116,4 +118,31 @@ export async function getElevenLabsVoices(): Promise<{
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
+}
+
+const getCachedElevenLabsVoices = unstable_cache(
+  fetchElevenLabsVoicesFromApi,
+  ["elevenlabs-voices"],
+  { revalidate: 3600 }
+);
+
+export async function getElevenLabsVoices(): Promise<{
+  success: boolean;
+  voices: ElevenLabsVoice[];
+  error?: string;
+}> {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      voices: fallbackVoices(),
+      error: "Nicht angemeldet.",
+    };
+  }
+
+  return getCachedElevenLabsVoices();
 }

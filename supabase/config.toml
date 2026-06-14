@@ -379,6 +379,16 @@ verify_jwt = false
 [functions.churn-prevention]
 verify_jwt = false
 
+# Service-role Bearer only (called from Next.js / other Edge Functions, not user JWT)
+[functions.process-referral]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.credits-low-email]
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.
