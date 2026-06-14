@@ -9,13 +9,12 @@ import {
 } from "react";
 import Link from "next/link";
 import { ArrowLeft, BrainCircuit } from "lucide-react";
-import type { AgentIntent, AgentResponse, ChatMessage } from "@/lib/agent-types";
-import {
-  formatAgentResponseMarkdown,
-  INTENT_BADGE_LABELS,
-} from "@/lib/agent/format-agent-markdown";
+import type { AgentIntent } from "@/lib/agent-types";
+import { consumeAgentStream } from "@/lib/agent/consumeAgentStream";
+import type { AgentChatMessage, AgentOutputs, AgentToolName } from "@/lib/agent/types";
 import { AgentMarkdown } from "@/components/agent/AgentMarkdown";
 import { AgentTypingIndicator } from "@/components/agent/AgentTypingIndicator";
+import { AgentWorkingStatus } from "@/components/agent/AgentWorkingStatus";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
@@ -27,55 +26,13 @@ type UiMessage = {
   content: string;
   intent?: AgentIntent;
   pending?: boolean;
+  activeTool?: { name: AgentToolName; label: string } | null;
+  outputs?: AgentOutputs;
 };
 
 type Props = {
   initialPrompt?: string;
 };
-
-const ASSISTANT_JSON_FALLBACK = "Wie kann ich dir helfen?";
-
-function looksLikeAgentJson(content: string): boolean {
-  const trimmed = content.trim();
-  return trimmed.startsWith("{") || trimmed.includes('"intent"');
-}
-
-function sanitizeAssistantContent(content: string): string {
-  const trimmed = content.trim();
-  if (!trimmed) return ASSISTANT_JSON_FALLBACK;
-
-  if (!looksLikeAgentJson(trimmed)) {
-    return content;
-  }
-
-  try {
-    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
-    for (const key of ["summary", "message", "response", "text", "content"]) {
-      const value = parsed[key];
-      if (typeof value === "string" && value.trim() && !looksLikeAgentJson(value)) {
-        return value.trim();
-      }
-    }
-
-    const output = parsed.output;
-    if (typeof output === "string" && output.trim() && !looksLikeAgentJson(output)) {
-      return output.trim();
-    }
-    if (output && typeof output === "object") {
-      const outputRecord = output as Record<string, unknown>;
-      for (const key of ["text", "message", "content", "response", "hook", "story", "body"]) {
-        const value = outputRecord[key];
-        if (typeof value === "string" && value.trim() && !looksLikeAgentJson(value)) {
-          return value.trim();
-        }
-      }
-    }
-  } catch {
-    // Fall through to generic fallback.
-  }
-
-  return ASSISTANT_JSON_FALLBACK;
-}
 
 export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
   const { profile, profileLabel, loading: profileLoading } = useCreatorProfile();
@@ -127,40 +84,46 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
         role: "assistant",
         content: "",
         pending: true,
+        activeTool: null,
       };
 
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setInput("");
       requestAnimationFrame(() => growTextarea(textareaRef.current));
 
-      const now = new Date().toISOString();
-      const history: ChatMessage[] = [
-        ...messages
-          .filter((m) => !m.pending && m.content)
-          .map((m) => ({
-            role: m.role,
-            content: m.content,
-            createdAt: now,
-          })),
-        { role: "user", content: trimmed, createdAt: now },
-      ];
+      const history: AgentChatMessage[] = messages
+        .filter((m) => !m.pending && m.content)
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+
+      const patchAssistant = (patch: Partial<UiMessage>) => {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === assistantId ? { ...m, ...patch } : m))
+        );
+      };
+
+      let streamFailed = false;
 
       try {
-        const res = await fetch("/api/ki-agent", {
+        const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history }),
+          body: JSON.stringify({ message: trimmed, history }),
         });
 
-        const data = (await res.json()) as {
-          success?: boolean;
-          agentResponse?: AgentResponse;
-          error?: string;
-          credits?: number;
-          required?: number;
-        };
+        const contentType = res.headers.get("content-type") ?? "";
 
         if (!res.ok) {
+          const data = contentType.includes("json")
+            ? ((await res.json().catch(() => ({}))) as {
+                error?: string;
+                credits?: number;
+                required?: number;
+              })
+            : {};
+
           if (res.status === 402) {
             openNoCreditsModal({
               required: data.required ?? 1,
@@ -169,32 +132,57 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
           }
           setError(data.error ?? "Anfrage fehlgeschlagen.");
           setMessages((prev) => prev.filter((m) => m.id !== assistantId));
-          setRunning(false);
           return;
         }
 
-        const response = data.agentResponse;
-        if (!response) {
-          setError("Keine Antwort erhalten.");
-          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
-          setRunning(false);
-          return;
-        }
-
-        const markdown = sanitizeAssistantContent(formatAgentResponseMarkdown(response));
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
+        await consumeAgentStream(res, {
+          onTextDelta: (chunk) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, content: m.content + chunk }
+                  : m
+              )
+            );
+          },
+          onToolStart: (tool, label) => {
+            patchAssistant({ activeTool: { name: tool, label } });
+          },
+          onToolDone: () => {
+            patchAssistant({ activeTool: null });
+          },
+          onToolError: () => {
+            patchAssistant({ activeTool: null });
+          },
+          onOutputs: (outputs) => {
+            patchAssistant({ outputs });
+          },
+          onCredits: () => {
+            window.dispatchEvent(new Event("credits-updated"));
+          },
+          onDone: (summary) => {
+            setMessages((prev) =>
+              prev.map((m) => {
+                if (m.id !== assistantId) return m;
+                return {
                   ...m,
-                  content: markdown,
-                  intent: response.intent,
                   pending: false,
-                }
-              : m
-          )
-        );
-        window.dispatchEvent(new Event("credits-updated"));
+                  activeTool: null,
+                  content: m.content.trim() || summary,
+                };
+              })
+            );
+          },
+          onError: (message) => {
+            streamFailed = true;
+            setError(message);
+            setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+          },
+        });
+
+        if (!streamFailed) {
+          patchAssistant({ pending: false, activeTool: null });
+        }
       } catch {
         setError("Netzwerkfehler. Bitte erneut versuchen.");
         setMessages((prev) => prev.filter((m) => m.id !== assistantId));
@@ -271,7 +259,7 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
               Beschreibe was du brauchst — der Agent erledigt den Rest.
             </p>
             <p className="mt-1 text-xs text-white/35">
-              Jede Anfrage kostet 1 Credit.
+              Kosten je nach Aufgabe und genutzten Tools
             </p>
           </div>
         )}
@@ -288,20 +276,24 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
                   : "border border-white/[0.08] bg-[#0d0d0f] text-white"
               }`}
             >
-              {m.role === "assistant" && m.intent && !m.pending && (
-                <span className="mb-2 inline-flex rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/10 px-2 py-0.5 text-[11px] font-semibold text-[#B4FF00]">
-                  {INTENT_BADGE_LABELS[m.intent] ?? "Strategie"}
-                </span>
-              )}
-              {m.pending ? (
+              {m.role === "assistant" && m.pending && m.activeTool ? (
+                <div className="mb-2">
+                  <AgentWorkingStatus
+                    tool={m.activeTool.name}
+                    fallbackLabel={m.activeTool.label}
+                  />
+                </div>
+              ) : null}
+              {m.role === "assistant" && m.pending && !m.activeTool && !m.content ? (
                 <AgentTypingIndicator label="Agent Autopilot denkt..." />
-              ) : m.role === "assistant" ? (
+              ) : null}
+              {m.role === "assistant" && m.content ? (
                 <AgentMarkdown content={m.content} />
-              ) : (
+              ) : m.role === "user" ? (
                 <p className="whitespace-pre-wrap text-sm leading-relaxed">
                   {m.content}
                 </p>
-              )}
+              ) : null}
               {m.role === "assistant" && !m.pending && m.content && (
                 <AiOutputDisclaimer className="mt-3 border-t border-white/[0.06] pt-2" />
               )}
@@ -339,7 +331,8 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
             Enter zum Senden · Shift+Enter für neue Zeile
           </p>
           <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-[11px] text-white/35">1 Credit pro Antwort</span>
+            {/* /api/agent: ORCHESTRATOR_BASE_COST + variable Tool-Credits — kein Flat-Rate-Hinweis */}
+            <span className="text-[11px] text-white/35">Kosten je nach Aufgabe</span>
             <LoadingButton
               mode="agent"
               isLoading={running}
