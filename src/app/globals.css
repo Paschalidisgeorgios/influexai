@@ -100,16 +100,6 @@ html[data-world="brand"] {
   .description {
     color: rgba(255, 255, 255, 0.65);
   }
-  body.has-custom-cursor,
-  body.has-custom-cursor a,
-  body.has-custom-cursor button,
-  body.has-custom-cursor [role="button"],
-  body.has-custom-cursor input,
-  body.has-custom-cursor textarea,
-  body.has-custom-cursor select,
-  body.has-custom-cursor label {
-    cursor: none;
-  }
   h1,
   h2,
   h3,
@@ -1895,14 +1885,6 @@ html[data-world="brand"] {
 .fixed,
 .absolute {
   max-width: 100vw;
-}
-
-/* Custom cursor — must never capture clicks */
-.custom-cursor-layer,
-.custom-cursor-layer *,
-.custom-cursor-dot,
-.custom-cursor-ring {
-  pointer-events: none !important;
 }
 
 /* Dashboard + forms — inputs always reachable above decorative layers */
