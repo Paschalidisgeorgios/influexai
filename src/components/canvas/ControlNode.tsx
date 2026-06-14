@@ -565,6 +565,18 @@ function ControlNodeComponent({
     resumeGenerationRef.current = false;
   }, []);
 
+  const hasResult = useMemo(() => {
+    const linkedAssetIds = canvasEdges
+      .filter((edge) => edge.source === id)
+      .map((edge) => edge.target);
+    return canvasNodes.some(
+      (node) =>
+        linkedAssetIds.includes(node.id) &&
+        node.type === "asset" &&
+        (node.data as AssetNodeData).status === "success"
+    );
+  }, [canvasEdges, canvasNodes, id]);
+
   if (!tool) return null;
 
   const coins = calculateToolCoins(tool, nodeData.params);
@@ -582,18 +594,6 @@ function ControlNodeComponent({
   const creditCostLabel = dynamicCost ? `~${coins} Credits` : `${coins} Credits`;
   const isAgentAutopilot = nodeData.toolId === "agent-autopilot";
   const visibleParams = tool?.params ?? [];
-
-  const hasResult = useMemo(() => {
-    const linkedAssetIds = canvasEdges
-      .filter((edge) => edge.source === id)
-      .map((edge) => edge.target);
-    return canvasNodes.some(
-      (node) =>
-        linkedAssetIds.includes(node.id) &&
-        node.type === "asset" &&
-        (node.data as AssetNodeData).status === "success"
-    );
-  }, [canvasEdges, canvasNodes, id]);
 
   return (
     <div

@@ -589,7 +589,7 @@ export default function CampaignAutopilot() {
             <strong style={{ color: "#B4FF00" }}>
               ~{estimatedCredits} Credits
             </strong>{" "}
-            für „{modeLabel}".
+            für „{modeLabel}“.
           </p>
         )}
       </div>

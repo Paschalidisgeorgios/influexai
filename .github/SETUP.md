@@ -6,7 +6,7 @@ Repository: [Paschalidisgeorgios/influexai](https://github.com/Paschalidisgeorgi
 
 | Workflow       | Trigger                      | Purpose                                 |
 | -------------- | ---------------------------- | --------------------------------------- |
-| `ci.yml`       | Push/PR to `main`, `develop` | Typecheck, lint, unit tests, build, E2E |
+| `ci.yml`       | Push/PR to `main`, `master` | Typecheck, lint, unit tests, build |
 | `deploy.yml`   | Push to `main`               | Production deploy to Vercel             |
 | `pr-check.yml` | Pull requests                | Bundle size + i18n key parity           |
 
@@ -91,9 +91,10 @@ Production branch in Vercel Git settings must be **`main`**.
 ```bash
 npm run typecheck
 npm run lint
+npm run test:unit:run
+npm run build
 npm run format:check
 npm run test:unit:coverage
-npm run build
 npm run i18n:check
 npm run test:e2e
 ```

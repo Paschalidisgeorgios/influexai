@@ -3,7 +3,7 @@ import { categoryCtaLabel, categoryToFeaturePath } from "@/lib/blog/categories";
 import { autoInternalLinks } from "@/lib/auto-internal-links";
 import { ContentEmailCaptureInline } from "@/components/content-email-capture";
 import { ArticleMdx } from "@/components/blog/article-mdx";
-import { markdownToHtml } from "@/lib/blog/markdown";
+import { markdownToSafeHtml, sanitizeHtml } from "@/lib/sanitize-markdown";
 import { blogCategoryToFeature, findNicheInText } from "@/lib/programmatic-seo";
 
 function MidArticleCta({ category }: { category: string }) {
@@ -63,7 +63,7 @@ export async function ArticleBody({
     );
   }
 
-  const rawHtml = await markdownToHtml(linkedMarkdown);
+  const rawHtml = await markdownToSafeHtml(linkedMarkdown);
   const withMarkers = injectMidBlocks(rawHtml);
   const chunks = withMarkers.split("<!--MID_CTA-->");
 
@@ -71,25 +71,25 @@ export async function ArticleBody({
     <div className="blog-prose max-w-none">
       {chunks.length >= 2 ? (
         <>
-          <div dangerouslySetInnerHTML={{ __html: chunks[0] }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(chunks[0]) }} />
           <MidArticleCta category={category} />
           {chunks[1].includes("<!--NEWSLETTER-->") ? (
             (() => {
               const [afterCta, rest] = chunks[1].split("<!--NEWSLETTER-->");
               return (
                 <>
-                  <div dangerouslySetInnerHTML={{ __html: afterCta }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(afterCta) }} />
                   <ContentEmailCaptureInline source={`blog-${category}`} />
-                  <div dangerouslySetInnerHTML={{ __html: rest }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(rest) }} />
                 </>
               );
             })()
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: chunks[1] }} />
+            <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(chunks[1]) }} />
           )}
         </>
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: withMarkers }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(withMarkers) }} />
       )}
     </div>
   );

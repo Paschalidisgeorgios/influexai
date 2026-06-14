@@ -14,7 +14,7 @@ import {
 } from "@/app/actions/blog-admin";
 import { generateBlogPost } from "@/app/actions/generate-blog-post";
 import { BLOG_CATEGORIES } from "@/lib/blog/categories";
-import { markdownToHtml } from "@/lib/blog/markdown";
+import { markdownToSafeHtml, sanitizeHtml } from "@/lib/sanitize-markdown";
 import type { BlogPost, KeywordIdea, SeoCheckItem } from "@/lib/blog/types";
 
 const LANGUAGES = [
@@ -96,7 +96,7 @@ export function ContentEngine() {
     setEditMeta(res.post.meta_description);
     setEditContent(res.post.content);
     setSeoChecks(null);
-    const html = await markdownToHtml(res.post.content);
+    const html = await markdownToSafeHtml(res.post.content);
     setPreviewHtml(html);
   }, []);
 
@@ -146,7 +146,7 @@ export function ContentEngine() {
     setSaving(false);
     if (res.ok) {
       await loadPosts();
-      setPreviewHtml(await markdownToHtml(editContent));
+      setPreviewHtml(await markdownToSafeHtml(editContent));
     }
   };
 
@@ -177,7 +177,7 @@ export function ContentEngine() {
   };
 
   const handlePreviewRefresh = async () => {
-    setPreviewHtml(await markdownToHtml(editContent));
+    setPreviewHtml(await markdownToSafeHtml(editContent));
   };
 
   const calendarDays = useMemo(() => {
@@ -610,7 +610,7 @@ export function ContentEngine() {
             </div>
 
             <div className="blog-prose rounded-xl border border-white/10 bg-[#060608] p-6">
-              <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewHtml) }} />
             </div>
 
             {selected.published && (

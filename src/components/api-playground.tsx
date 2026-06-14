@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ACCENT = "#B4FF00";
 const STORAGE_KEY = "influexai_api_playground_key";
@@ -86,14 +86,31 @@ export function ApiPlayground({ baseUrl }: { baseUrl: string }) {
   const persistKey = (value: string) => {
     setApiKey(value);
     if (typeof window !== "undefined") {
-      if (value) localStorage.setItem(STORAGE_KEY, value);
-      else localStorage.removeItem(STORAGE_KEY);
+      if (value) sessionStorage.setItem(STORAGE_KEY, value);
+      else sessionStorage.removeItem(STORAGE_KEY);
     }
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) setApiKey(stored);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const old = localStorage.getItem(STORAGE_KEY);
+    if (old) {
+      localStorage.removeItem(STORAGE_KEY);
+      if (!sessionStorage.getItem(STORAGE_KEY)) {
+        sessionStorage.setItem(STORAGE_KEY, old);
+      }
+    }
+  }, []);
+
   const loadStoredKey = () => {
     if (typeof window === "undefined") return;
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) setApiKey(stored);
   };
 
@@ -160,7 +177,7 @@ export function ApiPlayground({ baseUrl }: { baseUrl: string }) {
       </h2>
       <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", marginBottom: 16 }}>
         Teste Endpoints direkt im Browser. Business-Plan und gültiger API-Key
-        erforderlich. Der Key wird nur lokal im Browser gespeichert.
+        erforderlich. Der Key wird nur für diese Browser-Sitzung gespeichert.
       </p>
 
       <div
@@ -181,7 +198,7 @@ export function ApiPlayground({ baseUrl }: { baseUrl: string }) {
         >
           API Key
         </label>
-        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
           <input
             type="password"
             value={apiKey}
@@ -208,6 +225,9 @@ export function ApiPlayground({ baseUrl }: { baseUrl: string }) {
             Aus Speicher laden
           </button>
         </div>
+        <p className="text-[10px] text-white/30 mb-4">
+          Der Key wird nur für diese Browser-Sitzung gespeichert (sessionStorage).
+        </p>
 
         <label
           style={{

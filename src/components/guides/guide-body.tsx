@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { autoInternalLinks } from "@/lib/auto-internal-links";
-import { markdownToHtml } from "@/lib/blog/markdown";
+import { markdownToSafeHtml, sanitizeHtml } from "@/lib/sanitize-markdown";
 import { ContentEmailCaptureInline } from "@/components/content-email-capture";
 
 function FeaturedSnippetBox({ text }: { text: string }) {
@@ -31,7 +31,7 @@ export async function GuideBody({
   source: string;
 }) {
   const linked = autoInternalLinks(markdown);
-  const html = await markdownToHtml(linked);
+  const html = await markdownToSafeHtml(linked);
   const withNl = injectInlineNewsletter(html);
   const segments = withNl.split("<!--NEWSLETTER-->");
 
@@ -40,12 +40,12 @@ export async function GuideBody({
       <FeaturedSnippetBox text={featuredSnippet} />
       {segments.length === 2 ? (
         <>
-          <div dangerouslySetInnerHTML={{ __html: segments[0] }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(segments[0]) }} />
           <ContentEmailCaptureInline source={source} />
-          <div dangerouslySetInnerHTML={{ __html: segments[1] }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(segments[1]) }} />
         </>
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: withNl }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(withNl) }} />
       )}
     </div>
   );
