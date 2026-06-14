@@ -10,7 +10,7 @@ const ROTATE_INTERVAL_MS = 3000;
 const LONGEST_WORD = "Content-Workflows";
 
 const headlineClass =
-  "mb-4 text-balance font-sans text-[clamp(1.65rem,5.5vw,3.75rem)] font-extrabold leading-[1.12] tracking-tight antialiased [text-shadow:0_2px_24px_rgba(0,0,0,0.85),0_1px_3px_rgba(0,0,0,0.9)] md:mb-5";
+  "mb-6 text-balance font-sans text-[clamp(1.65rem,5.5vw,3.75rem)] font-extrabold leading-[1.12] tracking-tight antialiased [text-shadow:0_2px_24px_rgba(0,0,0,0.85),0_1px_3px_rgba(0,0,0,0.9)] md:mb-8";
 
 const wordMotion = {
   initial: { opacity: 0, y: 14 },
@@ -87,12 +87,6 @@ export function HeroKineticHeadline() {
           </span>
         </span>
       </h1>
-      <p
-        className="mx-auto mb-6 max-w-xl text-balance text-base leading-relaxed text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.8)] md:mx-0 md:text-lg"
-        style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
-      >
-        {LANDING_HERO_2026.subheadline}
-      </p>
     </>
   );
 }

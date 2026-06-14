@@ -27,10 +27,7 @@ export const LANDING_HERO_2026 = {
     "Kampagnen",
     "Content-Workflows",
   ] as const,
-  subheadline:
-    "InfluexAI bündelt Hooks, Visuals, Videos, Avatare und Kampagnen-Workflows in einem Studio.",
   ctaPrimary: "Studio starten",
-  ctaSecondary: "So funktioniert es",
   welcomeStudio: (name: string) =>
     `Willkommen, ${name}. Dein App Studio ist bereit.`,
 } as const;
