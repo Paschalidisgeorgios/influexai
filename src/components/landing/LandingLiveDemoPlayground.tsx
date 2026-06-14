@@ -80,7 +80,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
 
   return (
     <article
-      className={`flex min-h-[280px] flex-col justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/60 p-5 backdrop-blur-md sm:min-h-[320px] ${className}`}
+      className={`flex flex-col self-start rounded-xl border border-zinc-800/80 bg-zinc-950/60 p-5 backdrop-blur-md ${className}`}
     >
       <div>
         <span className="inline-flex rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#ccff00]">
@@ -133,7 +133,11 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
         </div>
       </div>
 
-      <div className="mt-4 min-h-[120px]">
+      <motion.div
+        layout
+        className="mt-4"
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      >
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div
@@ -187,7 +191,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
             </motion.p>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <IntentLink
         href="/signup"
