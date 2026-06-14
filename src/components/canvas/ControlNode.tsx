@@ -22,6 +22,7 @@ import {
   shouldRefundCredits,
   userMessageForCanvasError,
 } from "@/lib/canvas/canvas-api-errors";
+import { shouldPostCanvasAnalytics } from "@/lib/canvas/canvas-analytics-record";
 import Link from "next/link";
 import { ParamFields, type ParamFieldOverride } from "./ParamFields";
 import {
@@ -445,23 +446,42 @@ function ControlNodeComponent({
         }
       }
 
+      let analyticsCredits = 0;
+      if (shouldPostCanvasAnalytics(tool.id)) {
+        try {
+          const analyticsRes = await fetch("/api/canvas/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              toolId: tool.id,
+              params: generationParams,
+              prompt:
+                typeof generationParams.prompt === "string"
+                  ? generationParams.prompt
+                  : undefined,
+            }),
+          });
+          if (analyticsRes.ok) {
+            const analyticsJson = (await analyticsRes.json()) as { creditsUsed?: number };
+            if (typeof analyticsJson.creditsUsed === "number") {
+              analyticsCredits = analyticsJson.creditsUsed;
+            }
+          }
+        } catch {
+          // Analytics persistence is best-effort; generation already succeeded.
+        }
+      }
+
       recordGeneration({
         toolId: tool.id,
         toolLabel: tool.label,
         toolIcon: tool.icon,
-        creditsUsed: coins,
-        prompt: typeof nodeData.params.prompt === "string" ? nodeData.params.prompt : undefined,
+        creditsUsed: analyticsCredits,
+        prompt:
+          typeof generationParams.prompt === "string"
+            ? generationParams.prompt
+            : undefined,
       });
-
-      void fetch("/api/canvas/analytics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          toolId: tool.id,
-          params: nodeData.params,
-          prompt: nodeData.params.prompt,
-        }),
-      }).catch(() => undefined);
 
       void refreshCredits();
     } catch (err) {

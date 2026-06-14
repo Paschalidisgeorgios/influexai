@@ -95,16 +95,8 @@ export const useCanvasAnalyticsStore = create<CanvasAnalyticsStore>((set, get) =
       .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
       .slice(0, 24);
 
-    const localCredits = get().localEvents
-      .filter((e) => e.status === "generated")
-      .reduce((s, e) => s + e.creditsUsed, 0);
-
     return {
       ...snapshot,
-      creditBreakdown: {
-        ...snapshot.creditBreakdown,
-        total: snapshot.creditBreakdown.total + localCredits,
-      },
       activity: mergedActivity,
     };
   },

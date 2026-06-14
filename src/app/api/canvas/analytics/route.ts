@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       creditsUsed,
       prompt: typeof prompt === "string" ? prompt : undefined,
     });
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, creditsUsed });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Speichern fehlgeschlagen";
     return NextResponse.json({ error: message }, { status: 500 });
