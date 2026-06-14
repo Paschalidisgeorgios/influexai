@@ -3,11 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { NAV_LABELS_DE } from "@/lib/features-menu-i18n";
-import { FeaturesMegaMenuDesktop } from "@/components/landing/features/FeaturesMegaMenu";
 import { FeaturesMobileMenuOverlay } from "@/components/landing/features/FeaturesMobileMenuOverlay";
 
 const NAV_LINKS = [
@@ -20,7 +18,6 @@ const NAV_LINKS = [
 export function LandingNavV2() {
   const tNav = useTranslations("landingPage.nav");
   const [scrolled, setScrolled] = useState(false);
-  const [featuresOpen, setFeaturesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -37,14 +34,7 @@ export function LandingNavV2() {
     };
   }, [menuOpen]);
 
-  const closeFeatures = useCallback(() => setFeaturesOpen(false), []);
   const closeMenu = useCallback(() => {
-    setMenuOpen(false);
-    setFeaturesOpen(false);
-  }, []);
-
-  const toggleFeatures = useCallback(() => {
-    setFeaturesOpen((v) => !v);
     setMenuOpen(false);
   }, []);
 
@@ -52,44 +42,21 @@ export function LandingNavV2() {
     <>
       <header
         className={`landing-glass-header sticky top-0 z-50 flex h-14 w-full items-center overflow-visible px-4 transition-[background,border-color] duration-300 sm:px-6 lg:px-10 ${
-          scrolled || featuresOpen ? "landing-glass-header--scrolled" : ""
+          scrolled ? "landing-glass-header--scrolled" : ""
         }`}
         style={{ ["--landing-nav-height" as string]: "3.5rem" }}
       >
         <BrandWordmark href="/" onClick={closeMenu} />
 
         <nav
-          className="relative mx-auto hidden items-center gap-6 md:flex"
+          className="relative mx-auto hidden items-center justify-center gap-6 md:flex"
           aria-label="Hauptnavigation"
         >
-          <div className="relative z-[60]">
-            <button
-              type="button"
-              className={`landing-glass-nav-link inline-flex items-center gap-1 border-none bg-transparent cursor-pointer ${
-                featuresOpen ? "text-[#ccff00]" : ""
-              }`}
-              aria-expanded={featuresOpen}
-              aria-haspopup="dialog"
-              onClick={toggleFeatures}
-            >
-              {NAV_LABELS_DE.features}
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
-                strokeWidth={2}
-              />
-            </button>
-            <FeaturesMegaMenuDesktop
-              open={featuresOpen}
-              onClose={closeFeatures}
-              anchored
-            />
-          </div>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="landing-glass-nav-link"
-              onClick={closeFeatures}
             >
               {link.label}
             </Link>
@@ -111,10 +78,7 @@ export function LandingNavV2() {
             className="flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-800/60 text-white md:hidden"
             aria-label={menuOpen ? NAV_LABELS_DE.menuClose : NAV_LABELS_DE.menuOpen}
             aria-expanded={menuOpen}
-            onClick={() => {
-              setMenuOpen((v) => !v);
-              setFeaturesOpen(false);
-            }}
+            onClick={() => setMenuOpen((v) => !v)}
           >
             {menuOpen ? (
               <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">

@@ -3,14 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AcidMotionButton } from "@/components/ui/AcidMotionButton";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
-import {
-  FeaturesMegaMenuDesktop,
-  FeaturesMegaMenuMobile,
-} from "@/components/landing/features/FeaturesMegaMenu";
 import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
@@ -50,8 +45,6 @@ export function LandingNav({
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [featuresOpen, setFeaturesOpen] = useState(false);
-  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
   const [navSession, setNavSession] = useState<{
     user: boolean;
     hasPlan: boolean;
@@ -107,38 +100,21 @@ export function LandingNav({
   }, [mounted]);
 
   useEffect(() => {
-    if (menuOpen) setFeaturesOpen(false);
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (featuresOpen) setMenuOpen(false);
-  }, [featuresOpen]);
-
-  useEffect(() => {
     if (!mounted) return;
     if (menuOpen) {
       document.body.style.overflow = "hidden";
-    } else if (!featuresOpen) {
+    } else {
       document.body.style.overflow = "";
       document.body.style.overflowX = "clip";
     }
     return () => {
-      if (!featuresOpen) {
-        document.body.style.overflow = "";
-        document.body.style.overflowX = "";
-      }
+      document.body.style.overflow = "";
+      document.body.style.overflowX = "";
     };
-  }, [menuOpen, mounted, featuresOpen]);
+  }, [menuOpen, mounted]);
 
   const closeMenu = () => {
     setMenuOpen(false);
-    setMobileFeaturesOpen(false);
-  };
-
-  const closeFeatures = () => setFeaturesOpen(false);
-
-  const toggleFeatures = () => {
-    setFeaturesOpen((v) => !v);
   };
 
   const showGuestAuth = mounted && !navSession.user;
@@ -180,28 +156,6 @@ export function LandingNav({
                     {t("nav_showcase")}
                   </a>
                 ) : null}
-                <div className="relative z-[60]">
-                  <button
-                    type="button"
-                    className={`${navLinkClass}${featuresOpen ? " bg-white/[0.08] text-white" : ""}`}
-                    aria-expanded={featuresOpen}
-                    aria-haspopup="dialog"
-                    onClick={toggleFeatures}
-                  >
-                    {t("nav_features")}
-                    <ChevronDown
-                      className={`ml-1 h-3.5 w-3.5 transition-transform ${featuresOpen ? "rotate-180" : ""}`}
-                      strokeWidth={2}
-                    />
-                  </button>
-                  {!agencyMode ? (
-                    <FeaturesMegaMenuDesktop
-                      open={featuresOpen}
-                      onClose={closeFeatures}
-                      anchored
-                    />
-                  ) : null}
-                </div>
                 {navLinks.map((l) =>
                   l.external ? (
                     <Link key={l.href} href={l.href} className={navLinkClass}>
@@ -385,24 +339,6 @@ export function LandingNav({
                       {t("nav_showcase")}
                       <span className="text-xl">↗</span>
                     </a>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => setMobileFeaturesOpen((v) => !v)}
-                    className="mobile-nav-link w-full py-4 text-left text-[20px] text-white/85"
-                    aria-expanded={mobileFeaturesOpen}
-                  >
-                    <span className="flex items-center justify-between">
-                      {t("nav_features")}
-                      <ChevronDown
-                        className={`h-5 w-5 transition-transform ${mobileFeaturesOpen ? "rotate-180" : ""}`}
-                      />
-                    </span>
-                  </button>
-                  {mobileFeaturesOpen ? (
-                    <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                      <FeaturesMegaMenuMobile onNavigate={closeMenu} />
-                    </div>
                   ) : null}
                   {navLinks.map((l) =>
                     l.external ? (

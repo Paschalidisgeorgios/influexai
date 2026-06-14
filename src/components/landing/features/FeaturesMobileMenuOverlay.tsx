@@ -6,7 +6,6 @@ import { X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { NAV_LABELS_DE } from "@/lib/features-menu-i18n";
-import { FeaturesMegaMenuMobile } from "./FeaturesMegaMenu";
 
 type FeaturesMobileMenuOverlayProps = {
   open: boolean;
@@ -46,9 +45,7 @@ export function FeaturesMobileMenuOverlay({
           </div>
         </div>
 
-        <FeaturesMegaMenuMobile onNavigate={onClose} />
-
-        <div className="mt-8 space-y-1 border-t border-zinc-800/60 pt-4">
+        <div className="space-y-1 border-t border-zinc-800/60 pt-4">
           {navLinks.map((link) => (
             <Link
               key={link.href}
