@@ -59,7 +59,17 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/text-to-video",
-        destination: "/dashboard/story-creator",
+        destination: "/dashboard/seedance",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/story-creator",
+        destination: "/dashboard/seedance",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/voice-agent",
+        destination: "/dashboard/melodia",
         permanent: true,
       },
       {

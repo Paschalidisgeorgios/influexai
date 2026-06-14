@@ -26,6 +26,39 @@ type ModelsResponse = {
   error?: string;
 };
 
+/** Fallback when Akool API omits Seedance 2.0 (e.g. missing live key in CI). */
+export const SEEDANCE_2_0_FALLBACK: SeedanceModelOption = {
+  value: "seedance-2.0",
+  label: "Seedance 2.0",
+  provider: "seedance",
+  providerLabel: "Seedance",
+  durationList: [2, 5, 8, 10],
+  resolutionList: [
+    { value: "720p", label: "720p" },
+    { value: "1080p", label: "1080p" },
+  ],
+};
+
+function hasSeedanceV2Model(models: SeedanceModelOption[]): boolean {
+  return models.some((model) => {
+    const hay = `${model.label} ${model.value}`.toLowerCase();
+    return (
+      hay.includes("2.0") ||
+      hay.includes(" v2") ||
+      hay.includes("-v2") ||
+      hay.includes("v2")
+    );
+  });
+}
+
+export function ensureSeedanceModelFallback(
+  models: SeedanceModelOption[]
+): SeedanceModelOption[] {
+  if (models.length === 0) return [SEEDANCE_2_0_FALLBACK];
+  if (!hasSeedanceV2Model(models)) return [SEEDANCE_2_0_FALLBACK, ...models];
+  return models;
+}
+
 function mapApiModel(raw: AkoolModelApiEntry): SeedanceModelOption | null {
   const value = raw.value?.trim() ?? "";
   const label = raw.label?.trim() ?? "";
@@ -62,10 +95,21 @@ export function pickDefaultSeedanceModel(
 
   const preferV2 = (model: SeedanceModelOption) => {
     const hay = `${model.label} ${model.value}`.toLowerCase();
-    return hay.includes("2.0") || hay.includes(" v2") || hay.includes("-v2");
+    return (
+      hay.includes("2.0") ||
+      hay.includes(" v2") ||
+      hay.includes("-v2") ||
+      (hay.includes("seedance") && hay.includes("v2"))
+    );
   };
 
-  return pool.find(preferV2) ?? pool[0];
+  const v2Model = pool.find(preferV2);
+  if (v2Model) return v2Model;
+
+  const fallback = pool.find(
+    (model) => model.value === SEEDANCE_2_0_FALLBACK.value
+  );
+  return fallback ?? pool[0];
 }
 
 export function pickDefaultSeedanceResolution(
@@ -96,15 +140,17 @@ export function useSeedanceModels() {
           throw new Error(data.error ?? "Modellliste konnte nicht geladen werden");
         }
         if (!cancelled) {
-          const mapped = (Array.isArray(data.models) ? data.models : [])
-            .map(mapApiModel)
-            .filter((model): model is SeedanceModelOption => model !== null);
+          const mapped = ensureSeedanceModelFallback(
+            (Array.isArray(data.models) ? data.models : [])
+              .map(mapApiModel)
+              .filter((model): model is SeedanceModelOption => model !== null)
+          );
           setModels(mapped);
           setError(null);
         }
       } catch (err) {
         if (!cancelled) {
-          setModels([]);
+          setModels(ensureSeedanceModelFallback([]));
           setError(
             err instanceof Error ? err.message : "Modellliste konnte nicht geladen werden"
           );

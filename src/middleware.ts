@@ -63,6 +63,8 @@ export async function middleware(request: NextRequest) {
     "/dashboard/ki-influencer": "/dashboard/ki-ich",
     "/dashboard/produkt-werbung": "/dashboard/produkt",
     "/dashboard/agent": "/dashboard",
+    "/dashboard/voice-agent": "/dashboard/melodia",
+    "/dashboard/story-creator": "/dashboard/seedance",
   };
 
   const legacyDashboardTarget = legacyDashboardRedirects[pathname];

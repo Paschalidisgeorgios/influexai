@@ -414,7 +414,7 @@
       "error_scrape": "Produkt konnte nicht geladen werden"
     },
     "loraTraining": {
-      "title": "LoRA Training",
+      "title": "KI-Klon Training",
       "description": "Trainiere dein eigenes KI-Modell — Gesicht, Stil, Produkt oder Charakter",
       "loading": "Laden…",
       "demo_title": "Vorher / Nachher",
