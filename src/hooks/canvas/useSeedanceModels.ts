@@ -1,18 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { groupSeedanceModelOptionsByProvider } from "@/lib/seedance-model-groups";
 
 export type SeedanceModelOption = {
   value: string;
   label: string;
+  provider: string;
+  providerLabel: string;
   durationList: number[];
   resolutionList: Array<{ value: string; label: string }>;
 };
 
+type AkoolModelApiEntry = {
+  value?: string;
+  label?: string;
+  provider?: string;
+  providerLabel?: string;
+  durationList?: number[];
+  resolutionList?: Array<{ value: string; label: string }>;
+};
+
 type ModelsResponse = {
-  models?: SeedanceModelOption[];
+  models?: AkoolModelApiEntry[];
   error?: string;
 };
+
+function mapApiModel(raw: AkoolModelApiEntry): SeedanceModelOption | null {
+  const value = raw.value?.trim() ?? "";
+  const label = raw.label?.trim() ?? "";
+  if (!value || !label) return null;
+
+  return {
+    value,
+    label,
+    provider: raw.provider?.trim() ?? "",
+    providerLabel: raw.providerLabel?.trim() || raw.provider?.trim() || "Weitere",
+    durationList: Array.isArray(raw.durationList) ? raw.durationList : [],
+    resolutionList: Array.isArray(raw.resolutionList)
+      ? raw.resolutionList.map((item) => ({
+          value: item.value,
+          label: item.label || item.value,
+        }))
+      : [],
+  };
+}
 
 export function pickDefaultSeedanceModel(
   models: SeedanceModelOption[]
@@ -36,6 +68,8 @@ export function pickDefaultSeedanceResolution(
   return preferred?.value ?? model.resolutionList[0]?.value;
 }
 
+export { groupSeedanceModelOptionsByProvider };
+
 export function useSeedanceModels() {
   const [models, setModels] = useState<SeedanceModelOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +86,10 @@ export function useSeedanceModels() {
           throw new Error(data.error ?? "Modellliste konnte nicht geladen werden");
         }
         if (!cancelled) {
-          setModels(Array.isArray(data.models) ? data.models : []);
+          const mapped = (Array.isArray(data.models) ? data.models : [])
+            .map(mapApiModel)
+            .filter((model): model is SeedanceModelOption => model !== null);
+          setModels(mapped);
           setError(null);
         }
       } catch (err) {

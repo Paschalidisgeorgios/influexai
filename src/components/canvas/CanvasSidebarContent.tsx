@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Download, Home, LogOut } from "lucide-react";
+import { ChevronDown, Download, Home, Images, LogOut } from "lucide-react";
 import {
   TOOL_CATEGORIES,
   getToolsByCategory,
@@ -167,6 +167,16 @@ export function CanvasSidebarContent({ onToolSelect }: CanvasSidebarContentProps
             )}
           </span>
         </button>
+        <Link
+          href="/dashboard/gallery"
+          onClick={onToolSelect}
+          className="block min-h-11 rounded-lg px-3 py-2.5 text-xs leading-[44px] text-zinc-400 no-underline hover:bg-zinc-900/60 hover:text-zinc-200"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Images className="h-3.5 w-3.5 shrink-0 opacity-80" strokeWidth={1.75} />
+            Galerie
+          </span>
+        </Link>
         <Link
           href="/dashboard/settings"
           onClick={onToolSelect}

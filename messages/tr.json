@@ -83,50 +83,89 @@
       "starter_f4": "\"Powered by InfluexAI\" görünür",
       "starter_name": "Başlangıç Ajans",
       "yearly": "Yıllık"
+    },
+    "whitelabel": {
+      "canvas_placeholder": "App Studio · Canlı Önizleme",
+      "color_1": "Birincil",
+      "color_2": "Vurgu",
+      "color_3": "Öne Çıkan",
+      "color_picker": "Renk {index}",
+      "colors_label": "Marka Renkleri",
+      "default_name": "Ajansınız",
+      "headline": "Gerçek Zamanlı White Label'ınız",
+      "kicker": "Canlı Önizleme",
+      "name_label": "Ajans Adı",
+      "name_placeholder": "Studio Neon",
+      "powered_by": "Markanız tarafından desteklenmektedir",
+      "subline": "Ajans adınızı yazın ve üç vurgu rengi seçin — önizleme anında uyarlanır.",
+      "workspace_label": "App Studio"
     }
   },
   "agent": {
-    "chip_ugc_creator": "UGC creator'ım",
-    "chip_faceless": "Faceless içerik oluştur",
-    "chip_product_ad": "Ürünümü tanıt",
-    "chip_script": "Senaryo yaz",
+    "attach_soon": "Ek — yakında",
     "chip_channel_analyze": "Kanalımı analiz et",
-    "chip_viral_score": "Viral score kontrol et",
+    "chip_faceless": "Faceless içerik oluştur",
     "chip_generate_image": "Görsel oluştur",
     "chip_generate_video": "Video oluştur",
-    "greeting_morning": "Günaydın, {name} ☀️",
+    "chip_product_ad": "Ürünümü tanıt",
+    "chip_script": "Senaryo yaz",
+    "chip_ugc_creator": "UGC creator'ım",
+    "chip_viral_score": "Viral score kontrol et",
+    "cost_estimate": "Bu agent çalışması {label} tutar",
+    "credit_confirm": "~{credits} Credits · başlamadan önce onaylanır",
+    "credits_left": "{count} kredi kaldı",
+    "cta_free_plan": "Önizlemeyi görüntüle",
+    "cta_ki_agent": "Agent Autopilot'u aç",
+    "cta_plan_preview": "Önizlemeyi görüntüle",
+    "example_prompt_1": "Fitness koçu için TikTok Scripti oluştur",
+    "example_prompt_2": "Yerel bir restoran için 7 günlük içerik planla",
+    "example_prompt_3": "Bir parfüm için ürün reklamı oluştur",
+    "execute_hint": "Doğrudan çalıştırma — krediler düşülür",
+    "featured_prompts_label": "Popüler Örnekler",
     "greeting_day": "Merhaba, {name} 👋",
     "greeting_evening": "İyi akşamlar, {name} 🌆",
+    "greeting_hey": "Merhaba {name}",
+    "greeting_morning": "Günaydın, {name} ☀️",
     "greeting_night": "Hâlâ uyanık ve çalışıyorsun, {name}? 🌙",
+    "group_analyze": "Analiz & Planlama",
+    "group_creator": "Creator İçeriği",
+    "group_product": "Ürün & Reklam",
+    "group_quick_start": "Hızlı başlat",
+    "hero_headline": "Bugün ne oluşturuyorsun?",
+    "hero_subline": "Hedefini tarif et. InfluexAI sana uygun iş akışını önerir.",
+    "input_placeholder": "Ne oluşturmak istersin? Hedefini anlat…",
     "input_placeholder_focused": "Ne oluşturmak istiyorsun?",
+    "intent_toast": "Senin için {tool} açılıyor →",
+    "page_subtitle": "Kişisel YouTube stratejistin — hedefini anlat, agent gerisini halleder.",
+    "page_title": "Agent Autopilot",
+    "plan_preview_routing_hint": "Agent Autopilot'ta önizleme. Her çalıştırma kredi tüketir.",
+    "quick_win_body": "Hedefini tarif et. Agent Autopilot içerik oluşturur — her istek krediye mal olur.",
+    "quick_win_title": "Agent Autopilot ile başla",
+    "send": "Gönder",
+    "tab_chat": "Sohbet",
+    "tab_workflow": "İş Akışı",
+    "thinking": "Agent çalışıyor…",
+    "timeline_avatar": "Benim KI-Ich",
+    "timeline_competitor": "Rakip analizi",
+    "timeline_ideas": "Video fikirleri",
+    "timeline_image": "Görsel oluştur",
+    "timeline_label": "Agent İlerlemesi",
+    "timeline_live": "Canlı Creator",
+    "timeline_niche": "Nişi analiz et",
+    "timeline_outliers": "Outlier bul",
+    "timeline_produkt": "Ürün Reklamı",
+    "timeline_remix": "Video Remix",
+    "timeline_script": "Script oluştur",
+    "timeline_thumbnail": "Küçük Resim",
+    "timeline_ugc": "UGC Video",
+    "timeline_video": "Video oluştur",
+    "timeline_viral": "Viral Score",
+    "timeline_voice": "Ses & Müzik",
     "typewriter_example_1": "Kafem için bir TikTok scripti oluştur...",
     "typewriter_example_2": "Plajda bir kadının fotoğrafını istiyorum...",
     "typewriter_example_3": "Fitness stüdyom için 7 günlük içerik planla...",
     "typewriter_example_4": "Kendi yapay zeka influencer'ımı oluştur...",
     "typewriter_example_5": "Parfümüm için bir ürün reklamı yap...",
-    "intent_toast": "Senin için {tool} açılıyor →",
-    "attach_soon": "Ek — yakında",
-    "cost_estimate": "Bu agent çalışması {label} tutar",
-    "credit_confirm": "~{credits} Credits · başlamadan önce onaylanır",
-    "credits_left": "{count} kredi kaldı",
-    "greeting_hey": "Hey {name}",
-    "hero_headline": "Bugün ne oluşturuyorsun?",
-    "input_placeholder": "Ne oluşturmak istersin? Hedefini anlat…",
-    "page_subtitle": "Kişisel YouTube stratejistin — hedefini anlat, agent gerisini halleder.",
-    "page_title": "InfluexAI Master Agent",
-    "send": "Gönder",
-    "tab_chat": "Sohbet",
-    "tab_workflow": "İş Akışı",
-    "thinking": "Agent çalışıyor…",
-    "timeline_ideas": "Video fikirleri",
-    "timeline_image": "Görsel oluştur",
-    "timeline_video": "Video oluştur",
-    "timeline_label": "Agent İlerlemesi",
-    "timeline_niche": "Nişi analiz et",
-    "timeline_outliers": "Outlier bul",
-    "timeline_script": "Script oluştur",
-    "timeline_thumbnail": "Küçük Resim",
-    "timeline_viral": "Viral Score",
     "welcome_subtitle": "Video hedefini doğal dille anlat. Agent tüm araçları otomatik planlar ve çalıştırır.",
     "welcome_title": "Ne oluşturmak istiyorsun?",
     "workflow_desc": "Tam bir video hedefi anlattığında agent bu adımları otomatik çalıştırır."
@@ -136,12 +175,14 @@
     "divider": "veya",
     "email": "E-posta",
     "fill_fields": "Lütfen tüm alanları doldur.",
+    "forgot_generic_error": "İstek gönderilemedi. Lütfen daha sonra tekrar deneyin.",
     "forgot_password": "Unuttun mu?",
     "forgot_sent": "Hesap varsa e-posta gönderildi.",
     "forgot_submit": "Bağlantı gönder",
     "forgot_subtitle": "E-posta ile sıfırlama bağlantısı gönderilir.",
     "forgot_title": "Şifreyi sıfırla",
     "has_account": "Zaten kayıtlı mısın?",
+    "last_used": "Son kullanılan",
     "login_button": "Giriş yap",
     "login_link": "Giriş yap →",
     "login_subtitle": "Devam etmek için giriş yap.",
@@ -153,6 +194,15 @@
     "password_strong": "Güçlü",
     "password_too_short": "Çok kısa",
     "password_weak": "Zayıf",
+    "signup": {
+      "emailAlreadyExists": {
+        "description": "Bu e-posta ile giriş yap veya şifreni sıfırla.",
+        "login": "Giriş yap",
+        "resetPassword": "Şifreyi sıfırla",
+        "title": "Bu e-posta adresi zaten kayıtlı."
+      },
+      "generic_error": "Kayıt tamamlanamadı. Lütfen tekrar dene."
+    },
     "signup_button": "Hesap oluştur",
     "signup_link": "Kayıt ol →",
     "signup_subtitle": "AI ile içerik üreticisi yolculuğuna başla.",
@@ -160,16 +210,123 @@
     "terms_link": "Şartlar",
     "terms_text": "Kayıt olarak şunları kabul edersin:",
     "verify_email_body": "Doğrulama linkini şu adrese gönderdik:",
-    "verify_email_title": "E-postanı doğrula",
-    "signup": {
-      "generic_error": "Kayıt tamamlanamadı. Lütfen tekrar dene.",
-      "emailAlreadyExists": {
-        "title": "Bu e-posta adresi zaten kayıtlı.",
-        "description": "Bu e-posta ile giriş yap veya şifreni sıfırla.",
-        "login": "Giriş yap",
-        "resetPassword": "Şifreyi sıfırla"
-      }
+    "verify_email_title": "E-postanı doğrula"
+  },
+  "blog": {
+    "all_categories": "Tümü",
+    "breadcrumb_blog": "Blog",
+    "min_read": "{minutes} Dk",
+    "newsletter_cta": "Abone Ol",
+    "newsletter_subtitle": "Viral YouTube Shorts için haftalık ipuçları — spam yok.",
+    "newsletter_title": "Creator Bülteni",
+    "no_posts": "Henüz yayınlanmış makale yok. Yakında tekrar uğrayın.",
+    "no_results": "Bu arama için makale bulunamadı.",
+    "read_more": "Devamını oku →",
+    "related_title": "İlginizi çekebilecek içerikler",
+    "search_button": "Ara",
+    "search_placeholder": "Makale ara…",
+    "subtitle": "Viral olmak için ihtiyacın olan her şey",
+    "title": "InfluexAI Blog"
+  },
+  "businessPage": {
+    "compare": {
+      "assets_pain": "Kendi varlıklarınıza erişim yok",
+      "assets_pain_icon": "😤",
+      "assets_solution": "Her şey stüdyonuzda",
+      "assets_solution_icon": "🎯",
+      "budget_pain": "Binlerce Euro ajans bütçesi",
+      "budget_pain_icon": "💸",
+      "budget_solution": "Ayda 9,99€'dan başlayan",
+      "budget_solution_icon": "💚",
+      "headline": "NEDEN ARTIK AJANS YOK?",
+      "wait_pain": "Haftalarca bekleme süresi",
+      "wait_pain_icon": "⏰",
+      "wait_solution": "Dakikalar içinde sonuçlar",
+      "wait_solution_icon": "⚡"
+    },
+    "cta": {
+      "button": "Ücretsiz başla",
+      "headline": "BAŞLAMAYA HAZIR MISIN?",
+      "subline": "Bugün başla. İlk varlığın 60 saniyede hazır."
+    },
+    "features": {
+      "autopilot_desc": "Fikirden hazır gönderi planına — marka sesinle tamamen otomatik.",
+      "autopilot_tag": "Tek seferde 30 gönderiye kadar",
+      "autopilot_title": "Kampanya Otopilotu",
+      "calendar_desc": "Markan için 30 günlük içerik takvimi — tek tuşla, nişine göre özelleştirilmiş.",
+      "calendar_tag": "30 günü 30 saniyede",
+      "calendar_title": "İçerik Planlaması",
+      "headline": "STÜDYO NELERİ YAPABİLİR",
+      "product_ad_desc": "Saniyeler içinde profesyonel reklam metinleri ve ürün görselleri. Instagram, TikTok, Facebook için — kendi dilinizde.",
+      "product_ad_tag": "Hemen kullanıma hazır",
+      "product_ad_title": "Ürün Reklamı",
+      "visuals_desc": "Markana uygun ürün görselleri ve reklam grafikleri. Flux Pro kalitesi, doğrudan stüdyona.",
+      "visuals_tag": "Flux Pro Kalitesi",
+      "visuals_title": "Görseller & Resimler"
+    },
+    "hero": {
+      "card1": "Ürün görseli oluşturuldu ✓",
+      "card2": "Kampanya oluşturuldu: 7 gönderi ✓",
+      "card3": "Reklam metni: 3 varyant ✓",
+      "cta_primary": "Şimdi ücretsiz başlayın",
+      "cta_secondary": "Tüm planları görüntüle",
+      "headline_accent": "İÇERİK.",
+      "headline_line1": "MARKANIZı",
+      "headline_line2": "ÖNE ÇIKARAN",
+      "headline_line3": "",
+      "kicker": "MARKALAR VE İŞLETMELER İÇİN",
+      "subline": "Profesyonel reklamlar, sosyal medya içeriği ve kampanyalar oluşturun — tamamen otomatik. Ajans olmadan. Bekleme süresi olmadan."
+    },
+    "pricing": {
+      "badge": "BUSINESS PLANI",
+      "cta": "Business Planı Başlat",
+      "headline": "EKİPLER & AJANSLAR İÇİN",
+      "per_month": "/Ay",
+      "plan_name": "Business",
+      "pricing_f1": "Sınırsız kampanyalar",
+      "pricing_f2": "Tüm araçlar açık",
+      "pricing_f3": "En yüksek öncelik",
+      "pricing_f4": "Ekip erişimi",
+      "pricing_f5": "Kişisel destek",
+      "pricing_link": "Tüm planları görüntüle",
+      "smaller_plans": "Daha küçük planlar 9,99€/ay'dan başlıyor —",
+      "subline": "Ekipler, Markalar ve Ajanslar için"
     }
+  },
+  "buyCredits": {
+    "balance": "<credits></credits> kredin kaldı",
+    "buy_button": "Şimdi satın al",
+    "checkout_error": "Ödeme başarısız. Tekrar dene.",
+    "checkout_success": "✓ Krediler yüklendi! Devam edebilirsin.",
+    "close": "Kapat",
+    "credit_outcome_body": "50 Kredi örneğin yaklaşık 25 Script (her biri 2 Kredi) veya yaklaşık 10 Standart görsel (her biri 5 Kredi) için yeterlidir. Videolar, Premium görseller ve Lip-Sync çok daha fazla kredi harcar.",
+    "credit_outcome_title": "Krediler ne anlama gelir?",
+    "credits_label": "Kredi",
+    "dismiss": "Bannerı kapat",
+    "force_open_hint": "Devam etmek için kredi yükle.",
+    "low_banner": "Sadece {count} kredi kaldı",
+    "low_credit_plan_hint": "Plan önizlemelerini ücretsiz olarak kullanmaya devam edebilirsin. Üretim için krediye ihtiyacın var.",
+    "menu_top_up": "Kredi yükle",
+    "payment_success_pending": "Ödeme başarılı — Krediler kısa süre içinde hesabına eklenecek.",
+    "per_credit": "{price}/kredi",
+    "popular_badge": "En popüler",
+    "pricing_footnote": "Aktif bir InfluexAI planı gerektirir. Kredi satın alma tek seferlik bir işlemdir ve yeni abonelik başlatmaz.",
+    "pricing_subtitle": "Kullandığın kadar öde: sadece ihtiyacın kadar kredi al.",
+    "pricing_title": "Ya da sadece kredi al — abonelik yok",
+    "success_toast": "✓ {count} kredi başarıyla yüklendi!",
+    "title": "Kredi yükle!",
+    "top_up": "Şimdi yükle →",
+    "top_up_button": "{count} Kredi yükle",
+    "trust_footer_instant": "Ödemeden hemen sonra kullanılabilir",
+    "trust_footer_no_expire": "Krediler asla sona ermez — istediğin zaman kullan",
+    "trust_footer_one_time": "Tek seferlik yükleme — yeni abonelik başlatmaz",
+    "trust_footer_plan": "Araç erişimi aktif bir plan gerektirir",
+    "trust_footer_stripe": "Stripe ile güvenli ödeme",
+    "trust_instant": "Anında kullanılabilir",
+    "trust_no_expire": "Krediler süresiz",
+    "trust_no_sub": "Abonelik gerekmez",
+    "trust_plan_required": "Aktif plan gerekli",
+    "urgent_banner": "Krediler neredeyse bitti!"
   },
   "common": {
     "back": "Geri",
@@ -185,53 +342,53 @@
     "share": "Paylaş"
   },
   "community": {
+    "back_community": "Topluluğa dön",
     "badge_lora_master": "LoRA Master",
     "badge_power_user": "Güçlü Kullanıcı",
     "badge_viral_creator": "Viral Creator",
-    "back_community": "Back to Community",
-    "challenge_title": "Weekly Challenge",
-    "comment_placeholder": "Write a comment…",
-    "cta_join": "Join for free",
-    "cta_share": "Share creations publicly",
-    "empty_feed": "No creations in the feed yet.",
-    "empty_leaderboard": "No activity this week yet.",
-    "empty_profile": "No public creations yet.",
-    "empty_showcase": "No public creations yet — be the first!",
-    "feed_desc": "Scroll community creations. Fullscreen on mobile.",
+    "challenge_title": "Haftanın Challenge'ı",
+    "comment_placeholder": "Yorum yaz…",
+    "cta_join": "Ücretsiz katıl",
+    "cta_share": "Creations'ları herkese açık paylaş",
+    "empty_feed": "Feed'de henüz Creation yok.",
+    "empty_leaderboard": "Bu hafta henüz aktivite yok.",
+    "empty_profile": "Henüz herkese açık Creation yok.",
+    "empty_showcase": "Henüz herkese açık Creation yok — ilk sen ol!",
+    "feed_desc": "Topluluk Creation'larına göz at. Mobilde tam ekran.",
     "feed_title": "İlham Akışı",
-    "filter_newest": "Newest",
-    "filter_popular": "Most liked",
-    "follow": "Follow",
-    "following": "Following",
-    "gens_week": "{count} creations this week",
-    "hero_desc": "Discover top AI creations, remix viral ideas, and climb the leaderboard.",
-    "idea": "Idea",
-    "join_challenge": "I'm in",
-    "leaderboard_desc": "Top creators in the last 7 days by public creations.",
+    "filter_newest": "En Yeni",
+    "filter_popular": "En Popüler",
+    "follow": "Takip et",
+    "following": "Takip ediliyor",
+    "gens_week": "Bu hafta {count} Creation",
+    "hero_desc": "En iyi yapay zeka Creation'larını keşfet, viral fikirleri remixle ve lider tablosunda yüksel.",
+    "idea": "Fikir",
+    "join_challenge": "Ben de katılıyorum",
+    "leaderboard_desc": "Son 7 günün en iyi Creator'ları — herkese açık Creation'lara göre.",
     "leaderboard_title": "Sıralama",
-    "load_more": "Load more",
-    "loading": "Loading…",
-    "login_required": "Please sign in.",
-    "new_post": "New post",
-    "public_creations": "Public creations",
-    "question": "Question",
-    "remix_video": "Remix this video",
-    "reply": "Reply",
-    "report": "Report",
-    "report_prompt": "Reason for report (optional):",
-    "report_sent": "Thanks — we'll review this content.",
-    "showcase_desc": "The best public creations from the community.",
+    "load_more": "Daha fazla yükle",
+    "loading": "Yükleniyor…",
+    "login_required": "Lütfen giriş yapın.",
+    "new_post": "Yeni Gönderi",
+    "public_creations": "Herkese Açık Creations",
+    "question": "Soru",
+    "remix_video": "Bu videoyu remixle",
+    "reply": "Yanıtla",
+    "report": "Bildir",
+    "report_prompt": "Bildirme nedeni (opsiyonel):",
+    "report_sent": "Teşekkürler — içeriği inceliyoruz.",
+    "showcase_desc": "Topluluğun en iyi halka açık içerikleri.",
     "showcase_title": "Creator Vitrini",
-    "stat_followers": "Followers",
-    "stat_generations": "Generations",
-    "stat_viral_avg": "Avg viral score",
-    "tab_discuss": "Discuss",
+    "stat_followers": "Takipçi",
+    "stat_generations": "Üretimler",
+    "stat_viral_avg": "Ø Viral Score",
+    "tab_discuss": "Tartışma",
     "tab_feed": "Akış",
-    "tab_leaderboard": "Leaderboard",
+    "tab_leaderboard": "Sıralama",
     "tab_showcase": "Vitrin",
     "title": "Topluluk",
-    "type_all": "All",
-    "type_image": "Images",
+    "type_all": "Tümü",
+    "type_image": "Görseller",
     "type_remix": "Remix",
     "type_script": "Script'ler",
     "type_video": "Videolar",
@@ -287,6 +444,7 @@
     "quick_actions": "Hızlı işlemler",
     "quick_agent": "Ajan",
     "quick_avatar": "Avatar",
+    "quick_create": "Oluştur",
     "quick_gallery": "Galeri",
     "quick_niche": "Niş",
     "quick_script": "Senaryo",
@@ -311,8 +469,7 @@
     "trust_no_sub": "Abonelik tuzağı yok",
     "week_created": "{scripts} Script · {videos} video · {thumbnails} thumbnail",
     "week_created_label": "Bu hafta oluşturulan",
-    "welcome": "Hoş geldin",
-    "quick_create": "Create"
+    "welcome": "Hoş geldin"
   },
   "errors": {
     "generic": "Bir şeyler ters gitti. Lütfen tekrar dene.",
@@ -342,11 +499,17 @@
       "url_placeholder": "https://youtube.com/@kanal veya @handle",
       "weaknesses": "Zayıf yönler (Kazanabileceğin yerler)"
     },
+    "content_kalender": {
+      "button": "Takvim oluştur — {cost} Kredi",
+      "description": "Konular, hook'lar ve yayın zamanlarıyla 30 günlük içerik planı",
+      "title": "İçerik Takvimi"
+    },
     "image_generator": {
       "description": "10 kategori · Standart & Yüksek Çözünürlük · Upscaler",
       "title": "Görsel Oluşturucu"
     },
     "loraTraining": {
+      "cost_preview": "Bu eğitim {credits} Kredi tutar",
       "credits_label": "Krediler",
       "delete_button": "Sil",
       "delete_confirm": "Bu model silinsin mi?",
@@ -504,10 +667,50 @@
       "description": "CTR için optimize thumbnail fikirleri",
       "title": "Thumbnail Konsepti"
     },
+    "trend_to_script": {
+      "button": "Script oluştur — {cost} Kredi",
+      "description": "Güncel trendi tanı → anında uygun script",
+      "title": "Trend → Script"
+    },
+    "ugcVideo": {
+      "avatar_label": "UGC Avatar seçin",
+      "avatars_loading": "Avatarlar yükleniyor…",
+      "create_button": "UGC Video oluştur — {cost} Kredi",
+      "credits_left": "{count} Kredi kaldı",
+      "description": "Yapay zeka avatarıyla otantik içerik üretici videoları — Script, ses ve 9:16 UGC görünümü dakikalar içinde.",
+      "download": "Videoyu indir",
+      "error_credits": "Yetersiz kredi ({cost} gerekli).",
+      "error_failed": "Video üretimi başarısız oldu. Lütfen tekrar deneyin.",
+      "error_generic": "Video üretimi başarısız oldu.",
+      "error_hooks": "Hook üretimi başarısız oldu.",
+      "error_load": "Avatarlar yüklenemedi.",
+      "error_no_avatar": "Lütfen bir avatar seçin.",
+      "error_no_script": "Lütfen bir script girin.",
+      "generating": "Video oluşturuluyor…",
+      "hook_default_topic": "Sosyal medya için UGC Ürün videosu",
+      "hooks_button": "Hook Üretici — 3 Varyant",
+      "hooks_loading": "Hook'lar üretiliyor…",
+      "hooks_title": "Hook Varyantları (kullanmak için tıklayın)",
+      "language_label": "Dil",
+      "new_video": "Yeni Video",
+      "no_avatars": "Avatar mevcut değil.",
+      "result_title": "UGC Videonuz",
+      "script_label": "Script",
+      "script_placeholder": "İçerik üreticisi ne söylemeli? Maks. 500 karakter…",
+      "title": "UGC Video",
+      "voice_akool": "InfluexAI Voice",
+      "voice_elevenlabs": "ElevenLabs",
+      "voice_label": "Ses"
+    },
     "video_ad": {
       "button": "Reklam oluştur",
       "description": "AI ile viral ürün shortları",
       "title": "Ürün Reklamı"
+    },
+    "viral_hook": {
+      "button": "Hook çıkar — {cost} Kredi",
+      "description": "YouTube URL → Hook + Hikaye anlatım yapısı → doğrudan script olarak",
+      "title": "Viral Hook Çıkarıcı"
     },
     "viral_score": {
       "analyze_again": "Yeni analiz",
@@ -535,7 +738,9 @@
     }
   },
   "footer": {
+    "blog": "Blog",
     "for_agencies": "Ajanslar için →",
+    "guides": "Rehberler",
     "imprint": "Künye",
     "legal": "Yasal",
     "links": "Bağlantılar",
@@ -544,8 +749,20 @@
     "privacy": "Gizlilik",
     "tagline": "Viral shortlar için AI stüdyosu.",
     "terms": "Şartlar",
-    "blog": "Blog",
-    "guides": "Rehberler"
+    "trust": {
+      "cancel_anytime": "<neon>Dashboard</neon>'dan istediğiniz zaman iptal edebilirsiniz.",
+      "operated_from_germany": "InfluexAI <accent>Almanya'dan</accent> işletilmektedir.",
+      "secure_payments": "<neon>Stripe</neon> üzerinden güvenli ödemeler.",
+      "support": "Destek:"
+    }
+  },
+  "founding": {
+    "cta": "Erken erişim al",
+    "headline": "Founding Creator ol",
+    "kicker": "ERKEN ERİŞİM · 2026",
+    "note": "Sahte hype yok — yeniyiz ve seninle birlikte inşa ediyoruz.",
+    "slot_label": "{total} yerden {slot}. hâlâ boş",
+    "subtext": "İlkler arasında ol. Founding Creator'lar ömür boyu %20 indirim ve yeni özelliklere herkesten önce erişim kazanır."
   },
   "gallery": {
     "count": "{count} içerik",
@@ -566,37 +783,65 @@
     },
     "loadMore": "Daha fazla yükle",
     "loadingMore": "Yükleniyor…",
+    "pull_refresh": "Yenilemek için çek",
+    "refreshing": "Yenileniyor…",
     "searchPlaceholder": "İçeriklerinde ara…",
     "showing": "{shown} / {total} gösteriliyor",
     "title": "Galerim"
   },
+  "guides": {
+    "min_read": "yaklaşık {minutes} Dk okuma süresi",
+    "open_tool": "Aracı aç →",
+    "pillars_subtitle": "YouTube Creator'lar için derinlemesine kılavuzlar — AI, Shorts, Büyüme.",
+    "pillars_title": "Ana Rehberler",
+    "read_guide": "Kılavuzu oku",
+    "subtitle": "Her InfluexAI özelliği için adım adım kılavuzlar",
+    "title": "Rehberler & Eğitimler",
+    "tutorials": {
+      "live_creator_desc": "Ses ve script ile avatar videosu oluştur.",
+      "live_creator_title": "Konuşan Avatar & Live Creator",
+      "lora_training_desc": "Kendi AI yüzünü eğit ve Görsel Oluşturucu'da kullan.",
+      "lora_training_title": "LoRA Modeli nasıl eğitilir?",
+      "niche_analyzer_desc": "Nişi analiz et ve veri tabanlı içerik fikirleri çıkar.",
+      "niche_analyzer_title": "Niche Analyzer: Trendleri bul",
+      "product_ad_desc": "TikTok, Reels ve Shorts için ürün videoları oluştur.",
+      "product_ad_title": "AI ile Ürün Reklamları oluştur",
+      "script_generator_desc": "Fikirden tamamlanmış Short script'ine birkaç dakikada.",
+      "script_generator_title": "Script Generator nasıl kullanılır?",
+      "thumbnail_desc": "YouTube için yüksek CTR'li thumbnail konseptleri.",
+      "thumbnail_title": "Thumbnail Concepts"
+    },
+    "tutorials_subtitle": "Script Generator, LoRA Training ve daha fazlasını nasıl kullanırsın.",
+    "tutorials_title": "Özellik Eğitimleri",
+    "words": "{count} Kelime"
+  },
   "hero": {
     "badge": "AI Creator Stüdyosu",
+    "brand_subtitle": "Pahalı çekimler olmadan tutarlı marka iletişimi. 90 saniyede ürün videoları. KOBİ\\u2019ler ve ajanslar için ölçeklenebilir.",
+    "creator_subtitle": "Script\\u2019ten bitmiş videoya: yapay zeka ile eksiksiz creator stüdyon. Kamera yok, ekip yok, ön bilgi yok.",
     "cta_primary": "Hemen başla — €{price}'dan",
     "cta_secondary": "Özellikleri gör",
     "headline": "Bir sonraki viral Short'un — 60 saniyede.",
     "rotating_titles": [
-      "SIRADAKİ\nVIRAL SHORT\n60 SN'DE.",
-      "SCRIPT'İN.\n10 SN'DE\nHAZIR.",
-      "AI AVATARIN.\nCANLI\nVE GERÇEK.",
-      "THUMBNAIL'İN.\nTIK\nİÇİN YAPILDI.",
-      "NİŞİN.\nAI İLE\nANALİZ.",
-      "İÇERİĞİN.\nOTOPİLOT\nMODUNDA.",
-      "YÜZÜN.\nHER\nKARAKTERDE.",
-      "SESİN.\nHER\nDİLDE.",
-      "DAHA FAZLA\nİZLENME.\nAZ EFOR.",
-      "FİKRİNDEN\nVİDEOYA.\nDAKİKALARDA.",
-      "AI BENLİĞİN.\nMARKAN.\nKURALLARIN.",
-      "İÇERİĞİN\nGELECEĞİ.\nŞİMDİ."
+      "DEIN NÄCHSTER\nVIRALER SHORT\nIN 60 SEK.",
+      "DEIN SCRIPT.\nIN 10\nSEKUNDEN.",
+      "DEIN KI-AVATAR.\nLEBENDIG\nWIE NIE.",
+      "DEIN THUMBNAIL.\nGEBAUT\nFÜR KLICKS.",
+      "DEINE NISCHE.\nANALYSIERT\nVON KI.",
+      "DEIN CONTENT.\nAUF\nAUTOPILOT.",
+      "DEIN GESICHT.\nJEDER\nCHARAKTER.",
+      "DEINE STIMME.\nJEDE\nSPRACHE.",
+      "MEHR VIEWS.\nWENIGER\nAUFWAND.",
+      "VON DER IDEE\nZUM VIDEO.\nIN MINUTEN.",
+      "DEIN KI-ICH.\nDEIN BRAND.\nDEINE REGELN.",
+      "DIE ZUKUNFT\nDES CONTENTS.\nIST JETZT."
     ],
     "social_proof": "2026'da yeni başlangıç — ilk creator'lardan biri ol",
     "subheadline": "Kesim yok. Yazım yok. Sadece AI.",
     "trust_1": "Anında kullanım",
     "trust_2": "Kolay başlangıç",
     "trust_3": "GDPR uyumlu",
-    "trust_line": "€{price}/ay'dan · Credits dahil · İstediğin zaman iptal et",
-    "creator_subtitle": "Script\\u2019ten bitmiş videoya: yapay zeka ile eksiksiz creator stüdyon. Kamera yok, ekip yok, ön bilgi yok.",
-    "brand_subtitle": "Pahalı çekimler olmadan tutarlı marka iletişimi. 90 saniyede ürün videoları. KOBİ\\u2019ler ve ajanslar için ölçeklenebilir."
+    "trust_line": "€{price}/ay'dan · Credits dahil · İstediğin zaman iptal et"
   },
   "imageGenerator": {
     "cat_avatar": "Yapay Zeka Avatar",
@@ -636,7 +881,6 @@
     "loading_upscale": "Büyütülüyor…",
     "loading_variation": "Varyasyon…",
     "preview_empty": "Görselin burada görünür",
-    "watermark_hint": "Filigranlı önizleme — 1 kredi ile indirmeyi aç",
     "prompt_label": "Görselini tarif et…",
     "prompt_placeholder": "örn. Karanlık masada kadın içerik üreticisi, yeşil neon ışık, MacBook…",
     "regenerate": "Tekrar oluştur",
@@ -646,25 +890,83 @@
     "upscale_button": "2x büyüt — 2 Credits",
     "variation_a": "Versiyon A",
     "variation_b": "Versiyon B",
-    "variation_button": "Varyasyon oluştur — 1 Credit"
+    "variation_button": "Varyasyon oluştur — 1 Credit",
+    "watermark_hint": "Filigranlı önizleme — 1 kredi ile indirmeyi aç"
   },
   "landing": {
     "auth_login": "Giriş",
     "auth_signup": "Hemen başla",
+    "menu_close": "Menüyü kapat",
+    "menu_open": "Menüyü aç",
+    "menu_title": "Menü",
     "nav_agency": "Ajanslar İçin",
+    "nav_blog": "Blog",
     "nav_brands": "Markalar için",
+    "nav_community": "Topluluk",
     "nav_features": "Özellikler",
+    "nav_for_brands": "Markalar İçin",
+    "nav_guides": "Rehberler",
     "nav_home": "Ana Sayfa",
     "nav_pricing": "Fiyatlar",
-    "nav_blog": "Blog",
-    "nav_guides": "Rehberler",
-    "nav_community": "Topluluk"
+    "nav_showcase": "Vitrin",
+    "nav_tools": "Stüdyo"
   },
   "landingPage": {
+    "achieve": {
+      "headline": "InfluexAI ile neler başarabilirsin",
+      "p1_text": "Script, hook ve CTA — saatlerce yazmadan.",
+      "p1_title": "Dakikalar içinde viral shorts",
+      "p2_text": "Her sahnede senin yüzün — TikTok, Reels ve YouTube.",
+      "p2_title": "Tutarlı AI avatar",
+      "p3_text": "URL veya fotoğraf → ses ve script ile video, 90 saniyeden kısa.",
+      "p3_title": "Markalar için ürün reklamları",
+      "subline": "Vaatler değil, olanaklar — araçlar bunun için var."
+    },
     "agencyTeaser": {
       "cta": "Daha fazla bilgi",
       "headline": "Ajans veya serbest çalışan mısınız?",
       "subline": "Yapay zeka araçlarını kendi markanızla satın →"
+    },
+    "agentAutopilot": {
+      "cta": "Agent'ı başlat",
+      "demo_line_1": "> Briefing algılandı: Yemek & Yaşam Tarzı · Instagram",
+      "demo_line_2": "> CreatorDNA yüklendi · Ton: Otantik",
+      "demo_line_3": "",
+      "demo_line_4": "✓ Gün 1: 'Tarifimizin ardındaki hikaye...'",
+      "demo_line_5": "✓ Gün 2: 'Kamera Arkası: Saat 6'da nasıl başlıyoruz'",
+      "demo_line_6": "✓ Gün 3: 'POV: Bizdeki ilk espresso'n'",
+      "demo_line_7": "✓ Gün 4–7: [4 gönderi daha oluşturuldu]",
+      "demo_line_8": "> Creative Score: 91/100 · Dışa aktarım hazır",
+      "demo_status": "Agent Autopilot · 7 Gönderi · 2 Reel",
+      "demo_user": "Instagram'daki kafem için 7 günlük bir içerik planı oluştur",
+      "description": "Neye ihtiyacın olduğunu tarif et — Agent bağlamı algılar, uygun araçları seçer ve kullanılabilir sonuçlar sunar.",
+      "feature_f1": "Hook'ları, scriptleri ve video gereksinimlerini tanır",
+      "feature_f2": "Stüdyodan uygun araçları kullanır",
+      "feature_f3": "Bir briefing'den kampanya paketleri oluşturur",
+      "headline": "Bir komut.\nBirden fazla sonuç.",
+      "kicker": "Agent Autopilot"
+    },
+    "bentoTools": {
+      "agent_autopilot_benefit": "Hedefini tarif et — Agent her şeyi otomatik olarak halleder.",
+      "agent_autopilot_name": "Agent Autopilot",
+      "agent_autopilot_tag": "YENİ · OTOMASYON",
+      "headline": "HEPSİ İÇİNDE.",
+      "kicker": "ÖZELLİKLER",
+      "melodia_benefit": "Ses klonlama, metinden konuşmaya, ses değiştirme — hepsi bir arada.",
+      "melodia_name": "Voice Studio / Melodia",
+      "melodia_tag": "SES",
+      "story_benefit": "Metinden videoya — bir fikir gir, hazır bir video al.",
+      "story_name": "Hikaye Yaratıcısı",
+      "story_tag": "VİDEO",
+      "szenen_benefit": "Görsellerden sinematik videolar — 15 saniyeye kadar, birden fazla model.",
+      "szenen_name": "Sahne Oluşturucu",
+      "szenen_tag": "VİDEO",
+      "video_uebersetzer_benefit": "Videoları dudak senkronizasyonuyla otomatik olarak diğer dillere çevir.",
+      "video_uebersetzer_name": "Video Çevirici",
+      "video_uebersetzer_tag": "ÇEVİRİ",
+      "viral_hook_benefit": "Konunu tarif et — durduran, tetikleyen ve dönüştüren 10 hook al.",
+      "viral_hook_name": "Viral Hook Üretici",
+      "viral_hook_tag": "EN POPÜLER ARAÇ"
     },
     "brands": {
       "ex1_cat": "Güzellik Markası",
@@ -688,6 +990,383 @@
       "intro": "Pahalı çekimlere son. InfluexAI markana her yerde aynı görünen benzersiz bir AI sunucu kazandırır.",
       "kicker": "İşletmeler ve Markalar İçin"
     },
+    "campaignStudio": {
+      "audience": {
+        "agency_desc": "Brifingleri daha hızlı kampanyaya hazır paketlere dönüştürün.",
+        "agency_kicker": "Ajanslar",
+        "agency_title": "Müşteri başına daha fazla çıktı",
+        "brand_desc": "Pahalı çekimler olmadan Reklamlar, Reels ve Sosyal Medya için tutarlı Assetler.",
+        "brand_kicker": "Markalar",
+        "brand_title": "Tekil gönderiler yerine kampanyalar",
+        "creator_desc": "Fikirden hazır gönderiye — Dakikalar içinde Hook'lar, Görseller ve Score.",
+        "creator_kicker": "İçerik Üreticiler",
+        "creator_title": "Tükenmişlik sendromu olmadan içerik",
+        "headline": "Daha hızlı yayınlamak isteyen ekipler için.",
+        "kicker": "Hedef Kitleler",
+        "local_desc": "Reels, teklifler ve yerel kampanyalar — kolay ve tekrarlanabilir.",
+        "local_kicker": "Yerel İşletmeler",
+        "local_title": "Ajans olmadan görünürlük"
+      },
+      "featureExplorer": {
+        "columns": {
+          "automate": "Otomasyon",
+          "create": "Oluştur",
+          "visuals": "Görseller"
+        },
+        "groups": {
+          "ads": {
+            "title": "Reklam & Ads"
+          },
+          "agent": {
+            "title": "Agent & Kampanyalar"
+          },
+          "export": {
+            "title": "Analiz & Dışa Aktarım"
+          },
+          "images": {
+            "title": "Görseller & Avatarlar"
+          },
+          "live": {
+            "title": "Canlı & Ses"
+          },
+          "scripts": {
+            "title": "Senaryolar & Hook'lar"
+          },
+          "video": {
+            "title": "Video & Motion"
+          }
+        },
+        "headline": "Tüm araçlar. Net bir genel bakış.",
+        "kicker": "Ürün",
+        "links": {
+          "ad": "Reklam Oluşturucu",
+          "autopilot": "Agent Autopilot",
+          "calendar": "İçerik Takvimi",
+          "campaign": "Campaign Autopilot",
+          "competitor": "Rakip Analizi",
+          "gallery": "Stüdyo Arşivi",
+          "hook": "Viral Hook Oluşturucu",
+          "imageGen": "Görsel Oluşturucu",
+          "kiIch": "Benim KI-Ich",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "LoRA Eğitimi",
+          "melodia": "Melodia Studio",
+          "product": "Ürün Reklamı",
+          "scene": "Sahne Oluşturucu",
+          "score": "Viral Score",
+          "script": "Senaryo Oluşturucu",
+          "seedance": "Video Motion",
+          "story": "Hikaye Oluşturucu",
+          "thumbnail": "Küçük Resim Konsepti",
+          "transform": "Video Dönüştürücü",
+          "trend": "Trend Senaryo"
+        },
+        "preview": {
+          "agent": {
+            "badge": "Agent Autopilot",
+            "cta": "Agent'ı başlat",
+            "href": "/dashboard/ki-agent",
+            "quote": "Tek briefing'den 7 günlük kampanya"
+          },
+          "export": {
+            "badge": "Creative Score",
+            "cta": "Score analiz et",
+            "href": "/dashboard/viral-score",
+            "quote": "Yüklemeden önce kaliteyi kontrol et"
+          },
+          "images": {
+            "badge": "Image Studio",
+            "cta": "Görsel oluştur",
+            "href": "/dashboard/image-generator",
+            "quote": "Reels & Reklamlar için Marka Görseli"
+          },
+          "live": {
+            "badge": "Live Studio",
+            "cta": "Live Creator'ı aç",
+            "href": "/dashboard/live-creator",
+            "quote": "TikTok & YouTube'da canlı yapay zeka avatarı"
+          },
+          "scripts": {
+            "badge": "Script Studio",
+            "cta": "Script oluştur",
+            "href": "/dashboard/script-generator",
+            "quote": "3 saniyede durduran Hook"
+          },
+          "video": {
+            "badge": "Video Motion",
+            "cta": "Video başlat",
+            "href": "/dashboard/story-creator",
+            "quote": "Statik görsel Motion Clip'e dönüşür"
+          }
+        },
+        "subheadline": "Senaryodan dışa aktarıma — her modül bir tık uzakta."
+      },
+      "featuresMenu": {
+        "categories": {
+          "avatar": "AVATAR & SES",
+          "create": "OLUŞTUR",
+          "intelligence": "ZEKA",
+          "video": "VİDEO",
+          "visuals": "GÖRSELLER",
+          "workflow": "İŞ AKIŞI"
+        },
+        "close": "Özellikler menüsünü kapat",
+        "groups": {
+          "ads": {
+            "title": "Reklam & Ads"
+          },
+          "agent": {
+            "title": "Agent & Kampanyalar"
+          },
+          "analysis": {
+            "title": "Analiz & Skor"
+          },
+          "audio": {
+            "title": "Ses & Senkron"
+          },
+          "edit": {
+            "title": "Düzenle & Dönüştür"
+          },
+          "images": {
+            "title": "Görseller & Avatarlar"
+          },
+          "library": {
+            "title": "Arşiv"
+          },
+          "live": {
+            "title": "Canlı & Karakterler"
+          },
+          "motion": {
+            "title": "Hareket & Klipler"
+          },
+          "scripts": {
+            "title": "Script & Hook'lar"
+          },
+          "tools": {
+            "title": "İçgörüler"
+          },
+          "ugc": {
+            "title": "UGC & Ticaret"
+          }
+        },
+        "items": {
+          "ad": "Ad Creator",
+          "analytics": "Analytics",
+          "autopilot": "Agent Autopilot",
+          "avatarStudio": "Avatar Studio",
+          "calendar": "İçerik Takvimi",
+          "campaign": "Campaign Autopilot",
+          "character": "Character Studio",
+          "competitor": "Rakip Analizi",
+          "ecommerce": "E-Ticaret Reklamları",
+          "faceStudio": "Face Studio",
+          "gallery": "Stüdyo Arşivi",
+          "hook": "Viral Hook Generator",
+          "imageGen": "Görsel Üretici",
+          "kiIch": "Benim KI-Ich",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "LoRA Eğitimi",
+          "melodia": "Melodia Studio",
+          "motionTransfer": "Motion Transfer",
+          "niche": "Niche Analyzer",
+          "outlier": "Outlier Detector",
+          "product": "Ürün Reklamı",
+          "remix": "Video Remix",
+          "scene": "Sahne Üretici",
+          "score": "Viral Score",
+          "script": "Script Generator",
+          "seedance": "Video Motion",
+          "story": "Story Creator",
+          "textToVideo": "Text to Video",
+          "thumbnail": "Thumbnail Konsepti",
+          "transform": "Video Transformer",
+          "translate": "Video Çevirici",
+          "trend": "Trend Script",
+          "ugcVideo": "UGC Video",
+          "upscaler": "HD Upscaler"
+        },
+        "promo": {
+          "avatar": {
+            "cta": "Live Creator'ı aç",
+            "description": "Tek akışta Live, Lipsync ve Ses.",
+            "headline": "Senin AI yüzün. Her yerde tutarlı.",
+            "href": "/dashboard/live-creator",
+            "label": "Avatar Studio"
+          },
+          "campaign": {
+            "cta": "Hemen başla",
+            "description": "Görseller, Motion, Hooks ve Score — tek bir iş akışında.",
+            "headline": "Bir fikirden kampanyaya.",
+            "href": "/auth/sign-up",
+            "label": "AI Campaign Studio"
+          },
+          "create": {
+            "cta": "Script oluştur",
+            "description": "Tek bir briefing'den Hooks, Takvim ve Reklamlar.",
+            "headline": "Anında paylaşılabilir scriptler.",
+            "href": "/dashboard/script-generator",
+            "label": "Content Create"
+          },
+          "intelligence": {
+            "cta": "Agent Autopilot",
+            "description": "Agent, Score ve Rekabet Analizi.",
+            "headline": "Tahmin yerine veri odaklı.",
+            "href": "/dashboard/ki-agent",
+            "label": "Creative Intelligence"
+          },
+          "video": {
+            "cta": "Video başlat",
+            "description": "Hikaye, Sahneler ve Video Dönüşümü.",
+            "headline": "Görsel Motion Clip'e dönüşür.",
+            "href": "/dashboard/story-creator",
+            "label": "Video Motion"
+          },
+          "visuals": {
+            "cta": "Görsel oluştur",
+            "description": "Sosyal medya için AI görseller, Avatarlar ve UGC görünümü.",
+            "headline": "Saniyeler içinde marka varlıkları.",
+            "href": "/dashboard/image-generator",
+            "label": "VISUAL STUDIO"
+          }
+        },
+        "title": "Özellikler"
+      },
+      "hero": {
+        "ctaPrimary": "Hemen başla",
+        "ctaSecondary": "Demo izle",
+        "headline": "Bir fikirden eksiksiz bir kampanya doğuyor.",
+        "kicker": "AI Campaign Studio",
+        "mockup": {
+          "captionPreview": "Lansmana 3 adım. Sonrası için kaydet.",
+          "hookPreview": "POV: SaaS'ını başlatıyorsun — 80 saatlik hafta olmadan.",
+          "outputCaption": "Caption",
+          "outputHook": "Hook",
+          "outputImage": "Hero Görseli",
+          "outputVideo": "Motion",
+          "prompt": "SaaS'ım için 7 günlük lansman — TikTok ve LinkedIn için Reel'ler, Hook'lar ve Görseller.",
+          "promptLabel": "Kampanya Briefing'i",
+          "scoreLabel": "Creative Score",
+          "scoreValue": "91"
+        },
+        "note": "€{price}/aydan başlayan fiyatlar · Kredi dahil · Aylık iptal edilebilir",
+        "subheadline": "Görseller, Motion, Hook'lar, Caption'lar, Hashtag'ler ve Creative Score — sosyal medya için dışa aktarıma hazır."
+      },
+      "pack": {
+        "briefing_content": "Fitness Coach · Instagram · motive edici · Hedef kitle 25-40 yaş kadınlar",
+        "briefing_label": "Briefing'in",
+        "captions_desc": "5 Altyazı + Hashtagler",
+        "captions_icon": "💬",
+        "captions_title": "Altyazılar",
+        "cta": "Agent'ı başlat",
+        "headline": "Bir Briefing. Bir İş Akışı. Hazır Assetler.",
+        "hooks_desc": "Nişin için 10 Hook",
+        "hooks_icon": "⚡",
+        "hooks_title": "Viral Hook'lar",
+        "kicker": "Nasıl çalışır",
+        "motion_desc": "Video fikirleri + Sahne planı",
+        "motion_icon": "🎬",
+        "motion_title": "Motion",
+        "plan_desc": "30 Günlük Takvim",
+        "plan_icon": "📅",
+        "plan_title": "İçerik Planı",
+        "score_note": "Kalite otomatik olarak değerlendirilir ve gerektiğinde optimize edilir.",
+        "score_pill": "Creative Score: 94/100 (Örnek)",
+        "script_desc": "Eksiksiz Video Scripti",
+        "script_icon": "📝",
+        "script_title": "Script",
+        "subheadline": "Agent Autopilot briefing'ini okur ve Stüdyo'daki uygun araçları koordine eder.",
+        "visuals_desc": "Marka uyumlu 3 yapay zeka görseli",
+        "visuals_icon": "🖼",
+        "visuals_title": "Görseller"
+      },
+      "pricingCta": {
+        "ctaPrimary": "Fiyatları görüntüle",
+        "ctaSecondary": "Ücretsiz kayıt ol",
+        "headline": "Şeffaf başlayın. Büyüdükçe ölçeklendirin.",
+        "kicker": "Fiyatlandırma",
+        "subheadline": "Gerçek üretimler için krediler — aylık iptal edilebilir."
+      },
+      "showcase": {
+        "headline": "Anında etki yaratan kampanya varlıkları.",
+        "items": {
+          "adPack": {
+            "badges": {
+              "export": "Dışa Aktarım",
+              "multi": "Çoklu"
+            },
+            "description": "Reels, Story, Feed ve Ads için birden fazla formatta kampanya paketi.",
+            "tag": "Reklam Paketi",
+            "title": "Marka Hikayesi · Çoklu Format Dışa Aktarım"
+          },
+          "creator": {
+            "badges": {
+              "ads": "Ads",
+              "ugc": "UGC"
+            },
+            "description": "Sosyal kanıt ve performans reklamları için doğal görünümlü içerik üretici varlığı.",
+            "tag": "İçerik Üretici Paketi",
+            "title": "İçerik Üretici Kampanyası · UGC Görünüm"
+          },
+          "hook": {
+            "badges": {
+              "hook": "Hook",
+              "tiktok": "TikTok"
+            },
+            "description": "Feed'de daha fazla dikkat çekmek için güçlü girişe sahip hook görseli.",
+            "tag": "Hook Kartı",
+            "title": "Scroll-Stopper · TikTok · DE"
+          },
+          "motion": {
+            "badges": {
+              "duration": "15sn",
+              "video": "Video"
+            },
+            "description": "Ürün tanıtımları, reklamlar ve lansman gönderileri için kısa Motion klibi.",
+            "tag": "Motion Clip",
+            "title": "SaaS Demo · 15sn Loop · LinkedIn"
+          },
+          "reel": {
+            "badges": {
+              "ratio": "9:16",
+              "visual": "Görsel"
+            },
+            "description": "TikTok, Reel'ler ve Shorts için dikkat çekici dikey format görseli.",
+            "tag": "Reel Görseli",
+            "title": "Ürün Lansmanı · Acid-Look · 9:16"
+          },
+          "score": {
+            "badges": {
+              "analysis": "Analiz",
+              "score": "Skor"
+            },
+            "description": "Hook, format, okunabilirlik ve scroll-stop potansiyelinin değerlendirilmesi.",
+            "tag": "Yaratıcı Skor",
+            "title": "Skor Analizi · Kampanya Kontrolü"
+          }
+        },
+        "kicker": "Vitrin",
+        "scrollNext": "Sonraki kartlar",
+        "scrollPrev": "Önceki kartlar"
+      },
+      "tools": {
+        "agent_desc": "Briefing girin — Agent hook'ları, metni ve sonraki adımları planlar.",
+        "agent_title": "Agent Autopilot",
+        "gallery_desc": "Tüm varlıklar tek bir yerde — TikTok, Reels ve LinkedIn için indirmeye hazır.",
+        "gallery_title": "Galeri & Dışa Aktarım",
+        "headline": "Kampanyanız için her şey — tek bir iş akışında.",
+        "image_desc": "Reels, Ads ve küçük resimler için yapay zeka görselleri — marka uyumlu ve hızlı.",
+        "image_title": "Image Studio",
+        "kicker": "Studio",
+        "openTool": "Aracı aç",
+        "score_desc": "Yüklemeden önce hook'ları ve fikirleri değerlendirin — tahmin yerine veri odaklı.",
+        "score_title": "Creative Score",
+        "subheadline": "Araç kargaşası yok. Görsel, Video, Agent, Score ve Dışa Aktarım birlikte çalışır.",
+        "video_desc": "Görselden videoya, motion klipler ve tüm platformlar için kısa format varlıklar.",
+        "video_title": "Video Motion"
+      }
+    },
     "cta": {
       "headline1": "Yüz Yok.",
       "headline2": "Limit Yok.",
@@ -699,37 +1378,486 @@
       "sub1": "Viral olmak isteyen içerik üreticileri için.",
       "sub2": "Ölçeklenmek isteyen markalar için."
     },
+    "demos": {
+      "activity": {
+        "a1": {
+          "action": "Hedef kitle tespit edildi",
+          "badge": "✓",
+          "context": "Emlak · Mal Sahipleri · Demo"
+        },
+        "a10": {
+          "action": "Platform Uyumu (Örnek)",
+          "badge": "Yüksek",
+          "context": "TikTok · Reels"
+        },
+        "a11": {
+          "action": "Örnek Değerlendirme",
+          "badge": "91",
+          "context": "Kontrast · Okunabilirlik"
+        },
+        "a12": {
+          "action": "AI-Avatar Konsepti (Örnek)",
+          "badge": "✓",
+          "context": "Benim AI-Benliğim · Demo"
+        },
+        "a2": {
+          "action": "Örnek Skor hesaplandı",
+          "badge": "91",
+          "context": "Senaryo · TikTok"
+        },
+        "a3": {
+          "action": "Senaryo optimize edildi (Örnek)",
+          "badge": "✓",
+          "context": "Hook → Hikaye → CTA"
+        },
+        "a4": {
+          "action": "Görsel prompt oluşturuldu",
+          "badge": "✓",
+          "context": "Güzellik · 4:5 · Demo"
+        },
+        "a5": {
+          "action": "Risk Kontrolü: Örnek",
+          "badge": "Düşük",
+          "context": "Finans dili"
+        },
+        "a6": {
+          "action": "İçerik Takvimi (Örnek)",
+          "badge": "✓",
+          "context": "7 Gün · 3 Format"
+        },
+        "a7": {
+          "action": "Branding Overlay hazırlandı",
+          "badge": "✓",
+          "context": "Marka renkleri · Demo"
+        },
+        "a8": {
+          "action": "Başlık kısaltıldı (Örnek)",
+          "badge": "✓",
+          "context": "Instagram · DE"
+        },
+        "a9": {
+          "action": "CTA iyileştirildi (Örnek)",
+          "badge": "88",
+          "context": "Reel-Ad · Ürün"
+        }
+      },
+      "campaign": {
+        "monthly": {
+          "deliverables": [
+            "20–30 Ideen",
+            "8–12 Reels",
+            "Captions",
+            "Visual-Briefings"
+          ],
+          "subtitle": "30 Gün İçerik",
+          "title": "Aylık Kampanya",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "sprint": {
+          "deliverables": [
+            "3–5 Posts",
+            "3 Hooks",
+            "3 Captions",
+            "1 Mini-Kalender"
+          ],
+          "subtitle": "2–3 Gün İçerik",
+          "title": "Sprint İçerik",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "weekly": {
+          "deliverables": [
+            "5–7 Posts",
+            "3 Reels",
+            "2 Carousels",
+            "Posting-Zeiten"
+          ],
+          "subtitle": "7 Gün İçerik",
+          "title": "Haftalık İçerik",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        }
+      },
+      "campaignSection": {
+        "description": "Örnek Kartlar: Agent 2–3 gün, 7 gün veya 30 gün içerik planlar — Script'ler, Hook'lar, Başlıklar ve Takvim ile.",
+        "headline1": "BİR BRİFİNG.",
+        "headline2": "BİR İÇERİK PAKETİ.",
+        "kicker": "Campaign Autopilot · Demo",
+        "workflowLabel": "Demo İş Akışı"
+      },
+      "hero": {
+        "avatar": {
+          "agentSteps": [
+            "Foto geprüft",
+            "Stil gewählt",
+            "Consent bestätigt",
+            "Konsistenz gesichert"
+          ],
+          "agentSummary": "Yapay Zeka Avatar Konsepti · Onay bildirimi",
+          "miniLabel": "Reels · Reklamlar · Marka",
+          "outputs": [
+            {
+              "label": "Stil",
+              "text": "Tech Creator · clean background · professional look"
+            }
+          ],
+          "prompt": "Teknoloji içerik üreticisi stilinde yapay zeka avatarımı oluştur.",
+          "resultScore": "Onay ✓",
+          "resultSubtitle": "Fotoğraf girişli avatar konsepti",
+          "resultTitle": "Yapay Zeka Avatar Konsepti",
+          "toolLabel": "Benim KI-Ich'm"
+        },
+        "hooks": {
+          "agentSteps": [
+            "Trend-Fit analysiert",
+            "Hooks generiert",
+            "Klarheit optimiert",
+            "Risiko geprüft"
+          ],
+          "agentSummary": "5 Hook oluşturuldu · Risk düşük",
+          "miniLabel": "Platform Uyumu: Yüksek",
+          "outputs": [
+            {
+              "label": "Hook 1",
+              "text": "Diese Wohnung war in 4 Stunden verkauft."
+            },
+            {
+              "label": "Hook 2",
+              "text": "Die meisten Eigentümer unterschätzen diesen Fehler."
+            },
+            {
+              "label": "Hook 3",
+              "text": "Deine Wohnung ist vielleicht mehr wert, als du denkst."
+            }
+          ],
+          "prompt": "Emlak sayfam için 5 güçlü hook ver.",
+          "resultScore": "Risk düşük",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "5 Hook hazır",
+          "toolLabel": "Viral Hook"
+        },
+        "kalender": {
+          "agentSteps": [
+            "Zielgruppe erkannt",
+            "Themencluster erstellt",
+            "Hooks optimiert",
+            "Kalender formatiert"
+          ],
+          "agentSummary": "Hedef kitle tespit edildi · Takvim hazır",
+          "miniLabel": "7 Gönderi · 3 Format",
+          "outputs": [
+            {
+              "label": "Mo",
+              "text": "Immobilienwert erklären"
+            },
+            {
+              "label": "Mi",
+              "text": "Verkaufsfehler vermeiden"
+            },
+            {
+              "label": "Fr",
+              "text": "Eigentümer-CTA"
+            }
+          ],
+          "prompt": "Bir emlak şirketi için 7 günlük içerik planla.",
+          "resultScore": "Risk düşük",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "7 günlük içerik hazır",
+          "toolLabel": "İçerik Takvimi"
+        },
+        "produkt": {
+          "agentSteps": [
+            "Produkt analysiert",
+            "Nutzenversprechen geschärft",
+            "Spot-Text erstellt",
+            "CTA ergänzt"
+          ],
+          "agentSummary": "Ürün Reklamı · Finans dili yumuşatıldı",
+          "miniLabel": "Reels · 15s",
+          "outputs": [
+            {
+              "label": "Spot",
+              "text": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden."
+            }
+          ],
+          "prompt": "Bir yapay zeka vergi uygulaması için Reel reklamı yaz.",
+          "resultScore": "Risk düşük",
+          "resultSubtitle": "Netlik 90",
+          "resultTitle": "Reklam Senaryosu hazır",
+          "toolLabel": "Ürün Reklamı"
+        },
+        "visual": {
+          "agentSteps": [
+            "Stil definiert",
+            "Bildprompt erstellt",
+            "Format gewählt",
+            "Quality Gate vorbereitet"
+          ],
+          "agentSummary": "Görsel prompt oluşturuldu · Format 4:5",
+          "miniLabel": "Metin overlay yok",
+          "outputs": [
+            {
+              "label": "Briefing",
+              "text": "Soft studio light · clean skin · sustainable editorial mood"
+            }
+          ],
+          "prompt": "Sürdürülebilir bir güzellik rutini için reklam görseli oluştur.",
+          "resultScore": "Risk düşük",
+          "resultSubtitle": "Marka Uyumu: Yüksek",
+          "resultTitle": "Görsel Brifingi hazır",
+          "toolLabel": "Görsel Oluşturucu"
+        }
+      },
+      "labels": {
+        "agent": "Agent",
+        "agentActivityStream": "Agent Aktivitesi",
+        "agentDecision": "AGENT KARARI",
+        "agentWorkflow": "Demo İş Akışı",
+        "cta": "CTA",
+        "demo": "Demo",
+        "demoAgentWorks": "Demo: Yapay Zeka Agent'ı Böyle Çalışır",
+        "demoExample": "Demo Örneği",
+        "demoExampleCards": "Örnek Kartlar",
+        "demoRunning": "Demo çalışıyor",
+        "demoScore": "Demo Değerlendirmesi",
+        "exampleOutput": "Örnek Çıktı",
+        "exampleQualityCheck": "Örnek Kalite Kontrolü",
+        "exampleResult": "Bir sonuç şöyle görünebilir",
+        "exampleResultTitle": "Örnek Sonuç",
+        "exampleScore": "Örnek Değerlendirme",
+        "high": "Yüksek",
+        "hook": "Hook",
+        "input": "GİRDİ",
+        "low": "Düşük",
+        "medium": "Orta",
+        "output": "SONUÇ",
+        "preview": "Önizleme",
+        "prompt": "Prompt",
+        "qualityCheck": "Kalite Kontrolü",
+        "riskCheck": "Risk Kontrolü",
+        "riskCheckExample": "Risk Kontrolü: Örnek",
+        "score": "DEĞERLENDİRME",
+        "scoreClarity": "Netlik",
+        "scoreConsent": "Onay",
+        "scoreConsistency": "Tutarlılık",
+        "scoreHook": "Hook",
+        "scorePlan": "Plan",
+        "scorePlatform": "Platform",
+        "scoreRisk": "Risk",
+        "scoreScrollStop": "Scroll-Stop",
+        "spot": "Spot",
+        "story": "Story"
+      },
+      "quality": {
+        "brand": {
+          "items": [
+            "Markenstimme",
+            "Zielgruppe",
+            "Plattform-Fit (Beispiel)",
+            "Wiederholungen vermeiden"
+          ],
+          "title": "Marka Kontrolü · Örnek"
+        },
+        "text": {
+          "items": [
+            "Keine falschen Versprechen",
+            "CTA klar",
+            "Tonalität passend",
+            "Risiko-Check: Beispiel · Niedrig"
+          ],
+          "title": "Metin Kontrolü · Örnek"
+        },
+        "visual": {
+          "items": [
+            "Keine kaputten Hände/Finger",
+            "Kein falsches Logo",
+            "Text nicht von KI verzerrt",
+            "Format korrekt"
+          ],
+          "title": "Görsel Kontrolü · Örnek"
+        }
+      },
+      "qualitySection": {
+        "description": "Örnek kalite kontrolü — export öncesi bir kontrol böyle görünebilir.",
+        "headline1": "KALİTE,",
+        "headline2": "EXPORT ETMEDEN ÖNCE.",
+        "kicker": "Kalite Kontrolü · Örnek"
+      },
+      "stacked": {
+        "avatar": {
+          "agentDecisions": [
+            "Tool gewählt: Mein KI-Ich",
+            "Avatar-Konzept mit Foto-Input (Beispiel)",
+            "Consent-Hinweis als Demo gezeigt"
+          ],
+          "badge": "Benim KI-Ich'm",
+          "description": "Bir fotoğraf yükle ve KI-Ich için örnek bir konsept al.",
+          "headline": "YAPAY ZEKA AVATARIN TANINIR KALIR",
+          "input": "1 Fotoğraf · Stil: Profesyonel / Teknoloji İçerik Üreticisi\nModern Ofis",
+          "outputTags": [
+            "Professional",
+            "Studio BG",
+            "Wiedererkennbar"
+          ],
+          "outputTitle": "Yapay Zeka Avatar Konsepti",
+          "scores": {
+            "consent": "✓",
+            "consistency": "94",
+            "risk": "düşük"
+          }
+        },
+        "content_kalender": {
+          "agentDecisions": [
+            "Tool gewählt: Content Kalender KI",
+            "Themencluster erstellt (Beispiel)",
+            "Posting-Zeiten als Demo optimiert"
+          ],
+          "badge": "Content Kalender KI",
+          "calendarFooter": "En İyi Paylaşım Saati: 18:00–20:00 · Platform Uyumu: Yüksek",
+          "calendarRows": [
+            {
+              "day": "Mo",
+              "topic": "ETF-Erklärvideo: \"Was ist der MSCI World?\"",
+              "format": "Reel 30s"
+            },
+            {
+              "day": "Di",
+              "topic": "Tipp: \"Sparrate berechnen in 2 Min\"",
+              "format": "Carousel"
+            },
+            {
+              "day": "Mi",
+              "topic": "Story: Meine Depot-Routine diese Woche",
+              "format": "Story"
+            },
+            {
+              "day": "Do",
+              "topic": "Vergleich: \"Tagesgeld vs. ETF 2026\"",
+              "format": "Reel 60s"
+            },
+            {
+              "day": "Fr",
+              "topic": "Community-Frage: \"Was ist euer Sparziel?\"",
+              "format": "Post"
+            }
+          ],
+          "description": "Agent hedefe, frekansa ve platforma göre planlar — paylaşım saatleri ile örnek takvim oluşturur.",
+          "headline": "İÇERİK PLANIN HAZIR",
+          "input": "Niş: Kişisel Finans / Yatırım\nInstagram · 5×/Hafta · 7 Gün",
+          "scores": {
+            "plan": "92",
+            "platform": "Yüksek",
+            "risk": "düşük"
+          }
+        },
+        "product": {
+          "agentDecisions": [
+            "Tool gewählt: Produkt Werbung",
+            "Nutzenversprechen geschärft",
+            "Risiko-Check: Beispiel — Finance-Sprache entschärft"
+          ],
+          "badge": "Ürün Reklamı",
+          "description": "Ürün verileri girer — Agent örnek olarak Reels & Shorts için Spot, Caption ve CTA seçer.",
+          "headline": "SANİYELER İÇİNDE ÜRÜN REKLAMLARI",
+          "input": "Ürün: \"Serbest çalışanlar için Yapay Zeka Vergi Uygulaması\"\nInstagram Reels",
+          "outputCta": "Bio'daki link — 14 gün dene.",
+          "outputHook": "Muhasebenizde zaman kaybediyorsunuz — çünkü fişleriniz hala manuel olarak sıralanıyor.",
+          "outputSpot": "TaxMind fişleri tanır, harcamaları kategorize eder ve muhasebenizi yapay zeka destekli hazırlar.",
+          "scores": {
+            "clarity": "90",
+            "hook": "89",
+            "risk": "düşük"
+          }
+        },
+        "script": {
+          "agentDecisions": [
+            "Tool gewählt: Script Generator",
+            "Zielgruppe: Immobilien-Einsteiger",
+            "Risiko-Check: Beispiel — keine Finanzversprechen"
+          ],
+          "badge": "Script Generator",
+          "description": "Agent hedef kitleyi ve formatı anlar — örnek script olarak Hook, Story ve CTA sunar.",
+          "headline": "SANİYELER İÇİNDE SCRIPT",
+          "input": "\"Emlak yeni başlayanlar için bir TikTok scripti oluştur.\"\nTikTok · 30s",
+          "outputCta": "BAŞLA yaz — sana kontrol listesini göndereceğim.",
+          "outputHook": "Çoğu kişi emlak satın almanın sadece zenginler için olduğuna inanıyor. Ben 25 yaşında başladım — işte yol.",
+          "outputStory": "Bütçeyi anla, öz sermaye oluştur, teşvik seçeneklerini kontrol et — abartısız.",
+          "scores": {
+            "clarity": "88",
+            "hook": "91",
+            "risk": "düşük"
+          }
+        },
+        "viral_hook": {
+          "agentDecisions": [
+            "Tool gewählt: Viral Hook Extraktor",
+            "Scroll-Stop analysiert (Beispiel)",
+            "5 Varianten als Demo erstellt"
+          ],
+          "badge": "Viral Hook Extraktor",
+          "description": "Agent Scroll-Stop, Netlik ve Hedef Kitle Uyumunu değerlendirir — sonra örnek varyantlar sunar.",
+          "headline": "DURDURAN HOOK'LAR",
+          "input": "Konu: \"30€ altında sürdürülebilir güzellik rutini\"\nTikTok",
+          "outputItems": [
+            "Ich hab meine Beauty-Routine auf nachhaltig umgestellt — für unter 30€.",
+            "Warum gibst du 80€ für Gesichtscreme aus, wenn deine Routine einfacher funktionieren kann?",
+            "POV: Du findest heraus, dass dein Lieblingsprodukt nicht cruelty-free ist."
+          ],
+          "scores": {
+            "hook": "91",
+            "risk": "düşük",
+            "scroll_stop": "87"
+          }
+        }
+      },
+      "stackedSection": {
+        "headline1": "YAPAY ZEKA AGENT'ININ",
+        "headline2": "NASIL ÇALIŞTIĞINI GÖR",
+        "kicker": "Demo İş Akışı"
+      }
+    },
     "faq": {
-      "a_agent1": "Yes, in the dashboard. You enter a goal, the agent picks the right tools and creates outputs automatically.",
-      "a_agent2": "No. The landing page shows demos only. Real execution happens in the dashboard.",
-      "a_agent3": "The agent can review outputs, improve them, or create new variants. Critical workflows use quality gates.",
-      "a_agent4": "Credits are used for real generations and exports in the dashboard.",
-      "a_agent5": "Yes. Campaign Autopilot is designed for 2–3 day, 7 day, and 30 day content packages.",
-      "q_agent1": "Does the agent work automatically?",
-      "q_agent2": "Does the landing page run real actions?",
-      "q_agent3": "What if an output doesn't fit?",
-      "q_agent4": "What are credits used for?",
-      "q_agent5": "Can I create 7 or 30 days of content?",
-      "a_sub1": "Evet. INFLUEXAI aylık veya yıllık abonelik olarak sunulur. Her plan, AI araçlarımız ve creator modüllerimiz için kullanabileceğin Credits içerir. Aylık planlar her ay iptal edilebilir.",
-      "a_sub2": "Evet. Aylık planlar her ay iptal edilebilir. Yıllık planlarda erişimin, ödenen fatura döneminin sonuna kadar devam eder.",
-      "a_sub3": "Credits, AI üretimleri için kullanım bakiyendir — örneğin scriptler, hooklar, videolar, avatarlar, ses veya görsel araçlar. Her özellik farklı miktarda Credits tüketir.",
-      "a1": "Credits, InfluexAI'daki para birimidir. Her modül oluşturma başına 2–5 Credits tutar. Credits'in süresi dolmaz.",
       "a2": "Evet, ücretli planlar için bir ödeme yöntemi gerekir. Ödemeler Stripe üzerinden güvenli şekilde işlenir. Kart verilerini saklamıyoruz.",
       "a3": "Evet. Tüm veriler AB'de işlenir. Supabase (Frankfurt) ve Vercel (AB bölgesi) kullanıyoruz. Yüklemelerin açık onayın olmadan AI eğitimi için kullanılmaz.",
       "a4": "Evet, InfluexAI Voice (powered by ElevenLabs) ile. Yalnızca kendi sesini veya lisanslı ses materyalini kullanabilirsin.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts ve LinkedIn. Tüm araçlar bu platformlar için optimize edilmiştir.",
       "a6": "Evet. Campaign Autopilot markalar ve ajanslar için geliştirildi. 2–3 gün, 7 gün veya 30 günlük tam içerik kampanyalarını otomatik planlayabilirsin.",
+      "a_agent1": "Evet, Dashboard'da. Bir hedef giriyorsun, agent uygun araçları seçiyor ve otomatik olarak çıktılar oluşturuyor.",
+      "a_agent2": "Hayır. Landing page sadece demoları gösterir. Gerçek çalıştırma Dashboard'da gerçekleşir.",
+      "a_agent3": "Agent çıktıları kontrol edebilir, iyileştirebilir veya yeni varyantlar oluşturabilir. Kritik iş akışları Quality Gates kullanır.",
+      "a_agent4": "Krediler Dashboard'daki gerçek oluşturmalar ve dışa aktarmalar için kullanılır.",
+      "a_agent5": "Evet. Campaign Autopilot 2–3 gün, 7 gün ve 30 gün içerik paketleri için planlanmıştır.",
+      "a_sub1": "Evet. INFLUEXAI aylık veya yıllık abonelik olarak sunulur. Her plan, AI araçlarımız ve creator modüllerimiz için kullanabileceğin Credits içerir. Aylık planlar her ay iptal edilebilir.",
+      "a_sub2": "Evet. Aylık planlar her ay iptal edilebilir. Yıllık planlarda erişimin, ödenen fatura döneminin sonuna kadar devam eder.",
+      "a_sub3": "Credits, AI üretimleri için kullanım bakiyendir — örneğin scriptler, hooklar, videolar, avatarlar, ses veya görsel araçlar. Her özellik farklı miktarda Credits tüketir.",
       "headline": "Sık Sorulan Sorular",
       "kicker": "SSS",
-      "q_sub1": "INFLUEXAI bir abonelik mi?",
-      "q_sub2": "Aboneliğimi iptal edebilir miyim?",
-      "q_sub3": "Credits nedir?",
-      "q1": "Credits nedir?",
       "q2": "Kredi kartı gerekli mi?",
       "q3": "InfluexAI GDPR uyumlu mu?",
       "q4": "Kendi sesimi klonlayabilir miyim?",
       "q5": "Hangi platformlar destekleniyor?",
-      "q6": "Yapay zeka ajanını markam için kullanabilir miyim?"
+      "q6": "Yapay zeka ajanını markam için kullanabilir miyim?",
+      "q_agent1": "Agent otomatik çalışır mı?",
+      "q_agent2": "Açılış sayfası gerçek işlemler gerçekleştirir mi?",
+      "q_agent3": "Bir çıktı uygun değilse ne olur?",
+      "q_agent4": "Krediler ne için kullanılır?",
+      "q_agent5": "7 veya 30 günlük içerik oluşturabilir miyim?",
+      "q_sub1": "INFLUEXAI bir abonelik mi?",
+      "q_sub2": "Aboneliğimi iptal edebilir miyim?",
+      "q_sub3": "Credits nedir?"
     },
     "features": {
       "f1_api0": "Hooklar",
@@ -771,10 +1899,10 @@
       "company": "Şirket",
       "company_about": "Hakkımızda",
       "company_blog": "Blog",
-      "company_careers": "Kariyer",
-      "company_press": "Basın",
       "company_business": "İşletme",
       "company_faq": "SSS",
+      "company_guides": "Rehberler",
+      "company_press": "Basın",
       "legal": "Yasal",
       "legal_cookies": "Çerezler",
       "legal_imprint": "Künye",
@@ -785,8 +1913,7 @@
       "product_api": "API",
       "product_changelog": "Değişiklik Günlüğü",
       "product_features": "Özellikler",
-      "product_pricing": "Fiyatlandırma",
-      "company_guides": "Rehberler"
+      "product_pricing": "Fiyatlandırma"
     },
     "how": {
       "headline1": "3 Adımda",
@@ -799,7 +1926,21 @@
       "s3_desc": "Yükle, URL veya metin gir. AI saniyeler içinde teslim eder — tüm platformlar için dışa aktarmaya hazır.",
       "s3_title": "İçerik Oluştur"
     },
+    "launchBanner": "2026'da yeni başlangıç — ilk creator'lardan biri ol",
     "pricing": {
+      "all_tools_f1": "Tüm araçlar dahil",
+      "all_tools_f10": "Video Remix ve Live Creator",
+      "all_tools_f11": "Ses ve müzik ve LoRA Training",
+      "all_tools_f12": "Developer API",
+      "all_tools_f2": "KI Agent",
+      "all_tools_f3": "Script Generator",
+      "all_tools_f4": "Niche Analyzer ve Outlier Detector",
+      "all_tools_f5": "Thumbnail Konsept ve Viral Score",
+      "all_tools_f6": "Rakip analizi",
+      "all_tools_f7": "Görsel oluşturucu ve görselden videoya",
+      "all_tools_f8": "Ürün reklamı ve UGC Video",
+      "all_tools_f9": "KI Benliğim ve Face Swap",
+      "billed_yearly": "yıllık faturalandırma (€{amount}/yıl)",
       "business_credits": "2.500 Credits/ay",
       "business_cta": "InfluexAI Business Başlat",
       "business_desc": "Markalar, KOBİ'ler ve ajanslar için.",
@@ -809,6 +1950,7 @@
       "business_f4": "White-Label Dışa Aktarma",
       "business_f5": "API + Öncelikli Destek",
       "business_name": "InfluexAI Business",
+      "cancel_anytime": "İstediğin zaman iptal et",
       "creator_credits": "300 Credits/ay",
       "creator_cta": "InfluexAI Creator Seç",
       "creator_desc": "İçerik üreticileri ve serbest çalışanlar için.",
@@ -818,14 +1960,30 @@
       "creator_f4": "20 ürün reklamı",
       "creator_f5": "Ses klonlama",
       "creator_name": "InfluexAI Creator",
+      "credit_outcome_body": "50 Kredi örneğin yaklaşık 25 Script (her biri 2 Kredi) veya yaklaşık 10 Standart Görsel (her biri 5 Kredi) için yeterlidir. Videolar, Premium Görseller ve Lip-Sync çok daha fazla kredi tüketir.",
+      "credit_outcome_title": "Krediler ne anlama gelir?",
+      "credits_demo_note": "Ana sayfa demoları kredi tüketmez. Krediler, Dashboard'da gerçek üretimler ve export'lar için kullanılır.",
+      "credits_ex1": "Script'ler & Hook'lar",
+      "credits_ex2": "Görsel Fikirleri",
+      "credits_ex3": "İçerik Takvimi",
+      "credits_ex4": "Avatar İş Akışları",
+      "credits_ex5": "Kampanya Paketleri",
+      "credits_included": "Credits dahil",
+      "credits_usage_desc": "Krediler gerçek Agent çalıştırmaları için kullanılır — örneğin:",
+      "credits_usage_kicker": "Dashboard'da Krediler",
       "extra_credits": "Ekstra Credits",
       "extra_credits_suffix": "Pay-as-you-go 5 €'den itibaren (50 kredi).",
       "footnote": "Credits'in süresi dolmaz.",
       "headline": "Şeffaf. Ölçeklenebilir.",
       "kicker": "Fiyatlandırma",
       "monthly": "Aylık",
+      "most_popular": "EN POPÜLER SEÇİM",
       "page_subtitle": "Dahil kredili aylık planlar. İstediğin zaman iptal et.",
       "per_month": "/ay",
+      "plan_delta_business": "Takım Erişimi & birden fazla çalışma alanı · API & Whitelabel",
+      "plan_delta_creator": "300 Kredi · + Agent Autopilot · + Video Araçları",
+      "plan_delta_pro": "800 Kredi · + Tüm Video Araçları · + Öncelik",
+      "plan_delta_starter": "50 Kredi · Tüm Temel Araçlar · Metin & Görseller",
       "popular": "En Popüler Plan",
       "pro_credits": "800 Credits/ay",
       "pro_cta": "InfluexAI Pro Seç",
@@ -847,31 +2005,57 @@
       "starter_m2": "Yapay Zeka Ben Pro",
       "starter_m3": "Live Creator",
       "starter_name": "InfluExAi Starter",
-      "all_tools_f1": "Tüm araçlar dahil",
-      "all_tools_f2": "KI Agent",
-      "all_tools_f3": "Script Generator",
-      "all_tools_f4": "Niche Analyzer ve Outlier Detector",
-      "all_tools_f5": "Thumbnail Konsept ve Viral Score",
-      "all_tools_f6": "Rakip analizi",
-      "all_tools_f7": "Görsel oluşturucu ve görselden videoya",
-      "all_tools_f8": "Ürün reklamı ve UGC Video",
-      "all_tools_f9": "KI Benliğim ve Face Swap",
-      "all_tools_f10": "Video Remix ve Live Creator",
-      "all_tools_f11": "Ses ve müzik ve LoRA Training",
-      "all_tools_f12": "Developer API",
       "yearly": "Yıllık",
-      "yearly_discount": "−%{percent}",
-      "cancel_anytime": "İstediğin zaman iptal et",
-      "billed_yearly": "yıllık faturalandırma (€{amount}/yıl)",
-      "credits_included": "Credits dahil",
-      "credits_usage_kicker": "Credits in the dashboard",
-      "credits_usage_desc": "Credits are used for real agent executions — for example:",
-      "credits_ex1": "Scripts & hooks",
-      "credits_ex2": "Image ideas",
-      "credits_ex3": "Content calendar",
-      "credits_ex4": "Avatar workflows",
-      "credits_ex5": "Campaign packages",
-      "credits_demo_note": "Landing page demos use no credits. Credits are used in the dashboard for real generations and exports."
+      "yearly_discount": "−%{percent}"
+    },
+    "proof": {
+      "bullet_1": "TikTok ve Reels Senaryoları",
+      "bullet_2": "Görsel fikirler ve Creator görselleri",
+      "bullet_3": "Ürün reklamları",
+      "bullet_4": "İçerik planları",
+      "bullet_5": "Kampanya varyantları",
+      "cards": {
+        "content_plan": {
+          "benefit": "Bir haftalık içerik için konular, formatlar ve hook'lar.",
+          "prompt": "Yerel bir restoran için 7 günlük içerik planla",
+          "title": "7 Günlük İçerik Planı"
+        },
+        "creator_visual": {
+          "benefit": "Yapay zeka Creator görünümün için görsel fikirler ve sahneler.",
+          "prompt": "Fitness Reels için Creator görseli oluştur",
+          "title": "Creator Görseli"
+        },
+        "product_ad": {
+          "benefit": "Reels için spot, altyazı ve CTA'lı ürün reklamı.",
+          "prompt": "Bir parfüm için ürün reklamı oluştur",
+          "title": "Ürün Reklamı"
+        },
+        "tiktok_script": {
+          "benefit": "Shorts için Hook, Hikaye ve CTA — çekime hazır.",
+          "prompt": "Bir fitness koçu için TikTok senaryosu oluştur",
+          "title": "TikTok Senaryosu"
+        },
+        "video_motion": {
+          "benefit": "Bir istemden video konseptleri ve hareket fikirleri.",
+          "prompt": "Bir fitness koçu için TikTok video konsepti oluştur",
+          "title": "Video Motion"
+        }
+      },
+      "cta_choose_plan": "Plan Seç",
+      "cta_dashboard": "App Studio'yu Aç",
+      "cta_free_plan": "Ücretsiz planla",
+      "cta_workflow": "İş akışını görüntüle",
+      "demo_label": "Örnek İş Akışları",
+      "headline": "InfluexAI ile neler oluşturabilirsin",
+      "intro": "Bir fikirden somut varlıklara:",
+      "kicker": "Gerçek Demolar",
+      "preview_note": "Plan önizlemesi üretim başlatmaz",
+      "pricing_bridge": "€{price}'dan başlayan bir planla başla ve önce ücretsiz plan önizlemesini test et.",
+      "trust_1": "Kredisiz plan önizlemesi",
+      "trust_2": "Güvenli Stripe ödemesi",
+      "trust_3": "GDPR bilinçli",
+      "trust_4": "Şeffaf krediler",
+      "trust_bar_label": "Güven ve Şeffaflık"
     },
     "ticker": {
       "i0": "InfluexAI LiveSwap™",
@@ -887,47 +2071,203 @@
       "i8": "Almanya'da Üretildi",
       "i9": "GDPR uyumlu"
     },
+    "toolDemos": {
+      "agent": {
+        "problem": "20+ araç arasında gidip geliyor musun?",
+        "result_hashtags_body": "#verimlilik #sabahrutini\n#odak #shorts #ai",
+        "result_hashtags_label": "Hashtagler",
+        "result_script_body": "Hook: Çoğu kişi güne yanlış başlıyor.\nMain: Odak için 3 alışkanlık.\nCTA: 2. bölüm için takip et.",
+        "result_script_label": "Script",
+        "result_thumbnail_body": "Acid düzeni · Kontrast metin\n%99'unun yaptığı 5 hata\nCTR potansiyeli +%34",
+        "result_thumbnail_label": "Thumbnail",
+        "step1_status": "Hook, hikaye ve CTA yazılıyor…",
+        "step1_tool": "Script Generator",
+        "step2_status": "CTR düzenleri ve renk paleti oluşturuluyor…",
+        "step2_tool": "Thumbnail Konsepti",
+        "step3_status": "Trend etiketleri ve erişim kümeleri belirleniyor…",
+        "step3_tool": "Hashtag Optimizer",
+        "task": "Bir sonraki Short'umu planla — Verimlilik için script, thumbnail ve hashtagler."
+      },
+      "avatar": {
+        "after_caption": "Face Consistency aktif",
+        "after_label": "Sonra",
+        "before_caption": "Selfie / Referans",
+        "before_label": "Önce",
+        "benefit_number": "1 Avatar",
+        "benefit_prefix": "",
+        "benefit_suffix": " — TikTok, YouTube ve LinkedIn'de her yerde aynı.",
+        "match": "%98 Eşleşme",
+        "name": "Senin AI-Avatar'ın",
+        "problem": "Her video farklı mı görünüyor?",
+        "status": "Avatar oluşturuluyor…",
+        "subtitle": "Tüm platformlarda tutarlı"
+      },
+      "contentKalender": {
+        "benefit_highlight": "30 gün",
+        "benefit_prefix": "",
+        "benefit_suffix": " planlandı — Her gönderi için konu, Hook, zaman ve hashtagler.",
+        "problem": "Yarın ne paylaşacağına dair fikrin yok mu?",
+        "row1_day": "1",
+        "row1_hook": "Bu odağını mahvediyor…",
+        "row1_topic": "Sabah Rutini Miti",
+        "row2_day": "4",
+        "row2_hook": "Kimse #2 aracını kullanmıyor…",
+        "row2_topic": "5 Dakika Altında 3 Araç",
+        "row3_day": "7",
+        "row3_hook": "Bu haftaki en iyi fikrim…",
+        "row3_topic": "Hafta Özeti"
+      },
+      "niche": {
+        "benefit_number": "5 niş",
+        "benefit_prefix": "Veriye dayalı",
+        "benefit_suffix": " bir anda — haftalarca tahmin yerine.",
+        "problem": "Hangi niş gerçekten karlı?",
+        "row1_comp": "Düşük",
+        "row1_name": "Fitness Biohacking",
+        "row1_stars": "★★★★★",
+        "row2_comp": "Orta",
+        "row2_name": "Budget Meal Prep",
+        "row2_stars": "★★★★☆",
+        "row3_comp": "Düşük",
+        "row3_name": "AI Productivity",
+        "row3_stars": "★★★★★"
+      },
+      "outlier": {
+        "benefit_number": "10×",
+        "benefit_prefix": "",
+        "benefit_suffix": " performanslı videolar — kalıpları tanı ve tekrarla.",
+        "channel": "Fitness · Micro Channel",
+        "problem": "Neden bazı videolar viral oluyor — diğerleri olmuyor?",
+        "score": "9.2",
+        "tag1": "Curiosity Gap Hook",
+        "tag2": "Contrarian Angle",
+        "tag3": "List Format (viral)",
+        "title": "\"99%'un yaptığı 5 hata\""
+      },
+      "script": {
+        "benefit_number": "30 saniye",
+        "benefit_prefix": "Hazır senaryo",
+        "benefit_suffix": " içinde — video başına ~2 saat yazma işinden tasarruf.",
+        "cta": "2. bölüm için takip et — yarın saat 7'de.",
+        "hook": "Çoğu insan güne yanlış başlıyor — sen de mi?",
+        "main": "Alışkanlık 1: 60 dk telefon yok. Alışkanlık 2: İlk 30 dk'da gün ışığı. Alışkanlık 3: …",
+        "problem": "Saatlerce boş sayfanın önünde mi?",
+        "topic": "Daha fazla odak için 5 sabah alışkanlığı"
+      },
+      "section_headline": "Problemden Sonuca",
+      "section_kicker": "Canlı Demo",
+      "thumbnail": {
+        "benefit_number": "+%34",
+        "benefit_prefix": "CTR potansiyeli",
+        "benefit_suffix": " kadar — yerleşim, metin ve renk tek adımda.",
+        "ctr": "+%34",
+        "palette": "Palet",
+        "problem": "Kimsenin tıklamadığı küçük resimler mi?",
+        "swatch_1": "#B4FF00",
+        "swatch_2": "#2563eb",
+        "swatch_3": "#ffffff"
+      },
+      "trendToScript": {
+        "benefit_highlight": "hazır script",
+        "benefit_prefix": "Trend × Niş =",
+        "benefit_suffix": " Hook, hikaye ve CTA ile.",
+        "hook": "AI Agents işini mi yoksa iş akışını mı değiştirecek?",
+        "main": "İşte her gün kullandığım 3 agent…",
+        "niche": "Verimlilik",
+        "problem": "Trendler gelip geçiyor — sen geride mi kalıyorsun?",
+        "trend": "AI Agents"
+      },
+      "upscaler": {
+        "after_label": "4K",
+        "before_label": "720p",
+        "benefit": "Saniyeler içinde 2× büyütme — 720p'den 4K'ya, post prodüksiyonda kalite kaybı olmadan.",
+        "problem": "Timeline'da piksel piksel ve bulanık mı?",
+        "title": "HD Upscaler"
+      },
+      "viralHook": {
+        "benefit_highlight": "saniyeler",
+        "benefit_prefix": "Hook + Storytelling",
+        "benefit_suffix": " içinde — doğrudan senaryo olarak kullan.",
+        "cta_line": "2. bölüm için takip et",
+        "hook": "\"Dur — her sabah bu hatayı yapıyorsun…\"",
+        "problem": "Viral videolar görüyorsun — ama hook'un neden işe yaradığını anlamıyor musun?",
+        "problem_line": "%99'u güne yanlış başlıyor",
+        "url": "youtube.com/shorts/…"
+      },
+      "viralscore": {
+        "benefit_number": "87/100",
+        "benefit_prefix": "Yüklemeden önce skor:",
+        "benefit_suffix": " — Yayınlamadan önce zayıf noktaları düzelt.",
+        "niche_label": "Niş",
+        "niche_pct": "%82",
+        "niche_value": "82",
+        "problem": "Yükleyip umut mu ediyorsun?",
+        "script_label": "Script",
+        "script_pct": "%91",
+        "script_value": "91",
+        "thumbnail_label": "Thumbnail",
+        "thumbnail_pct": "%88",
+        "thumbnail_value": "88",
+        "total": "87"
+      }
+    },
     "toolExamples": {
-      "coming_soon": "Yakında",
-      "script_title": "Script Oluşturucu",
-      "script_desc": "Saniyeler içinde viral kısa Script'ler — Hook, hikaye, CTA ve hashtagler.",
-      "product_title": "Ürün Reklamcılığı",
-      "product_desc": "TikTok, Reels ve YouTube için reklamlar — script, açıklama ve hashtagler.",
-      "thumbnail_title": "Thumbnail Konsepti",
-      "thumbnail_desc": "Tıklanan thumbnail'ler — düzen, metin ve renk yapay zekadan.",
-      "agent_title": "AI Agent",
       "agent_desc": "AI stratejistin: script, thumbnail ve içerik planlar — tek sohbette.",
-      "ki_ich_title": "Benim AI Benliğim",
-      "ki_ich_desc": "Tek fotoğraftan AI avatarın — reels, ads ve brand deals için.",
-      "image_gen_title": "Görsel Oluşturucu",
-      "image_gen_desc": "İçerik, ads ve thumbnails için AI görseller — saniyeler içinde.",
-      "viral_hook_title": "Viral Hook Çıkarıcı",
-      "viral_hook_desc": "Scroll'u durduran hooklar — AI mükemmel opener'ını yazar.",
-      "content_kalender_title": "İçerik Takvimi AI",
+      "agent_title": "Agent Otopilot",
+      "coming_soon": "Yakında",
       "content_kalender_desc": "30 günlük plan, otomatik — konular, formatlar, saatler.",
-      "trend_script_title": "Trend→Script",
-      "trend_script_desc": "Güncel YouTube trendlerini otomatik hazır scriptlere dönüştür.",
-      "voice_title": "Ses & Müzik",
-      "voice_desc": "Videoların için AI seslendirme ve müzik — stüdyo yok.",
-      "live_title": "Live Creator",
-      "live_desc": "TikTok ve YouTube'da canlı AI avatar — kamera yok.",
-      "lora_title": "LoRA Training",
-      "lora_desc": "Kişisel AI modelini eğit — tutarlı bir look için.",
+      "content_kalender_title": "İçerik Takvimi AI",
       "headline1": "On İki Araç.",
       "headline2": "Tek Stüdyo.",
+      "image_gen_desc": "İçerik, ads ve thumbnails için AI görseller — saniyeler içinde.",
+      "image_gen_title": "Görsel Oluşturucu",
+      "ki_ich_desc": "Tek fotoğraftan AI avatarın — reels, ads ve brand deals için.",
+      "ki_ich_title": "Benim AI Benliğim",
       "kicker": "Tüm Modüller",
-      "sidebar": "Bir modüle tıklayın — doğrudan Dashboard'a gidin. Tüm araçlar, tek platform."
+      "live_desc": "TikTok ve YouTube'da canlı AI avatar — kamera yok.",
+      "live_title": "Live Creator",
+      "lora_desc": "Kişisel AI modelini eğit — tutarlı bir look için.",
+      "lora_title": "LoRA Eğitimi",
+      "product_desc": "TikTok, Reels ve YouTube için reklamlar — script, açıklama ve hashtagler.",
+      "product_title": "Ürün Reklamcılığı",
+      "script_desc": "Saniyeler içinde viral kısa Script'ler — Hook, hikaye, CTA ve hashtagler.",
+      "script_title": "Script Oluşturucu",
+      "sidebar": "Bir modüle tıklayın — doğrudan Dashboard'a gidin. Tüm araçlar, tek platform.",
+      "thumbnail_desc": "Tıklanan thumbnail'ler — düzen, metin ve renk yapay zekadan.",
+      "thumbnail_title": "Thumbnail Konsepti",
+      "trend_script_desc": "Güncel YouTube trendlerini otomatik hazır scriptlere dönüştür.",
+      "trend_script_title": "Trend→Script",
+      "viral_hook_desc": "Scroll'u durduran hooklar — AI mükemmel opener'ını yazar.",
+      "viral_hook_title": "Viral Hook Çıkarıcı",
+      "voice_desc": "Videoların için AI seslendirme ve müzik — stüdyo yok.",
+      "voice_title": "Ses & Müzik"
     },
-    "launchBanner": "2026'da yeni başlangıç — ilk creator'lardan biri ol",
-    "achieve": {
-      "headline": "InfluexAI ile neler başarabilirsin",
-      "subline": "Vaatler değil, olanaklar — araçlar bunun için var.",
-      "p1_title": "Dakikalar içinde viral shorts",
-      "p1_text": "Script, hook ve CTA — saatlerce yazmadan.",
-      "p2_title": "Tutarlı AI avatar",
-      "p2_text": "Her sahnede senin yüzün — TikTok, Reels ve YouTube.",
-      "p3_title": "Markalar için ürün reklamları",
-      "p3_text": "URL veya fotoğraf → ses ve script ile video, 90 saniyeden kısa."
+    "useCases": {
+      "brand_desc": "Ürün görselleri, reklam metni, video çevirisi ve kampanyalar — marka uyumlu ve kısa sürede uygulanabilir.",
+      "brand_subtitle": "Profesyonel kampanyalar. Ajans olmadan.",
+      "brand_tag": "Reklam · Video · Kampanyalar · Ads",
+      "brand_title": "Marka & İşletme",
+      "creator_desc": "Hook'lar, senaryolar, görseller ve içerik takvimi — hızlıca üretilir. Agent Autopilot haftalık planlamanda sana destek olur.",
+      "creator_subtitle": "Her gün sıfırdan başlamadan düzenli olarak görünür ol.",
+      "creator_tag": "Hook'lar · Senaryolar · Takvim · Agent",
+      "creator_title": "İçerik Üreticisi",
+      "headline": "Bir Stüdyo. Üç Hedef Kitle.",
+      "influencer_desc": "Kendi yapay zeka avatarın, Sahne Üretici, Hikaye Yaratıcı — bir kez kur, sonra farklı formatlarda içerik oluştur.",
+      "influencer_subtitle": "Bir kez kurulur. Tekrar tekrar kullanılır.",
+      "influencer_tag": "Avatar · Video · Sahneler · LoRA",
+      "influencer_title": "Creator & Avatar",
+      "kicker": "InfluexAI kimin için?"
+    },
+    "value": {
+      "body": "Hedefini tarif et ve Agent Autopilot'un uygun araçları seçmesine izin ver. Hook'lar, videolar, kampanyalar — hepsi tek bir komuttan.",
+      "cta_primary": "Agent'ı başlat",
+      "cta_secondary": "Fiyatlara bak",
+      "headline": "Agent Autopilot — senin içerik stüdyon."
+    },
+    "worldTransition": {
+      "brand": "Markalar İçin",
+      "creator": "Creator'lar İçin",
+      "tagline": "Bir Stüdyo. İki Dünya."
     }
   },
   "language": {
@@ -962,16 +2302,18 @@
   "nav": {
     "agent": "Yapay Zeka Ajanı",
     "analytics": "İstatistikler",
+    "choose_plan": "Paket seç",
+    "choose_plan_hint": "Kredileri kullanmak için bir plan seç.",
     "collapse": "Daralt",
     "community": "Topluluk",
     "competitor": "Rakip Analizi",
     "credits": "Kredi",
-    "credits_balance": "{max} içinden {current}",
-    "credits_running_low": "Krediler azalıyor",
     "credits_almost_empty": "Neredeyse bitti — şimdi yükle",
+    "credits_balance": "{max} içinden {current}",
     "credits_empty": "Kredi kalmadı",
     "credits_of": "{max} Credits'ten",
     "credits_plan": "Krediler & Plan",
+    "credits_running_low": "Krediler azalıyor",
     "dashboard": "Kontrol Paneli",
     "developer_api": "Geliştirici API",
     "gallery": "Galerim",
@@ -983,8 +2325,38 @@
     "referral": "Arkadaş davet et",
     "settings_menu": "Ayarlar",
     "top_up": "Yükle",
+    "ugc_video": "UGC Video",
     "view_website": "Web sitesine git",
     "viral_score": "Viral Score"
+  },
+  "noCredits": {
+    "back": "Geri",
+    "best_deal_badge": "En iyi teklif",
+    "buy_button": "Satın al",
+    "buy_credits_primary": "Kredi satın al",
+    "checkout_error": "Ödeme başarısız. Tekrar dene.",
+    "checkout_error_banner": "Ödeme başlatılamadı. İnternet bağlantını kontrol et veya farklı bir paket dene.",
+    "checkout_loading": "Yükleniyor...",
+    "checkout_retry": "Tekrar dene",
+    "close": "Kapat",
+    "force_hint": "Şu an üretmek için krediye ihtiyacın var.",
+    "insufficient_missing": "{missing} kredi eksik.",
+    "insufficient_subtext": "Bu işlem için {required} krediye ihtiyacın var. {remaining} kredin kaldı.",
+    "insufficient_title": "⚡ Yetersiz Kredi",
+    "per_credit": "{cents} sent/Kr",
+    "plan_footer": "Mevcut planın: {plan} · Ayda {monthly} Kredi",
+    "popular_badge": "Popüler ⭐",
+    "recommended_badge": "Önerilen",
+    "recommended_for_action": "Bu işlem için önerilen",
+    "recommended_pack": "Önerilen: {credits} Kredi €{price} karşılığında",
+    "renewal_days": "Sonraki krediler: {days} gün içinde",
+    "renewal_monthly": "Sonraki krediler: aboneliğinle birlikte aylık",
+    "subtext": "Aylık kredilerin bitti. Şimdi yükle ve devam et.",
+    "title": "Kredi yükle",
+    "upgrade_hint": "Veya daha fazla aylık kredi için planını yükselt —",
+    "upgrade_link": "Planları gör",
+    "upgrade_plan_hint": "Aylık abonelikle %{percent}'e kadar tasarruf et",
+    "upgrade_plan_secondary": "Planı yükselt"
   },
   "notFound": {
     "body": "Belki özellik yakında gelir. Dashboard'a dön?",
@@ -1031,6 +2403,15 @@
     "kicker": "Başla",
     "title": "Başlamak için bir plan seç"
   },
+  "pwa": {
+    "install_body": "Ana ekranda InfluexAI — hızlı erişim, tam ekran, çevrimdışı kullanım.",
+    "install_cta": "Yükle",
+    "install_dismiss": "Sonra",
+    "install_kicker": "PWA",
+    "install_title": "Uygulamayı yükle",
+    "ios_step_add": "\"Ana Ekrana Ekle\"yi seç",
+    "ios_step_share": "Paylaş'a dokun (Safari)"
+  },
   "referral": {
     "code_label": "Kodun:",
     "col_credits": "Kredi",
@@ -1067,25 +2448,28 @@
   "settings": {
     "daily_suggestions_email_desc": "Her sabah 07:00 UTC'de: nişindeki YouTube trendlerine göre 3 video fikri.",
     "daily_suggestions_email_label": "Günlük fikirler e-postayla",
-    "growth_agent_title": "Creator Büyüme Ajanı",
     "deleteAccount": {
-      "title": "Hesap kalıcı olarak silinsin mi?",
-      "warning": "Bu işlem hesabını, profil verilerini ve erişimini kalıcı olarak siler. Geri alınamaz.",
-      "subscription_hint": "Aktif bir aboneliğin varsa, hesap silinmeden önce iptal edilir.",
       "agency_owner_block": "Ajans / white-label hesabını silmek için lütfen destek ile iletişime geç: {email}",
-      "confirm_label": "Onaylamak için {word} yaz",
-      "confirm_button": "Hesabı kalıcı olarak sil",
       "cancel": "İptal",
-      "deleting": "Siliniyor…",
+      "confirm_button": "Hesabı kalıcı olarak sil",
+      "confirm_label": "Onaylamak için {word} yaz",
       "danger_button": "Hesabı sil",
       "danger_desc": "Hesap silme tüm verilerini ve kredilerini kalıcı olarak kaldırır.",
+      "deleting": "Siliniyor…",
+      "dismiss": "Kapat",
       "error_generic": "Hesap silinemedi. Tekrar dene veya {email} ile iletişime geç.",
-      "success_title": "Hesabın silindi.",
+      "subscription_hint": "Aktif bir aboneliğin varsa, hesap silinmeden önce iptal edilir.",
       "success_redirect": "Ana sayfaya yönlendiriliyorsun…",
-      "dismiss": "Kapat"
-    }
+      "success_title": "Hesabın silindi.",
+      "title": "Hesap kalıcı olarak silinsin mi?",
+      "warning": "Bu işlem hesabını, profil verilerini ve erişimini kalıcı olarak siler. Geri alınamaz."
+    },
+    "growth_agent_title": "Creator Büyüme Ajanı"
   },
   "slideshow": {
+    "ki_ich_benefit_1": "Fotoğraftan AI Avatar",
+    "ki_ich_benefit_2": "Tanınabilir görünüm",
+    "ki_ich_benefit_3": "Reels · Ads · Brand",
     "slide1_badge": "⚡ 2 Credits · Anında kullanılabilir",
     "slide1_description": "Video konusunu anlat, Hook, story ve CTA ile tam Script al — çekime hazır.",
     "slide1_heading": "30 saniyede Script",
@@ -1101,95 +2485,31 @@
     "slide5_badge": "👥 Tüm kullanıcılara açık",
     "slide5_description": "Bağlan, ilerlemeni paylaş ve aynı hedefe sahip kişilerle büyü — topluluk yakında.",
     "slide5_heading": "Creator topluluğu",
-    "community_benefit_1": "Diğer creatorlarla iletişim kur",
-    "community_benefit_2": "Başarılarını paylaş",
-    "community_benefit_3": "Haftalık video fikirleri",
     "social_proof": "2026'da yeni başlangıç — ilk creator'lardan biri ol"
   },
-  "blog": {
-    "title": "InfluexAI Blog",
-    "subtitle": "Everything you need to go viral",
-    "search_placeholder": "Search articles…",
-    "search_button": "Search",
-    "no_posts": "No articles published yet. Check back soon.",
-    "no_results": "No articles found for this search.",
-    "read_more": "Read more →",
-    "min_read": "{minutes} min",
-    "all_categories": "All",
-    "newsletter_title": "Creator Bülteni",
-    "newsletter_subtitle": "Weekly tips for viral YouTube Shorts — no spam.",
-    "newsletter_cta": "Subscribe",
-    "related_title": "You might also like",
-    "breadcrumb_blog": "Blog"
+  "upscalerPage": {
+    "credits_hint": "Upscale başına {cost} Kredi · Bakiye: {balance}",
+    "empty_gallery": "Henüz resim yok. Önce Resim Oluşturucu'da bir tane oluşturun.",
+    "pick_image": "Galeriden resim seçin",
+    "result_title": "Önce / Sonra",
+    "subtitle": "Clarity Upscaler (fal.ai) — galerinizden bir resim seçin ve 2× çözünürlükte netleştirin.",
+    "title": "HD Upscaler",
+    "upload_active": "Yüklenen resim (aktif)",
+    "upload_button": "Kendi resminizi yükleyin",
+    "upload_clear": "Yüklemeyi kaldır",
+    "upload_drop": "Resmi buraya sürükleyin veya tıklayın",
+    "upload_hint": "JPG, PNG, WEBP · Maks. 10 MB",
+    "upload_invalid_type": "Lütfen bir resim dosyası seçin (JPG, PNG, WEBP).",
+    "upload_read_error": "Resim okunamadı.",
+    "upload_title": "Kendi resminizi yükleyin",
+    "upload_too_large": "Resim çok büyük (maks. 10 MB).",
+    "upscale_cta": "2× Upscale — {cost} Kredi"
   },
-  "guides": {
-    "title": "Rehberler & Eğitimler",
-    "subtitle": "Step-by-step guides for every InfluexAI feature",
-    "pillars_title": "Ana Rehberler",
-    "pillars_subtitle": "In-depth guides for YouTube creators.",
-    "tutorials_title": "Özellik Eğitimleri",
-    "tutorials_subtitle": "How to use Script Generator, LoRA Training, and more.",
-    "read_guide": "Read guide",
-    "open_tool": "Open tool →",
-    "words": "{count} words",
-    "min_read": "~{minutes} min read",
-    "tutorials": {
-      "script_generator_title": "How to use the Script Generator",
-      "script_generator_desc": "From idea to finished short script in minutes.",
-      "lora_training_title": "How to train a LoRA model",
-      "lora_training_desc": "Train your AI face and use it in the image generator.",
-      "niche_analyzer_title": "Niche Analyzer: find trends",
-      "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
-      "product_ad_title": "Create product ads with AI",
-      "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Konuşan Avatar & Live Creator",
-      "live_creator_desc": "Create avatar videos with voice and script.",
-      "thumbnail_title": "Thumbnail concepts",
-      "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
-    }
-  },
-  "noCredits": {
-    "title": "Kredi yükle",
-    "subtext": "Aylık kredilerin bitti. Şimdi yükle ve devam et.",
-    "force_hint": "Şu an üretmek için krediye ihtiyacın var.",
-    "popular_badge": "Popüler ⭐",
-    "best_deal_badge": "En iyi teklif",
-    "per_credit": "{cents} sent/Kr",
-    "buy_button": "Satın al",
-    "upgrade_hint": "Veya daha fazla aylık kredi için planını yükselt —",
-    "upgrade_link": "Planları gör",
-    "close": "Kapat",
-    "checkout_error": "Ödeme başarısız. Tekrar dene."
-  },
-  "buyCredits": {
-    "title": "Kredi yükle!",
-    "balance": "<credits></credits> kredin kaldı",
-    "popular_badge": "En popüler",
-    "per_credit": "{price}/kredi",
-    "buy_button": "Şimdi satın al",
-    "close": "Kapat",
-    "checkout_error": "Ödeme başarısız. Tekrar dene.",
-    "checkout_success": "✓ Krediler yüklendi! Devam edebilirsin.",
-    "success_toast": "✓ {count} kredi başarıyla yüklendi!",
-    "low_banner": "Sadece {count} kredi kaldı",
-    "urgent_banner": "Krediler neredeyse bitti!",
-    "top_up": "Şimdi yükle →",
-    "dismiss": "Bannerı kapat",
-    "force_open_hint": "Devam etmek için kredi yükle.",
-    "trust_instant": "Anında kullanılabilir",
-    "trust_no_sub": "Abonelik gerekmez",
-    "trust_no_expire": "Krediler süresiz",
-    "credits_label": "Kredi",
-    "menu_top_up": "Kredi yükle",
-    "pricing_title": "Ya da sadece kredi al — abonelik yok",
-    "pricing_subtitle": "Kullandığın kadar öde: sadece ihtiyacın kadar kredi al."
-  },
-  "founding": {
-    "kicker": "ERKEN ERİŞİM · 2026",
-    "headline": "Founding Creator ol",
-    "subtext": "İlkler arasında ol. Founding Creator'lar ömür boyu %20 indirim ve yeni özelliklere herkesten önce erişim kazanır.",
-    "slot_label": "{total} yerden {slot}. hâlâ boş",
-    "cta": "Erken erişim al",
-    "note": "Sahte hype yok — yeniyiz ve seninle birlikte inşa ediyoruz."
+  "voiceAgentPage": {
+    "badge": "Yakında",
+    "body": "ElevenLabs Conversational AI — gerçek zamanlı olarak bir yapay zeka ajanıyla konuşun. ElevenLabs hesabınız Conversational AI'yı desteklediğinde özelliği etkinleştireceğiz.",
+    "elevenlabs_hint": "Not: Conversational AI için ayrı ElevenLabs kredisine ihtiyacınız var (Ses & Müzik'teki TTS'ye ek olarak).",
+    "title": "Voice Agent",
+    "voice_cta": "Ses & Müzik'e git"
   }
 }

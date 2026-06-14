@@ -1420,7 +1420,7 @@
       "brand_tag": "Werbung · Video · Kampagnen · Ads",
       "influencer_title": "Creator & Avatar",
       "influencer_subtitle": "Einmal eingerichtet. Wiederholt nutzbar.",
-      "influencer_desc": "Eigener KI-Avatar, Szenen Generator, Story Creator — einmal aufsetzen, dann Content in verschiedenen Formaten erstellen.",
+      "influencer_desc": "Eigener KI-Avatar, Video Generator, Story Creator — einmal aufsetzen, dann Content in verschiedenen Formaten erstellen.",
       "influencer_tag": "Avatar · Video · Szenen · LoRA"
     },
     "bentoTools": {
@@ -1582,7 +1582,7 @@
           "kiIch": "Mein KI-Ich",
           "lora": "LoRA Training",
           "story": "Story Creator",
-          "scene": "Szenen Generator",
+          "scene": "Video Generator",
           "transform": "Video Transformer",
           "seedance": "Video Motion",
           "autopilot": "Agent Autopilot",
@@ -1724,7 +1724,7 @@
           "ugcVideo": "UGC Video",
           "ecommerce": "E-Commerce Ads",
           "story": "Story Creator",
-          "scene": "Szenen Generator",
+          "scene": "Video Generator",
           "seedance": "Video Motion",
           "textToVideo": "Text to Video",
           "transform": "Video Transformer",

@@ -14,8 +14,14 @@ import { usePipelineContextOptional } from "@/lib/dashboard-v3/PipelineContext";
 import { InheritedInputBadge } from "@/components/dashboard-v3/InheritedInputBadge";
 import { PIPELINE_COMPATIBILITY } from "@/lib/dashboard-v3/usePipeline";
 
+export type ParamOptionGroup = {
+  providerLabel: string;
+  options: ParamOption[];
+};
+
 export type ParamFieldOverride = {
   options?: ParamOption[];
+  optionGroups?: ParamOptionGroup[];
   placeholder?: string;
   disabled?: boolean;
 };
@@ -288,7 +294,11 @@ function FieldInput({
 
   if (field.type === "select") {
     const options = override?.options ?? field.options ?? [];
+    const optionGroups = override?.optionGroups;
     const placeholder = override?.placeholder ?? field.placeholder;
+    const hasGroupedOptions = Boolean(optionGroups && optionGroups.length > 0);
+    const hasFlatOptions = options.length > 0;
+
     return (
       <select
         className={base}
@@ -296,16 +306,26 @@ function FieldInput({
         disabled={override?.disabled}
         onChange={(e) => onChange(e.target.value)}
       >
-        {options.length === 0 ? (
+        {!hasGroupedOptions && !hasFlatOptions ? (
           <option value="">
             {placeholder ?? "Bitte wählen…"}
           </option>
         ) : null}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
+        {hasGroupedOptions
+          ? optionGroups!.map((group) => (
+              <optgroup key={group.providerLabel} label={group.providerLabel}>
+                {group.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          : options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
       </select>
     );
   }

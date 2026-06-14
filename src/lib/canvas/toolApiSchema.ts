@@ -400,7 +400,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
   },
   "seedance-video": {
     id: "seedance-video",
-    label: "Szenen Generator",
+    label: "Video Generator",
     icon: "🎬",
     category: "VIDEO & FILM",
     outputType: "video",

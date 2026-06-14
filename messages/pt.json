@@ -83,50 +83,89 @@
       "starter_f4": "\"Powered by InfluexAI\" visível",
       "starter_name": "Agência Starter",
       "yearly": "Anual"
+    },
+    "whitelabel": {
+      "canvas_placeholder": "App Studio · Live Preview",
+      "color_1": "Primary",
+      "color_2": "Accent",
+      "color_3": "Highlight",
+      "color_picker": "Color {index}",
+      "colors_label": "Brand colors",
+      "default_name": "Your Agency",
+      "headline": "Your white label in real time",
+      "kicker": "Live preview",
+      "name_label": "Agency name",
+      "name_placeholder": "Studio Neon",
+      "powered_by": "Powered by your brand",
+      "subline": "Type your agency name and pick three accent colors — the preview updates instantly.",
+      "workspace_label": "App Studio"
     }
   },
   "agent": {
-    "chip_ugc_creator": "Sou criador UGC",
-    "chip_faceless": "Criar conteúdo faceless",
-    "chip_product_ad": "Promover meu produto",
-    "chip_script": "Escrever um roteiro",
+    "attach_soon": "Anexo — em breve",
     "chip_channel_analyze": "Analisar meu canal",
-    "chip_viral_score": "Verificar viral score",
+    "chip_faceless": "Criar conteúdo faceless",
     "chip_generate_image": "Gerar uma imagem",
     "chip_generate_video": "Criar um vídeo",
-    "greeting_morning": "Bom dia, {name} ☀️",
+    "chip_product_ad": "Promover meu produto",
+    "chip_script": "Escrever um roteiro",
+    "chip_ugc_creator": "Sou criador UGC",
+    "chip_viral_score": "Verificar viral score",
+    "cost_estimate": "Este run custa {label}",
+    "credit_confirm": "~{credits} Créditos · será confirmado antes de iniciar",
+    "credits_left": "{count} créditos restantes",
+    "cta_free_plan": "Plan for free",
+    "cta_ki_agent": "Open KI Agent",
+    "cta_plan_preview": "Start plan preview",
+    "example_prompt_1": "Create a TikTok script for a fitness coach",
+    "example_prompt_2": "Plan 7 days of content for a local restaurant",
+    "example_prompt_3": "Create a product ad for a perfume",
+    "execute_hint": "Direct execution — credits are deducted",
+    "featured_prompts_label": "Popular examples",
     "greeting_day": "Olá, {name} 👋",
     "greeting_evening": "Boa noite, {name} 🌆",
+    "greeting_hey": "Ei {name}",
+    "greeting_morning": "Bom dia, {name} ☀️",
     "greeting_night": "Ainda acordado e trabalhando, {name}? 🌙",
+    "group_analyze": "Analysis & planning",
+    "group_creator": "Creator content",
+    "group_product": "Product & ads",
+    "group_quick_start": "Quick start",
+    "hero_headline": "O que você cria hoje?",
+    "hero_subline": "Describe your goal. InfluexAI suggests the right workflow.",
+    "input_placeholder": "O que você quer criar? Descreva seu objetivo…",
     "input_placeholder_focused": "O que queres criar?",
+    "intent_toast": "A abrir {tool} para ti →",
+    "page_subtitle": "O teu estratega pessoal de YouTube.",
+    "page_title": "InfluexAI Master Agent",
+    "plan_preview_routing_hint": "Free plan preview in KI Agent. Running here uses credits.",
+    "quick_win_body": "Describe your goal. InfluexAI shows the right workflow before credits are used.",
+    "quick_win_title": "Start with a free plan preview",
+    "send": "Enviar",
+    "tab_chat": "Chat",
+    "tab_workflow": "Fluxo de trabalho",
+    "thinking": "O agente está a trabalhar…",
+    "timeline_avatar": "My AI self",
+    "timeline_competitor": "Competitor analysis",
+    "timeline_ideas": "Ideias de Vídeo",
+    "timeline_image": "Gerar imagem",
+    "timeline_label": "Progresso do Agent",
+    "timeline_live": "Live Creator",
+    "timeline_niche": "Analisar nicho",
+    "timeline_outliers": "Encontrar Outliers",
+    "timeline_produkt": "Product ads",
+    "timeline_remix": "Video remix",
+    "timeline_script": "Gerar Script",
+    "timeline_thumbnail": "Miniatura",
+    "timeline_ugc": "UGC Video",
+    "timeline_video": "Criar vídeo",
+    "timeline_viral": "Viral Score",
+    "timeline_voice": "Voice & music",
     "typewriter_example_1": "Cria um script TikTok para o meu café...",
     "typewriter_example_2": "Quero uma imagem de uma mulher na praia...",
     "typewriter_example_3": "Planeia 7 dias de conteúdo para o meu ginásio...",
     "typewriter_example_4": "Cria o meu próprio influencer de IA...",
     "typewriter_example_5": "Faz-me um anúncio de produto para o meu perfume...",
-    "intent_toast": "A abrir {tool} para ti →",
-    "attach_soon": "Anexo — em breve",
-    "cost_estimate": "Este run custa {label}",
-    "credit_confirm": "~{credits} Créditos · será confirmado antes de iniciar",
-    "credits_left": "{count} créditos restantes",
-    "greeting_hey": "Ei {name}",
-    "hero_headline": "O que você cria hoje?",
-    "input_placeholder": "O que você quer criar? Descreva seu objetivo…",
-    "page_subtitle": "O teu estratega pessoal de YouTube.",
-    "page_title": "InfluexAI Master Agent",
-    "send": "Enviar",
-    "tab_chat": "Chat",
-    "tab_workflow": "Fluxo de trabalho",
-    "thinking": "O agente está a trabalhar…",
-    "timeline_ideas": "Ideias de Vídeo",
-    "timeline_image": "Gerar imagem",
-    "timeline_video": "Criar vídeo",
-    "timeline_label": "Progresso do Agent",
-    "timeline_niche": "Analisar nicho",
-    "timeline_outliers": "Encontrar Outliers",
-    "timeline_script": "Gerar Script",
-    "timeline_thumbnail": "Miniatura",
-    "timeline_viral": "Viral Score",
     "welcome_subtitle": "Descreve o objetivo. O agente planifica e executa as ferramentas.",
     "welcome_title": "O que queres criar?",
     "workflow_desc": "O Agent executa essas etapas automaticamente quando você descreve um objetivo completo de vídeo."
@@ -136,12 +175,14 @@
     "divider": "ou",
     "email": "E-mail",
     "fill_fields": "Preencha todos os campos.",
+    "forgot_generic_error": "Could not send the request. Please try again later.",
     "forgot_password": "Esqueceu?",
     "forgot_sent": "Se existir conta, receberás um e-mail.",
     "forgot_submit": "Enviar link",
     "forgot_subtitle": "Enviaremos um link por e-mail.",
     "forgot_title": "Redefinir palavra-passe",
     "has_account": "Já tem conta?",
+    "last_used": "Last used",
     "login_button": "Entrar agora",
     "login_link": "Entrar →",
     "login_subtitle": "Faça login para continuar.",
@@ -153,6 +194,15 @@
     "password_strong": "Forte",
     "password_too_short": "Muito curta",
     "password_weak": "Fraca",
+    "signup": {
+      "emailAlreadyExists": {
+        "description": "Entre com este e-mail ou redefina sua senha.",
+        "login": "Entrar",
+        "resetPassword": "Redefinir senha",
+        "title": "Este endereço de e-mail já está registrado."
+      },
+      "generic_error": "Não foi possível concluir o cadastro. Tente novamente."
+    },
     "signup_button": "Cadastrar agora",
     "signup_link": "Cadastrar agora →",
     "signup_subtitle": "Comece sua jornada de criador com IA.",
@@ -160,16 +210,123 @@
     "terms_link": "Termos de Uso",
     "terms_text": "Ao se cadastrar, você concorda com nossos",
     "verify_email_body": "Enviamos um link para",
-    "verify_email_title": "Confirme seu e-mail",
-    "signup": {
-      "generic_error": "Não foi possível concluir o cadastro. Tente novamente.",
-      "emailAlreadyExists": {
-        "title": "Este endereço de e-mail já está registrado.",
-        "description": "Entre com este e-mail ou redefina sua senha.",
-        "login": "Entrar",
-        "resetPassword": "Redefinir senha"
-      }
+    "verify_email_title": "Confirme seu e-mail"
+  },
+  "blog": {
+    "all_categories": "All",
+    "breadcrumb_blog": "Blog",
+    "min_read": "{minutes} min",
+    "newsletter_cta": "Subscribe",
+    "newsletter_subtitle": "Weekly tips for viral YouTube Shorts — no spam.",
+    "newsletter_title": "Newsletter para Criadores",
+    "no_posts": "No articles published yet. Check back soon.",
+    "no_results": "No articles found for this search.",
+    "read_more": "Read more →",
+    "related_title": "You might also like",
+    "search_button": "Search",
+    "search_placeholder": "Search articles…",
+    "subtitle": "Everything you need to go viral",
+    "title": "Blog InfluexAI"
+  },
+  "businessPage": {
+    "compare": {
+      "assets_pain": "No access to your own assets",
+      "assets_pain_icon": "😤",
+      "assets_solution": "Everything in your studio",
+      "assets_solution_icon": "🎯",
+      "budget_pain": "Thousands in agency budget",
+      "budget_pain_icon": "💸",
+      "budget_solution": "From €9.99/month",
+      "budget_solution_icon": "💚",
+      "headline": "WHY NOT AN AGENCY ANYMORE?",
+      "wait_pain": "Weeks of waiting",
+      "wait_pain_icon": "⏰",
+      "wait_solution": "Results in minutes",
+      "wait_solution_icon": "⚡"
+    },
+    "cta": {
+      "button": "Start for free",
+      "headline": "READY TO GET STARTED?",
+      "subline": "Start today. Your first asset is ready in 60 seconds."
+    },
+    "features": {
+      "autopilot_desc": "From idea to finished post plan — fully automated with your brand voice.",
+      "autopilot_tag": "Up to 30 posts at once",
+      "autopilot_title": "Campaign Autopilot",
+      "calendar_desc": "30-day content calendar for your brand — on demand, tailored to your niche.",
+      "calendar_tag": "30 days in 30 seconds",
+      "calendar_title": "Content Planning",
+      "headline": "WHAT THE STUDIO CAN DO",
+      "product_ad_desc": "Professional ad copy and product images in seconds. For Instagram, TikTok, Facebook — in your language.",
+      "product_ad_tag": "Ready to use instantly",
+      "product_ad_title": "Product Advertising",
+      "visuals_desc": "On-brand product shots and ad graphics. Flux Pro quality, straight into your studio.",
+      "visuals_tag": "Flux Pro quality",
+      "visuals_title": "Visuals & Images"
+    },
+    "hero": {
+      "card1": "Product image generated ✓",
+      "card2": "Campaign created: 7 posts ✓",
+      "card3": "Ad copy: 3 variants ✓",
+      "cta_primary": "Start free now",
+      "cta_secondary": "View all plans",
+      "headline_accent": "FORWARD.",
+      "headline_line1": "CONTENT THAT",
+      "headline_line2": "MOVES YOUR BRAND",
+      "headline_line3": "DELIVERS.",
+      "kicker": "FOR BRANDS & BUSINESSES",
+      "subline": "Create professional ads, social content, and campaigns — fully automated. No agency. No waiting."
+    },
+    "pricing": {
+      "badge": "BUSINESS PLAN",
+      "cta": "Start Business Plan",
+      "headline": "FOR TEAMS & AGENCIES",
+      "per_month": "/month",
+      "plan_name": "Business",
+      "pricing_f1": "Unlimited campaigns",
+      "pricing_f2": "All tools unlocked",
+      "pricing_f3": "Highest priority",
+      "pricing_f4": "Team access",
+      "pricing_f5": "Personal support",
+      "pricing_link": "View all plans",
+      "smaller_plans": "Smaller plans available from €9.99/month —",
+      "subline": "For teams, brands, and agencies"
     }
+  },
+  "buyCredits": {
+    "balance": "Tens <credits></credits> créditos",
+    "buy_button": "Comprar agora",
+    "checkout_error": "Falha no pagamento. Tenta novamente.",
+    "checkout_success": "✓ Créditos recarregados! Podes continuar.",
+    "close": "Fechar",
+    "credit_outcome_body": "50 credits can cover about 25 scripts (2 credits each) or about 10 standard images (5 credits each). Videos, premium images, and lip-sync use significantly more credits.",
+    "credit_outcome_title": "What do credits mean?",
+    "credits_label": "Créditos",
+    "dismiss": "Fechar banner",
+    "force_open_hint": "Carrega créditos para continuar.",
+    "low_banner": "Só {count} créditos restantes",
+    "low_credit_plan_hint": "You can still use free plan previews. Generations require credits.",
+    "menu_top_up": "Carregar créditos",
+    "payment_success_pending": "Payment successful — credits will be added shortly.",
+    "per_credit": "{price}/crédito",
+    "popular_badge": "Mais popular",
+    "pricing_footnote": "Requires an active InfluexAI plan. Credit purchases are one-time and do not start a new subscription.",
+    "pricing_subtitle": "Compra créditos adicionais como recarga única quando o teu saldo estiver baixo — requer plano ativo.",
+    "pricing_title": "Ou compra só créditos — sem subscrição",
+    "success_toast": "✓ {count} créditos adicionados com sucesso!",
+    "title": "Recarregar créditos!",
+    "top_up": "Carregar →",
+    "top_up_button": "Top up {count} credits",
+    "trust_footer_instant": "Available immediately after payment",
+    "trust_footer_no_expire": "Credits never expire — use them anytime",
+    "trust_footer_one_time": "One-time top-up — does not start a new subscription",
+    "trust_footer_plan": "Tool access requires an active plan",
+    "trust_footer_stripe": "Secure payment with Stripe",
+    "trust_instant": "Disponível na hora",
+    "trust_no_expire": "Créditos não expiram",
+    "trust_no_sub": "Sem subscrição",
+    "trust_plan_required": "Active plan required",
+    "urgent_banner": "Quase sem créditos!"
   },
   "common": {
     "back": "Voltar",
@@ -185,10 +342,10 @@
     "share": "Compartilhar"
   },
   "community": {
+    "back_community": "Back to Community",
     "badge_lora_master": "LoRA Master",
     "badge_power_user": "Power User",
     "badge_viral_creator": "Viral Creator",
-    "back_community": "Back to Community",
     "challenge_title": "Weekly Challenge",
     "comment_placeholder": "Write a comment…",
     "cta_join": "Join for free",
@@ -287,6 +444,7 @@
     "quick_actions": "Ações rápidas",
     "quick_agent": "Agente",
     "quick_avatar": "Avatar",
+    "quick_create": "Create",
     "quick_gallery": "Galeria",
     "quick_niche": "Nicho",
     "quick_script": "Roteiro",
@@ -311,8 +469,7 @@
     "trust_no_sub": "Sem subscrição",
     "week_created": "{scripts} scripts · {videos} vídeos · {thumbnails} thumbnails",
     "week_created_label": "Criado esta semana",
-    "welcome": "Bem-vindo",
-    "quick_create": "Create"
+    "welcome": "Bem-vindo"
   },
   "errors": {
     "generic": "Algo deu errado. Tente novamente.",
@@ -342,11 +499,17 @@
       "url_placeholder": "https://youtube.com/@canal ou @handle",
       "weaknesses": "Fraquezas"
     },
+    "content_kalender": {
+      "button": "Generate calendar — {cost} credits",
+      "description": "30-day content plan with topics, hooks and posting times",
+      "title": "Content Calendar"
+    },
     "image_generator": {
       "description": "10 Categorias · Padrão e Alta resolução · Upscaler",
       "title": "Gerador de Imagens"
     },
     "loraTraining": {
+      "cost_preview": "This training costs {credits} credits",
       "credits_label": "Créditos",
       "delete_button": "Eliminar",
       "delete_confirm": "Eliminar este modelo?",
@@ -504,10 +667,50 @@
       "description": "Ideias de thumbnail otimizadas para CTR",
       "title": "Conceito de Thumbnail"
     },
+    "trend_to_script": {
+      "button": "Generate script — {cost} credits",
+      "description": "Spot a trend → get a matching script instantly",
+      "title": "Trend → Script"
+    },
+    "ugcVideo": {
+      "avatar_label": "Choose UGC avatar",
+      "avatars_loading": "Loading avatars…",
+      "create_button": "Create UGC video — {cost} Credits",
+      "credits_left": "{count} credits left",
+      "description": "Authentic creator-style videos with AI avatars — script, voice & 9:16 UGC look in minutes.",
+      "download": "Download video",
+      "error_credits": "Not enough credits ({cost} required).",
+      "error_failed": "Video generation failed. Please try again.",
+      "error_generic": "Video generation failed.",
+      "error_hooks": "Hook generation failed.",
+      "error_load": "Could not load avatars.",
+      "error_no_avatar": "Please select an avatar.",
+      "error_no_script": "Please enter a script.",
+      "generating": "Creating video…",
+      "hook_default_topic": "UGC product video for social media",
+      "hooks_button": "Hook generator — 3 variants",
+      "hooks_loading": "Generating hooks…",
+      "hooks_title": "Hook variants (tap to apply)",
+      "language_label": "Language",
+      "new_video": "New video",
+      "no_avatars": "No avatars available.",
+      "result_title": "Your UGC video",
+      "script_label": "Script",
+      "script_placeholder": "What should the creator say? Max 500 characters…",
+      "title": "UGC Video",
+      "voice_akool": "InfluexAI Voice",
+      "voice_elevenlabs": "ElevenLabs",
+      "voice_label": "Voice"
+    },
     "video_ad": {
       "button": "Criar anúncio",
       "description": "Shorts de produto virais com IA",
       "title": "Anúncio de Produto"
+    },
+    "viral_hook": {
+      "button": "Extract hook — {cost} credits",
+      "description": "YouTube URL → hook + storytelling structure → script",
+      "title": "Viral Hook Extractor"
     },
     "viral_score": {
       "analyze_again": "Nova análise",
@@ -535,7 +738,9 @@
     }
   },
   "footer": {
+    "blog": "Blog",
     "for_agencies": "Para agências →",
+    "guides": "Guias",
     "imprint": "Informações legais",
     "legal": "Jurídico",
     "links": "Links",
@@ -544,8 +749,20 @@
     "privacy": "Privacidade",
     "tagline": "O estúdio IA para shorts virais.",
     "terms": "Termos",
-    "blog": "Blog",
-    "guides": "Guias"
+    "trust": {
+      "cancel_anytime": "Cancel anytime from your <neon>Dashboard</neon>.",
+      "operated_from_germany": "InfluexAI is operated from <accent>Germany</accent>.",
+      "secure_payments": "Secure payments via <neon>Stripe</neon>.",
+      "support": "Support:"
+    }
+  },
+  "founding": {
+    "cta": "Garantir acesso antecipado",
+    "headline": "Torna-te Founding Creator",
+    "kicker": "ACESSO ANTECIPADO · 2026",
+    "note": "Sem hype falso — somos novos e construímos contigo.",
+    "slot_label": "Lugar {slot} de {total} ainda livre",
+    "subtext": "Sê dos primeiros. Founding Creators recebem 20% de desconto vitalício e acesso antecipado a novas funcionalidades."
   },
   "gallery": {
     "count": "{count} criações",
@@ -566,37 +783,65 @@
     },
     "loadMore": "Carregar mais",
     "loadingMore": "A carregar…",
+    "pull_refresh": "Pull to refresh",
+    "refreshing": "Refreshing…",
     "searchPlaceholder": "Pesquisar nas suas criações…",
     "showing": "A mostrar {shown} de {total}",
     "title": "Minha galeria"
   },
+  "guides": {
+    "min_read": "~{minutes} min read",
+    "open_tool": "Open tool →",
+    "pillars_subtitle": "In-depth guides for YouTube creators.",
+    "pillars_title": "Guias Principais",
+    "read_guide": "Read guide",
+    "subtitle": "Step-by-step guides for every InfluexAI feature",
+    "title": "Guias & Tutoriais",
+    "tutorials": {
+      "live_creator_desc": "Create avatar videos with voice and script.",
+      "live_creator_title": "Avatar Falante & Live Creator",
+      "lora_training_desc": "Train your AI face and use it in the image generator.",
+      "lora_training_title": "How to train a LoRA model",
+      "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
+      "niche_analyzer_title": "Niche Analyzer: find trends",
+      "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
+      "product_ad_title": "Create product ads with AI",
+      "script_generator_desc": "From idea to finished short script in minutes.",
+      "script_generator_title": "How to use the Script Generator",
+      "thumbnail_desc": "High-CTR thumbnail concepts for YouTube.",
+      "thumbnail_title": "Thumbnail concepts"
+    },
+    "tutorials_subtitle": "How to use Script Generator, LoRA Training, and more.",
+    "tutorials_title": "Tutoriais de Recursos",
+    "words": "{count} words"
+  },
   "hero": {
     "badge": "Estúdio de Criador IA",
+    "brand_subtitle": "Comunicação de marca consistente sem sessões caras. Vídeos de produto em 90 segundos. Escalável para PMEs e agências.",
+    "creator_subtitle": "Do script ao vídeo pronto: teu estúdio creator completo com IA. Sem câmera, sem equipa, sem experiência.",
     "cta_primary": "Começar — a partir de €{price}",
     "cta_secondary": "Ver funcionalidades",
     "headline": "Seu próximo Short viral — em 60 segundos.",
     "rotating_titles": [
-      "TEU PRÓXIMO\nSHORT VIRAL\nEM 60 SEG.",
-      "TEU SCRIPT.\nEM 10\nSEGUNDOS.",
-      "TEU AVATAR IA.\nVIVO\nCOMO NUNCA.",
-      "TEU THUMBNAIL.\nFEITO\nPARA CLICKS.",
-      "TEU NICHO.\nANALISADO\nPOR IA.",
-      "TEU CONTEÚDO.\nEM\nAUTOPILOT.",
-      "TEU ROSTO.\nCADA\nPERSONAGEM.",
-      "TUA VOZ.\nCADA\nIDIOMA.",
-      "MAIS VIEWS.\nMENOS\nESFORÇO.",
-      "DA IDEIA\nAO VÍDEO.\nEM MINUTOS.",
-      "TEU EU IA.\nTUA MARCA.\nTUAS REGRAS.",
-      "O FUTURO\nDO CONTEÚDO.\nÉ AGORA."
+      "DEIN NÄCHSTER\nVIRALER SHORT\nIN 60 SEK.",
+      "DEIN SCRIPT.\nIN 10\nSEKUNDEN.",
+      "DEIN KI-AVATAR.\nLEBENDIG\nWIE NIE.",
+      "DEIN THUMBNAIL.\nGEBAUT\nFÜR KLICKS.",
+      "DEINE NISCHE.\nANALYSIERT\nVON KI.",
+      "DEIN CONTENT.\nAUF\nAUTOPILOT.",
+      "DEIN GESICHT.\nJEDER\nCHARAKTER.",
+      "DEINE STIMME.\nJEDE\nSPRACHE.",
+      "MEHR VIEWS.\nWENIGER\nAUFWAND.",
+      "VON DER IDEE\nZUM VIDEO.\nIN MINUTEN.",
+      "DEIN KI-ICH.\nDEIN BRAND.\nDEINE REGELN.",
+      "DIE ZUKUNFT\nDES CONTENTS.\nIST JETZT."
     ],
     "social_proof": "Lançamento em 2026 — seja um dos primeiros creators",
     "subheadline": "Sem edição. Sem escrita. Só IA.",
     "trust_1": "Disponível na hora",
     "trust_2": "Entrada fácil",
     "trust_3": "Conforme GDPR",
-    "trust_line": "A partir de €{price}/mês · Credits incluídos · Cancele quando quiser",
-    "creator_subtitle": "Do script ao vídeo pronto: teu estúdio creator completo com IA. Sem câmera, sem equipa, sem experiência.",
-    "brand_subtitle": "Comunicação de marca consistente sem sessões caras. Vídeos de produto em 90 segundos. Escalável para PMEs e agências."
+    "trust_line": "A partir de €{price}/mês · Credits incluídos · Cancele quando quiser"
   },
   "imageGenerator": {
     "cat_avatar": "Avatar IA",
@@ -636,7 +881,6 @@
     "loading_upscale": "Upscale em andamento…",
     "loading_variation": "Variação…",
     "preview_empty": "Sua imagem aparecerá aqui",
-    "watermark_hint": "Pré-visualização com marca d'água — desbloqueie o download por 1 crédito",
     "prompt_label": "Descreva sua imagem…",
     "prompt_placeholder": "ex: Criadora de conteúdo feminina em mesa escura, luz neon verde, MacBook…",
     "regenerate": "Gerar novamente",
@@ -646,25 +890,83 @@
     "upscale_button": "Upscale 2x — 2 Créditos",
     "variation_a": "Versão A",
     "variation_b": "Versão B",
-    "variation_button": "Criar variação — 1 Crédito"
+    "variation_button": "Criar variação — 1 Crédito",
+    "watermark_hint": "Pré-visualização com marca d'água — desbloqueie o download por 1 crédito"
   },
   "landing": {
     "auth_login": "Entrar",
     "auth_signup": "Começar agora",
+    "menu_close": "Close menu",
+    "menu_open": "Open menu",
+    "menu_title": "Menu",
     "nav_agency": "Para Agências",
+    "nav_blog": "Blog",
     "nav_brands": "Para marcas",
+    "nav_community": "Comunidade",
     "nav_features": "Recursos",
+    "nav_for_brands": "For Brands",
+    "nav_guides": "Guias",
     "nav_home": "Início",
     "nav_pricing": "Preços",
-    "nav_blog": "Blog",
-    "nav_guides": "Guias",
-    "nav_community": "Comunidade"
+    "nav_showcase": "Showcase",
+    "nav_tools": "Studio"
   },
   "landingPage": {
+    "achieve": {
+      "headline": "O que você pode alcançar com InfluexAI",
+      "p1_text": "Script, hook e CTA — sem horas escrevendo.",
+      "p1_title": "Shorts virais em minutos",
+      "p2_text": "Seu rosto em cada cena — TikTok, Reels e YouTube.",
+      "p2_title": "Avatar IA consistente",
+      "p3_text": "URL ou foto → vídeo com voz e script em menos de 90 segundos.",
+      "p3_title": "Anúncios de produto para marcas",
+      "subline": "Possibilidades, não promessas — é para isso que as ferramentas existem."
+    },
     "agencyTeaser": {
       "cta": "Saiba mais",
       "headline": "Você é uma agência ou freelancer?",
       "subline": "Venda ferramentas de IA com a sua marca →"
+    },
+    "agentAutopilot": {
+      "cta": "Start Agent Autopilot →",
+      "demo_line_1": "> Briefing detected: Food & Lifestyle · Instagram",
+      "demo_line_2": "> CreatorDNA loaded · Tone: Authentic",
+      "demo_line_3": "",
+      "demo_line_4": "✓ Day 1: 'The story behind our recipe...'",
+      "demo_line_5": "✓ Day 2: 'Behind the scenes: How we start at 6 AM'",
+      "demo_line_6": "✓ Day 3: 'POV: Your first espresso with us'",
+      "demo_line_7": "✓ Day 4–7: [4 more posts generated]",
+      "demo_line_8": "> Creative Score: 91/100 · Export ready",
+      "demo_status": "Agent Autopilot · 7 Posts · 2 Reels",
+      "demo_user": "Create a 7-day content plan for my café on Instagram",
+      "description": "Describe what you need — the agent automatically detects what's required, uses the right tools, and delivers ready-to-use results.",
+      "feature_f1": "Automatically detects hooks, scripts, videos",
+      "feature_f2": "Uses all 20+ tools intelligently",
+      "feature_f3": "Delivers campaign packs at the push of a button",
+      "headline": "ONE COMMAND.\nEVERYTHING DONE.",
+      "kicker": "AGENT AUTOPILOT"
+    },
+    "bentoTools": {
+      "agent_autopilot_benefit": "Describe your goal — the agent handles everything automatically.",
+      "agent_autopilot_name": "Agent Autopilot",
+      "agent_autopilot_tag": "NEW · AUTOMATION",
+      "headline": "EVERYTHING INSIDE.",
+      "kicker": "FEATURES",
+      "melodia_benefit": "Clone voice, text to speech, voice change — all in one.",
+      "melodia_name": "Voice Studio / Melodia",
+      "melodia_tag": "AUDIO",
+      "story_benefit": "Text to video — enter an idea, get a finished video.",
+      "story_name": "Story Creator",
+      "story_tag": "VIDEO",
+      "szenen_benefit": "Images to cinematic videos — up to 15 seconds, multiple models.",
+      "szenen_name": "Scene Generator",
+      "szenen_tag": "VIDEO",
+      "video_uebersetzer_benefit": "Automatically translate videos into other languages with lipsync.",
+      "video_uebersetzer_name": "Video Translator",
+      "video_uebersetzer_tag": "TRANSLATION",
+      "viral_hook_benefit": "Describe your topic — get 10 hooks that stop, trigger, and convert.",
+      "viral_hook_name": "Viral Hook Generator",
+      "viral_hook_tag": "MOST POPULAR TOOL"
     },
     "brands": {
       "ex1_cat": "Marca de Beleza",
@@ -688,6 +990,383 @@
       "intro": "Chega de sessões de fotos caras. InfluexAI dá à sua marca um apresentador IA inconfundível que tem a mesma aparência em todos os lugares.",
       "kicker": "Para Empresas & Marcas"
     },
+    "campaignStudio": {
+      "audience": {
+        "agency_desc": "Turn briefings into campaign-ready packs faster.",
+        "agency_kicker": "Agencies",
+        "agency_title": "More output per client",
+        "brand_desc": "Consistent assets for ads, reels and social — without expensive shoots.",
+        "brand_kicker": "Brands",
+        "brand_title": "Campaigns, not one-offs",
+        "creator_desc": "From idea to finished post — hooks, visuals and score in minutes.",
+        "creator_kicker": "Creators",
+        "creator_title": "Content without burnout",
+        "headline": "For teams that want to launch faster.",
+        "kicker": "Audiences",
+        "local_desc": "Reels, offers and local campaigns — simple and repeatable.",
+        "local_kicker": "Local business",
+        "local_title": "Visibility without an agency"
+      },
+      "featureExplorer": {
+        "columns": {
+          "automate": "Automation",
+          "create": "Create",
+          "visuals": "Visuals"
+        },
+        "groups": {
+          "ads": {
+            "title": "Ads & promos"
+          },
+          "agent": {
+            "title": "Agent & campaigns"
+          },
+          "export": {
+            "title": "Analysis & export"
+          },
+          "images": {
+            "title": "Images & avatars"
+          },
+          "live": {
+            "title": "Live & audio"
+          },
+          "scripts": {
+            "title": "Scripts & hooks"
+          },
+          "video": {
+            "title": "Video & motion"
+          }
+        },
+        "headline": "Every tool. One clear overview.",
+        "kicker": "Product",
+        "links": {
+          "ad": "Ad Creator",
+          "autopilot": "Agent Autopilot",
+          "calendar": "Content Calendar",
+          "campaign": "Campaign Autopilot",
+          "competitor": "Competitor Analysis",
+          "gallery": "Studio Archive",
+          "hook": "Viral Hook Generator",
+          "imageGen": "Image Generator",
+          "kiIch": "My AI Self",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "LoRA Training",
+          "melodia": "Melodia Studio",
+          "product": "Product Ads",
+          "scene": "Scene Generator",
+          "score": "Viral Score",
+          "script": "Script Generator",
+          "seedance": "Video Motion",
+          "story": "Story Creator",
+          "thumbnail": "Thumbnail Concept",
+          "transform": "Video Transformer",
+          "trend": "Trend Script"
+        },
+        "preview": {
+          "agent": {
+            "badge": "Agent Autopilot",
+            "cta": "Start agent",
+            "href": "/dashboard/ki-agent",
+            "quote": "7-day campaign from one briefing"
+          },
+          "export": {
+            "badge": "Creative Score",
+            "cta": "Run analysis",
+            "href": "/dashboard/viral-score",
+            "quote": "Check quality before you publish"
+          },
+          "images": {
+            "badge": "Image Studio",
+            "cta": "Generate image",
+            "href": "/dashboard/image-generator",
+            "quote": "Brand visual for reels & ads"
+          },
+          "live": {
+            "badge": "Live Studio",
+            "cta": "Open Live Creator",
+            "href": "/dashboard/live-creator",
+            "quote": "AI avatar live on TikTok & YouTube"
+          },
+          "scripts": {
+            "badge": "Script Studio",
+            "cta": "Create script",
+            "href": "/dashboard/script-generator",
+            "quote": "A hook that stops the scroll in 3 seconds"
+          },
+          "video": {
+            "badge": "Video Motion",
+            "cta": "Start video",
+            "href": "/dashboard/story-creator",
+            "quote": "Turn a still image into a motion clip"
+          }
+        },
+        "subheadline": "From script to export — every module is one click away."
+      },
+      "featuresMenu": {
+        "categories": {
+          "avatar": "Avatar & Audio",
+          "create": "Create",
+          "intelligence": "Intelligence",
+          "video": "Video",
+          "visuals": "Visuals",
+          "workflow": "Workflow"
+        },
+        "close": "Close features menu",
+        "groups": {
+          "ads": {
+            "title": "Ads & promos"
+          },
+          "agent": {
+            "title": "Agent & campaigns"
+          },
+          "analysis": {
+            "title": "Analysis & score"
+          },
+          "audio": {
+            "title": "Audio & sync"
+          },
+          "edit": {
+            "title": "Edit & transform"
+          },
+          "images": {
+            "title": "Images & avatars"
+          },
+          "library": {
+            "title": "Archive"
+          },
+          "live": {
+            "title": "Live & characters"
+          },
+          "motion": {
+            "title": "Motion & clips"
+          },
+          "scripts": {
+            "title": "Scripts & hooks"
+          },
+          "tools": {
+            "title": "Insights"
+          },
+          "ugc": {
+            "title": "UGC & commerce"
+          }
+        },
+        "items": {
+          "ad": "Ad Creator",
+          "analytics": "Analytics",
+          "autopilot": "Agent Autopilot",
+          "avatarStudio": "Avatar Studio",
+          "calendar": "Content Calendar",
+          "campaign": "Campaign Autopilot",
+          "character": "Character Studio",
+          "competitor": "Competitor Analysis",
+          "ecommerce": "E-Commerce Ads",
+          "faceStudio": "Face Studio",
+          "gallery": "Studio Archive",
+          "hook": "Viral Hook Generator",
+          "imageGen": "Image Generator",
+          "kiIch": "My AI Self",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "LoRA Training",
+          "melodia": "Melodia Studio",
+          "motionTransfer": "Motion Transfer",
+          "niche": "Niche Analyzer",
+          "outlier": "Outlier Detector",
+          "product": "Product Ads",
+          "remix": "Video Remix",
+          "scene": "Scene Generator",
+          "score": "Viral Score",
+          "script": "Script Generator",
+          "seedance": "Video Motion",
+          "story": "Story Creator",
+          "textToVideo": "Text to Video",
+          "thumbnail": "Thumbnail Concept",
+          "transform": "Video Transformer",
+          "translate": "Video Translator",
+          "trend": "Trend Script",
+          "ugcVideo": "UGC Video",
+          "upscaler": "HD Upscaler"
+        },
+        "promo": {
+          "avatar": {
+            "cta": "Open Live Creator",
+            "description": "Live, lipsync and voice in one flow.",
+            "headline": "Your AI face. Consistent everywhere.",
+            "href": "/dashboard/live-creator",
+            "label": "Avatar Studio"
+          },
+          "campaign": {
+            "cta": "Get started",
+            "description": "Images, motion, hooks and score — one workflow.",
+            "headline": "From one idea to a full campaign.",
+            "href": "/auth/sign-up",
+            "label": "AI Campaign Studio"
+          },
+          "create": {
+            "cta": "Create script",
+            "description": "Hooks, calendar and ads from one briefing.",
+            "headline": "Scripts ready to publish.",
+            "href": "/dashboard/script-generator",
+            "label": "Content Create"
+          },
+          "intelligence": {
+            "cta": "Agent Autopilot",
+            "description": "Agent, score and competitor analysis.",
+            "headline": "Data over guesswork.",
+            "href": "/dashboard/ki-agent",
+            "label": "Creative Intelligence"
+          },
+          "video": {
+            "cta": "Start video",
+            "description": "Story, scenes and video transformation.",
+            "headline": "Still image becomes motion clip.",
+            "href": "/dashboard/story-creator",
+            "label": "Video Motion"
+          },
+          "visuals": {
+            "cta": "Generate image",
+            "description": "AI images, avatars and UGC look for social.",
+            "headline": "Brand assets in seconds.",
+            "href": "/dashboard/image-generator",
+            "label": "Visual Studio"
+          }
+        },
+        "title": "Features"
+      },
+      "hero": {
+        "ctaPrimary": "Get started",
+        "ctaSecondary": "View demo",
+        "headline": "From one idea to a campaign-ready pack.",
+        "kicker": "AI Campaign Studio",
+        "mockup": {
+          "captionPreview": "3 steps to launch. Save for later.",
+          "hookPreview": "POV: You launch your SaaS — without an 80-hour week.",
+          "outputCaption": "Caption",
+          "outputHook": "Hook",
+          "outputImage": "Hero visual",
+          "outputVideo": "Motion",
+          "prompt": "7-day SaaS launch — reels, hooks and visuals for TikTok & LinkedIn.",
+          "promptLabel": "Campaign briefing",
+          "scoreLabel": "Creative Score",
+          "scoreValue": "91"
+        },
+        "note": "From €{price}/mo · Credits included · Cancel anytime",
+        "subheadline": "Images, motion, hooks, captions, hashtags and Creative Score — ready to export for social."
+      },
+      "pack": {
+        "briefing_content": "Fitness coach · Instagram · motivational · Target audience women 25-40",
+        "briefing_label": "Your briefing",
+        "captions_desc": "5 captions + hashtags",
+        "captions_icon": "💬",
+        "captions_title": "Captions",
+        "cta": "Start Agent Autopilot →",
+        "headline": "ONE BRIEF. ONE CLICK. EVERYTHING DONE.",
+        "hooks_desc": "10 hooks for your niche",
+        "hooks_icon": "⚡",
+        "hooks_title": "Viral Hooks",
+        "kicker": "HOW IT WORKS",
+        "motion_desc": "Video ideas + scene plan",
+        "motion_icon": "🎬",
+        "motion_title": "Motion",
+        "plan_desc": "30-day calendar",
+        "plan_icon": "📅",
+        "plan_title": "Content plan",
+        "score_note": "Automatically scored and optimized.",
+        "score_pill": "✦ Creative Score: 94/100",
+        "script_desc": "Complete video script",
+        "script_icon": "📝",
+        "script_title": "Script",
+        "subheadline": "Agent Autopilot reads your briefing and automatically coordinates all the tools you need.",
+        "visuals_desc": "3 on-brand AI images",
+        "visuals_icon": "🖼",
+        "visuals_title": "Visuals"
+      },
+      "pricingCta": {
+        "ctaPrimary": "View pricing",
+        "ctaSecondary": "Sign up free",
+        "headline": "Start transparent. Scale as you grow.",
+        "kicker": "Pricing",
+        "subheadline": "Credits for real generations — cancel monthly."
+      },
+      "showcase": {
+        "headline": "Campaign assets that look ready to publish.",
+        "items": {
+          "adPack": {
+            "badges": {
+              "export": "Export",
+              "multi": "Multi"
+            },
+            "description": "Campaign pack with formats for Reels, Story, Feed and Ads.",
+            "tag": "Ad pack",
+            "title": "Brand story · Multi-format export"
+          },
+          "creator": {
+            "badges": {
+              "ads": "Ads",
+              "ugc": "UGC"
+            },
+            "description": "Natural creator asset for social proof and performance ads.",
+            "tag": "Creator pack",
+            "title": "Creator campaign · UGC look"
+          },
+          "hook": {
+            "badges": {
+              "hook": "Hook",
+              "tiktok": "TikTok"
+            },
+            "description": "Hook visual with a strong opening for more feed attention.",
+            "tag": "Hook card",
+            "title": "Scroll-stopper · TikTok · EN"
+          },
+          "motion": {
+            "badges": {
+              "duration": "15s",
+              "video": "Video"
+            },
+            "description": "Short motion clip for product demos, ads and launch posts.",
+            "tag": "Motion clip",
+            "title": "SaaS demo · 15s loop · LinkedIn"
+          },
+          "reel": {
+            "badges": {
+              "ratio": "9:16",
+              "visual": "Visual"
+            },
+            "description": "A bold vertical visual built for TikTok, Reels and Shorts.",
+            "tag": "Reel visual",
+            "title": "Product launch · Acid look · 9:16"
+          },
+          "score": {
+            "badges": {
+              "analysis": "Analysis",
+              "score": "Score"
+            },
+            "description": "Rating for hook, format, readability and scroll-stop potential.",
+            "tag": "Creative score",
+            "title": "Score analysis · Campaign check"
+          }
+        },
+        "kicker": "Showcase",
+        "scrollNext": "Next cards",
+        "scrollPrev": "Previous cards"
+      },
+      "tools": {
+        "agent_desc": "Enter a briefing — the agent plans hooks, copy and next steps.",
+        "agent_title": "Agent Autopilot",
+        "gallery_desc": "All assets in one place — download-ready for TikTok, Reels & LinkedIn.",
+        "gallery_title": "Gallery & Export",
+        "headline": "Everything for your campaign — one workflow.",
+        "image_desc": "AI images for reels, ads and thumbnails — on-brand and fast.",
+        "image_title": "Image Studio",
+        "kicker": "Studio",
+        "openTool": "Open tool",
+        "score_desc": "Rate hooks and ideas before you publish — data over guesswork.",
+        "score_title": "Creative Score",
+        "subheadline": "No tool chaos. Image, video, agent, score and export work together.",
+        "video_desc": "Image-to-video, motion clips and short-form assets for every platform.",
+        "video_title": "Video Motion"
+      }
+    },
     "cta": {
       "headline1": "Sem rosto.",
       "headline2": "Sem limite.",
@@ -699,37 +1378,486 @@
       "sub1": "Para Creators que querem viralizar.",
       "sub2": "Para Marcas que querem escalar."
     },
+    "demos": {
+      "activity": {
+        "a1": {
+          "action": "Audience detected",
+          "badge": "✓",
+          "context": "Real estate · owners · demo"
+        },
+        "a10": {
+          "action": "Platform fit (example)",
+          "badge": "High",
+          "context": "TikTok · Reels"
+        },
+        "a11": {
+          "action": "Example score",
+          "badge": "91",
+          "context": "Contrast · readability"
+        },
+        "a12": {
+          "action": "AI avatar concept (example)",
+          "badge": "✓",
+          "context": "AI Self · demo"
+        },
+        "a2": {
+          "action": "Example score calculated",
+          "badge": "91",
+          "context": "Script · TikTok"
+        },
+        "a3": {
+          "action": "Script optimized (example)",
+          "badge": "✓",
+          "context": "Hook → Story → CTA"
+        },
+        "a4": {
+          "action": "Image prompt created",
+          "badge": "✓",
+          "context": "Beauty · 4:5 · demo"
+        },
+        "a5": {
+          "action": "Risk check: example",
+          "badge": "Low",
+          "context": "Finance language"
+        },
+        "a6": {
+          "action": "Content calendar (example)",
+          "badge": "✓",
+          "context": "7 days · 3 formats"
+        },
+        "a7": {
+          "action": "Branding overlay prepared",
+          "badge": "✓",
+          "context": "Brand colors · demo"
+        },
+        "a8": {
+          "action": "Caption shortened (example)",
+          "badge": "✓",
+          "context": "Instagram · EN"
+        },
+        "a9": {
+          "action": "CTA improved (example)",
+          "badge": "88",
+          "context": "Reel ad · product"
+        }
+      },
+      "campaign": {
+        "monthly": {
+          "deliverables": [
+            "20–30 Ideen",
+            "8–12 Reels",
+            "Captions",
+            "Visual-Briefings"
+          ],
+          "subtitle": "30 days of content",
+          "title": "Monthly Campaign",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "sprint": {
+          "deliverables": [
+            "3–5 Posts",
+            "3 Hooks",
+            "3 Captions",
+            "1 Mini-Kalender"
+          ],
+          "subtitle": "2–3 days of content",
+          "title": "Sprint Content",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "weekly": {
+          "deliverables": [
+            "5–7 Posts",
+            "3 Reels",
+            "2 Carousels",
+            "Posting-Zeiten"
+          ],
+          "subtitle": "7 days of content",
+          "title": "Weekly Content",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        }
+      },
+      "campaignSection": {
+        "description": "Example cards: the agent plans 2–3 days, 7 days or 30 days of content — with scripts, hooks, captions and calendar.",
+        "headline1": "ONE BRIEF.",
+        "headline2": "ONE CONTENT PACKAGE.",
+        "kicker": "Campaign Autopilot · Demo",
+        "workflowLabel": "Demo workflow"
+      },
+      "hero": {
+        "avatar": {
+          "agentSteps": [
+            "Foto geprüft",
+            "Stil gewählt",
+            "Consent bestätigt",
+            "Konsistenz gesichert"
+          ],
+          "agentSummary": "AI avatar concept · Consent note",
+          "miniLabel": "Reels · Ads · Brand",
+          "outputs": [
+            {
+              "label": "Stil",
+              "text": "Tech Creator · clean background · professional look"
+            }
+          ],
+          "prompt": "Create my AI avatar in tech creator style.",
+          "resultScore": "Consent ✓",
+          "resultSubtitle": "Avatar concept with photo input",
+          "resultTitle": "AI avatar concept",
+          "toolLabel": "AI Self"
+        },
+        "hooks": {
+          "agentSteps": [
+            "Trend-Fit analysiert",
+            "Hooks generiert",
+            "Klarheit optimiert",
+            "Risiko geprüft"
+          ],
+          "agentSummary": "5 hooks created · Low risk",
+          "miniLabel": "Platform fit: High",
+          "outputs": [
+            {
+              "label": "Hook 1",
+              "text": "Diese Wohnung war in 4 Stunden verkauft."
+            },
+            {
+              "label": "Hook 2",
+              "text": "Die meisten Eigentümer unterschätzen diesen Fehler."
+            },
+            {
+              "label": "Hook 3",
+              "text": "Deine Wohnung ist vielleicht mehr wert, als du denkst."
+            }
+          ],
+          "prompt": "Give me 5 strong hooks for my real estate page.",
+          "resultScore": "Low risk",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "5 hooks ready",
+          "toolLabel": "Viral Hook"
+        },
+        "kalender": {
+          "agentSteps": [
+            "Zielgruppe erkannt",
+            "Themencluster erstellt",
+            "Hooks optimiert",
+            "Kalender formatiert"
+          ],
+          "agentSummary": "Audience detected · Calendar ready",
+          "miniLabel": "7 posts · 3 formats",
+          "outputs": [
+            {
+              "label": "Mo",
+              "text": "Immobilienwert erklären"
+            },
+            {
+              "label": "Mi",
+              "text": "Verkaufsfehler vermeiden"
+            },
+            {
+              "label": "Fr",
+              "text": "Eigentümer-CTA"
+            }
+          ],
+          "prompt": "Plan 7 days of content for a real estate company.",
+          "resultScore": "Low risk",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "7 days of content ready",
+          "toolLabel": "Content Calendar"
+        },
+        "produkt": {
+          "agentSteps": [
+            "Produkt analysiert",
+            "Nutzenversprechen geschärft",
+            "Spot-Text erstellt",
+            "CTA ergänzt"
+          ],
+          "agentSummary": "Product Advertising · Finance language softened",
+          "miniLabel": "Reels · 15s",
+          "outputs": [
+            {
+              "label": "Spot",
+              "text": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden."
+            }
+          ],
+          "prompt": "Write a reel ad for an AI tax app.",
+          "resultScore": "Low risk",
+          "resultSubtitle": "Clarity 90",
+          "resultTitle": "Ad script ready",
+          "toolLabel": "Product Advertising"
+        },
+        "visual": {
+          "agentSteps": [
+            "Stil definiert",
+            "Bildprompt erstellt",
+            "Format gewählt",
+            "Quality Gate vorbereitet"
+          ],
+          "agentSummary": "Image prompt created · Format 4:5",
+          "miniLabel": "No text overlay",
+          "outputs": [
+            {
+              "label": "Briefing",
+              "text": "Soft studio light · clean skin · sustainable editorial mood"
+            }
+          ],
+          "prompt": "Create an ad visual for a sustainable beauty routine.",
+          "resultScore": "Low risk",
+          "resultSubtitle": "Brand fit: High",
+          "resultTitle": "Visual briefing ready",
+          "toolLabel": "Image Generator"
+        }
+      },
+      "labels": {
+        "agent": "Agent",
+        "agentActivityStream": "Agent Activity Stream",
+        "agentDecision": "AGENT DECISION",
+        "agentWorkflow": "Demo workflow",
+        "cta": "CTA",
+        "demo": "Demo",
+        "demoAgentWorks": "Demo: how the AI agent works",
+        "demoExample": "Demo example",
+        "demoExampleCards": "Example cards",
+        "demoRunning": "Demo running",
+        "demoScore": "Demo score",
+        "exampleOutput": "Example output",
+        "exampleQualityCheck": "Example quality check",
+        "exampleResult": "This is an example result",
+        "exampleResultTitle": "Example result",
+        "exampleScore": "Example score",
+        "high": "High",
+        "hook": "Hook",
+        "input": "INPUT",
+        "low": "Low",
+        "medium": "Medium",
+        "output": "OUTPUT",
+        "preview": "Preview",
+        "prompt": "Prompt",
+        "qualityCheck": "Quality Check",
+        "riskCheck": "Risk Check",
+        "riskCheckExample": "Risk check: example",
+        "score": "SCORE",
+        "scoreClarity": "Clarity",
+        "scoreConsent": "Consent",
+        "scoreConsistency": "Consistency",
+        "scoreHook": "Hook",
+        "scorePlan": "Plan",
+        "scorePlatform": "Platform",
+        "scoreRisk": "Risk",
+        "scoreScrollStop": "Scroll-stop",
+        "spot": "Spot",
+        "story": "Story"
+      },
+      "quality": {
+        "brand": {
+          "items": [
+            "Markenstimme",
+            "Zielgruppe",
+            "Plattform-Fit (Beispiel)",
+            "Wiederholungen vermeiden"
+          ],
+          "title": "Brand Check · Example"
+        },
+        "text": {
+          "items": [
+            "Keine falschen Versprechen",
+            "CTA klar",
+            "Tonalität passend",
+            "Risiko-Check: Beispiel · Niedrig"
+          ],
+          "title": "Text Check · Example"
+        },
+        "visual": {
+          "items": [
+            "Keine kaputten Hände/Finger",
+            "Kein falsches Logo",
+            "Text nicht von KI verzerrt",
+            "Format korrekt"
+          ],
+          "title": "Visual Check · Example"
+        }
+      },
+      "qualitySection": {
+        "description": "Example quality check — this is what a pre-export review could look like.",
+        "headline1": "QUALITY,",
+        "headline2": "BEFORE YOU EXPORT.",
+        "kicker": "Quality Check · Example"
+      },
+      "stacked": {
+        "avatar": {
+          "agentDecisions": [
+            "Tool gewählt: Mein KI-Ich",
+            "Avatar-Konzept mit Foto-Input (Beispiel)",
+            "Consent-Hinweis als Demo gezeigt"
+          ],
+          "badge": "AI Self",
+          "description": "Upload a photo and get an example concept for your AI self.",
+          "headline": "KEEP YOUR AI AVATAR CONSISTENT",
+          "input": "1 photo · Style: Professional / Tech Creator\nModern office",
+          "outputTags": [
+            "Professional",
+            "Studio BG",
+            "Wiedererkennbar"
+          ],
+          "outputTitle": "AI avatar concept",
+          "scores": {
+            "consent": "✓",
+            "consistency": "94",
+            "risk": "low"
+          }
+        },
+        "content_kalender": {
+          "agentDecisions": [
+            "Tool gewählt: Content Kalender KI",
+            "Themencluster erstellt (Beispiel)",
+            "Posting-Zeiten als Demo optimiert"
+          ],
+          "badge": "Content Calendar AI",
+          "calendarFooter": "Best posting time: 6–8 PM · Platform fit: High",
+          "calendarRows": [
+            {
+              "day": "Mo",
+              "topic": "ETF-Erklärvideo: \"Was ist der MSCI World?\"",
+              "format": "Reel 30s"
+            },
+            {
+              "day": "Di",
+              "topic": "Tipp: \"Sparrate berechnen in 2 Min\"",
+              "format": "Carousel"
+            },
+            {
+              "day": "Mi",
+              "topic": "Story: Meine Depot-Routine diese Woche",
+              "format": "Story"
+            },
+            {
+              "day": "Do",
+              "topic": "Vergleich: \"Tagesgeld vs. ETF 2026\"",
+              "format": "Reel 60s"
+            },
+            {
+              "day": "Fr",
+              "topic": "Community-Frage: \"Was ist euer Sparziel?\"",
+              "format": "Post"
+            }
+          ],
+          "description": "The agent plans by goal, frequency and platform — as an example calendar with posting times.",
+          "headline": "YOUR CONTENT PLAN IS READY",
+          "input": "Niche: personal finance / investing\nInstagram · 5×/week · 7 days",
+          "scores": {
+            "plan": "92",
+            "platform": "High",
+            "risk": "low"
+          }
+        },
+        "product": {
+          "agentDecisions": [
+            "Tool gewählt: Produkt Werbung",
+            "Nutzenversprechen geschärft",
+            "Risiko-Check: Beispiel — Finance-Sprache entschärft"
+          ],
+          "badge": "Product Advertising",
+          "description": "Add product data — the agent picks spot, caption and CTA as an example for reels & shorts.",
+          "headline": "PRODUCT ADS IN SECONDS",
+          "input": "Product: \"AI tax app for freelancers\"\nInstagram Reels",
+          "outputCta": "Link in bio — try 14 days.",
+          "outputHook": "You're losing time on bookkeeping — because your receipts are still sorted manually.",
+          "outputSpot": "TaxMind recognizes receipts, categorizes expenses and prepares your bookkeeping with AI.",
+          "scores": {
+            "clarity": "90",
+            "hook": "89",
+            "risk": "low"
+          }
+        },
+        "script": {
+          "agentDecisions": [
+            "Tool gewählt: Script Generator",
+            "Zielgruppe: Immobilien-Einsteiger",
+            "Risiko-Check: Beispiel — keine Finanzversprechen"
+          ],
+          "badge": "Script Generator",
+          "description": "The agent understands audience and format — and delivers hook, story and CTA as an example script.",
+          "headline": "SCRIPTS IN SECONDS",
+          "input": "\"Create a TikTok script for real estate beginners.\"\nTikTok · 30s",
+          "outputCta": "Comment START — I'll send you the checklist.",
+          "outputHook": "Most people think buying property is only for the rich. I started at 25 — here's how.",
+          "outputStory": "Understand budget, build equity, check subsidies — without exaggeration.",
+          "scores": {
+            "clarity": "88",
+            "hook": "91",
+            "risk": "low"
+          }
+        },
+        "viral_hook": {
+          "agentDecisions": [
+            "Tool gewählt: Viral Hook Extraktor",
+            "Scroll-Stop analysiert (Beispiel)",
+            "5 Varianten als Demo erstellt"
+          ],
+          "badge": "Viral Hook Extractor",
+          "description": "The agent evaluates scroll-stop, clarity and audience fit — then delivers example variants.",
+          "headline": "HOOKS THAT STOP THE SCROLL",
+          "input": "Topic: \"Sustainable beauty routine under €30\"\nTikTok",
+          "outputItems": [
+            "Ich hab meine Beauty-Routine auf nachhaltig umgestellt — für unter 30€.",
+            "Warum gibst du 80€ für Gesichtscreme aus, wenn deine Routine einfacher funktionieren kann?",
+            "POV: Du findest heraus, dass dein Lieblingsprodukt nicht cruelty-free ist."
+          ],
+          "scores": {
+            "hook": "91",
+            "risk": "low",
+            "scroll_stop": "87"
+          }
+        }
+      },
+      "stackedSection": {
+        "headline1": "SEE HOW THE",
+        "headline2": "AI AGENT WORKS",
+        "kicker": "Demo workflow"
+      }
+    },
     "faq": {
-      "a_agent1": "Yes, in the dashboard. You enter a goal, the agent picks the right tools and creates outputs automatically.",
-      "a_agent2": "No. The landing page shows demos only. Real execution happens in the dashboard.",
-      "a_agent3": "The agent can review outputs, improve them, or create new variants. Critical workflows use quality gates.",
-      "a_agent4": "Credits are used for real generations and exports in the dashboard.",
-      "a_agent5": "Yes. Campaign Autopilot is designed for 2–3 day, 7 day, and 30 day content packages.",
-      "q_agent1": "Does the agent work automatically?",
-      "q_agent2": "Does the landing page run real actions?",
-      "q_agent3": "What if an output doesn't fit?",
-      "q_agent4": "What are credits used for?",
-      "q_agent5": "Can I create 7 or 30 days of content?",
-      "a_sub1": "Sim. INFLUEXAI é oferecido como assinatura mensal ou anual. Cada plano inclui Credits para nossas ferramentas de IA e módulos creator. Planos mensais podem ser cancelados a cada mês.",
-      "a_sub2": "Sim. Planos mensais podem ser cancelados a cada mês. Com planos anuais, seu acesso continua até o fim do período de faturamento pago.",
-      "a_sub3": "Credits são seu saldo de uso para gerações de IA — por exemplo scripts, hooks, vídeos, avatares, voz ou ferramentas de imagem. Cada função consome uma quantidade diferente de Credits.",
-      "a1": "Credits são a moeda no InfluexAI. Cada módulo custa 2–5 Credits por geração. Credits não expiram.",
       "a2": "Sim, planos pagos exigem um método de pagamento. Os pagamentos são processados com segurança via Stripe. Não armazenamos dados de cartão.",
       "a3": "Sim. Todos os dados são processados na UE. Usamos Supabase (Frankfurt) e Vercel (região UE). Seus uploads não são usados para treinamento de IA sem seu consentimento explícito.",
       "a4": "Sim, com InfluexAI Voice (powered by ElevenLabs). Você só pode usar sua própria voz ou material de áudio licenciado.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts e LinkedIn. Todas as ferramentas são otimizadas para essas plataformas.",
       "a6": "Sim. Campaign Autopilot foi desenvolvido para marcas e agências. Você pode planejar automaticamente campanhas de conteúdo completas para 2–3 dias, 7 dias ou 30 dias.",
+      "a_agent1": "Yes, in the dashboard. You enter a goal, the agent picks the right tools and creates outputs automatically.",
+      "a_agent2": "No. The landing page shows demos only. Real execution happens in the dashboard.",
+      "a_agent3": "The agent can review outputs, improve them, or create new variants. Critical workflows use quality gates.",
+      "a_agent4": "Credits are used for real generations and exports in the dashboard.",
+      "a_agent5": "Yes. Campaign Autopilot is designed for 2–3 day, 7 day, and 30 day content packages.",
+      "a_sub1": "Sim. INFLUEXAI é oferecido como assinatura mensal ou anual. Cada plano inclui Credits para nossas ferramentas de IA e módulos creator. Planos mensais podem ser cancelados a cada mês.",
+      "a_sub2": "Sim. Planos mensais podem ser cancelados a cada mês. Com planos anuais, seu acesso continua até o fim do período de faturamento pago.",
+      "a_sub3": "Credits são seu saldo de uso para gerações de IA — por exemplo scripts, hooks, vídeos, avatares, voz ou ferramentas de imagem. Cada função consome uma quantidade diferente de Credits.",
       "headline": "Perguntas Frequentes",
       "kicker": "FAQ",
-      "q_sub1": "O INFLUEXAI é uma assinatura?",
-      "q_sub2": "Posso cancelar minha assinatura?",
-      "q_sub3": "O que são Credits?",
-      "q1": "O que são Credits?",
       "q2": "Preciso de cartão de crédito?",
       "q3": "O InfluexAI é conforme com GDPR?",
       "q4": "Posso clonar minha própria voz?",
       "q5": "Quais plataformas são suportadas?",
-      "q6": "Posso usar o agente de IA para minha marca?"
+      "q6": "Posso usar o agente de IA para minha marca?",
+      "q_agent1": "Does the agent work automatically?",
+      "q_agent2": "Does the landing page run real actions?",
+      "q_agent3": "What if an output doesn't fit?",
+      "q_agent4": "What are credits used for?",
+      "q_agent5": "Can I create 7 or 30 days of content?",
+      "q_sub1": "O INFLUEXAI é uma assinatura?",
+      "q_sub2": "Posso cancelar minha assinatura?",
+      "q_sub3": "O que são Credits?"
     },
     "features": {
       "f1_api0": "Hooks",
@@ -771,10 +1899,10 @@
       "company": "Empresa",
       "company_about": "Sobre nós",
       "company_blog": "Blog",
-      "company_careers": "Carreiras",
-      "company_press": "Imprensa",
       "company_business": "Empresa",
       "company_faq": "FAQ",
+      "company_guides": "Guias",
+      "company_press": "Imprensa",
       "legal": "Jurídico",
       "legal_cookies": "Cookies",
       "legal_imprint": "Informações Legais",
@@ -785,8 +1913,7 @@
       "product_api": "API",
       "product_changelog": "Changelog",
       "product_features": "Recursos",
-      "product_pricing": "Preços",
-      "company_guides": "Guias"
+      "product_pricing": "Preços"
     },
     "how": {
       "headline1": "Em 3 Passos",
@@ -799,7 +1926,21 @@
       "s3_desc": "Upload, URL ou texto. IA entrega em segundos — pronto para exportar para todas as plataformas.",
       "s3_title": "Gerar Conteúdo"
     },
+    "launchBanner": "Lançamento em 2026 — seja um dos primeiros creators",
     "pricing": {
+      "all_tools_f1": "Todas as ferramentas incluídas",
+      "all_tools_f10": "Video Remix e Live Creator",
+      "all_tools_f11": "Voz e música e LoRA Training",
+      "all_tools_f12": "API para desenvolvedores",
+      "all_tools_f2": "Agente IA",
+      "all_tools_f3": "Gerador de roteiros",
+      "all_tools_f4": "Niche Analyzer e Outlier Detector",
+      "all_tools_f5": "Conceito de thumbnail e Viral Score",
+      "all_tools_f6": "Análise de concorrentes",
+      "all_tools_f7": "Gerador de imagens e imagem para vídeo",
+      "all_tools_f8": "Anúncios de produto e UGC Video",
+      "all_tools_f9": "Meu eu IA e Face Swap",
+      "billed_yearly": "faturado anualmente (€{amount}/ano)",
       "business_credits": "2.500 Credits/mês",
       "business_cta": "InfluexAI Business iniciar",
       "business_desc": "Para marcas, PMEs e agências.",
@@ -809,6 +1950,7 @@
       "business_f4": "Exportação White-Label",
       "business_f5": "API + Suporte Prioritário",
       "business_name": "InfluexAI Business",
+      "cancel_anytime": "Cancele quando quiser",
       "creator_credits": "300 Credits/mês",
       "creator_cta": "Escolher InfluexAI Creator",
       "creator_desc": "Para Creators e freelancers.",
@@ -818,14 +1960,30 @@
       "creator_f4": "20 anúncios de produto",
       "creator_f5": "Clonagem de voz",
       "creator_name": "InfluexAI Creator",
+      "credit_outcome_body": "50 credits can cover about 25 scripts (2 credits each) or about 10 standard images (5 credits each). Videos, premium images, and lip-sync use significantly more credits.",
+      "credit_outcome_title": "What do credits mean?",
+      "credits_demo_note": "Landing page demos use no credits. Credits are used in the dashboard for real generations and exports.",
+      "credits_ex1": "Scripts & hooks",
+      "credits_ex2": "Image ideas",
+      "credits_ex3": "Content calendar",
+      "credits_ex4": "Avatar workflows",
+      "credits_ex5": "Campaign packages",
+      "credits_included": "Credits incluídos",
+      "credits_usage_desc": "Credits are used for real agent executions — for example:",
+      "credits_usage_kicker": "Credits in the dashboard",
       "extra_credits": "Credits Extras",
       "extra_credits_suffix": "Pay-as-you-go a partir de €5 (50 créditos).",
       "footnote": "Credits não expiram.",
       "headline": "Transparente. Escalável.",
       "kicker": "Preços",
       "monthly": "Mensal",
+      "most_popular": "MOST POPULAR",
       "page_subtitle": "Planos mensais com créditos incluídos. Cancele quando quiser.",
       "per_month": "/mês",
+      "plan_delta_business": "Unlimited · + Team · + All 20+ tools",
+      "plan_delta_creator": "300 Credits · + Agent Autopilot · + Video tools",
+      "plan_delta_pro": "800 Credits · + All video tools · + Priority",
+      "plan_delta_starter": "50 Credits · All basic tools · Text & images",
       "popular": "Plano Mais Popular",
       "pro_credits": "800 Credits/mês",
       "pro_cta": "Escolher InfluexAI Pro",
@@ -847,31 +2005,57 @@
       "starter_m2": "IA-Eu Pro",
       "starter_m3": "Live Creator",
       "starter_name": "InfluExAi Starter",
-      "all_tools_f1": "Todas as ferramentas incluídas",
-      "all_tools_f2": "Agente IA",
-      "all_tools_f3": "Gerador de roteiros",
-      "all_tools_f4": "Niche Analyzer e Outlier Detector",
-      "all_tools_f5": "Conceito de thumbnail e Viral Score",
-      "all_tools_f6": "Análise de concorrentes",
-      "all_tools_f7": "Gerador de imagens e imagem para vídeo",
-      "all_tools_f8": "Anúncios de produto e UGC Video",
-      "all_tools_f9": "Meu eu IA e Face Swap",
-      "all_tools_f10": "Video Remix e Live Creator",
-      "all_tools_f11": "Voz e música e LoRA Training",
-      "all_tools_f12": "API para desenvolvedores",
       "yearly": "Anual",
-      "yearly_discount": "−{percent}%",
-      "cancel_anytime": "Cancele quando quiser",
-      "billed_yearly": "faturado anualmente (€{amount}/ano)",
-      "credits_included": "Credits incluídos",
-      "credits_usage_kicker": "Credits in the dashboard",
-      "credits_usage_desc": "Credits are used for real agent executions — for example:",
-      "credits_ex1": "Scripts & hooks",
-      "credits_ex2": "Image ideas",
-      "credits_ex3": "Content calendar",
-      "credits_ex4": "Avatar workflows",
-      "credits_ex5": "Campaign packages",
-      "credits_demo_note": "Landing page demos use no credits. Credits are used in the dashboard for real generations and exports."
+      "yearly_discount": "−{percent}%"
+    },
+    "proof": {
+      "bullet_1": "TikTok and Reels scripts",
+      "bullet_2": "Image ideas and creator visuals",
+      "bullet_3": "Product ads",
+      "bullet_4": "Content plans",
+      "bullet_5": "Campaign variants",
+      "cards": {
+        "content_plan": {
+          "benefit": "Topics, formats and hooks for a week of content.",
+          "prompt": "Plan 7 days of content for a local restaurant",
+          "title": "7-Day Content Plan"
+        },
+        "creator_visual": {
+          "benefit": "Image ideas and scenes for your AI creator look.",
+          "prompt": "Create a creator visual for fitness Reels",
+          "title": "Creator Visual"
+        },
+        "product_ad": {
+          "benefit": "Product ad with spot, caption and CTA for Reels.",
+          "prompt": "Create a product ad for a perfume",
+          "title": "Product Ad"
+        },
+        "tiktok_script": {
+          "benefit": "Hook, story and CTA for shorts — ready to record.",
+          "prompt": "Create a TikTok script for a fitness coach",
+          "title": "TikTok Script"
+        },
+        "video_motion": {
+          "benefit": "Video concepts and motion ideas from one prompt.",
+          "prompt": "Create a TikTok video concept for a fitness coach",
+          "title": "Video Motion"
+        }
+      },
+      "cta_choose_plan": "Choose plan",
+      "cta_dashboard": "Open dashboard",
+      "cta_free_plan": "Plan for free",
+      "cta_workflow": "View workflow",
+      "demo_label": "Example workflows",
+      "headline": "What you can create with InfluexAI",
+      "intro": "Turn one idea into concrete assets:",
+      "kicker": "Real demos",
+      "preview_note": "Plan preview does not start generation",
+      "pricing_bridge": "Start with a plan from {price} and try the free plan preview first.",
+      "trust_1": "Plan preview without credits",
+      "trust_2": "Secure Stripe checkout",
+      "trust_3": "GDPR-aware",
+      "trust_4": "Transparent credits",
+      "trust_bar_label": "Trust and transparency"
     },
     "ticker": {
       "i0": "InfluexAI LiveSwap™",
@@ -887,47 +2071,203 @@
       "i8": "Feito na Alemanha",
       "i9": "Conforme GDPR"
     },
+    "toolDemos": {
+      "agent": {
+        "problem": "Jumping between 12 tools?",
+        "result_hashtags_body": "#productivity #morningroutine\n#focus #shorts #ai",
+        "result_hashtags_label": "Hashtags",
+        "result_script_body": "Hook: \"Most people start their day wrong.\"\nMain: 3 habits for focus.\nCTA: Follow for part 2.",
+        "result_script_label": "Script",
+        "result_thumbnail_body": "Acid layout · contrast text\n\"5 mistakes 99% make\"\nCTR potential +34%",
+        "result_thumbnail_label": "Thumbnail",
+        "step1_status": "Writing hook, story and CTA…",
+        "step1_tool": "Script Generator",
+        "step2_status": "Generating CTR layouts and palette…",
+        "step2_tool": "Thumbnail Concept",
+        "step3_status": "Finding trend tags and reach clusters…",
+        "step3_tool": "Hashtag Optimizer",
+        "task": "Plan my next Short — script, thumbnail and hashtags for productivity."
+      },
+      "avatar": {
+        "after_caption": "Face consistency active",
+        "after_label": "After",
+        "before_caption": "Selfie / reference",
+        "before_label": "Before",
+        "benefit_number": "1 avatar",
+        "benefit_prefix": "",
+        "benefit_suffix": " — identical on TikTok, YouTube & LinkedIn.",
+        "match": "98% match",
+        "name": "Your AI avatar",
+        "problem": "Every video looks different?",
+        "status": "Generating avatar…",
+        "subtitle": "Consistent on every platform"
+      },
+      "contentKalender": {
+        "benefit_highlight": "30 days",
+        "benefit_prefix": "",
+        "benefit_suffix": " planned — topic, hook, time & hashtags per post.",
+        "problem": "No idea what to post tomorrow?",
+        "row1_day": "1",
+        "row1_hook": "This kills your focus…",
+        "row1_topic": "Morning routine myth",
+        "row2_day": "4",
+        "row2_hook": "Nobody uses tool #2…",
+        "row2_topic": "3 tools under 5 min",
+        "row3_day": "7",
+        "row3_hook": "My best idea this week…",
+        "row3_topic": "Week recap"
+      },
+      "niche": {
+        "benefit_number": "5 niches",
+        "benefit_prefix": "Data-backed",
+        "benefit_suffix": " at once — instead of guessing for weeks.",
+        "problem": "Which niche is actually profitable?",
+        "row1_comp": "Low",
+        "row1_name": "Fitness Biohacking",
+        "row1_stars": "★★★★★",
+        "row2_comp": "Medium",
+        "row2_name": "Budget Meal Prep",
+        "row2_stars": "★★★★☆",
+        "row3_comp": "Low",
+        "row3_name": "AI Productivity",
+        "row3_stars": "★★★★★"
+      },
+      "outlier": {
+        "benefit_number": "10×",
+        "benefit_prefix": "Videos with",
+        "benefit_suffix": " performance — spot patterns and remix them.",
+        "channel": "Fitness · Micro Channel",
+        "problem": "Why do some videos go viral — and others don't?",
+        "score": "9.2",
+        "tag1": "Curiosity Gap Hook",
+        "tag2": "Contrarian Angle",
+        "tag3": "List Format (viral)",
+        "title": "\"5 mistakes 99% make\""
+      },
+      "script": {
+        "benefit_number": "30 seconds",
+        "benefit_prefix": "Complete script in",
+        "benefit_suffix": " — saves ~2h of writing per video.",
+        "cta": "Follow for part 2 — tomorrow at 7am.",
+        "hook": "Most people start their day wrong — you too?",
+        "main": "Habit 1: No phone for 60 min. Habit 2: Daylight in the first 30 min. Habit 3: …",
+        "problem": "Staring at a blank page for hours?",
+        "topic": "5 morning habits for more focus"
+      },
+      "section_headline": "From problem to result",
+      "section_kicker": "Live demo",
+      "thumbnail": {
+        "benefit_number": "+34%",
+        "benefit_prefix": "CTR potential up to",
+        "benefit_suffix": " — layout, text and color in one step.",
+        "ctr": "+34%",
+        "palette": "Palette",
+        "problem": "Thumbnails nobody clicks?",
+        "swatch_1": "#B4FF00",
+        "swatch_2": "#2563eb",
+        "swatch_3": "#ffffff"
+      },
+      "trendToScript": {
+        "benefit_highlight": "ready script",
+        "benefit_prefix": "Trend × niche =",
+        "benefit_suffix": " with hook, story & CTA.",
+        "hook": "AI agents replace your job — or your workflow?",
+        "main": "Here are 3 agents I use daily…",
+        "niche": "Productivity",
+        "problem": "Trends come and go — you're always late?",
+        "trend": "AI Agents"
+      },
+      "upscaler": {
+        "after_label": "4K",
+        "before_label": "720p",
+        "benefit": "2× upscale in seconds — from 720p to 4K without losing detail in post.",
+        "problem": "Pixelated and soft in the timeline?",
+        "title": "HD Upscaler"
+      },
+      "viralHook": {
+        "benefit_highlight": "seconds",
+        "benefit_prefix": "Hook + storytelling in",
+        "benefit_suffix": " — turn it into a script instantly.",
+        "cta_line": "Follow for part 2",
+        "hook": "\"Stop — you're making this mistake every morning…\"",
+        "problem": "You see viral videos — but don't know why the hook works?",
+        "problem_line": "99% start the day wrong",
+        "url": "youtube.com/shorts/…"
+      },
+      "viralscore": {
+        "benefit_number": "87/100",
+        "benefit_prefix": "Pre-upload score:",
+        "benefit_suffix": " — fix weak spots before you publish.",
+        "niche_label": "Niche",
+        "niche_pct": "82%",
+        "niche_value": "82",
+        "problem": "Upload and hope?",
+        "script_label": "Script",
+        "script_pct": "91%",
+        "script_value": "91",
+        "thumbnail_label": "Thumbnail",
+        "thumbnail_pct": "88%",
+        "thumbnail_value": "88",
+        "total": "87"
+      }
+    },
     "toolExamples": {
-      "coming_soon": "Em breve",
-      "script_title": "Gerador de Script",
-      "script_desc": "Scripts virais de vídeos curtos em segundos — Hook, história, CTA e hashtags.",
-      "product_title": "Publicidade de Produto",
-      "product_desc": "Anúncios para TikTok, Reels e YouTube — script, legenda e hashtags.",
-      "thumbnail_title": "Conceito de Thumbnail",
-      "thumbnail_desc": "Thumbnails que geram cliques — layout, texto e cor pela IA.",
-      "agent_title": "AI Agent",
       "agent_desc": "O teu estratega IA: planeia script, thumbnail e conteúdo num chat.",
-      "ki_ich_title": "Meu Eu IA",
-      "ki_ich_desc": "Teu avatar IA a partir de uma foto — para reels, ads e brand deals.",
-      "image_gen_title": "Gerador de Imagens",
-      "image_gen_desc": "Imagens IA para conteúdo, ads e thumbnails — em segundos.",
-      "viral_hook_title": "Extrator Viral Hook",
-      "viral_hook_desc": "Hooks que param o scroll — a IA escreve o teu opener perfeito.",
-      "content_kalender_title": "Calendário de Conteúdo IA",
+      "agent_title": "AI Agent",
+      "coming_soon": "Em breve",
       "content_kalender_desc": "Plano de 30 dias auto-gerado — temas, formatos, horários.",
-      "trend_script_title": "Trend→Script",
-      "trend_script_desc": "Transforma tendências do YouTube em scripts prontos automaticamente.",
-      "voice_title": "Voz e Música",
-      "voice_desc": "Voiceover IA e música para os teus vídeos — sem estúdio.",
-      "live_title": "Live Creator",
-      "live_desc": "Avatar IA ao vivo no TikTok e YouTube — sem câmara.",
-      "lora_title": "LoRA Training",
-      "lora_desc": "Treina o teu modelo IA pessoal — para um look consistente.",
+      "content_kalender_title": "Calendário de Conteúdo IA",
       "headline1": "Doze Ferramentas.",
       "headline2": "Um Estúdio.",
+      "image_gen_desc": "Imagens IA para conteúdo, ads e thumbnails — em segundos.",
+      "image_gen_title": "Gerador de Imagens",
+      "ki_ich_desc": "Teu avatar IA a partir de uma foto — para reels, ads e brand deals.",
+      "ki_ich_title": "Meu Eu IA",
       "kicker": "Todos os Módulos",
-      "sidebar": "Clique em um módulo — direto para o Dashboard. Todas as ferramentas, uma plataforma."
+      "live_desc": "Avatar IA ao vivo no TikTok e YouTube — sem câmara.",
+      "live_title": "Live Creator",
+      "lora_desc": "Treina o teu modelo IA pessoal — para um look consistente.",
+      "lora_title": "LoRA Training",
+      "product_desc": "Anúncios para TikTok, Reels e YouTube — script, legenda e hashtags.",
+      "product_title": "Publicidade de Produto",
+      "script_desc": "Scripts virais de vídeos curtos em segundos — Hook, história, CTA e hashtags.",
+      "script_title": "Gerador de Script",
+      "sidebar": "Clique em um módulo — direto para o Dashboard. Todas as ferramentas, uma plataforma.",
+      "thumbnail_desc": "Thumbnails que geram cliques — layout, texto e cor pela IA.",
+      "thumbnail_title": "Conceito de Thumbnail",
+      "trend_script_desc": "Transforma tendências do YouTube em scripts prontos automaticamente.",
+      "trend_script_title": "Trend→Script",
+      "viral_hook_desc": "Hooks que param o scroll — a IA escreve o teu opener perfeito.",
+      "viral_hook_title": "Extrator Viral Hook",
+      "voice_desc": "Voiceover IA e música para os teus vídeos — sem estúdio.",
+      "voice_title": "Voz e Música"
     },
-    "launchBanner": "Lançamento em 2026 — seja um dos primeiros creators",
-    "achieve": {
-      "headline": "O que você pode alcançar com InfluexAI",
-      "subline": "Possibilidades, não promessas — é para isso que as ferramentas existem.",
-      "p1_title": "Shorts virais em minutos",
-      "p1_text": "Script, hook e CTA — sem horas escrevendo.",
-      "p2_title": "Avatar IA consistente",
-      "p2_text": "Seu rosto em cada cena — TikTok, Reels e YouTube.",
-      "p3_title": "Anúncios de produto para marcas",
-      "p3_text": "URL ou foto → vídeo com voz e script em menos de 90 segundos."
+    "useCases": {
+      "brand_desc": "Product images, ad copy, video translation and full campaigns — fully automated, on-brand, in minutes.",
+      "brand_subtitle": "Professional campaigns. No agency needed.",
+      "brand_tag": "Ads · Video · Campaigns · Ads",
+      "brand_title": "Brand & Business",
+      "creator_desc": "Viral hooks, scripts, visuals and content calendars — generated in seconds. Agent Autopilot plans your whole week.",
+      "creator_subtitle": "Visible every day without working every day.",
+      "creator_tag": "Hooks · Scripts · Calendar · Agent",
+      "creator_title": "Content Creator",
+      "headline": "ONE STUDIO. THREE WORLDS.",
+      "influencer_desc": "Your own AI avatar, Scene Generator, Story Creator — set up once, then unlimited content in every format.",
+      "influencer_subtitle": "Train once. Unlimited output.",
+      "influencer_tag": "Avatar · Video · Scenes · LoRA",
+      "influencer_title": "Creator & Avatar",
+      "kicker": "WHO IS IT FOR?"
+    },
+    "value": {
+      "body": "Describe your goal and use the plan preview before credits are used. You see the right workflow first and decide afterwards what should be generated.",
+      "cta_primary": "Plan for free",
+      "cta_secondary": "View pricing",
+      "headline": "Plan first. Create after."
+    },
+    "worldTransition": {
+      "brand": "For Brands",
+      "creator": "For Creators",
+      "tagline": "One Studio. Two Worlds."
     }
   },
   "language": {
@@ -962,16 +2302,18 @@
   "nav": {
     "agent": "Agente IA",
     "analytics": "Estatísticas",
+    "choose_plan": "Choose a plan",
+    "choose_plan_hint": "Choose a plan to use credits.",
     "collapse": "Recolher",
     "community": "Comunidade",
     "competitor": "Análise concorrência",
     "credits": "Créditos",
-    "credits_balance": "{current} de {max}",
-    "credits_running_low": "Créditos a acabar",
     "credits_almost_empty": "Quase vazio — recarregue",
+    "credits_balance": "{current} de {max}",
     "credits_empty": "Sem créditos",
     "credits_of": "de {max} Créditos",
     "credits_plan": "Créditos & Plano",
+    "credits_running_low": "Créditos a acabar",
     "dashboard": "Painel",
     "developer_api": "API para Desenvolvedores",
     "gallery": "Minha Galeria",
@@ -983,8 +2325,38 @@
     "referral": "Convidar amigos",
     "settings_menu": "Configurações",
     "top_up": "Recarregar",
+    "ugc_video": "UGC Video",
     "view_website": "Ver website",
     "viral_score": "Viral Score"
+  },
+  "noCredits": {
+    "back": "Back",
+    "best_deal_badge": "Melhor oferta",
+    "buy_button": "Comprar",
+    "buy_credits_primary": "Buy credits",
+    "checkout_error": "Checkout falhou. Tente novamente.",
+    "checkout_error_banner": "Payment could not be started. Check your internet connection or try a different pack.",
+    "checkout_loading": "Loading...",
+    "checkout_retry": "Try again",
+    "close": "Fechar",
+    "force_hint": "Você precisa de créditos para gerar agora.",
+    "insufficient_missing": "You're short {missing} credits.",
+    "insufficient_subtext": "You need {required} credits for this action. You have {remaining} credits left.",
+    "insufficient_title": "⚡ Not enough credits",
+    "per_credit": "{cents} cent/Cr",
+    "plan_footer": "Your plan: {plan} · {monthly} credits/month",
+    "popular_badge": "Popular ⭐",
+    "recommended_badge": "Recommended",
+    "recommended_for_action": "Recommended for this action",
+    "recommended_pack": "Recommended: {credits} credits for €{price}",
+    "renewal_days": "Next credits: in {days} days",
+    "renewal_monthly": "Next credits: renew monthly with your subscription",
+    "subtext": "Seus créditos mensais acabaram. Recarregue agora e continue criando.",
+    "title": "Recarregar créditos",
+    "upgrade_hint": "Ou faça upgrade do plano para mais créditos —",
+    "upgrade_link": "Ver planos",
+    "upgrade_plan_hint": "Save up to {percent}% with a monthly subscription",
+    "upgrade_plan_secondary": "Upgrade plan"
   },
   "notFound": {
     "body": "Talvez o recurso chegue em breve. Voltar ao dashboard?",
@@ -1031,6 +2403,15 @@
     "kicker": "Começar",
     "title": "Escolha um plano para começar"
   },
+  "pwa": {
+    "install_body": "Add InfluexAI to your home screen for faster access, fullscreen mode, and offline shell.",
+    "install_cta": "Install",
+    "install_dismiss": "Later",
+    "install_kicker": "PWA",
+    "install_title": "Install the app",
+    "ios_step_add": "Choose “Add to Home Screen”",
+    "ios_step_share": "Tap Share in Safari"
+  },
   "referral": {
     "code_label": "O teu código:",
     "col_credits": "Créditos",
@@ -1067,25 +2448,28 @@
   "settings": {
     "daily_suggestions_email_desc": "Todas as manhãs às 07:00 UTC: 3 ideias com base nas tendências do YouTube no teu nicho.",
     "daily_suggestions_email_label": "Ideias diárias por email",
-    "growth_agent_title": "Agente de Crescimento para Criadores",
     "deleteAccount": {
-      "title": "Excluir conta permanentemente?",
-      "warning": "Esta ação exclui permanentemente sua conta, dados de perfil e acesso. Não pode ser desfeita.",
-      "subscription_hint": "Se você tiver uma assinatura ativa, ela será cancelada antes da exclusão da conta.",
       "agency_owner_block": "Entre em contato com o suporte para excluir sua conta de agência / white-label: {email}",
-      "confirm_label": "Digite {word} para confirmar",
-      "confirm_button": "Excluir conta permanentemente",
       "cancel": "Cancelar",
-      "deleting": "Excluindo…",
+      "confirm_button": "Excluir conta permanentemente",
+      "confirm_label": "Digite {word} para confirmar",
       "danger_button": "Excluir conta",
       "danger_desc": "Excluir a conta remove permanentemente todos os seus dados e créditos.",
+      "deleting": "Excluindo…",
+      "dismiss": "Fechar",
       "error_generic": "Não foi possível excluir a conta. Tente novamente ou contate {email}.",
-      "success_title": "Sua conta foi excluída.",
+      "subscription_hint": "Se você tiver uma assinatura ativa, ela será cancelada antes da exclusão da conta.",
       "success_redirect": "Redirecionando para a página inicial…",
-      "dismiss": "Fechar"
-    }
+      "success_title": "Sua conta foi excluída.",
+      "title": "Excluir conta permanentemente?",
+      "warning": "Esta ação exclui permanentemente sua conta, dados de perfil e acesso. Não pode ser desfeita."
+    },
+    "growth_agent_title": "Agente de Crescimento para Criadores"
   },
   "slideshow": {
+    "ki_ich_benefit_1": "AI avatar from photo",
+    "ki_ich_benefit_2": "Recognizable look",
+    "ki_ich_benefit_3": "Reels · Ads · Brand",
     "slide1_badge": "⚡ 2 Credits · Disponível na hora",
     "slide1_description": "Descreva o tema do seu vídeo e receba um roteiro pronto com hook, história e CTA — pronto para gravar.",
     "slide1_heading": "Roteiro em 30 segundos",
@@ -1101,95 +2485,31 @@
     "slide5_badge": "👥 Acessível para todos os usuários",
     "slide5_description": "Conecte-se, compartilhe progresso e cresça com pessoas com os mesmos objetivos — a comunidade chega em breve.",
     "slide5_heading": "Comunidade de creators",
-    "community_benefit_1": "Troca ideias com outros creators",
-    "community_benefit_2": "Partilha os teus sucessos",
-    "community_benefit_3": "Ideias de vídeo semanais",
     "social_proof": "Lançamento em 2026 — seja um dos primeiros creators"
   },
-  "blog": {
-    "title": "Blog InfluexAI",
-    "subtitle": "Everything you need to go viral",
-    "search_placeholder": "Search articles…",
-    "search_button": "Search",
-    "no_posts": "No articles published yet. Check back soon.",
-    "no_results": "No articles found for this search.",
-    "read_more": "Read more →",
-    "min_read": "{minutes} min",
-    "all_categories": "All",
-    "newsletter_title": "Newsletter para Criadores",
-    "newsletter_subtitle": "Weekly tips for viral YouTube Shorts — no spam.",
-    "newsletter_cta": "Subscribe",
-    "related_title": "You might also like",
-    "breadcrumb_blog": "Blog"
+  "upscalerPage": {
+    "credits_hint": "{cost} credits per upscale · Balance: {balance}",
+    "empty_gallery": "No images yet. Create some in the Image Generator first.",
+    "pick_image": "Choose from gallery",
+    "result_title": "Before / After",
+    "subtitle": "Clarity Upscaler (fal.ai) — pick a gallery image and sharpen it at 2× resolution.",
+    "title": "HD Upscaler",
+    "upload_active": "Uploaded image (active)",
+    "upload_button": "Upload your own image",
+    "upload_clear": "Remove upload",
+    "upload_drop": "Drag an image here or click",
+    "upload_hint": "JPG, PNG, WEBP · Max. 10 MB",
+    "upload_invalid_type": "Please choose an image file (JPG, PNG, WEBP).",
+    "upload_read_error": "Could not read the image.",
+    "upload_title": "Upload your own image",
+    "upload_too_large": "Image is too large (max. 10 MB).",
+    "upscale_cta": "Upscale 2× — {cost} Credits"
   },
-  "guides": {
-    "title": "Guias & Tutoriais",
-    "subtitle": "Step-by-step guides for every InfluexAI feature",
-    "pillars_title": "Guias Principais",
-    "pillars_subtitle": "In-depth guides for YouTube creators.",
-    "tutorials_title": "Tutoriais de Recursos",
-    "tutorials_subtitle": "How to use Script Generator, LoRA Training, and more.",
-    "read_guide": "Read guide",
-    "open_tool": "Open tool →",
-    "words": "{count} words",
-    "min_read": "~{minutes} min read",
-    "tutorials": {
-      "script_generator_title": "How to use the Script Generator",
-      "script_generator_desc": "From idea to finished short script in minutes.",
-      "lora_training_title": "How to train a LoRA model",
-      "lora_training_desc": "Train your AI face and use it in the image generator.",
-      "niche_analyzer_title": "Niche Analyzer: find trends",
-      "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
-      "product_ad_title": "Create product ads with AI",
-      "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Avatar Falante & Live Creator",
-      "live_creator_desc": "Create avatar videos with voice and script.",
-      "thumbnail_title": "Thumbnail concepts",
-      "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
-    }
-  },
-  "noCredits": {
-    "title": "Recarregar créditos",
-    "subtext": "Seus créditos mensais acabaram. Recarregue agora e continue criando.",
-    "force_hint": "Você precisa de créditos para gerar agora.",
-    "popular_badge": "Popular ⭐",
-    "best_deal_badge": "Melhor oferta",
-    "per_credit": "{cents} cent/Cr",
-    "buy_button": "Comprar",
-    "upgrade_hint": "Ou faça upgrade do plano para mais créditos —",
-    "upgrade_link": "Ver planos",
-    "close": "Fechar",
-    "checkout_error": "Checkout falhou. Tente novamente."
-  },
-  "buyCredits": {
-    "title": "Recarregar créditos!",
-    "balance": "Tens <credits></credits> créditos",
-    "popular_badge": "Mais popular",
-    "per_credit": "{price}/crédito",
-    "buy_button": "Comprar agora",
-    "close": "Fechar",
-    "checkout_error": "Falha no pagamento. Tenta novamente.",
-    "checkout_success": "✓ Créditos recarregados! Podes continuar.",
-    "success_toast": "✓ {count} créditos adicionados com sucesso!",
-    "low_banner": "Só {count} créditos restantes",
-    "urgent_banner": "Quase sem créditos!",
-    "top_up": "Carregar →",
-    "dismiss": "Fechar banner",
-    "force_open_hint": "Carrega créditos para continuar.",
-    "trust_instant": "Disponível na hora",
-    "trust_no_sub": "Sem subscrição",
-    "trust_no_expire": "Créditos não expiram",
-    "credits_label": "Créditos",
-    "menu_top_up": "Carregar créditos",
-    "pricing_title": "Ou compra só créditos — sem subscrição",
-    "pricing_subtitle": "Compra créditos adicionais como recarga única quando o teu saldo estiver baixo — requer plano ativo."
-  },
-  "founding": {
-    "kicker": "ACESSO ANTECIPADO · 2026",
-    "headline": "Torna-te Founding Creator",
-    "subtext": "Sê dos primeiros. Founding Creators recebem 20% de desconto vitalício e acesso antecipado a novas funcionalidades.",
-    "slot_label": "Lugar {slot} de {total} ainda livre",
-    "cta": "Garantir acesso antecipado",
-    "note": "Sem hype falso — somos novos e construímos contigo."
+  "voiceAgentPage": {
+    "badge": "Coming Soon",
+    "body": "ElevenLabs Conversational AI — talk to an AI agent in real time. We will enable this when your ElevenLabs account supports Conversational AI.",
+    "elevenlabs_hint": "Note: Conversational AI requires separate ElevenLabs credits (in addition to TTS in Voice & Music).",
+    "title": "Voice Agent",
+    "voice_cta": "Go to Voice & Music"
   }
 }

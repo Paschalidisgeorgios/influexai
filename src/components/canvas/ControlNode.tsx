@@ -28,6 +28,7 @@ import { ParamFields, type ParamFieldOverride } from "./ParamFields";
 import {
   pickDefaultSeedanceModel,
   pickDefaultSeedanceResolution,
+  groupSeedanceModelOptionsByProvider,
   useSeedanceModels,
 } from "@/hooks/canvas/useSeedanceModels";
 import { useJobPolling } from "@/hooks/canvas/useJobPolling";
@@ -131,10 +132,7 @@ function ControlNodeComponent({
   const seedanceFieldOverrides = useMemo((): Record<string, ParamFieldOverride> | undefined => {
     if (!isSeedanceTool) return undefined;
 
-    const modelOptions = seedanceModels.models.map((model) => ({
-      value: model.value,
-      label: model.label,
-    }));
+    const modelOptionGroups = groupSeedanceModelOptionsByProvider(seedanceModels.models);
     const selectedModel = seedanceModels.models.find(
       (model) => model.value === nodeData.params.modelId
     );
@@ -146,9 +144,9 @@ function ControlNodeComponent({
 
     return {
       modelId: {
-        options: modelOptions,
+        optionGroups: modelOptionGroups,
         placeholder: seedanceModels.loading ? "Lade Modelle…" : "Modell wählen",
-        disabled: seedanceModels.loading || modelOptions.length === 0,
+        disabled: seedanceModels.loading || seedanceModels.models.length === 0,
       },
       resolution: {
         options: resolutionOptions,

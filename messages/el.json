@@ -75,7 +75,7 @@
       "pro_f5": "Υποστήριξη Προτεραιότητας",
       "pro_name": "Pro Agency",
       "setup_hint": "Προαιρετικά: Όνομα & Subdomain πριν το checkout — μπορείς να το ρυθμίσεις και αργότερα.",
-      "slug_label": "Subdomain",
+      "slug_label": "Υποτομέας",
       "slug_placeholder": "neon",
       "starter_f1": "10 θέσεις πελατών",
       "starter_f2": "500 Credits Pool/Μήνα",
@@ -83,50 +83,89 @@
       "starter_f4": "\"Powered by InfluexAI\" ορατό",
       "starter_name": "Starter Agency",
       "yearly": "Ετήσια"
+    },
+    "whitelabel": {
+      "canvas_placeholder": "App Studio · Live Preview",
+      "color_1": "Κύριο",
+      "color_2": "Έμφαση",
+      "color_3": "Τονισμός",
+      "color_picker": "Χρώμα {index}",
+      "colors_label": "Χρώματα Επωνυμίας",
+      "default_name": "Το Πρακτορείο Σας",
+      "headline": "Το White Label σας σε πραγματικό χρόνο",
+      "kicker": "Προεπισκόπηση σε πραγματικό χρόνο",
+      "name_label": "Όνομα Πρακτορείου",
+      "name_placeholder": "Studio Neon",
+      "powered_by": "Powered by η επωνυμία σας",
+      "subline": "Πληκτρολογήστε το όνομα του πρακτορείου σας και επιλέξτε τρία χρώματα έμφασης — η προεπισκόπηση προσαρμόζεται αμέσως.",
+      "workspace_label": "App Studio"
     }
   },
   "agent": {
-    "chip_ugc_creator": "Είμαι UGC creator",
-    "chip_faceless": "Δημιουργία faceless content",
-    "chip_product_ad": "Προώθηση προϊόντος",
-    "chip_script": "Γράψε σενάριο",
+    "attach_soon": "Συνημμένο — σύντομα",
     "chip_channel_analyze": "Ανάλυση καναλιού",
-    "chip_viral_score": "Έλεγχος viral score",
+    "chip_faceless": "Δημιουργία faceless content",
     "chip_generate_image": "Δημιουργία εικόνας",
     "chip_generate_video": "Δημιουργία βίντεο",
-    "greeting_morning": "Καλημέρα, {name} ☀️",
+    "chip_product_ad": "Προώθηση προϊόντος",
+    "chip_script": "Γράψε σενάριο",
+    "chip_ugc_creator": "Είμαι UGC creator",
+    "chip_viral_score": "Έλεγχος viral score",
+    "cost_estimate": "Κόστος {label}",
+    "credit_confirm": "~{credits} Credits · θα επιβεβαιωθεί πριν την έναρξη",
+    "credits_left": "{count} credits απομένουν",
+    "cta_free_plan": "Προβολή προεπισκόπησης",
+    "cta_ki_agent": "Άνοιγμα Agent Autopilot",
+    "cta_plan_preview": "Προβολή προεπισκόπησης",
+    "example_prompt_1": "Δημιούργησε ένα TikTok Script για μια προπονήτρια fitness",
+    "example_prompt_2": "Προγραμμάτισε 7 ημέρες περιεχομένου για ένα τοπικό εστιατόριο",
+    "example_prompt_3": "Δημιούργησε μια διαφήμιση προϊόντος για ένα άρωμα",
+    "execute_hint": "Άμεση εκτέλεση — τα Credits θα αφαιρεθούν",
+    "featured_prompts_label": "Δημοφιλή παραδείγματα",
     "greeting_day": "Γεια σου, {name} 👋",
     "greeting_evening": "Καλησπέρα, {name} 🌆",
+    "greeting_hey": "Γεια {name}",
+    "greeting_morning": "Καλημέρα, {name} ☀️",
     "greeting_night": "Ακόμα ξύπνιος και δουλεύεις σκληρά, {name}; 🌙",
+    "group_analyze": "Ανάλυση & Προγραμματισμός",
+    "group_creator": "Περιεχόμενο Creator",
+    "group_product": "Προϊόν & Διαφήμιση",
+    "group_quick_start": "Γρήγορη εκκίνηση",
+    "hero_headline": "Τι δημιουργείς σήμερα;",
+    "hero_subline": "Περιέγραψε τον στόχο σου. Το InfluexAI θα σου προτείνει την κατάλληλη ροή εργασίας.",
+    "input_placeholder": "Τι θέλεις να δημιουργήσεις; Περιέγραψε τον στόχο σου…",
     "input_placeholder_focused": "Τι θέλεις να δημιουργήσεις;",
+    "intent_toast": "Ανοίγω το {tool} για εσένα →",
+    "page_subtitle": "Ο προσωπικός σου YouTube στρατηγός.",
+    "page_title": "Agent Autopilot",
+    "plan_preview_routing_hint": "Προεπισκόπηση στο Agent Autopilot. Κάθε εκτέλεση καταναλώνει Credits.",
+    "quick_win_body": "Περιέγραψε τον στόχο σου. Το Agent Autopilot δημιουργεί περιεχόμενο — κάθε αίτημα κοστίζει Credits.",
+    "quick_win_title": "Ξεκίνησε με το Agent Autopilot",
+    "send": "Αποστολή",
+    "tab_chat": "Συνομιλία",
+    "tab_workflow": "Ροή εργασίας",
+    "thinking": "Ο agent δουλεύει…",
+    "timeline_avatar": "Το KI-Ich μου",
+    "timeline_competitor": "Ανάλυση ανταγωνισμού",
+    "timeline_ideas": "Ιδέες βίντεο",
+    "timeline_image": "Δημιουργία εικόνας",
+    "timeline_label": "Πρόοδος Agent",
+    "timeline_live": "Live Creator",
+    "timeline_niche": "Ανάλυση niche",
+    "timeline_outliers": "Εύρεση Outliers",
+    "timeline_produkt": "Διαφήμιση προϊόντος",
+    "timeline_remix": "Video Remix",
+    "timeline_script": "Δημιουργία σεναρίου",
+    "timeline_thumbnail": "Μικρογραφία",
+    "timeline_ugc": "UGC Video",
+    "timeline_video": "Δημιουργία βίντεο",
+    "timeline_viral": "Viral Score",
+    "timeline_voice": "Φωνή & Μουσική",
     "typewriter_example_1": "Φτιάξε ένα TikTok script για το καφέ μου...",
     "typewriter_example_2": "Θέλω μια εικόνα μιας γυναίκας στην παραλία...",
     "typewriter_example_3": "Σχεδίασε 7 ημέρες content για το γυμναστήριό μου...",
     "typewriter_example_4": "Δημιούργησε τον δικό μου AI influencer...",
     "typewriter_example_5": "Φτιάξε μια διαφήμιση προϊόντος για το άρωμά μου...",
-    "intent_toast": "Ανοίγω το {tool} για εσένα →",
-    "attach_soon": "Συνημμένο — σύντομα",
-    "cost_estimate": "Κόστος {label}",
-    "credit_confirm": "~{credits} Credits · θα επιβεβαιωθεί πριν την έναρξη",
-    "credits_left": "{count} credits απομένουν",
-    "greeting_hey": "Γεια {name}",
-    "hero_headline": "Τι δημιουργείς σήμερα;",
-    "input_placeholder": "Τι θέλεις να δημιουργήσεις; Περιέγραψε τον στόχο σου…",
-    "page_subtitle": "Ο προσωπικός σου YouTube στρατηγός.",
-    "page_title": "InfluexAI Master Agent",
-    "send": "Αποστολή",
-    "tab_chat": "Συνομιλία",
-    "tab_workflow": "Ροή εργασίας",
-    "thinking": "Ο agent δουλεύει…",
-    "timeline_ideas": "Ιδέες βίντεο",
-    "timeline_image": "Δημιουργία εικόνας",
-    "timeline_video": "Δημιουργία βίντεο",
-    "timeline_label": "Πρόοδος Agent",
-    "timeline_niche": "Ανάλυση niche",
-    "timeline_outliers": "Εύρεση Outliers",
-    "timeline_script": "Δημιουργία σεναρίου",
-    "timeline_thumbnail": "Μικρογραφία",
-    "timeline_viral": "Viral Score",
     "welcome_subtitle": "Περίγραψε τον στόχο. Ο agent σχεδιάζει και εκτελεί εργαλεία.",
     "welcome_title": "Τι θέλεις να δημιουργήσεις;",
     "workflow_desc": "Ο Agent εκτελεί αυτά τα βήματα αυτόματα όταν περιγράφεις έναν πλήρη στόχο βίντεο."
@@ -136,12 +175,14 @@
     "divider": "ή",
     "email": "E-mail",
     "fill_fields": "Συμπλήρωσε όλα τα πεδία.",
+    "forgot_generic_error": "Δεν ήταν δυνατή η αποστολή του αιτήματος. Παρακαλώ δοκιμάστε ξανά αργότερα.",
     "forgot_password": "Ξέχασες;",
     "forgot_sent": "Αν υπάρχει λογαριασμός, στάλθηκε email.",
     "forgot_submit": "Αποστολή συνδέσμου",
     "forgot_subtitle": "Θα στείλουμε σύνδεσμο μέσω email.",
     "forgot_title": "Επαναφορά κωδικού",
     "has_account": "Έχεις ήδη λογαριασμό;",
+    "last_used": "Τελευταία χρήση",
     "login_button": "Σύνδεση",
     "login_link": "Σύνδεση →",
     "login_subtitle": "Σύνδεση για να συνεχίσεις.",
@@ -153,6 +194,15 @@
     "password_strong": "Δυνατό",
     "password_too_short": "Πολύ σύντομο",
     "password_weak": "Αδύναμο",
+    "signup": {
+      "emailAlreadyExists": {
+        "description": "Συνδέσου με αυτό το email ή επανέφερε τον κωδικό σου.",
+        "login": "Σύνδεση",
+        "resetPassword": "Επαναφορά κωδικού",
+        "title": "Αυτή η διεύθυνση email είναι ήδη καταχωρημένη."
+      },
+      "generic_error": "Η εγγραφή απέτυχε. Δοκίμασε ξανά."
+    },
     "signup_button": "Εγγραφή",
     "signup_link": "Εγγραφή →",
     "signup_subtitle": "Ξεκίνα το creator ταξίδι σου με AI.",
@@ -160,16 +210,123 @@
     "terms_link": "Όρους",
     "terms_text": "Με την εγγραφή αποδέχεσαι τους",
     "verify_email_body": "Σου στείλαμε σύνδεσμο στο",
-    "verify_email_title": "Επιβεβαίωσε το email σου",
-    "signup": {
-      "generic_error": "Η εγγραφή απέτυχε. Δοκίμασε ξανά.",
-      "emailAlreadyExists": {
-        "title": "Αυτή η διεύθυνση email είναι ήδη καταχωρημένη.",
-        "description": "Συνδέσου με αυτό το email ή επανέφερε τον κωδικό σου.",
-        "login": "Σύνδεση",
-        "resetPassword": "Επαναφορά κωδικού"
-      }
+    "verify_email_title": "Επιβεβαίωσε το email σου"
+  },
+  "blog": {
+    "all_categories": "Όλες",
+    "breadcrumb_blog": "Blog",
+    "min_read": "{minutes} Λεπτά",
+    "newsletter_cta": "Εγγραφή",
+    "newsletter_subtitle": "Εβδομαδιαίες συμβουλές για viral YouTube Shorts — χωρίς spam.",
+    "newsletter_title": "Newsletter Δημιουργών",
+    "no_posts": "Δεν έχουν δημοσιευτεί άρθρα ακόμα. Επισκεφθείτε ξανά σύντομα.",
+    "no_results": "Δεν βρέθηκαν άρθρα για αυτήν την αναζήτηση.",
+    "read_more": "Διαβάστε περισσότερα →",
+    "related_title": "Αυτό μπορεί επίσης να σας ενδιαφέρει",
+    "search_button": "Αναζήτηση",
+    "search_placeholder": "Αναζήτηση άρθρων…",
+    "subtitle": "Όλα όσα χρειάζεσαι για να γίνεις viral",
+    "title": "InfluexAI Blog"
+  },
+  "businessPage": {
+    "compare": {
+      "assets_pain": "Χωρίς πρόσβαση στα δικά σου Assets",
+      "assets_pain_icon": "😤",
+      "assets_solution": "Όλα στο Studio σου",
+      "assets_solution_icon": "🎯",
+      "budget_pain": "Χιλιάδες ευρώ budget για agency",
+      "budget_pain_icon": "💸",
+      "budget_solution": "Από €9,99 το μήνα",
+      "budget_solution_icon": "💚",
+      "headline": "ΓΙΑΤΙ ΟΧΙ ΠΛΕΟΝ AGENCY;",
+      "wait_pain": "Εβδομάδες αναμονής",
+      "wait_pain_icon": "⏰",
+      "wait_solution": "Αποτελέσματα σε λεπτά",
+      "wait_solution_icon": "⚡"
+    },
+    "cta": {
+      "button": "Ξεκίνα δωρεάν",
+      "headline": "ΕΤΟΙΜΟΣ ΝΑ ΞΕΚΙΝΗΣΕΙΣ;",
+      "subline": "Ξεκίνα σήμερα. Το πρώτο σου Asset είναι έτοιμο σε 60 δευτερόλεπτα."
+    },
+    "features": {
+      "autopilot_desc": "Από την ιδέα μέχρι το έτοιμο Post-Plan — πλήρως αυτόματα με τη φωνή της μάρκας σου.",
+      "autopilot_tag": "Μέχρι 30 Posts με μία κίνηση",
+      "autopilot_title": "Autopilot Καμπανιών",
+      "calendar_desc": "Ημερολόγιο περιεχομένου 30 ημερών για τη μάρκα σου — με ένα κλικ, προσαρμοσμένο στο niche σου.",
+      "calendar_tag": "30 μέρες σε 30 δευτερόλεπτα",
+      "calendar_title": "Προγραμματισμός Περιεχομένου",
+      "headline": "ΤΙ ΜΠΟΡΕΙ ΤΟ STUDIO",
+      "product_ad_desc": "Επαγγελματικά Ad-Κείμενα και εικόνες προϊόντων σε δευτερόλεπτα. Για Instagram, TikTok, Facebook — στη γλώσσα σου.",
+      "product_ad_tag": "Άμεσα έτοιμο",
+      "product_ad_title": "Διαφήμιση Προϊόντων",
+      "visuals_desc": "On-brand εικόνες προϊόντων και διαφημιστικά γραφικά. Ποιότητα Flux Pro, απευθείας στο Studio σου.",
+      "visuals_tag": "Ποιότητα Flux Pro",
+      "visuals_title": "Visuals & Εικόνες"
+    },
+    "hero": {
+      "card1": "Εικόνα προϊόντος δημιουργήθηκε ✓",
+      "card2": "Καμπάνια δημιουργήθηκε: 7 Posts ✓",
+      "card3": "Ad-Copy: 3 Παραλλαγές ✓",
+      "cta_primary": "Ξεκίνα δωρεάν τώρα",
+      "cta_secondary": "Δες όλα τα πλάνα",
+      "headline_accent": "ΠΡΟΩΘΕΙ",
+      "headline_line1": "ΠΕΡΙΕΧΟΜΕΝΟ ΠΟΥ",
+      "headline_line2": "ΤΗΝ ΜΑΡΚΑ ΣΟΥ",
+      "headline_line3": "ΜΠΡΟΣΤΑ.",
+      "kicker": "ΓΙΑ BRANDS & ΕΠΙΧΕΙΡΗΣΕΙΣ",
+      "subline": "Δημιούργησε επαγγελματική διαφήμιση, Social Content και καμπάνιες — πλήρως αυτόματα. Χωρίς agency. Χωρίς αναμονή."
+    },
+    "pricing": {
+      "badge": "BUSINESS PLAN",
+      "cta": "Ξεκίνα Business Plan",
+      "headline": "ΓΙΑ ΟΜΑΔΕΣ & AGENCIES",
+      "per_month": "/Μήνα",
+      "plan_name": "Business",
+      "pricing_f1": "Απεριόριστες καμπάνιες",
+      "pricing_f2": "Όλα τα εργαλεία ξεκλειδωμένα",
+      "pricing_f3": "Υψηλότερη προτεραιότητα",
+      "pricing_f4": "Πρόσβαση ομάδας",
+      "pricing_f5": "Προσωπική υποστήριξη",
+      "pricing_link": "Δες όλα τα πλάνα",
+      "smaller_plans": "Μικρότερα πλάνα διαθέσιμα από €9,99/μήνα —",
+      "subline": "Για ομάδες, Brands και Agencies"
     }
+  },
+  "buyCredits": {
+    "balance": "Έχεις <credits></credits> credits",
+    "buy_button": "Αγορά τώρα",
+    "checkout_error": "Η πληρωμή απέτυχε. Δοκίμασε ξανά.",
+    "checkout_success": "✓ Credits φορτίστηκαν! Μπορείς να συνεχίσεις.",
+    "close": "Κλείσιμο",
+    "credit_outcome_body": "50 Credits φτάνουν π.χ. για περίπου 25 Scripts (από 2 Credits το καθένα) ή περίπου 10 Standard εικόνες (από 5 Credits η καθεμία). Τα Videos, οι Premium εικόνες και το Lip-Sync καταναλώνουν σημαντικά περισσότερα Credits.",
+    "credit_outcome_title": "Τι σημαίνουν τα Credits;",
+    "credits_label": "Credits",
+    "dismiss": "Κλείσιμο banner",
+    "force_open_hint": "Φόρτωσε credits για να συνεχίσεις.",
+    "low_banner": "Μόνο {count} credits απομένουν",
+    "low_credit_plan_hint": "Μπορείς να συνεχίσεις να χρησιμοποιείς δωρεάν τις προεπισκοπήσεις προγραμμάτων. Για δημιουργίες χρειάζεσαι Credits.",
+    "menu_top_up": "Φόρτωση credits",
+    "payment_success_pending": "Η πληρωμή ολοκληρώθηκε — τα Credits θα πιστωθούν σύντομα.",
+    "per_credit": "{price}/Credit",
+    "popular_badge": "Δημοφιλέστερο",
+    "pricing_footnote": "Απαιτεί ενεργό πρόγραμμα InfluexAI. Η αγορά Credits γίνεται μία φορά και δεν ξεκινά νέα συνδρομή.",
+    "pricing_subtitle": "Αγόρασε επιπλέον credits ως εφάπαξ ανανέωση — απαιτείται ενεργό πλάνο.",
+    "pricing_title": "Ή αγόρασε μόνο credits — χωρίς συνδρομή",
+    "success_toast": "✓ {count} credits προστέθηκαν επιτυχώς!",
+    "title": "Ανανέωση credits!",
+    "top_up": "Φόρτωσε τώρα →",
+    "top_up_button": "Φόρτωση {count} Credits",
+    "trust_footer_instant": "Διαθέσιμα αμέσως μετά την πληρωμή",
+    "trust_footer_no_expire": "Τα Credits δεν λήγουν — χρησιμοποίησέ τα όποτε θέλεις",
+    "trust_footer_one_time": "Εφάπαξ φόρτωση — δεν ξεκινά νέα συνδρομή",
+    "trust_footer_plan": "Η πρόσβαση στα εργαλεία απαιτεί ενεργό πρόγραμμα",
+    "trust_footer_stripe": "Ασφαλής πληρωμή με Stripe",
+    "trust_instant": "Άμεσα διαθέσιμο",
+    "trust_no_expire": "Τα credits δεν λήγουν",
+    "trust_no_sub": "Χωρίς συνδρομή",
+    "trust_plan_required": "Απαιτείται ενεργό πρόγραμμα",
+    "urgent_banner": "Σχεδόν χωρίς credits!"
   },
   "common": {
     "back": "Πίσω",
@@ -185,53 +342,53 @@
     "share": "Κοινοποίηση"
   },
   "community": {
+    "back_community": "Πίσω στην Κοινότητα",
     "badge_lora_master": "LoRA Master",
     "badge_power_user": "Power User",
     "badge_viral_creator": "Viral Creator",
-    "back_community": "Back to Community",
-    "challenge_title": "Weekly Challenge",
-    "comment_placeholder": "Write a comment…",
-    "cta_join": "Join for free",
-    "cta_share": "Share creations publicly",
-    "empty_feed": "No creations in the feed yet.",
-    "empty_leaderboard": "No activity this week yet.",
-    "empty_profile": "No public creations yet.",
-    "empty_showcase": "No public creations yet — be the first!",
-    "feed_desc": "Scroll community creations. Fullscreen on mobile.",
+    "challenge_title": "Challenge της εβδομάδας",
+    "comment_placeholder": "Γράψε σχόλιο…",
+    "cta_join": "Εγγραφή δωρεάν",
+    "cta_share": "Μοιράσου δημόσια τις δημιουργίες σου",
+    "empty_feed": "Δεν υπάρχουν ακόμα δημιουργίες στο Feed.",
+    "empty_leaderboard": "Καμία δραστηριότητα αυτή την εβδομάδα.",
+    "empty_profile": "Δεν υπάρχουν ακόμα δημόσιες δημιουργίες.",
+    "empty_showcase": "Δεν υπάρχουν ακόμα δημόσιες δημιουργίες — γίνε ο πρώτος!",
+    "feed_desc": "Περιηγήσου στις δημιουργίες της κοινότητας. Σε πλήρη οθόνη στο κινητό.",
     "feed_title": "Ροή Έμπνευσης",
-    "filter_newest": "Newest",
-    "filter_popular": "Most liked",
-    "follow": "Follow",
-    "following": "Following",
-    "gens_week": "{count} creations this week",
-    "hero_desc": "Discover top AI creations, remix viral ideas, and climb the leaderboard.",
-    "idea": "Idea",
-    "join_challenge": "I'm in",
-    "leaderboard_desc": "Top creators in the last 7 days by public creations.",
+    "filter_newest": "Νεότερα",
+    "filter_popular": "Δημοφιλέστερα",
+    "follow": "Ακολούθησε",
+    "following": "Ακολουθείς",
+    "gens_week": "{count} Δημιουργίες αυτή την εβδομάδα",
+    "hero_desc": "Ανακάλυψε τις καλύτερες AI δημιουργίες, κάνε remix σε viral ιδέες και ανέβα στο Leaderboard.",
+    "idea": "Ιδέα",
+    "join_challenge": "Συμμετέχω",
+    "leaderboard_desc": "Κορυφαίοι Creators των τελευταίων 7 ημερών — με βάση τις δημόσιες δημιουργίες.",
     "leaderboard_title": "Κατάταξη",
-    "load_more": "Load more",
-    "loading": "Loading…",
-    "login_required": "Please sign in.",
-    "new_post": "New post",
-    "public_creations": "Public creations",
-    "question": "Question",
-    "remix_video": "Remix this video",
-    "reply": "Reply",
-    "report": "Report",
-    "report_prompt": "Reason for report (optional):",
-    "report_sent": "Thanks — we'll review this content.",
-    "showcase_desc": "The best public creations from the community.",
+    "load_more": "Φόρτωσε περισσότερα",
+    "loading": "Φόρτωση…",
+    "login_required": "Παρακαλώ συνδέσου.",
+    "new_post": "Νέα ανάρτηση",
+    "public_creations": "Δημόσιες δημιουργίες",
+    "question": "Ερώτηση",
+    "remix_video": "Κάνε Remix αυτό το βίντεο",
+    "reply": "Απάντηση",
+    "report": "Αναφορά",
+    "report_prompt": "Λόγος αναφοράς (προαιρετικό):",
+    "report_sent": "Ευχαριστούμε — θα ελέγξουμε το περιεχόμενο.",
+    "showcase_desc": "Οι καλύτερες δημόσιες δημιουργίες της κοινότητας.",
     "showcase_title": "Vitrina Δημιουργών",
-    "stat_followers": "Followers",
-    "stat_generations": "Generations",
-    "stat_viral_avg": "Avg viral score",
-    "tab_discuss": "Discuss",
+    "stat_followers": "Ακόλουθοι",
+    "stat_generations": "Δημιουργίες",
+    "stat_viral_avg": "Μ.Ο. Viral Score",
+    "tab_discuss": "Συζήτηση",
     "tab_feed": "Ροή",
-    "tab_leaderboard": "Leaderboard",
+    "tab_leaderboard": "Κατάταξη",
     "tab_showcase": "Vitrina",
     "title": "Κοινότητα",
-    "type_all": "All",
-    "type_image": "Images",
+    "type_all": "Όλα",
+    "type_image": "Εικόνες",
     "type_remix": "Remix",
     "type_script": "Scripts",
     "type_video": "Βίντεο",
@@ -287,6 +444,7 @@
     "quick_actions": "Γρήγορες ενέργειες",
     "quick_agent": "Agent",
     "quick_avatar": "Avatar",
+    "quick_create": "Δημιουργία",
     "quick_gallery": "Συλλογή",
     "quick_niche": "Νίσα",
     "quick_script": "Script",
@@ -311,8 +469,7 @@
     "trust_no_sub": "Χωρίς συνδρομή",
     "week_created": "{scripts} scripts · {videos} βίντεο · {thumbnails} thumbnails",
     "week_created_label": "Δημιουργήθηκε αυτή την εβδομάδα",
-    "welcome": "Καλώς ήρθες",
-    "quick_create": "Create"
+    "welcome": "Καλώς ήρθες"
   },
   "errors": {
     "generic": "Κάτι πήγε στραβά. Παρακαλώ δοκίμασε ξανά.",
@@ -342,11 +499,17 @@
       "url_placeholder": "https://youtube.com/@channel ή @handle",
       "weaknesses": "Αδυναμίες"
     },
+    "content_kalender": {
+      "button": "Δημιουργία ημερολογίου — {cost} Credits",
+      "description": "Σχέδιο περιεχομένου 30 ημερών με θέματα, hooks και ώρες δημοσίευσης",
+      "title": "Ημερολόγιο Περιεχομένου"
+    },
     "image_generator": {
       "description": "10 κατηγορίες · Standard & High-Res · Upscaler",
       "title": "Γεννήτρια Εικόνων"
     },
     "loraTraining": {
+      "cost_preview": "Αυτή η εκπαίδευση κοστίζει {credits} Credits",
       "credits_label": "Credits",
       "delete_button": "Διαγραφή",
       "delete_confirm": "Διαγραφή αυτού του μοντέλου;",
@@ -504,10 +667,50 @@
       "description": "Ιδέες thumbnail βελτιστοποιημένες για CTR",
       "title": "Ιδέες Thumbnail"
     },
+    "trend_to_script": {
+      "button": "Δημιουργία Script — {cost} Credits",
+      "description": "Αναγνώριση τρέχουσας τάσης → άμεσα κατάλληλο Script",
+      "title": "Trend → Script"
+    },
+    "ugcVideo": {
+      "avatar_label": "Επιλέξτε UGC Avatar",
+      "avatars_loading": "Τα avatars φορτώνονται…",
+      "create_button": "Δημιουργία UGC Video — {cost} Credits",
+      "credits_left": "{count} Credits απομένουν",
+      "description": "Αυθεντικά βίντεο δημιουργών με AI-Avatar — Script, φωνή & 9:16 UGC εμφάνιση σε λεπτά.",
+      "download": "Λήψη βίντεο",
+      "error_credits": "Δεν επαρκούν τα credits (απαιτούνται {cost}).",
+      "error_failed": "Η δημιουργία βίντεο απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
+      "error_generic": "Η δημιουργία βίντεο απέτυχε.",
+      "error_hooks": "Η δημιουργία hook απέτυχε.",
+      "error_load": "Τα avatars δεν μπόρεσαν να φορτωθούν.",
+      "error_no_avatar": "Παρακαλώ επιλέξτε ένα avatar.",
+      "error_no_script": "Παρακαλώ εισάγετε ένα script.",
+      "generating": "Το βίντεο δημιουργείται…",
+      "hook_default_topic": "UGC βίντεο προϊόντος για Social Media",
+      "hooks_button": "Hook Generator — 3 παραλλαγές",
+      "hooks_loading": "Τα hooks δημιουργούνται…",
+      "hooks_title": "Παραλλαγές Hook (πατήστε για εφαρμογή)",
+      "language_label": "Γλώσσα",
+      "new_video": "Νέο βίντεο",
+      "no_avatars": "Δεν υπάρχουν διαθέσιμα avatars.",
+      "result_title": "Το UGC βίντεό σας",
+      "script_label": "Script",
+      "script_placeholder": "Τι θα πει ο δημιουργός; Μέγ. 500 χαρακτήρες…",
+      "title": "UGC Video",
+      "voice_akool": "InfluexAI Voice",
+      "voice_elevenlabs": "ElevenLabs",
+      "voice_label": "Φωνή"
+    },
     "video_ad": {
       "button": "Δημιουργία διαφήμισης",
       "description": "Viral διαφημιστικά shorts με AI",
       "title": "Διαφήμιση Προϊόντος"
+    },
+    "viral_hook": {
+      "button": "Εξαγωγή Hook — {cost} Credits",
+      "description": "YouTube URL → Hook + δομή storytelling → απευθείας ως Script",
+      "title": "Viral Hook Extraktor"
     },
     "viral_score": {
       "analyze_again": "Νέα ανάλυση",
@@ -535,7 +738,9 @@
     }
   },
   "footer": {
+    "blog": "Blog",
     "for_agencies": "Για agencies →",
+    "guides": "Οδηγοί",
     "imprint": "Νομικές Πληροφορίες",
     "legal": "Νομικά",
     "links": "Σύνδεσμοι",
@@ -544,8 +749,20 @@
     "privacy": "Πολιτική Απορρήτου",
     "tagline": "Το AI στούντιο για viral shorts.",
     "terms": "Όροι Χρήσης",
-    "blog": "Blog",
-    "guides": "Οδηγοί"
+    "trust": {
+      "cancel_anytime": "Ακύρωση ανά πάσα στιγμή από το <neon>Dashboard</neon>.",
+      "operated_from_germany": "Το InfluexAI λειτουργεί από τη <accent>Γερμανία</accent>.",
+      "secure_payments": "Ασφαλείς πληρωμές μέσω <neon>Stripe</neon>.",
+      "support": "Υποστήριξη:"
+    }
+  },
+  "founding": {
+    "cta": "Απόκτησε early access",
+    "headline": "Γίνε Founding Creator",
+    "kicker": "EARLY ACCESS · 2026",
+    "note": "Χωρίς fake hype — είμαστε νέοι και χτίζουμε μαζί σου.",
+    "slot_label": "Θέση {slot} από {total} ακόμα ελεύθερη",
+    "subtext": "Γίνε από τους πρώτους. Founding Creators παίρνουν 20% έκπτωση για πάντα και early access σε νέα features."
   },
   "gallery": {
     "count": "{count} δημιουργίες",
@@ -566,40 +783,68 @@
     },
     "loadMore": "Φόρτωση περισσότερων",
     "loadingMore": "Φόρτωση…",
+    "pull_refresh": "Σύρετε για ανανέωση",
+    "refreshing": "Ανανέωση…",
     "searchPlaceholder": "Αναζήτηση στις δημιουργίες σου…",
     "showing": "Εμφάνιση {shown} από {total}",
     "title": "Η γκαλερί μου"
   },
+  "guides": {
+    "min_read": "περ. {minutes} Λεπτά ανάγνωσης",
+    "open_tool": "Άνοιγμα εργαλείου →",
+    "pillars_subtitle": "Αναλυτικοί οδηγοί για YouTube Creators — AI, Shorts, Ανάπτυξη.",
+    "pillars_title": "Βασικοί Οδηγοί",
+    "read_guide": "Διαβάστε τον οδηγό",
+    "subtitle": "Οδηγοί βήμα προς βήμα για κάθε λειτουργία του InfluexAI",
+    "title": "Οδηγοί & Tutorials",
+    "tutorials": {
+      "live_creator_desc": "Δημιουργήστε βίντεο Avatar με φωνή και σενάριο.",
+      "live_creator_title": "Talking Avatar & Live Creator",
+      "lora_training_desc": "Εκπαιδεύστε το δικό σας AI πρόσωπο και χρησιμοποιήστε το στη γεννήτρια εικόνων.",
+      "lora_training_title": "Πώς εκπαιδεύω ένα LoRA μοντέλο;",
+      "niche_analyzer_desc": "Αναλύστε niche και εξάγετε ιδέες περιεχομένου βασισμένες σε δεδομένα.",
+      "niche_analyzer_title": "Niche Analyzer: Εύρεση τάσεων",
+      "product_ad_desc": "Δημιουργήστε βίντεο προϊόντων για TikTok, Reels και Shorts.",
+      "product_ad_title": "Δημιουργία διαφημίσεων προϊόντων με AI",
+      "script_generator_desc": "Από την ιδέα στο έτοιμο Short-Script σε λίγα λεπτά.",
+      "script_generator_title": "Πώς χρησιμοποιώ το Script Generator;",
+      "thumbnail_desc": "Ιδέες thumbnails με υψηλό CTR για το YouTube.",
+      "thumbnail_title": "Thumbnail Concepts"
+    },
+    "tutorials_subtitle": "Πώς να χρησιμοποιήσετε το Script Generator, LoRA Training και άλλα.",
+    "tutorials_title": "Οδηγοί Λειτουργιών",
+    "words": "{count} Λέξεις"
+  },
   "hero": {
     "badge": "Στούντιο Δημιουργού AI",
+    "brand_subtitle": "Συνεπής επικοινωνία brand χωρίς ακριβά shootings. Product videos σε 90 δευτερόλεπτα. Κλιμακώσιμο για SMBs και agencies.",
+    "creator_subtitle": "Από το script μέχρι το έτοιμο βίντεο: το πλήρες creator studio σου με AI. Χωρίς κάμερα, χωρίς ομάδα, χωρίς εμπειρία.",
     "cta_primary": "Ξεκίνα τώρα — από €{price}",
     "cta_secondary": "Δες τα features",
     "headline": "Το επόμενο viral Short σου — σε 60 δευτερόλεπτα.",
     "rotating_titles": [
-      "ΤΟ ΕΠΟΜΕΝΟ\nVIRAL SHORT\nΣΕ 60 ΔΕΥΤ.",
-      "ΤΟ SCRIPT ΣΟΥ.\nΣΕ 10\nΔΕΥΤΕΡΟΛΕΠΤΑ.",
-      "ΤΟ AI AVATAR.\nΖΩΝΤΑΝΟ\nΣΑΝ ΠΟΤΕ.",
-      "ΤΟ THUMBNAIL.\nΦΤΙΑΓΜΕΝΟ\nΓΙΑ CLICKS.",
-      "Η NICHE ΣΟΥ.\nΑΝΑΛΥΜΕΝΗ\nΑΠΟ AI.",
-      "ΤΟ CONTENT.\nΣΕ\nAUTOPILOT.",
-      "ΤΟ ΠΡΟΣΩΠΟ.\nΚΑΘΕ\nΧΑΡΑΚΤΗΡΑΣ.",
-      "Η ΦΩΝΗ ΣΟΥ.\nΚΑΘΕ\nΓΛΩΣΣΑ.",
-      "ΠΕΡΙΣΣΟΤΕΡΑ\nVIEWS.\nΛΙΓΌΤΕΡΗ ΠΡΟΣΠ.",
-      "ΑΠΟ ΤΗΝ ΙΔΕΑ\nΣΤΟ ΒΙΝΤΕΟ.\nΣΕ ΛΕΠΤΑ.",
-      "ΤΟ AI ΕΓΩ ΣΟΥ.\nΤΟ BRAND.\nΟΙ ΚΑΝΟΝΕΣ.",
-      "ΤΟ ΜΕΛΛΟΝ\nΤΟΥ CONTENT.\nΕΙΝΑΙ ΤΩΡΑ."
+      "DEIN NÄCHSTER\nVIRALER SHORT\nIN 60 SEK.",
+      "DEIN SCRIPT.\nIN 10\nSEKUNDEN.",
+      "DEIN KI-AVATAR.\nLEBENDIG\nWIE NIE.",
+      "DEIN THUMBNAIL.\nGEBAUT\nFÜR KLICKS.",
+      "DEINE NISCHE.\nANALYSIERT\nVON KI.",
+      "DEIN CONTENT.\nAUF\nAUTOPILOT.",
+      "DEIN GESICHT.\nJEDER\nCHARAKTER.",
+      "DEINE STIMME.\nJEDE\nSPRACHE.",
+      "MEHR VIEWS.\nWENIGER\nAUFWAND.",
+      "VON DER IDEE\nZUM VIDEO.\nIN MINUTEN.",
+      "DEIN KI-ICH.\nDEIN BRAND.\nDEINE REGELN.",
+      "DIE ZUKUNFT\nDES CONTENTS.\nIST JETZT."
     ],
     "social_proof": "Νέα εκκίνηση 2026 — γίνε ένας από τους πρώτους creators",
     "subheadline": "Χωρίς μοντάζ. Χωρίς γραφή. Μόνο AI.",
     "trust_1": "Άμεσα διαθέσιμα",
     "trust_2": "Εύκολη έναρξη",
     "trust_3": "Συμμόρφωση GDPR",
-    "trust_line": "Από €{price}/μήνα · Credits συμπεριλαμβάνονται · Ακύρωση ανά πάσα στιγμή",
-    "creator_subtitle": "Από το script μέχρι το έτοιμο βίντεο: το πλήρες creator studio σου με AI. Χωρίς κάμερα, χωρίς ομάδα, χωρίς εμπειρία.",
-    "brand_subtitle": "Συνεπής επικοινωνία brand χωρίς ακριβά shootings. Product videos σε 90 δευτερόλεπτα. Κλιμακώσιμο για SMBs και agencies."
+    "trust_line": "Από €{price}/μήνα · Credits συμπεριλαμβάνονται · Ακύρωση ανά πάσα στιγμή"
   },
   "imageGenerator": {
-    "cat_avatar": "AI Avatar",
+    "cat_avatar": "KI Avatar",
     "cat_background": "Φόντο",
     "cat_cinematic": "Κινηματογραφικό",
     "cat_creator": "Δημιουργός Περιεχομένου",
@@ -636,7 +881,6 @@
     "loading_upscale": "Upscale σε εξέλιξη…",
     "loading_variation": "Παραλλαγή…",
     "preview_empty": "Η εικόνα σου θα εμφανιστεί εδώ",
-    "watermark_hint": "Προεπισκόπηση με υδατογράφημα — ξεκλείδωσε λήψης με 1 credit",
     "prompt_label": "Περιγραφή…",
     "prompt_placeholder": "π.χ. Γυναίκα content creator σε σκοτεινό γραφείο, πράσινο φως νέον, MacBook…",
     "regenerate": "Δημιουργία ξανά",
@@ -646,25 +890,83 @@
     "upscale_button": "Upscale 2x — 2 Credits",
     "variation_a": "Έκδοση A",
     "variation_b": "Έκδοση B",
-    "variation_button": "Δημιουργία παραλλαγής — 1 Credit"
+    "variation_button": "Δημιουργία παραλλαγής — 1 Credit",
+    "watermark_hint": "Προεπισκόπηση με υδατογράφημα — ξεκλείδωσε λήψης με 1 credit"
   },
   "landing": {
     "auth_login": "Σύνδεση",
     "auth_signup": "Ξεκίνα τώρα",
+    "menu_close": "Κλείσιμο μενού",
+    "menu_open": "Άνοιγμα μενού",
+    "menu_title": "Μενού",
     "nav_agency": "Για Agencies",
+    "nav_blog": "Blog",
     "nav_brands": "Για brands",
+    "nav_community": "Κοινότητα",
     "nav_features": "Χαρακτηριστικά",
+    "nav_for_brands": "Για Brands",
+    "nav_guides": "Οδηγοί",
     "nav_home": "Αρχική",
     "nav_pricing": "Τιμές",
-    "nav_blog": "Blog",
-    "nav_guides": "Οδηγοί",
-    "nav_community": "Κοινότητα"
+    "nav_showcase": "Showcase",
+    "nav_tools": "Studio"
   },
   "landingPage": {
+    "achieve": {
+      "headline": "Τι μπορείς να πετύχεις με το InfluexAI",
+      "p1_text": "Script, hook και CTA — χωρίς ώρες γραφής.",
+      "p1_title": "Viral shorts σε λίγα λεπτά",
+      "p2_text": "Το πρόσωπό σου σε κάθε σκηνή — TikTok, Reels και YouTube.",
+      "p2_title": "Συνεπές AI avatar",
+      "p3_text": "URL ή φωτογραφία → βίντεο με φωνή και script σε λιγότερο από 90 δευτερόλεπτα.",
+      "p3_title": "Διαφημίσεις προϊόντων για brands",
+      "subline": "Δυνατότητες, όχι υποσχέσεις — γι' αυτό υπάρχουν τα εργαλεία."
+    },
     "agencyTeaser": {
       "cta": "Μάθε περισσότερα",
       "headline": "Είσαι agency ή freelancer;",
       "subline": "Πούλα AI εργαλεία με το δικό σου brand →"
+    },
+    "agentAutopilot": {
+      "cta": "Εκκίνηση Agent",
+      "demo_line_1": "> Briefing αναγνωρίστηκε: Food & Lifestyle · Instagram",
+      "demo_line_2": "> CreatorDNA φορτώθηκε · Τονικότητα: Αυθεντική",
+      "demo_line_3": "",
+      "demo_line_4": "✓ Ημέρα 1: 'Η ιστορία πίσω από τη συνταγή μας...'",
+      "demo_line_5": "✓ Ημέρα 2: 'Behind the Scenes: Πώς ξεκινάμε στις 6 το πρωί'",
+      "demo_line_6": "✓ Ημέρα 3: 'POV: Ο πρώτος σου espresso μαζί μας'",
+      "demo_line_7": "✓ Ημέρα 4–7: [4 επιπλέον Posts δημιουργήθηκαν]",
+      "demo_line_8": "> Creative Score: 91/100 · Έτοιμο για εξαγωγή",
+      "demo_status": "Agent Autopilot · 7 Posts · 2 Reels",
+      "demo_user": "Δημιούργησε ένα πλάνο περιεχομένου 7 ημερών για το καφέ μου στο Instagram",
+      "description": "Περιέγραψε τι χρειάζεσαι — ο Agent αναγνωρίζει το πλαίσιο, επιλέγει κατάλληλα εργαλεία και παρέχει χρήσιμα αποτελέσματα.",
+      "feature_f1": "Αναγνωρίζει Hooks, Scripts και απαιτήσεις βίντεο",
+      "feature_f2": "Χρησιμοποιεί κατάλληλα εργαλεία από το Studio",
+      "feature_f3": "Δημιουργεί Campaign-Packs από ένα briefing",
+      "headline": "Μία εντολή.\nΠολλαπλά αποτελέσματα.",
+      "kicker": "Agent Autopilot"
+    },
+    "bentoTools": {
+      "agent_autopilot_benefit": "Περιέγραψε τον στόχο σου — ο Agent τα κάνει όλα αυτόματα.",
+      "agent_autopilot_name": "Agent Autopilot",
+      "agent_autopilot_tag": "ΝΕΟ · AUTOMATION",
+      "headline": "ΟΛΑ ΜΕΣΑ.",
+      "kicker": "ΧΑΡΑΚΤΗΡΙΣΤΙΚΑ",
+      "melodia_benefit": "Κλωνοποίηση φωνής, κείμενο σε ομιλία, αλλαγή φωνής — όλα σε ένα.",
+      "melodia_name": "Voice Studio / Melodia",
+      "melodia_tag": "AUDIO",
+      "story_benefit": "Κείμενο σε βίντεο — δώσε μια ιδέα, λάβε ένα ολοκληρωμένο βίντεο.",
+      "story_name": "Story Creator",
+      "story_tag": "VIDEO",
+      "szenen_benefit": "Εικόνες σε κινηματογραφικά βίντεο — έως 15 δευτερόλεπτα, πολλαπλά μοντέλα.",
+      "szenen_name": "Szenen Generator",
+      "szenen_tag": "VIDEO",
+      "video_uebersetzer_benefit": "Αυτόματη μετάφραση βίντεο σε άλλες γλώσσες με Lipsync.",
+      "video_uebersetzer_name": "Video Übersetzer",
+      "video_uebersetzer_tag": "ΜΕΤΑΦΡΑΣΗ",
+      "viral_hook_benefit": "Περιέγραψε το θέμα σου — λάβε 10 Hooks που σταματούν, προκαλούν και μετατρέπουν.",
+      "viral_hook_name": "Viral Hook Generator",
+      "viral_hook_tag": "ΔΗΜΟΦΙΛΕΣΤΕΡΟ ΕΡΓΑΛΕΙΟ"
     },
     "brands": {
       "ex1_cat": "Μάρκα Ομορφιάς",
@@ -688,6 +990,383 @@
       "intro": "Τέλος στα ακριβά shootings. Το InfluexAI δίνει στη μάρκα σου έναν μοναδικό AI-Εκφωνητή που φαίνεται ίδιος παντού.",
       "kicker": "Για Επιχειρήσεις & Μάρκες"
     },
+    "campaignStudio": {
+      "audience": {
+        "agency_desc": "Μετατρέψτε briefings σε πακέτα έτοιμα για καμπάνιες γρηγορότερα.",
+        "agency_kicker": "Agencies",
+        "agency_title": "Περισσότερο Output ανά πελάτη",
+        "brand_desc": "Συνεπή Assets για Ads, Reels και Social — χωρίς ακριβά γυρίσματα.",
+        "brand_kicker": "Brands",
+        "brand_title": "Καμπάνιες αντί για μεμονωμένες αναρτήσεις",
+        "creator_desc": "Από την ιδέα στην έτοιμη ανάρτηση — Hooks, Visuals και Score σε λίγα λεπτά.",
+        "creator_kicker": "Δημιουργοί",
+        "creator_title": "Περιεχόμενο χωρίς εξάντληση",
+        "headline": "Για ομάδες που θέλουν να λανσάρουν γρηγορότερα.",
+        "kicker": "Κοινό-στόχος",
+        "local_desc": "Reels, προσφορές και τοπικές καμπάνιες — απλά και επαναλήψιμα.",
+        "local_kicker": "Τοπικές επιχειρήσεις",
+        "local_title": "Ορατότητα χωρίς Agency"
+      },
+      "featureExplorer": {
+        "columns": {
+          "automate": "Αυτοματισμός",
+          "create": "Δημιουργία",
+          "visuals": "Visuals"
+        },
+        "groups": {
+          "ads": {
+            "title": "Διαφήμιση & Ads"
+          },
+          "agent": {
+            "title": "Agent & Καμπάνιες"
+          },
+          "export": {
+            "title": "Ανάλυση & Εξαγωγή"
+          },
+          "images": {
+            "title": "Εικόνες & Avatars"
+          },
+          "live": {
+            "title": "Live & Ήχος"
+          },
+          "scripts": {
+            "title": "Scripts & Hooks"
+          },
+          "video": {
+            "title": "Video & Motion"
+          }
+        },
+        "headline": "Όλα τα εργαλεία. Μία σαφής επισκόπηση.",
+        "kicker": "Προϊόν",
+        "links": {
+          "ad": "Δημιουργός Διαφημίσεων",
+          "autopilot": "Agent Autopilot",
+          "calendar": "Ημερολόγιο Περιεχομένου",
+          "campaign": "Campaign Autopilot",
+          "competitor": "Ανάλυση Ανταγωνισμού",
+          "gallery": "Αρχείο Studio",
+          "hook": "Δημιουργός Viral Hook",
+          "imageGen": "Δημιουργός Εικόνων",
+          "kiIch": "Το KI-Ich μου",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "Εκπαίδευση LoRA",
+          "melodia": "Melodia Studio",
+          "product": "Διαφήμιση Προϊόντος",
+          "scene": "Δημιουργός Σκηνών",
+          "score": "Viral Score",
+          "script": "Δημιουργός Script",
+          "seedance": "Video Motion",
+          "story": "Δημιουργός Ιστοριών",
+          "thumbnail": "Ιδέα Thumbnail",
+          "transform": "Μετασχηματιστής Βίντεο",
+          "trend": "Trend Script"
+        },
+        "preview": {
+          "agent": {
+            "badge": "Agent Autopilot",
+            "cta": "Έναρξη Agent",
+            "href": "/dashboard/ki-agent",
+            "quote": "Καμπάνια 7 ημερών από ένα briefing"
+          },
+          "export": {
+            "badge": "Creative Score",
+            "cta": "Ανάλυση Score",
+            "href": "/dashboard/viral-score",
+            "quote": "Έλεγχος ποιότητας πριν το ανέβασμα"
+          },
+          "images": {
+            "badge": "Image Studio",
+            "cta": "Δημιουργία εικόνας",
+            "href": "/dashboard/image-generator",
+            "quote": "Brand Visual για Reels & Ads"
+          },
+          "live": {
+            "badge": "Live Studio",
+            "cta": "Άνοιγμα Live Creator",
+            "href": "/dashboard/live-creator",
+            "quote": "KI-Avatar ζωντανά στο TikTok & YouTube"
+          },
+          "scripts": {
+            "badge": "Script Studio",
+            "cta": "Δημιουργία Script",
+            "href": "/dashboard/script-generator",
+            "quote": "Hook που σταματάει σε 3 δευτερόλεπτα"
+          },
+          "video": {
+            "badge": "Video Motion",
+            "cta": "Έναρξη βίντεο",
+            "href": "/dashboard/story-creator",
+            "quote": "Στατική εικόνα γίνεται Motion Clip"
+          }
+        },
+        "subheadline": "Από το Script μέχρι το Export — κάθε module απέχει ένα κλικ."
+      },
+      "featuresMenu": {
+        "categories": {
+          "avatar": "AVATAR & AUDIO",
+          "create": "ΔΗΜΙΟΥΡΓΙΑ",
+          "intelligence": "INTELLIGENCE",
+          "video": "VIDEO",
+          "visuals": "VISUALS",
+          "workflow": "WORKFLOW"
+        },
+        "close": "Κλείσιμο μενού χαρακτηριστικών",
+        "groups": {
+          "ads": {
+            "title": "Διαφήμιση & Ads"
+          },
+          "agent": {
+            "title": "Agent & Καμπάνιες"
+          },
+          "analysis": {
+            "title": "Ανάλυση & Score"
+          },
+          "audio": {
+            "title": "Audio & Sync"
+          },
+          "edit": {
+            "title": "Επεξεργασία & Μετασχηματισμός"
+          },
+          "images": {
+            "title": "Εικόνες & Avatars"
+          },
+          "library": {
+            "title": "Αρχείο"
+          },
+          "live": {
+            "title": "Live & Χαρακτήρες"
+          },
+          "motion": {
+            "title": "Motion & Clips"
+          },
+          "scripts": {
+            "title": "Scripts & Hooks"
+          },
+          "tools": {
+            "title": "Insights"
+          },
+          "ugc": {
+            "title": "UGC & Commerce"
+          }
+        },
+        "items": {
+          "ad": "Ad Creator",
+          "analytics": "Analytics",
+          "autopilot": "Agent Autopilot",
+          "avatarStudio": "Avatar Studio",
+          "calendar": "Ημερολόγιο Περιεχομένου",
+          "campaign": "Campaign Autopilot",
+          "character": "Character Studio",
+          "competitor": "Ανάλυση Ανταγωνισμού",
+          "ecommerce": "E-Commerce Ads",
+          "faceStudio": "Face Studio",
+          "gallery": "Αρχείο Studio",
+          "hook": "Viral Hook Generator",
+          "imageGen": "Bild Generator",
+          "kiIch": "Το KI-Ich μου",
+          "lipsync": "Lipsync Studio",
+          "liveCreator": "Live Creator",
+          "lora": "LoRA Training",
+          "melodia": "Melodia Studio",
+          "motionTransfer": "Motion Transfer",
+          "niche": "Niche Analyzer",
+          "outlier": "Outlier Detector",
+          "product": "Διαφήμιση Προϊόντος",
+          "remix": "Video Remix",
+          "scene": "Γεννήτρια Σκηνών",
+          "score": "Viral Score",
+          "script": "Script Generator",
+          "seedance": "Video Motion",
+          "story": "Story Creator",
+          "textToVideo": "Text to Video",
+          "thumbnail": "Thumbnail Κονσέπτ",
+          "transform": "Video Transformer",
+          "translate": "Μεταφραστής Βίντεο",
+          "trend": "Trend Script",
+          "ugcVideo": "UGC Video",
+          "upscaler": "HD Upscaler"
+        },
+        "promo": {
+          "avatar": {
+            "cta": "Άνοιγμα Live Creator",
+            "description": "Live, Lipsync και Φωνή σε μία ροή.",
+            "headline": "Το AI πρόσωπό σου. Παντού συνεπές.",
+            "href": "/dashboard/live-creator",
+            "label": "Avatar Studio"
+          },
+          "campaign": {
+            "cta": "Ξεκινήστε τώρα",
+            "description": "Εικόνες, Motion, Hooks και Score — σε μία ροή εργασίας.",
+            "headline": "Από μια ιδέα σε μια καμπάνια.",
+            "href": "/auth/sign-up",
+            "label": "AI Campaign Studio"
+          },
+          "create": {
+            "cta": "Δημιουργία Script",
+            "description": "Hooks, Ημερολόγιο και Διαφημίσεις από ένα briefing.",
+            "headline": "Scripts έτοιμα για άμεση δημοσίευση.",
+            "href": "/dashboard/script-generator",
+            "label": "Content Create"
+          },
+          "intelligence": {
+            "cta": "Agent Autopilot",
+            "description": "Agent, Score και Ανάλυση Ανταγωνισμού.",
+            "headline": "Με βάση δεδομένα αντί για εικασίες.",
+            "href": "/dashboard/ki-agent",
+            "label": "Creative Intelligence"
+          },
+          "video": {
+            "cta": "Έναρξη βίντεο",
+            "description": "Story, Σκηνές και Μετασχηματισμός Βίντεο.",
+            "headline": "Η εικόνα γίνεται Motion Clip.",
+            "href": "/dashboard/story-creator",
+            "label": "Video Motion"
+          },
+          "visuals": {
+            "cta": "Δημιουργία εικόνας",
+            "description": "Εικόνες AI, Avatars και UGC-Look για Social.",
+            "headline": "Brand Assets σε δευτερόλεπτα.",
+            "href": "/dashboard/image-generator",
+            "label": "VISUAL STUDIO"
+          }
+        },
+        "title": "Χαρακτηριστικά"
+      },
+      "hero": {
+        "ctaPrimary": "Ξεκίνα τώρα",
+        "ctaSecondary": "Δες Demo",
+        "headline": "Από μία ιδέα σε μία ολοκληρωμένη καμπάνια.",
+        "kicker": "AI Campaign Studio",
+        "mockup": {
+          "captionPreview": "3 βήματα για το λανσάρισμα. Αποθήκευση για αργότερα.",
+          "hookPreview": "POV: Ξεκινάς το SaaS σου — χωρίς εβδομάδες 80 ωρών.",
+          "outputCaption": "Caption",
+          "outputHook": "Hook",
+          "outputImage": "Hero Visual",
+          "outputVideo": "Motion",
+          "prompt": "7ήμερο Launch για το SaaS μου — Reels, Hooks και Visuals για TikTok & LinkedIn.",
+          "promptLabel": "Briefing Καμπάνιας",
+          "scoreLabel": "Creative Score",
+          "scoreValue": "91"
+        },
+        "note": "Από €{price}/μήνα · Credits συμπεριλαμβάνονται · Ακύρωση ανά μήνα",
+        "subheadline": "Εικόνες, Motion, Hooks, Captions, Hashtags και Creative Score — έτοιμα για εξαγωγή στα Social Media."
+      },
+      "pack": {
+        "briefing_content": "Fitness Coach · Instagram · παρακινητικό · Κοινό γυναίκες 25-40",
+        "briefing_label": "Το Briefing σου",
+        "captions_desc": "5 Captions + Hashtags",
+        "captions_icon": "💬",
+        "captions_title": "Captions",
+        "cta": "Εκκίνηση Agent",
+        "headline": "Ένα Briefing. Μία Ροή εργασίας. Έτοιμα Assets.",
+        "hooks_desc": "10 Hooks για το niche σου",
+        "hooks_icon": "⚡",
+        "hooks_title": "Viral Hooks",
+        "kicker": "Πώς λειτουργεί",
+        "motion_desc": "Ιδέες βίντεο + Σχέδιο σκηνών",
+        "motion_icon": "🎬",
+        "motion_title": "Motion",
+        "plan_desc": "Ημερολόγιο 30 ημερών",
+        "plan_icon": "📅",
+        "plan_title": "Πλάνο Περιεχομένου",
+        "score_note": "Η ποιότητα αξιολογείται αυτόματα και βελτιστοποιείται όταν χρειάζεται.",
+        "score_pill": "Creative Score: 94/100 (Παράδειγμα)",
+        "script_desc": "Πλήρες σενάριο βίντεο",
+        "script_icon": "📝",
+        "script_title": "Σενάριο",
+        "subheadline": "Το Agent Autopilot διαβάζει το briefing σου και συντονίζει τα κατάλληλα εργαλεία στο Studio.",
+        "visuals_desc": "3 KI-εικόνες on-brand",
+        "visuals_icon": "🖼",
+        "visuals_title": "Visuals"
+      },
+      "pricingCta": {
+        "ctaPrimary": "Δείτε τιμές",
+        "ctaSecondary": "Εγγραφή δωρεάν",
+        "headline": "Διαφανής εκκίνηση. Κλιμάκωση καθώς μεγαλώνεις.",
+        "kicker": "Τιμές",
+        "subheadline": "Credits για πραγματικές δημιουργίες — με μηνιαία ακύρωση."
+      },
+      "showcase": {
+        "headline": "Υλικά καμπανιών που λειτουργούν αμέσως.",
+        "items": {
+          "adPack": {
+            "badges": {
+              "export": "Export",
+              "multi": "Multi"
+            },
+            "description": "Πακέτο καμπάνιας με πολλαπλές μορφές για Reels, Story, Feed και Ads.",
+            "tag": "Ad Pack",
+            "title": "Brand Story · Multi-Format Export"
+          },
+          "creator": {
+            "badges": {
+              "ads": "Ads",
+              "ugc": "UGC"
+            },
+            "description": "Φυσικό Creator Asset για Social Proof και Performance Ads.",
+            "tag": "Creator Pack",
+            "title": "Creator Campaign · UGC Look"
+          },
+          "hook": {
+            "badges": {
+              "hook": "Hook",
+              "tiktok": "TikTok"
+            },
+            "description": "Hook Visual με δυνατή αρχή για περισσότερη προσοχή στο Feed.",
+            "tag": "Hook Card",
+            "title": "Scroll-Stopper · TikTok · DE"
+          },
+          "motion": {
+            "badges": {
+              "duration": "15s",
+              "video": "Video"
+            },
+            "description": "Σύντομο Motion Clip για παρουσιάσεις προϊόντων, Ads και αναρτήσεις λανσαρίσματος.",
+            "tag": "Motion Clip",
+            "title": "SaaS Demo · 15s Loop · LinkedIn"
+          },
+          "reel": {
+            "badges": {
+              "ratio": "9:16",
+              "visual": "Visual"
+            },
+            "description": "Ένα εντυπωσιακό κάθετο visual για TikTok, Reels και Shorts.",
+            "tag": "Reel Visual",
+            "title": "Product Launch · Acid-Look · 9:16"
+          },
+          "score": {
+            "badges": {
+              "analysis": "Ανάλυση",
+              "score": "Score"
+            },
+            "description": "Αξιολόγηση Hook, μορφής, αναγνωσιμότητας και δυναμικού Scroll-Stop.",
+            "tag": "Creative Score",
+            "title": "Score Analyse · Kampagnen-Check"
+          }
+        },
+        "kicker": "Showcase",
+        "scrollNext": "Επόμενες κάρτες",
+        "scrollPrev": "Προηγούμενες κάρτες"
+      },
+      "tools": {
+        "agent_desc": "Εισαγωγή briefing — ο Agent σχεδιάζει Hooks, Copy και επόμενα βήματα.",
+        "agent_title": "Agent Autopilot",
+        "gallery_desc": "Όλα τα Assets σε ένα μέρος — έτοιμα για λήψη για TikTok, Reels & LinkedIn.",
+        "gallery_title": "Gallery & Export",
+        "headline": "Όλα για την καμπάνια σου — σε μία ροή εργασίας.",
+        "image_desc": "Εικόνες AI για Reels, Ads και Thumbnails — σύμφωνα με το brand και γρήγορα.",
+        "image_title": "Image Studio",
+        "kicker": "Studio",
+        "openTool": "Άνοιγμα εργαλείου",
+        "score_desc": "Αξιολόγησε Hooks και ιδέες πριν το ανέβασμα — με δεδομένα αντί για εικασίες.",
+        "score_title": "Creative Score",
+        "subheadline": "Χωρίς χάος εργαλείων. Image, Video, Agent, Score και Export δουλεύουν μαζί.",
+        "video_desc": "Εικόνα σε Video, Motion Clips και Short-Form Assets για όλες τις πλατφόρμες.",
+        "video_title": "Video Motion"
+      }
+    },
     "cta": {
       "headline1": "Χωρίς Πρόσωπο.",
       "headline2": "Χωρίς Όριο.",
@@ -699,37 +1378,486 @@
       "sub1": "Για Creator που θέλουν να γίνουν viral.",
       "sub2": "Για Μάρκες που θέλουν να κλιμακωθούν."
     },
+    "demos": {
+      "activity": {
+        "a1": {
+          "action": "Κοινό εντοπίστηκε",
+          "badge": "✓",
+          "context": "Ακίνητα · Ιδιοκτήτες · Demo"
+        },
+        "a10": {
+          "action": "Προσαρμογή Πλατφόρμας (Παράδειγμα)",
+          "badge": "Υψηλό",
+          "context": "TikTok · Reels"
+        },
+        "a11": {
+          "action": "Παράδειγμα Αξιολόγησης",
+          "badge": "91",
+          "context": "Αντίθεση · Αναγνωσιμότητα"
+        },
+        "a12": {
+          "action": "Ιδέα KI-Avatar (Παράδειγμα)",
+          "badge": "✓",
+          "context": "Το KI-Ich μου · Demo"
+        },
+        "a2": {
+          "action": "Παράδειγμα Score υπολογίστηκε",
+          "badge": "91",
+          "context": "Script · TikTok"
+        },
+        "a3": {
+          "action": "Script βελτιστοποιήθηκε (Παράδειγμα)",
+          "badge": "✓",
+          "context": "Hook → Ιστορία → CTA"
+        },
+        "a4": {
+          "action": "Prompt εικόνας δημιουργήθηκε",
+          "badge": "✓",
+          "context": "Ομορφιά · 4:5 · Demo"
+        },
+        "a5": {
+          "action": "Έλεγχος κινδύνου: Παράδειγμα",
+          "badge": "Χαμηλό",
+          "context": "Γλώσσα Χρηματοοικονομικών"
+        },
+        "a6": {
+          "action": "Ημερολόγιο Περιεχομένου (Παράδειγμα)",
+          "badge": "✓",
+          "context": "7 Ημέρες · 3 Μορφές"
+        },
+        "a7": {
+          "action": "Επικάλυψη Branding ετοιμάστηκε",
+          "badge": "✓",
+          "context": "Χρώματα Μάρκας · Demo"
+        },
+        "a8": {
+          "action": "Λεζάντα συντομεύτηκε (Παράδειγμα)",
+          "badge": "✓",
+          "context": "Instagram · DE"
+        },
+        "a9": {
+          "action": "CTA βελτιώθηκε (Παράδειγμα)",
+          "badge": "88",
+          "context": "Reel-Ad · Προϊόν"
+        }
+      },
+      "campaign": {
+        "monthly": {
+          "deliverables": [
+            "20–30 Ideen",
+            "8–12 Reels",
+            "Captions",
+            "Visual-Briefings"
+          ],
+          "subtitle": "Περιεχόμενο 30 Ημερών",
+          "title": "Monthly Campaign",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "sprint": {
+          "deliverables": [
+            "3–5 Posts",
+            "3 Hooks",
+            "3 Captions",
+            "1 Mini-Kalender"
+          ],
+          "subtitle": "Περιεχόμενο 2–3 Ημερών",
+          "title": "Sprint Content",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        },
+        "weekly": {
+          "deliverables": [
+            "5–7 Posts",
+            "3 Reels",
+            "2 Carousels",
+            "Posting-Zeiten"
+          ],
+          "subtitle": "Περιεχόμενο 7 Ημερών",
+          "title": "Weekly Content",
+          "workflowSteps": [
+            "Briefing verstehen",
+            "Zielgruppe erkennen",
+            "Inhalte planen",
+            "Qualität prüfen (Beispiel)"
+          ]
+        }
+      },
+      "campaignSection": {
+        "description": "Παραδείγματα καρτών: Ο Agent σχεδιάζει περιεχόμενο 2–3 ημερών, 7 ημερών ή 30 ημερών — με Scripts, Hooks, Captions και Ημερολόγιο.",
+        "headline1": "ΕΝΑ BRIEFING.",
+        "headline2": "ΕΝΑ ΠΑΚΕΤΟ ΠΕΡΙΕΧΟΜΕΝΟΥ.",
+        "kicker": "Campaign Autopilot · Demo",
+        "workflowLabel": "Demo-Workflow"
+      },
+      "hero": {
+        "avatar": {
+          "agentSteps": [
+            "Foto geprüft",
+            "Stil gewählt",
+            "Consent bestätigt",
+            "Konsistenz gesichert"
+          ],
+          "agentSummary": "Concept KI-Avatar · Υπόδειξη συγκατάθεσης",
+          "miniLabel": "Reels · Διαφημίσεις · Brand",
+          "outputs": [
+            {
+              "label": "Stil",
+              "text": "Tech Creator · clean background · professional look"
+            }
+          ],
+          "prompt": "Δημιούργησε το KI-Avatar μου σε στυλ Tech-Creator.",
+          "resultScore": "Συγκατάθεση ✓",
+          "resultSubtitle": "Concept Avatar με είσοδο φωτογραφίας",
+          "resultTitle": "Concept KI-Avatar",
+          "toolLabel": "Το KI-Ich μου"
+        },
+        "hooks": {
+          "agentSteps": [
+            "Trend-Fit analysiert",
+            "Hooks generiert",
+            "Klarheit optimiert",
+            "Risiko geprüft"
+          ],
+          "agentSummary": "5 Hooks δημιουργήθηκαν · Κίνδυνος χαμηλός",
+          "miniLabel": "Ταίριασμα πλατφόρμας: Υψηλό",
+          "outputs": [
+            {
+              "label": "Hook 1",
+              "text": "Diese Wohnung war in 4 Stunden verkauft."
+            },
+            {
+              "label": "Hook 2",
+              "text": "Die meisten Eigentümer unterschätzen diesen Fehler."
+            },
+            {
+              "label": "Hook 3",
+              "text": "Deine Wohnung ist vielleicht mehr wert, als du denkst."
+            }
+          ],
+          "prompt": "Δώσε μου 5 δυνατά Hooks για τη σελίδα ακινήτων μου.",
+          "resultScore": "Κίνδυνος χαμηλός",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "5 Hooks έτοιμα",
+          "toolLabel": "Viral Hook"
+        },
+        "kalender": {
+          "agentSteps": [
+            "Zielgruppe erkannt",
+            "Themencluster erstellt",
+            "Hooks optimiert",
+            "Kalender formatiert"
+          ],
+          "agentSummary": "Κοινό εντοπίστηκε · Ημερολόγιο έτοιμο",
+          "miniLabel": "7 αναρτήσεις · 3 μορφές",
+          "outputs": [
+            {
+              "label": "Mo",
+              "text": "Immobilienwert erklären"
+            },
+            {
+              "label": "Mi",
+              "text": "Verkaufsfehler vermeiden"
+            },
+            {
+              "label": "Fr",
+              "text": "Eigentümer-CTA"
+            }
+          ],
+          "prompt": "Σχεδίασέ μου περιεχόμενο 7 ημερών για μια εταιρεία ακινήτων.",
+          "resultScore": "Κίνδυνος χαμηλός",
+          "resultSubtitle": "Hook 91",
+          "resultTitle": "Περιεχόμενο 7 ημερών έτοιμο",
+          "toolLabel": "Content Kalender"
+        },
+        "produkt": {
+          "agentSteps": [
+            "Produkt analysiert",
+            "Nutzenversprechen geschärft",
+            "Spot-Text erstellt",
+            "CTA ergänzt"
+          ],
+          "agentSummary": "Διαφήμιση προϊόντος · Γλώσσα Finance εξομαλύνθηκε",
+          "miniLabel": "Reels · 15s",
+          "outputs": [
+            {
+              "label": "Spot",
+              "text": "Du verlierst Zeit in deiner Buchhaltung — weil deine Belege noch manuell sortiert werden."
+            }
+          ],
+          "prompt": "Γράψε μου μια διαφήμιση Reel για μια εφαρμογή φορολογικής KI.",
+          "resultScore": "Κίνδυνος χαμηλός",
+          "resultSubtitle": "Σαφήνεια 90",
+          "resultTitle": "Script διαφήμισης έτοιμο",
+          "toolLabel": "Διαφήμιση προϊόντος"
+        },
+        "visual": {
+          "agentSteps": [
+            "Stil definiert",
+            "Bildprompt erstellt",
+            "Format gewählt",
+            "Quality Gate vorbereitet"
+          ],
+          "agentSummary": "Prompt εικόνας δημιουργήθηκε · Μορφή 4:5",
+          "miniLabel": "Χωρίς κείμενο",
+          "outputs": [
+            {
+              "label": "Briefing",
+              "text": "Soft studio light · clean skin · sustainable editorial mood"
+            }
+          ],
+          "prompt": "Δημιούργησε ένα οπτικό διαφήμισης για μια βιώσιμη ρουτίνα ομορφιάς.",
+          "resultScore": "Κίνδυνος χαμηλός",
+          "resultSubtitle": "Ταίριασμα Brand: Υψηλό",
+          "resultTitle": "Οπτικό briefing έτοιμο",
+          "toolLabel": "Γεννήτρια εικόνων"
+        }
+      },
+      "labels": {
+        "agent": "Πράκτορας",
+        "agentActivityStream": "Δραστηριότητα Πράκτορα",
+        "agentDecision": "ΑΠΟΦΑΣΗ ΠΡΑΚΤΟΡΑ",
+        "agentWorkflow": "Ροή Εργασίας Demo",
+        "cta": "CTA",
+        "demo": "Demo",
+        "demoAgentWorks": "Demo: Έτσι δουλεύει ο AI-Πράκτορας",
+        "demoExample": "Παράδειγμα Demo",
+        "demoExampleCards": "Παράδειγμα Καρτών",
+        "demoRunning": "Το Demo εκτελείται",
+        "demoScore": "Αξιολόγηση Demo",
+        "exampleOutput": "Παράδειγμα Αποτελέσματος",
+        "exampleQualityCheck": "Παραδειγματικός Έλεγχος Ποιότητας",
+        "exampleResult": "Έτσι θα μπορούσε να φαίνεται ένα αποτέλεσμα",
+        "exampleResultTitle": "Παράδειγμα Αποτελέσματος",
+        "exampleScore": "Παράδειγμα Αξιολόγησης",
+        "high": "Υψηλός",
+        "hook": "Hook",
+        "input": "ΕΙΣΑΓΩΓΗ",
+        "low": "Χαμηλός",
+        "medium": "Μεσαίος",
+        "output": "ΑΠΟΤΕΛΕΣΜΑ",
+        "preview": "Προεπισκόπηση",
+        "prompt": "Prompt",
+        "qualityCheck": "Έλεγχος Ποιότητας",
+        "riskCheck": "Έλεγχος Κινδύνου",
+        "riskCheckExample": "Έλεγχος Κινδύνου: Παράδειγμα",
+        "score": "ΑΞΙΟΛΟΓΗΣΗ",
+        "scoreClarity": "Σαφήνεια",
+        "scoreConsent": "Συγκατάθεση",
+        "scoreConsistency": "Συνέπεια",
+        "scoreHook": "Hook",
+        "scorePlan": "Σχέδιο",
+        "scorePlatform": "Πλατφόρμα",
+        "scoreRisk": "Κίνδυνος",
+        "scoreScrollStop": "Scroll-Stop",
+        "spot": "Spot",
+        "story": "Ιστορία"
+      },
+      "quality": {
+        "brand": {
+          "items": [
+            "Markenstimme",
+            "Zielgruppe",
+            "Plattform-Fit (Beispiel)",
+            "Wiederholungen vermeiden"
+          ],
+          "title": "Έλεγχος Μάρκας · Παράδειγμα"
+        },
+        "text": {
+          "items": [
+            "Keine falschen Versprechen",
+            "CTA klar",
+            "Tonalität passend",
+            "Risiko-Check: Beispiel · Niedrig"
+          ],
+          "title": "Έλεγχος Κειμένου · Παράδειγμα"
+        },
+        "visual": {
+          "items": [
+            "Keine kaputten Hände/Finger",
+            "Kein falsches Logo",
+            "Text nicht von KI verzerrt",
+            "Format korrekt"
+          ],
+          "title": "Οπτικός Έλεγχος · Παράδειγμα"
+        }
+      },
+      "qualitySection": {
+        "description": "Ενδεικτικός έλεγχος ποιότητας — έτσι θα μπορούσε να φαίνεται ένας έλεγχος πριν την εξαγωγή.",
+        "headline1": "ΠΟΙΟΤΗΤΑ,",
+        "headline2": "ΠΡΙΝ ΕΞΑΓΑΓΕΙΣ.",
+        "kicker": "Έλεγχος Ποιότητας · Παράδειγμα"
+      },
+      "stacked": {
+        "avatar": {
+          "agentDecisions": [
+            "Tool gewählt: Mein KI-Ich",
+            "Avatar-Konzept mit Foto-Input (Beispiel)",
+            "Consent-Hinweis als Demo gezeigt"
+          ],
+          "badge": "Το KI-Ich μου",
+          "description": "Ανέβασε μια φωτογραφία και λάβε ένα παράδειγμα concept για το KI-Ich σου.",
+          "headline": "ΤΟ KI-AVATAR ΣΟΥ ΠΑΡΑΜΕΝΕΙ ΑΝΑΓΝΩΡΙΣΙΜΟ",
+          "input": "1 φωτογραφία · Στυλ: Professional / Tech-Creator\nΣύγχρονο γραφείο",
+          "outputTags": [
+            "Professional",
+            "Studio BG",
+            "Wiedererkennbar"
+          ],
+          "outputTitle": "Concept KI-Avatar",
+          "scores": {
+            "consent": "✓",
+            "consistency": "94",
+            "risk": "χαμηλός"
+          }
+        },
+        "content_kalender": {
+          "agentDecisions": [
+            "Tool gewählt: Content Kalender KI",
+            "Themencluster erstellt (Beispiel)",
+            "Posting-Zeiten als Demo optimiert"
+          ],
+          "badge": "Content Kalender KI",
+          "calendarFooter": "Καλύτερη ώρα δημοσίευσης: 18:00–20:00 · Ταίριασμα πλατφόρμας: Υψηλό",
+          "calendarRows": [
+            {
+              "day": "Mo",
+              "topic": "ETF-Erklärvideo: \"Was ist der MSCI World?\"",
+              "format": "Reel 30s"
+            },
+            {
+              "day": "Di",
+              "topic": "Tipp: \"Sparrate berechnen in 2 Min\"",
+              "format": "Carousel"
+            },
+            {
+              "day": "Mi",
+              "topic": "Story: Meine Depot-Routine diese Woche",
+              "format": "Story"
+            },
+            {
+              "day": "Do",
+              "topic": "Vergleich: \"Tagesgeld vs. ETF 2026\"",
+              "format": "Reel 60s"
+            },
+            {
+              "day": "Fr",
+              "topic": "Community-Frage: \"Was ist euer Sparziel?\"",
+              "format": "Post"
+            }
+          ],
+          "description": "Ο Agent σχεδιάζει με βάση στόχο, συχνότητα και πλατφόρμα — ως παράδειγμα ημερολογίου με ώρες δημοσίευσης.",
+          "headline": "ΤΟ ΠΛΑΝΟ ΠΕΡΙΕΧΟΜΕΝΟΥ ΣΟΥ ΕΙΝΑΙ ΕΤΟΙΜΟ",
+          "input": "Niche: Προσωπικά Οικονομικά / Επενδύσεις\nInstagram · 5×/εβδομάδα · 7 ημέρες",
+          "scores": {
+            "plan": "92",
+            "platform": "Υψηλό",
+            "risk": "χαμηλός"
+          }
+        },
+        "product": {
+          "agentDecisions": [
+            "Tool gewählt: Produkt Werbung",
+            "Nutzenversprechen geschärft",
+            "Risiko-Check: Beispiel — Finance-Sprache entschärft"
+          ],
+          "badge": "Διαφήμιση Προϊόντος",
+          "description": "Δεδομένα προϊόντος μέσα — ο Πράκτορας επιλέγει Spot, Caption και CTA ως παράδειγμα για Reels & Shorts.",
+          "headline": "ΔΙΑΦΗΜΙΣΕΙΣ ΠΡΟΪΟΝΤΩΝ ΣΕ ΔΕΥΤΕΡΟΛΕΠΤΑ",
+          "input": "Προϊόν: \"AI-Εφαρμογή Φόρων για Αυτοαπασχολούμενους\"\nInstagram Reels",
+          "outputCta": "Link στο Bio — δοκιμή 14 ημερών.",
+          "outputHook": "Χάνεις χρόνο στη λογιστική σου — επειδή οι αποδείξεις σου ταξινομούνται ακόμα χειροκίνητα.",
+          "outputSpot": "Το TaxMind αναγνωρίζει αποδείξεις, κατηγοριοποιεί έξοδα και προετοιμάζει τη λογιστική σου με υποστήριξη AI.",
+          "scores": {
+            "clarity": "90",
+            "hook": "89",
+            "risk": "χαμηλός"
+          }
+        },
+        "script": {
+          "agentDecisions": [
+            "Tool gewählt: Script Generator",
+            "Zielgruppe: Immobilien-Einsteiger",
+            "Risiko-Check: Beispiel — keine Finanzversprechen"
+          ],
+          "badge": "Script Generator",
+          "description": "Ο Πράκτορας κατανοεί το κοινό-στόχο και τη μορφή — και παραδίδει Hook, Story και CTA ως παράδειγμα Script.",
+          "headline": "SCRIPT ΣΕ ΔΕΥΤΕΡΟΛΕΠΤΑ",
+          "input": "\"Δημιούργησε ένα TikTok-Script για αρχάριους στα ακίνητα.\"\nTikTok · 30s",
+          "outputCta": "Σχολίασε START — θα σου στείλω τη λίστα ελέγχου.",
+          "outputHook": "Οι περισσότεροι πιστεύουν ότι η αγορά ακινήτων είναι μόνο για πλούσιους. Ξεκίνησα στα 25 — αυτός είναι ο δρόμος.",
+          "outputStory": "Κατανόηση προϋπολογισμού, δημιουργία ιδίων κεφαλαίων, έλεγχος επιλογών επιδότησης — χωρίς υπερβολές.",
+          "scores": {
+            "clarity": "88",
+            "hook": "91",
+            "risk": "χαμηλός"
+          }
+        },
+        "viral_hook": {
+          "agentDecisions": [
+            "Tool gewählt: Viral Hook Extraktor",
+            "Scroll-Stop analysiert (Beispiel)",
+            "5 Varianten als Demo erstellt"
+          ],
+          "badge": "Εξαγωγέας Viral Hook",
+          "description": "Ο Πράκτορας αξιολογεί Scroll-Stop, Σαφήνεια και Ταίριασμα με Κοινό — μετά παραδίδει παράδειγμα παραλλαγών.",
+          "headline": "HOOKS ΠΟΥ ΣΤΑΜΑΤΟΥΝ",
+          "input": "Θέμα: \"Βιώσιμη ρουτίνα ομορφιάς κάτω από 30€\"\nTikTok",
+          "outputItems": [
+            "Ich hab meine Beauty-Routine auf nachhaltig umgestellt — für unter 30€.",
+            "Warum gibst du 80€ für Gesichtscreme aus, wenn deine Routine einfacher funktionieren kann?",
+            "POV: Du findest heraus, dass dein Lieblingsprodukt nicht cruelty-free ist."
+          ],
+          "scores": {
+            "hook": "91",
+            "risk": "χαμηλός",
+            "scroll_stop": "87"
+          }
+        }
+      },
+      "stackedSection": {
+        "headline1": "ΔΕΙΤΕ ΠΩΣ Ο",
+        "headline2": "AI-ΠΡΑΚΤΟΡΑΣ ΔΟΥΛΕΥΕΙ",
+        "kicker": "Ροή Εργασίας Demo"
+      }
+    },
     "faq": {
-      "a_agent1": "Yes, in the dashboard. You enter a goal, the agent picks the right tools and creates outputs automatically.",
-      "a_agent2": "No. The landing page shows demos only. Real execution happens in the dashboard.",
-      "a_agent3": "The agent can review outputs, improve them, or create new variants. Critical workflows use quality gates.",
-      "a_agent4": "Credits are used for real generations and exports in the dashboard.",
-      "a_agent5": "Yes. Campaign Autopilot is designed for 2–3 day, 7 day, and 30 day content packages.",
-      "q_agent1": "Does the agent work automatically?",
-      "q_agent2": "Does the landing page run real actions?",
-      "q_agent3": "What if an output doesn't fit?",
-      "q_agent4": "What are credits used for?",
-      "q_agent5": "Can I create 7 or 30 days of content?",
-      "a_sub1": "Ναι. Το INFLUEXAI προσφέρεται ως μηνιαία ή ετήσια συνδρομή. Κάθε πλάνο περιλαμβάνει Credits για τα AI εργαλεία και creator modules μας. Τα μηνιαία πλάνα μπορούν να ακυρωθούν κάθε μήνα.",
-      "a_sub2": "Ναι. Τα μηνιαία πλάνα μπορούν να ακυρωθούν κάθε μήνα. Με ετήσια πλάνα, η πρόσβασή σου συνεχίζεται μέχρι το τέλος της πληρωμένης περιόδου χρέωσης.",
-      "a_sub3": "Τα Credits είναι το υπόλοιπο χρήσης για AI δημιουργίες — π.χ. scripts, hooks, videos, avatars, voice ή εργαλεία εικόνας. Κάθε λειτουργία καταναλώνει διαφορετικά Credits.",
-      "a1": "Τα Credits είναι το νόμισμα στο InfluexAI. Κάθε module κοστίζει 2–5 Credits ανά δημιουργία. Τα Credits δεν λήγουν.",
       "a2": "Ναι, τα paid πλάνα απαιτούν μέθοδο πληρωμής. Οι πληρωμές γίνονται με ασφάλεια μέσω Stripe. Δεν αποθηκεύουμε δεδομένα κάρτας.",
       "a3": "Ναι. Όλα τα δεδομένα επεξεργάζονται στην ΕΕ. Χρησιμοποιούμε Supabase (Φρανκφούρτη) και Vercel (περιοχή ΕΕ). Τα uploads σου δεν χρησιμοποιούνται για AI training χωρίς ρητή συγκατάθεση.",
       "a4": "Ναι, με InfluexAI Voice (powered by ElevenLabs). Μπορείς να χρησιμοποιήσεις μόνο τη δική σου φωνή ή αδειοδοτημένο audio.",
       "a5": "TikTok, Instagram Reels, YouTube Shorts και LinkedIn. Όλα τα εργαλεία είναι βελτιστοποιημένα για αυτές τις πλατφόρμες.",
       "a6": "Ναι. Το Campaign Autopilot είναι σχεδιασμένο για brands και agencies. Μπορείς να σχεδιάσεις αυτόματα πλήρεις content καμπάνιες για 2–3 ημέρες, 7 ημέρες ή 30 ημέρες.",
+      "a_agent1": "Ναι, στο Dashboard. Εισάγετε έναν στόχο, ο Agent επιλέγει τα κατάλληλα εργαλεία και δημιουργεί αποτελέσματα αυτόματα.",
+      "a_agent2": "Όχι. Η σελίδα προορισμού δείχνει μόνο demos. Η πραγματική εκτέλεση γίνεται στο Dashboard.",
+      "a_agent3": "Ο Agent μπορεί να ελέγξει, να βελτιώσει ή να δημιουργήσει νέες παραλλαγές αποτελεσμάτων. Οι κρίσιμες ροές εργασίας χρησιμοποιούν Quality Gates.",
+      "a_agent4": "Τα Credits χρησιμοποιούνται για πραγματικές δημιουργίες και εξαγωγές στο Dashboard.",
+      "a_agent5": "Ναι. Το Campaign Autopilot είναι προγραμματισμένο για πακέτα περιεχομένου 2–3 ημερών, 7 ημερών και 30 ημερών.",
+      "a_sub1": "Ναι. Το INFLUEXAI προσφέρεται ως μηνιαία ή ετήσια συνδρομή. Κάθε πλάνο περιλαμβάνει Credits για τα AI εργαλεία και creator modules μας. Τα μηνιαία πλάνα μπορούν να ακυρωθούν κάθε μήνα.",
+      "a_sub2": "Ναι. Τα μηνιαία πλάνα μπορούν να ακυρωθούν κάθε μήνα. Με ετήσια πλάνα, η πρόσβασή σου συνεχίζεται μέχρι το τέλος της πληρωμένης περιόδου χρέωσης.",
+      "a_sub3": "Τα Credits είναι το υπόλοιπο χρήσης για AI δημιουργίες — π.χ. scripts, hooks, videos, avatars, voice ή εργαλεία εικόνας. Κάθε λειτουργία καταναλώνει διαφορετικά Credits.",
       "headline": "Συχνές Ερωτήσεις",
       "kicker": "Συχνές Ερωτήσεις",
-      "q_sub1": "Είναι το INFLUEXAI συνδρομή;",
-      "q_sub2": "Μπορώ να ακυρώσω τη συνδρομή μου;",
-      "q_sub3": "Τι είναι τα Credits;",
-      "q1": "Τι είναι τα Credits;",
       "q2": "Χρειάζομαι πιστωτική κάρτα;",
       "q3": "Είναι το InfluexAI συμβατό με GDPR;",
       "q4": "Μπορώ να κλωνοποιήσω τη δική μου φωνή;",
       "q5": "Ποιες πλατφόρμες υποστηρίζονται;",
-      "q6": "Μπορώ να χρησιμοποιήσω τον AI agent για το brand μου;"
+      "q6": "Μπορώ να χρησιμοποιήσω τον AI agent για το brand μου;",
+      "q_agent1": "Ο Agent λειτουργεί αυτόματα;",
+      "q_agent2": "Η σελίδα προορισμού εκτελεί πραγματικές ενέργειες;",
+      "q_agent3": "Τι συμβαίνει αν ένα αποτέλεσμα δεν ταιριάζει;",
+      "q_agent4": "Για τι χρησιμοποιούνται τα Credits;",
+      "q_agent5": "Μπορώ να δημιουργήσω περιεχόμενο για 7 ή 30 ημέρες;",
+      "q_sub1": "Είναι το INFLUEXAI συνδρομή;",
+      "q_sub2": "Μπορώ να ακυρώσω τη συνδρομή μου;",
+      "q_sub3": "Τι είναι τα Credits;"
     },
     "features": {
       "f1_api0": "Hooks",
@@ -741,7 +1869,7 @@
       "f2_api1": "Σταθερό Πρόσωπο",
       "f2_api2": "Σκηνές",
       "f2_desc": "Το AI avatar σου σε κάθε σκηνή. Σταθερό πρόσωπο σε όλες τις εικόνες και βίντεο.",
-      "f2_title": "AI Avatar",
+      "f2_title": "KI Avatar",
       "f3_api0": "Πραγματικός Χρόνος",
       "f3_api1": "Έτοιμο για Live",
       "f3_api2": "Πολλαπλές Πλατφόρμες",
@@ -771,10 +1899,10 @@
       "company": "Εταιρεία",
       "company_about": "Σχετικά με εμάς",
       "company_blog": "Blog",
-      "company_careers": "Καριέρα",
-      "company_press": "Τύπος",
       "company_business": "Επιχείρηση",
       "company_faq": "FAQ",
+      "company_guides": "Οδηγοί",
+      "company_press": "Τύπος",
       "legal": "Νομικά",
       "legal_cookies": "Cookies",
       "legal_imprint": "Νομικές Πληροφορίες",
@@ -785,8 +1913,7 @@
       "product_api": "API",
       "product_changelog": "Αρχείο Αλλαγών",
       "product_features": "Χαρακτηριστικά",
-      "product_pricing": "Τιμές",
-      "company_guides": "Οδηγοί"
+      "product_pricing": "Τιμές"
     },
     "how": {
       "headline1": "Σε 3 Βήματα",
@@ -799,7 +1926,21 @@
       "s3_desc": "Upload, URL ή εισαγωγή κειμένου. Το AI παραδίδει σε δευτερόλεπτα — έτοιμο για εξαγωγή σε όλες τις πλατφόρμες.",
       "s3_title": "Δημιουργία Περιεχομένου"
     },
+    "launchBanner": "Νέα εκκίνηση 2026 — γίνε ένας από τους πρώτους creators",
     "pricing": {
+      "all_tools_f1": "Όλα τα εργαλεία included",
+      "all_tools_f10": "Video Remix & Live Creator",
+      "all_tools_f11": "Φωνή & Μουσική & LoRA Training",
+      "all_tools_f12": "Developer API",
+      "all_tools_f2": "Agent Autopilot",
+      "all_tools_f3": "Δημιουργός Script",
+      "all_tools_f4": "Αναλυτής Niche & Ανιχνευτής Outlier",
+      "all_tools_f5": "Ιδέα Thumbnail & Viral Score",
+      "all_tools_f6": "Ανάλυση ανταγωνισμού",
+      "all_tools_f7": "Δημιουργός Εικόνας & Εικόνα σε Βίντεο",
+      "all_tools_f8": "Διαφήμιση Προϊόντος & UGC Video",
+      "all_tools_f9": "Το KI-Ich μου & Face Swap",
+      "billed_yearly": "ετήσια χρέωση (€{amount}/έτος)",
       "business_credits": "2.500 Credits/μήνα",
       "business_cta": "Ξεκίνα InfluexAI Business",
       "business_desc": "Για μάρκες, ΜΜΕ και agencies.",
@@ -809,6 +1950,7 @@
       "business_f4": "Εξαγωγή White-Label",
       "business_f5": "API + Υποστήριξη Προτεραιότητας",
       "business_name": "InfluexAI Business",
+      "cancel_anytime": "Ακύρωση ανά πάσα στιγμή",
       "creator_credits": "300 Credits/μήνα",
       "creator_cta": "InfluexAI Creator",
       "creator_desc": "Για Creator και Freelancer.",
@@ -818,14 +1960,30 @@
       "creator_f4": "20 διαφημίσεις προϊόντος",
       "creator_f5": "Κλωνοποίηση φωνής",
       "creator_name": "InfluexAI Creator",
+      "credit_outcome_body": "50 Credits επαρκούν π.χ. για περίπου 25 Σενάρια (από 2 Credits το καθένα) ή περίπου 10 Τυπικές εικόνες (από 5 Credits η καθεμία). Τα βίντεο, οι Premium εικόνες και το Lip-Sync καταναλώνουν σημαντικά περισσότερα Credits.",
+      "credit_outcome_title": "Τι σημαίνουν τα Credits;",
+      "credits_demo_note": "Τα demos της αρχικής σελίδας δεν καταναλώνουν Credits. Τα Credits χρησιμοποιούνται στο Dashboard για πραγματικές δημιουργίες και εξαγωγές.",
+      "credits_ex1": "Σενάρια & Hooks",
+      "credits_ex2": "Ιδέες εικόνων",
+      "credits_ex3": "Ημερολόγιο περιεχομένου",
+      "credits_ex4": "Ροές εργασίας Avatar",
+      "credits_ex5": "Πακέτα καμπανιών",
+      "credits_included": "Credits συμπεριλαμβάνονται",
+      "credits_usage_desc": "Τα Credits χρησιμοποιούνται για πραγματικές εκτελέσεις Agent — για παράδειγμα:",
+      "credits_usage_kicker": "Credits στο Dashboard",
       "extra_credits": "Επιπλέον Credits",
       "extra_credits_suffix": "Pay-as-you-go από €5 (50 credits).",
       "footnote": "Τα Credits δεν λήγουν.",
       "headline": "Διαφανές. Επεκτάσιμο.",
       "kicker": "Τιμές",
       "monthly": "Μηνιαία",
+      "most_popular": "ΠΙΟΔΗΜΟΦΙΛΗΣ ΕΠΙΛΟΓΗ",
       "page_subtitle": "Μηνιαία πλάνα με συμπεριλαμβανόμενα credits. Ακύρωση ανά πάσα στιγμή.",
       "per_month": "/Μήνα",
+      "plan_delta_business": "Πρόσβαση Ομάδας & πολλαπλοί χώροι εργασίας · API & Whitelabel",
+      "plan_delta_creator": "300 Credits · + Agent Autopilot · + Εργαλεία Βίντεο",
+      "plan_delta_pro": "800 Credits · + Όλα τα Εργαλεία Βίντεο · + Προτεραιότητα",
+      "plan_delta_starter": "50 Credits · Όλα τα Βασικά Εργαλεία · Κείμενο & Εικόνες",
       "popular": "Πιο Δημοφιλές Πλάνο",
       "pro_credits": "800 Credits/μήνα",
       "pro_cta": "InfluexAI Pro",
@@ -847,31 +2005,57 @@
       "starter_m2": "KI-Εγώ Pro",
       "starter_m3": "Live Creator",
       "starter_name": "InfluExAi Starter",
-      "all_tools_f1": "Όλα τα εργαλεία included",
-      "all_tools_f2": "AI Agent",
-      "all_tools_f3": "Script Generator",
-      "all_tools_f4": "Niche Analyzer & Outlier Detector",
-      "all_tools_f5": "Thumbnail Concept & Viral Score",
-      "all_tools_f6": "Ανάλυση ανταγωνισμού",
-      "all_tools_f7": "Image Generator & Image to Video",
-      "all_tools_f8": "Product Ads & UGC Video",
-      "all_tools_f9": "My AI Self & Face Swap",
-      "all_tools_f10": "Video Remix & Live Creator",
-      "all_tools_f11": "Voice & Music & LoRA Training",
-      "all_tools_f12": "Developer API",
       "yearly": "Ετήσια",
-      "yearly_discount": "−{percent}%",
-      "cancel_anytime": "Ακύρωση ανά πάσα στιγμή",
-      "billed_yearly": "ετήσια χρέωση (€{amount}/έτος)",
-      "credits_included": "Credits συμπεριλαμβάνονται",
-      "credits_usage_kicker": "Credits in the dashboard",
-      "credits_usage_desc": "Credits are used for real agent executions — for example:",
-      "credits_ex1": "Scripts & hooks",
-      "credits_ex2": "Image ideas",
-      "credits_ex3": "Content calendar",
-      "credits_ex4": "Avatar workflows",
-      "credits_ex5": "Campaign packages",
-      "credits_demo_note": "Landing page demos use no credits. Credits are used in the dashboard for real generations and exports."
+      "yearly_discount": "−{percent}%"
+    },
+    "proof": {
+      "bullet_1": "Σενάρια TikTok και Reels",
+      "bullet_2": "Ιδέες εικόνων και Creator Visuals",
+      "bullet_3": "Διαφήμιση προϊόντων",
+      "bullet_4": "Σχέδια περιεχομένου",
+      "bullet_5": "Παραλλαγές καμπανιών",
+      "cards": {
+        "content_plan": {
+          "benefit": "Θέματα, μορφές και Hooks για περιεχόμενο μιας εβδομάδας.",
+          "prompt": "Σχεδίασε περιεχόμενο 7 ημερών για ένα τοπικό εστιατόριο",
+          "title": "Πλάνο Περιεχομένου 7 Ημερών"
+        },
+        "creator_visual": {
+          "benefit": "Ιδέες εικόνων και σκηνές για το AI-Creator look σου.",
+          "prompt": "Δημιούργησε ένα Creator Visual για Reels Fitness",
+          "title": "Creator Visual"
+        },
+        "product_ad": {
+          "benefit": "Διαφήμιση προϊόντος με Spot, Caption και CTA για Reels.",
+          "prompt": "Δημιούργησε μία διαφήμιση προϊόντος για ένα άρωμα",
+          "title": "Διαφήμιση Προϊόντος"
+        },
+        "tiktok_script": {
+          "benefit": "Hook, Story και CTA για Shorts — έτοιμο για γύρισμα.",
+          "prompt": "Δημιούργησε ένα σενάριο TikTok για μία προπονήτρια Fitness",
+          "title": "Σενάριο TikTok"
+        },
+        "video_motion": {
+          "benefit": "Ιδέες βίντεο και Motion από ένα prompt.",
+          "prompt": "Δημιούργησε μία ιδέα βίντεο TikTok για μία προπονήτρια Fitness",
+          "title": "Video Motion"
+        }
+      },
+      "cta_choose_plan": "Επιλογή πλάνου",
+      "cta_dashboard": "Άνοιγμα App Studio",
+      "cta_free_plan": "Δωρεάν σχεδιασμός",
+      "cta_workflow": "Προβολή ροής εργασίας",
+      "demo_label": "Ροές εργασίας-παράδειγμα",
+      "headline": "Τι μπορείς να δημιουργήσεις με το InfluexAI",
+      "intro": "Από μία ιδέα δημιουργούνται συγκεκριμένα Assets:",
+      "kicker": "Πραγματικά Demos",
+      "preview_note": "Η προεπισκόπηση πλάνου δεν ξεκινά δημιουργία",
+      "pricing_bridge": "Ξεκίνησε με ένα πλάνο από €{price} και δοκίμασε πρώτα τη δωρεάν προεπισκόπηση πλάνου.",
+      "trust_1": "Προεπισκόπηση πλάνου χωρίς Credits",
+      "trust_2": "Ασφαλής πληρωμή Stripe",
+      "trust_3": "Σύμφωνα με GDPR",
+      "trust_4": "Credits με διαφάνεια",
+      "trust_bar_label": "Εμπιστοσύνη και Διαφάνεια"
     },
     "ticker": {
       "i0": "InfluexAI LiveSwap™",
@@ -887,47 +2071,203 @@
       "i8": "Κατασκευασμένο στη Γερμανία",
       "i9": "Συμμόρφωση GDPR"
     },
+    "toolDemos": {
+      "agent": {
+        "problem": "Μεταπηδάς μεταξύ 20+ εργαλείων;",
+        "result_hashtags_body": "#παραγωγικότητα #morningroutine\n#συγκέντρωση #shorts #ki",
+        "result_hashtags_label": "Hashtags",
+        "result_script_body": "Hook: Οι περισσότεροι ξεκινούν λάθος τη μέρα τους.\nMain: 3 συνήθειες για συγκέντρωση.\nCTA: Ακολούθησε για Μέρος 2.",
+        "result_script_label": "Script",
+        "result_thumbnail_body": "Acid-Layout · Κείμενο αντίθεσης\n5 λάθη που κάνει το 99%\nCTR-Δυναμικό +34%",
+        "result_thumbnail_label": "Thumbnail",
+        "step1_status": "Hook, Story και CTA γράφονται…",
+        "step1_tool": "Script Generator",
+        "step2_status": "CTR-Layouts και χρωματική παλέτα δημιουργούνται…",
+        "step2_tool": "Thumbnail Κονσέπτ",
+        "step3_status": "Trend-Tags και clusters εμβέλειας εντοπίζονται…",
+        "step3_tool": "Hashtag Optimizer",
+        "task": "Σχεδίασε το επόμενο Short μου — Σενάριο, Thumbnail και Hashtags για παραγωγικότητα."
+      },
+      "avatar": {
+        "after_caption": "Face Consistency ενεργό",
+        "after_label": "Μετά",
+        "before_caption": "Selfie / Αναφορά",
+        "before_label": "Πριν",
+        "benefit_number": "1 Avatar",
+        "benefit_prefix": "",
+        "benefit_suffix": " — το ίδιο παντού στο TikTok, YouTube & LinkedIn.",
+        "match": "98% Ταίριασμα",
+        "name": "Το AI-Avatar σου",
+        "problem": "Κάθε βίντεο φαίνεται διαφορετικό;",
+        "status": "Το Avatar δημιουργείται…",
+        "subtitle": "Συνεπής σε όλες τις πλατφόρμες"
+      },
+      "contentKalender": {
+        "benefit_highlight": "30 ημέρες",
+        "benefit_prefix": "",
+        "benefit_suffix": " προγραμματισμένες — Θέμα, Hook, Ώρα & Hashtags ανά ανάρτηση.",
+        "problem": "Δεν ξέρεις τι να ποστάρεις αύριο;",
+        "row1_day": "1",
+        "row1_hook": "Αυτό καταστρέφει τη συγκέντρωσή σου…",
+        "row1_topic": "Μύθος πρωινής ρουτίνας",
+        "row2_day": "4",
+        "row2_hook": "Κανείς δεν χρησιμοποιεί το εργαλείο #2…",
+        "row2_topic": "3 Εργαλεία κάτω από 5 λεπτά",
+        "row3_day": "7",
+        "row3_hook": "Η καλύτερή μου ιδέα αυτή την εβδομάδα…",
+        "row3_topic": "Ανασκόπηση εβδομάδας"
+      },
+      "niche": {
+        "benefit_number": "5 niches",
+        "benefit_prefix": "Με βάση δεδομένα",
+        "benefit_suffix": " με μία κίνηση — αντί να μαντεύεις για εβδομάδες.",
+        "problem": "Ποιο niche είναι πραγματικά κερδοφόρο;",
+        "row1_comp": "Χαμηλός",
+        "row1_name": "Fitness Biohacking",
+        "row1_stars": "★★★★★",
+        "row2_comp": "Μέτριος",
+        "row2_name": "Budget Meal Prep",
+        "row2_stars": "★★★★☆",
+        "row3_comp": "Χαμηλός",
+        "row3_name": "AI Productivity",
+        "row3_stars": "★★★★★"
+      },
+      "outlier": {
+        "benefit_number": "10×",
+        "benefit_prefix": "Βίντεο με",
+        "benefit_suffix": " απόδοση — εντόπισε μοτίβα και αναπαράγαγέ τα.",
+        "channel": "Fitness · Micro Channel",
+        "problem": "Γιατί κάποια βίντεο γίνονται viral — και άλλα όχι;",
+        "score": "9.2",
+        "tag1": "Curiosity Gap Hook",
+        "tag2": "Contrarian Angle",
+        "tag3": "List Format (viral)",
+        "title": "«5 λάθη που κάνει το 99%»"
+      },
+      "script": {
+        "benefit_number": "30 δευτερόλεπτα",
+        "benefit_prefix": "Έτοιμο σενάριο σε",
+        "benefit_suffix": " — εξοικονομεί ~2 ώρες γραψίματος ανά βίντεο.",
+        "cta": "Follow για το μέρος 2 — αύριο στις 7.",
+        "hook": "Οι περισσότεροι ξεκινούν λάθος τη μέρα τους — κι εσύ;",
+        "main": "Συνήθεια 1: Όχι κινητό για 60 λεπτά. Συνήθεια 2: Φυσικό φως στα πρώτα 30 λεπτά. Συνήθεια 3: …",
+        "problem": "Ώρες μπροστά στη λευκή σελίδα;",
+        "topic": "5 πρωινές συνήθειες για περισσότερη εστίαση"
+      },
+      "section_headline": "Από το Πρόβλημα στο Αποτέλεσμα",
+      "section_kicker": "Live-Demo",
+      "thumbnail": {
+        "benefit_number": "+34%",
+        "benefit_prefix": "Δυναμικό CTR έως",
+        "benefit_suffix": " — layout, κείμενο και χρώμα σε ένα βήμα.",
+        "ctr": "+34%",
+        "palette": "Παλέτα",
+        "problem": "Thumbnails που δεν κάνει κλικ κανείς;",
+        "swatch_1": "#B4FF00",
+        "swatch_2": "#2563eb",
+        "swatch_3": "#ffffff"
+      },
+      "trendToScript": {
+        "benefit_highlight": "έτοιμο σενάριο",
+        "benefit_prefix": "Trend × Niche =",
+        "benefit_suffix": " με Hook, Story & CTA.",
+        "hook": "Τα AI Agents αντικαθιστούν τη δουλειά σου — ή τη ροή εργασίας σου;",
+        "main": "Εδώ είναι 3 Agents που χρησιμοποιώ καθημερινά…",
+        "niche": "Παραγωγικότητα",
+        "problem": "Τα trends έρχονται και φεύγουν — εσύ μένεις πίσω;",
+        "trend": "AI Agents"
+      },
+      "upscaler": {
+        "after_label": "4K",
+        "before_label": "720p",
+        "benefit": "2× Upscale σε δευτερόλεπτα — από 720p σε 4K, χωρίς απώλεια ποιότητας στην επεξεργασία.",
+        "problem": "Pixelated και θολό στο timeline;",
+        "title": "HD Upscaler"
+      },
+      "viralHook": {
+        "benefit_highlight": "Δευτερόλεπτα",
+        "benefit_prefix": "Hook + storytelling σε",
+        "benefit_suffix": " — χρησιμοποίησέ το απευθείας ως σενάριο.",
+        "cta_line": "Ακολούθησε για Μέρος 2",
+        "hook": "«Στοπ — κάνεις αυτό το λάθος κάθε πρωί…»",
+        "problem": "Βλέπεις viral βίντεο — αλλά δεν καταλαβαίνεις γιατί το hook δουλεύει;",
+        "problem_line": "Το 99% ξεκινά τη μέρα λάθος",
+        "url": "youtube.com/shorts/…"
+      },
+      "viralscore": {
+        "benefit_number": "87/100",
+        "benefit_prefix": "Score πριν το upload:",
+        "benefit_suffix": " — διόρθωσε αδυναμίες πριν δημοσιεύσεις.",
+        "niche_label": "Niche",
+        "niche_pct": "82%",
+        "niche_value": "82",
+        "problem": "Upload και ελπίδα;",
+        "script_label": "Script",
+        "script_pct": "91%",
+        "script_value": "91",
+        "thumbnail_label": "Thumbnail",
+        "thumbnail_pct": "88%",
+        "thumbnail_value": "88",
+        "total": "87"
+      }
+    },
     "toolExamples": {
-      "coming_soon": "Σύντομα",
-      "script_title": "Δημιουργός Script",
-      "script_desc": "Viral Short-Scripts σε δευτερόλεπτα — Hook, Story, CTA και hashtags.",
-      "product_title": "Διαφήμιση Προϊόντος",
-      "product_desc": "Διαφημιστικά spots για TikTok, Reels & YouTube — Script, Caption και Hashtags.",
-      "thumbnail_title": "Ιδέα Thumbnail",
-      "thumbnail_desc": "Thumbnails που κλικάρονται — layout, κείμενο και χρώμα από AI.",
-      "agent_title": "AI Agent",
       "agent_desc": "Ο AI στρατηγός σου: σχεδιάζει script, thumbnail και content σε ένα chat.",
-      "ki_ich_title": "Το AI Εγώ μου",
-      "ki_ich_desc": "Το AI avatar σου από μία φωτογραφία — για reels, ads και brand deals.",
-      "image_gen_title": "Image Generator",
-      "image_gen_desc": "AI εικόνες για content, ads και thumbnails — σε δευτερόλεπτα.",
-      "viral_hook_title": "Viral Hook Extractor",
-      "viral_hook_desc": "Hooks που σταματούν το scroll — το AI γράφει το τέλειο opener.",
-      "content_kalender_title": "Content Calendar AI",
+      "agent_title": "Agent Autopilot",
+      "coming_soon": "Σύντομα",
       "content_kalender_desc": "30ήμερο πλάνο, αυτόματο — θέματα, formats, ώρες posting.",
-      "trend_script_title": "Trend→Script",
-      "trend_script_desc": "Μετέτρεψε τρέχοντα YouTube trends σε έτοιμα scripts αυτόματα.",
-      "voice_title": "Φωνή και Μουσική",
-      "voice_desc": "AI voiceover και μουσική για τα βίντεό σου — χωρίς studio.",
-      "live_title": "Live Creator",
-      "live_desc": "Live AI avatar στο TikTok & YouTube — χωρίς κάμερα.",
-      "lora_title": "LoRA Training",
-      "lora_desc": "Εκπαίδευσε το προσωπικό AI μοντέλο σου — για consistent look.",
+      "content_kalender_title": "Ημερολόγιο Περιεχομένου AI",
       "headline1": "Δώδεκα Εργαλεία.",
       "headline2": "Ένα Studio.",
+      "image_gen_desc": "AI εικόνες για content, ads και thumbnails — σε δευτερόλεπτα.",
+      "image_gen_title": "Γεννήτρια Εικόνων",
+      "ki_ich_desc": "Το AI avatar σου από μία φωτογραφία — για reels, ads και brand deals.",
+      "ki_ich_title": "Το AI Εγώ μου",
       "kicker": "Όλα τα Modules",
-      "sidebar": "Κάνε κλικ σε ένα module — απευθείας στο dashboard. Όλα τα εργαλεία, μία πλατφόρμα."
+      "live_desc": "Live AI avatar στο TikTok & YouTube — χωρίς κάμερα.",
+      "live_title": "Live Creator",
+      "lora_desc": "Εκπαίδευσε το προσωπικό AI μοντέλο σου — για consistent look.",
+      "lora_title": "Εκπαίδευση LoRA",
+      "product_desc": "Διαφημιστικά spots για TikTok, Reels & YouTube — Script, Caption και Hashtags.",
+      "product_title": "Διαφήμιση Προϊόντος",
+      "script_desc": "Viral Short-Scripts σε δευτερόλεπτα — Hook, Story, CTA και hashtags.",
+      "script_title": "Δημιουργός Script",
+      "sidebar": "Κάνε κλικ σε ένα module — απευθείας στο dashboard. Όλα τα εργαλεία, μία πλατφόρμα.",
+      "thumbnail_desc": "Thumbnails που κλικάρονται — layout, κείμενο και χρώμα από AI.",
+      "thumbnail_title": "Ιδέα Thumbnail",
+      "trend_script_desc": "Μετέτρεψε τρέχοντα YouTube trends σε έτοιμα scripts αυτόματα.",
+      "trend_script_title": "Trend→Script",
+      "viral_hook_desc": "Hooks που σταματούν το scroll — το AI γράφει το τέλειο opener.",
+      "viral_hook_title": "Viral Hook Extraktor",
+      "voice_desc": "AI voiceover και μουσική για τα βίντεό σου — χωρίς studio.",
+      "voice_title": "Φωνή και Μουσική"
     },
-    "launchBanner": "Νέα εκκίνηση 2026 — γίνε ένας από τους πρώτους creators",
-    "achieve": {
-      "headline": "Τι μπορείς να πετύχεις με το InfluexAI",
-      "subline": "Δυνατότητες, όχι υποσχέσεις — γι' αυτό υπάρχουν τα εργαλεία.",
-      "p1_title": "Viral shorts σε λίγα λεπτά",
-      "p1_text": "Script, hook και CTA — χωρίς ώρες γραφής.",
-      "p2_title": "Συνεπές AI avatar",
-      "p2_text": "Το πρόσωπό σου σε κάθε σκηνή — TikTok, Reels και YouTube.",
-      "p3_title": "Διαφημίσεις προϊόντων για brands",
-      "p3_text": "URL ή φωτογραφία → βίντεο με φωνή και script σε λιγότερο από 90 δευτερόλεπτα."
+    "useCases": {
+      "brand_desc": "Εικόνες προϊόντων, Ad-Copy, μετάφραση βίντεο και καμπάνιες — σύμφωνα με την ταυτότητα της μάρκας και υλοποιήσιμα σε σύντομο χρόνο.",
+      "brand_subtitle": "Επαγγελματικές καμπάνιες. Χωρίς πρακτορείο.",
+      "brand_tag": "Διαφήμιση · Video · Καμπάνιες · Ads",
+      "brand_title": "Brand & Business",
+      "creator_desc": "Hooks, σενάρια, visuals και ημερολόγιο περιεχομένου — γρήγορα δημιουργημένα. Το Agent Autopilot σε υποστηρίζει στον εβδομαδιαίο προγραμματισμό.",
+      "creator_subtitle": "Τακτικά ορατός, χωρίς να ξεκινάς από την αρχή κάθε μέρα.",
+      "creator_tag": "Hooks · Scripts · Ημερολόγιο · Agent",
+      "creator_title": "Content Creator",
+      "headline": "Ένα Studio. Τρεις ομάδες-στόχοι.",
+      "influencer_desc": "Δικό σου AI Avatar, Szenen Generator, Story Creator — ρύθμιση μία φορά και δημιουργία περιεχομένου σε διάφορες μορφές.",
+      "influencer_subtitle": "Ρύθμιση μία φορά. Επαναχρησιμοποιήσιμο.",
+      "influencer_tag": "Avatar · Video · Σκηνές · LoRA",
+      "influencer_title": "Creator & Avatar",
+      "kicker": "Για ποιους είναι το InfluexAI;"
+    },
+    "value": {
+      "body": "Περιέγραψε τον στόχο σου και άφησε τον Agent Autopilot να επιλέξει τα κατάλληλα εργαλεία. Hooks, Videos, καμπάνιες — όλα από μία εντολή.",
+      "cta_primary": "Εκκίνηση Agent",
+      "cta_secondary": "Δες τιμές",
+      "headline": "Agent Autopilot — το Content-Studio σου."
+    },
+    "worldTransition": {
+      "brand": "Για Brands",
+      "creator": "Για Creators",
+      "tagline": "Ένα Studio. Δύο κόσμοι."
     }
   },
   "language": {
@@ -960,18 +2300,20 @@
     "upload_character": "Δική σου εικόνα"
   },
   "nav": {
-    "agent": "AI Agent",
+    "agent": "Agent Autopilot",
     "analytics": "Στατιστικά",
+    "choose_plan": "Επιλογή πακέτου",
+    "choose_plan_hint": "Επιλέξτε ένα πλάνο για να χρησιμοποιήσετε Credits.",
     "collapse": "Σύμπτυξη",
     "community": "Κοινότητα",
     "competitor": "Ανάλυση ανταγωνισμού",
     "credits": "Πόντοι",
-    "credits_balance": "{current} από {max}",
-    "credits_running_low": "Τα credits τελειώνουν",
     "credits_almost_empty": "Σχεδόν άδειο — ανανέωση τώρα",
+    "credits_balance": "{current} από {max}",
     "credits_empty": "Χωρίς credits",
     "credits_of": "από {max} Credits",
     "credits_plan": "Credits & Πλάνο",
+    "credits_running_low": "Τα credits τελειώνουν",
     "dashboard": "Πίνακας Ελέγχου",
     "developer_api": "Developer API",
     "gallery": "Η Συλλογή μου",
@@ -983,8 +2325,38 @@
     "referral": "Πρόσκλησε φίλους",
     "settings_menu": "Ρυθμίσεις",
     "top_up": "Ανανέωση",
+    "ugc_video": "UGC Video",
     "view_website": "Δείτε τον ιστότοπο",
     "viral_score": "Viral Score"
+  },
+  "noCredits": {
+    "back": "Πίσω",
+    "best_deal_badge": "Καλύτερη προσφορά",
+    "buy_button": "Αγορά",
+    "buy_credits_primary": "Αγόρασε Credits",
+    "checkout_error": "Η πληρωμή απέτυχε. Δοκίμασε ξανά.",
+    "checkout_error_banner": "Η πληρωμή δεν μπόρεσε να ξεκινήσει. Έλεγξε τη σύνδεσή σου στο διαδίκτυο ή δοκίμασε ένα άλλο πακέτο.",
+    "checkout_loading": "Φόρτωση...",
+    "checkout_retry": "Δοκίμασε ξανά",
+    "close": "Κλείσιμο",
+    "force_hint": "Χρειάζεσαι credits για να δημιουργήσεις τώρα.",
+    "insufficient_missing": "Λείπουν {missing} Credits.",
+    "insufficient_subtext": "Χρειάζεσαι {required} Credits για αυτή την ενέργεια. Έχεις {remaining} Credits.",
+    "insufficient_title": "⚡ Ανεπαρκή Credits",
+    "per_credit": "{cents} λεπτ/Cr",
+    "plan_footer": "Το τρέχον πρόγραμμά σου: {plan} · {monthly} Credits/μήνα",
+    "popular_badge": "Δημοφιλές ⭐",
+    "recommended_badge": "Προτεινόμενο",
+    "recommended_for_action": "Προτεινόμενο για αυτή την ενέργεια",
+    "recommended_pack": "Προτεινόμενο: {credits} Credits για €{price}",
+    "renewal_days": "Επόμενα Credits: σε {days} ημέρες",
+    "renewal_monthly": "Επόμενα Credits: μηνιαία με τη συνδρομή σου",
+    "subtext": "Τα μηνιαία credits σου τέλειωσαν. Φόρτισε τώρα και συνέχισε.",
+    "title": "Ανανέωση credits",
+    "upgrade_hint": "Ή αναβάθμισε το πλάνο σου για περισσότερα credits —",
+    "upgrade_link": "Δες πλάνα",
+    "upgrade_plan_hint": "Εξοικονόμησε έως {percent}% με μηνιαία συνδρομή",
+    "upgrade_plan_secondary": "Αναβάθμισε πλάνο"
   },
   "notFound": {
     "body": "Ίσως έρχεται σύντομα. Πίσω στο dashboard;",
@@ -1031,6 +2403,15 @@
     "kicker": "Ξεκίνα",
     "title": "Επίλεξε πλάνο για να ξεκινήσεις"
   },
+  "pwa": {
+    "install_body": "InfluexAI στην αρχική οθόνη — γρήγορη πρόσβαση, πλήρης οθόνη, λειτουργία χωρίς σύνδεση.",
+    "install_cta": "Εγκατάσταση",
+    "install_dismiss": "Αργότερα",
+    "install_kicker": "PWA",
+    "install_title": "Εγκατάσταση εφαρμογής",
+    "ios_step_add": "Επιλέξτε \"Στην αρχική οθόνη\"",
+    "ios_step_share": "Πατήστε Κοινοποίηση (Safari)"
+  },
   "referral": {
     "code_label": "Ο κωδικός σου:",
     "col_credits": "Πόντοι",
@@ -1067,25 +2448,28 @@
   "settings": {
     "daily_suggestions_email_desc": "Κάθε πρωί 07:00 UTC: 3 ιδέες από τrends YouTube στη niche σου.",
     "daily_suggestions_email_label": "Καθημερινές ιδέες με email",
-    "growth_agent_title": "Creator Growth Agent",
     "deleteAccount": {
-      "title": "Μόνιμη διαγραφή λογαριασμού;",
-      "warning": "Αυτή η ενέργεια διαγράφει μόνιμα τον λογαριασμό, τα δεδομένα προφίλ και την πρόσβασή σου. Δεν μπορεί να αναιρεθεί.",
-      "subscription_hint": "Αν έχεις ενεργή συνδρομή, θα ακυρωθεί πριν τη διαγραφή του λογαριασμού.",
       "agency_owner_block": "Επικοινώνησε με την υποστήριξη για διαγραφή λογαριασμού agency / white-label: {email}",
-      "confirm_label": "Πληκτρολόγησε {word} για επιβεβαίωση",
-      "confirm_button": "Μόνιμη διαγραφή λογαριασμού",
       "cancel": "Ακύρωση",
-      "deleting": "Διαγραφή…",
+      "confirm_button": "Μόνιμη διαγραφή λογαριασμού",
+      "confirm_label": "Πληκτρολόγησε {word} για επιβεβαίωση",
       "danger_button": "Διαγραφή λογαριασμού",
       "danger_desc": "Η διαγραφή λογαριασμού αφαιρεί μόνιμα όλα τα δεδομένα και credits σου.",
+      "deleting": "Διαγραφή…",
+      "dismiss": "Κλείσιμο",
       "error_generic": "Ο λογαριασμός δεν διαγράφηκε. Δοκίμασε ξανά ή επικοινώνησε με {email}.",
-      "success_title": "Ο λογαριασμός σου διαγράφηκε.",
+      "subscription_hint": "Αν έχεις ενεργή συνδρομή, θα ακυρωθεί πριν τη διαγραφή του λογαριασμού.",
       "success_redirect": "Μεταφορά στην αρχική…",
-      "dismiss": "Κλείσιμο"
-    }
+      "success_title": "Ο λογαριασμός σου διαγράφηκε.",
+      "title": "Μόνιμη διαγραφή λογαριασμού;",
+      "warning": "Αυτή η ενέργεια διαγράφει μόνιμα τον λογαριασμό, τα δεδομένα προφίλ και την πρόσβασή σου. Δεν μπορεί να αναιρεθεί."
+    },
+    "growth_agent_title": "Creator Growth Agent"
   },
   "slideshow": {
+    "ki_ich_benefit_1": "KI-Avatar από φωτογραφία",
+    "ki_ich_benefit_2": "Αναγνωρίσιμη εμφάνιση",
+    "ki_ich_benefit_3": "Reels · Ads · Brand",
     "slide1_badge": "⚡ 2 Credits · Άμεσα διαθέσιμο",
     "slide1_description": "Περίγραψε το θέμα του βίντεό σου και λάβε ένα έτοιμο script με Hook, Story και CTA — έτοιμο για γύρισμα.",
     "slide1_heading": "Script σε 30 δευτερόλεπτα",
@@ -1101,95 +2485,31 @@
     "slide5_badge": "👥 Προσβάσιμο σε όλους τους χρήστες",
     "slide5_description": "Συνδέσου, μοιράσου πρόοδο και αναπτύξου με ανθρώπους με τους ίδιους στόχους — η κοινότητα έρχεται σύντομα.",
     "slide5_heading": "Κοινότητα creators",
-    "community_benefit_1": "Συνδέσου με άλλους creators",
-    "community_benefit_2": "Μοιράσου τις επιτυχίες σου",
-    "community_benefit_3": "Εβδομαδιαίες ιδέες βίντεο",
     "social_proof": "Νέα εκκίνηση 2026 — γίνε ένας από τους πρώτους creators"
   },
-  "blog": {
-    "title": "InfluexAI Blog",
-    "subtitle": "Everything you need to go viral",
-    "search_placeholder": "Search articles…",
-    "search_button": "Search",
-    "no_posts": "No articles published yet. Check back soon.",
-    "no_results": "No articles found for this search.",
-    "read_more": "Read more →",
-    "min_read": "{minutes} min",
-    "all_categories": "All",
-    "newsletter_title": "Newsletter Δημιουργών",
-    "newsletter_subtitle": "Weekly tips for viral YouTube Shorts — no spam.",
-    "newsletter_cta": "Subscribe",
-    "related_title": "You might also like",
-    "breadcrumb_blog": "Blog"
+  "upscalerPage": {
+    "credits_hint": "{cost} Credits ανά upscale · Υπόλοιπο: {balance}",
+    "empty_gallery": "Δεν υπάρχουν ακόμα εικόνες. Δημιουργήστε πρώτα στη Γεννήτρια Εικόνων.",
+    "pick_image": "Επιλογή εικόνας από τη συλλογή",
+    "result_title": "Πριν / Μετά",
+    "subtitle": "Clarity Upscaler (fal.ai) — επιλέξτε μια εικόνα από τη συλλογή σας και βελτιώστε την ευκρίνεια σε 2× ανάλυση.",
+    "title": "HD Upscaler",
+    "upload_active": "Μεταφορτωμένη εικόνα (ενεργή)",
+    "upload_button": "Μεταφόρτωση δικής σας εικόνας",
+    "upload_clear": "Αφαίρεση μεταφόρτωσης",
+    "upload_drop": "Σύρετε εικόνα εδώ ή κάντε κλικ",
+    "upload_hint": "JPG, PNG, WEBP · Μέγ. 10 MB",
+    "upload_invalid_type": "Παρακαλώ επιλέξτε αρχείο εικόνας (JPG, PNG, WEBP).",
+    "upload_read_error": "Η εικόνα δεν μπόρεσε να διαβαστεί.",
+    "upload_title": "Μεταφόρτωση δικής σας εικόνας",
+    "upload_too_large": "Η εικόνα είναι πολύ μεγάλη (μέγ. 10 MB).",
+    "upscale_cta": "Upscale 2× — {cost} Credits"
   },
-  "guides": {
-    "title": "Οδηγοί & Tutorials",
-    "subtitle": "Step-by-step guides for every InfluexAI feature",
-    "pillars_title": "Βασικοί Οδηγοί",
-    "pillars_subtitle": "In-depth guides for YouTube creators.",
-    "tutorials_title": "Οδηγοί Λειτουργιών",
-    "tutorials_subtitle": "How to use Script Generator, LoRA Training, and more.",
-    "read_guide": "Read guide",
-    "open_tool": "Open tool →",
-    "words": "{count} words",
-    "min_read": "~{minutes} min read",
-    "tutorials": {
-      "script_generator_title": "How to use the Script Generator",
-      "script_generator_desc": "From idea to finished short script in minutes.",
-      "lora_training_title": "How to train a LoRA model",
-      "lora_training_desc": "Train your AI face and use it in the image generator.",
-      "niche_analyzer_title": "Niche Analyzer: find trends",
-      "niche_analyzer_desc": "Analyze niches and derive data-driven content ideas.",
-      "product_ad_title": "Create product ads with AI",
-      "product_ad_desc": "Generate product videos for TikTok, Reels and Shorts.",
-      "live_creator_title": "Talking Avatar & Live Creator",
-      "live_creator_desc": "Create avatar videos with voice and script.",
-      "thumbnail_title": "Thumbnail concepts",
-      "thumbnail_desc": "High-CTR thumbnail concepts for YouTube."
-    }
-  },
-  "noCredits": {
-    "title": "Ανανέωση credits",
-    "subtext": "Τα μηνιαία credits σου τέλειωσαν. Φόρτισε τώρα και συνέχισε.",
-    "force_hint": "Χρειάζεσαι credits για να δημιουργήσεις τώρα.",
-    "popular_badge": "Δημοφιλές ⭐",
-    "best_deal_badge": "Καλύτερη προσφορά",
-    "per_credit": "{cents} λεπτ/Cr",
-    "buy_button": "Αγορά",
-    "upgrade_hint": "Ή αναβάθμισε το πλάνο σου για περισσότερα credits —",
-    "upgrade_link": "Δες πλάνα",
-    "close": "Κλείσιμο",
-    "checkout_error": "Η πληρωμή απέτυχε. Δοκίμασε ξανά."
-  },
-  "buyCredits": {
-    "title": "Ανανέωση credits!",
-    "balance": "Έχεις <credits></credits> credits",
-    "popular_badge": "Δημοφιλέστερο",
-    "per_credit": "{price}/credit",
-    "buy_button": "Αγορά τώρα",
-    "close": "Κλείσιμο",
-    "checkout_error": "Η πληρωμή απέτυχε. Δοκίμασε ξανά.",
-    "checkout_success": "✓ Credits φορτίστηκαν! Μπορείς να συνεχίσεις.",
-    "success_toast": "✓ {count} credits προστέθηκαν επιτυχώς!",
-    "low_banner": "Μόνο {count} credits απομένουν",
-    "urgent_banner": "Σχεδόν χωρίς credits!",
-    "top_up": "Φόρτωσε τώρα →",
-    "dismiss": "Κλείσιμο banner",
-    "force_open_hint": "Φόρτωσε credits για να συνεχίσεις.",
-    "trust_instant": "Άμεσα διαθέσιμο",
-    "trust_no_sub": "Χωρίς συνδρομή",
-    "trust_no_expire": "Τα credits δεν λήγουν",
-    "credits_label": "Credits",
-    "menu_top_up": "Φόρτωση credits",
-    "pricing_title": "Ή αγόρασε μόνο credits — χωρίς συνδρομή",
-    "pricing_subtitle": "Αγόρασε επιπλέον credits ως εφάπαξ ανανέωση — απαιτείται ενεργό πλάνο."
-  },
-  "founding": {
-    "kicker": "EARLY ACCESS · 2026",
-    "headline": "Γίνε Founding Creator",
-    "subtext": "Γίνε από τους πρώτους. Founding Creators παίρνουν 20% έκπτωση για πάντα και early access σε νέα features.",
-    "slot_label": "Θέση {slot} από {total} ακόμα ελεύθερη",
-    "cta": "Απόκτησε early access",
-    "note": "Χωρίς fake hype — είμαστε νέοι και χτίζουμε μαζί σου."
+  "voiceAgentPage": {
+    "badge": "Coming Soon",
+    "body": "ElevenLabs Conversational AI — μιλήστε με έναν KI-πράκτορα σε πραγματικό χρόνο. Θα ενεργοποιήσουμε τη λειτουργία μόλις ο λογαριασμός σας στο ElevenLabs υποστηρίζει Conversational AI.",
+    "elevenlabs_hint": "Σημείωση: Χρειάζεστε ξεχωριστό υπόλοιπο ElevenLabs για Conversational AI (επιπλέον του TTS στη Φωνή & Μουσική).",
+    "title": "Voice Agent",
+    "voice_cta": "Στη Φωνή & Μουσική"
   }
 }

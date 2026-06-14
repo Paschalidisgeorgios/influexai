@@ -627,7 +627,7 @@ export function SzenenGeneratorStudio() {
               className="font-display text-[36px] font-semibold leading-none tracking-tight text-white transition-all duration-700 ease-in-out"
               style={{ textShadow: `0 0 40px rgba(${theme.rgb},0.3)` }}
             >
-              SZENEN GENERATOR
+              VIDEO GENERATOR
             </h1>
             {selectedModel && (
               <div

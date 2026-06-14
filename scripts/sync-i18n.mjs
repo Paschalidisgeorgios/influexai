@@ -89,6 +89,7 @@ Keep placeholders unchanged: {count}, {name}, {cost}, {scripts}, {videos}, {thum
 Keep these product/brand terms when they appear: ${KEEP_SUBSTRINGS.join(", ")}.
 Keep € prices, emojis, and "·" separators in badges.
 Return ONLY a valid JSON object (key → translated string), no markdown.
+Escape double quotes inside string values with backslashes.
 
 ${JSON.stringify(entries, null, 2)}`,
         },
@@ -152,10 +153,24 @@ for (const locale of locales) {
     const slice = keys.slice(i, i + BATCH);
     const batch = Object.fromEntries(slice.map((k) => [k, toTranslate[k]]));
     console.log(`  → batch ${Math.floor(i / BATCH) + 1} (${slice.length} keys)`);
-    const translated = await translateBatch(batch, LOCALE_LANGUAGE[locale]);
+
+    let translated;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        translated = await translateBatch(batch, LOCALE_LANGUAGE[locale]);
+        break;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (attempt === 3 || !msg.includes("JSON")) throw err;
+        console.warn(`  ⚠ batch retry ${attempt} (${msg.slice(0, 100)})`);
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+    }
+
     for (const [pathKey, value] of Object.entries(translated)) {
       if (typeof value === "string") setByPath(messages, pathKey, value);
     }
+    saveJson(filePath, messages);
     await new Promise((r) => setTimeout(r, 400));
   }
 
