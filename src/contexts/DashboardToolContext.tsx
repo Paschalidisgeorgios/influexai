@@ -7,6 +7,7 @@ import {
   getToolByRoute,
   getToolConfig,
 } from "@/lib/tools/tool-registry";
+import { useCredits } from "@/components/credits/BuyCreditsProvider";
 import {
   applyDashboardThemeToRoot,
   getDashboardTheme,
@@ -61,6 +62,7 @@ const DashboardToolContext = createContext<DashboardToolContextValue | null>(nul
 
 export function DashboardToolProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { credits } = useCredits();
   const activeTool = useMemo(() => getToolByRoute(pathname), [pathname]);
   const toolConfig = activeTool ? getToolConfig(activeTool) : null;
 
@@ -68,7 +70,6 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
   const [activeParams, setActiveParams] = useState<ToolParams>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({});
   const [prompt, setPrompt] = useState("");
-  const [credits, setCredits] = useState<number | null>(null);
   const [userName, setUserName] = useState("Georg");
   const badgeHandler = useRef<
     ((text: string, duration?: number, priority?: number) => void) | null
@@ -110,35 +111,7 @@ export function DashboardToolProvider({ children }: { children: ReactNode }) {
         user.email?.split("@")[0] ||
         "Georg";
       setUserName(first);
-      void supabase
-        .from("profiles")
-        .select("credits")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
-          if (typeof data?.credits === "number") setCredits(data.credits);
-        });
     });
-  }, []);
-
-  useEffect(() => {
-    const onCredits = () => {
-      void createClient()
-        .auth.getUser()
-        .then(({ data: { user } }) => {
-          if (!user) return;
-          return createClient()
-            .from("profiles")
-            .select("credits")
-            .eq("id", user.id)
-            .single();
-        })
-        .then((result) => {
-          if (typeof result?.data?.credits === "number") setCredits(result.data.credits);
-        });
-    };
-    window.addEventListener("credits-updated", onCredits);
-    return () => window.removeEventListener("credits-updated", onCredits);
   }, []);
 
   const showBadge = useCallback(

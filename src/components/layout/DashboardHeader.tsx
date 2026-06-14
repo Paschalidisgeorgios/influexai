@@ -25,7 +25,6 @@ import {
 interface Profile {
   full_name: string | null;
   email: string | null;
-  credits: number;
   plan: string;
   role: string | null;
   is_admin: boolean | null;
@@ -60,7 +59,7 @@ export function DashboardHeader({
 
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, email, credits, plan, role, is_admin")
+      .select("full_name, email, plan, role, is_admin")
       .eq("id", user.id)
       .single();
 
@@ -68,22 +67,7 @@ export function DashboardHeader({
   }, [supabase]);
 
   useEffect(() => {
-    loadProfile();
-    const onCreditsUpdated = () => loadProfile();
-    window.addEventListener("credits-updated", onCreditsUpdated);
-    const onOptimistic = (e: Event) => {
-      const v = (e as CustomEvent<number | null>).detail;
-      if (typeof v === "number") {
-        setProfile((p) => (p ? { ...p, credits: v } : p));
-      } else {
-        loadProfile();
-      }
-    };
-    window.addEventListener("optimistic-credits", onOptimistic);
-    return () => {
-      window.removeEventListener("credits-updated", onCreditsUpdated);
-      window.removeEventListener("optimistic-credits", onOptimistic);
-    };
+    void loadProfile();
   }, [loadProfile]);
 
   const handleLogout = async () => {
@@ -109,7 +93,7 @@ export function DashboardHeader({
     business: "Business",
   };
 
-  const displayCredits = creditsProp ?? globalCredits ?? profile?.credits ?? null;
+  const displayCredits = creditsProp ?? globalCredits ?? null;
   const hasPlatformPlan = profile
     ? hasActivePlan({
         plan: profile.plan,

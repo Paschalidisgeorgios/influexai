@@ -12,12 +12,15 @@ type UseAkoolJobPollOptions = {
   onSuccess?: (data: PollSuccess) => void;
 };
 
+const MAX_ATTEMPTS = 100; // ~5 min at 3s interval
+
 export function useAkoolJobPoll(options?: UseAkoolJobPollOptions) {
   const [generating, setGenerating] = useState(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const attemptsRef = useRef(0);
   const onSuccessRef = useRef(options?.onSuccess);
 
   useEffect(() => {
@@ -77,12 +80,21 @@ export function useAkoolJobPoll(options?: UseAkoolJobPollOptions) {
   const startPolling = useCallback(
     (jobId: string, pollType: string) => {
       stopTimers();
+      attemptsRef.current = 0;
       setGenerating(true);
       setElapsedSec(0);
       setError(null);
       elapsedRef.current = setInterval(() => setElapsedSec((s) => s + 1), 1000);
 
       const tick = async () => {
+        attemptsRef.current += 1;
+        if (attemptsRef.current >= MAX_ATTEMPTS) {
+          stopTimers();
+          setGenerating(false);
+          setError("Zeitüberschreitung — bitte erneut versuchen.");
+          return;
+        }
+
         try {
           await pollOnce(jobId, pollType);
         } catch (err: unknown) {

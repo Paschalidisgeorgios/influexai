@@ -22,6 +22,18 @@ export function useOptimisticGeneration() {
 
       try {
         const result = await action();
+
+        if (
+          result &&
+          typeof result === "object" &&
+          "error" in result &&
+          result.error
+        ) {
+          setOptimisticCredits(currentCredits);
+          broadcastCreditsBalance(currentCredits);
+          throw new Error(String(result.error));
+        }
+
         return result;
       } catch (error) {
         setOptimisticCredits(currentCredits);
