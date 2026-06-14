@@ -220,7 +220,7 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     params: [
       {
         key: "topic",
-        label: "Thema / Prompt",
+        label: "Thema / Beschreibung",
         type: "textarea",
         required: true,
         placeholder: "z.B. Warum KI Creator die Zukunft sind…",
@@ -394,8 +394,8 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     apiRoute: "/api/lora/train",
     params: [
       { key: "dataset_zip", label: "Dataset (ZIP)", type: "file", required: true },
-      { key: "trigger_word", label: "Trigger-Wort", type: "string", required: true },
-      { key: "training_steps", label: "Training Steps", type: "number", defaultValue: 2000, min: 500, max: 5000 },
+      { key: "trigger_word", label: "Erkennungswort", type: "string", required: true },
+      { key: "training_steps", label: "Trainingsdauer (Schritte)", type: "number", defaultValue: 2000, min: 500, max: 5000 },
     ],
   },
   "seedance-video": {

@@ -404,14 +404,22 @@ function ControlNodeComponent({
     }
 
     const isAgentAutopilot = tool.id === "agent-autopilot";
+    const skipFakeProgress =
+      isAgentAutopilot ||
+      tool.id === "seedance-video" ||
+      tool.id === "lora-training";
     let progressTimer: number | undefined;
 
-    if (isAgentAutopilot) {
+    if (skipFakeProgress) {
       updateAssetNode(assetId, {
         progress: 5,
         status: "loading",
-        statusLabel: "Agent startet…",
-        text: "",
+        statusLabel: isAgentAutopilot
+          ? "Agent startet…"
+          : tool.id === "seedance-video"
+            ? "Video wird vorbereitet…"
+            : "Training wird gestartet…",
+        ...(isAgentAutopilot ? { text: "" } : {}),
       });
     } else {
       let progress = 0;

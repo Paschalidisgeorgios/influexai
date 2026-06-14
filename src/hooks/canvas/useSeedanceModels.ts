@@ -50,12 +50,22 @@ export function pickDefaultSeedanceModel(
   models: SeedanceModelOption[]
 ): SeedanceModelOption | undefined {
   if (models.length === 0) return undefined;
-  const seedanceMatch = models.find(
+
+  const seedanceModels = models.filter(
     (model) =>
+      model.provider.toLowerCase() === "seedance" ||
       model.value.toLowerCase().includes("seedance") ||
       model.label.toLowerCase().includes("seedance")
   );
-  return seedanceMatch ?? models[0];
+
+  const pool = seedanceModels.length > 0 ? seedanceModels : models;
+
+  const preferV2 = (model: SeedanceModelOption) => {
+    const hay = `${model.label} ${model.value}`.toLowerCase();
+    return hay.includes("2.0") || hay.includes(" v2") || hay.includes("-v2");
+  };
+
+  return pool.find(preferV2) ?? pool[0];
 }
 
 export function pickDefaultSeedanceResolution(

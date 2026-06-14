@@ -1,50 +1,55 @@
 /**
  * Kompakte Studio-Wissensbasis für den KI-Agent-Chat (Studio-Guide).
- * Quelle: Sidebar + Dashboard-Flows.
+ * Quelle: Canvas-Sidebar (toolApiSchema.ts TOOL_CATEGORIES + TOOL_API_SCHEMA).
  */
 export const STUDIO_KNOWLEDGE = `
-## InfluexAI Studio — Tools im Überblick
+## InfluexAI Studio — Sidebar-Tools
 
-### Agent
-- **Agent Autopilot** (/dashboard/ki-agent) — Zentraler Assistent: plant Workflows, erstellt Content, empfiehlt nächste Schritte. 1 Credit pro Anfrage, Tools zusätzlich.
-- **KI-Influencer** (/dashboard/ki-influencer) — Eigenen digitalen Creator anlegen (Foto-Upload oder Beschreibung), für konsistente Bilder. NEU.
-- **Autopilot Kampagne** (/dashboard/campaign-autopilot) — Komplette Kampagnen (Reels, Posts, Visuals) aus einem Briefing. Ab ~38 Credits.
+### ERSTELLEN
+- **Viral Hook** (/dashboard/viral-hook) — Scroll-stoppende Hooks für Short-Form. ~3 Credits.
+- **Content Kalender** (/dashboard/content-kalender) — Content-Plan mit Themen & Formaten. ~5 Credits.
+- **Trend Script** (/dashboard/trend-to-script) — Trend-Thema → Sprecher-Skript mit B-Roll-Regie. ~4 Credits.
+- **Script Generator** (/dashboard/script-generator) — Video-Skript mit Hook, Body, CTA. ~2 Credits.
+- **Produkt-Werbung** (/dashboard/produkt) — Werbetexte und Spot-Texte aus Produkt-USPs.
 
-### Text & Script
-- **Script Generator** (/dashboard/script-generator) — Virale YouTube-/Shorts-Scripts in Sekunden. 2 Credits. Tipp: Thema + Zielgruppe angeben.
-- **Produkt-Werbung** (/dashboard/produkt) — Werbespots für TikTok, Reels & YouTube aus Produkt-URL oder Beschreibung. ~75 Credits.
-- **Thumbnail Konzept** (/dashboard/thumbnail-concept) — Klickstarke Thumbnail-Ideen mit Text & Layout. 1 Credit.
-- **Viral Hooks** (/dashboard/viral-hook) — Aufmerksamkeits-Hooks aus Thema oder Video-URL. 3 Credits. Tipp: Nische konkret benennen.
+### VISUALS
+- **Bild Generator** (/dashboard/image-generator) — Social-Media-Bilder mit Stil-Vorlagen. Ab ~5 Credits.
+- **KI-Ich** (/dashboard/ki-ich) — Trainierter Avatar-Klon in neuen Szenen. ~8 Credits.
+- **LoRA Training** (/dashboard/lora-training) — Wiedererkennbaren Look für die Marke trainieren. Ab ~10 Credits.
 
-### Video & Bild
-- **Bild Generator** (/dashboard/image-generator) — Social-Media-Bilder in verschiedenen Stilen & Formaten. Ab 5 Credits. Tipp: Plattform nennen (TikTok = Hochformat).
-- **UGC Video** (/dashboard/ugc-video) — Authentisches Produktvideo mit Upload. Höhere Credits.
-- **KI-Ich** (/dashboard/ki-influencer) — Dein Gesicht in einer Szene einsetzen. 8 Credits.
-- **Bild zu Video** (/dashboard/seedance) — Statisches Bild animieren mit Sound. 40 Credits.
-- **Motion Transfer** (/dashboard/motion-transfer) — Bewegung von Referenzvideo auf dein Foto. 8 Credits.
-- **Live Portrait** (/dashboard/live-portrait) — Mimik von Video auf Foto übertragen. 5 Credits.
-- **Avatar Studio** (/dashboard/avatar-studio) — Premium Live-Avatar-Export. Ab 9 Credits.
-- **HD Upscaler** (/dashboard/upscaler) — Bilder schärfer machen. 4 Credits.
-- **LoRA Training** (/dashboard/lora-training) — Eigenes Bildmodell trainieren. Ab 10 Credits.
+### VIDEO & FILM
+- **Video Generator** (/dashboard/seedance) — Bild-zu-Video (Seedance, Kling u.a. via Modellauswahl). Credits variabel je Modell/Auflösung.
+- **Video Transformer** (/dashboard/video-transformer) — Stil-Transfer auf bestehendes Video.
+- **Video Übersetzer** (/dashboard/video-uebersetzer) — Video übersetzen inkl. Lipsync-Korrektur.
 
-### Analyse
-- **Niche Analyzer** (/dashboard/niche-analyzer) — Profitable YouTube-Nischen finden. 2 Credits.
-- **Outlier Detector** (/dashboard/outlier-detector) — Virale Ausreißer-Videos analysieren. 3 Credits.
-- **Content Kalender** (/dashboard/content-kalender) — 30-Tage-Plan mit Ideen & Formaten. 5 Credits.
-- **Trend → Script** (/dashboard/trend-to-script) — Aktuelle Trends → passendes Script. 4 Credits.
-- **Konkurrenz-Analyse** (/dashboard/competitor) — Kanäle vergleichen, Lücken finden. 5 Credits.
-- **Viral Score** — Im Agent Autopilot: Content 0–100 bewerten lassen.
+### AVATAR & LIVE
+- **Avatar Studio** (/dashboard/avatar-studio) — Digitaler Zwilling spricht dein Skript. Ab ~9 Credits.
+- **Lipsync Studio** (/dashboard/lipsync-studio) — Neue Stimme auf bestehendes Video legen.
 
-### Live & Audio
-- **Stimme & Musik** (/dashboard/stimme-musik) — Voiceover & Hintergrundmusik.
-- **Live Creator** (/dashboard/live-creator) — Live-Avatar / Face Swap.
+### AUDIO
+- **Melodia Studio** (/dashboard/melodia) — Musik und Soundeffekte aus Text-Beschreibung.
+
+### AUTOMATION
+- **KI Agent** (/dashboard/ki-agent) — Master Agent: plant Workflows, führt Tools aus, empfiehlt nächste Schritte. Basis + Tool-Credits.
+
+## Weitere Dashboard-Seiten (nicht in der Canvas-Sidebar)
+
+- **Autopilot Kampagne** (/dashboard/campaign-autopilot) — Komplette Kampagne aus Briefing. Ab ~38 Credits.
+- **UGC Video** (/dashboard/ugc-video) — Authentisches Produktvideo mit Upload.
+- **Thumbnail Konzept** (/dashboard/thumbnail-concept) — Thumbnail-Ideen mit Layout. ~1 Credit.
+- **Niche Analyzer** (/dashboard/niche-analyzer) — Profitable Nischen finden. ~2 Credits.
+- **Outlier Detector** (/dashboard/outlier-detector) — Virale Ausreißer analysieren. ~3 Credits.
+- **Konkurrenz-Analyse** (/dashboard/competitor) — Kanäle vergleichen. ~5 Credits.
+- **KI-Influencer** (/dashboard/ki-influencer) — Digitalen Creator anlegen & trainieren.
+- **Galerie** (/dashboard/gallery) — Generierte Assets ansehen.
 
 Empfehlungs-Regeln:
-- Für Hooks → Viral Hooks oder Agent Autopilot
-- Für Wochenplan → Content Kalender oder Autopilot Kampagne
-- Für Produktvideo → Produkt-Werbung oder UGC Video
-- Für Social-Bild → Bild Generator
-- Für Trend-Content → Trend → Script
+- Hooks → Viral Hook oder KI Agent
+- Wochenplan → Content Kalender oder Autopilot Kampagne
+- Produktvideo → Produkt-Werbung (/dashboard/produkt) oder UGC Video
+- Social-Bild → Bild Generator
+- Trend-Content → Trend Script
+- Bild animieren → Video Generator (Sidebar) / Seedance-Seite
 `.trim();
 
 export const STUDIO_GUIDE_INSTRUCTIONS = `

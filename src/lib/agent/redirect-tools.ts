@@ -19,7 +19,7 @@ export const AGENT_REDIRECT_TOOL_CONFIG: Record<
       "Lade dein Produktbild hoch und erstelle authentische UGC-Ads.",
   },
   produkt_werbung: {
-    href: "/dashboard/produkt-werbung",
+    href: "/dashboard/produkt",
     title: "Produkt-Werbung",
     emoji: "🛍️",
     defaultHeadline: "Ideal für Produkt-Launches.",
@@ -27,12 +27,12 @@ export const AGENT_REDIRECT_TOOL_CONFIG: Record<
       "Mehrstufiger Flow: Produkt-URL, Bilder und Werbespot in einem Schritt.",
   },
   avatar_video: {
-    href: "/dashboard/mein-ki-ich",
-    title: "Mein KI-Ich",
-    emoji: "🧑‍💻",
-    defaultHeadline: "Dein persönlicher KI-Avatar.",
+    href: "/dashboard/ki-ich",
+    title: "KI-Ich",
+    emoji: "👤",
+    defaultHeadline: "Dein Avatar-Klon in neuen Szenen.",
     defaultDescription:
-      "Lade ein Selfie hoch und erstelle Videos mit deinem KI-Ich.",
+      "Trainiere deinen Avatar und setze ihn in Szenen ein — ideal für Face-Cam Content.",
   },
   video_remix: {
     href: "/dashboard/video-remix",

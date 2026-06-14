@@ -5,11 +5,11 @@ export const INTENT_TOOL_LABELS: Record<IntentToolId, string> = {
   "ki-influencer": "KI-Influencer",
   "ugc-video": "UGC Video",
   "script-generator": "Script Generator",
-  "viral-hooks": "Viral Hooks",
+  "viral-hooks": "Viral Hook",
   "content-kalender": "Content Kalender",
-  "trend-script": "Trend-Script",
+  "trend-script": "Trend Script",
   "product-ad": "Produkt-Werbung",
-  thumbnail: "Thumbnail",
+  thumbnail: "Thumbnail Konzept",
   "ki-agent": "KI Agent",
 };
 
