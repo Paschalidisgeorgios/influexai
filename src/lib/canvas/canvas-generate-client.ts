@@ -73,6 +73,21 @@ export function validateSeedanceParams(
   return null;
 }
 
+export function validateKiIchParams(
+  params: Record<string, unknown>
+): string | null {
+  const characterId =
+    typeof params.characterId === "string" ? params.characterId.trim() : "";
+  const prompt = typeof params.prompt === "string" ? params.prompt.trim() : "";
+  if (!characterId) {
+    return "Bitte einen trainierten Avatar-Klon wählen";
+  }
+  if (!prompt) {
+    return "Bitte eine Szene beschreiben";
+  }
+  return null;
+}
+
 function buildRequestBody(
   tool: ToolApiDefinition,
   params: Record<string, unknown>
@@ -174,6 +189,22 @@ function buildRequestBody(
         message += `\n\nKontext: ${platforms.join(", ")}.`;
       }
       return { message };
+    }
+    case "ki-ich": {
+      const basePrompt =
+        typeof params.prompt === "string" ? params.prompt.trim() : "";
+      const kleidungsStil =
+        typeof params.kleidungs_stil === "string"
+          ? params.kleidungs_stil.trim()
+          : "";
+      const prompt = kleidungsStil
+        ? `${basePrompt}\n\nKleidungsstil: ${kleidungsStil}`
+        : basePrompt;
+
+      return {
+        characterId: params.characterId,
+        prompt,
+      };
     }
     default:
       return { ...params };

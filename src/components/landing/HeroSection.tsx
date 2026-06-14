@@ -23,7 +23,7 @@ type ConciergeState = {
 } | null;
 
 export function HeroSection() {
-  const { setIntent, getIntentHref } = useIntentTracking();
+  const { setIntent } = useIntentTracking();
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -95,7 +95,7 @@ export function HeroSection() {
   };
 
   const ctaRoute = result ? CONCIERGE_TOOL_ROUTES[result.tool] : null;
-  const ctaHref = ctaRoute ? getIntentHref(ctaRoute.href) : getIntentHref("/signup");
+  const conciergeHref = ctaRoute?.href ?? "/signup";
 
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#030304]">
@@ -216,7 +216,7 @@ export function HeroSection() {
                     className="mt-4"
                   >
                     <IntentLink
-                      href={ctaHref}
+                      href={conciergeHref}
                       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ccff00] px-4 py-3 text-sm font-bold text-black no-underline transition-all hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(204,255,0,0.35)] sm:w-auto"
                       onClick={() => {
                         if (ctaRoute) setIntent(ctaRoute.intent);

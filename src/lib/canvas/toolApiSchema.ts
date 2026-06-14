@@ -362,7 +362,14 @@ export const TOOL_API_SCHEMA: Record<string, ToolApiDefinition> = {
     apiRoute: "/api/ki-influencer/generate",
     params: [
       { key: "prompt", label: "Szene beschreiben", type: "textarea", required: true },
-      { key: "model_id", label: "Avatar-Klon", type: "string", placeholder: "Ausgewähltes Modell" },
+      {
+        key: "characterId",
+        label: "Avatar-Klon",
+        type: "select",
+        required: true,
+        defaultValue: "",
+        options: [],
+      },
       { key: "kleidungs_stil", label: "Kleidungsstil", type: "string", placeholder: "z.B. Business Casual" },
       {
         key: "reference_image",

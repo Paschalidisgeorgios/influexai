@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { AssetLoadingShader } from "@/components/canvas/AssetLoadingShader";
-import { useIntentTracking, type IntentKey } from "@/hooks/useIntentTracking";
+import { IntentLink, useIntentTracking, type IntentKey } from "@/hooks/useIntentTracking";
 import "@/styles/canvas.css";
 
 const DEMO_INTENT: IntentKey = "agent-autopilot";
@@ -15,7 +14,7 @@ type LandingLiveDemoPlaygroundProps = {
 };
 
 export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPlaygroundProps) {
-  const { setIntent, getIntentHref } = useIntentTracking();
+  const { setIntent } = useIntentTracking();
   const [niche, setNiche] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -72,8 +71,6 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
       setLoading(false);
     }
   };
-
-  const signupHref = getIntentHref("/signup");
 
   return (
     <article
@@ -170,14 +167,14 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
         </AnimatePresence>
       </div>
 
-      <Link
-        href={signupHref}
+      <IntentLink
+        href="/signup"
         className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-[#ccff00] no-underline transition-opacity hover:opacity-80"
         onClick={() => setIntent(DEMO_INTENT)}
       >
         Im App Studio weiterbearbeiten
         <ArrowRight size={12} aria-hidden />
-      </Link>
+      </IntentLink>
     </article>
   );
 }

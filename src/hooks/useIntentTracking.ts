@@ -82,14 +82,16 @@ export function IntentLink({
   ...rest
 }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
   const { getIntentHref } = useIntentTracking();
+
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(e);
     const intentHref = getIntentHref(href);
     if (intentHref !== href) {
       e.preventDefault();
       window.location.href = intentHref;
     }
-    onClick?.(e);
   };
+
   return createElement(
     "a",
     { href, onClick: handleClick, className, ...rest },

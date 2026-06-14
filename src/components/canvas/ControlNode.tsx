@@ -15,6 +15,7 @@ import { isClientCreditExempt } from "@/lib/client-credits-ui";
 import {
   runCanvasGeneration,
   validateSeedanceParams,
+  validateKiIchParams,
   CANVAS_ASYNC_JOB_START_TIMEOUT_MS,
 } from "@/lib/canvas/canvas-generate-client";
 import {
@@ -29,6 +30,7 @@ import {
   useSeedanceModels,
 } from "@/hooks/canvas/useSeedanceModels";
 import { useJobPolling } from "@/hooks/canvas/useJobPolling";
+import { useKiInfluencerCharacters } from "@/hooks/canvas/useKiInfluencerCharacters";
 import { CanvasTopUpOverlay } from "./CanvasTopUpOverlay";
 import { CanvasNodeAmbientGlow } from "./CanvasNodeAmbientGlow";
 import { useCanvasAnalyticsStore } from "@/lib/canvas/canvas-analytics-store";
@@ -54,6 +56,9 @@ function isPrimaryParam(
     toolId === "seedance-video" &&
     (field.key === "modelId" || field.key === "images_list")
   ) {
+    return true;
+  }
+  if (toolId === "ki-ich" && field.key === "characterId") {
     return true;
   }
   if (field.type === "textarea") return true;
@@ -106,6 +111,7 @@ function ControlNodeComponent({
   const [seedanceValidationError, setSeedanceValidationError] = useState<string | null>(
     null
   );
+  const [kiIchValidationError, setKiIchValidationError] = useState<string | null>(null);
   const resumeGenerationRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const { profile } = useCreatorProfile();
@@ -116,7 +122,9 @@ function ControlNodeComponent({
   const pipelinePanel = usePipelineContextOptional();
   const pipelineStore = usePipelineStoreOptional();
   const isSeedanceTool = nodeData.toolId === "seedance-video";
+  const isKiIchTool = nodeData.toolId === "ki-ich";
   const seedanceModels = useSeedanceModels();
+  const kiInfluencerCharacters = useKiInfluencerCharacters();
   const jobPolling = useJobPolling();
 
   const seedanceFieldOverrides = useMemo((): Record<string, ParamFieldOverride> | undefined => {
@@ -147,6 +155,63 @@ function ControlNodeComponent({
       },
     };
   }, [isSeedanceTool, nodeData.params.modelId, seedanceModels.loading, seedanceModels.models]);
+
+  const kiIchFieldOverrides = useMemo((): Record<string, ParamFieldOverride> | undefined => {
+    if (!isKiIchTool) return undefined;
+
+    const characterOptions = kiInfluencerCharacters.characters.map((character) => ({
+      value: character.id,
+      label: character.name,
+    }));
+
+    return {
+      characterId: {
+        options: characterOptions,
+        placeholder: kiInfluencerCharacters.loading
+          ? "Lade Avatare…"
+          : characterOptions.length === 0
+            ? "Kein trainierter Avatar"
+            : "Avatar wählen",
+        disabled:
+          kiInfluencerCharacters.loading || characterOptions.length === 0,
+      },
+    };
+  }, [
+    isKiIchTool,
+    kiInfluencerCharacters.characters,
+    kiInfluencerCharacters.loading,
+  ]);
+
+  const fieldOverrides = seedanceFieldOverrides ?? kiIchFieldOverrides;
+
+  useEffect(() => {
+    if (
+      !isKiIchTool ||
+      kiInfluencerCharacters.loading ||
+      kiInfluencerCharacters.characters.length === 0
+    ) {
+      return;
+    }
+
+    const currentCharacterId =
+      typeof nodeData.params.characterId === "string"
+        ? nodeData.params.characterId
+        : "";
+
+    if (!currentCharacterId) {
+      const first = kiInfluencerCharacters.characters[0];
+      if (first) {
+        updateControlParams(id, { characterId: first.id });
+      }
+    }
+  }, [
+    id,
+    isKiIchTool,
+    kiInfluencerCharacters.characters,
+    kiInfluencerCharacters.loading,
+    nodeData.params.characterId,
+    updateControlParams,
+  ]);
 
   useEffect(() => {
     if (!isSeedanceTool || seedanceModels.loading || seedanceModels.models.length === 0) {
@@ -194,8 +259,11 @@ function ControlNodeComponent({
       jobPolling.reset();
       setSeedanceValidationError(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset when leaving seedance tool only
-  }, [isSeedanceTool]);
+    if (!isKiIchTool) {
+      setKiIchValidationError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset when leaving tool only
+  }, [isSeedanceTool, isKiIchTool]);
 
   const promptText = useMemo(
     () => buildPromptFromParams(nodeData.params, tool?.params ?? []),
@@ -278,6 +346,16 @@ function ControlNodeComponent({
         return;
       }
       setSeedanceValidationError(null);
+    }
+
+    if (tool.id === "ki-ich") {
+      const validationError = validateKiIchParams(generationParams);
+      if (validationError) {
+        setKiIchValidationError(validationError);
+        showCreditsToast(validationError, "error");
+        return;
+      }
+      setKiIchValidationError(null);
     }
 
     const coins = calculateToolCoins(tool, generationParams);
@@ -554,7 +632,7 @@ function ControlNodeComponent({
           values={nodeData.params}
           accent={tool.accent}
           onChange={handleChange}
-          fieldOverrides={seedanceFieldOverrides}
+          fieldOverrides={fieldOverrides}
           disconnectedFields={pipelineDisconnected}
           onDisconnectField={(key) =>
             setPipelineDisconnected((prev) => new Set(prev).add(key))
@@ -597,7 +675,7 @@ function ControlNodeComponent({
                   accent={tool.accent}
                   flat
                   onChange={handleChange}
-                  fieldOverrides={seedanceFieldOverrides}
+                  fieldOverrides={fieldOverrides}
                   disconnectedFields={pipelineDisconnected}
                   onDisconnectField={(key) =>
                     setPipelineDisconnected((prev) => new Set(prev).add(key))
@@ -625,6 +703,30 @@ function ControlNodeComponent({
             prediction={viralPrediction}
             onKeywordClick={handleTrendKeyword}
           />
+        ) : null}
+
+        {isKiIchTool && kiInfluencerCharacters.error ? (
+          <p className="mt-3 text-[10px] text-red-400/80">
+            {kiInfluencerCharacters.error}
+          </p>
+        ) : null}
+
+        {isKiIchTool &&
+        !kiInfluencerCharacters.loading &&
+        kiInfluencerCharacters.characters.length === 0 ? (
+          <p className="mt-3 text-[11px] leading-relaxed text-white/45">
+            Noch kein trainierter Avatar.{" "}
+            <Link
+              href="/dashboard/ki-influencer"
+              className="text-[#B7FF00] underline underline-offset-2 hover:text-[#ccff00]"
+            >
+              Avatar im KI-Influencer trainieren →
+            </Link>
+          </p>
+        ) : null}
+
+        {kiIchValidationError ? (
+          <p className="mt-3 text-[10px] text-red-400/80">{kiIchValidationError}</p>
         ) : null}
 
         {isSeedanceTool && seedanceModels.error ? (

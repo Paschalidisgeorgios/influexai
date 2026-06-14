@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
-import { useIntentTracking } from "@/hooks/useIntentTracking";
+import { IntentLink } from "@/hooks/useIntentTracking";
 import { LANDING_NEON } from "@/lib/landing-neon-theme";
-import Link from "next/link";
 
 const RESPONSE_LINES = [
   "line_1",
@@ -22,7 +21,6 @@ const FEATURE_KEYS = ["f1", "f2", "f3"] as const;
 
 export function LandingAgentAutopilotSection() {
   const t = useTranslations("landingPage.agentAutopilot");
-  const { getIntentHref } = useIntentTracking();
   const [visibleLines, setVisibleLines] = useState(0);
   const [active, setActive] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
@@ -111,9 +109,9 @@ export function LandingAgentAutopilotSection() {
               );
             })}
           </ul>
-          <Link href={getIntentHref("/dashboard")} className="landing-neon-btn-primary mt-8">
+          <IntentLink href="/dashboard" className="landing-neon-btn-primary mt-8">
             {t("cta")}
-          </Link>
+          </IntentLink>
         </SpringReveal>
 
         <SpringReveal delay={0.12}>
