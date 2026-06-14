@@ -133,7 +133,7 @@ export async function createApiKey(
   if (!canUsePublicApi(profile ?? { plan: "free" })) {
     return {
       success: false,
-      error: "Die Public API ist nur im Business-Plan verfügbar.",
+      error: "Die Public API ist im Pro- und Business-Plan verfügbar.",
     };
   }
 

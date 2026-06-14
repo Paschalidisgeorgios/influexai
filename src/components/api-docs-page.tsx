@@ -329,7 +329,8 @@ export function ApiDocsPage() {
               nur einmal bei der Erstellung.
             </p>
             <p style={p}>
-              Die Public API ist nur im{" "}
+              Die Public API ist im{" "}
+              <strong style={{ color: "#F0EFE8" }}>Pro</strong>- und{" "}
               <strong style={{ color: "#F0EFE8" }}>Business</strong>-Plan
               verfügbar. Andere Pläne erhalten{" "}
               <code style={codeInline}>403 PLAN_REQUIRED</code>.

@@ -14,14 +14,15 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
     { text: "Basis Text- & Bild-Tools", included: true },
     { text: "Script Generator & Viral Hooks", included: true },
     { text: "Flux.1 Bild-Generator (Standard)", included: true },
-    { text: "Alle Video-Tools (Seedance, Kling, Hailuo)", included: false },
-    { text: "Agent Autopilot (Content-Planung)", included: false },
-    { text: "Eigenes LoRA-Modell Training", included: false },
+    { text: "Alle Video-Tools (Seedance, Kling, Hailuo)", included: true },
+    { text: "Agent Autopilot (Content-Planung)", included: true },
+    { text: "Eigenes LoRA-Modell Training", included: true },
   ],
   creator: [
     { text: "300 Credits / Monat", included: true },
     { text: "Alle Video-Tools inklusive (Standard-Modus)", included: true },
     { text: "Agent Autopilot (Content-Planung)", included: true },
+    { text: "Eigenes LoRA-Modell Training", included: true },
     { text: "Thumbnail Konzept & Viral Score Predictor", included: true },
     { text: "Bild-zu-Video & Video Remix", included: true },
   ],
@@ -30,7 +31,7 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
     { text: "Priorisierte Server-Warteschlange (Keine Wartezeit)", included: true },
     { text: "High-Res & Ultra HQ Video-Rendering (Kling Omni)", included: true },
     { text: "Mein KI-Ich & Avatar Studio (Face Swap)", included: true },
-    { text: "Stimme, Musik & Eigenes LoRA-Modell Training", included: true },
+    { text: "Voice Clone, Musik & Ultra-HQ Video-Pipeline", included: true },
   ],
   business: [
     { text: "2.500 Credits / Monat", included: true },
@@ -48,9 +49,9 @@ export function getPlanCreditsLabel(plan: PaidPlanId): string {
 
 export function getPlanDeltaLabel(plan: PaidPlanId): string {
   const deltas: Record<PaidPlanId, string> = {
-    starter: "Einstieg · Text, Hooks & Flux Standard",
-    creator: "Video-Suite · Agent & Viral Score",
-    pro: "HQ-Rendering · Avatar, Stimme & LoRA",
+    starter: "Einstieg · Video, Agent & LoRA inklusive",
+    creator: "300 Credits · Viral Score & Thumbnail Konzept",
+    pro: "HQ-Rendering · Avatar, Stimme & Priorität",
     business: "2.500 Credits · Team, API & Whitelabel",
   };
   return deltas[plan];

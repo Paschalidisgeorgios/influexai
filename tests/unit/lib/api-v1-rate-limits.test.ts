@@ -7,8 +7,10 @@ import {
 } from "@/lib/api-v1/rate-limits";
 
 describe("api-v1 rate limits", () => {
-  it("allows public API for any paid plan, blocks free", () => {
+  it("allows public API for Pro and Business only", () => {
     expect(canUsePublicApi("free")).toBe(false);
+    expect(canUsePublicApi("starter")).toBe(false);
+    expect(canUsePublicApi("creator")).toBe(false);
     expect(canUsePublicApi("pro")).toBe(true);
     expect(canUsePublicApi("business")).toBe(true);
   });
@@ -18,6 +20,8 @@ describe("api-v1 rate limits", () => {
     expect(getDailyRateLimitForPlan("business")).toBe(
       API_RATE_LIMIT_BUSINESS_PER_DAY
     );
+    expect(getDailyRateLimitForPlan("starter")).toBe(0);
+    expect(getDailyRateLimitForPlan("creator")).toBe(0);
     expect(getDailyRateLimitForPlan("free")).toBe(0);
   });
 });

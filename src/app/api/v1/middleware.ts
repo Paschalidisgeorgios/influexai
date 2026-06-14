@@ -69,9 +69,9 @@ export async function authenticateApiRequest(
       ok: false,
         response: apiError(
         403,
-        "Wähle einen Plan um zu starten.",
+        "Die Public API ist im Pro- und Business-Plan verfügbar.",
         "PLAN_REQUIRED",
-        { required_plan: "starter" }
+        { required_plan: "pro" }
       ),
     };
   }

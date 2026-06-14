@@ -156,10 +156,10 @@ export default function DeveloperApiPage() {
           }}
         >
           <p style={{ color: "#F0EFE8", margin: "0 0 8px", fontWeight: 700 }}>
-            Business-Plan erforderlich
+            Pro- oder Business-Plan erforderlich
           </p>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.85rem", margin: 0 }}>
-            Die Public API ist nur im Business-Plan verfügbar. Upgrade über
+            Die Public API ist im Pro- und Business-Plan verfügbar. Upgrade über
             Pricing — das Upgrade-Modal erscheint automatisch auf dieser Seite.
           </p>
         </div>
@@ -222,7 +222,7 @@ export default function DeveloperApiPage() {
           API Keys
         </h2>
         <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem", marginBottom: 16 }}>
-          Maximal 3 aktive Keys (Business). Keys werden gehasht gespeichert —
+          Maximal 3 aktive Keys (Pro & Business). Keys werden gehasht gespeichert —
           einmalig sichtbar nach Erstellung. Credits teilen sich mit dem
           Dashboard-Guthaben.
         </p>
