@@ -133,7 +133,7 @@ export function HeroSection() {
             onSubmit={(e) => void handleSubmit(e)}
             className="relative z-20 w-full"
           >
-            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-[#ccff00]/40 bg-zinc-950/40 p-3 shadow-[0_0_15px_rgba(204,255,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 focus-within:border-[#ccff00] focus-within:shadow-[0_0_25px_rgba(204,255,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-[#ccff00]/40 bg-zinc-950/40 p-3 shadow-[0_0_15px_rgba(204,255,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 focus-within:border-[#B4FF00] focus-within:ring-2 focus-within:ring-[#B4FF00] focus-within:shadow-[0_0_25px_rgba(180,255,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.05)]">
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
