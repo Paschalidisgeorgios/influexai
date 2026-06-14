@@ -11,6 +11,7 @@ const EMPTY: CanvasAnalyticsSnapshot = {
     likes: [0, 0, 0, 0, 0, 0, 0],
     shares: [0, 0, 0, 0, 0, 0, 0],
     totals: { views: 0, likes: 0, shares: 0 },
+    hasRealMetrics: false,
   },
   roi: { creditsPer1000Views: 0, eurPer1000Views: 0, eurPerCredit: 0.17 },
   activity: [],

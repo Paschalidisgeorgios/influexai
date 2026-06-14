@@ -6,7 +6,7 @@ export function useScrollVelocity(threshold = 15, cooldownMs = 6000) {
   const [velocity, setVelocity] = useState(0);
   const lastYRef = useRef(0);
   const lastTimeRef = useRef(Date.now());
-  const cooldownRef = useRef(0);
+  const [lastTriggeredAt, setLastTriggeredAt] = useState(0);
   const velocityRef = useRef(0);
 
   const onScroll = useCallback(
@@ -46,10 +46,10 @@ export function useScrollVelocity(threshold = 15, cooldownMs = 6000) {
   }, [onScroll]);
 
   const shouldTrigger =
-    velocity > threshold && Date.now() - cooldownRef.current > cooldownMs;
+    velocity > threshold && Date.now() - lastTriggeredAt > cooldownMs;
 
   const markTriggered = useCallback(() => {
-    cooldownRef.current = Date.now();
+    setLastTriggeredAt(Date.now());
   }, []);
 
   return { velocity, shouldTrigger, markTriggered };

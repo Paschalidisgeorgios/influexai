@@ -144,26 +144,35 @@ function CanvasAnalyticsPanelComponent({ open, onOpenChange }: CanvasAnalyticsPa
                   <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-500">
                     Post-Performance
                   </p>
-                  <div className="flex gap-2">
-                    <CanvasSparkline
-                      data={postMetrics.views}
-                      color="#ccff00"
-                      label="Views"
-                      total={postMetrics.totals.views}
-                    />
-                    <CanvasSparkline
-                      data={postMetrics.likes}
-                      color="#a855f7"
-                      label="Likes"
-                      total={postMetrics.totals.likes}
-                    />
-                    <CanvasSparkline
-                      data={postMetrics.shares}
-                      color="#38bdf8"
-                      label="Shares"
-                      total={postMetrics.totals.shares}
-                    />
-                  </div>
+                  {postMetrics.hasRealMetrics ? (
+                    <div className="flex gap-2">
+                      <CanvasSparkline
+                        data={postMetrics.views}
+                        color="#ccff00"
+                        label="Views"
+                        total={postMetrics.totals.views}
+                      />
+                      <CanvasSparkline
+                        data={postMetrics.likes}
+                        color="#a855f7"
+                        label="Likes"
+                        total={postMetrics.totals.likes}
+                      />
+                      <CanvasSparkline
+                        data={postMetrics.shares}
+                        color="#38bdf8"
+                        label="Shares"
+                        total={postMetrics.totals.shares}
+                      />
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-4 text-center">
+                      <p className="text-[10px] leading-relaxed text-zinc-500">
+                        Performance-Daten — Plattform-Verbindung folgt in einem
+                        späteren Update.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="canvas-metric-tile rounded-lg border border-zinc-800/60 bg-black/25 p-3">
@@ -175,7 +184,7 @@ function CanvasAnalyticsPanelComponent({ open, onOpenChange }: CanvasAnalyticsPa
                     <span className="font-semibold text-[#ccff00]">
                       {roi.creditsPer1000Views.toLocaleString("de-DE")} Credits
                     </span>
-                    {roi.creditsPer1000Views > 0 ? (
+                    {postMetrics.hasRealMetrics && roi.creditsPer1000Views > 0 ? (
                       <>
                         {" "}
                         <span className="text-zinc-500">(ca.</span>{" "}
@@ -188,7 +197,10 @@ function CanvasAnalyticsPanelComponent({ open, onOpenChange }: CanvasAnalyticsPa
                         <span className="text-zinc-500">)</span>
                       </>
                     ) : (
-                      <span className="text-zinc-600"> — noch keine Share-Daten</span>
+                      <span className="text-zinc-600">
+                        {" "}
+                        — verfügbar sobald Plattform-Metriken angebunden sind
+                      </span>
                     )}
                   </p>
                 </div>

@@ -27,16 +27,15 @@ function daysAgoIso(days: number): string {
   return d.toISOString();
 }
 
-function mockSparkline(seed: string, base: number): number[] {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  return Array.from({ length: SPARK_DAYS }, (_, i) => {
-    const wave = Math.sin((hash % 97) * 0.1 + i * 0.9) * 0.35 + 0.65;
-    return Math.round(base * (0.35 + (i / SPARK_DAYS) * 0.65) * wave);
-  });
+function emptyPostMetrics(): PostMetricSeries {
+  const zeroSeries = Array(SPARK_DAYS).fill(0);
+  return {
+    views: zeroSeries,
+    likes: zeroSeries,
+    shares: zeroSeries,
+    totals: { views: 0, likes: 0, shares: 0 },
+    hasRealMetrics: false,
+  };
 }
 
 function parseShareResult(result: Record<string, unknown> | null) {
@@ -45,22 +44,30 @@ function parseShareResult(result: Record<string, unknown> | null) {
     | Record<string, unknown>
     | undefined;
   if (!share) return null;
+
+  const metricsSource =
+    share.metricsSource === "platform" ? ("platform" as const) : null;
+
   return {
     platform: String(share.platform ?? "") as SharePlatform,
     liveUrl: typeof share.liveUrl === "string" ? share.liveUrl : undefined,
     postId: typeof share.postId === "string" ? share.postId : "",
-    views: Number(share.views ?? 0),
-    likes: Number(share.likes ?? 0),
-    shares: Number(share.shares ?? 0),
-    sparklineViews: Array.isArray(share.sparklineViews)
-      ? share.sparklineViews.map(Number)
-      : undefined,
     toolId: typeof share.toolId === "string" ? share.toolId : undefined,
+    metricsSource,
+    views: metricsSource === "platform" ? Number(share.views ?? 0) : 0,
+    likes: metricsSource === "platform" ? Number(share.likes ?? 0) : 0,
+    shares: metricsSource === "platform" ? Number(share.shares ?? 0) : 0,
+    sparklineViews:
+      metricsSource === "platform" && Array.isArray(share.sparklineViews)
+        ? share.sparklineViews.map(Number)
+        : undefined,
   };
 }
 
 function aggregatePostMetrics(rows: GenerationRow[]): PostMetricSeries {
   const shareRows = rows.filter((r) => r.type.startsWith("canvas-share-"));
+  if (shareRows.length === 0) return emptyPostMetrics();
+
   const viewsSeries = Array(SPARK_DAYS).fill(0);
   const likesSeries = Array(SPARK_DAYS).fill(0);
   const sharesSeries = Array(SPARK_DAYS).fill(0);
@@ -68,21 +75,22 @@ function aggregatePostMetrics(rows: GenerationRow[]): PostMetricSeries {
   let totalViews = 0;
   let totalLikes = 0;
   let totalShares = 0;
+  let hasRealMetrics = false;
 
   for (const row of shareRows) {
     const share = parseShareResult(row.result);
-    const seed = share?.postId ?? row.id;
-    const views = share?.views || Math.max(120, (row.prompt.length % 40) * 80);
-    const likes = share?.likes || Math.round(views * 0.08);
-    const shareCount = share?.shares || Math.round(views * 0.015);
+    if (!share || share.metricsSource !== "platform") continue;
 
-    totalViews += views;
-    totalLikes += likes;
-    totalShares += shareCount;
+    hasRealMetrics = true;
+    totalViews += share.views;
+    totalLikes += share.likes;
+    totalShares += share.shares;
 
-    const vLine = share?.sparklineViews ?? mockSparkline(`${seed}-v`, views / SPARK_DAYS);
-    const lLine = mockSparkline(`${seed}-l`, likes / SPARK_DAYS);
-    const sLine = mockSparkline(`${seed}-s`, shareCount / SPARK_DAYS);
+    const vLine =
+      share.sparklineViews ??
+      Array(SPARK_DAYS).fill(share.views / SPARK_DAYS);
+    const lLine = Array(SPARK_DAYS).fill(share.likes / SPARK_DAYS);
+    const sLine = Array(SPARK_DAYS).fill(share.shares / SPARK_DAYS);
 
     for (let i = 0; i < SPARK_DAYS; i += 1) {
       viewsSeries[i] += vLine[i] ?? 0;
@@ -91,11 +99,14 @@ function aggregatePostMetrics(rows: GenerationRow[]): PostMetricSeries {
     }
   }
 
+  if (!hasRealMetrics) return emptyPostMetrics();
+
   return {
     views: viewsSeries,
     likes: likesSeries,
     shares: sharesSeries,
     totals: { views: totalViews, likes: totalLikes, shares: totalShares },
+    hasRealMetrics: true,
   };
 }
 
@@ -155,10 +166,9 @@ export async function fetchCanvasAnalytics(
     .slice(0, 50)
     .reduce((s, r) => s + (r.credits_used ?? 0), 0);
 
-  const views = postMetrics.totals.views || 1;
   const creditsPer1000Views =
-    postMetrics.totals.views > 0
-      ? Math.round((shareCredits / views) * 1000 * 10) / 10
+    postMetrics.hasRealMetrics && postMetrics.totals.views > 0
+      ? Math.round((shareCredits / postMetrics.totals.views) * 1000 * 10) / 10
       : 0;
 
   return {
@@ -173,6 +183,7 @@ export async function fetchCanvasAnalytics(
   };
 }
 
+/** Records a canvas share event (metadata only — no synthetic performance metrics). */
 export async function recordCanvasShare(
   supabase: SupabaseClient,
   userId: string,
@@ -185,11 +196,6 @@ export async function recordCanvasShare(
     creditsUsed?: number;
   }
 ): Promise<void> {
-  const baseViews = 800 + (payload.postId.length % 12) * 120;
-  const views = baseViews + Math.floor(Math.random() * 400);
-  const likes = Math.round(views * (0.06 + Math.random() * 0.04));
-  const shares = Math.round(views * (0.01 + Math.random() * 0.01));
-
   await supabase.from("generations").insert({
     user_id: userId,
     type: `canvas-share-${payload.platform}`,
@@ -201,10 +207,6 @@ export async function recordCanvasShare(
       liveUrl: payload.liveUrl,
       postId: payload.postId,
       toolId: payload.toolId,
-      views,
-      likes,
-      shares,
-      sparklineViews: mockSparkline(payload.postId, views / SPARK_DAYS),
     },
   });
 }

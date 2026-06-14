@@ -7,9 +7,9 @@ import {
 } from "@/lib/api-v1/rate-limits";
 
 describe("api-v1 rate limits", () => {
-  it("allows public API only for business", () => {
+  it("allows public API for any paid plan, blocks free", () => {
     expect(canUsePublicApi("free")).toBe(false);
-    expect(canUsePublicApi("pro")).toBe(false);
+    expect(canUsePublicApi("pro")).toBe(true);
     expect(canUsePublicApi("business")).toBe(true);
   });
 

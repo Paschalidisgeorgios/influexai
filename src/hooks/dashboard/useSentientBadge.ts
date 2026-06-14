@@ -59,7 +59,9 @@ export function useSentientBadge(initialMessage = DEFAULT_MSG) {
     }, 200);
   }, []);
 
-  showMessageRef.current = showMessage;
+  useEffect(() => {
+    showMessageRef.current = showMessage;
+  }, [showMessage]);
 
   useEffect(() => {
     return () => {

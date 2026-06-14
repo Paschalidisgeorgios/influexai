@@ -18,6 +18,8 @@ export type PostMetricSeries = {
     likes: number;
     shares: number;
   };
+  /** True only when metrics come from a connected platform API (not synthetic). */
+  hasRealMetrics: boolean;
 };
 
 export type CanvasActivityItem = {

@@ -19,7 +19,10 @@ export function useAkoolJobPoll(options?: UseAkoolJobPollOptions) {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onSuccessRef = useRef(options?.onSuccess);
-  onSuccessRef.current = options?.onSuccess;
+
+  useEffect(() => {
+    onSuccessRef.current = options?.onSuccess;
+  }, [options?.onSuccess]);
 
   const stopTimers = useCallback(() => {
     if (pollRef.current) {

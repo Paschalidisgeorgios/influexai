@@ -48,7 +48,9 @@ export function useSmartCapsule() {
     }, next.duration);
   }, []);
 
-  processQueueRef.current = processQueue;
+  useEffect(() => {
+    processQueueRef.current = processQueue;
+  }, [processQueue]);
 
   const showMessage = useCallback(
     (text: string, duration = 4000, priority = 1) => {
