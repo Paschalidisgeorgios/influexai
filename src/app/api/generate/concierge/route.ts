@@ -9,6 +9,7 @@ import {
   CONCIERGE_SYSTEM_PROMPT,
   parseConciergeResponse,
 } from "@/lib/claude-concierge";
+import { verifyTurnstileToken } from "@/lib/security/turnstile";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -20,6 +21,7 @@ const rateMap = new Map<string, { count: number; resetAt: number }>();
 type ConciergeBody = {
   question?: string;
   message?: string;
+  turnstileToken?: string;
 };
 
 function clientKey(request: Request): string {
@@ -50,6 +52,21 @@ export async function POST(request: Request) {
     body = (await request.json()) as ConciergeBody;
   } catch {
     return NextResponse.json({ success: false, error: "Ungültiger Body." }, { status: 400 });
+  }
+
+  const turnstileToken = body.turnstileToken;
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined;
+
+  const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
+  if (!turnstileValid) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Sicherheitsprüfung fehlgeschlagen. Bitte Seite neu laden.",
+      },
+      { status: 403 }
+    );
   }
 
   const question = (body.question ?? body.message ?? "").trim();

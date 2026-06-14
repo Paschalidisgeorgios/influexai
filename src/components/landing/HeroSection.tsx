@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { IntentLink, useIntentTracking } from "@/hooks/useIntentTracking";
 import { AssetLoadingShader } from "@/components/canvas/AssetLoadingShader";
 import {
@@ -12,6 +13,7 @@ import {
 import { LandingHeroBackground } from "./LandingHeroBackground";
 import { HeroKineticHeadline } from "./HeroKineticHeadline";
 import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
+import { TURNSTILE_SITE_KEY } from "@/lib/security/turnstile";
 import "@/styles/canvas.css";
 
 const CONCIERGE_PLACEHOLDER =
@@ -29,7 +31,9 @@ export function HeroSection() {
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<ConciergeState>(null);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const progressTimer = useRef<number | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const stopProgress = useCallback(() => {
     if (progressTimer.current) {
@@ -58,7 +62,7 @@ export function HeroSection() {
     event.preventDefault();
 
     const cleanQuestion = question.trim();
-    if (!cleanQuestion || loading) return;
+    if (!cleanQuestion || loading || !turnstileToken) return;
 
     setLoading(true);
     setError(null);
@@ -69,7 +73,7 @@ export function HeroSection() {
       const res = await fetch("/api/generate/concierge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: cleanQuestion }),
+        body: JSON.stringify({ question: cleanQuestion, turnstileToken }),
       });
 
       const data = (await res.json()) as {
@@ -91,6 +95,8 @@ export function HeroSection() {
     } finally {
       stopProgress();
       setLoading(false);
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   };
 
@@ -156,12 +162,25 @@ export function HeroSection() {
               />
               <button
                 type="submit"
-                disabled={loading || !question.trim()}
+                disabled={loading || !question.trim() || !turnstileToken}
                 aria-label="Frage senden"
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ccff00]/50 bg-[#ccff00]/10 text-[#ccff00] transition-all duration-300 hover:scale-105 hover:border-[#ccff00] hover:bg-[#ccff00]/20 hover:shadow-[0_0_20px_rgba(204,255,0,0.45)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 disabled:hover:shadow-none"
               >
                 <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
               </button>
+            </div>
+
+            <div className="sr-only" aria-hidden>
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={setTurnstileToken}
+                onExpire={() => {
+                  setTurnstileToken(null);
+                  turnstileRef.current?.reset();
+                }}
+                options={{ size: "invisible" }}
+              />
             </div>
 
             <AnimatePresence mode="wait">

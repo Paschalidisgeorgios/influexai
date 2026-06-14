@@ -9,6 +9,7 @@ import {
   LANDING_DEMO_SYSTEM_PROMPT,
   parseLandingDemoIdea,
 } from "@/lib/claude-landing-demo";
+import { verifyTurnstileToken } from "@/lib/security/turnstile";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -21,6 +22,7 @@ type DemoBody = {
   niche?: string;
   nische?: string;
   topic?: string;
+  turnstileToken?: string;
 };
 
 function clientKey(request: Request): string {
@@ -51,6 +53,21 @@ export async function POST(request: Request) {
     body = (await request.json()) as DemoBody;
   } catch {
     return NextResponse.json({ success: false, error: "Ungültiger Body." }, { status: 400 });
+  }
+
+  const turnstileToken = body.turnstileToken;
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined;
+
+  const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
+  if (!turnstileValid) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Sicherheitsprüfung fehlgeschlagen. Bitte Seite neu laden.",
+      },
+      { status: 403 }
+    );
   }
 
   const niche = (body.niche ?? body.nische ?? body.topic ?? "").trim();

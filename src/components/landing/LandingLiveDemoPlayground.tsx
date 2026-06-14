@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { AssetLoadingShader } from "@/components/canvas/AssetLoadingShader";
 import { IntentLink, useIntentTracking, type IntentKey } from "@/hooks/useIntentTracking";
+import { TURNSTILE_SITE_KEY } from "@/lib/security/turnstile";
 import "@/styles/canvas.css";
 
 const DEMO_INTENT: IntentKey = "agent-autopilot";
@@ -20,7 +22,9 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
   const [progress, setProgress] = useState(0);
   const [idea, setIdea] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const progressTimer = useRef<number | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const stopProgress = useCallback(() => {
     if (progressTimer.current) {
@@ -41,7 +45,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
 
   const generate = async () => {
     const value = niche.trim();
-    if (value.length < 2 || loading) return;
+    if (value.length < 2 || loading || !turnstileToken) return;
 
     setLoading(true);
     setError(null);
@@ -53,7 +57,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
       const res = await fetch("/api/generate/demo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche: value }),
+        body: JSON.stringify({ niche: value, turnstileToken }),
       });
       const data = (await res.json()) as { success?: boolean; idea?: string; error?: string };
 
@@ -69,6 +73,8 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
     } finally {
       stopProgress();
       setLoading(false);
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   };
 
@@ -103,11 +109,27 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
           <button
             type="button"
             onClick={() => void generate()}
-            disabled={loading || niche.trim().length < 2}
+            disabled={loading || niche.trim().length < 2 || !turnstileToken}
             className="w-full rounded-lg bg-[#ccff00] px-3 py-2 text-xs font-bold text-black transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Generiert…" : "Idee generieren"}
+            {loading
+              ? "Generiert…"
+              : !turnstileToken
+                ? "Sicherheitsprüfung läuft…"
+                : "Idee generieren"}
           </button>
+          <div className="sr-only" aria-hidden>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={setTurnstileToken}
+              onExpire={() => {
+                setTurnstileToken(null);
+                turnstileRef.current?.reset();
+              }}
+              options={{ size: "invisible" }}
+            />
+          </div>
         </div>
       </div>
 
