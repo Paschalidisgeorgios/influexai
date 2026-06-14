@@ -522,30 +522,47 @@ export default function CampaignAutopilot() {
           className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.14em]"
           style={{ color: "#B4FF00" }}
         >
-          Creator Studio · Preview
+          {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+            ? "Creator Studio · Preview"
+            : "Creator Studio"}
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-display text-[clamp(2rem,4vw,2.75rem)] leading-none">
             AUTOPILOT KAMPAGNE
           </h1>
-          <span
-            className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
-            style={{
-              borderRadius: 4,
-              background: "rgba(180,255,0,0.1)",
-              border: "1px solid rgba(180,255,0,0.45)",
-              color: "#B4FF00",
-            }}
-          >
-            Preview
-          </span>
+          {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? (
+            <span
+              className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+              style={{
+                borderRadius: 4,
+                background: "rgba(180,255,0,0.1)",
+                border: "1px solid rgba(180,255,0,0.45)",
+                color: "#B4FF00",
+              }}
+            >
+              Preview
+            </span>
+          ) : (
+            <span
+              className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+              style={{
+                borderRadius: 4,
+                background: "rgba(180,255,0,0.1)",
+                border: "1px solid rgba(180,255,0,0.45)",
+                color: "#B4FF00",
+              }}
+            >
+              Live
+            </span>
+          )}
         </div>
         <p
           className="mt-2 text-[0.9rem] leading-[1.65]"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
-          Erstellt aktuell nur eine beispielhafte Kampagnenstruktur — noch kein
-          echter autonomer Kampagnen-Agent.
+          {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+            ? "Erstellt aktuell nur eine beispielhafte Kampagnenstruktur — noch kein echter autonomer Kampagnen-Agent."
+            : "Plant und generiert Content-Pakete über mehrere KI-Tools — von Hooks und Scripts bis zu Visuals und Kalender."}
         </p>
       </header>
 
@@ -762,7 +779,7 @@ export default function CampaignAutopilot() {
                 fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
               }}
             >
-              PREVIEW-AUSGABE
+              {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? "PREVIEW-AUSGABE" : "ERGEBNIS"}
             </span>
             <span className="text-[11px] font-semibold" style={{ color: "#B4FF00" }}>
               {stepIdx + 1} / {TOTAL_STEPS}
@@ -773,8 +790,9 @@ export default function CampaignAutopilot() {
             className="mb-3 text-[10px] leading-[1.5]"
             style={{ color: "rgba(255,255,255,0.42)" }}
           >
-            Simulierte Schritte zur Illustration — keine echte Recherche oder
-            KI-Generierung.
+            {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+              ? "Simulierte Schritte zur Illustration — keine echte Recherche oder KI-Generierung."
+              : "KI-Tools werden nacheinander ausgeführt — das kann einige Minuten dauern."}
           </p>
 
           <div
@@ -973,7 +991,9 @@ function CampaignResultCard({
                 className="mb-2 text-[11px] font-semibold"
                 style={{ color: "rgba(180,255,0,0.8)" }}
               >
-                Vereinfachte Demo-Annahmen:
+                {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+                  ? "Vereinfachte Demo-Annahmen:"
+                  : "Getroffene Annahmen:"}
               </p>
               <ul
                 className="m-0 list-disc pl-4 text-[11px] leading-[1.55]"
@@ -1209,7 +1229,11 @@ function CampaignResultCard({
           <button
             type="button"
             disabled
-            title="In der Preview noch nicht verfügbar"
+            title={
+              CAMPAIGN_AUTOPILOT_IS_PREVIEW
+                ? "In der Preview noch nicht verfügbar"
+                : "Demnächst verfügbar"
+            }
             className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
             style={{
               borderRadius: 4,
@@ -1218,7 +1242,9 @@ function CampaignResultCard({
               background: "transparent",
             }}
           >
-            Veröffentlichen (Preview — noch nicht verfügbar)
+            {CAMPAIGN_AUTOPILOT_IS_PREVIEW
+              ? "Veröffentlichen (Preview — noch nicht verfügbar)"
+              : "Veröffentlichen (demnächst verfügbar)"}
           </button>
         </div>
       </div>
