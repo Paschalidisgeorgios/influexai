@@ -966,9 +966,9 @@ export function DashboardLayout() {
   // TEXT-TOOLS: /api/agent zieht bereits 1 Credit ab → skipDeduction: true
   //             Wir speichern nur das Asset in die DB.
   //
-  // MEDIEN-TOOLS: Kein eigener Credit-Abzug bisher → skipDeduction: false,
-  //               cost wird in /api/dashboard/asset server-seitig abgezogen.
-  //               Simulierter API-Call (3 s) — durch echten ersetzen wenn bereit.
+  // MEDIEN-TOOLS: Mock-Pfad (noch kein echter API-Call) → skipDeduction: true,
+  //               damit kein Credit-Abzug für nicht-funktionale Placeholder-Outputs.
+  //               Echte Calls (img-to-img, etc.) setzen ihren eigenen skipDeduction-Wert.
   //
   const handleActionExecute = useCallback(
     async (tool: ToolId, payload: string) => {
@@ -1076,14 +1076,15 @@ export function DashboardLayout() {
           ? "https://images.unsplash.com/photo-1686191128892-3b37add4c844?w=800&q=80"
           : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
 
-        // Asset speichern + Credits serverseitig abziehen
+        // Asset speichern — KEIN Credit-Abzug für Mock-Placeholder
+        // (echter Abzug erfolgt erst wenn der echte API-Call aktiviert wird)
         const saved = await saveAsset({
           type:          isImageTool ? "image" : "video",
           url:           placeholderUrl,
           prompt:        payload,
           tool:          toolLabel,
-          cost,
-          skipDeduction: false,   // server-side Abzug
+          cost:          0,
+          skipDeduction: true,    // kein Abzug für nicht-funktionale Mock-Outputs
         });
 
         if (saved) {
@@ -1099,7 +1100,7 @@ export function DashboardLayout() {
             tool:      toolLabel,
             createdAt: new Date().toISOString(),
           }, ...prev]);
-          setCredits((c) => Math.max(0, c - cost));
+          // cost=0 für Mock → keine lokale Credit-Anpassung nötig
         }
 
       } catch (err) {
