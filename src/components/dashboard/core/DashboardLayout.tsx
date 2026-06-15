@@ -6,6 +6,7 @@ import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
 import { DashboardSectionHeader } from "@/components/dashboard/ui/DashboardSectionHeader";
+import { DashboardCard }          from "@/components/dashboard/ui/DashboardCard";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -464,122 +465,205 @@ const HERO_CARDS: HeroCard[] = [
 ];
 
 interface SmallCard {
-  id: ToolId;
-  label: string;
-  icon: React.ReactNode;
-  badge?: BadgeVariant;
+  id:      ToolId;
+  label:   string;
+  desc:    string;
+  icon:    React.ReactNode;
+  badge?:  BadgeVariant;
+  credits: number;
 }
 
 const SMALL_CARDS_CREATE: SmallCard[] = [
-  { id: "image-gen",     label: "Asset Generator", icon: <Image size={13} />,   badge: "hot" },
-  { id: "ecommerce-ads", label: "Video Ad",         icon: <Video size={13} />,   badge: "new" },
-  { id: "img-to-img",    label: "Image Ad",          icon: <Images size={13} />          },
+  { id: "image-gen",     label: "Asset Generator", desc: "From concept to campaign visual in seconds",   icon: <Image size={13} />,   badge: "hot", credits: 3  },
+  { id: "ecommerce-ads", label: "Video Ad",         desc: "AI-powered campaign video via Akool",          icon: <Video size={13} />,   badge: "new", credits: 15 },
+  { id: "img-to-img",    label: "Image Ad",          desc: "Transform images with AI variation",          icon: <Images size={13} />,               credits: 3  },
 ];
 
 const SMALL_CARDS_ANALYZE: SmallCard[] = [
-  { id: "viral-hook",        label: "Viral Hook",       icon: <Zap size={13} />        },
-  { id: "content-calendar",  label: "Content Calendar", icon: <Calendar size={13} />   },
-  { id: "trend-script",      label: "Trend Script",     icon: <TrendingUp size={13} /> },
+  { id: "viral-hook",       label: "Viral Hook",       desc: "5 scroll-stopping hooks via Claude",    icon: <Zap size={13} />,        credits: 1 },
+  { id: "content-calendar", label: "Content Calendar", desc: "7-day platform-ready calendar",         icon: <Calendar size={13} />,   credits: 2 },
+  { id: "trend-script",     label: "Trend Script",     desc: "Script built from trending content",    icon: <TrendingUp size={13} />, credits: 3 },
 ];
 
-function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
+const WORKFLOW_STEPS = [
+  { num: "01", label: "Idea"     },
+  { num: "02", label: "Brand"    },
+  { num: "03", label: "Generate" },
+  { num: "04", label: "Review"   },
+  { num: "05", label: "Export"   },
+] as const;
+
+function StudioHome({
+  onSelect,
+  credits,
+  creditsLoaded,
+  recentAssets,
+}: {
+  onSelect:      (id: ToolId) => void;
+  credits:       number;
+  creditsLoaded: boolean;
+  recentAssets:  GalleryItem[];
+}) {
   return (
-    <div className="w-full">
+    <div className="relative w-full space-y-10">
 
-      {/* ── Hero heading ──────────────────────────────────────────────────── */}
-      <div className="mb-8">
-        <DashboardSectionHeader
-          eyebrow="Creator Studio"
-          title="What are you making today?"
-          description="Start with an image, video, avatar or campaign workflow."
-        />
-      </div>
+      {/* Subtle lime ambient glow at top */}
+      <div
+        className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full opacity-[0.05] blur-3xl"
+        style={{ background: "#b4ff00" }}
+      />
 
-      {/* ── Hero Grid ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3">
-        {HERO_CARDS.map((card) => (
-          <motion.button
-            key={card.id}
-            type="button"
-            onClick={() => onSelect(card.id)}
-            whileHover="hover"
-            whileTap={{ scale: 0.985 }}
-            transition={{ duration: 0.22 }}
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
-            style={{
-              aspectRatio: "16/10",
-              background:  "#0C0C0E",
-            }}
-          >
-            {/* Background image */}
-            {card.imgUrl && (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={card.imgUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover opacity-35 transition-opacity duration-500 group-hover:opacity-50"
-                />
-                {/* Deeper cinematic gradient for better text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/[0.08]" />
-              </>
-            )}
-
-            {/* Grid pattern — AI Media Buyer card */}
-            {card.grid && (
-              <>
-                <div
-                  className="absolute inset-0 opacity-[0.04]"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px)," +
-                      "linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-                    backgroundSize: "28px 28px",
-                  }}
-                />
-                <div
-                  className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.07] blur-3xl"
-                  style={{ background: "white" }}
-                />
-              </>
-            )}
-
-            {/* Accent glow — Ad Flow card */}
-            {card.accentGlow && (
-              <div
-                className="absolute -bottom-8 -right-8 h-36 w-36 rounded-full opacity-[0.18] blur-2xl transition-opacity duration-500 group-hover:opacity-30"
-                style={{ background: card.accentGlow }}
-              />
-            )}
-
-            {/* Hover surface sheen */}
-            <motion.div
-              variants={{ hover: { opacity: 1 } }}
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
-            />
-
-            {/* Card content */}
-            <div className="relative z-10 flex h-full flex-col justify-between p-5">
-              {/* Category pill — top-left */}
-              <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
-                {card.eyebrow}
-              </span>
-              {/* CTA + subtitle — bottom */}
-              <div>
-                <p className="text-[18px] font-semibold tracking-tight text-white">
-                  {card.cta}
-                </p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-400">{card.sub}</p>
+      {/* ── 1. Studio Header ──────────────────────────────────────────────── */}
+      <DashboardSectionHeader
+        eyebrow="Creator Studio"
+        title="What are you making today?"
+        description="Generate campaign-ready images, videos and creator assets from one place."
+        action={
+          creditsLoaded ? (
+            <div className="flex shrink-0 items-center gap-4 rounded-xl border border-white/[0.05] bg-white/[0.01] px-4 py-2.5">
+              <div className="text-center">
+                <p className="font-mono text-sm font-bold text-[#b4ff00]">{credits}</p>
+                <p className="mt-0.5 text-[9px] uppercase tracking-widest text-zinc-600">Credits</p>
               </div>
+              {recentAssets.length > 0 && (
+                <>
+                  <div className="h-6 w-px bg-white/[0.06]" />
+                  <div className="text-center">
+                    <p className="font-mono text-sm font-bold text-white">{recentAssets.length}</p>
+                    <p className="mt-0.5 text-[9px] uppercase tracking-widest text-zinc-600">Assets</p>
+                  </div>
+                </>
+              )}
             </div>
-          </motion.button>
-        ))}
+          ) : undefined
+        }
+      />
+
+      {/* ── 2. Bento Hero Grid ────────────────────────────────────────────── */}
+      {/* Ad Flow takes 2/3 width; Avatar + Agent stack in the remaining 1/3 */}
+      <div className="flex gap-3" style={{ minHeight: "300px" }}>
+
+        {/* Large feature card — Ad Flow */}
+        {(() => {
+          const card = HERO_CARDS[0];
+          return (
+            <motion.button
+              key={card.id}
+              type="button"
+              onClick={() => onSelect(card.id)}
+              whileHover="hover"
+              whileTap={{ scale: 0.985 }}
+              transition={{ duration: 0.22 }}
+              className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-[#b4ff00]/20 hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
+              style={{ flex: 2, background: "#0C0C0E" }}
+            >
+              {card.imgUrl && (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-opacity duration-500 group-hover:opacity-50" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/[0.06]" />
+                </>
+              )}
+              {card.accentGlow && (
+                <div
+                  className="absolute -bottom-10 -right-10 h-56 w-56 rounded-full opacity-[0.20] blur-3xl transition-opacity duration-500 group-hover:opacity-35"
+                  style={{ background: card.accentGlow }}
+                />
+              )}
+              <motion.div
+                variants={{ hover: { opacity: 1 } }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
+              />
+              <div className="relative z-10 flex h-full flex-col justify-between p-7">
+                <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
+                  {card.eyebrow}
+                </span>
+                <div>
+                  <p className="text-2xl font-semibold tracking-tight text-white">{card.cta}</p>
+                  <p className="mt-2 text-[12px] leading-relaxed text-neutral-400">{card.sub}</p>
+                  <div className="mt-4 flex items-center gap-1.5">
+                    <span className="text-[11px] font-medium text-[#b4ff00]/60">Open Studio</span>
+                    <ChevronRight size={11} className="text-[#b4ff00]/40" />
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+          );
+        })()}
+
+        {/* Right column — Avatar Video + AI Media Buyer stacked */}
+        <div className="flex flex-1 flex-col gap-3">
+          {HERO_CARDS.slice(1).map((card) => (
+            <motion.button
+              key={card.id}
+              type="button"
+              onClick={() => onSelect(card.id)}
+              whileHover="hover"
+              whileTap={{ scale: 0.985 }}
+              transition={{ duration: 0.22 }}
+              className="group relative flex-1 cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_24px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+              style={{ background: "#0C0C0E" }}
+            >
+              {card.imgUrl && (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-45" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
+                </>
+              )}
+              {card.grid && (
+                <>
+                  <div className="absolute inset-0 opacity-[0.04]" style={{
+                    backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                  }} />
+                  <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.06] blur-3xl" style={{ background: "white" }} />
+                </>
+              )}
+              <motion.div
+                variants={{ hover: { opacity: 1 } }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
+              />
+              <div className="relative z-10 flex h-full flex-col justify-between p-5">
+                <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
+                  {card.eyebrow}
+                </span>
+                <div>
+                  <p className="text-base font-semibold tracking-tight text-white">{card.cta}</p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">{card.sub}</p>
+                </div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+
       </div>
 
-      {/* ── Lower Sections ────────────────────────────────────────────────── */}
-      <div className="mt-12 grid grid-cols-2 gap-8">
+      {/* ── 3. Workflow Strip ─────────────────────────────────────────────── */}
+      <DashboardCard variant="muted" className="px-5 py-3.5">
+        <div className="flex items-center">
+          {WORKFLOW_STEPS.map((step, i) => (
+            <div key={step.label} className="flex flex-1 items-center">
+              <div className="flex items-center gap-2">
+                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-white/[0.08] font-mono text-[8px] text-zinc-600">
+                  {step.num}
+                </span>
+                <span className="text-[11px] font-medium text-zinc-500">{step.label}</span>
+              </div>
+              {i < WORKFLOW_STEPS.length - 1 && (
+                <div className="mx-3 h-px flex-1 bg-gradient-to-r from-white/[0.06] to-transparent" />
+              )}
+            </div>
+          ))}
+        </div>
+      </DashboardCard>
+
+      {/* ── 4. Tool Categories ────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-8">
 
         {/* More ways to create */}
         <div>
@@ -592,19 +676,21 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
               >
-                <span className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-white/[0.02] text-zinc-500 transition-colors group-hover:text-zinc-300">
                   {card.icon}
                 </span>
-                <span className="flex-1 text-xs font-medium text-zinc-300 transition-colors group-hover:text-white">
-                  {card.label}
-                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
+                  <p className="mt-0.5 truncate text-[10px] text-zinc-600 transition-colors group-hover:text-zinc-500">{card.desc}</p>
+                </div>
                 {card.badge && (
-                  <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
                     {BADGE_LABEL[card.badge]}
                   </span>
                 )}
+                <span className="shrink-0 font-mono text-[10px] text-zinc-700">~{card.credits}cr</span>
                 <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
               </button>
             ))}
@@ -622,14 +708,16 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
               >
-                <span className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-white/[0.02] text-zinc-500 transition-colors group-hover:text-zinc-300">
                   {card.icon}
                 </span>
-                <span className="flex-1 text-xs font-medium text-zinc-300 transition-colors group-hover:text-white">
-                  {card.label}
-                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
+                  <p className="mt-0.5 truncate text-[10px] text-zinc-600 transition-colors group-hover:text-zinc-500">{card.desc}</p>
+                </div>
+                <span className="shrink-0 font-mono text-[10px] text-zinc-700">~{card.credits}cr</span>
                 <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
               </button>
             ))}
@@ -637,6 +725,41 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
         </div>
 
       </div>
+
+      {/* ── 5. Recent Outputs — only shown when real assets exist ─────────── */}
+      {recentAssets.length > 0 && (
+        <div>
+          <div className="mb-4">
+            <DashboardSectionHeader title="Recent outputs" />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {recentAssets.slice(0, 3).map((asset) => (
+              <div
+                key={asset.id}
+                className="relative overflow-hidden rounded-xl border border-white/[0.04] bg-zinc-950/40"
+                style={{ aspectRatio: "16/9" }}
+              >
+                {asset.url && asset.type === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={asset.url} alt={asset.prompt.slice(0, 40)} className="h-full w-full object-cover opacity-80" />
+                ) : asset.url && asset.type === "video" ? (
+                  <video src={asset.url} className="h-full w-full object-cover opacity-80" muted playsInline />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-3">
+                    <p className="line-clamp-4 text-center text-[10px] leading-relaxed text-zinc-500">
+                      {asset.content ?? asset.prompt}
+                    </p>
+                  </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
+                  <p className="truncate font-mono text-[9px] text-zinc-500">{asset.tool}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
@@ -1176,8 +1299,13 @@ export function DashboardLayout() {
       >
         {/* Studio Home hat eigenes breiteres Layout */}
         {activeTool === "studio" ? (
-          <div className="mx-auto w-full max-w-4xl px-10 pb-12 pt-14">
-            <StudioHome onSelect={handleToolSelect} />
+          <div className="mx-auto w-full max-w-6xl px-8 pb-14 pt-12">
+            <StudioHome
+              onSelect={handleToolSelect}
+              credits={credits}
+              creditsLoaded={creditsLoaded}
+              recentAssets={galleryAssets}
+            />
           </div>
         ) : (
         <div className="mx-auto flex w-full max-w-xl flex-col pt-8 pb-12">
