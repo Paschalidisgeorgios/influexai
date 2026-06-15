@@ -228,43 +228,63 @@ async function consumeAgentStream(
 // Shared UI-Primitives — absolut flach, rahmenlos, Krea-Stil
 // ---------------------------------------------------------------------------
 
-const BASE_INPUT_STYLE: React.CSSProperties = {
-  background: "rgba(0,0,0,0.30)",
-  borderColor: "rgba(255,255,255,0.06)",
-};
+// ---------------------------------------------------------------------------
+// Krea-Design Primitives — naked, borderless, editorial
+// ---------------------------------------------------------------------------
 
-const inputCls =
-  "w-full rounded-lg border px-4 py-3 text-[13px] text-white/75 outline-none transition-colors placeholder:text-white/18 " +
-  "focus:border-white/15 disabled:cursor-not-allowed disabled:opacity-35";
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-white/25">
-      {children}
-    </p>
-  );
-}
-
-function Textarea({
-  value, onChange, placeholder, rows = 3, disabled,
+/** Nacktes Textarea — kein Hintergrund, kein Rahmen. Reines Schreibprogramm-Feeling. */
+function NakedTextarea({
+  value, onChange, placeholder, disabled,
 }: {
   value: string; onChange: (v: string) => void;
-  placeholder?: string; rows?: number; disabled?: boolean;
+  placeholder?: string; disabled?: boolean;
 }) {
   return (
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      rows={rows}
       disabled={disabled}
-      className={`${inputCls} resize-none leading-relaxed`}
-      style={BASE_INPUT_STYLE}
+      className="h-20 w-full resize-none bg-transparent font-sans text-sm leading-relaxed text-neutral-200 placeholder:text-neutral-600 focus:outline-none disabled:opacity-40"
     />
   );
 }
 
-function StyledSelect({
+/** Platform-Links als winzige Text-Links nebeneinander. */
+function PlatformLinks({
+  options, selected, onChange, disabled,
+}: {
+  options: string[]; selected: string[];
+  onChange: (v: string[]) => void; disabled?: boolean;
+}) {
+  const toggle = (opt: string) => {
+    if (disabled) return;
+    onChange(selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt]);
+  };
+  return (
+    <div className="flex flex-wrap gap-3">
+      {options.map((opt) => {
+        const active = selected.includes(opt);
+        return (
+          <button
+            key={opt} type="button" disabled={disabled}
+            onClick={() => toggle(opt)}
+            className={`cursor-pointer px-1 font-mono text-[10px] tracking-wider transition-colors disabled:opacity-30 ${
+              active
+                ? "font-semibold text-neutral-200"
+                : "text-neutral-500 hover:text-neutral-300"
+            }`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Minimaler Inline-Select — für Tonalität / Länge als Meta-Zeile. */
+function TinySelect({
   value, onChange, options, disabled,
 }: {
   value: string; onChange: (v: string) => void;
@@ -276,8 +296,7 @@ function StyledSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`${inputCls} appearance-none pr-9`}
-        style={BASE_INPUT_STYLE}
+        className="cursor-pointer appearance-none bg-transparent pr-5 font-mono text-[11px] tracking-wider text-neutral-500 outline-none transition-colors hover:text-neutral-300 disabled:opacity-30"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value} style={{ background: "#111" }}>
@@ -285,143 +304,171 @@ function StyledSelect({
           </option>
         ))}
       </select>
-      <ChevronDown size={13} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/22" />
+      <ChevronDown size={10} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-neutral-600" />
     </div>
   );
 }
 
-function MultiToggle({
-  options, selected, onChange, disabled,
+// ---------------------------------------------------------------------------
+// Tool-Formulare — monolithisch, labellos, editorial
+// ---------------------------------------------------------------------------
+
+/** Gemeinsame Bottom-Aktionszeile: optionales linkes Element + ActionButton */
+function FormActionRow({
+  left, loading, disabled, creditCost, canAfford,
 }: {
-  options: string[]; selected: string[];
-  onChange: (v: string[]) => void; disabled?: boolean;
+  left?: React.ReactNode;
+  loading: boolean;
+  disabled: boolean;
+  creditCost: number;
+  canAfford: boolean;
 }) {
-  const toggle = (opt: string) => {
-    if (disabled) return;
-    onChange(selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt]);
-  };
+  const notAffordable = !canAfford && !loading;
+  const isDisabled    = disabled || loading || notAffordable;
+  const isActive      = !isDisabled;
 
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {options.map((opt) => {
-        const active = selected.includes(opt);
-        return (
-          <button
-            key={opt} type="button" disabled={disabled}
-            onClick={() => toggle(opt)}
-            className="rounded-xl px-3 py-1.5 text-[12px] font-medium transition-all disabled:cursor-not-allowed disabled:opacity-35"
-            style={{
-              background: active ? "rgba(204,255,0,0.12)" : "#050505",
-              border:     active ? "1px solid rgba(204,255,0,0.28)" : "1px solid rgba(255,255,255,0.08)",
-              color:      active ? "#ccff00" : "rgba(255,255,255,0.38)",
-            }}
-          >
-            {opt}
-          </button>
-        );
-      })}
+    <div className="mt-4 flex items-center justify-between gap-4">
+      <div className="min-w-0 flex-1">{left}</div>
+      <button
+        type="submit"
+        disabled={isDisabled}
+        className={`shrink-0 rounded px-3.5 py-1.5 text-[11px] font-medium transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 ${
+          isActive
+            ? "bg-[#ccff00] text-black hover:opacity-90"
+            : "border border-white/5 bg-transparent text-neutral-500"
+        }`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {loading ? (
+            <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
+              <Loader2 size={11} className="animate-spin" /> Generiert…
+            </motion.span>
+          ) : (
+            <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
+              {notAffordable
+                ? <><AlertCircle size={11} /> Credits</>
+                : <><Sparkles size={11} /> {formatCreditCost(creditCost)}</>
+              }
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Tool-Formulare
-// ---------------------------------------------------------------------------
-
-function ViralHookForm({ values, onChange, disabled }: {
+function ViralHookForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
   values: ViralHookValues;
   onChange: (v: Partial<ViralHookValues>) => void;
   disabled: boolean;
+  loading: boolean;
+  creditCost: number;
+  canAfford: boolean;
 }) {
   return (
-    <div className="space-y-4">
-      <div>
-        <FieldLabel>Nische / Thema</FieldLabel>
-        <Textarea
-          value={values.thema}
-          onChange={(v) => onChange({ thema: v })}
-          placeholder="z. B. KI-Tools für Freelancer, Fitness über 40, SaaS-Marketing…"
-          rows={2} disabled={disabled}
-        />
-      </div>
-      <div>
-        <FieldLabel>Tonalität</FieldLabel>
-        <StyledSelect
-          value={values.tonalitaet}
-          onChange={(v) => onChange({ tonalitaet: v as ViralHookValues["tonalitaet"] })}
-          options={[
-            { value: "neugierig", label: "Neugierig" },
-            { value: "fordernd",  label: "Fordernd" },
-            { value: "provokant", label: "Provokant" },
-            { value: "emotional", label: "Emotional" },
-            { value: "story",     label: "Story" },
-          ]}
-          disabled={disabled}
-        />
-      </div>
+    <div>
+      <NakedTextarea
+        value={values.thema}
+        onChange={(v) => onChange({ thema: v })}
+        placeholder="Nische oder Thema eingeben…"
+        disabled={disabled}
+      />
+      <FormActionRow
+        loading={loading}
+        disabled={!values.thema.trim()}
+        creditCost={creditCost}
+        canAfford={canAfford}
+        left={
+          <TinySelect
+            value={values.tonalitaet}
+            onChange={(v) => onChange({ tonalitaet: v as ViralHookValues["tonalitaet"] })}
+            options={[
+              { value: "neugierig", label: "Neugierig" },
+              { value: "fordernd",  label: "Fordernd" },
+              { value: "provokant", label: "Provokant" },
+              { value: "emotional", label: "Emotional" },
+              { value: "story",     label: "Story" },
+            ]}
+            disabled={disabled}
+          />
+        }
+      />
     </div>
   );
 }
 
-function ContentCalendarForm({ values, onChange, disabled }: {
+function ContentCalendarForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
   values: ContentCalendarValues;
   onChange: (v: Partial<ContentCalendarValues>) => void;
   disabled: boolean;
+  loading: boolean;
+  creditCost: number;
+  canAfford: boolean;
 }) {
   return (
-    <div className="space-y-4">
-      <div>
-        <FieldLabel>Thema / Nische</FieldLabel>
-        <Textarea
-          value={values.thema}
-          onChange={(v) => onChange({ thema: v })}
-          placeholder="z. B. Persönliche Finanzen, Tech-Startups, Creator Economy…"
-          rows={2} disabled={disabled}
-        />
-      </div>
-      <div>
-        <FieldLabel>Plattformen</FieldLabel>
-        <MultiToggle
-          options={["TikTok", "Instagram", "YouTube Shorts", "LinkedIn", "Twitter / X"]}
-          selected={values.plattformen}
-          onChange={(v) => onChange({ plattformen: v })}
-          disabled={disabled}
-        />
-      </div>
+    <div>
+      <NakedTextarea
+        value={values.thema}
+        onChange={(v) => onChange({ thema: v })}
+        placeholder="Thema oder Nische eingeben…"
+        disabled={disabled}
+      />
+      <FormActionRow
+        loading={loading}
+        disabled={!values.thema.trim()}
+        creditCost={creditCost}
+        canAfford={canAfford}
+        left={
+          <PlatformLinks
+            options={["TikTok", "Instagram", "YouTube Shorts", "LinkedIn", "Twitter / X"]}
+            selected={values.plattformen}
+            onChange={(v) => onChange({ plattformen: v })}
+            disabled={disabled}
+          />
+        }
+      />
     </div>
   );
 }
 
-function TrendScriptForm({ values, onChange, disabled }: {
+function TrendScriptForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
   values: TrendScriptValues;
   onChange: (v: Partial<TrendScriptValues>) => void;
   disabled: boolean;
+  loading: boolean;
+  creditCost: number;
+  canAfford: boolean;
 }) {
   return (
-    <div className="space-y-4">
-      <div>
-        <FieldLabel>Trend-Link oder Thema</FieldLabel>
-        <Textarea
-          value={values.trendLink}
-          onChange={(v) => onChange({ trendLink: v })}
-          placeholder="TikTok-URL, YouTube-Link oder Thema einfügen…"
-          rows={3} disabled={disabled}
-        />
-      </div>
-      <div>
-        <FieldLabel>Skript-Länge</FieldLabel>
-        <StyledSelect
-          value={values.laenge}
-          onChange={(v) => onChange({ laenge: v as TrendScriptValues["laenge"] })}
-          options={[
-            { value: "30 Sekunden", label: "30 Sekunden — Quick Hook" },
-            { value: "60 Sekunden", label: "60 Sekunden — Standard Reel" },
-            { value: "90 Sekunden", label: "90 Sekunden — Deep Dive" },
-            { value: "3 Minuten",   label: "3 Minuten — YouTube Short" },
-          ]}
-          disabled={disabled}
-        />
-      </div>
+    <div>
+      <NakedTextarea
+        value={values.trendLink}
+        onChange={(v) => onChange({ trendLink: v })}
+        placeholder="TikTok-URL, YouTube-Link oder Trend-Thema…"
+        disabled={disabled}
+      />
+      <FormActionRow
+        loading={loading}
+        disabled={!values.trendLink.trim()}
+        creditCost={creditCost}
+        canAfford={canAfford}
+        left={
+          <TinySelect
+            value={values.laenge}
+            onChange={(v) => onChange({ laenge: v as TrendScriptValues["laenge"] })}
+            options={[
+              { value: "30 Sekunden", label: "30 Sek" },
+              { value: "60 Sekunden", label: "60 Sek" },
+              { value: "90 Sekunden", label: "90 Sek" },
+              { value: "3 Minuten",   label: "3 Min" },
+            ]}
+            disabled={disabled}
+          />
+        }
+      />
     </div>
   );
 }
@@ -477,12 +524,12 @@ function FrameDropzone({
         }}
         className="relative flex aspect-[4/3] w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl transition-all"
         style={{
-          background:  drag ? "rgba(204,255,0,0.04)" : "rgba(0,0,0,0.30)",
+          background:  drag ? "rgba(204,255,0,0.04)" : "#080808",
           border:      drag
             ? "1px solid rgba(204,255,0,0.30)"
             : value
-            ? "1px solid rgba(255,255,255,0.08)"
-            : "1px dashed rgba(255,255,255,0.09)",
+            ? "1px solid rgba(255,255,255,0.07)"
+            : "1px dashed rgba(255,255,255,0.08)",
           opacity: disabled ? 0.5 : 1,
         }}
       >
@@ -570,33 +617,21 @@ function ImgToVideoForm({
       </div>
 
       {/* Motion Prompt */}
-      <div>
-        <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest"
-          style={{ color: "rgba(255,255,255,0.28)" }}>
-          Bewegungs-Prompt
-        </label>
-        <textarea
-          rows={3}
-          value={values.motionPrompt}
-          disabled={disabled}
-          onChange={(e) => onChange({ motionPrompt: e.target.value })}
-          placeholder="z. B. »Kamerafahrt nach rechts, Licht blendet auf, sanfter Zoom auf das Produkt«"
-          className="w-full resize-none rounded-lg border px-3.5 py-3 text-[12px] leading-relaxed text-white/75 placeholder-white/18 outline-none transition-colors focus:border-white/15 disabled:opacity-50"
-          style={{ background: "rgba(0,0,0,0.30)", borderColor: "rgba(255,255,255,0.06)" }}
-        />
-        <p className="mt-1.5 text-[10px] text-white/18">
-          Steuert den Übergang zwischen Start- und End-Frame. Je präziser, desto besser das Ergebnis.
-        </p>
-      </div>
+      <NakedTextarea
+        value={values.motionPrompt}
+        onChange={(v) => onChange({ motionPrompt: v })}
+        placeholder="Bewegungs-Prompt: Kamerafahrt, Zoom, Lichteffekte…"
+        disabled={disabled}
+      />
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Generate Button — flach, kein Lila; aktiv = Lime, inaktiv = dunkles Flat
+// MediaActionButton — für Medien-Tools (img-to-video, image-gen, etc.)
 // ---------------------------------------------------------------------------
 
-function GenerateButton({
+function MediaActionButton({
   loading, disabled, creditCost, canAfford,
 }: {
   loading: boolean;
@@ -606,47 +641,37 @@ function GenerateButton({
 }) {
   const notAffordable = !canAfford && !loading;
   const isDisabled    = disabled || loading || notAffordable;
-  // Aktivzustand: Lime-Button; deaktiviert: tiefdunkler Flat-Button
   const isActive      = !isDisabled;
 
   return (
-    <button
-      type="submit"
-      disabled={isDisabled}
-      className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[13px] font-medium transition-all duration-150 disabled:cursor-not-allowed"
-      style={{
-        background: isActive ? "#ccff00" : "rgba(255,255,255,0.04)",
-        border:     isActive ? "none" : "1px solid rgba(255,255,255,0.07)",
-        color:      isActive ? "#000" : "rgba(255,255,255,0.22)",
-      }}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        {loading ? (
-          <motion.span key="loading"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="flex items-center gap-2"
-          >
-            <Loader2 size={13} className="animate-spin" />
-            <span>Generieren…</span>
-          </motion.span>
-        ) : (
-          <motion.span key="idle"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="flex items-center gap-2"
-          >
-            {notAffordable
-              ? <><AlertCircle size={13} /> Nicht genug Credits</>
-              : <><Sparkles size={13} /> Generieren</>
-            }
-            <span className="ml-0.5 text-[11px] font-normal opacity-55">
-              {formatCreditCost(creditCost)}
-            </span>
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </button>
+    <div className="mt-5 flex justify-end">
+      <button
+        type="submit"
+        disabled={isDisabled}
+        className={`rounded px-3.5 py-1.5 text-[11px] font-medium transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 ${
+          isActive
+            ? "bg-[#ccff00] text-black hover:opacity-90"
+            : "border border-white/5 bg-transparent text-neutral-500"
+        }`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {loading ? (
+            <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
+              <Loader2 size={11} className="animate-spin" /> Generiert…
+            </motion.span>
+          ) : (
+            <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
+              {notAffordable
+                ? <><AlertCircle size={11} /> Credits</>
+                : <><Sparkles size={11} /> {formatCreditCost(creditCost)}</>
+              }
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
+    </div>
   );
 }
 
@@ -717,7 +742,7 @@ function OutputPanel({
       <div
         className="max-h-[400px] overflow-y-auto rounded-xl border p-5 font-sans text-[13px] leading-relaxed text-white/72"
         style={{
-          background:     "rgba(0,0,0,0.28)",
+          background:     "#080808",
           borderColor:    "rgba(255,255,255,0.05)",
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(255,255,255,0.05) transparent",
@@ -1102,14 +1127,15 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
                 initial={{ opacity: 0, x: -4 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.16, delay: i * 0.05 }}
-                whileHover={{ x: 2 }}
                 whileTap={{ scale: 0.99 }}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] text-white/38 transition-all hover:text-white/60 disabled:pointer-events-none disabled:opacity-30"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}
+                className="group flex cursor-pointer items-center justify-between rounded-lg border border-white/5 p-3 text-left text-[11px] text-neutral-400 transition-all hover:border-white/10 hover:text-neutral-200 disabled:pointer-events-none disabled:opacity-30"
+                style={{ background: "#060606" }}
               >
-                <span className="text-[14px]">{s.emoji}</span>
-                <span className="flex-1 leading-snug">{s.label}</span>
-                <ArrowRight size={11} className="shrink-0 opacity-25" />
+                <span className="flex items-center gap-2.5">
+                  <span className="text-[13px]">{s.emoji}</span>
+                  <span className="leading-snug">{s.label}</span>
+                </span>
+                <ArrowRight size={11} className="shrink-0 text-neutral-600 transition-colors group-hover:text-[#ccff00]" />
               </motion.button>
             ))}
           </motion.div>
@@ -1133,10 +1159,10 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
             }
             disabled={streaming}
             rows={1}
-            className="w-full resize-none rounded-lg border p-3.5 text-[13px] text-white/80 outline-none transition-colors placeholder:text-white/20 focus:border-white/15 disabled:opacity-40"
+            className="w-full resize-none rounded-xl border p-4 text-sm text-white shadow-inner outline-none transition-all placeholder:text-neutral-600 focus:border-white/15 disabled:opacity-40"
             style={{
-              background:   "rgba(0,0,0,0.28)",
-              borderColor:  "rgba(255,255,255,0.06)",
+              background:  "#080808",
+              borderColor: "rgba(255,255,255,0.05)",
               maxHeight:    140,
               overflowY:    "auto",
               lineHeight:   "1.5",
@@ -1201,32 +1227,24 @@ export const AgentBox = memo(function AgentBox({
   if (COPILOT_TRIGGER_TOOLS.has(activeTool)) {
     return (
       <motion.div
-        layout
         key="copilot"
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.97 }}
-        transition={{ duration: 0.18, ease: "easeOut" }}
-        className="flex w-full flex-col gap-4 rounded-2xl p-5"
-        style={{ background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.05)" }}
+        initial={{ opacity: 0, y: -10, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0,   scale: 1   }}
+        exit={{ opacity: 0, y: -10,    scale: 0.97 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed left-1/2 top-16 z-50 w-full max-w-xl -translate-x-1/2 rounded-xl border border-white/[0.05] p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+        style={{ background: "rgba(11,11,13,0.90)" }}
       >
         {/* ── Copilot Header ─────────────────────────────────────────────── */}
-        <div className="flex items-center gap-2.5">
-          <div
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg"
-            style={{ background: "rgba(255,255,255,0.05)" }}
-          >
-            <Bot size={12} style={{ color: "rgba(255,255,255,0.40)" }} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-medium leading-tight text-white/70">InfluexAI Copilot</p>
-            <p className="text-[11px] text-white/22">Frag mich alles · ich navigiere zum richtigen Tool</p>
-          </div>
-          {/* Online-Puls */}
+        <div className="mb-3 flex items-center gap-2">
+          <Bot size={12} style={{ color: "rgba(255,255,255,0.22)" }} />
+          <p className="flex-1 font-mono text-[10px] uppercase tracking-widest text-neutral-600">
+            InfluexAI Copilot
+          </p>
           <motion.span
-            className="h-[6px] w-[6px] shrink-0 rounded-full"
+            className="h-[4px] w-[4px] shrink-0 rounded-full"
             style={{ background: "#ccff00" }}
-            animate={{ opacity: [0.4, 0.9, 0.4] }}
+            animate={{ opacity: [0.3, 0.9, 0.3] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
@@ -1360,40 +1378,27 @@ export const AgentBox = memo(function AgentBox({
 
   return (
     <motion.div
-      layout
       key={`tool-${activeTool}`}
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      className="overflow-hidden rounded-2xl"
-      style={{
-        background: "rgba(255,255,255,0.018)",
-        border:     "1px solid rgba(255,255,255,0.05)",
-      }}
+      initial={{ opacity: 0, y: -10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0,   scale: 1   }}
+      exit={{ opacity: 0, y: -10,    scale: 0.97 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed left-1/2 top-16 z-50 w-full max-w-xl -translate-x-1/2 rounded-xl border border-white/[0.05] p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+      style={{ background: "rgba(11,11,13,0.90)" }}
     >
       {/* ── Header ───────────────────────────────────────────────────────── */}
-      <div
-        className="flex items-center gap-3 px-5 py-4"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <div
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-          style={{ background: "rgba(255,255,255,0.05)" }}
-        >
-          <span style={{ color: "rgba(255,255,255,0.45)" }}>{meta.icon}</span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-white/75">{meta.label}</p>
-          <p className="truncate text-[11px] text-white/22">{meta.description}</p>
-        </div>
+      <div className="mb-3 flex items-center gap-2">
+        <span style={{ color: "rgba(255,255,255,0.22)" }}>{meta.icon}</span>
+        <p className="flex-1 text-[11px] font-mono uppercase tracking-widest text-neutral-600">
+          {meta.label}
+        </p>
 
         {/* Abbrechen — nur sichtbar während Loading */}
         {loading && (
           <button
             type="button"
             onClick={() => abortRef.current?.abort()}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] text-white/28 transition-colors hover:bg-white/5 hover:text-white/55"
+            className="flex shrink-0 items-center gap-1 rounded px-2 py-1 font-mono text-[10px] text-white/25 transition-colors hover:text-white/50"
           >
             <X size={11} />
             Abbrechen
@@ -1402,7 +1407,7 @@ export const AgentBox = memo(function AgentBox({
       </div>
 
       {/* ── Formular ─────────────────────────────────────────────────────── */}
-      <form onSubmit={onSubmit} className="px-5 py-5">
+      <form onSubmit={onSubmit} className="w-full">
         {isTextTool ? (
           <>
             {activeTool === "viral-hook" && (
@@ -1410,6 +1415,9 @@ export const AgentBox = memo(function AgentBox({
                 values={formValues as ViralHookValues}
                 onChange={patchValues}
                 disabled={loading}
+                loading={loading}
+                creditCost={creditCost}
+                canAfford={canAfford}
               />
             )}
             {activeTool === "content-calendar" && (
@@ -1417,6 +1425,9 @@ export const AgentBox = memo(function AgentBox({
                 values={formValues as ContentCalendarValues}
                 onChange={patchValues}
                 disabled={loading}
+                loading={loading}
+                creditCost={creditCost}
+                canAfford={canAfford}
               />
             )}
             {activeTool === "trend-script" && (
@@ -1424,64 +1435,19 @@ export const AgentBox = memo(function AgentBox({
                 values={formValues as TrendScriptValues}
                 onChange={patchValues}
                 disabled={loading}
+                loading={loading}
+                creditCost={creditCost}
+                canAfford={canAfford}
               />
             )}
 
-            {/* Prompt-Vorschau (dual: original + optimiert) */}
-            {formattedPrompt && !loading && !output && (
-              <details className="mt-4">
-                <summary className="cursor-pointer select-none text-[10px] font-semibold uppercase tracking-widest text-white/15 hover:text-white/30">
-                  Prompt-Vorschau
-                </summary>
-                <div className="mt-1.5 space-y-2">
-                  <div>
-                    <p className="mb-1 text-[9px] uppercase tracking-widest text-white/20">
-                      Original (Deine Eingabe)
-                    </p>
-                    <p
-                      className="rounded-xl px-3 py-2.5 text-[11px] leading-relaxed text-white/30"
-                      style={{ background: "#050505", border: "1px solid rgba(255,255,255,0.05)" }}
-                    >
-                      {formattedPrompt}
-                    </p>
-                  </div>
-                  {optimized && optimized.optimized !== formattedPrompt && (
-                    <div>
-                      <p className="mb-1 flex items-center gap-2 text-[9px] uppercase tracking-widest text-white/20">
-                        <span>Optimierter API-Prompt</span>
-                        {optimized.wasGerman && (
-                          <span className="rounded bg-blue-500/10 px-1 py-0.5 text-[8px] text-blue-400 normal-case tracking-normal">
-                            🇩🇪 → 🇬🇧
-                          </span>
-                        )}
-                      </p>
-                      <p
-                        className="rounded-xl px-3 py-2.5 text-[11px] leading-relaxed text-white/40"
-                        style={{ background: "#050505", border: "1px solid rgba(100,200,255,0.08)" }}
-                      >
-                        {optimized.optimized}
-                      </p>
-                      {optimized.enhancements.length > 0 && (
-                        <ul className="mt-1.5 space-y-0.5">
-                          {optimized.enhancements.map((e, i) => (
-                            <li key={i} className="text-[9px] text-white/20">
-                              {e}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </details>
+            {/* Prompt-Vorschau — ausklappbar, minimal */}
+            {optimized && optimized.wasGerman && !loading && (
+              <p className="mt-3 font-mono text-[10px] text-neutral-600">
+                🇩🇪 → 🇬🇧 übersetzt
+                {optimized.enhancements.length > 0 && ` · ${optimized.enhancements.length} Verbesserungen`}
+              </p>
             )}
-
-            <GenerateButton
-              loading={loading}
-              disabled={!formattedPrompt}
-              creditCost={creditCost}
-              canAfford={canAfford}
-            />
           </>
         ) : activeTool === "img-to-video" ? (
           /* Kling Keyframe-Tool — eigenes Formular */
@@ -1491,7 +1457,7 @@ export const AgentBox = memo(function AgentBox({
               onChange={patchValues}
               disabled={loading}
             />
-            <GenerateButton
+            <MediaActionButton
               loading={loading}
               disabled={!(formValues as ImgToVideoValues).startFrameUrl}
               creditCost={creditCost}
@@ -1501,12 +1467,10 @@ export const AgentBox = memo(function AgentBox({
         ) : (
           /* Alle anderen Medien-Tools — Settings in der rechten Sidebar */
           <>
-            <div className="flex min-h-[52px] items-center justify-center">
-              <p className="text-[13px] text-white/22">
-                Einstellungen befinden sich in der rechten Sidebar.
-              </p>
-            </div>
-            <GenerateButton
+            <p className="py-4 text-[13px] text-neutral-600">
+              Einstellungen in der rechten Sidebar ↗
+            </p>
+            <MediaActionButton
               loading={loading}
               disabled={false}
               creditCost={creditCost}

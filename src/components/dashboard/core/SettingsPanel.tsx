@@ -93,22 +93,17 @@ const FAL_VIDEO_DEFAULTS: FalVideoSettings = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-widest text-white/20">
+    <p className="mb-2.5 font-mono text-[10px] uppercase tracking-wider text-neutral-500">
       {children}
     </p>
   );
 }
 
 function Divider() {
-  return (
-    <div
-      className="my-5"
-      style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
-    />
-  );
+  return <div className="my-4" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }} />;
 }
 
-/** Thin-line range slider — Krea style */
+/** Filigran-Slider — Krea 2026: Lime active track, weißer Thumb */
 function SettingsSlider({
   label,
   value,
@@ -128,10 +123,8 @@ function SettingsSlider({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs text-white/40">{label}</span>
-        <span className="min-w-[2ch] text-right font-mono text-xs font-semibold text-white/60">
-          {value}
-        </span>
+        <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">{label}</span>
+        <span className="font-mono text-[11px] text-white/50">{value}</span>
       </div>
       <input
         type="range"
@@ -140,16 +133,23 @@ function SettingsSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-[2px] w-full cursor-pointer appearance-none rounded-full outline-none focus-visible:outline-none"
+        className="h-[3px] w-full cursor-pointer appearance-none rounded-full outline-none focus-visible:outline-none
+          [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3
+          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full
+          [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-neutral-950
+          [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow
+          [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3
+          [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border
+          [&::-moz-range-thumb]:border-neutral-950 [&::-moz-range-thumb]:bg-white"
         style={{
-          background: `linear-gradient(to right, rgba(255,255,255,0.55) ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
+          background: `linear-gradient(to right, #ccff00 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
         }}
       />
     </div>
   );
 }
 
-/** Flat select — Krea style */
+/** Flat select — Krea 2026 */
 function SettingsSelect({
   value,
   onChange,
@@ -163,8 +163,8 @@ function SettingsSelect({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg border border-white/10 bg-neutral-950 p-2 text-xs text-neutral-300 outline-none transition-colors hover:border-white/20 focus:border-indigo-500/50"
-      style={{ background: "#0a0a0a" }}
+      className="w-full rounded-md border p-2 text-[11px] text-neutral-400 outline-none transition-colors focus:border-white/10"
+      style={{ background: "#080808", borderColor: "rgba(255,255,255,0.05)" }}
     >
       {options.map((o) => (
         <option key={o.value} value={o.value} style={{ background: "#111" }}>
@@ -193,11 +193,8 @@ function Toggle({
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/[0.025]"
-      style={{
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.06)",
-      }}
+      className="flex w-full items-center justify-between gap-3 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-white/[0.02]"
+      style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}
     >
       <div className="flex min-w-0 items-start gap-2">
         {icon && (
@@ -213,21 +210,17 @@ function Toggle({
 
       {/* Track */}
       <div
-        className="relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200"
+        className="relative h-4 w-8 shrink-0 rounded-full transition-colors duration-200"
         style={{
-          background: checked
-            ? "rgba(99,102,241,0.30)"
-            : "rgba(255,255,255,0.08)",
-          border: checked
-            ? "1px solid rgba(99,102,241,0.45)"
-            : "1px solid rgba(255,255,255,0.10)",
+          background: checked ? "rgba(204,255,0,0.20)" : "rgba(255,255,255,0.06)",
+          border: checked ? "1px solid rgba(204,255,0,0.35)" : "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <span
-          className="absolute top-0.5 h-4 w-4 rounded-full shadow transition-all duration-200"
+          className="absolute top-0.5 h-3 w-3 rounded-full shadow transition-all duration-200"
           style={{
-            left: checked ? "calc(100% - 18px)" : "2px",
-            background: checked ? "#818cf8" : "rgba(255,255,255,0.28)",
+            left: checked ? "calc(100% - 14px)" : "2px",
+            background: checked ? "#ccff00" : "rgba(255,255,255,0.25)",
           }}
         />
       </div>
@@ -286,26 +279,25 @@ function ImageGenPanel({
                 key={m.value}
                 type="button"
                 onClick={() => patch({ model: m.value })}
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition-all"
+                className="flex w-full items-center gap-2.5 rounded-md p-2 text-left transition-all"
                 style={{
-                  background: active ? "rgba(99,102,241,0.12)" : "rgba(255,255,255,0.02)",
-                  border: active ? "1px solid rgba(99,102,241,0.32)" : "1px solid rgba(255,255,255,0.07)",
+                  background: active ? "rgba(255,255,255,0.07)" : "#080808",
+                  border: active ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.05)",
                 }}
               >
-                <Sparkles size={11} style={{ color: active ? "#818cf8" : "rgba(255,255,255,0.20)", flexShrink: 0 }} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium" style={{ color: active ? "#c7d2fe" : "rgba(255,255,255,0.45)" }}>
+                    <span className="text-[11px] font-medium" style={{ color: active ? "#fff" : "rgba(255,255,255,0.45)" }}>
                       {m.label}
                     </span>
                     {m.badge && (
-                      <span className="rounded px-1 text-[9px] font-semibold"
-                        style={{ background: "rgba(99,102,241,0.18)", color: "#a5b4fc" }}>
+                      <span className="rounded px-1 font-mono text-[9px]"
+                        style={{ background: "rgba(204,255,0,0.12)", color: "#ccff00" }}>
                         {m.badge}
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-white/20">{m.sub}</p>
+                  <p className="text-[10px] text-neutral-600">{m.sub}</p>
                 </div>
               </button>
             );
@@ -326,21 +318,15 @@ function ImageGenPanel({
                 key={ar.value}
                 type="button"
                 onClick={() => patch({ aspectRatio: ar.value })}
-                className="flex flex-col items-center gap-1.5 rounded-xl py-3 transition-all"
+                className="flex flex-col items-center gap-1.5 rounded-md py-2.5 transition-all"
                 style={{
-                  background: active
-                    ? "rgba(99,102,241,0.10)"
-                    : "rgba(255,255,255,0.025)",
-                  border: active
-                    ? "1px solid rgba(99,102,241,0.28)"
-                    : "1px solid rgba(255,255,255,0.07)",
-                  color: active ? "#818cf8" : "rgba(255,255,255,0.28)",
+                  background: active ? "rgba(255,255,255,0.07)" : "#080808",
+                  border: active ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.05)",
+                  color: active ? "#fff" : "rgba(255,255,255,0.25)",
                 }}
               >
                 {ar.icon}
-                <span className="text-[10px] font-semibold tracking-wide">
-                  {ar.label}
-                </span>
+                <span className="font-mono text-[10px]">{ar.label}</span>
               </button>
             );
           })}
@@ -423,34 +409,20 @@ function UgcVideoPanel({
                 key={f.value}
                 type="button"
                 onClick={() => patch({ videoFormat: f.value })}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all"
+                className="flex w-full items-center gap-2.5 rounded-md p-2 text-left transition-all"
                 style={{
-                  background: active
-                    ? "rgba(99,102,241,0.10)"
-                    : "rgba(255,255,255,0.02)",
-                  border: active
-                    ? "1px solid rgba(99,102,241,0.28)"
-                    : "1px solid rgba(255,255,255,0.06)",
+                  background: active ? "rgba(255,255,255,0.07)" : "#080808",
+                  border: active ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.05)",
                 }}
               >
-                <span
-                  className="shrink-0 transition-colors"
-                  style={{
-                    color: active ? "#818cf8" : "rgba(255,255,255,0.25)",
-                  }}
-                >
+                <span className="shrink-0" style={{ color: active ? "#fff" : "rgba(255,255,255,0.25)" }}>
                   {f.icon}
                 </span>
                 <div className="min-w-0">
-                  <p
-                    className="text-xs font-medium transition-colors"
-                    style={{
-                      color: active ? "#c7d2fe" : "rgba(255,255,255,0.55)",
-                    }}
-                  >
+                  <p className="text-[11px] font-medium" style={{ color: active ? "#fff" : "rgba(255,255,255,0.45)" }}>
                     {f.label}
                   </p>
-                  <p className="text-[10px] text-white/20">{f.sub}</p>
+                  <p className="text-[10px] text-neutral-600">{f.sub}</p>
                 </div>
               </button>
             );
@@ -544,26 +516,25 @@ function FalVideoPanel({
                 key={m.value}
                 type="button"
                 onClick={() => patch({ model: m.value })}
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition-all"
+                className="flex w-full items-center gap-2.5 rounded-md p-2 text-left transition-all"
                 style={{
-                  background: active ? "rgba(139,93,255,0.12)" : "rgba(255,255,255,0.02)",
-                  border:     active ? "1px solid rgba(139,93,255,0.32)" : "1px solid rgba(255,255,255,0.07)",
+                  background: active ? "rgba(255,255,255,0.07)" : "#080808",
+                  border:     active ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.05)",
                 }}
               >
-                <Sparkles size={11} style={{ color: active ? "#a78bfa" : "rgba(255,255,255,0.20)", flexShrink: 0 }} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium" style={{ color: active ? "#ddd6fe" : "rgba(255,255,255,0.45)" }}>
+                    <span className="text-[11px] font-medium" style={{ color: active ? "#fff" : "rgba(255,255,255,0.45)" }}>
                       {m.label}
                     </span>
                     {m.badge && (
-                      <span className="rounded px-1 text-[9px] font-semibold"
-                        style={{ background: "rgba(139,93,255,0.20)", color: "#c4b5fd" }}>
+                      <span className="rounded font-mono px-1 text-[9px]"
+                        style={{ background: "rgba(204,255,0,0.12)", color: "#ccff00" }}>
                         {m.badge}
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-white/20">{m.sub}</p>
+                  <p className="text-[10px] text-neutral-600">{m.sub}</p>
                 </div>
               </button>
             );
@@ -584,15 +555,15 @@ function FalVideoPanel({
                 key={ar.value}
                 type="button"
                 onClick={() => patch({ aspectRatio: ar.value })}
-                className="flex flex-col items-center gap-1.5 rounded-xl py-3 transition-all"
+                className="flex flex-col items-center gap-1.5 rounded-md py-2.5 transition-all"
                 style={{
-                  background: active ? "rgba(139,93,255,0.10)" : "rgba(255,255,255,0.025)",
-                  border:     active ? "1px solid rgba(139,93,255,0.28)" : "1px solid rgba(255,255,255,0.07)",
-                  color:      active ? "#a78bfa" : "rgba(255,255,255,0.28)",
+                  background: active ? "rgba(255,255,255,0.07)" : "#080808",
+                  border:     active ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.05)",
+                  color:      active ? "#fff" : "rgba(255,255,255,0.25)",
                 }}
               >
                 {ar.icon}
-                <span className="text-[10px] font-semibold tracking-wide">{ar.label}</span>
+                <span className="font-mono text-[10px]">{ar.label}</span>
               </button>
             );
           })}
@@ -614,8 +585,8 @@ function FalVideoPanel({
 
         {/* Segmented 5 / 10 toggle */}
         <div
-          className="flex items-center gap-1 rounded-lg p-1"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+          className="flex items-center gap-0.5 rounded-md p-0.5"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
         >
           {([5, 10] as const).map((sec) => {
             const active = s.durationSeconds === sec;
@@ -624,14 +595,14 @@ function FalVideoPanel({
                 key={sec}
                 type="button"
                 onClick={() => patch({ durationSeconds: sec })}
-                className="flex-1 rounded-md py-1.5 text-xs font-medium transition-all"
+                className="flex-1 rounded py-1.5 font-mono text-[11px] transition-all"
                 style={{
-                  background: active ? "rgba(139,93,255,0.18)" : "transparent",
-                  border:     active ? "1px solid rgba(139,93,255,0.30)" : "1px solid transparent",
-                  color:      active ? "#ddd6fe" : "rgba(255,255,255,0.32)",
+                  background: active ? "rgba(255,255,255,0.08)" : "transparent",
+                  border:     "1px solid transparent",
+                  color:      active ? "#fff" : "rgba(255,255,255,0.28)",
                 }}
               >
-                {sec} Sek.
+                {sec}s
               </button>
             );
           })}
@@ -747,7 +718,7 @@ function PresetsSection({ isImage, isVideo, currentValues, onApply }: PresetsSec
 
       {/* Inline name input */}
       {isAdding && (
-        <div className="mb-2.5 flex items-center gap-1.5">
+        <div className="mb-2 flex items-center gap-1.5">
           <input
             ref={inputRef}
             type="text"
@@ -759,60 +730,51 @@ function PresetsSection({ isImage, isVideo, currentValues, onApply }: PresetsSec
             }}
             placeholder="Preset-Name…"
             maxLength={32}
-            className="flex-1 rounded-lg border px-2.5 py-1.5 text-[11px] text-neutral-200 placeholder-neutral-600 outline-none transition-colors focus:border-indigo-500/40"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.08)",
-            }}
+            className="flex-1 rounded border px-2.5 py-1.5 font-mono text-[11px] text-neutral-300 placeholder-neutral-700 outline-none transition-colors focus:border-white/10"
+            style={{ background: "#080808", borderColor: "rgba(255,255,255,0.06)" }}
           />
           <button
             type="button"
             onClick={handleSave}
             disabled={!newName.trim()}
-            className="shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all disabled:opacity-30"
-            style={{
-              background: "rgba(99,102,241,0.18)",
-              border: "1px solid rgba(99,102,241,0.28)",
-              color: "#a5b4fc",
-            }}
+            className="shrink-0 rounded border border-white/8 bg-neutral-900 px-2.5 py-1.5 font-mono text-[11px] text-white/60 transition-all hover:text-white disabled:opacity-30"
           >
-            Sichern
+            ↵
           </button>
         </div>
       )}
 
       {/* Preset list */}
       {presets.length === 0 && !isAdding ? (
-        <p className="text-[10px] text-white/18">Noch keine Presets gespeichert.</p>
+        <p className="font-mono text-[10px] text-neutral-700">Noch keine Presets.</p>
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {presets.map((preset) => (
             <button
               key={preset.id}
               type="button"
               onClick={() => onApply(preset.values)}
-              className="flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left transition-all hover:border-white/10 hover:text-white"
+              className="group flex w-full items-center justify-between rounded border px-2 py-1 text-left transition-all hover:text-neutral-200"
               style={{
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                color: "rgba(255,255,255,0.45)",
+                background: "#060606",
+                borderColor: "rgba(255,255,255,0.03)",
+                color: "rgba(255,255,255,0.40)",
               }}
             >
               <div className="flex min-w-0 items-center gap-1.5">
                 {savedId === preset.id ? (
                   <Check size={9} className="shrink-0 text-green-400" />
                 ) : (
-                  <BookmarkCheck size={9} className="shrink-0 opacity-40" />
+                  <BookmarkCheck size={9} className="shrink-0 opacity-30" />
                 )}
-                <span className="truncate text-[10px]">{preset.name}</span>
+                <span className="truncate font-mono text-[10px]">{preset.name}</span>
               </div>
               <span
-                className="shrink-0 rounded p-0.5 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                className="shrink-0 rounded p-0.5 text-neutral-700 transition-colors hover:text-red-400"
                 onClick={(e) => handleDelete(e, preset.id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === "Enter") handleDelete(e as unknown as React.MouseEvent, preset.id); }}
-                style={{ color: "rgba(255,255,255,0.20)" }}
               >
                 <X size={9} />
               </span>
@@ -906,12 +868,12 @@ export const SettingsPanel = memo(function SettingsPanel({
   const headerLabel = isImage ? "Bild-Einstellungen" : isFalVideo ? "Kling Video-Engine" : isUgcVideo ? "Video-Einstellungen" : "Einstellungen";
 
   return (
-    <aside className="flex h-full flex-col" style={{ background: "#111111" }}>
+    <aside className="flex h-full flex-col" style={{ background: "#0d0d0d" }}>
       {/* Header */}
-      <div className="flex items-center gap-2 px-5 py-4"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <SlidersHorizontal size={13} className="text-white/22" />
-        <p className="text-xs font-semibold text-white/35">{headerLabel}</p>
+      <div className="flex items-center gap-2 px-4 py-3.5"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <SlidersHorizontal size={12} className="text-neutral-600" />
+        <p className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">{headerLabel}</p>
       </div>
 
       {/* Body */}
