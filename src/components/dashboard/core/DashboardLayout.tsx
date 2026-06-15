@@ -430,13 +430,14 @@ function LeftSidebar({
 // ---------------------------------------------------------------------------
 
 interface HeroCard {
-  id: ToolId;
-  eyebrow: string;
-  cta: string;
-  sub: string;
-  imgUrl?: string;
+  id:          ToolId;
+  eyebrow:     string;
+  cta:         string;
+  sub:         string;
+  imgUrl?:     string;
   accentGlow?: string;
-  grid?: boolean;
+  bgGradient?: string;
+  grid?:       boolean;
 }
 
 const HERO_CARDS: HeroCard[] = [
@@ -445,7 +446,8 @@ const HERO_CARDS: HeroCard[] = [
     eyebrow:    "Video",
     cta:        "AD FLOW →",
     sub:        "Build ads on one visual canvas",
-    imgUrl:     "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=900&q=70",
+    // Dark abstract film/light-rays — no cinema screen visible
+    imgUrl:     "https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=900&q=70",
     accentGlow: "#b4ff00",
   },
   {
@@ -453,14 +455,18 @@ const HERO_CARDS: HeroCard[] = [
     eyebrow: "Avatar",
     cta:     "AVATAR VIDEO →",
     sub:     "Create talking videos with AI actors",
-    imgUrl:  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&q=80",
+    // Local avatar asset — person/face, perfect for "talking AI actors"
+    imgUrl:  "/avatars/avatar-1.jpg",
   },
   {
-    id:      "viral-hook",
-    eyebrow: "AI Agent",
-    cta:     "AI MEDIA BUYER →",
-    sub:     "Your copilot across every ad account",
-    grid:    true,
+    id:         "viral-hook",
+    eyebrow:    "AI Agent",
+    cta:        "AI MEDIA BUYER →",
+    sub:        "Your copilot across every ad account",
+    grid:       true,
+    // Dark navy gradient — suggests tech/data without a photo
+    bgGradient: "linear-gradient(135deg, #070d1f 0%, #0b0b12 60%, #080810 100%)",
+    accentGlow: "#0055ff",
   },
 ];
 
@@ -604,23 +610,30 @@ function StudioHome({
               whileTap={{ scale: 0.985 }}
               transition={{ duration: 0.22 }}
               className="group relative flex-1 cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_24px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
-              style={{ background: "#0C0C0E" }}
+              style={{ background: card.bgGradient ?? "#0C0C0E" }}
             >
               {card.imgUrl && (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-45" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
+                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-500 group-hover:opacity-55" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/[0.05]" />
                 </>
               )}
               {card.grid && (
                 <>
-                  <div className="absolute inset-0 opacity-[0.04]" style={{
+                  <div className="absolute inset-0 opacity-[0.07]" style={{
                     backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
                     backgroundSize: "24px 24px",
                   }} />
-                  <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.06] blur-3xl" style={{ background: "white" }} />
+                  <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.08] blur-3xl" style={{ background: "white" }} />
                 </>
+              )}
+              {/* Accent glow — colour per-card (lime for Avatar, blue for Agent) */}
+              {card.accentGlow && (
+                <div
+                  className="absolute -bottom-6 -right-6 h-32 w-32 rounded-full opacity-[0.22] blur-2xl transition-opacity duration-500 group-hover:opacity-35"
+                  style={{ background: card.accentGlow }}
+                />
               )}
               <motion.div
                 variants={{ hover: { opacity: 1 } }}
