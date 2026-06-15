@@ -28,7 +28,7 @@ export function AssetSharePanel({ nodeData }: Props) {
         onClick={handleCopy}
         className="flex items-center gap-1.5 rounded-lg border border-zinc-700/50 bg-zinc-900/60 px-2.5 py-1.5 text-xs text-zinc-400 transition-all hover:border-zinc-600 hover:text-zinc-200"
       >
-        {copied ? <Check size={12} className="text-[#ccff00]" /> : <Copy size={12} />}
+        {copied ? <Check size={12} className="text-[#b4ff00]" /> : <Copy size={12} />}
         {copied ? "Kopiert!" : "Link"}
       </button>
 

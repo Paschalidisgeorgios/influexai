@@ -339,7 +339,7 @@ function FormActionRow({
         disabled={isDisabled}
         className={`shrink-0 rounded px-3.5 py-1.5 text-[11px] font-medium transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 ${
           isActive
-            ? "bg-[#ccff00] text-black hover:opacity-90"
+            ? "bg-[#b4ff00] text-black hover:opacity-90"
             : "border border-white/5 bg-transparent text-neutral-500"
         }`}
       >
@@ -654,7 +654,7 @@ function MediaActionButton({
         disabled={isDisabled}
         className={`rounded px-3.5 py-1.5 text-[11px] font-medium transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 ${
           isActive
-            ? "bg-[#ccff00] text-black hover:opacity-90"
+            ? "bg-[#b4ff00] text-black hover:opacity-90"
             : "border border-white/5 bg-transparent text-neutral-500"
         }`}
       >
@@ -778,7 +778,7 @@ function OutputPanel({
             {loading && (
               <motion.span
                 className="ml-px inline-block h-3.5 w-[2px] align-middle"
-                style={{ background: "#ccff00" }}
+                style={{ background: "#b4ff00" }}
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
               />
@@ -806,11 +806,11 @@ function OutputPanel({
 const TOOL_META: Record<string, {
   label: string; icon: React.ReactNode; accent: string; description: string;
 }> = {
-  "viral-hook":        { label: "Viral Hook",        icon: <Zap size={14} />,        accent: "#B7FF00", description: "5 scroll-stoppende Hooks via Claude" },
+  "viral-hook":        { label: "Viral Hook",        icon: <Zap size={14} />,        accent: "#b4ff00", description: "5 scroll-stoppende Hooks via Claude" },
   "content-calendar":  { label: "Content Kalender",  icon: <Calendar size={14} />,   accent: "#00D5FF", description: "7-Tage-Kalender — plattformoptimiert" },
   "trend-script":      { label: "Trend Script",      icon: <TrendingUp size={14} />, accent: "#FFD84D", description: "Fertiges Skript aus Trend oder Thema" },
   "image-gen":         { label: "Bild Generator",    icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "KI-Bildgenerierung via Fal AI" },
-  "ecommerce-ads":     { label: "E-Commerce Ads",    icon: <Sparkles size={14} />,   accent: "#B7FF00", description: "Video-Generierung via Akool" },
+  "ecommerce-ads":     { label: "E-Commerce Ads",    icon: <Sparkles size={14} />,   accent: "#b4ff00", description: "Video-Generierung via Akool" },
   "img-to-video":      { label: "Bild zu Video",     icon: <Film size={14} />,       accent: "#8B5DFF", description: "Animiere Standbilder mit Kinofilm-Physik via Kling 3.0 & Nano Banana." },
   "text-to-video":     { label: "Text → Video",      icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Text direkt in Video umwandeln" },
   "video-to-video":    { label: "Video → Video",     icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Video re-generieren & anpassen" },
@@ -819,7 +819,7 @@ const TOOL_META: Record<string, {
 };
 
 const FALLBACK_META = {
-  label: "Tool", icon: <Sparkles size={14} />, accent: "#ccff00", description: "KI-Assistent",
+  label: "Tool", icon: <Sparkles size={14} />, accent: "#b4ff00", description: "KI-Assistent",
 };
 
 // ---------------------------------------------------------------------------
@@ -1041,7 +1041,7 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
                   {msg.role === "assistant" && (
                     <span
                       className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ background: "#ccff00", opacity: 0.65 }}
+                      style={{ background: "#b4ff00", opacity: 0.65 }}
                     />
                   )}
 
@@ -1062,7 +1062,7 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
                             {isStreaming && (
                               <motion.span
                                 className="ml-[2px] inline-block h-[13px] w-[2px] align-middle rounded-full"
-                                style={{ background: "#ccff00" }}
+                                style={{ background: "#b4ff00" }}
                                 animate={{ opacity: [1, 0, 1] }}
                                 transition={{ duration: 0.75, repeat: Infinity, ease: "linear" }}
                               />
@@ -1073,7 +1073,7 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
                             {[0, 1, 2].map((d) => (
                               <motion.span key={d}
                                 className="h-1 w-1 rounded-full"
-                                style={{ background: "#ccff00", opacity: 0.7 }}
+                                style={{ background: "#b4ff00", opacity: 0.7 }}
                                 animate={{ opacity: [0.2, 0.8, 0.2] }}
                                 transition={{ duration: 0.9, repeat: Infinity, delay: d * 0.18 }}
                               />
@@ -1184,7 +1184,7 @@ function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) 
           whileTap={{ scale: 0.90 }}
           className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-xl transition-all disabled:opacity-25"
           style={{
-            background: input.trim() && !streaming ? "#ccff00" : "rgba(255,255,255,0.05)",
+            background: input.trim() && !streaming ? "#b4ff00" : "rgba(255,255,255,0.05)",
             color:      input.trim() && !streaming ? "#000"    : "rgba(255,255,255,0.30)",
           }}
         >
@@ -1249,7 +1249,7 @@ export const AgentBox = memo(function AgentBox({
           </p>
           <motion.span
             className="h-[4px] w-[4px] shrink-0 rounded-full"
-            style={{ background: "#ccff00" }}
+            style={{ background: "#b4ff00" }}
             animate={{ opacity: [0.3, 0.9, 0.3] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           />

@@ -39,7 +39,7 @@ export function DashboardSidebarContent({ onToolSelect }: Props) {
   const creditExempt = isClientCreditExempt();
 
   const creditColor =
-    typeof credits === "number" ? creditsDisplayColor(credits) : "#ccff00";
+    typeof credits === "number" ? creditsDisplayColor(credits) : "#b4ff00";
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -58,7 +58,7 @@ export function DashboardSidebarContent({ onToolSelect }: Props) {
           <span className="text-xs text-zinc-500">Credits</span>
           <span
             className="font-mono text-sm font-bold transition-colors"
-            style={{ color: creditExempt ? "#ccff00" : creditColor }}
+            style={{ color: creditExempt ? "#b4ff00" : creditColor }}
           >
             {creditExempt ? (
               "∞ ADMIN"

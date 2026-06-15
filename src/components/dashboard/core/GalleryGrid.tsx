@@ -166,6 +166,7 @@ function CardActions({ item, onMaximize, onRePrompt, onDelete }: CardActionsProp
       <button
         type="button"
         title="Kopieren"
+        aria-label="Kopieren"
         className={`${base} hover:text-white`}
         onClick={copy}
       >
@@ -178,6 +179,7 @@ function CardActions({ item, onMaximize, onRePrompt, onDelete }: CardActionsProp
       <button
         type="button"
         title="Vollbild"
+        aria-label="Vollbild"
         className={`${base} hover:text-white`}
         onClick={onMaximize}
       >
@@ -188,6 +190,7 @@ function CardActions({ item, onMaximize, onRePrompt, onDelete }: CardActionsProp
       <button
         type="button"
         title="Löschen"
+        aria-label="Löschen"
         className={`${base} hover:text-red-400`}
         onClick={(e) => {
           e.stopPropagation();
@@ -334,7 +337,7 @@ export const GalleryGrid = memo(function GalleryGrid({
             Zuletzt generiert
           </p>
           {!isLoading && (
-            <span className="text-[11px] text-white/16">{assets.length} Assets</span>
+            <span className="text-[11px] text-white/40">{assets.length} Assets</span>
           )}
         </div>
 

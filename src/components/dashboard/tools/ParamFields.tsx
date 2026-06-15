@@ -67,7 +67,7 @@ function ParamField({
             type="checkbox"
             checked={Boolean(value ?? param.defaultValue)}
             onChange={(e) => onChange(param.key, e.target.checked)}
-            className="rounded accent-[#ccff00]"
+            className="rounded accent-[#b4ff00]"
           />
           <span className="text-xs text-zinc-400">Aktiviert</span>
         </label>
@@ -80,7 +80,7 @@ function ParamField({
             step={param.step ?? 1}
             value={Number(value ?? param.defaultValue ?? param.min ?? 0)}
             onChange={(e) => onChange(param.key, Number(e.target.value))}
-            className="flex-1 accent-[#ccff00]"
+            className="flex-1 accent-[#b4ff00]"
           />
           <span className="min-w-[3rem] text-right font-mono text-xs text-zinc-400">
             {String(value ?? param.defaultValue ?? 0)}

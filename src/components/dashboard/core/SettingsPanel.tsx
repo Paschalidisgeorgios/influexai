@@ -142,7 +142,7 @@ function SettingsSlider({
           [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border
           [&::-moz-range-thumb]:border-neutral-950 [&::-moz-range-thumb]:bg-white"
         style={{
-          background: `linear-gradient(to right, #ccff00 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
+          background: `linear-gradient(to right, #b4ff00 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
         }}
       />
     </div>
@@ -220,7 +220,7 @@ function Toggle({
           className="absolute top-0.5 h-3 w-3 rounded-full shadow transition-all duration-200"
           style={{
             left: checked ? "calc(100% - 14px)" : "2px",
-            background: checked ? "#ccff00" : "rgba(255,255,255,0.25)",
+            background: checked ? "#b4ff00" : "rgba(255,255,255,0.25)",
           }}
         />
       </div>
@@ -292,7 +292,7 @@ function ImageGenPanel({
                     </span>
                     {m.badge && (
                       <span className="rounded px-1 font-mono text-[9px]"
-                        style={{ background: "rgba(204,255,0,0.12)", color: "#ccff00" }}>
+                        style={{ background: "rgba(180,255,0,0.12)", color: "#b4ff00" }}>
                         {m.badge}
                       </span>
                     )}
@@ -529,7 +529,7 @@ function FalVideoPanel({
                     </span>
                     {m.badge && (
                       <span className="rounded font-mono px-1 text-[9px]"
-                        style={{ background: "rgba(204,255,0,0.12)", color: "#ccff00" }}>
+                        style={{ background: "rgba(180,255,0,0.12)", color: "#b4ff00" }}>
                         {m.badge}
                       </span>
                     )}
@@ -607,7 +607,7 @@ function FalVideoPanel({
             );
           })}
         </div>
-        <p className="mt-1.5 text-[10px] text-white/16">
+        <p className="mt-1.5 text-[10px] text-white/40">
           Kling API — offizielle Standardwerte (5 s / 10 s)
         </p>
       </section>

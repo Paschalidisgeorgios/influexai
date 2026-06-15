@@ -22,7 +22,7 @@ interface Props {
 export function AssetNode({ nodeId, nodeData }: Props) {
   const removeNode = useCanvasStore((s) => s.removeNode);
   const tool = TOOL_API_SCHEMA[nodeData.toolId];
-  const accent = tool?.accent ?? "#ccff00";
+  const accent = tool?.accent ?? "#b4ff00";
 
   return (
     <div className="flex h-full flex-col gap-3 overflow-y-auto rounded-2xl border border-zinc-800/50 bg-zinc-950/80 p-4 backdrop-blur-sm">

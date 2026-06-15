@@ -33,7 +33,7 @@ export function TopUpOverlay({ open, onClose, requiredCoins }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex justify-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ccff00]/10 text-[#ccff00]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#b4ff00]/10 text-[#b4ff00]">
                 <Zap size={22} />
               </span>
             </div>
@@ -44,7 +44,7 @@ export function TopUpOverlay({ open, onClose, requiredCoins }: Props) {
             <button
               type="button"
               onClick={() => { openBuyModal(); onClose(); }}
-              className="w-full rounded-xl bg-[#ccff00] px-4 py-2.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
+              className="w-full rounded-xl bg-[#b4ff00] px-4 py-2.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
             >
               Credits aufladen
             </button>

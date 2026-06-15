@@ -41,7 +41,7 @@ function DashboardHeaderComponent() {
                 aria-live="polite"
               >
                 <span>{lead}</span>
-                <span className="font-mono font-bold tracking-wide text-[#ccff00] [text-shadow:0_0_18px_rgba(204,255,0,0.35)]">
+                <span className="font-mono font-bold tracking-wide text-[#b4ff00] [text-shadow:0_0_18px_rgba(180,255,0,0.35)]">
                   {name}
                 </span>
                 <span>{tail}</span>
@@ -61,7 +61,7 @@ function DashboardHeaderComponent() {
               exit={{ opacity: 0, y: 4 }}
               transition={{ duration: 0.2 }}
               onClick={() => { touchActivity(); openChat(); }}
-              className="canvas-onboarding-help pointer-events-auto rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-3 py-1.5 font-sans text-xs font-medium tracking-wide text-[#ccff00] shadow-[0_0_16px_rgba(204,255,0,0.15)] transition-transform hover:scale-[1.02]"
+              className="canvas-onboarding-help pointer-events-auto rounded-full border border-[#b4ff00]/30 bg-[#b4ff00]/10 px-3 py-1.5 font-sans text-xs font-medium tracking-wide text-[#b4ff00] shadow-[0_0_16px_rgba(180,255,0,0.15)] transition-transform hover:scale-[1.02]"
             >
               Brauchst du Hilfe? 💬
             </motion.button>

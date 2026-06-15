@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function AssetLoadingShader({ progress, label, accent, className }: Props) {
-  const glowColor = accent ?? "#ccff00";
+  const glowColor = accent ?? "#b4ff00";
   return (
     <div className={`flex h-full min-h-[200px] w-full flex-col items-center justify-center gap-4 rounded-xl border border-zinc-800/40 bg-zinc-950/60 ${className ?? ""}`}>
       {/* Shader animation */}
@@ -28,7 +28,7 @@ export function AssetLoadingShader({ progress, label, accent, className }: Props
           transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
         />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-2 w-2 rounded-full bg-[#ccff00]/60" />
+          <div className="h-2 w-2 rounded-full bg-[#b4ff00]/60" />
         </div>
       </div>
 

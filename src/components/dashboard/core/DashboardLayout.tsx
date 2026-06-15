@@ -102,7 +102,7 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   {
     title: "Erstellen",
     items: [
-      { id: "viral-hook",       label: "Viral Hook",           icon: <Zap size={14} />,          accent: "#B7FF00" },
+      { id: "viral-hook",       label: "Viral Hook",           icon: <Zap size={14} />,          accent: "#b4ff00" },
       { id: "content-calendar", label: "Content Kalender",     icon: <Calendar size={14} />,     accent: "#00D5FF" },
       { id: "trend-script",     label: "Trend Script",         icon: <TrendingUp size={14} />,   accent: "#FFD84D" },
     ],
@@ -142,8 +142,8 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
 // dedicated Agora-SDK UI. APIs remain fully functional (/api/live-avatar/session + heartbeat).
 
 const NAV_BOTTOM: NavItem[] = [
-  { id: "gallery",  label: "Galerie",       icon: <Images size={14} />,   accent: "#ccff00" },
-  { id: "settings", label: "Einstellungen", icon: <Settings size={14} />, accent: "#ccff00" },
+  { id: "gallery",  label: "Galerie",       icon: <Images size={14} />,   accent: "#b4ff00" },
+  { id: "settings", label: "Einstellungen", icon: <Settings size={14} />, accent: "#b4ff00" },
 ];
 
 // Tools die automatisch das rechte Panel öffnen
@@ -195,7 +195,7 @@ function resolveTopNav(toolId: ToolId): TopNavId | null {
 
 function AnimatedCredits({ credits }: { credits: number }) {
   const low   = credits < 10;
-  const color = low ? "#ff4444" : "#ccff00";
+  const color = low ? "#ff4444" : "#b4ff00";
   return (
     <motion.span
       key={credits}
@@ -275,7 +275,7 @@ function LeftSidebar({
                 className="flex w-full items-center gap-3 rounded-lg py-2 pl-3 pr-3 text-left transition-all"
                 style={{
                   background:  isActive ? "rgba(255,255,255,0.04)" : "transparent",
-                  borderLeft:  isActive ? "2px solid #ccff00" : "2px solid transparent",
+                  borderLeft:  isActive ? "2px solid #b4ff00" : "2px solid transparent",
                   paddingLeft: isActive ? "calc(0.75rem - 2px)" : "0.75rem",
                 }}
               >
@@ -334,7 +334,7 @@ function LeftSidebar({
                           className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
                           style={{
                             background:  active ? "rgba(255,255,255,0.04)" : "transparent",
-                            borderLeft:  active ? "2px solid #ccff00" : "2px solid transparent",
+                            borderLeft:  active ? "2px solid #b4ff00" : "2px solid transparent",
                             paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
                           }}
                           >
@@ -377,11 +377,11 @@ function LeftSidebar({
             className="flex w-full items-center gap-3 rounded-lg py-2 pr-3 text-left transition-all"
             style={{
               background:  activeTool === "studio" ? "rgba(255,255,255,0.04)" : "transparent",
-              borderLeft:  activeTool === "studio" ? "2px solid #ccff00" : "2px solid transparent",
+              borderLeft:  activeTool === "studio" ? "2px solid #b4ff00" : "2px solid transparent",
               paddingLeft: activeTool === "studio" ? "calc(0.75rem - 2px)" : "0.75rem",
             }}
           >
-            <Layers size={14} style={{ color: activeTool === "studio" ? "#ccff00" : "rgba(255,255,255,0.25)" }} />
+            <Layers size={14} style={{ color: activeTool === "studio" ? "#b4ff00" : "rgba(255,255,255,0.25)" }} />
             <span
               className="text-xs font-medium"
               style={{ color: activeTool === "studio" ? "#ffffff" : "rgba(255,255,255,0.38)" }}
@@ -444,7 +444,7 @@ const HERO_CARDS: HeroCard[] = [
     cta:        "AD FLOW →",
     sub:        "Build ads on one visual canvas",
     imgUrl:     "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=900&q=70",
-    accentGlow: "#ccff00",
+    accentGlow: "#b4ff00",
   },
   {
     id:      "avatar-video",

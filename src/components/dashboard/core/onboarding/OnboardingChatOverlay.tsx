@@ -37,7 +37,7 @@ export function OnboardingChatOverlay() {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-zinc-800/60 px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#ccff00] text-[10px] font-black text-black">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#b4ff00] text-[10px] font-black text-black">
                 AI
               </span>
               <span className="text-sm font-semibold text-white">Live Co-Pilot</span>
@@ -59,7 +59,7 @@ export function OnboardingChatOverlay() {
                 className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
                   msg.role === "assistant"
                     ? "self-start bg-zinc-800/80 text-zinc-200"
-                    : "self-end bg-[#ccff00]/10 text-[#ccff00]"
+                    : "self-end bg-[#b4ff00]/10 text-[#b4ff00]"
                 }`}
               >
                 {msg.content}
@@ -95,7 +95,7 @@ export function OnboardingChatOverlay() {
                 type="button"
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
-                className="text-[#ccff00] disabled:opacity-30"
+                className="text-[#b4ff00] disabled:opacity-30"
               >
                 <Send size={14} />
               </button>

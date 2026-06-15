@@ -134,7 +134,7 @@ export function SegmentedControl({
           onClick={() => onChange(o.value)}
           className={`flex-1 py-2 text-[11px] font-medium transition-all ${
             value === o.value
-              ? "bg-[#ccff00] text-black"
+              ? "bg-[#b4ff00] text-black"
               : "text-zinc-400 hover:text-zinc-200"
           }`}
         >
@@ -173,7 +173,7 @@ export function SliderField({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 accent-[#ccff00]"
+        className="flex-1 accent-[#b4ff00]"
       />
       <span className="min-w-[3rem] text-right font-mono text-xs text-zinc-400">
         {value}{unit ?? ""}
@@ -243,7 +243,7 @@ export function DropzoneField({
         <div
           className={`flex h-24 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition-colors ${
             dragOver
-              ? "border-[#ccff00]/60 bg-[#ccff00]/5"
+              ? "border-[#b4ff00]/60 bg-[#b4ff00]/5"
               : "border-zinc-700/60 bg-zinc-900/30 hover:border-zinc-600"
           }`}
           onClick={() => inputRef.current?.click()}

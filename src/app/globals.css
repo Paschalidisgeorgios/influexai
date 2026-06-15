@@ -2319,12 +2319,14 @@ h3 {
   margin: 0.4rem 0;
 }
 
-/* Typo-Sicherheitsnetz: zu kleine Tailwind-Hilfsklassen in App-Oberflächen */
-[data-dashboard] .text-xs,
-[data-dashboard] .text-\[11px\],
-[data-dashboard] .text-\[10px\],
-[data-dashboard] .text-\[9px\],
-[data-dashboard] .text-\[8px\],
+/* Typo-Sicherheitsnetz: zu kleine Tailwind-Hilfsklassen in App-Oberflächen.
+   Scope auf main-Inhaltsbereiche eingeschränkt — Sidebar/aside explizit ausgenommen,
+   damit kompakte Navigation-Labels (9px/11px) nicht auf 14px gehoben werden. */
+[data-dashboard] main .text-xs,
+[data-dashboard] main .text-\[11px\],
+[data-dashboard] main .text-\[10px\],
+[data-dashboard] main .text-\[9px\],
+[data-dashboard] main .text-\[8px\],
 .studio-glass-legacy-content .text-xs,
 .studio-glass-legacy-content .text-\[11px\],
 .studio-glass-legacy-content .text-\[10px\],

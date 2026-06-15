@@ -104,7 +104,7 @@ function ProfileTab({ credits, creditsLoaded }: SettingsViewProps) {
           href="/dashboard/credits"
           className="inline-flex items-center gap-1.5 rounded border border-white/5 bg-neutral-900 px-3 py-1.5 text-xs text-white transition-colors hover:bg-neutral-800"
         >
-          <Zap size={11} style={{ color: "#ccff00" }} />
+          <Zap size={11} style={{ color: "#b4ff00" }} />
           Credits aufladen
         </a>
       </div>
