@@ -963,12 +963,25 @@ export function DashboardLayout() {
     setToolSettings(settings);
   }, []);
 
-  // Tool-Auswahl — img-to-video leitet zu /dashboard/szenen-generator weiter
-  // (vollständige SzenenGeneratorStudio-Implementierung mit Modell-Auswahl,
-  //  Polling und dynamischen Credits statt AgentBox-Mock)
+  // Tool-Auswahl — bestimmte Tools leiten zu fertigen dedizierten Seiten weiter
+  // statt den AgentBox-Mock zu öffnen.
   const handleToolSelect = useCallback((id: ToolId) => {
     if (id === "img-to-video") {
       router.push("/dashboard/szenen-generator");
+      return;
+    }
+    // face-studio vereint beide Tabs (Video + Foto) — keine URL-Parameter da
+    // face-studio/page.tsx nur lokalen useState nutzt (kein useSearchParams)
+    if (id === "face-swap-video" || id === "face-swap-image") {
+      router.push("/dashboard/face-studio");
+      return;
+    }
+    if (id === "talking-photo") {
+      router.push("/dashboard/live-portrait");
+      return;
+    }
+    if (id === "talking-avatar") {
+      router.push("/dashboard/lipsync-studio");
       return;
     }
     setActiveTool(id);

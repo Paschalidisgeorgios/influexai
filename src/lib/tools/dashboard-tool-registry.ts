@@ -206,7 +206,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-image (unterscheidet nach Eingabe-Typ: Video→10 Credits, Bild→5 Credits). [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap]",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-image (unterscheidet nach Eingabe-Typ: Video→10 Credits, Bild→5 Credits). [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (Tab 'Face Swap Video', vollständige Implementierung mit FaceSwapPanel + echtem API-Call + Polling) statt AgentBox-Mock zu öffnen. face-studio/page.tsx nutzt nur lokalen Tab-State (kein useSearchParams) → kein URL-Tab-Parameter möglich.",
   },
 
   "character-swap": {
@@ -266,7 +266,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.lipsync=20 (akool-credits.ts). /api/akool/lipsync/route.ts: echter Akool-Call (/v3/lipsync/create), runAkoolAsyncPost → deductAkoolToolCredits upfront. Semantisch: Lipsync = Video mit synchronisierten Lippen → entspricht 'Sprechender Avatar'. promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→20, apiRoute null→/api/akool/lipsync]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.lipsync=20 (akool-credits.ts). /api/akool/lipsync/route.ts: echter Akool-Call (/v3/lipsync/create), runAkoolAsyncPost → deductAkoolToolCredits upfront. Semantisch: Lipsync = Video mit synchronisierten Lippen → entspricht 'Sprechender Avatar'. promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→20, apiRoute null→/api/akool/lipsync] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/lipsync-studio (vollständige Implementierung mit Video-URL + Audio-URL/TTS, Polling via useAkoolJobPoll) statt AgentBox-Mock zu öffnen. /dashboard/lipsync ist Duplikat — lipsync-studio als kanonische Seite gewählt.",
   },
 
   "talking-photo": {
@@ -278,7 +278,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_COST=5 in /api/live-portrait/route.ts (hardcoded). Echter fal.ai-Call (fal-ai/live-portrait). assertKiToolAccess(5) Pre-Check. Post-Pay-Risiko: fal.ai-Call läuft vor deductCredits — wenn Abzug nach Generierung fehlschlägt, entsteht fal.ai-Kosten ohne Credit-Abzug. promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/live-portrait, Post-Pay-Risiko dokumentiert]",
+    sourceNotes: "CREDIT_COST=5 in /api/live-portrait/route.ts (hardcoded). Echter fal.ai-Call (fal-ai/live-portrait). Pre-Pay mit Refund-on-Failure bereits implementiert. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/live-portrait] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/live-portrait (vollständige Implementierung mit Foto-Upload + Driving-Video/Webcam + echtem /api/live-portrait-Call + Result-Anzeige) statt AgentBox-Mock zu öffnen.",
   },
 
   "ai-video-editor": {
@@ -316,7 +316,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_IMAGE=5 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video (CREDIT_VIDEO=10 für Video-Input, CREDIT_IMAGE=5 für Bild-Input). promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/faceswap]",
+    sourceNotes: "CREDIT_IMAGE=5 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video (CREDIT_VIDEO=10 für Video-Input, CREDIT_IMAGE=5 für Bild-Input). promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/faceswap] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (Tab 'Face Swap Foto', vollständige Implementierung) statt AgentBox-Mock. Kein URL-Tab-Parameter möglich (face-studio nutzt nur lokalen State) — Nutzer landet auf face-studio, Default-Tab ist 'Video', muss manuell zu 'Foto' wechseln.",
   },
 
   "image-gen": {
