@@ -1269,11 +1269,16 @@ export const AgentBox = memo(function AgentBox({
   // Production-Impact (tree-shaken by bundler).
   if (process.env.NODE_ENV === "development") {
     const _reg = getToolDefinition(activeTool);
-    if (_reg?.credits !== null && _reg?.credits !== undefined && _reg.credits !== creditCost) {
+    if (_reg === undefined) {
+      console.warn(
+        `[ToolRegistry] Tool "${activeTool}" fehlt in dashboard-tool-registry.ts — ` +
+        `bitte Eintrag ergänzen.`
+      );
+    } else if (_reg.credits !== null && _reg.credits !== creditCost) {
       console.warn(
         `[ToolRegistry] Credit-Diskrepanz für "${activeTool}": ` +
         `calculateExactCredits=${creditCost}, registry=${_reg.credits}. ` +
-        `→ promptOptimizer.ts oder dashboard-tool-registry.ts anpassen.`
+        `Registry vs. promptOptimizer Diskrepanz — siehe dashboard-tool-registry.ts sourceNotes`
       );
     }
   }
