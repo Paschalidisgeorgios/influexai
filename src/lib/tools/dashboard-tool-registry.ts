@@ -6,7 +6,9 @@
  *
  * Datenquellen:
  *  - ToolId-Union-Type:      src/components/dashboard/core/DashboardLayout.tsx (Z. 52–68)
- *  - calculateExactCredits:  src/lib/dashboard/promptOptimizer.ts (Z. 600–626)
+ *  - calculateExactCredits:  src/lib/dashboard/promptOptimizer.ts (Z. 600–626) — ACHTUNG: weicht
+ *                            systematisch von AKOOL_TOOL_CREDITS (akool-credits.ts) ab; Validation
+ *                            v2 korrigiert die Registry auf die tatsächlichen API-Abzüge.
  *  - TOOLS_WITH_RIGHT_PANEL: src/components/dashboard/core/DashboardLayout.tsx (Z. 171–175)
  *  - MEDIA_TOOLS:            src/components/dashboard/core/AgentBox.tsx (Z. 109)
  *  - COPILOT_TRIGGER_TOOLS:  src/components/dashboard/core/AgentBox.tsx (Z. 1216)
@@ -78,7 +80,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Navigation-Only. Kein API-Aufruf; rendert StudioHome. calculateExactCredits gibt 0 zurück (nicht explizit gelistet, fällt in Default-Branch → 5, aber UI-seitig nie verwendet). Kategorie 'text' als Fallback – passt zu keiner Kategorie des bestehenden Schemas.",
+    sourceNotes: "Navigation-Only. Kein API-Aufruf; rendert StudioHome. calculateExactCredits hat keinen expliziten Eintrag für 'studio' — fällt in Default-Branch und würde 5 zurückgeben, wird aber UI-seitig nie aufgerufen. credits=0 gesetzt, da kein Abzug stattfindet. Kategorie 'text' als Fallback – passt zu keiner Kategorie des bestehenden Schemas.",
   },
 
   "gallery": {
@@ -112,11 +114,11 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     category: "text",
     name: "Viral Hook",
     credits: 1,
-    apiRoute: "/api/agent",
+    apiRoute: "/api/viral-hook",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "TEXT_TOOLS-Set in promptOptimizer (Z.598) → 1 Credit. AgentBox.tsx: buildPrompt() generiert Hook-Prompt, Submit via /api/agent (SSE-Stream). Zusätzlich existiert /api/viral-hook/route.ts als eigenständige Route (wird von alten Dashboard-Pages genutzt, nicht von AgentBox).",
+    sourceNotes: "VIRAL_HOOK_EXTRACTOR_CREDIT_COST = 1 (viral-hook-extraktor.ts) — übereinstimmend mit promptOptimizer TEXT_TOOLS. /api/viral-hook/route.ts: echter Anthropic-Call, deductCredits mit amount=1 via withCreditDeduction. AgentBox streamt via /api/agent als Proxy, tatsächlicher Credit-Abzug in /api/viral-hook. [KORRIGIERT v2: apiRoute /api/agent → /api/viral-hook]",
   },
 
   "content-calendar": {
@@ -135,12 +137,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "trend-script",
     category: "text",
     name: "Trend Script",
-    credits: 1,
-    apiRoute: "/api/agent",
+    credits: 3,
+    apiRoute: "/api/trend-script",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "TEXT_TOOLS-Set in promptOptimizer (Z.598) → 1 Credit. AgentBox.tsx: buildPrompt() generiert Script-Prompt, Submit via /api/agent (SSE). Eigenständige Route /api/trend-script/route.ts existiert zusätzlich (Legacy-Dashboard-Pages).",
+    sourceNotes: "TREND_SCRIPT_TOOL_CREDIT_COST = 3 (trend-script-tool.ts). /api/trend-script/route.ts: echter YouTube-API + Anthropic-Call, deductCredits mit amount=3. promptOptimizer TEXT_TOOLS-Set setzt fälschlich 1 Credit — Diskrepanz zur Route. AgentBox streamt via /api/agent, tatsächlicher Abzug in /api/trend-script. [KORRIGIERT v2: credits 1→3, apiRoute /api/agent→/api/trend-script]",
   },
 
   // ── Video Tools (fal.ai) ──────────────────────────────────────────────────
@@ -154,7 +156,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "Credits: 15 (< 10s) oder 30 (≥ 10s) — durationabhängig, daher null. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.172). MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/image-to-video/route.ts existiert. AgentBox hat ImgToVideoValues-Form mit Start/End-Frame + MotionPrompt.",
+    sourceNotes: "Credits: calculateAkoolModelCredits(model, resolution, duration) = unit_credit × duration — vollständig modell- und auflösungsabhängig, kein generelles 15–30-Fenster. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.172). MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/image-to-video/route.ts existiert, echter Akool-Call (/v4/image2video/create). AgentBox hat ImgToVideoValues-Form mit Start/End-Frame + MotionPrompt. [KORRIGIERT v2: sourceNotes präzisiert]",
   },
 
   "text-to-video": {
@@ -166,19 +168,19 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "Credits: 15 (< 10s) oder 30 (≥ 10s) — durationabhängig, daher null. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.172). MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/text-to-video/route.ts existiert.",
+    sourceNotes: "Credits: calculateAkoolModelCredits(model, resolution, duration) wenn Modell bekannt; Fallback AKOOL_TOOL_CREDITS.textToVideo = 50 wenn kein Modell gefunden. Kein generelles 15–30-Fenster. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.172). MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/text-to-video/route.ts existiert, echter Akool-Call (/v4/text2video/create). [KORRIGIERT v2: sourceNotes präzisiert, Fallback 50 ergänzt]",
   },
 
   "video-to-video": {
     id: "video-to-video",
     category: "video",
     name: "Video to Video",
-    credits: 15,
+    credits: 40,
     apiRoute: "/api/akool/video-to-video",
     hasRightPanel: false,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "promptOptimizer Z.619 → 15 Credits fix. MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/video-to-video/route.ts existiert.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.videoEditor = 40 (akool-credits.ts). Route ruft /v3/video/style-transfer auf, generationType='akool-video-editor'. promptOptimizer Z.619 nennt fälschlich 15 — Diskrepanz. MEDIA_TOOLS (AgentBox Z.109). [KORRIGIERT v2: credits 15→40]",
   },
 
   "ref-to-video": {
@@ -216,43 +218,43 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine dedizierte API-Route in /api/ gefunden. Kein Form in AgentBox. Status 'unknown'.",
+    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits (promptOptimizer, nicht verifiziert). /api/akool/character-studio verwendet pollType='characterSwap' — könnte character-swap bedienen, aber explizite Zuordnung fehlt. Keine eigene Route identifizierbar. Status 'unknown'. [KORRIGIERT v2: Hinweis auf mögliche Route ergänzt]",
   },
 
   "char-studio-video": {
     id: "char-studio-video",
     category: "video",
     name: "Character Studio",
-    credits: 10,
+    credits: 25,
     apiRoute: "/api/akool/character-studio",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/akool/character-studio/route.ts existiert (geteilt mit char-studio-image). Zuordnung per Toolname erschlossen.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: /api/akool/character-studio/route.ts, echter Akool-Call (/v4/characterSwap/create), generationType='akool-character-studio'. Geteilt mit char-studio-image. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10. [KORRIGIERT v2: credits 10→25]",
   },
 
   "avatar-video": {
     id: "avatar-video",
     category: "video",
     name: "Avatar Video",
-    credits: 10,
-    apiRoute: "/api/avatar",
+    credits: null,
+    apiRoute: "/api/avatar/create-job",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/avatar/create-job, /api/avatar/start-render existieren. Genauer Endpoint je nach Avatar-Workflow variiert.",
+    sourceNotes: "Credits: dynamisch via estimateAvatarCredits() — Basis 5 (15s), 9 (30s), 16 (60s) + Addons (1080p+3, Untertitel+1, Voiceover+2, Branding+1), Bereich 5–21. /api/avatar/create-job erstellt Supabase-Job-Record + schätzt Credits; Ausführung via /api/avatar/start-render + RunPod. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, apiRoute präzisiert, Bereich 5–21]",
   },
 
   "video-translation": {
     id: "video-translation",
     category: "video",
     name: "Videoübersetzung",
-    credits: 10,
+    credits: null,
     apiRoute: "/api/akool/video-translation",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/akool/video-translation/route.ts gefunden.",
+    sourceNotes: "Credits: minutes × AKOOL_TOOL_CREDITS.videoTranslationPerMinute = minutes × 30 (variabel, Minimum 1 Min. = 30 Credits). /api/akool/video-translation/route.ts: echter Akool-Call (/v3/videoTranslation/create). promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, Abrechnungsmodell 30/Min ergänzt]",
   },
 
   "talking-avatar": {
@@ -295,12 +297,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "ecommerce-ads",
     category: "video",
     name: "E-Commerce Product Ads",
-    credits: 8,
+    credits: 15,
     apiRoute: "/api/akool/ecommerce-ads",
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "promptOptimizer Z.621 → 8 Credits. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.173). MEDIA_TOOLS (AgentBox Z.109). UGC_VIDEO_TOOL_IDS in SettingsPanel (Z.63). /api/akool/ecommerce-ads/route.ts existiert.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.ecommerceAds = 15 (akool-credits.ts). Route: /api/akool/ecommerce-ads/route.ts, echter Akool-Call (/v3/product-ad/create). TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.173). MEDIA_TOOLS (AgentBox Z.109). UGC_VIDEO_TOOL_IDS in SettingsPanel (Z.63). promptOptimizer Z.621 nennt fälschlich 8. [KORRIGIERT v2: credits 8→15]",
   },
 
   // ── Image Tools ───────────────────────────────────────────────────────────
@@ -326,7 +328,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "Credits: 3 (default/nano-banana-2) oder 5 (nano-banana-pro/flux-2-pro) — modellabhängig, daher null. TOOLS_WITH_RIGHT_PANEL. MEDIA_TOOLS. IMAGE_TOOL_IDS in SettingsPanel (Z.59). KreaImageTool.tsx (Z.113) nennt /api/generate-image explizit. Ordner /api/generate-image/ im API-Verzeichnis gefunden.",
+    sourceNotes: "Credits: IMAGE_GEN_CREDITS.standard = FAL_CREDITS.fluxDev = 5 (Standardqualität), IMAGE_GEN_CREDITS.highRes = FAL_CREDITS.fluxProT2i = 8 (High-Res). Kein 3-Credit-Tier im tatsächlichen Code. /api/generate-image/route.ts: echter fal.ai-Call via generateCategoryImage(). TOOLS_WITH_RIGHT_PANEL. MEDIA_TOOLS. IMAGE_TOOL_IDS in SettingsPanel (Z.59). [KORRIGIERT v2: Bereich 3–5 → standard=5/highRes=8, kein 3er-Tier]",
   },
 
   "img-to-img": {
@@ -338,19 +340,19 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: false,
     status: "unknown",
-    sourceNotes: "Credits: 3 oder 5 — modellabhängig (wie image-gen), daher null. TOOLS_WITH_RIGHT_PANEL. IMAGE_TOOL_IDS in SettingsPanel (Z.59). Keine eigenständige API-Route in AgentBox oder /api/ gefunden. Status 'unknown'.",
+    sourceNotes: "Credits: würden wie image-gen standard=5/highRes=8 sein (gleiche fal.ai-Basis), aber kein eigener Abzug verifizierbar. TOOLS_WITH_RIGHT_PANEL. IMAGE_TOOL_IDS in SettingsPanel (Z.59). Keine eigenständige API-Route in AgentBox oder /api/ gefunden. Könnte /api/generate-image mit variation=true teilen. [KORRIGIERT v2: sourceNotes aktualisiert]",
   },
 
   "char-studio-image": {
     id: "char-studio-image",
     category: "image",
     name: "Character Studio Bild",
-    credits: 10,
+    credits: 25,
     apiRoute: "/api/akool/character-studio",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/akool/character-studio/route.ts existiert (geteilt mit char-studio-video).",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: geteilt mit char-studio-video (/api/akool/character-studio). ACHTUNG: Route produziert Video-Output (characterSwap in Video), nicht statisches Bild — ToolId-Kategorie 'image' ist irreführend. promptOptimizer nennt fälschlich 10. [KORRIGIERT v2: credits 10→25, Kategorie-Warnung ergänzt]",
   },
 
   "jarvis-moderator": {
@@ -371,36 +373,36 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "tts",
     category: "audio",
     name: "Text-zu-Sprache",
-    credits: 2,
+    credits: 3,
     apiRoute: "/api/akool/tts",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "promptOptimizer Z.622 → 2 Credits. /api/akool/tts/route.ts existiert. Zusätzlich /api/stimme/speak/route.ts vorhanden (älteres Legacy-Endpoint).",
+    sourceNotes: "AKOOL_TOOL_CREDITS.tts = 3 (akool-credits.ts). Route: /api/akool/tts/route.ts, echter Akool-Call (/v4/voice/tts). Zusätzlich /api/stimme/speak/route.ts (Legacy-Endpoint). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→3]",
   },
 
   "voice-clone": {
     id: "voice-clone",
     category: "audio",
     name: "Stimmenklon",
-    credits: 2,
+    credits: 5,
     apiRoute: "/api/akool/voice-clone",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "promptOptimizer Z.622 → 2 Credits. /api/akool/voice-clone/route.ts existiert. Zusätzlich /api/stimme/clone/route.ts (Legacy).",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceClone = 5 (akool-credits.ts). Route: /api/akool/voice-clone/route.ts, echter Akool-Call (/v4/voice/clone). Zusätzlich /api/stimme/clone/route.ts (Legacy). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→5]",
   },
 
   "voice-changer": {
     id: "voice-changer",
     category: "audio",
     name: "Stimmverzerrer",
-    credits: 2,
+    credits: 5,
     apiRoute: "/api/akool/voice-changer",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "promptOptimizer Z.622 → 2 Credits. /api/akool/voice-changer/route.ts existiert.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceChanger = 5 (akool-credits.ts). Route: /api/akool/voice-changer/route.ts, echter Akool-Call (/v4/voice/change). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→5]",
   },
 
   // ── Live & Akool Tools ────────────────────────────────────────────────────
@@ -409,24 +411,24 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "live-camera",
     category: "live",
     name: "Live-Kamera",
-    credits: 10,
+    credits: null,
     apiRoute: "/api/live-avatar/session",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/live-avatar/session/route.ts und /api/live-avatar/heartbeat/route.ts existieren.",
+    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE = 1 pro Minute (akool-live-avatar.ts) — laufend abgezogen, kein fixer Einmalwert. /api/live-avatar/session/route.ts: echter Akool Live-Avatar-Call (Agora-Credentials). hasEnoughCredits-Check auf 1 Credit minimum. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, Abrechnungsmodell 1/Min ergänzt]",
   },
 
   "streaming-avatar": {
     id: "streaming-avatar",
     category: "live",
     name: "Streaming-Avatar",
-    credits: 10,
+    credits: null,
     apiRoute: "/api/live-avatar/session",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Teilt /api/live-avatar/session mit live-camera (Akool Live Avatar Session-Management).",
+    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE = 1 pro Minute — laufend abgezogen wie live-camera. Teilt /api/live-avatar/session (Akool Live Avatar Session-Management, Agora-Credentials). promptOptimizer nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null]",
   },
 
   "live-face-swap": {
