@@ -242,7 +242,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: dynamisch via estimateAvatarCredits() — Basis 5 (15s), 9 (30s), 16 (60s) + Addons (1080p+3, Untertitel+1, Voiceover+2, Branding+1), Bereich 5–21. /api/avatar/create-job erstellt Supabase-Job-Record + schätzt Credits (kein Abzug). Post-Pay-Risiko: chargeAvatarCredits RPC läuft nach fal.ai-Render in /api/avatar/start-render — wenn RPC nach Render fehlschlägt, entstehen fal.ai-Kosten ohne Credit-Abzug. [KORRIGIERT v3: Post-Pay-Risiko dokumentiert]",
+    sourceNotes: "Credits: dynamisch via estimateAvatarCredits() — Basis 5/9/16 + Addons 5–21. Pre-Pay mit refundCredits-on-Failure bereits implementiert. [KORRIGIERT v3] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/avatar-studio (vollständige Implementierung mit Bild+Video-Upload, Optionen, create-job+start-render, Pre-Pay) statt AgentBox-Mock.",
   },
 
   "video-translation": {
@@ -254,7 +254,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: minutes × AKOOL_TOOL_CREDITS.videoTranslationPerMinute = minutes × 30 (variabel, Minimum 1 Min. = 30 Credits). /api/akool/video-translation/route.ts: echter Akool-Call (/v3/videoTranslation/create). promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, Abrechnungsmodell 30/Min ergänzt]",
+    sourceNotes: "Credits: minutes × 30 (Minimum 30 Credits/Min). Echter Akool-Call. Duplikat: /dashboard/video-uebersetzer ruft dieselbe Route auf. [KORRIGIERT v2] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/video-translation (vollständige Implementierung, Akool-Polling) statt AgentBox-Mock.",
   },
 
   "talking-avatar": {
@@ -340,7 +340,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "Shared Route mit image-gen via variation:true Parameter. IMAGE_GEN_CREDITS.variation = FAL_CREDITS.fluxDev ≈ 3 Credits. TOOLS_WITH_RIGHT_PANEL + IMAGE_TOOL_IDS (SettingsPanel). TODO in handleActionExecute (DashboardLayout.tsx) aktiviert: eigener Branch für img-to-img ruft /api/generate-image mit variation:true auf, skipDeduction:true (API deducted bereits). [AKTIVIERT v5: unknown→active, credits null→3, apiRoute ergänzt, isMediaTool false→true]",
+    sourceNotes: "Shared Route mit image-gen via variation:true Parameter. 3 Credits. TOOLS_WITH_RIGHT_PANEL + IMAGE_TOOL_IDS. [AKTIVIERT v5: handleActionExecute-Branch ergänzt] [AKTIVIERT v8] MEDIA_TOOLS + TOOL_META ergänzt in AgentBox.tsx — isMedia=true, onActionExecute erreichbar. buildPrompt-Case nicht nötig (default:'' reicht, Prompt optional für variation-Mode). AgentBox zeigt jetzt 'Bild zu Bild'-Header statt FALLBACK_META 'TOOL'.",
   },
 
   "char-studio-image": {
@@ -352,7 +352,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: geteilt mit char-studio-video (/api/akool/character-studio). ACHTUNG: Route produziert Video-Output (characterSwap in Video), nicht statisches Bild — ToolId-Kategorie 'image' ist irreführend. promptOptimizer nennt fälschlich 10. [KORRIGIERT v2: credits 10→25, Kategorie-Warnung ergänzt]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25. Route: /api/akool/character-studio (geteilt mit char-studio-video/character-swap). ACHTUNG: Video-Output trotz 'image'-Kategorie. [KORRIGIERT v2] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (selbe Seite wie char-studio-video/character-swap) — 3. Sidebar-Eintrag für dieselbe Funktion, Konsolidierung als separater UX-Schritt.",
   },
 
   "jarvis-moderator": {
@@ -378,7 +378,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.tts = 3 (akool-credits.ts). Route: /api/akool/tts/route.ts, echter Akool-Call (/v4/voice/tts). Zusätzlich /api/stimme/speak/route.ts (Legacy-Endpoint). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→3]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.tts = 3. Route: /api/akool/tts. [KORRIGIERT v2: credits 2→3] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia (Tab 'tts', Default-Tab). melodia nutzt nur lokalen State (kein useSearchParams) — alle drei Audio-Tools (tts/voice-clone/voice-changer) landen auf Default-Tab 'tts'.",
   },
 
   "voice-clone": {
@@ -390,7 +390,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.voiceClone = 5 (akool-credits.ts). Route: /api/akool/voice-clone/route.ts, echter Akool-Call (/v4/voice/clone). Zusätzlich /api/stimme/clone/route.ts (Legacy). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→5]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceClone = 5. Route: /api/akool/voice-clone. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia — kein Tab-Parameter möglich, Nutzer landet auf Default-Tab 'tts', muss manuell zu 'Stimme klonen' wechseln.",
   },
 
   "voice-changer": {
@@ -402,7 +402,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.voiceChanger = 5 (akool-credits.ts). Route: /api/akool/voice-changer/route.ts, echter Akool-Call (/v4/voice/change). promptOptimizer Z.622 nennt fälschlich 2. [KORRIGIERT v2: credits 2→5]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceChanger = 5. Route: /api/akool/voice-changer. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia — kein Tab-Parameter möglich, Nutzer landet auf Default-Tab 'tts', muss manuell zu 'Stimmverzerrer' wechseln.",
   },
 
   // ── Live & Akool Tools ────────────────────────────────────────────────────
@@ -416,7 +416,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE=1 pro Minute — laufend via /api/live-avatar/heartbeat abgezogen. /api/live-avatar/session/route.ts: echter Akool Live-Avatar-Call (Agora-Credentials). Billing-Lücke: Session-Start hat keinen Credit-Abzug, nur hasEnoughCredits-Check. Abrechnung ausschließlich via Heartbeat (1 Credit/Minute) — Client-Absturz vor erstem Heartbeat → Session aktiv, 0 Credits abgezogen. [KORRIGIERT v3: Billing-Lücke dokumentiert]",
+    sourceNotes: "Credits: 1/Min via Heartbeat. /api/live-avatar/session: echter Akool/Agora-Call. Billing-Lücke dokumentiert. [KORRIGIERT v3] UI-Lücke (2026-06-15): /api/live-avatar/session existiert mit echter Akool/Agora-Integration, aber keine Dashboard-Seite ruft sie auf. Sidebar-Eintrag führt zu Mock (kein Credit-Abzug, kein Ergebnis). Unterschied zu den am 2026-06-15 entfernten Tools: hier existiert eine funktionierende API, nur die UI fehlt — Kandidat für zukünftigen Feature-Build (Live-Streaming-UI mit Agora-SDK), nicht für Entfernung.",
   },
 
   "streaming-avatar": {
@@ -428,7 +428,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE=1 pro Minute — laufend via /api/live-avatar/heartbeat abgezogen. Teilt /api/live-avatar/session mit live-camera. Billing-Lücke: Session-Start hat keinen Credit-Abzug, nur hasEnoughCredits-Check. Abrechnung ausschließlich via Heartbeat (1 Credit/Minute) — Client-Absturz vor erstem Heartbeat → Session aktiv, 0 Credits abgezogen. [KORRIGIERT v3: Billing-Lücke dokumentiert]",
+    sourceNotes: "Credits: 1/Min via Heartbeat. Teilt /api/live-avatar/session mit live-camera. Billing-Lücke dokumentiert. [KORRIGIERT v3] UI-Lücke (2026-06-15): /api/live-avatar/session existiert mit echter Akool/Agora-Integration, aber keine Dashboard-Seite ruft sie auf. Sidebar-Eintrag führt zu Mock (kein Credit-Abzug, kein Ergebnis). Unterschied zu den am 2026-06-15 entfernten Tools: hier existiert eine funktionierende API, nur die UI fehlt — Kandidat für zukünftigen Feature-Build (Live-Streaming-UI mit Agora-SDK), nicht für Entfernung.",
   },
 
   "live-face-swap": {
@@ -440,7 +440,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, generationType='live-creator-faceswap' (Name deutet auf Live-Kontext hin). Echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video/face-swap-image, unterscheidet per Eingabe-Typ. [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap]",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-video/-image. [KORRIGIERT v3] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (gleiche /api/faceswap-Route, vollständige FaceSwapPanel-Implementierung). Hinweis: 'live-face-swap' hatte ursprünglich Live-Kontext-Bedeutung (generationType), face-studio ist Batch — kein echter Unterschied in der API-Implementierung.",
   },
 
   "ai-support-agent": {

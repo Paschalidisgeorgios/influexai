@@ -979,10 +979,27 @@ export function DashboardLayout() {
     }
     // character-swap und char-studio-video sind Sidebar-Duplikate derselben Funktion
     // (/dashboard/character-studio, /api/akool/character-studio) — beide Einträge
-    // leiten auf dieselbe Seite. Sidebar-Konsolidierung (Entfernung des Duplikats)
-    // ist ein separater UX-Schritt.
-    if (id === "character-swap" || id === "char-studio-video") {
+    // leiten auf dieselbe Seite. char-studio-image ebenfalls.
+    if (id === "character-swap" || id === "char-studio-video" || id === "char-studio-image") {
       router.push("/dashboard/character-studio");
+      return;
+    }
+    if (id === "avatar-video") {
+      router.push("/dashboard/avatar-studio");
+      return;
+    }
+    if (id === "video-translation") {
+      router.push("/dashboard/video-translation");
+      return;
+    }
+    if (id === "live-face-swap") {
+      router.push("/dashboard/face-studio");
+      return;
+    }
+    // melodia vereint tts/voice-clone/voice-changer als Tabs — kein useSearchParams,
+    // alle drei landen auf Default-Tab "tts". Nutzer muss ggf. Tab manuell wechseln.
+    if (id === "tts" || id === "voice-clone" || id === "voice-changer") {
+      router.push("/dashboard/melodia");
       return;
     }
     setActiveTool(id);

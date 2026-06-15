@@ -109,7 +109,8 @@ const DEFAULTS: Record<string, FormValues> = {
 };
 
 // img-to-video: AgentBox-Pfad unreachable seit Umleitung zu /dashboard/szenen-generator, siehe dashboard-tool-registry.ts
-const MEDIA_TOOLS = new Set<ToolId>(["image-gen", "ecommerce-ads", "img-to-video", "text-to-video", "video-to-video", "ai-video-editor"]);
+// img-to-img: in MEDIA_TOOLS damit isMedia=true → onActionExecute → DashboardLayout.handleActionExecute-Branch (variation:true)
+const MEDIA_TOOLS = new Set<ToolId>(["image-gen", "ecommerce-ads", "img-to-video", "text-to-video", "video-to-video", "ai-video-editor", "img-to-img"]);
 
 // ---------------------------------------------------------------------------
 // Prompt-Builder — Single source of truth für alle Claude-Prompts
@@ -814,6 +815,7 @@ const TOOL_META: Record<string, {
   "text-to-video":     { label: "Text → Video",      icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Text direkt in Video umwandeln" },
   "video-to-video":    { label: "Video → Video",     icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Video re-generieren & anpassen" },
   "ai-video-editor":   { label: "KI-Videoeditor",   icon: <Clapperboard size={14} />, accent: "#FFD84D", description: "Stil-Transfer & KI-Bearbeitung via Akool" },
+  "img-to-img":        { label: "Bild zu Bild",     icon: <ImageIcon size={14} />,    accent: "#8B5DFF", description: "KI-Bildvariation via Fal AI" },
 };
 
 const FALLBACK_META = {
