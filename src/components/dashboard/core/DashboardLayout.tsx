@@ -511,12 +511,16 @@ function StudioHome({
   recentAssets:  GalleryItem[];
 }) {
   return (
-    <div className="relative w-full space-y-10">
+    <div className="relative w-full space-y-8">
 
-      {/* Subtle lime ambient glow at top */}
+      {/* Layered ambient glows — lime top-centre + blue right — create depth without neon */}
       <div
-        className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full opacity-[0.05] blur-3xl"
+        className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full opacity-[0.08] blur-[100px]"
         style={{ background: "#b4ff00" }}
+      />
+      <div
+        className="pointer-events-none absolute top-64 right-0 h-[400px] w-[400px] rounded-full opacity-[0.035] blur-[120px]"
+        style={{ background: "#0055ff" }}
       />
 
       {/* ── 1. Studio Header ──────────────────────────────────────────────── */}
@@ -547,7 +551,7 @@ function StudioHome({
 
       {/* ── 2. Bento Hero Grid ────────────────────────────────────────────── */}
       {/* Ad Flow takes 2/3 width; Avatar + Agent stack in the remaining 1/3 */}
-      <div className="flex gap-3" style={{ minHeight: "300px" }}>
+      <div className="flex gap-3" style={{ minHeight: "380px" }}>
 
         {/* Large feature card — Ad Flow */}
         {(() => {
@@ -641,13 +645,17 @@ function StudioHome({
                 transition={{ duration: 0.3 }}
                 className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
               />
-              <div className="relative z-10 flex h-full flex-col justify-between p-5">
+              <div className="relative z-10 flex h-full flex-col justify-between p-6">
                 <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
                   {card.eyebrow}
                 </span>
                 <div>
                   <p className="text-base font-semibold tracking-tight text-white">{card.cta}</p>
                   <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">{card.sub}</p>
+                  <div className="mt-3 flex items-center gap-1">
+                    <span className="text-[10px] text-white/25">Open</span>
+                    <ChevronRight size={10} className="text-white/20" />
+                  </div>
                 </div>
               </div>
             </motion.button>
@@ -657,23 +665,32 @@ function StudioHome({
       </div>
 
       {/* ── 3. Workflow Strip ─────────────────────────────────────────────── */}
-      <DashboardCard variant="muted" className="px-5 py-3.5">
-        <div className="flex items-center">
+      {/* Premium stage indicator — thin lime accent line at top, first step highlighted */}
+      <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.01]">
+        {/* Lime top-accent hairline */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#b4ff00]/25 to-transparent" />
+        <div className="flex items-center px-6 py-4">
           {WORKFLOW_STEPS.map((step, i) => (
             <div key={step.label} className="flex flex-1 items-center">
-              <div className="flex items-center gap-2">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-white/[0.08] font-mono text-[8px] text-zinc-600">
+              <div className="flex items-center gap-2.5">
+                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[8px] transition-colors ${
+                  i === 0
+                    ? "border border-[#b4ff00]/30 bg-[#b4ff00]/10 text-[#b4ff00]"
+                    : "border border-white/[0.08] text-white/25"
+                }`}>
                   {step.num}
                 </span>
-                <span className="text-[11px] font-medium text-zinc-500">{step.label}</span>
+                <span className={`text-[11px] font-medium tracking-wide ${i === 0 ? "text-zinc-300" : "text-zinc-600"}`}>
+                  {step.label}
+                </span>
               </div>
               {i < WORKFLOW_STEPS.length - 1 && (
-                <div className="mx-3 h-px flex-1 bg-gradient-to-r from-white/[0.06] to-transparent" />
+                <div className="mx-4 h-px flex-1 bg-gradient-to-r from-white/[0.08] to-transparent" />
               )}
             </div>
           ))}
         </div>
-      </DashboardCard>
+      </div>
 
       {/* ── 4. Tool Categories ────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-8">
@@ -681,7 +698,7 @@ function StudioHome({
         {/* More ways to create */}
         <div>
           <div className="mb-4">
-            <DashboardSectionHeader title="More ways to create" />
+            <DashboardSectionHeader eyebrow="Studio" title="More ways to create" />
           </div>
           <div className="space-y-1.5">
             {SMALL_CARDS_CREATE.map((card) => (
@@ -689,22 +706,22 @@ function StudioHome({
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03]"
               >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-white/[0.02] text-zinc-500 transition-colors group-hover:text-zinc-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors group-hover:text-zinc-200">
                   {card.icon}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[10px] text-zinc-600 transition-colors group-hover:text-zinc-500">{card.desc}</p>
+                  <p className="mt-0.5 truncate text-[10px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
                 </div>
                 {card.badge && (
                   <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
                     {BADGE_LABEL[card.badge]}
                   </span>
                 )}
-                <span className="shrink-0 font-mono text-[10px] text-zinc-700">~{card.credits}cr</span>
-                <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
+                <span className="shrink-0 font-mono text-[10px] text-zinc-600">~{card.credits}cr</span>
+                <ChevronRight size={11} className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400" />
               </button>
             ))}
           </div>
@@ -713,7 +730,7 @@ function StudioHome({
         {/* Analyze & launch */}
         <div>
           <div className="mb-4">
-            <DashboardSectionHeader title="Analyze &amp; launch" />
+            <DashboardSectionHeader eyebrow="Analytics" title="Analyze &amp; launch" />
           </div>
           <div className="space-y-1.5">
             {SMALL_CARDS_ANALYZE.map((card) => (
@@ -721,17 +738,17 @@ function StudioHome({
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03]"
               >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-white/[0.02] text-zinc-500 transition-colors group-hover:text-zinc-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors group-hover:text-zinc-200">
                   {card.icon}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[10px] text-zinc-600 transition-colors group-hover:text-zinc-500">{card.desc}</p>
+                  <p className="mt-0.5 truncate text-[10px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
                 </div>
-                <span className="shrink-0 font-mono text-[10px] text-zinc-700">~{card.credits}cr</span>
-                <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
+                <span className="shrink-0 font-mono text-[10px] text-zinc-600">~{card.credits}cr</span>
+                <ChevronRight size={11} className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400" />
               </button>
             ))}
           </div>
