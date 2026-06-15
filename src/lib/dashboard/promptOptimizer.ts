@@ -595,13 +595,15 @@ const AKOOL_TOOLS = new Set<ToolId>([
   "ai-support-agent",
 ]);
 
-const TEXT_TOOLS = new Set<ToolId>(["viral-hook", "content-calendar", "trend-script"]);
+const TEXT_TOOLS = new Set<ToolId>(["viral-hook"]);
 
 export function calculateExactCredits(
   toolId: ToolId,
   settings?: Record<string, unknown> | null
 ): number {
   if (toolId === "gallery" || toolId === "settings") return 0;
+  if (toolId === "content-calendar") return 2; // CONTENT_KALENDER_TOOL_CREDIT_COST
+  if (toolId === "trend-script")     return 3; // TREND_SCRIPT_TOOL_CREDIT_COST
   if (TEXT_TOOLS.has(toolId)) return 1;
 
   if (toolId === "image-gen" || toolId === "img-to-img") {
