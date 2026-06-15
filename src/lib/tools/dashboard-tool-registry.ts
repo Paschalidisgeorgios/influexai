@@ -218,7 +218,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Duplikat von char-studio-video — beide rufen /api/akool/character-studio mit pollType='characterSwap' (/v4/characterSwap/create) auf, identische Backend-Logik (AKOOL_TOOL_CREDITS.characterStudio=25), nur UI-Label unterscheidet sich. Sidebar-Konsolidierung (zwei Einträge für eine Funktion) als UX-Thema für später vermerkt. WICHTIG: Registry korrekt, aber UI via AgentBox nutzt weiterhin Mock-Path — Aktivierung erfordert dediziertes Formular in AgentBox für image_url + video_url Eingaben (handleActionExecute kann ohne diese Inputs nicht auf /api/akool/character-studio routen). Dedizierte Seite /dashboard/character-studio ist der funktionierende Einstiegspunkt. [KORRIGIERT v5: unknown→active, credits 10→25, apiRoute ergänzt]",
+    sourceNotes: "Duplikat von char-studio-video — beide rufen /api/akool/character-studio auf, identische Backend-Logik (AKOOL_TOOL_CREDITS.characterStudio=25). [KORRIGIERT v5: unknown→active, credits 10→25, apiRoute ergänzt] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (CharacterStudioPage, vollständige Implementierung: Bild-Upload + Video-URL + Modus 'animate'/'replace', useAkoolJobPoll, echter /api/akool/character-studio-Call) statt AgentBox-Mock. SIDEBAR-DUPLIKAT: character-swap + char-studio-video sind beide sichtbare Sidebar-Einträge, beide leiten jetzt zu /dashboard/character-studio → identisches Ziel. UX-Konsolidierung (Entfernung eines der zwei Einträge) als separater Schritt geplant.",
   },
 
   "char-studio-video": {
@@ -230,7 +230,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: /api/akool/character-studio/route.ts, echter Akool-Call (/v4/characterSwap/create), generationType='akool-character-studio'. Geteilt mit char-studio-image. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10. [KORRIGIERT v2: credits 10→25]",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: /api/akool/character-studio/route.ts, echter Akool-Call (/v4/characterSwap/create). Geteilt mit char-studio-image. [KORRIGIERT v2: credits 10→25] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (identische Funktion wie character-swap). SIDEBAR-DUPLIKAT: char-studio-video + character-swap haben beide eigene Sidebar-Einträge, beide zeigen jetzt auf /dashboard/character-studio. UX-Konsolidierung (einen der Einträge entfernen) als separater Schritt geplant.",
   },
 
   "avatar-video": {

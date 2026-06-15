@@ -984,6 +984,14 @@ export function DashboardLayout() {
       router.push("/dashboard/lipsync-studio");
       return;
     }
+    // character-swap und char-studio-video sind Sidebar-Duplikate derselben Funktion
+    // (/dashboard/character-studio, /api/akool/character-studio) — beide Einträge
+    // leiten auf dieselbe Seite. Sidebar-Konsolidierung (Entfernung des Duplikats)
+    // ist ein separater UX-Schritt.
+    if (id === "character-swap" || id === "char-studio-video") {
+      router.push("/dashboard/character-studio");
+      return;
+    }
     setActiveTool(id);
   }, [router]);
 
