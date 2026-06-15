@@ -4,7 +4,7 @@ export const maxDuration = 300;
 import { fal } from "@fal-ai/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { chargeAvatarCredits } from "@/lib/avatar/credits";
+import { chargeAvatarCredits, refundCredits } from "@/lib/avatar/credits";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -65,6 +65,35 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Pre-Pay: Credits upfront abziehen, bevor der fal.ai-Render startet.
+  // estimated_credits stammt unverändert aus create-job (dort gesetzt, hier nur gelesen).
+  let creditCharged = false;
+  const charged = await chargeAvatarCredits(
+    supabase,
+    user.id,
+    job.estimated_credits,
+    jobId
+  );
+
+  if (charged === null) {
+    await supabase
+      .from("avatar_render_jobs")
+      .update({
+        status: "failed",
+        error: "Credit-Abzug fehlgeschlagen.",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", jobId);
+
+    return NextResponse.json(
+      { error: "Credit-Abzug fehlgeschlagen. Bitte erneut versuchen." },
+      { status: 402 }
+    );
+  }
+
+  // Credits erfolgreich abgezogen — ab hier Refund bei Fehler nötig.
+  creditCharged = true;
+
   await supabase
     .from("avatar_render_jobs")
     .update({
@@ -89,6 +118,12 @@ export async function POST(req: NextRequest) {
 
     const videoUrl = result?.data?.video?.url ?? result?.video?.url;
     if (!videoUrl) {
+      await refundCredits(
+        supabase,
+        user.id,
+        job.estimated_credits,
+        "Avatar Video — Refund"
+      );
       await supabase
         .from("avatar_render_jobs")
         .update({
@@ -101,29 +136,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Render fehlgeschlagen." },
         { status: 500 }
-      );
-    }
-
-    const charged = await chargeAvatarCredits(
-      supabase,
-      user.id,
-      job.estimated_credits,
-      jobId
-    );
-
-    if (charged === null) {
-      await supabase
-        .from("avatar_render_jobs")
-        .update({
-          status: "failed",
-          error: "Credit-Abzug fehlgeschlagen.",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", jobId);
-
-      return NextResponse.json(
-        { error: "Credit-Abzug fehlgeschlagen. Bitte erneut versuchen." },
-        { status: 402 }
       );
     }
 
@@ -144,9 +156,19 @@ export async function POST(req: NextRequest) {
       jobId,
       status: "completed",
       videoUrl,
+      creditsLeft: charged,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Render fehlgeschlagen.";
+
+    if (creditCharged) {
+      await refundCredits(
+        supabase,
+        user.id,
+        job.estimated_credits,
+        "Avatar Video — Refund"
+      );
+    }
 
     await supabase
       .from("avatar_render_jobs")
