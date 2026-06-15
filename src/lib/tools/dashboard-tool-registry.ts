@@ -364,7 +364,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für Content-Moderation in src/lib/akool*.ts oder src/app/api/akool/* referenziert. Akool bietet keine moderierte Content-Moderation-API im SDK. Würde neuen Provider (z.B. AWS Rekognition, Google Vision SafeSearch) oder eigenständigen Akool-Moderations-Endpoint erfordern — nicht im aktuellen Code vorhanden. Status bleibt 'coming-soon'. [Diagnose v4]",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für Content-Moderation referenziert. Würde neuen Provider erfordern. [Diagnose v4] [ENTFERNT v7] Sidebar-Eintrag entfernt — aktiver Button ohne Funktion und ohne Coming-Soon-Hinweis war irreführend. Kein Akool-Endpoint vorhanden. Kann bei zukünftiger echter Implementierung neu hinzugefügt werden.",
   },
 
   // ── Audio Tools ───────────────────────────────────────────────────────────
@@ -452,7 +452,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für AI-Support/Chat-Agent in src/lib/akool*.ts oder src/app/api/akool/* referenziert. Konzept eines autonomen Support-Agenten erfordert eigene Backend-Logik (z.B. RAG-Pipeline, Ticketing-Integration, Websocket-Chat) — weit über Akool-Wrapper hinaus. Würde komplett neue Architektur erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für AI-Support/Chat-Agent referenziert. Würde komplett neue Architektur erfordern. [Diagnose v4] [ENTFERNT v7] Sidebar-Eintrag entfernt — aktiver Button ohne Funktion und ohne Coming-Soon-Hinweis war irreführend. Kein Akool-Endpoint vorhanden. Kann bei zukünftiger echter Implementierung neu hinzugefügt werden.",
   },
 
   "akool-production": {
@@ -464,7 +464,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Production'-Feature in src/lib/akool*.ts oder AkoolJobPollType referenziert. 'Production' könnte Akools Enterprise-Rendering-Pipeline bezeichnen — kein öffentlicher v4-Endpoint dafür im Codebase bekannt. Würde Akool-API-Dokumentationsrecherche und neuen Wrapper erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Production'-Feature referenziert. Würde API-Recherche und neuen Wrapper erfordern. [Diagnose v4] [ENTFERNT v7] Sidebar-Eintrag entfernt — aktiver Button ohne Funktion und ohne Coming-Soon-Hinweis war irreführend. Kein Akool-Endpoint vorhanden. Kann bei zukünftiger echter Implementierung neu hinzugefügt werden.",
   },
 
   "holographic-avatar": {
@@ -476,7 +476,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für holografische/3D-Avatar-Darstellung in src/lib/akool*.ts oder AkoolJobPollType referenziert. Holografische Displays erfordern Hardware-Integration (Looking Glass, HoloLens etc.) oder spezialisierte 3D-Rendering-Pipeline — weit außerhalb der aktuellen Akool-API-Abdeckung. Status bleibt 'coming-soon'. [Diagnose v4]",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für holografische/3D-Avatar-Darstellung referenziert. Erfordert Hardware-Integration oder spezialisierte 3D-Pipeline. [Diagnose v4] [ENTFERNT v7] Sidebar-Eintrag entfernt — aktiver Button ohne Funktion und ohne Coming-Soon-Hinweis war irreführend. Kein Akool-Endpoint vorhanden. Kann bei zukünftiger echter Implementierung neu hinzugefügt werden.",
   },
 
   "akool-edge": {
@@ -488,7 +488,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Edge'-Feature in src/lib/akool*.ts oder AkoolJobPollType referenziert. 'Akool Edge' könnte Edge-Deployment/CDN-Beschleunigung oder Real-Time-Inference bezeichnen — kein Wrapper/Typ/Konstante im Codebase vorhanden. Würde Akool Enterprise-API-Recherche und komplett neuen Wrapper erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Edge'-Feature referenziert. Würde Enterprise-API-Recherche und neuen Wrapper erfordern. [Diagnose v4] [ENTFERNT v7] Sidebar-Eintrag entfernt — aktiver Button ohne Funktion und ohne Coming-Soon-Hinweis war irreführend. Kein Akool-Endpoint vorhanden. Kann bei zukünftiger echter Implementierung neu hinzugefügt werden.",
   },
 } satisfies Record<string, ToolDefinition>;
 

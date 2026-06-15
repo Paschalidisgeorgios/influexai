@@ -40,8 +40,6 @@ import {
   Volume2,
   Camera,
   Bot,
-  Cpu,
-  Glasses,
   MessageCircle,
   Shuffle,
 } from "lucide-react";
@@ -138,7 +136,6 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { id: "image-gen",         label: "Bildgenerator",        icon: <Image size={14} />,         accent: "#8B5DFF"              },
       { id: "img-to-img",        label: "Bild zu Bild",         icon: <Repeat2 size={14} />,       accent: "#8B5DFF"              },
       { id: "char-studio-image", label: "Character Studio Bild",icon: <UserRound size={14} />,     accent: "#FF6B6B", badge: "new" },
-      { id: "jarvis-moderator",  label: "Jarvis Moderator",     icon: <Bot size={14} />,           accent: "#FFD84D"              },
     ],
   },
   {
@@ -155,10 +152,6 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { id: "live-camera",        label: "Live-Kamera",              icon: <Camera size={14} />,        accent: "#FF6B6B" },
       { id: "streaming-avatar",   label: "Streaming-Avatar",         icon: <Radio size={14} />,         accent: "#FF6B6B" },
       { id: "live-face-swap",     label: "Live-Gesichtstausch",      icon: <Monitor size={14} />,       accent: "#FF6B6B" },
-      { id: "ai-support-agent",   label: "KI-Support-Mitarbeiter",   icon: <MessageCircle size={14} />, accent: "#00D5FF" },
-      { id: "akool-production",   label: "Akool Production",         icon: <Cpu size={14} />,           accent: "#FFD84D" },
-      { id: "holographic-avatar", label: "Holografische Avatar-Anz.",icon: <Glasses size={14} />,       accent: "#FFD84D" },
-      { id: "akool-edge",         label: "Akool Edge",               icon: <Sparkles size={14} />,      accent: "#FFD84D" },
     ],
   },
 ];
