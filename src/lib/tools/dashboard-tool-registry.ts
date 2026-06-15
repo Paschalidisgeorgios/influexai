@@ -156,7 +156,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: true,
     isMediaTool: true,
     status: "active",
-    sourceNotes: "Credits: calculateAkoolModelCredits(model, resolution, duration) = unit_credit × duration — vollständig modell- und auflösungsabhängig, kein generelles 15–30-Fenster. TOOLS_WITH_RIGHT_PANEL (DashboardLayout Z.172). MEDIA_TOOLS (AgentBox Z.109). API: /api/akool/image-to-video/route.ts existiert, echter Akool-Call (/v4/image2video/create). AgentBox hat ImgToVideoValues-Form mit Start/End-Frame + MotionPrompt. [KORRIGIERT v2: sourceNotes präzisiert]",
+    sourceNotes: "UI-Redirect: Sidebar + Hero-Card navigieren zu /dashboard/szenen-generator (SzenenGeneratorStudio) statt AgentBox-Formular zu öffnen. Identische API-Route /api/akool/image-to-video, aber vollständige Modell-/Resolution-/Duration-Auswahl + Polling dort bereits implementiert. AgentBox-Mock-Pfad für img-to-video ist seit diesem Fix unreachable. Credits weiterhin null (modell-/dauerabhängig, korrekt in SzenenGeneratorStudio dargestellt). [REDIRECT v5]",
   },
 
   "text-to-video": {

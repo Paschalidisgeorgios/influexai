@@ -108,6 +108,7 @@ const DEFAULTS: Record<string, FormValues> = {
   "img-to-video":     { startFrameUrl: "", endFrameUrl: "", motionPrompt: "" } satisfies ImgToVideoValues,
 };
 
+// img-to-video: AgentBox-Pfad unreachable seit Umleitung zu /dashboard/szenen-generator, siehe dashboard-tool-registry.ts
 const MEDIA_TOOLS = new Set<ToolId>(["image-gen", "ecommerce-ads", "img-to-video", "text-to-video", "video-to-video", "ai-video-editor"]);
 
 // ---------------------------------------------------------------------------
@@ -1474,7 +1475,7 @@ export const AgentBox = memo(function AgentBox({
             )}
           </>
         ) : activeTool === "img-to-video" ? (
-          /* Kling Keyframe-Tool — eigenes Formular */
+          /* img-to-video: unreachable — Sidebar + Hero-Card leiten zu /dashboard/szenen-generator weiter (SzenenGeneratorStudio). Siehe dashboard-tool-registry.ts. */
           <>
             <ImgToVideoForm
               values={formValues as ImgToVideoValues}

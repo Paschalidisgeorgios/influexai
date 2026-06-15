@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
@@ -884,6 +885,7 @@ async function deleteAsset(id: string): Promise<void> {
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
 export function DashboardLayout() {
+  const router = useRouter();
   const [activeTool, setActiveTool]         = useState<ToolId>("studio");
   const [isRightPanelOpen, setIsRightPanel] = useState(false);
 
@@ -960,6 +962,17 @@ export function DashboardLayout() {
     toolSettingsRef.current = settings;
     setToolSettings(settings);
   }, []);
+
+  // Tool-Auswahl — img-to-video leitet zu /dashboard/szenen-generator weiter
+  // (vollständige SzenenGeneratorStudio-Implementierung mit Modell-Auswahl,
+  //  Polling und dynamischen Credits statt AgentBox-Mock)
+  const handleToolSelect = useCallback((id: ToolId) => {
+    if (id === "img-to-video") {
+      router.push("/dashboard/szenen-generator");
+      return;
+    }
+    setActiveTool(id);
+  }, [router]);
 
   // ── AgentBox Callback ─────────────────────────────────────────────────────
   //
@@ -1124,7 +1137,7 @@ export function DashboardLayout() {
         credits={credits}
         creditsLoaded={creditsLoaded}
         toolsGenerating={toolsGenerating}
-        onSelect={setActiveTool}
+        onSelect={handleToolSelect}
       />
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
@@ -1140,7 +1153,7 @@ export function DashboardLayout() {
         {/* Studio Home hat eigenes breiteres Layout */}
         {activeTool === "studio" ? (
           <div className="mx-auto w-full max-w-4xl px-10 pb-12 pt-14">
-            <StudioHome onSelect={setActiveTool} />
+            <StudioHome onSelect={handleToolSelect} />
           </div>
         ) : (
         <div className="mx-auto flex w-full max-w-xl flex-col pt-8 pb-12">
