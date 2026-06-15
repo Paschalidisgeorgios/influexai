@@ -28,15 +28,11 @@ import {
   Film,
   Repeat2,
   UserRound,
-  UserCheck,
   Languages,
   Radio,
   Clapperboard,
-  Monitor,
   ShoppingBag,
   Layers,
-  Mic2,
-  Mic,
   Volume2,
   Camera,
   Bot,
@@ -118,8 +114,7 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { id: "text-to-video",     label: "Text zu Video",        icon: <Video size={14} />,         accent: "#8B5DFF"                      },
       { id: "video-to-video",    label: "Video to Video",       icon: <Repeat2 size={14} />,       accent: "#8B5DFF"                      },
       { id: "ref-to-video",      label: "Reference to Video",   icon: <Layers size={14} />,        accent: "#8B5DFF"                      },
-      { id: "face-swap-video",   label: "Gesichtstausch Video", icon: <Shuffle size={14} />,       accent: "#FF6B6B", badge: "new"       },
-      { id: "character-swap",    label: "Character Swap",       icon: <UserCheck size={14} />,     accent: "#FF6B6B"                      },
+      { id: "face-swap-video",   label: "Gesichtstausch",       icon: <Shuffle size={14} />,       accent: "#FF6B6B", badge: "new"       },
       { id: "char-studio-video", label: "Character Studio",     icon: <UserRound size={14} />,     accent: "#FF6B6B", badge: "new"       },
       { id: "avatar-video",      label: "Avatar Video",         icon: <UserRound size={14} />,     accent: "#00D5FF", badge: "unlimited" },
       { id: "video-translation", label: "Videoübersetzung",     icon: <Languages size={14} />,     accent: "#00D5FF"                      },
@@ -132,18 +127,14 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   {
     title: "Image Tools",
     items: [
-      { id: "face-swap-image",   label: "Gesichtstausch Bild",  icon: <Shuffle size={14} />,       accent: "#FF6B6B", badge: "new" },
-      { id: "image-gen",         label: "Bildgenerator",        icon: <Image size={14} />,         accent: "#8B5DFF"              },
-      { id: "img-to-img",        label: "Bild zu Bild",         icon: <Repeat2 size={14} />,       accent: "#8B5DFF"              },
-      { id: "char-studio-image", label: "Character Studio Bild",icon: <UserRound size={14} />,     accent: "#FF6B6B", badge: "new" },
+      { id: "image-gen",         label: "Bildgenerator",        icon: <Image size={14} />,         accent: "#8B5DFF" },
+      { id: "img-to-img",        label: "Bild zu Bild",         icon: <Repeat2 size={14} />,       accent: "#8B5DFF" },
     ],
   },
   {
     title: "Audio Tools",
     items: [
-      { id: "tts",           label: "Text-zu-Sprache",    icon: <Volume2 size={14} />, accent: "#00D5FF" },
-      { id: "voice-clone",   label: "Stimmenklon",        icon: <Mic2 size={14} />,   accent: "#00D5FF" },
-      { id: "voice-changer", label: "Stimmverzerrer",     icon: <Mic size={14} />,    accent: "#00D5FF" },
+      { id: "tts",           label: "Melodia Studio",     icon: <Volume2 size={14} />, accent: "#00D5FF" },
     ],
   },
   {
@@ -151,7 +142,6 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
     items: [
       { id: "live-camera",        label: "Live-Kamera",              icon: <Camera size={14} />,        accent: "#FF6B6B" },
       { id: "streaming-avatar",   label: "Streaming-Avatar",         icon: <Radio size={14} />,         accent: "#FF6B6B" },
-      { id: "live-face-swap",     label: "Live-Gesichtstausch",      icon: <Monitor size={14} />,       accent: "#FF6B6B" },
     ],
   },
 ];

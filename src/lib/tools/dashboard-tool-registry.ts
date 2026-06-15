@@ -206,7 +206,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-image (unterscheidet nach Eingabe-Typ: Video→10 Credits, Bild→5 Credits). [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (Tab 'Face Swap Video', vollständige Implementierung mit FaceSwapPanel + echtem API-Call + Polling) statt AgentBox-Mock zu öffnen. face-studio/page.tsx nutzt nur lokalen Tab-State (kein useSearchParams) → kein URL-Tab-Parameter möglich.",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, echter Akool-Call. [KORRIGIERT v3] [REDIRECT v6] [SIDEBAR-KONSOLIDIERUNG v9] Einziger verbleibender Sidebar-Eintrag für face-studio-Gruppe — Label umbenannt von 'Gesichtstausch Video' zu 'Gesichtstausch'. face-swap-image + live-face-swap entfernt — /dashboard/face-studio deckt beide Varianten via Tabs (Video/Foto).",
   },
 
   "character-swap": {
@@ -218,7 +218,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Duplikat von char-studio-video — beide rufen /api/akool/character-studio auf, identische Backend-Logik (AKOOL_TOOL_CREDITS.characterStudio=25). [KORRIGIERT v5: unknown→active, credits 10→25, apiRoute ergänzt] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (CharacterStudioPage, vollständige Implementierung: Bild-Upload + Video-URL + Modus 'animate'/'replace', useAkoolJobPoll, echter /api/akool/character-studio-Call) statt AgentBox-Mock. SIDEBAR-DUPLIKAT: character-swap + char-studio-video sind beide sichtbare Sidebar-Einträge, beide leiten jetzt zu /dashboard/character-studio → identisches Ziel. UX-Konsolidierung (Entfernung eines der zwei Einträge) als separater Schritt geplant.",
+    sourceNotes: "Duplikat von char-studio-video. [KORRIGIERT v5] [REDIRECT v6] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über char-studio-video-Eintrag → /dashboard/character-studio erreichbar (Seite bietet Mode-Toggle animate/replace).",
   },
 
   "char-studio-video": {
@@ -230,7 +230,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25 (akool-credits.ts). Route: /api/akool/character-studio/route.ts, echter Akool-Call (/v4/characterSwap/create). Geteilt mit char-studio-image. [KORRIGIERT v2: credits 10→25] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (identische Funktion wie character-swap). SIDEBAR-DUPLIKAT: char-studio-video + character-swap haben beide eigene Sidebar-Einträge, beide zeigen jetzt auf /dashboard/character-studio. UX-Konsolidierung (einen der Einträge entfernen) als separater Schritt geplant.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25. Route: /api/akool/character-studio. [KORRIGIERT v2] [REDIRECT v6] [SIDEBAR-KONSOLIDIERUNG v9] Einziger verbleibender Sidebar-Eintrag für character-studio-Gruppe (Label 'Character Studio', Badge 'New'). character-swap + char-studio-image entfernt — alle drei zeigten auf dieselbe /dashboard/character-studio-Seite.",
   },
 
   "avatar-video": {
@@ -316,7 +316,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_IMAGE=5 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video (CREDIT_VIDEO=10 für Video-Input, CREDIT_IMAGE=5 für Bild-Input). promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/faceswap] [REDIRECT v6] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (Tab 'Face Swap Foto', vollständige Implementierung) statt AgentBox-Mock. Kein URL-Tab-Parameter möglich (face-studio nutzt nur lokalen State) — Nutzer landet auf face-studio, Default-Tab ist 'Video', muss manuell zu 'Foto' wechseln.",
+    sourceNotes: "CREDIT_IMAGE=5 in /api/faceswap/route.ts. [KORRIGIERT v3] [REDIRECT v6] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über face-swap-video-Eintrag ('Gesichtstausch') → /dashboard/face-studio erreichbar (Tab 'Face Swap Foto' auf der Seite verfügbar).",
   },
 
   "image-gen": {
@@ -352,7 +352,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25. Route: /api/akool/character-studio (geteilt mit char-studio-video/character-swap). ACHTUNG: Video-Output trotz 'image'-Kategorie. [KORRIGIERT v2] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/character-studio (selbe Seite wie char-studio-video/character-swap) — 3. Sidebar-Eintrag für dieselbe Funktion, Konsolidierung als separater UX-Schritt.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.characterStudio = 25. Route: /api/akool/character-studio. Video-Output trotz 'image'-Kategorie. [KORRIGIERT v2] [REDIRECT v8] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über char-studio-video-Eintrag → /dashboard/character-studio erreichbar (Seite bietet Mode-Toggle animate/replace).",
   },
 
   "jarvis-moderator": {
@@ -378,7 +378,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.tts = 3. Route: /api/akool/tts. [KORRIGIERT v2: credits 2→3] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia (Tab 'tts', Default-Tab). melodia nutzt nur lokalen State (kein useSearchParams) — alle drei Audio-Tools (tts/voice-clone/voice-changer) landen auf Default-Tab 'tts'.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.tts = 3. Route: /api/akool/tts. [KORRIGIERT v2: credits 2→3] [REDIRECT v8] [SIDEBAR-KONSOLIDIERUNG v9] Einziger verbleibender Sidebar-Eintrag für melodia-Gruppe — Label umbenannt von 'Text-zu-Sprache' zu 'Melodia Studio'. voice-clone + voice-changer entfernt — /dashboard/melodia deckt alle drei via Tabs (Text zu Sprache / Stimme klonen / Stimme ändern).",
   },
 
   "voice-clone": {
@@ -390,7 +390,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.voiceClone = 5. Route: /api/akool/voice-clone. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia — kein Tab-Parameter möglich, Nutzer landet auf Default-Tab 'tts', muss manuell zu 'Stimme klonen' wechseln.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceClone = 5. Route: /api/akool/voice-clone. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über tts-Eintrag ('Melodia Studio') → /dashboard/melodia erreichbar (Tab 'Stimme klonen' auf der Seite verfügbar).",
   },
 
   "voice-changer": {
@@ -402,7 +402,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "AKOOL_TOOL_CREDITS.voiceChanger = 5. Route: /api/akool/voice-changer. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/melodia — kein Tab-Parameter möglich, Nutzer landet auf Default-Tab 'tts', muss manuell zu 'Stimmverzerrer' wechseln.",
+    sourceNotes: "AKOOL_TOOL_CREDITS.voiceChanger = 5. Route: /api/akool/voice-changer. [KORRIGIERT v2: credits 2→5] [REDIRECT v8] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über tts-Eintrag ('Melodia Studio') → /dashboard/melodia erreichbar (Tab 'Stimme ändern' auf der Seite verfügbar).",
   },
 
   // ── Live & Akool Tools ────────────────────────────────────────────────────
@@ -440,7 +440,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-video/-image. [KORRIGIERT v3] [REDIRECT v8] UI-Redirect: Sidebar navigiert zu /dashboard/face-studio (gleiche /api/faceswap-Route, vollständige FaceSwapPanel-Implementierung). Hinweis: 'live-face-swap' hatte ursprünglich Live-Kontext-Bedeutung (generationType), face-studio ist Batch — kein echter Unterschied in der API-Implementierung.",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, generationType='live-creator-faceswap'. [KORRIGIERT v3] [REDIRECT v8] [SIDEBAR-KONSOLIDIERUNG v9] Sidebar-Eintrag entfernt — Funktion über face-swap-video-Eintrag ('Gesichtstausch') → /dashboard/face-studio erreichbar (kein eigener 'Live'-Tab, API-Implementierung identisch mit Batch-Swap).",
   },
 
   "ai-support-agent": {
