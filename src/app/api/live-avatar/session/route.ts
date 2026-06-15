@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { hasEnoughCredits } from "@/lib/credits";
+import { hasEnoughCredits, deductCredits, addCredits } from "@/lib/credits";
 import {
   closeLiveAvatarSession,
   createLiveAvatarSession,
@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "avatarId required" }, { status: 400 });
   }
 
+  // Pre-check: verify balance before attempting deduction
   const creditCheck = await hasEnoughCredits(
     supabase,
     user.id,
@@ -120,6 +121,29 @@ export async function POST(request: NextRequest) {
       {
         error: `Nicht genug Credits (${LIVE_AVATAR_CREDITS_PER_MINUTE} pro Minute)`,
         credits: creditCheck.credits,
+      },
+      { status: 402 }
+    );
+  }
+
+  // Pre-pay: deduct 1 credit for the first minute BEFORE starting the provider session.
+  // This prevents Akool/Agora costs without any credit deduction (billing gap fix).
+  //
+  // IMPORTANT for future UI: heartbeat must start its interval AFTER 60 seconds
+  // (not immediately at session start) to avoid double-billing minute 1.
+  // The session response includes `firstMinutePrepaid: true` as a signal to the UI.
+  const deduction = await deductCredits(
+    supabase,
+    user.id,
+    LIVE_AVATAR_CREDITS_PER_MINUTE,
+    "Live Avatar — Session Start (Minute 1)",
+    { generationType: "live-avatar-session-start", prompt: "live-avatar-minute-1" }
+  );
+  if (!deduction.success) {
+    return NextResponse.json(
+      {
+        error: deduction.error ?? `Nicht genug Credits (${LIVE_AVATAR_CREDITS_PER_MINUTE} pro Minute)`,
+        credits: deduction.remainingCredits,
       },
       { status: 402 }
     );
@@ -138,12 +162,22 @@ export async function POST(request: NextRequest) {
       agora_token,
       agora_uid,
       credentials: session.credentials,
-      credits: creditCheck.credits,
+      credits: deduction.remainingCredits,
       creditsPerMinute: LIVE_AVATAR_CREDITS_PER_MINUTE,
       lowCreditsWarning: LIVE_AVATAR_LOW_CREDITS_WARNING,
+      // Signal to the UI: minute 1 is already paid — start heartbeat interval
+      // only after 60 seconds to avoid double-billing the first minute.
+      firstMinutePrepaid: true,
     });
   } catch (err: unknown) {
     console.error("[live-avatar POST]", err);
+    // Provider failed after successful deduction — refund the pre-paid credit.
+    await addCredits(
+      supabase,
+      user.id,
+      LIVE_AVATAR_CREDITS_PER_MINUTE,
+      "Live Avatar — Refund (Session Start fehlgeschlagen)"
+    );
     return NextResponse.json(
       {
         error: sanitizeUserMessage(

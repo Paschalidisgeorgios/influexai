@@ -22,6 +22,10 @@ export async function POST() {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
+  // Billing contract: minute 1 is pre-paid at session start (session/route.ts).
+  // The UI MUST NOT call this heartbeat until 60 seconds after session start.
+  // Calling it immediately at session start would double-bill the first minute.
+  // The session response includes `firstMinutePrepaid: true` as a hint to the UI.
   const deduction = await deductCredits(
     supabase,
     user.id,
