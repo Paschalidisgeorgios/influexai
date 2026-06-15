@@ -48,6 +48,7 @@ import {
   formatCreditCost,
   type OptimizedPromptResult,
 } from "@/lib/dashboard/promptOptimizer";
+import { getToolDefinition } from "@/lib/tools/dashboard-tool-registry";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -1261,6 +1262,22 @@ export const AgentBox = memo(function AgentBox({
   // Credit calculation — live based on tool + settings
   const creditCost = calculateExactCredits(activeTool, toolSettings);
   const canAfford  = currentCredits >= creditCost;
+
+  // ── Dev-only: TOOL_REGISTRY consistency check ─────────────────────────────
+  // Vergleicht calculateExactCredits() mit dem validierten Wert in
+  // dashboard-tool-registry.ts. Nur im Development-Build aktiv, kein
+  // Production-Impact (tree-shaken by bundler).
+  if (process.env.NODE_ENV === "development") {
+    const _reg = getToolDefinition(activeTool);
+    if (_reg?.credits !== null && _reg?.credits !== undefined && _reg.credits !== creditCost) {
+      console.warn(
+        `[ToolRegistry] Credit-Diskrepanz für "${activeTool}": ` +
+        `calculateExactCredits=${creditCost}, registry=${_reg.credits}. ` +
+        `→ promptOptimizer.ts oder dashboard-tool-registry.ts anpassen.`
+      );
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Form State
   const [formValues, setFormValues] = useState<FormValues>(
