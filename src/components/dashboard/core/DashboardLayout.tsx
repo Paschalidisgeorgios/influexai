@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
+import { DashboardSectionHeader } from "@/components/dashboard/ui/DashboardSectionHeader";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -486,12 +487,16 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
     <div className="w-full">
 
       {/* ── Hero heading ──────────────────────────────────────────────────── */}
-      <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.25em] text-neutral-500">
-        What are you making today?
-      </p>
+      <div className="mb-8">
+        <DashboardSectionHeader
+          eyebrow="Creator Studio"
+          title="What are you making today?"
+          description="Start with an image, video, avatar or campaign workflow."
+        />
+      </div>
 
       {/* ── Hero Grid ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-3">
         {HERO_CARDS.map((card) => (
           <motion.button
             key={card.id}
@@ -500,31 +505,31 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
             whileHover="hover"
             whileTap={{ scale: 0.985 }}
             transition={{ duration: 0.22 }}
-            className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/[0.03] text-left shadow-2xl transition-all duration-300 hover:border-white/[0.08]"
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
             style={{
               aspectRatio: "16/10",
               background:  "#0C0C0E",
             }}
           >
-            {/* Hintergrundbild */}
+            {/* Background image */}
             {card.imgUrl && (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={card.imgUrl}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
+                  className="absolute inset-0 h-full w-full object-cover opacity-35 transition-opacity duration-500 group-hover:opacity-50"
                 />
-                {/* Cinema-Gradient über dem Bild */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+                {/* Deeper cinematic gradient for better text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/[0.08]" />
               </>
             )}
 
-            {/* Vercel-Gitter für AI Media Buyer */}
+            {/* Grid pattern — AI Media Buyer card */}
             {card.grid && (
               <>
                 <div
-                  className="absolute inset-0 opacity-[0.035]"
+                  className="absolute inset-0 opacity-[0.04]"
                   style={{
                     backgroundImage:
                       "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px)," +
@@ -532,40 +537,41 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
                     backgroundSize: "28px 28px",
                   }}
                 />
-                {/* Subtiler radialer Glow-Mittelpunkt */}
                 <div
-                  className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 blur-3xl"
+                  className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.07] blur-3xl"
                   style={{ background: "white" }}
                 />
               </>
             )}
 
-            {/* Lime-Glow für Ad Flow */}
+            {/* Accent glow — Ad Flow card */}
             {card.accentGlow && (
               <div
-                className="absolute -bottom-6 -right-6 h-28 w-28 rounded-full opacity-[0.15] blur-2xl transition-opacity duration-500 group-hover:opacity-25"
+                className="absolute -bottom-8 -right-8 h-36 w-36 rounded-full opacity-[0.18] blur-2xl transition-opacity duration-500 group-hover:opacity-30"
                 style={{ background: card.accentGlow }}
               />
             )}
 
-            {/* Hover-Shine */}
+            {/* Hover surface sheen */}
             <motion.div
               variants={{ hover: { opacity: 1 } }}
               initial={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.025] to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
             />
 
-            {/* Content */}
+            {/* Card content */}
             <div className="relative z-10 flex h-full flex-col justify-between p-5">
-              <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/25">
+              {/* Category pill — top-left */}
+              <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
                 {card.eyebrow}
               </span>
+              {/* CTA + subtitle — bottom */}
               <div>
-                <p className="text-xl font-light tracking-wide text-white transition-colors group-hover:text-white/90">
+                <p className="text-[18px] font-semibold tracking-tight text-white">
                   {card.cta}
                 </p>
-                <p className="mt-1 text-[11px] text-neutral-400">{card.sub}</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-400">{card.sub}</p>
               </div>
             </div>
           </motion.button>
@@ -573,32 +579,33 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
       </div>
 
       {/* ── Lower Sections ────────────────────────────────────────────────── */}
-      <div className="mt-10 grid grid-cols-2 gap-8">
+      <div className="mt-12 grid grid-cols-2 gap-8">
 
         {/* More ways to create */}
         <div>
-          <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-neutral-600">
-            More ways to create
-          </p>
-          <div className="space-y-1">
+          <div className="mb-4">
+            <DashboardSectionHeader title="More ways to create" />
+          </div>
+          <div className="space-y-1.5">
             {SMALL_CARDS_CREATE.map((card) => (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-lg border border-white/[0.02] p-3.5 text-left text-xs text-neutral-300 transition-colors hover:border-white/[0.05] hover:bg-white/[0.015]"
-                style={{ background: "#080809" }}
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
               >
-                <span className="shrink-0 text-white/25 transition-colors group-hover:text-white/40">
+                <span className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400">
                   {card.icon}
                 </span>
-                <span className="flex-1 font-medium tracking-wide">{card.label}</span>
+                <span className="flex-1 text-xs font-medium text-zinc-300 transition-colors group-hover:text-white">
+                  {card.label}
+                </span>
                 {card.badge && (
-                  <span className={`rounded px-1.5 text-[9px] font-semibold leading-[1.7] ${BADGE_STYLE[card.badge]}`}>
+                  <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
                     {BADGE_LABEL[card.badge]}
                   </span>
                 )}
-                <ChevronRight size={11} className="text-white/10 transition-colors group-hover:text-white/25" />
+                <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
               </button>
             ))}
           </div>
@@ -606,23 +613,24 @@ function StudioHome({ onSelect }: { onSelect: (id: ToolId) => void }) {
 
         {/* Analyze & launch */}
         <div>
-          <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-neutral-600">
-            Analyze &amp; launch
-          </p>
-          <div className="space-y-1">
+          <div className="mb-4">
+            <DashboardSectionHeader title="Analyze &amp; launch" />
+          </div>
+          <div className="space-y-1.5">
             {SMALL_CARDS_ANALYZE.map((card) => (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-lg border border-white/[0.02] p-3.5 text-left text-xs text-neutral-300 transition-colors hover:border-white/[0.05] hover:bg-white/[0.015]"
-                style={{ background: "#080809" }}
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.025]"
               >
-                <span className="shrink-0 text-white/25 transition-colors group-hover:text-white/40">
+                <span className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400">
                   {card.icon}
                 </span>
-                <span className="flex-1 font-medium tracking-wide">{card.label}</span>
-                <ChevronRight size={11} className="text-white/10 transition-colors group-hover:text-white/25" />
+                <span className="flex-1 text-xs font-medium text-zinc-300 transition-colors group-hover:text-white">
+                  {card.label}
+                </span>
+                <ChevronRight size={11} className="shrink-0 text-zinc-700 transition-colors group-hover:text-zinc-500" />
               </button>
             ))}
           </div>
