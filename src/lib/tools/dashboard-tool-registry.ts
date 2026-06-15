@@ -416,7 +416,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: 1/Min via Heartbeat. /api/live-avatar/session: echter Akool/Agora-Call. Billing-Lücke dokumentiert. [KORRIGIERT v3] UI-Lücke (2026-06-15): /api/live-avatar/session existiert mit echter Akool/Agora-Integration, aber keine Dashboard-Seite ruft sie auf. Sidebar-Eintrag führt zu Mock (kein Credit-Abzug, kein Ergebnis). Unterschied zu den am 2026-06-15 entfernten Tools: hier existiert eine funktionierende API, nur die UI fehlt — Kandidat für zukünftigen Feature-Build (Live-Streaming-UI mit Agora-SDK), nicht für Entfernung.",
+    sourceNotes: "Credits: 1/Min via Heartbeat. /api/live-avatar/session: echter Akool/Agora-Call. Billing-Lücke dokumentiert. [KORRIGIERT v3] [SIDEBAR-ENTFERNT v10 — FEATURE-VORBEREITET] Sidebar-Eintrag entfernt, da keine UI existiert. UNTERSCHIED zu v7-Entfernungen: /api/live-avatar/session + /api/live-avatar/heartbeat sind vollständig implementiert (echte Akool/Agora-Integration, LIVE_AVATAR_CREDITS_PER_MINUTE=1). Für Reaktivierung: neue Dashboard-Seite mit Agora-SDK-Webcam-Integration + Session-Start/Heartbeat-Anbindung bauen, dann Sidebar-Eintrag + Redirect ergänzen (gleiches Muster wie v8-Redirects). Billing-Lücke bei Session-Start (dokumentiert in vorheriger Session) sollte beim Feature-Build mitbehandelt werden.",
   },
 
   "streaming-avatar": {
@@ -428,7 +428,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: 1/Min via Heartbeat. Teilt /api/live-avatar/session mit live-camera. Billing-Lücke dokumentiert. [KORRIGIERT v3] UI-Lücke (2026-06-15): /api/live-avatar/session existiert mit echter Akool/Agora-Integration, aber keine Dashboard-Seite ruft sie auf. Sidebar-Eintrag führt zu Mock (kein Credit-Abzug, kein Ergebnis). Unterschied zu den am 2026-06-15 entfernten Tools: hier existiert eine funktionierende API, nur die UI fehlt — Kandidat für zukünftigen Feature-Build (Live-Streaming-UI mit Agora-SDK), nicht für Entfernung.",
+    sourceNotes: "Credits: 1/Min via Heartbeat. Teilt /api/live-avatar/session mit live-camera. Billing-Lücke dokumentiert. [KORRIGIERT v3] [SIDEBAR-ENTFERNT v10 — FEATURE-VORBEREITET] Sidebar-Eintrag entfernt, da keine UI existiert. UNTERSCHIED zu v7-Entfernungen: /api/live-avatar/session + /api/live-avatar/heartbeat sind vollständig implementiert (echte Akool/Agora-Integration, LIVE_AVATAR_CREDITS_PER_MINUTE=1). Für Reaktivierung: neue Dashboard-Seite mit Agora-SDK-Webcam-Integration + Session-Start/Heartbeat-Anbindung bauen, dann Sidebar-Eintrag + Redirect ergänzen (gleiches Muster wie v8-Redirects). Billing-Lücke bei Session-Start (dokumentiert in vorheriger Session) sollte beim Feature-Build mitbehandelt werden.",
   },
 
   "live-face-swap": {

@@ -29,7 +29,7 @@ import {
   Repeat2,
   UserRound,
   Languages,
-  Radio,
+
   Clapperboard,
   ShoppingBag,
   Layers,
@@ -137,14 +137,9 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { id: "tts",           label: "Melodia Studio",     icon: <Volume2 size={14} />, accent: "#00D5FF" },
     ],
   },
-  {
-    title: "Live & Akool",
-    items: [
-      { id: "live-camera",        label: "Live-Kamera",              icon: <Camera size={14} />,        accent: "#FF6B6B" },
-      { id: "streaming-avatar",   label: "Streaming-Avatar",         icon: <Radio size={14} />,         accent: "#FF6B6B" },
-    ],
-  },
 ];
+// "Live & Akool" section removed [v10]: live-camera + streaming-avatar hidden pending
+// dedicated Agora-SDK UI. APIs remain fully functional (/api/live-avatar/session + heartbeat).
 
 const NAV_BOTTOM: NavItem[] = [
   { id: "gallery",  label: "Galerie",       icon: <Images size={14} />,   accent: "#ccff00" },
