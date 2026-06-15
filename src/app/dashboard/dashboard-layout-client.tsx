@@ -1,11 +1,11 @@
 "use client";
 
-import { CanvasShell } from "@/components/canvas/CanvasShell";
+import { DashboardShell } from "@/components/dashboard/core/DashboardShell";
 
 export function DashboardLayoutClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <CanvasShell>{children}</CanvasShell>;
+  return <DashboardShell>{children}</DashboardShell>;
 }

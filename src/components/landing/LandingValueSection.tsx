@@ -15,7 +15,7 @@ export function LandingValueSection() {
     >
       <SpringReveal>
         <div className="mx-auto max-w-[720px] rounded-2xl border border-white/[0.08] bg-white/[0.02] px-6 py-10 text-center md:px-12 md:py-14">
-          <h2 className="font-display text-[clamp(28px,6vw,3rem)] font-normal leading-[0.95] tracking-[0.02em] text-zinc-100">
+          <h2 className="font-bold text-[clamp(28px,6vw,3rem)] font-normal leading-[0.95] tracking-[0.02em] text-zinc-100">
             {t("headline")}
           </h2>
           <p className="mx-auto mt-5 max-w-[52ch] text-base leading-relaxed text-zinc-300 md:text-lg">

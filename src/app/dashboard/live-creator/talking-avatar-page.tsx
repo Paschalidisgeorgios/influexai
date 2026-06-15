@@ -372,10 +372,10 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
     <div className="max-w-xl mx-auto pb-16 px-1">
       {!embedded && (
         <header className="mb-6">
-          <p className="text-[#B4FF00] text-[0.7rem] font-bold uppercase tracking-[0.14em] mb-2">
+          <p className="text-[#B4FF00] text-sm font-semibold tracking-wide mb-2">
             Avatar Video
           </p>
-          <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
+          <h1 className="text-4xl text-[#F0EFE8] leading-tight mb-2">
             AVATAR VIDEO
           </h1>
           <p className="text-white/80 text-sm">
@@ -494,7 +494,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
           <div className="p-5 md:p-6 space-y-8">
             {/* STEP 1: Photo */}
             <section>
-              <h2 className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
+              <h2 className="text-white/80 text-xs tracking-wide mb-3 font-bold">
                 Schritt 1 · Foto
               </h2>
               <div
@@ -563,10 +563,10 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
             {/* STEP 2: Audio */}
             <section className="space-y-4">
-              <h2 className="text-white/80 text-xs uppercase tracking-wider font-bold">
+              <h2 className="text-white/80 text-xs tracking-wide font-bold">
                 Schritt 2 · Audio
               </h2>
-              <p className="text-white/80 text-sm uppercase tracking-wider">
+              <p className="text-white/80 text-sm tracking-wide">
                 Audio-Quelle wählen
               </p>
 
@@ -618,7 +618,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
               </div>
 
               <div>
-                <label className="text-white/80 text-xs uppercase tracking-wider mb-2 block font-bold">
+                <label className="text-white/80 text-xs tracking-wide mb-2 block font-bold">
                   Dein Script
                 </label>
                 <textarea
@@ -642,7 +642,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
               {audioSource === "own" && (
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
+                  <p className="text-white/80 text-xs tracking-wide mb-3 font-bold">
                     Stimme aufnehmen
                   </p>
                   {!recordedBlob ? (
@@ -703,7 +703,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
               {audioSource === "elevenlabs" && (
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/80 text-xs uppercase tracking-wider mb-3 font-bold">
+                  <p className="text-white/80 text-xs tracking-wide mb-3 font-bold">
                     Stimme wählen
                   </p>
                   <LiveCreatorVoicePicker
@@ -716,7 +716,7 @@ export default function TalkingAvatarPage({ embedded = false }: { embedded?: boo
 
             {/* STEP 3: Generate */}
             <section className="space-y-4 pt-2 border-t border-white/[0.06]">
-              <h2 className="text-white/80 text-xs uppercase tracking-wider font-bold">
+              <h2 className="text-white/80 text-xs tracking-wide font-bold">
                 Schritt 3 · Generieren
               </h2>
               <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 cursor-pointer">

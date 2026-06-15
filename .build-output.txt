@@ -1,0 +1,292 @@
+﻿
+> influexai@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.7 (Turbopack)
+- Environments: .env.production.local, .env.local
+- Experiments (use with caution):
+  ┬À clientTraceMetadata
+  ┬À optimizePackageImports
+
+node.exe : ÔÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+In C:\Program Files\nodejs\npm.ps1:29 Zeichen:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ÔÜá The "middle...leware-to-proxy:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 17.2s
+  Running next.config.js provided runAfterProductionCompile ...
+Ô£ô Completed runAfterProductionCompile in 10.5s
+  Running TypeScript ...
+  Finished TypeScript in 24.1s ...
+  Collecting page data using 15 workers ...
+ÔÜá Using edge runtime on a page currently disables static generation for that page
+  Generating static pages using 15 workers (0/633) ...
+  Generating static pages using 15 workers (158/633) 
+  Generating static pages using 15 workers (316/633) 
+  Generating static pages using 15 workers (474/633) 
+Ô£ô Generating static pages using 15 workers (633/633) in 2.2s
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî ãÆ /
+Ôö£ ãÆ /_not-found
+Ôö£ ãÆ /admin
+Ôö£ ãÆ /admin/blog
+Ôö£ ãÆ /agb
+Ôö£ ãÆ /agency
+Ôö£ ãÆ /api-docs
+Ôö£ ãÆ /api/ab-track
+Ôö£ ãÆ /api/account/delete
+Ôö£ ãÆ /api/admin/ab-reset
+Ôö£ ãÆ /api/admin/ab-stats
+Ôö£ ãÆ /api/admin/analytics/export
+Ôö£ ãÆ /api/admin/api-stats
+Ôö£ ãÆ /api/admin/churn/export
+Ôö£ ãÆ /api/admin/ph-promo
+Ôö£ ãÆ /api/admin/stats
+Ôö£ ãÆ /api/agency/checkout
+Ôö£ ãÆ /api/agent
+Ôö£ ãÆ /api/agent/campaign
+Ôö£ ãÆ /api/agent/execute
+Ôö£ ãÆ /api/agent/intent-route
+Ôö£ ãÆ /api/agent/job/[id]
+Ôö£ ãÆ /api/agent/plan-preview
+Ôö£ ãÆ /api/agent/publish
+Ôö£ ãÆ /api/akool
+Ôö£ ãÆ /api/akool/character-studio
+Ôö£ ãÆ /api/akool/ecommerce-ads
+Ôö£ ãÆ /api/akool/image-to-video
+Ôö£ ãÆ /api/akool/lipsync
+Ôö£ ãÆ /api/akool/status
+Ôö£ ãÆ /api/akool/text-to-video
+Ôö£ ãÆ /api/akool/tts
+Ôö£ ãÆ /api/akool/video-to-video
+Ôö£ ãÆ /api/akool/video-translation
+Ôö£ ãÆ /api/akool/voice-changer
+Ôö£ ãÆ /api/akool/voice-clone
+Ôö£ ãÆ /api/akool/voices
+Ôö£ ãÆ /api/auth/is-admin
+Ôö£ ãÆ /api/avatar/create-job
+Ôö£ ãÆ /api/avatar/job/[id]
+Ôö£ ãÆ /api/avatar/runpod-callback
+Ôö£ ãÆ /api/avatar/start-render
+Ôö£ ãÆ /api/beta/signup
+Ôö£ ãÆ /api/beta/stats
+Ôö£ ãÆ /api/canvas/analytics
+Ôö£ ãÆ /api/character-image
+Ôö£ ãÆ /api/checkout/status
+Ôö£ ãÆ /api/community/preview/[id]
+Ôö£ ãÆ /api/competitor
+Ôö£ ãÆ /api/competitor-analysis
+Ôö£ ãÆ /api/content-kalender
+Ôö£ ãÆ /api/credits/checkout
+Ôö£ ãÆ /api/credits/payment-intent
+Ôö£ ãÆ /api/credits/payment-status
+Ôö£ ãÆ /api/download/[generation_id]
+Ôö£ ãÆ /api/elevenlabs/voice-preview
+Ôö£ ãÆ /api/faceswap
+Ôö£ ãÆ /api/fal/realtime-token
+Ôö£ ãÆ /api/generate
+Ôö£ ãÆ /api/generate-image
+Ôö£ ãÆ /api/generate/concierge
+Ôö£ ãÆ /api/generate/demo
+Ôö£ ãÆ /api/generated-audio/[id]
+Ôö£ ãÆ /api/generated-image/[id]
+Ôö£ ãÆ /api/generated-video/[id]
+Ôö£ ãÆ /api/guides/[slug]/pdf
+Ôö£ ãÆ /api/ki-agent
+Ôö£ ãÆ /api/ki-agent/suggested-prompts
+Ôö£ ãÆ /api/ki-ich
+Ôö£ ãÆ /api/ki-influencer/casting
+Ôö£ ãÆ /api/ki-influencer/character/[id]
+Ôö£ ãÆ /api/ki-influencer/characters
+Ôö£ ãÆ /api/ki-influencer/create-from-upload
+Ôö£ ãÆ /api/ki-influencer/finalize-upload
+Ôö£ ãÆ /api/ki-influencer/generate
+Ôö£ ãÆ /api/ki-influencer/schema-status
+Ôö£ ãÆ /api/ki-influencer/status/[id]
+Ôö£ ãÆ /api/ki-influencer/train
+Ôö£ ãÆ /api/ki-influencer/training-set
+Ôö£ ãÆ /api/ki-influencer/upload-photo
+Ôö£ ãÆ /api/live-avatar/heartbeat
+Ôö£ ãÆ /api/live-avatar/session
+Ôö£ ãÆ /api/live-creator
+Ôö£ ãÆ /api/live-creator/portrait-frame
+Ôö£ ãÆ /api/live-creator/studio
+Ôö£ ãÆ /api/live-creator/studio/heartbeat
+Ôö£ ãÆ /api/live-portrait
+Ôö£ ãÆ /api/lora/delete
+Ôö£ ãÆ /api/lora/generate
+Ôö£ ãÆ /api/lora/status/[id]
+Ôö£ ãÆ /api/lora/train
+Ôö£ ãÆ /api/lora/upload
+Ôö£ ãÆ /api/lora/webhook
+Ôö£ ãÆ /api/melodia
+Ôö£ ãÆ /api/motion-transfer
+Ôö£ ãÆ /api/newsletter/confirm
+Ôö£ ãÆ /api/onboarding/copilot
+Ôö£ ãÆ /api/outlier-detector
+Ôö£ ãÆ /api/product-ad/generate
+Ôö£ ãÆ /api/product-ad/script
+Ôö£ ãÆ /api/produkt-werbung
+Ôö£ ãÆ /api/purchase-image-download
+Ôö£ ãÆ /api/push/send
+Ôö£ ãÆ /api/push/subscribe
+Ôö£ ãÆ /api/referral/track
+Ôö£ ãÆ /api/scrape-product
+Ôö£ ãÆ /api/seedance
+Ôö£ ãÆ /api/seedance/models
+Ôö£ ãÆ /api/seedance/status
+Ôö£ ãÆ /api/sentry-test
+Ôö£ ãÆ /api/share/instagram
+Ôö£ ãÆ /api/share/tiktok
+Ôö£ ãÆ /api/share/youtube
+Ôö£ ãÆ /api/stimme/clone
+Ôö£ ãÆ /api/stimme/speak
+Ôö£ ãÆ /api/stripe/agency-checkout
+Ôö£ ãÆ /api/stripe/agency-credits
+Ôö£ ãÆ /api/stripe/checkout
+Ôö£ ãÆ /api/stripe/credits-checkout
+Ôö£ ãÆ /api/stripe/session
+Ôö£ ãÆ /api/stripe/subscribe
+Ôö£ ãÆ /api/stripe/webhook
+Ôö£ ãÆ /api/test-elevenlabs
+Ôö£ ãÆ /api/track-activity
+Ôö£ ãÆ /api/trend-script
+Ôö£ ãÆ /api/trends/broll-match
+Ôö£ ãÆ /api/ugc-video
+Ôö£ ãÆ /api/ugc-video/avatars
+Ôö£ ãÆ /api/ugc-video/hooks
+Ôö£ ãÆ /api/ugc-video/voices
+Ôö£ ãÆ /api/unsubscribe
+Ôö£ ãÆ /api/unsubscribe-daily-suggestions
+Ôö£ ãÆ /api/upscale
+Ôö£ ãÆ /api/upscale-image
+Ôö£ ãÆ /api/v1/credits
+Ôö£ ãÆ /api/v1/generations
+Ôö£ ãÆ /api/v1/image
+Ôö£ ãÆ /api/v1/me
+Ôö£ ãÆ /api/v1/niche
+Ôö£ ãÆ /api/v1/outlier
+Ôö£ ãÆ /api/v1/script
+Ôö£ ãÆ /api/v1/thumbnail
+Ôö£ ãÆ /api/v1/viral-score
+Ôö£ ãÆ /api/video-remix
+Ôö£ ãÆ /api/viral-hook
+Ôö£ ãÆ /api/viral-score
+Ôö£ ãÆ /api/webhooks/stripe
+Ôö£ ãÆ /auth
+Ôö£ ãÆ /auth/callback
+Ôö£ ãÆ /auth/sign-in
+Ôö£ ãÆ /auth/sign-up
+Ôö£ ãÆ /beta
+Ôö£ ãÆ /beta/welcome
+Ôö£ ãÆ /blog
+Ôö£ ãÆ /blog/[slug]
+Ôö£ ãÆ /business
+Ôö£ ãÆ /checkout/success
+Ôö£ ãÆ /community
+Ôö£ ãÆ /cookies
+Ôö£ ãÆ /creator/[username]
+Ôö£ ãÆ /dashboard
+Ôö£ ãÆ /dashboard/ad-creator
+Ôö£ ãÆ /dashboard/admin/analytics
+Ôö£ ãÆ /dashboard/admin/app-store
+Ôö£ ãÆ /dashboard/admin/content
+Ôö£ ãÆ /dashboard/admin/producthunt
+Ôö£ ãÆ /dashboard/agency
+Ôö£ ãÆ /dashboard/agent
+Ôö£ ãÆ /dashboard/analytics
+Ôö£ ãÆ /dashboard/api
+Ôö£ ãÆ /dashboard/avatar
+Ôö£ ãÆ /dashboard/avatar-studio
+Ôö£ ãÆ /dashboard/campaign-autopilot
+Ôö£ ãÆ /dashboard/character-studio
+Ôö£ ãÆ /dashboard/competitor
+Ôö£ ãÆ /dashboard/content-kalender
+Ôö£ ãÆ /dashboard/credits
+Ôö£ ãÆ /dashboard/credits/success
+Ôö£ ãÆ /dashboard/ecommerce-ads
+Ôö£ ãÆ /dashboard/face-studio
+Ôö£ ãÆ /dashboard/gallery
+Ôö£ ãÆ /dashboard/image-generator
+Ôö£ ãÆ /dashboard/ki-agent
+Ôö£ ãÆ /dashboard/ki-agent/chat
+Ôö£ ãÆ /dashboard/ki-ich
+Ôö£ ãÆ /dashboard/ki-influencer
+Ôö£ ãÆ /dashboard/lipsync
+Ôö£ ãÆ /dashboard/lipsync-studio
+Ôö£ ãÆ /dashboard/live
+Ôö£ ãÆ /dashboard/live-creator
+Ôö£ ãÆ /dashboard/live-creator-new
+Ôö£ ãÆ /dashboard/live-portrait
+Ôö£ ãÆ /dashboard/lora-training
+Ôö£ ãÆ /dashboard/melodia
+Ôö£ ãÆ /dashboard/motion-transfer
+Ôö£ ãÆ /dashboard/niche-analyzer
+Ôö£ ãÆ /dashboard/outlier-detector
+Ôö£ ãÆ /dashboard/produkt
+Ôö£ ãÆ /dashboard/profile/public
+Ôö£ ãÆ /dashboard/referral
+Ôö£ ãÆ /dashboard/script-generator
+Ôö£ ãÆ /dashboard/script-generator/saved
+Ôö£ ãÆ /dashboard/seedance
+Ôö£ ãÆ /dashboard/settings
+Ôö£ ãÆ /dashboard/stimme
+Ôö£ ãÆ /dashboard/stimme-musik
+Ôö£ ãÆ /dashboard/story-creator
+Ôö£ ãÆ /dashboard/szenen-generator
+Ôö£ ãÆ /dashboard/text-to-video
+Ôö£ ãÆ /dashboard/thumbnail-concept
+Ôö£ ãÆ /dashboard/trend-to-script
+Ôö£ ãÆ /dashboard/ugc-video
+Ôö£ ãÆ /dashboard/upscaler
+Ôö£ ãÆ /dashboard/video-ad
+Ôö£ ãÆ /dashboard/video-editor
+Ôö£ ãÆ /dashboard/video-generator
+Ôö£ ãÆ /dashboard/video-remix
+Ôö£ ãÆ /dashboard/video-transformer
+Ôö£ ãÆ /dashboard/video-translation
+Ôö£ ãÆ /dashboard/video-uebersetzer
+Ôö£ ãÆ /dashboard/viral-hook
+Ôö£ ãÆ /dashboard/viral-score
+Ôö£ ãÆ /dashboard/voice
+Ôö£ ãÆ /dashboard/voice-agent
+Ôö£ ãÆ /dashboard/voice-studio
+Ôö£ ãÆ /dashboard/white-label
+Ôö£ ãÆ /datenschutz
+Ôö£ ãÆ /demo
+Ôö£ ãÆ /docs
+Ôö£ ãÆ /faq
+Ôö£ ãÆ /forgot-password
+Ôö£ ãÆ /guides
+Ôö£ ãÆ /guides/[slug]
+Ôö£ ãÆ /impressum
+Ôö£ ãÆ /join
+Ôö£ ãÆ /login
+Ôö£ ãÆ /onboarding
+Ôö£ ãÆ /opengraph-image
+Ôö£ ãÆ /pricing
+Ôö£ ãÆ /profile/[username]
+Ôö£ Ôùï /robots.txt
+Ôö£ ãÆ /sentry-example-page
+Ôö£ ãÆ /signup
+Ôö£ Ôùï /sitemap.xml
+Ôö£ ãÆ /tools
+Ôö£ ãÆ /tools/[feature]/[niche]
+Ôö£ ãÆ /tools/content-kalender
+Ôö£ ãÆ /tools/trend-script
+Ôö£ ãÆ /tools/viral-hook-extraktor
+Ôö£ ãÆ /white-label
+Ôöö ãÆ /widerruf
+
+
+ãÆ Proxy (Middleware)
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+

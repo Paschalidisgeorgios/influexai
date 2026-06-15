@@ -292,7 +292,7 @@ export function LandingNav({
             aria-modal="true"
           >
             <div className="flex items-center justify-between mb-6">
-              <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#F0EFE8]">
+              <span className="text-xl tracking-[0.04em] text-[#F0EFE8]">
                 {t("menu_title")}
               </span>
               <button

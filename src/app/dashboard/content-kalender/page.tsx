@@ -166,7 +166,7 @@ function ContentKalenderPageInner() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Calendar size={32} color="#B4FF00" strokeWidth={2} />
           <div>
-            <h1 className="font-display m-0 text-[clamp(2rem,4vw,3rem)] leading-none tracking-wide text-[#F0EFE8]">
+            <h1 className="m-0 font-bold text-[clamp(2rem,4vw,3rem)] leading-none tracking-wide text-[#F0EFE8]">
               CONTENT KALENDER KI
             </h1>
             <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", margin: "6px 0 0" }}>
@@ -245,7 +245,7 @@ function ContentKalenderPageInner() {
               border: "none",
               background: niche.trim() ? "#B4FF00" : "#2a2a2a",
               color: niche.trim() ? "#060608" : "rgba(255,255,255,0.5)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.3rem",
               cursor: niche.trim() ? "pointer" : "default",
             }}

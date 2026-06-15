@@ -44,7 +44,7 @@ function StudioToolCard({
         <div className="absolute inset-0 tool-card-overlay" aria-hidden />
         {disabled && (
           <span
-            className="absolute right-2 top-2 rounded-[6px] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+            className="absolute right-2 top-2 rounded-[6px] px-2 py-0.5 text-sm font-semibold tracking-wide"
             style={{
               background: "rgba(180,255,0,0.12)",
               border: "1px solid rgba(180,255,0,0.35)",
@@ -63,7 +63,7 @@ function StudioToolCard({
         </h4>
         <p className="tool-card-desc">{description}</p>
         <p
-          className="text-[0.72rem] leading-[1.5]"
+          className="text-sm leading-[1.5]"
           style={{ color: "rgba(180,255,0,0.55)" }}
         >
           {agentHint}

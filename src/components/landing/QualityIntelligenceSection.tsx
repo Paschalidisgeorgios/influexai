@@ -43,7 +43,7 @@ export function QualityIntelligenceSection() {
                   style={{ minHeight: 280 }}
                 >
                   <p
-                    className="mb-1 text-[0.66rem] font-bold uppercase tracking-[0.08em]"
+                    className="mb-1 text-sm font-semibold tracking-wide"
                     style={{ color: "rgba(255,255,255,0.42)" }}
                   >
                     {tl("exampleQualityCheck")}
@@ -61,7 +61,7 @@ export function QualityIntelligenceSection() {
                         className="flex items-start gap-2.5 text-[0.84rem] text-white/82"
                       >
                         <span
-                          className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[0.62rem]"
+                          className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-sm"
                           style={{
                             background: "rgba(180,255,0,0.12)",
                             border: "1px solid rgba(180,255,0,0.35)",

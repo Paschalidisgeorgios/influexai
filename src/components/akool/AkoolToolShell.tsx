@@ -31,7 +31,7 @@ export function AkoolToolShell({
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
           <Icon size={32} color="#B4FF00" strokeWidth={2.2} />
-          <h1 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+          <h1 className="text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
             {title}
           </h1>
         </div>
@@ -88,6 +88,6 @@ export const akoolInputClass =
 export const akoolLabelClass = "text-sm font-semibold text-[#F0EFE8]";
 
 export const akoolButtonClass =
-  "min-h-[48px] w-full rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:cursor-not-allowed disabled:opacity-45 md:w-auto";
+  "min-h-[48px] w-full rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608] disabled:cursor-not-allowed disabled:opacity-45 md:w-auto";
 
 export const akoolSelectClass = akoolInputClass;

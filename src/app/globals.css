@@ -47,12 +47,12 @@
   --glow-acid: 0 0 32px rgba(180, 255, 0, 0.18);
   --world: "creator";
   --world-mix: 0;
-  --heading-font: var(--font-bebas), "Bebas Neue", sans-serif;
-  --heading-weight: 400;
+  --heading-font: var(--font-inter), "Inter", system-ui, sans-serif;
+  --heading-weight: 700;
   --heading-style: normal;
-  --heading-transform: uppercase;
-  --heading-tracking: -0.04em;
-  --heading-leading: 0.88;
+  --heading-transform: none;
+  --heading-tracking: -0.02em;
+  --heading-leading: 1.25;
 }
 
 html[data-world="brand"] {
@@ -74,7 +74,7 @@ html[data-world="brand"] {
   body {
     background: var(--bg);
     color: rgba(255, 255, 255, 0.92);
-    font-family: var(--font-dm), "DM Sans", -apple-system, BlinkMacSystemFont,
+    font-family: var(--font-inter), "Inter", system-ui, -apple-system, BlinkMacSystemFont,
       "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -106,9 +106,10 @@ html[data-world="brand"] {
   h4,
   h5,
   h6 {
-    font-family: var(--font-bebas), "Bebas Neue", sans-serif;
-    letter-spacing: 0.02em;
-    line-height: 1;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    text-transform: none;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
     color: #ffffff;
     text-shadow: none !important;
     -webkit-text-stroke: 0 !important;
@@ -120,6 +121,8 @@ html[data-world="brand"] {
   h3.font-display,
   .font-display {
     font-size: clamp(28px, 6vw, 72px);
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    text-transform: none;
   }
 
   input,
@@ -134,17 +137,17 @@ html[data-world="brand"] {
     min-height: 48px;
   }
 
-  /* Landing: Two Worlds — Creator (Bebas) → Brand (Fraunces) via LightSystem scroll */
+  /* Landing headings — Inter SaaS scale */
   .landing-root h1,
   .landing-root h2,
   .landing-root h3,
   .landing-heading {
-    font-family: var(--heading-font);
-    font-weight: var(--heading-weight, 400);
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-weight: var(--heading-weight, 700);
     font-style: var(--heading-style, normal);
-    letter-spacing: var(--heading-tracking, -0.04em);
-    line-height: var(--heading-leading, 0.88);
-    text-transform: var(--heading-transform, uppercase);
+    letter-spacing: var(--heading-tracking, -0.02em);
+    line-height: var(--heading-leading, 1.25);
+    text-transform: none;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     text-shadow: none !important;
@@ -2217,20 +2220,151 @@ header.site-header.site-header--scrolled {
   color: #b4ff00;
 }
 
+/* ==========================================
+   GLOBALES SAAS TYPOGRAFIE-UPDATE (PRO PROD)
+   ========================================== */
+
+/* 1. Globaler Fließtext (Dashboard, Landingpage & Canvas) */
+body,
+html,
+p,
+span,
+label,
+input,
+textarea {
+  font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* 2. Überschriften (Landingpage & Dashboard-Inhalte) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif !important;
+  text-transform: none !important;
+  letter-spacing: -0.02em !important;
+}
+
+h1 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+}
+
+h2 {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+}
+
+h3 {
+  font-size: 1.35rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+/* 3. Zielgerichtetes Update für das Canvas-Ergebnisfenster (Markdown) */
 .agent-markdown--canvas {
-  font-size: 0.875rem;
-  line-height: 1.55;
+  width: 100%;
+  max-width: none;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+  color: #e2e8f0 !important;
 }
 
 .agent-markdown--canvas h1,
 .agent-markdown--canvas h2,
 .agent-markdown--canvas h3 {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: inherit !important;
+  text-transform: none !important;
+  color: #22d3ee !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.agent-markdown--canvas h1 {
+  font-size: 22px !important;
+}
+
+.agent-markdown--canvas h2 {
+  font-size: 18px !important;
+}
+
+.agent-markdown--canvas h3 {
+  font-size: 16px !important;
+}
+
+.agent-markdown--canvas ul {
+  margin-left: 1.5rem !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  list-style-type: disc !important;
+}
+
+.agent-markdown--canvas li {
+  margin-bottom: 0.5rem !important;
+}
+
+.agent-markdown--canvas strong {
+  color: #f43f5e !important;
+  font-weight: 700 !important;
 }
 
 .agent-markdown--canvas p {
   margin: 0.4rem 0;
+}
+
+/* Typo-Sicherheitsnetz: zu kleine Tailwind-Hilfsklassen in App-Oberflächen */
+[data-dashboard] .text-xs,
+[data-dashboard] .text-\[11px\],
+[data-dashboard] .text-\[10px\],
+[data-dashboard] .text-\[9px\],
+[data-dashboard] .text-\[8px\],
+.studio-glass-legacy-content .text-xs,
+.studio-glass-legacy-content .text-\[11px\],
+.studio-glass-legacy-content .text-\[10px\],
+.studio-glass-legacy-content .text-\[9px\],
+.studio-glass-legacy-content .text-\[8px\],
+.canvas-glass-node .text-xs,
+.canvas-glass-node .text-\[11px\],
+.canvas-glass-node .text-\[10px\],
+.canvas-glass-node .text-\[9px\],
+.canvas-glass-node .text-\[8px\],
+.landing-root .text-xs,
+.landing-root .text-\[11px\],
+.landing-root .text-\[10px\],
+.landing-root .text-\[9px\],
+.landing-root .text-\[8px\] {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+[data-dashboard] h1,
+[data-dashboard] h2,
+[data-dashboard] h3,
+[data-dashboard] h4,
+[data-dashboard] h5,
+[data-dashboard] h6,
+[data-dashboard] .font-display,
+[data-dashboard] .font-bebas,
+.studio-glass-legacy-content h1,
+.studio-glass-legacy-content h2,
+.studio-glass-legacy-content h3,
+.canvas-glass-node h1,
+.canvas-glass-node h2,
+.canvas-glass-node h3,
+.landing-root h1,
+.landing-root h2,
+.landing-root h3,
+.landing-root .font-display,
+.landing-root .font-bebas {
+  font-family: var(--font-inter), "Inter", system-ui, sans-serif !important;
+  text-transform: none !important;
 }
 
 /* Dashboard mobile sidebar drawer */

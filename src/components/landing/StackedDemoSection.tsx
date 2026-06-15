@@ -39,7 +39,7 @@ function clamp(value: number, min: number, max: number) {
 function DemoBadge({ children }: { children: string }) {
   return (
     <span
-      className="mb-3 inline-block rounded-[6px] px-2 py-0.5 text-[0.66rem] font-medium tracking-[0.02em]"
+      className="mb-3 inline-block rounded-[6px] px-2 py-0.5 text-sm font-medium tracking-[0.02em]"
       style={{
         background: "rgba(255,255,255,0.06)",
         border: "1px solid rgba(255,255,255,0.14)",
@@ -72,7 +72,7 @@ function ScoreRow({ scores }: { scores: DemoStep["scores"] }) {
       {scores.map((s) => (
         <span
           key={s.label}
-          className="rounded-full px-2.5 py-1 text-[0.7rem] font-semibold"
+          className="rounded-full px-2.5 py-1 text-sm font-semibold"
           style={{
             background: "rgba(180,255,0,0.08)",
             border: "1px solid rgba(180,255,0,0.22)",
@@ -147,7 +147,7 @@ function useDemoSteps(): DemoStep[] {
       output = (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[260px] border-collapse text-[0.78rem]">
+            <table className="w-full min-w-[260px] border-collapse text-sm">
               <tbody>
                 {rows.map((row) => (
                   <tr
@@ -169,7 +169,7 @@ function useDemoSteps(): DemoStep[] {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-[0.78rem]">{t(`${prefix}.calendarFooter`)}</p>
+          <p className="mt-3 text-sm">{t(`${prefix}.calendarFooter`)}</p>
         </>
       );
     } else {
@@ -197,7 +197,7 @@ function useDemoSteps(): DemoStep[] {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full px-2 py-0.5 text-[0.7rem]"
+                className="rounded-full px-2 py-0.5 text-sm"
                 style={{
                   border: "1px solid rgba(180,255,0,0.25)",
                   color: "rgba(255,255,255,0.78)",
@@ -276,12 +276,12 @@ function WorkflowPanel({
         }}
       >
         <p
-          className="mb-1.5 text-[0.66rem] font-bold uppercase tracking-[0.1em]"
+          className="mb-1.5 text-sm font-semibold tracking-wide"
           style={{ color: "rgba(255,255,255,0.48)" }}
         >
           {labels.agentDecision}
         </p>
-        <ul className="m-0 flex flex-col gap-1 p-0 text-[0.78rem] text-white/72">
+        <ul className="m-0 flex flex-col gap-1 p-0 text-sm text-white/72">
           {step.agentDecisions.map((line) => (
             <li key={line} className="list-none">
               · {line}
@@ -291,7 +291,7 @@ function WorkflowPanel({
       </div>
 
       <p
-        className="mb-2 text-[0.66rem] font-bold uppercase tracking-[0.1em]"
+        className="mb-2 text-sm font-semibold tracking-wide"
         style={{ color: "rgba(255,255,255,0.48)" }}
       >
         {labels.output}
@@ -305,7 +305,7 @@ function WorkflowPanel({
 
       <div className="mt-4 shrink-0 border-t border-white/6 pt-4">
         <p
-          className="mb-2 text-[0.66rem] font-bold uppercase tracking-[0.1em]"
+          className="mb-2 text-sm font-semibold tracking-wide"
           style={{ color: "rgba(255,255,255,0.48)" }}
         >
           {labels.score}
@@ -340,14 +340,14 @@ function StepCopy({
       aria-hidden={!isActive}
     >
       <p
-        className="mb-3 text-[0.72rem] font-bold tracking-[0.14em]"
+        className="mb-3 text-sm font-bold tracking-[0.14em]"
         style={{ color: "#B4FF00", fontFamily: "var(--font-dm), sans-serif" }}
       >
         {String(index + 1).padStart(2, "0")} / {String(STEP_COUNT).padStart(2, "0")}
       </p>
       <h2
         className="landing-heading mb-3 text-[clamp(2rem,4vw,3.25rem)] leading-[0.95]"
-        style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif" }}
+        style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
       >
         {step.headline}
       </h2>
@@ -368,7 +368,7 @@ function StepCopy({
         }}
       >
         <p
-          className="mb-2 text-[0.66rem] font-bold uppercase tracking-[0.1em]"
+          className="mb-2 text-sm font-semibold tracking-wide"
           style={{ color: "rgba(255,255,255,0.48)" }}
         >
           {labels.input}
@@ -409,7 +409,7 @@ function MobileStepCard({
       }}
     >
       <DemoBadge>{labels.demoExample}</DemoBadge>
-      <p className="mb-2 text-[0.68rem] font-bold tracking-[0.12em] text-[#B4FF00]">
+      <p className="mb-2 text-sm font-bold tracking-[0.12em] text-[#B4FF00]">
         {String(index + 1).padStart(2, "0")} / {String(STEP_COUNT).padStart(2, "0")}
       </p>
       <h3 className="landing-heading mb-2 text-2xl leading-none">{step.headline}</h3>
@@ -418,16 +418,16 @@ function MobileStepCard({
         className="mb-4 rounded-[10px] p-3 text-[0.8rem] text-white/70"
         style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
-        <span className="text-[0.66rem] font-bold uppercase text-white/60">
+        <span className="text-sm font-semibold text-white/60">
           {labels.input} ·{" "}
         </span>
         {step.input}
       </div>
       <div
-        className="mb-4 rounded-[10px] p-3 text-[0.78rem] text-white/72"
+        className="mb-4 rounded-[10px] p-3 text-sm text-white/72"
         style={{ border: "1px solid rgba(180,255,0,0.12)" }}
       >
-        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/60">
+        <p className="mb-2 text-sm font-semibold text-white/60">
           {labels.agentDecision}
         </p>
         <ul className="m-0 flex flex-col gap-1 p-0">
@@ -439,13 +439,13 @@ function MobileStepCard({
         </ul>
       </div>
       <p
-        className="mb-2 text-[0.66rem] font-bold uppercase text-white/60"
+        className="mb-2 text-sm font-semibold text-white/60"
       >
         {labels.output}
       </p>
       <div className="mb-4 text-[0.82rem] leading-relaxed text-white/85">{step.output}</div>
       <div className="mb-4">
-        <p className="mb-2 text-[0.66rem] font-bold uppercase text-white/60">{labels.score}</p>
+        <p className="mb-2 text-sm font-semibold text-white/60">{labels.score}</p>
         <ScoreRow scores={step.scores} />
       </div>
       <AgentPill>{step.badge}</AgentPill>

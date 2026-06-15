@@ -20,7 +20,7 @@ const SCRIPT_CREDITS = LANDING_DEMO_CREDITS.script;
 function DemoBadge({ children }: { children: ReactNode }) {
   return (
     <span
-      className="inline-block text-[11px] rounded-[6px] px-2.5 py-1"
+      className="inline-block text-sm rounded-[6px] px-2.5 py-1"
       style={{
         background: "rgba(180,255,0,0.1)",
         border: "1px solid rgba(180,255,0,0.3)",
@@ -51,7 +51,7 @@ function OutputShell({
         }}
       >
         <p
-          className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.12em]"
+          className="mb-3 text-sm font-semibold tracking-wide"
           style={{ color: "rgba(255,255,255,0.45)" }}
         >
           Input
@@ -248,7 +248,7 @@ function ContentKalenderTab() {
       output={
         <>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[280px] border-collapse text-[0.78rem]">
+            <table className="w-full min-w-[280px] border-collapse text-sm">
               <tbody>
                 {rows.map(([day, topic, format]) => (
                   <tr
@@ -335,7 +335,7 @@ function AvatarTab() {
             {["Professional", "Studio BG", "Face Consistent"].map((tag) => (
               <span
                 key={tag}
-                className="rounded-full px-2.5 py-0.5 text-[0.72rem]"
+                className="rounded-full px-2.5 py-0.5 text-sm"
                 style={{
                   border: "1px solid rgba(180,255,0,0.25)",
                   color: "rgba(255,255,255,0.7)",
@@ -345,7 +345,7 @@ function AvatarTab() {
               </span>
             ))}
           </div>
-          <p className="text-[0.78rem]" style={{ color: "rgba(255,255,255,0.55)" }}>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
             Konsistentes Gesicht in jedem generierten Bild.
           </p>
         </div>

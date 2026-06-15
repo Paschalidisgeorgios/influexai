@@ -56,17 +56,17 @@ export function FeatureCard({
           <Icon size={22} className="text-[#B4FF00]" strokeWidth={2} />
         </span>
         {badge === "NEU" && (
-          <span className="text-[0.62rem] font-extrabold px-2 py-0.5 rounded-md bg-[#B4FF00]/15 border border-[#B4FF00]/35 text-[#B4FF00] tracking-wide">
+          <span className="text-sm font-extrabold px-2 py-0.5 rounded-md bg-[#B4FF00]/15 border border-[#B4FF00]/35 text-[#B4FF00] tracking-wide">
             NEU
           </span>
         )}
         {badge === "SOON" && (
-          <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-white/5 text-white/75">
+          <span className="text-sm font-bold px-2 py-0.5 rounded-md bg-white/5 text-white/75">
             {tCommon("coming_soon")}
           </span>
         )}
         {badge === "Preview" && (
-          <span className="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-[#B4FF00]/10 border border-[#B4FF00]/30 text-[#B4FF00] tracking-wide">
+          <span className="text-sm font-bold px-2 py-0.5 rounded-md bg-[#B4FF00]/10 border border-[#B4FF00]/30 text-[#B4FF00] tracking-wide">
             Preview
           </span>
         )}

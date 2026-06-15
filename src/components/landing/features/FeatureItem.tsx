@@ -49,7 +49,7 @@ export function FeatureItem({
           {label}
         </span>
         {subtitle ? (
-          <span className="mt-0.5 block text-[11px] font-normal leading-normal text-zinc-400">
+          <span className="mt-0.5 block text-sm font-normal leading-normal text-zinc-400">
             {subtitle}
           </span>
         ) : null}

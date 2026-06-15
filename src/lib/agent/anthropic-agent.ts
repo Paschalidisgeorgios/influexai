@@ -41,7 +41,13 @@ export type AnthropicTurnResult = {
 export async function runAnthropicAgentTurn(
   system: string,
   messages: AnthropicMessageParam[],
-  options?: { enableCaching?: boolean }
+  options?: {
+    enableCaching?: boolean;
+    toolChoice?:
+      | { type: "auto" }
+      | { type: "any" }
+      | { type: "tool"; name: string };
+  }
 ): Promise<
   | { ok: true; turn: AnthropicTurnResult }
   | { ok: false; error: string }
@@ -64,6 +70,7 @@ export async function runAnthropicAgentTurn(
       ...(options?.enableCaching
         ? { cache_control: ANTHROPIC_EPHEMERAL_CACHE_CONTROL }
         : {}),
+      ...(options?.toolChoice ? { tool_choice: options.toolChoice } : {}),
       system,
       tools: MASTER_AGENT_TOOLS,
       messages,

@@ -91,7 +91,7 @@ function ThumbnailConceptPageInner() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   const selectStyle = {
@@ -198,7 +198,7 @@ function ThumbnailConceptPageInner() {
           <div>
             <h1
               style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "clamp(1.8rem, 4vw, 2.4rem)",
                 letterSpacing: "0.02em",
                 color: "#F0EFE8",

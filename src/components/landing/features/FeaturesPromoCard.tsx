@@ -48,10 +48,10 @@ export function FeaturesPromoCard({
           compact ? "p-5" : "p-6"
         }`}
       >
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-[#ccff00]/85">
+        <span className="font-mono text-sm font-semibold tracking-wide text-[#ccff00]/85">
           {promo(`${variant}.label`)}
         </span>
-        <h3 className="mt-3 font-[family-name:var(--font-bebas)] text-2xl font-bold uppercase leading-[0.95] tracking-wide text-white">
+        <h3 className="mt-3 text-2xl font-semibold leading-[0.95] tracking-wide text-white">
           {promo(`${variant}.headline`)}
         </h3>
         <p className="mt-2.5 text-[13px] leading-relaxed text-zinc-400">

@@ -207,7 +207,7 @@ export default function LivePortraitPage() {
             fontSize: 10,
             color: "#B4FF00",
             letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -219,7 +219,7 @@ export default function LivePortraitPage() {
             fontWeight: 900,
             color: "#fff",
             letterSpacing: "0.04em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -245,7 +245,7 @@ export default function LivePortraitPage() {
               fontSize: 10,
               color: "rgba(180,255,0,0.6)",
               letterSpacing: "0.12em",
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 8,
             }}
           >
@@ -327,7 +327,7 @@ export default function LivePortraitPage() {
               fontSize: 10,
               color: "rgba(180,255,0,0.6)",
               letterSpacing: "0.12em",
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 8,
             }}
           >
@@ -691,7 +691,7 @@ export default function LivePortraitPage() {
           fontWeight: 800,
           cursor: canSubmit ? "pointer" : "not-allowed",
           letterSpacing: "0.04em",
-          textTransform: "uppercase",
+          textTransform: "none",
         }}
       >
         {loading
@@ -751,7 +751,7 @@ export default function LivePortraitPage() {
                 color: "#B4FF00",
                 fontWeight: 700,
                 letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                textTransform: "none",
               }}
             >
               ✓ LIVE PORTRAIT BEREIT

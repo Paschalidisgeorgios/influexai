@@ -226,7 +226,7 @@ function CompetitorPageInner() {
               display: "block",
               marginBottom: 6,
               letterSpacing: "0.04em",
-              textTransform: "uppercase",
+              textTransform: "none",
             }}
           >
             {t("url_label")}
@@ -543,7 +543,7 @@ function CompetitorPageInner() {
             style={{
               fontSize: "1rem",
               color: "rgba(255,255,255,0.65)",
-              textTransform: "uppercase",
+              textTransform: "none",
               letterSpacing: "0.08em",
               marginBottom: 14,
             }}

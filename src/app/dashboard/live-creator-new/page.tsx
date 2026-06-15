@@ -12,14 +12,14 @@ export default function LiveCreatorNewPage() {
     <div className="max-w-xl mx-auto pb-16 px-1">
       <header className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <p className="text-[#B4FF00] text-[0.7rem] font-bold uppercase tracking-[0.14em]">
+          <p className="text-[#B4FF00] text-sm font-semibold tracking-wide">
             Live Creator
           </p>
-          <span className="bg-[#B4FF00] text-[#060608] text-[0.65rem] font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-[#B4FF00] text-[#060608] text-sm font-bold px-2 py-0.5 rounded-full">
             NEU
           </span>
         </div>
-        <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
+        <h1 className="text-4xl text-[#F0EFE8] leading-tight mb-2">
           Live Creator
         </h1>
         <p className="text-white/80 text-sm">

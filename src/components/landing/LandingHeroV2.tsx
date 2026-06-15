@@ -178,7 +178,7 @@ export function LandingHeroV2({
         }}
       >
         <span
-          className="mb-4 inline-flex rounded-full border px-3 py-1 text-[10px] uppercase tracking-[1.5px]"
+          className="mb-4 inline-flex rounded-full border px-3 py-1 text-sm tracking-wide"
           style={{
             borderColor: "var(--theme-accent-25)",
             background: "rgba(255,255,255,0.04)",
@@ -189,7 +189,7 @@ export function LandingHeroV2({
         </span>
 
         <h1
-          className="font-display leading-none tracking-[-2px] text-white"
+          className="font-bold leading-tight tracking-[-2px] text-white"
           style={{
             fontSize: "clamp(40px, 7vw, 72px)",
             textShadow: "0 2px 40px rgba(0,0,0,0.9)",
@@ -245,7 +245,7 @@ export function LandingHeroV2({
         {dialogStep >= 3 && (
           <Link
             href="/signup"
-            className={`mt-4 flex h-14 w-full max-w-[520px] items-center justify-center gap-2 rounded-[10px] font-display text-lg tracking-wide no-underline transition-all duration-300 ${
+            className={`mt-4 flex h-14 w-full max-w-[520px] items-center justify-center gap-2 rounded-[10px] font-bold text-lg tracking-wide no-underline transition-all duration-300 ${
               pulseStudio ? "landing-studio-pulse" : ""
             }`}
             style={{
@@ -259,7 +259,7 @@ export function LandingHeroV2({
           </Link>
         )}
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[11px] text-white/60 sm:gap-3">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-white/60 sm:gap-3">
           <span>📝 Beschreibe dein Ziel</span>
           <span aria-hidden>→</span>
           <span>🤖 Agent plant & erstellt</span>

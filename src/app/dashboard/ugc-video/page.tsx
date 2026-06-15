@@ -536,7 +536,7 @@ export default function UgcVideoPage() {
 
             {hookVariants.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-bold uppercase tracking-wider text-white/65">
+                <p className="text-xs font-semibold tracking-wide text-white/65">
                   {t("hooks_title")}
                 </p>
                 {hookVariants.map((hook) => (
@@ -850,7 +850,7 @@ export default function UgcVideoPage() {
                           {avatar.name}
                         </p>
                         {avatar.gender && (
-                          <p className="text-[10px] text-white/65 capitalize">
+                          <p className="text-sm text-white/65 capitalize">
                             {avatar.gender}
                           </p>
                         )}

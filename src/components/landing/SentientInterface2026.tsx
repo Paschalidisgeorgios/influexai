@@ -71,7 +71,7 @@ function HeroPreview() {
         </div>
         <div className="flex items-center gap-4">
           {(["APP_STUDIO", "FPS: 60", "NODES: 12"] as const).map((stat) => (
-            <span key={stat} className="font-mono text-[9px] tracking-wider text-white/25">
+            <span key={stat} className="font-mono text-sm tracking-wider text-white/25">
               {stat}
             </span>
           ))}
@@ -81,7 +81,7 @@ function HeroPreview() {
             className="h-1.5 w-1.5 animate-pulse rounded-full"
             style={{ background: LANDING_NEON.green }}
           />
-          <span className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.green}B3` }}>
+          <span className="font-mono text-sm" style={{ color: `${LANDING_NEON.green}B3` }}>
             LIVE
           </span>
         </div>
@@ -92,7 +92,7 @@ function HeroPreview() {
           className="border-b p-5 md:border-b-0 md:border-r"
           style={{ borderColor: "var(--border-soft)" }}
         >
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/60 uppercase">
+          <p className="mb-3 font-mono text-sm tracking-wide text-white/60">
             Claude · Skript + B-Roll
           </p>
           <div
@@ -111,14 +111,14 @@ function HeroPreview() {
                   style={{ width: "86%", background: LANDING_NEON.green }}
                 />
               </div>
-              <span className="font-mono text-[9px] text-white/60">86%</span>
+              <span className="font-mono text-sm text-white/60">86%</span>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {TOOL_CHIPS.map((chip) => (
               <span
                 key={chip}
-                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-white/60"
+                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 font-mono text-sm text-white/60"
               >
                 {chip}
               </span>
@@ -127,7 +127,7 @@ function HeroPreview() {
         </div>
 
         <div className="p-5">
-          <p className="mb-3 font-mono text-[10px] tracking-widest text-white/60 uppercase">
+          <p className="mb-3 font-mono text-sm tracking-wide text-white/60">
             Canvas Pipeline
           </p>
           <div className="space-y-2">
@@ -142,7 +142,7 @@ function HeroPreview() {
                 className="flex items-center gap-3 rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2"
               >
                 <span
-                  className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px]"
+                  className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-sm"
                   style={
                     done
                       ? {
@@ -181,7 +181,7 @@ function HeroPreview() {
               background: `rgba(${LANDING_NEON.greenRgb}, 0.05)`,
             }}
           >
-            <p className="font-mono text-[9px]" style={{ color: `${LANDING_NEON.cyan}CC` }}>
+            <p className="font-mono text-sm" style={{ color: `${LANDING_NEON.cyan}CC` }}>
               CTR-Tendenz: <span className="text-[#ccff00]">+14%</span> · Viral Score 91 · Demo
             </p>
           </div>
@@ -226,7 +226,7 @@ function BentoCardItem({
         <div className="landing-neon-bento-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
           {icon}
         </div>
-        <span className="landing-neon-bento-tag rounded-full px-2.5 py-0.5 font-mono text-[10px] font-medium tracking-wide">
+        <span className="landing-neon-bento-tag rounded-full px-2.5 py-0.5 font-mono text-sm font-medium tracking-wide">
           {card.tag}
         </span>
       </div>
@@ -282,7 +282,7 @@ export default function SentientInterface2026() {
 
       <div className="relative z-10 px-6 pt-20 pb-16 text-center md:px-12 md:pt-28">
         <div
-          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[11px] text-white/60 backdrop-blur-sm"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-sm text-white/60 backdrop-blur-sm"
           style={{
             borderColor: `rgba(${LANDING_NEON.violetRgb}, 0.25)`,
             background: `rgba(${LANDING_NEON.violetRgb}, 0.06)`,
@@ -321,7 +321,7 @@ export default function SentientInterface2026() {
         <div className="mx-auto max-w-6xl">
           <div className="landing-neon-divider-glow mb-12" aria-hidden />
           <div className="mb-10 text-center">
-            <p className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2 font-mono text-[10px] tracking-[0.14em]">
+            <p className="landing-neon-section-kicker landing-neon-section-kicker--blue mb-2 font-mono text-sm tracking-[0.14em]">
               {LANDING_STUDIO_SECTION_2026.featuresKicker}
             </p>
             <h2 className="landing-glass-heading text-[clamp(1.75rem,3.5vw,2.75rem)] text-white">

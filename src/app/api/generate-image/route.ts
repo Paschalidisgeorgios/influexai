@@ -33,6 +33,7 @@ import {
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
 import { applyVisualQARetry } from "@/lib/agent/visualQuality";
+import { DEFAULT_IMAGE_MODEL_ID, isKreaModel } from "@/lib/generation-config";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
     prompt,
+    modelId: modelIdRaw,
     category: categoryRaw,
     aspectRatio,
     highRes: highResRaw,
@@ -65,6 +67,7 @@ export async function POST(request: NextRequest) {
     platform: platformRaw,
   } = body as {
     prompt?: string;
+    modelId?: string;
     category?: string;
     aspectRatio?: FalImageSize;
     highRes?: boolean;
@@ -77,6 +80,11 @@ export async function POST(request: NextRequest) {
     styleId?: ImageStyleId;
     platform?: ImagePlatformId;
   };
+
+  const modelId =
+    typeof modelIdRaw === "string" && modelIdRaw.trim()
+      ? modelIdRaw.trim()
+      : DEFAULT_IMAGE_MODEL_ID;
 
   const trimmedPrompt = prompt?.trim() ?? "";
   const category: ImageCategoryKey = isValidCategory(categoryRaw ?? "")
@@ -157,11 +165,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const modelLabel = isKreaModel(modelId) ? "Krea AI" : "Flux";
   const creditAction = isVariation
-    ? "Bild Generator — Variation"
+    ? `Bild Generator — Variation (${modelLabel})`
     : highRes
-      ? "Bild Generator — High-Res"
-      : "Bild Generator — Standard";
+      ? `Bild Generator — High-Res (${modelLabel})`
+      : `Bild Generator — Standard (${modelLabel})`;
 
   const deduction = await deductCredits(
     supabase,
@@ -198,6 +207,7 @@ export async function POST(request: NextRequest) {
 
       const falResult = await generateCategoryImage({
         prompt: enhancedPrompt,
+        modelId,
         falPrompt: enhancedPrompt,
         negativePrompt: prepared.negativePrompt,
         category: prepared.category,

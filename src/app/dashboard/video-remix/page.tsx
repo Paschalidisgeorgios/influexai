@@ -92,7 +92,7 @@ export default function VideoRemixPage() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   useEffect(() => {
@@ -234,7 +234,7 @@ export default function VideoRemixPage() {
           <Repeat2 size={32} color="#B4FF00" strokeWidth={2} />
           <h1
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(2rem, 4vw, 3rem)",
               letterSpacing: "0.02em",
               color: "#F0EFE8",
@@ -440,7 +440,7 @@ export default function VideoRemixPage() {
               border: "none",
               background: canSubmit ? "#B4FF00" : "#2a2a2a",
               color: canSubmit ? "#060608" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
               cursor: canSubmit ? "pointer" : "default",
@@ -587,7 +587,7 @@ export default function VideoRemixPage() {
                 >
                   <h3
                     style={{
-                      fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                      fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                       fontSize: "1.35rem",
                       letterSpacing: "0.02em",
                       color: "#F0EFE8",
@@ -648,7 +648,7 @@ export default function VideoRemixPage() {
                       fontWeight: 700,
                       color: "#B4FF00",
                       marginBottom: 6,
-                      textTransform: "uppercase",
+                      textTransform: "none",
                       letterSpacing: "0.08em",
                     }}
                   >
@@ -694,7 +694,7 @@ export default function VideoRemixPage() {
                           fontSize: "0.65rem",
                           fontWeight: 800,
                           color: "rgba(255,255,255,0.65)",
-                          textTransform: "uppercase",
+                          textTransform: "none",
                           letterSpacing: "0.1em",
                           marginBottom: 6,
                         }}

@@ -95,7 +95,7 @@ export default function ReferralPage() {
       <header className="mb-8 flex items-center gap-3">
         <TablerGift size={32} color="#B4FF00" strokeWidth={2.2} />
         <div>
-          <h1 className="font-[family-name:var(--font-bebas)] text-4xl leading-none text-[#F0EFE8]">
+          <h1 className="text-4xl leading-none text-[#F0EFE8]">
             {t("title")}
           </h1>
           <p className="mt-1 text-sm text-white/75">{t("subtitle")}</p>
@@ -104,7 +104,7 @@ export default function ReferralPage() {
 
       {/* A) Referral link */}
       <section className="mb-6 rounded-2xl border border-[#B4FF00]/20 bg-[#B4FF00]/5 p-6">
-        <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
+        <p className="mb-2 text-sm font-semibold tracking-wide text-white/65">
           {t("link_label")}
         </p>
         <div className="mb-4 break-all rounded-xl border border-white/10 bg-[#0f0f12] px-4 py-3.5 font-mono text-sm text-[#B4FF00]">
@@ -153,7 +153,7 @@ export default function ReferralPage() {
       </section>
 
       {/* B) Stats */}
-      <h2 className="mb-3 font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8]">
+      <h2 className="mb-3 text-xl text-[#F0EFE8]">
         {t("stats_title")}
       </h2>
       <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -167,7 +167,7 @@ export default function ReferralPage() {
 
       {/* C) How it works */}
       <section className="mb-8 rounded-2xl border border-white/10 bg-[#0f0f12] p-6">
-        <h2 className="mb-4 font-[family-name:var(--font-bebas)] text-xl text-[#F0EFE8]">
+        <h2 className="mb-4 text-xl text-[#F0EFE8]">
           {t("how_title")}
         </h2>
         <ol className="space-y-4">
@@ -189,7 +189,7 @@ export default function ReferralPage() {
 
       {/* D) History */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f0f12]">
-        <div className="hidden sm:grid sm:grid-cols-3 sm:gap-2 border-b border-white/10 px-4 py-3 text-[0.7rem] font-bold uppercase tracking-wider text-white/65">
+        <div className="hidden sm:grid sm:grid-cols-3 sm:gap-2 border-b border-white/10 px-4 py-3 text-sm font-semibold tracking-wide text-white/65">
           <span>{t("col_date")}</span>
           <span>{t("col_status")}</span>
           <span className="text-right">{t("col_credits")}</span>
@@ -205,7 +205,7 @@ export default function ReferralPage() {
               className="border-b border-white/5 px-4 py-3 text-sm text-[#F0EFE8] last:border-0 sm:grid sm:grid-cols-3 sm:gap-2 sm:items-center"
             >
               <div className="mb-2 sm:mb-0">
-                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                <span className="mb-1 block text-sm font-semibold tracking-wide text-white/50 sm:hidden">
                   {t("col_date")}
                 </span>
                 {formatDate(row.date)}
@@ -214,11 +214,11 @@ export default function ReferralPage() {
                 </span>
               </div>
               <div className="mb-2 sm:mb-0">
-                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                <span className="mb-1 block text-sm font-semibold tracking-wide text-white/50 sm:hidden">
                   {t("col_status")}
                 </span>
                 <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${
+                  className={`inline-block rounded-full px-2 py-0.5 text-sm font-bold ${
                     row.status === "purchased"
                       ? "bg-[#B4FF00]/15 text-[#B4FF00]"
                       : "bg-white/5 text-white/75"
@@ -230,7 +230,7 @@ export default function ReferralPage() {
                 </span>
               </div>
               <div className="sm:text-right">
-                <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wider text-white/50 sm:hidden">
+                <span className="mb-1 block text-sm font-semibold tracking-wide text-white/50 sm:hidden">
                   {t("col_credits")}
                 </span>
                 <span className="font-bold text-[#B4FF00]">
@@ -280,7 +280,7 @@ export default function ReferralPage() {
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl border border-white/10 bg-[#0f0f12] p-5">
-      <div className="font-[family-name:var(--font-bebas)] text-4xl leading-none text-[#B4FF00]">
+      <div className="text-4xl leading-none text-[#B4FF00]">
         {value}
       </div>
       <div className="mt-2 text-xs text-white/70">{label}</div>

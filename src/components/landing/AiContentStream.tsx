@@ -48,7 +48,7 @@ export function AiContentStream() {
         <span className="ai-content-stream__heading-dot" aria-hidden />
         {tl("agentActivityStream")}
         <span
-          className="ml-2 inline-block rounded-[4px] px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+          className="ml-2 inline-block rounded-[4px] px-1.5 py-0.5 text-sm font-semibold tracking-wide"
           style={{
             color: "rgba(255,255,255,0.5)",
             border: "1px solid rgba(255,255,255,0.12)",

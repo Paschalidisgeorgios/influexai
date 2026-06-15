@@ -148,7 +148,7 @@ export default function PublicProfileSettingsPage() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   if (loading) {
@@ -182,7 +182,7 @@ export default function PublicProfileSettingsPage() {
 
       <h1
         style={{
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
           fontSize: "clamp(2rem, 4vw, 2.5rem)",
           margin: "12px 0 6px",
           color: "#F0EFE8",
@@ -387,7 +387,7 @@ export default function PublicProfileSettingsPage() {
             border: "none",
             background: "#B4FF00",
             color: "#060608",
-            fontFamily: "var(--font-bebas), sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "1.15rem",
             letterSpacing: "0.04em",
             cursor: saving ? "default" : "pointer",
@@ -407,7 +407,7 @@ export default function PublicProfileSettingsPage() {
       >
         <h2
           style={{
-            fontFamily: "var(--font-bebas), sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "1.2rem",
             margin: "0 0 8px",
             color: "#F0EFE8",

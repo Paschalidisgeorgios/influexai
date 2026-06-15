@@ -83,7 +83,7 @@ export function SmartCapsule({
         </span>
 
         <span
-          className="min-w-0 font-sans font-medium uppercase"
+          className="min-w-0 font-sans font-medium"
           style={{
             fontSize: isScrolled ? "9px" : "10px",
             letterSpacing: isScrolled ? "1px" : "1.5px",

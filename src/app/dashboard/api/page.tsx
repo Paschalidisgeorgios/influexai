@@ -62,7 +62,7 @@ export default function DeveloperApiPage() {
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontFamily: "var(--font-bebas), sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "2.25rem",
             color: "#F0EFE8",
             margin: "0 0 6px",
@@ -197,7 +197,7 @@ export default function DeveloperApiPage() {
               </div>
               <div
                 style={{
-                  fontFamily: "var(--font-bebas), sans-serif",
+                  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                   fontSize: "1.5rem",
                   color: ACCENT,
                 }}

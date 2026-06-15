@@ -41,7 +41,7 @@ export function FeatureCategory({
           type="button"
           onClick={() => setIsOpen((v) => !v)}
           aria-expanded={isOpen}
-          className={`flex min-h-12 w-full items-center justify-between px-3 py-3 text-left font-mono text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 ${
+          className={`flex min-h-12 w-full items-center justify-between px-3 py-3 text-left font-mono text-sm font-semibold tracking-wide transition-colors duration-300 ${
             isOpen ? "text-[#ccff00]" : "text-zinc-400"
           }`}
         >
@@ -85,7 +85,7 @@ export function FeatureCategory({
 
   return (
     <div className="min-w-0">
-      <p className="mb-4 border-b border-zinc-800/60 pb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+      <p className="mb-4 border-b border-zinc-800/60 pb-2 font-mono text-sm font-semibold tracking-wide text-zinc-400">
         {label(`categories.${category.id}`)}
       </p>
       <div className="space-y-4">

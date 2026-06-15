@@ -100,9 +100,9 @@ export function HeroTitle({ titles }: Props) {
     fontFamily: "var(--heading-font)",
     fontWeight: "var(--heading-weight, 400)" as unknown as number,
     fontStyle: "var(--heading-style, normal)" as React.CSSProperties["fontStyle"],
-    letterSpacing: "var(--heading-tracking, -0.04em)",
+    letterSpacing: "var(--heading-tracking, -0.02em)",
     textTransform:
-      "var(--heading-transform, uppercase)" as React.CSSProperties["textTransform"],
+      "var(--heading-transform, none)" as React.CSSProperties["textTransform"],
     opacity: fadeIn || reducedMotion ? 1 : 0,
     transition: reducedMotion ? "none" : "opacity 280ms ease-out",
   };

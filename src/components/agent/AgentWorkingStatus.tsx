@@ -1,17 +1,19 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import type { AgentToolName } from "@/lib/agent/types";
+import type { AgentMetaToolName, AgentToolName } from "@/lib/agent/types";
 import { AGENT_TOOL_WORKING_LABELS } from "@/lib/agent/tool-labels";
 
 type Props = {
-  tool: AgentToolName | null;
+  tool: AgentToolName | AgentMetaToolName | null;
   fallbackLabel?: string;
 };
 
 export function AgentWorkingStatus({ tool, fallbackLabel }: Props) {
   const label =
-    (tool && AGENT_TOOL_WORKING_LABELS[tool]) ||
+    (tool && tool in AGENT_TOOL_WORKING_LABELS
+      ? AGENT_TOOL_WORKING_LABELS[tool as AgentToolName]
+      : undefined) ||
     fallbackLabel ||
     "Agent arbeitet…";
 

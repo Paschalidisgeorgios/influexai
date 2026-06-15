@@ -245,7 +245,7 @@ export default function SettingsPage() {
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "clamp(2rem,4vw,3rem)",
             letterSpacing: "0.02em",
             color: "#F0EFE8",
@@ -265,7 +265,7 @@ export default function SettingsPage() {
           <>
             <h2
               style={{
-                fontFamily: "var(--font-bebas), sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
                 color: "#F0EFE8",
@@ -356,7 +356,7 @@ export default function SettingsPage() {
           <>
             <h2
               style={{
-                fontFamily: "var(--font-bebas), sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
                 color: "#F0EFE8",
@@ -399,7 +399,7 @@ export default function SettingsPage() {
           <>
             <h2
               style={{
-                fontFamily: "var(--font-bebas), sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
                 color: "#F0EFE8",
@@ -515,7 +515,7 @@ export default function SettingsPage() {
         <div className="settings-glass-card flex flex-col gap-3.5 rounded-2xl p-6">
           <h2
             style={{
-              fontFamily: "var(--font-bebas), sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.02em",
               color: "#F0EFE8",

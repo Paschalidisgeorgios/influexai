@@ -154,7 +154,7 @@ export default function MotionTransferPage() {
             fontSize: 10,
             color: "#B4FF00",
             letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -166,7 +166,7 @@ export default function MotionTransferPage() {
             fontWeight: 900,
             color: "#fff",
             letterSpacing: "0.04em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -191,7 +191,7 @@ export default function MotionTransferPage() {
               fontSize: 10,
               color: "rgba(180,255,0,0.6)",
               letterSpacing: "0.12em",
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 8,
             }}
           >
@@ -388,7 +388,7 @@ export default function MotionTransferPage() {
               fontSize: 10,
               color: "rgba(180,255,0,0.6)",
               letterSpacing: "0.12em",
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 8,
             }}
           >
@@ -531,7 +531,7 @@ export default function MotionTransferPage() {
               ? "default"
               : "pointer",
           letterSpacing: "0.04em",
-          textTransform: "uppercase",
+          textTransform: "none",
           transition: "background 0.2s",
         }}
       >
@@ -585,7 +585,7 @@ export default function MotionTransferPage() {
                 color: "#B4FF00",
                 fontWeight: 700,
                 letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                textTransform: "none",
               }}
             >
               ✓ Motion Transfer bereit

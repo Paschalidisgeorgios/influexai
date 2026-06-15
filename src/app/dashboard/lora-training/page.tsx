@@ -275,7 +275,7 @@ function LoraTrainingPageInner() {
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <Brain size={28} color="#B4FF00" />
-            <h1 className="font-display m-0 text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+            <h1 className="m-0 font-bold text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
               {t("title")}
             </h1>
             <span
@@ -314,7 +314,7 @@ function LoraTrainingPageInner() {
 
       {/* Demo */}
       <div style={{ ...card(), marginBottom: 16 }}>
-        <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", marginBottom: 12, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", marginBottom: 12, letterSpacing: "0.08em", textTransform: "none" }}>
           {t("demo_title")}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
@@ -370,7 +370,7 @@ function LoraTrainingPageInner() {
 
           {/* Upload */}
           <div style={{ ...card(), marginBottom: 16 }}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "none" }}>
               {t("upload_label")} ({files.length}/{LORA_MAX_IMAGES})
             </label>
             <div
@@ -509,7 +509,7 @@ function LoraTrainingPageInner() {
                 files.length >= LORA_MIN_IMAGES && consentAccepted
                   ? "#060608"
                   : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
               cursor:
@@ -529,7 +529,7 @@ function LoraTrainingPageInner() {
       {step === "training" && (
         <div style={{ ...card(), textAlign: "center", padding: "48px 24px", marginBottom: 24 }}>
           <div style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid #B4FF00", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 20px" }} />
-          <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.6rem", color: "#F0EFE8", marginBottom: 8 }}>{t("training_title")}</h2>
+          <h2 style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif", fontSize: "1.6rem", color: "#F0EFE8", marginBottom: 8 }}>{t("training_title")}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem", marginBottom: 20 }}>{t("training_subtitle")}</p>
           <div style={{ height: 8, borderRadius: 99, background: "#18181d", overflow: "hidden", maxWidth: 400, margin: "0 auto 12px" }}>
             {progress > 0 ? (
@@ -556,7 +556,7 @@ function LoraTrainingPageInner() {
       {step === "done" && (
         <div style={{ ...card(), textAlign: "center", padding: 32, marginBottom: 24, border: "1px solid rgba(180,255,0,0.3)" }}>
           <Check size={40} color="#B4FF00" style={{ margin: "0 auto 12px" }} />
-          <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.6rem", color: "#F0EFE8" }}>{t("done_title")}</h2>
+          <h2 style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif", fontSize: "1.6rem", color: "#F0EFE8" }}>{t("done_title")}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 16 }}>{t("done_subtitle")}</p>
           <button type="button" onClick={resetForm} style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#B4FF00", color: "#060608", fontWeight: 700, cursor: "pointer" }}>{t("done_button")}</button>
           <AiOutputDisclaimer className="mt-4" />
@@ -565,7 +565,7 @@ function LoraTrainingPageInner() {
 
       {/* My models */}
       <div style={card()}>
-        <h2 style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif", fontSize: "1.4rem", color: "#F0EFE8", marginBottom: 16 }}>{t("models_title")}</h2>
+        <h2 style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif", fontSize: "1.4rem", color: "#F0EFE8", marginBottom: 16 }}>{t("models_title")}</h2>
         {models.length === 0 ? (
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.88rem" }}>{t("models_empty")}</p>
         ) : (

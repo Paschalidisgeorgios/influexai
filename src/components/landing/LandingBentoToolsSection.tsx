@@ -37,7 +37,7 @@ function BentoCard({
       } ${href ? "group no-underline" : ""} ${className}`}
     >
       <span
-        className="mb-3 inline-flex w-fit rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/[0.08] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#B4FF00]"
+        className="mb-3 inline-flex w-fit rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/[0.08] px-2.5 py-0.5 text-sm font-semibold tracking-wide text-[#B4FF00]"
         style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
       >
         {tag}
@@ -45,7 +45,7 @@ function BentoCard({
       <h3
         className="mb-2 text-white"
         style={{
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
           fontSize: accent ? "clamp(1.35rem, 2.5vw, 1.75rem)" : "1.25rem",
           letterSpacing: "0.02em",
           lineHeight: 1.1,
@@ -86,7 +86,7 @@ export function LandingBentoToolsSection() {
       <div className="mx-auto w-full max-w-[1160px]">
         <SpringReveal>
           <p
-            className="mb-2 text-center uppercase"
+            className="mb-2 text-center"
             style={{
               fontSize: 10,
               color: "#B4FF00",
@@ -101,7 +101,7 @@ export function LandingBentoToolsSection() {
             id="bento-tools-heading"
             className="mb-10 text-center md:mb-12"
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(28px, 6vw, 48px)",
               color: "#ffffff",
               letterSpacing: "0.02em",
@@ -126,7 +126,7 @@ export function LandingBentoToolsSection() {
                 {HOOK_PILLS.map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[0.78rem] italic text-white/75"
+                    className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm italic text-white/75"
                     style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
                   >
                     {'„' + pill + '\u201C'}

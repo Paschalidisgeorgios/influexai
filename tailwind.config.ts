@@ -11,9 +11,10 @@ const config: Config = {
     extend: {
       fontFamily: {
         bebas: ["var(--font-bebas)", "Bebas Neue", "sans-serif"],
-        display: ["var(--font-bebas)", "Bebas Neue", "sans-serif"],
-        dm: ["var(--font-dm)", "DM Sans", "system-ui", "sans-serif"],
-        sans: ["var(--font-dm)", "DM Sans", "system-ui", "sans-serif"],
+        inter: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        dm: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
         mono: ["var(--font-dm)", "DM Mono", "monospace"],
       },
       colors: {

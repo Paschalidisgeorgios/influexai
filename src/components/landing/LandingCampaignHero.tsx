@@ -22,10 +22,10 @@ export function LandingCampaignHero() {
       <div className="relative z-10 mx-auto max-w-[1160px]">
         <div className="flex flex-col items-center text-center">
           <SpringReveal>
-            <span className="mb-4 inline-flex rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#B4FF00]">
+            <span className="mb-4 inline-flex rounded-full border border-[#B4FF00]/25 bg-[#B4FF00]/10 px-3 py-1 text-sm font-semibold tracking-wide text-[#B4FF00]">
               {t("kicker")}
             </span>
-            <h1 className="mx-auto max-w-[900px] font-[family-name:var(--font-bebas)] text-[clamp(2.5rem,8vw,4.75rem)] leading-[0.95] tracking-[0.01em] text-white">
+            <h1 className="mx-auto max-w-[900px] text-[clamp(2.5rem,8vw,4.75rem)] leading-[0.95] tracking-[0.01em] text-white">
               {t("headline")}
             </h1>
             <p className="mx-auto mt-5 max-w-[560px] text-base leading-relaxed text-white/60 md:text-lg">

@@ -1,9 +1,22 @@
+import {
+  buildUgcVideoScript,
+  resolveUgcProductImageUrl,
+  validateToolRequiredParams,
+  areToolParamsReady,
+  resolveThumbnailStyle,
+  resolveThumbnailColorEnergy,
+  resolveNicheAudience,
+  resolveNicheFormat,
+} from "./tool-param-validation";
+import { extractStructuredCanvasText } from "./canvas-text-output";
 import type { ToolApiDefinition, ToolOutputType } from "./toolApiSchema";
 import {
   CanvasGenerationError,
   type CanvasApiErrorCode,
 } from "./canvas-api-errors";
 import { LANDING_VIDEOS } from "@/lib/landing-video-urls";
+
+import type { AgentTrendInsight } from "@/lib/agent/types";
 
 export type CanvasGenerationResult = {
   text?: string;
@@ -28,11 +41,12 @@ export type RunCanvasGenerationOptions = {
 };
 
 export type CanvasSseProgressEvent = {
-  type: "tool_start" | "tool_done" | "tool_error" | "estimate" | "text_delta";
+  type: "tool_start" | "tool_done" | "tool_error" | "estimate" | "text_delta" | "insight";
   tool?: string;
   label?: string;
   toolsDone?: number;
   text?: string;
+  insight?: AgentTrendInsight;
 };
 
 export type CanvasSseProgressHandler = (event: CanvasSseProgressEvent) => void;
@@ -100,6 +114,8 @@ export function validateKiIchParams(
   return null;
 }
 
+export { areToolParamsReady, validateToolRequiredParams } from "./tool-param-validation";
+
 function buildRequestBody(
   tool: ToolApiDefinition,
   params: Record<string, unknown>
@@ -108,6 +124,7 @@ function buildRequestBody(
     case "flux-image":
       return {
         prompt: params.prompt,
+        modelId: params.modelId ?? "krea/v2/large/text-to-image",
         aspectRatio: params.aspect_ratio ?? "9:16",
         styleId: params.style_preset ?? "ugc",
         platform: "tiktok",
@@ -218,6 +235,156 @@ function buildRequestBody(
         prompt,
       };
     }
+    case "ugc-video": {
+      const produktBeschreibung =
+        typeof params.produkt_beschreibung === "string"
+          ? params.produkt_beschreibung.trim()
+          : "";
+      const plattform =
+        typeof params.plattform === "string" ? params.plattform : "tiktok";
+      const videoStil =
+        typeof params.video_stil === "string" ? params.video_stil : "unboxing";
+      const customPhotoUrl = resolveUgcProductImageUrl(params.produkt_bilder);
+      const script = buildUgcVideoScript(
+        produktBeschreibung,
+        plattform,
+        videoStil
+      );
+
+      return {
+        avatarId: customPhotoUrl ? "custom" : "sonya_01",
+        script,
+        customPhotoUrl,
+        consentAccepted: Boolean(customPhotoUrl),
+        aspectRatio: plattform === "youtube_shorts" ? "16:9" : "9:16",
+        voiceSource: "akool",
+        language: "Deutsch",
+        plattform,
+        video_stil: videoStil,
+        produkt_beschreibung: produktBeschreibung,
+      };
+    }
+    case "thumbnail-concept":
+      return {
+        topic: params.topic,
+        style: resolveThumbnailStyle(
+          typeof params.style === "string" ? params.style : undefined
+        ),
+        colorEnergy: resolveThumbnailColorEnergy(
+          typeof params.color_energy === "string"
+            ? params.color_energy
+            : undefined
+        ),
+      };
+    case "niche-analyzer":
+      return {
+        topic: params.topic,
+        audience: resolveNicheAudience(
+          typeof params.audience === "string" ? params.audience : undefined
+        ),
+        format: resolveNicheFormat(
+          typeof params.format === "string" ? params.format : undefined
+        ),
+      };
+    case "outlier-detector":
+      return {
+        niche: params.niche,
+        period: params.period ?? "Letzter Monat",
+        platform: params.platform ?? "YouTube Shorts",
+        channelSize: params.channel_size ?? "Alle",
+        language: params.language ?? "de",
+      };
+    case "viral-score":
+      return {
+        script: params.script,
+        thumbnail_idea: params.thumbnail_idea,
+        niche: params.niche,
+        language: params.language ?? "de",
+      };
+    case "campaign-autopilot":
+      return {
+        prompt: params.campaign_brief,
+        mode: params.mode ?? "weekly",
+        platforms: Array.isArray(params.platforms)
+          ? (params.platforms as string[]).filter(Boolean)
+          : ["instagram"],
+        goal: params.goal ?? "reach",
+        tone: params.tone ?? "modern",
+      };
+    case "video-transformer": {
+      const videoUrl =
+        typeof params.input_video === "string" ? params.input_video.trim() : "";
+      const style =
+        typeof params.transform_stil === "string"
+          ? params.transform_stil
+          : "Anime";
+      return {
+        videoUrl,
+        stylePrompt: `${style} style cinematic transfer`,
+        strength: params.motion_strength ?? 50,
+      };
+    }
+    case "video-uebersetzer": {
+      const targetMap: Record<string, string> = {
+        Englisch: "en",
+        Spanisch: "es",
+        Französisch: "fr",
+        Japanisch: "ja",
+      };
+      const ziel =
+        typeof params.ziel_sprache === "string" ? params.ziel_sprache : "Englisch";
+      return {
+        videoUrl:
+          typeof params.input_video === "string"
+            ? params.input_video.trim()
+            : "",
+        targetLanguage: targetMap[ziel] ?? ziel.toLowerCase().slice(0, 2),
+        voiceClone: params.lipsync_correction ?? true,
+        durationMinutes: params.duration_minutes ?? 1,
+      };
+    }
+    case "lipsync-studio":
+      return {
+        videoUrl:
+          typeof params.input_video === "string"
+            ? params.input_video.trim()
+            : "",
+        audioUrl:
+          typeof params.input_audio === "string"
+            ? params.input_audio.trim()
+            : "",
+      };
+    case "lora-training":
+      return {
+        name:
+          typeof params.klon_name === "string" && params.klon_name.trim()
+            ? params.klon_name.trim()
+            : "Mein KI-Klon",
+        triggerWord:
+          typeof params.trigger_word === "string"
+            ? params.trigger_word.trim().toUpperCase()
+            : "",
+        zipUrl:
+          typeof params.dataset_zip === "string" ? params.dataset_zip.trim() : "",
+        steps: params.training_steps ?? 2000,
+        type: "portrait",
+        consentAccepted: true,
+      };
+    case "avatar-studio": {
+      const script =
+        typeof params.audio_script === "string"
+          ? params.audio_script.trim()
+          : "";
+      const scene =
+        typeof params.background_scene === "string"
+          ? params.background_scene.trim()
+          : "";
+      return {
+        script,
+        backgroundScene: scene || "Modernes Studio",
+        avatarId: params.avatar_id ?? "default",
+      };
+    }
     default:
       return { ...params };
   }
@@ -267,7 +434,8 @@ function parseApiResponse(
       : url;
 
   const text =
-    typeof body.text === "string"
+    extractStructuredCanvasText(body) ??
+    (typeof body.text === "string"
       ? body.text
       : typeof body.script === "string"
         ? body.script
@@ -275,7 +443,7 @@ function parseApiResponse(
           ? body.output
           : Array.isArray(body.hooks)
             ? (body.hooks as string[]).join("\n\n")
-            : undefined;
+            : undefined);
 
   const data =
     body.data && typeof body.data === "object"
@@ -301,10 +469,23 @@ function parseApiResponse(
   return { text, url, previewUrl, data, jobId, generationId, status: responseStatus };
 }
 
+function withAsyncPlaceholderText(
+  result: CanvasGenerationResult
+): CanvasGenerationResult {
+  if (!result.text?.trim() && result.jobId) {
+    return {
+      ...result,
+      text: "Auftrag gestartet — Ergebnis wird im Hintergrund erstellt…",
+    };
+  }
+  return result;
+}
+
 type SseStreamResult = {
   text: string;
   error?: string;
   outputs?: Record<string, unknown>;
+  insight?: AgentTrendInsight;
 };
 
 async function consumeSseResponse(
@@ -326,6 +507,7 @@ async function consumeSseResponse(
   let text = "";
   let error: string | undefined;
   let outputs: Record<string, unknown> | undefined;
+  let insight: AgentTrendInsight | undefined;
   let toolsCompletedCount = 0;
 
   try {
@@ -356,6 +538,9 @@ async function consumeSseResponse(
         if (event.type === "text_delta" && typeof event.text === "string") {
           text += event.text;
           onProgress?.({ type: "text_delta", text: event.text });
+        } else if (event.type === "insight" && event.insight) {
+          insight = event.insight as AgentTrendInsight;
+          onProgress?.({ type: "insight", insight });
         } else if (event.type === "error" && typeof event.message === "string") {
           error = event.message;
         } else if (
@@ -397,7 +582,12 @@ async function consumeSseResponse(
     reader.releaseLock();
   }
 
-  return { text: text.trim(), error, outputs };
+  return {
+    text: text.trim() || insight?.htmlOrMarkdownOutput?.trim() || "",
+    error,
+    outputs,
+    insight,
+  };
 }
 
 async function parseCanvasResponse(
@@ -429,7 +619,10 @@ async function parseCanvasResponse(
     }
     return {
       text: streamed.text,
-      data: streamed.outputs,
+      data: {
+        ...(streamed.outputs ?? {}),
+        ...(streamed.insight ? { agentTrendInsight: streamed.insight } : {}),
+      },
     };
   }
 
@@ -439,7 +632,7 @@ async function parseCanvasResponse(
     throw mapHttpError(res.status, body);
   }
 
-  return parseApiResponse(tool, body);
+  return withAsyncPlaceholderText(parseApiResponse(tool, body));
 }
 
 async function mockGeneration(

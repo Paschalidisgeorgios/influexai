@@ -12,11 +12,11 @@ export default function FaceStudioPage() {
     <div className="max-w-xl mx-auto pb-16 px-1">
       <header className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <p className="text-[#B4FF00] text-[0.7rem] font-bold uppercase tracking-[0.14em]">
+          <p className="text-[#B4FF00] text-sm font-semibold tracking-wide">
             Avatar & Live
           </p>
         </div>
-        <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
+        <h1 className="text-4xl text-[#F0EFE8] leading-tight mb-2">
           FACE STUDIO
         </h1>
         <p className="text-white/80 text-sm">

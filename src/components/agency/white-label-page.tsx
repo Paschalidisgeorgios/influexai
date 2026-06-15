@@ -54,7 +54,7 @@ export function WhiteLabelPageContent() {
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1
-            className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,5vw,3.5rem)] leading-tight text-[#F0EFE8]"
+            className="text-[clamp(2rem,5vw,3.5rem)] leading-tight text-[#F0EFE8]"
           >
             White Label / Agentur
           </h1>
@@ -112,7 +112,7 @@ export function WhiteLabelPageContent() {
             <div className="text-xs text-[rgba(255,255,255,0.65)] font-bold">
               {plan.name.toUpperCase()}
             </div>
-            <div className="font-[family-name:var(--font-bebas)] text-4xl text-[var(--accent)] my-2">
+            <div className="text-4xl text-[var(--accent)] my-2">
               €{plan.monthlyPriceEur}/mo
             </div>
             <p className="text-[rgba(255,255,255,0.65)] text-sm mb-5">
@@ -133,7 +133,7 @@ export function WhiteLabelPageContent() {
       </section>
 
       <section className="max-w-2xl mx-auto text-center">
-        <h2 className="font-[family-name:var(--font-bebas)] text-3xl mb-6">
+        <h2 className="text-3xl mb-6">
           So funktioniert&apos;s
         </h2>
         <ol className="text-left text-[rgba(255,255,255,0.65)] leading-8 pl-6">

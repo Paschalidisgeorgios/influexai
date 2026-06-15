@@ -210,7 +210,7 @@ export default function KiIchPage() {
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "clamp(2rem, 4vw, 3rem)",
             letterSpacing: "0.02em",
             color: "#F0EFE8",
@@ -322,7 +322,7 @@ export default function KiIchPage() {
           <div style={{ fontSize: "3rem", marginBottom: 16 }}>📷</div>
           <h2
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.6rem",
               letterSpacing: "0.02em",
               color: "#F0EFE8",
@@ -441,7 +441,7 @@ export default function KiIchPage() {
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 color: "rgba(255,255,255,0.65)",
-                textTransform: "uppercase",
+                textTransform: "none",
                 letterSpacing: "0.08em",
                 marginBottom: 10,
               }}
@@ -494,7 +494,7 @@ export default function KiIchPage() {
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 color: "rgba(255,255,255,0.65)",
-                textTransform: "uppercase",
+                textTransform: "none",
                 letterSpacing: "0.08em",
                 marginBottom: 14,
               }}
@@ -534,7 +534,7 @@ export default function KiIchPage() {
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 color: "rgba(255,255,255,0.65)",
-                textTransform: "uppercase",
+                textTransform: "none",
                 letterSpacing: "0.08em",
                 marginBottom: 10,
               }}
@@ -583,7 +583,7 @@ export default function KiIchPage() {
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 color: "#B4FF00",
-                textTransform: "uppercase",
+                textTransform: "none",
                 letterSpacing: "0.08em",
                 marginBottom: 10,
               }}
@@ -650,7 +650,7 @@ export default function KiIchPage() {
                 buildScenePrompt().trim() && consentAccepted
                   ? "#060608"
                   : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
               cursor:

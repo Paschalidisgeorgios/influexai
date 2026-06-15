@@ -249,7 +249,7 @@ function ViralScorePageInner() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   const runAnalyze = async () => {
@@ -539,7 +539,7 @@ function ViralScorePageInner() {
                 color: "#B4FF00",
                 margin: "0 0 10px",
                 fontSize: "0.85rem",
-                textTransform: "uppercase",
+                textTransform: "none",
                 letterSpacing: "0.06em",
               }}
             >
@@ -578,7 +578,7 @@ function ViralScorePageInner() {
             style={{
               fontSize: "1rem",
               color: "rgba(255,255,255,0.65)",
-              textTransform: "uppercase",
+              textTransform: "none",
               letterSpacing: "0.08em",
               marginBottom: 14,
             }}

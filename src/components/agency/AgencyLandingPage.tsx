@@ -126,7 +126,7 @@ export function AgencyLandingPage() {
                   <div className="studio-glass-icon-wrap mb-5">
                     <Icon size={22} color={NEON} strokeWidth={2} />
                   </div>
-                  <h3 className="text-white font-bold text-sm uppercase tracking-widest antialiased">
+                  <h3 className="text-white font-bold text-sm tracking-wide antialiased">
                     {t(`features.${key}_title`)}
                   </h3>
                   <p className="text-white/80 text-sm leading-relaxed mt-2 whitespace-pre-line">
@@ -166,7 +166,7 @@ export function AgencyLandingPage() {
                     <p
                       role="heading"
                       aria-level={3}
-                      className="mb-1 block font-sans text-lg font-extrabold uppercase tracking-wide leading-snug text-white"
+                      className="mb-1 block font-sans text-lg font-bold tracking-wide leading-snug text-white"
                     >
                       {t(`how.${key}_title`)}
                     </p>
@@ -240,7 +240,7 @@ export function AgencyLandingPage() {
               >
                 {label}
                 {isY && (
-                  <span className="ml-1.5 text-[0.65rem] font-bold px-1.5 py-0.5 rounded bg-[#ccff00]/15 text-[#ccff00]">
+                  <span className="ml-1.5 text-sm font-bold px-1.5 py-0.5 rounded bg-[#ccff00]/15 text-[#ccff00]">
                     −20%
                   </span>
                 )}
@@ -272,14 +272,14 @@ export function AgencyLandingPage() {
                   style={plan.popular ? { background: "rgba(204,255,0,0.04)" } : undefined}
                 >
                   {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ccff00] text-black text-[0.7rem] font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ccff00] text-black text-sm font-bold px-4 py-1 rounded-full whitespace-nowrap">
                       {t("pricing.popular")}
                     </span>
                   )}
-                  <p className="text-xs font-bold uppercase tracking-wider text-[rgba(255,255,255,0.65)] mb-2">
+                  <p className="text-xs font-semibold tracking-wide text-[rgba(255,255,255,0.65)] mb-2">
                     {t(`pricing.${planId}_name`)}
                   </p>
-                  <div className="font-[family-name:var(--font-bebas)] text-5xl leading-none mb-1">
+                  <div className="text-5xl leading-none mb-1">
                     €{price}
                     <span className="text-sm text-[rgba(255,255,255,0.65)] font-[family-name:var(--font-dm)]">
                       {t("pricing.per_month")}

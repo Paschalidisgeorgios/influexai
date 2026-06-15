@@ -102,7 +102,7 @@ function UseCaseGlassNode({
         {desc}
       </p>
       <span
-        className="inline-flex w-fit rounded-full border px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.06em]"
+        className="inline-flex w-fit rounded-full border px-3 py-1 text-sm font-semibold tracking-wide"
         style={{
           fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
           borderColor: `rgba(${LANDING_ACCENT_RGB[accent]}, 0.35)`,

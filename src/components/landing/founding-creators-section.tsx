@@ -19,7 +19,7 @@ export function FoundingCreatorsSection() {
       <div className="mx-auto max-w-[720px] text-center">
         <SpringReveal>
           <p
-            className="mb-4 font-bold uppercase tracking-[0.22em]"
+            className="mb-4 font-semibold tracking-wide"
             style={{
               fontSize: 11,
               color: "var(--accent, #B4FF00)",
@@ -62,7 +62,7 @@ export function FoundingCreatorsSection() {
                   </span>
                 </div>
                 <p
-                  className="m-0 text-[0.72rem] leading-snug"
+                  className="m-0 text-sm leading-snug"
                   style={{ color: "rgba(255,255,255,0.5)" }}
                 >
                   {t("slot_label", { slot, total: TOTAL_SLOTS })}
@@ -80,7 +80,7 @@ export function FoundingCreatorsSection() {
             → {t("cta")}
           </AcidMotionButton>
           <p
-            className="mt-4 text-[0.78rem]"
+            className="mt-4 text-sm"
             style={{ color: "rgba(255,255,255,0.45)" }}
           >
             {t("note")}

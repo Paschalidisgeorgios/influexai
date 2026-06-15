@@ -142,7 +142,7 @@ function ViralHookPageInner() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Zap size={32} color="#B4FF00" strokeWidth={2} />
           <div>
-            <h1 className="font-display m-0 text-[clamp(2rem,4vw,3rem)] leading-none tracking-wide text-[#F0EFE8]">
+            <h1 className="m-0 font-bold text-[clamp(2rem,4vw,3rem)] leading-none tracking-wide text-[#F0EFE8]">
               VIRAL HOOK EXTRAKTOR
             </h1>
             <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem", margin: "6px 0 0" }}>
@@ -241,7 +241,7 @@ function ViralHookPageInner() {
               border: "none",
               background: "#B4FF00",
               color: "#060608",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
               cursor: "pointer",
@@ -360,7 +360,7 @@ function Section({
           fontSize: "0.78rem",
           fontWeight: 800,
           letterSpacing: "0.08em",
-          textTransform: "uppercase",
+          textTransform: "none",
           color: accent ? "#B4FF00" : "rgba(255,255,255,0.55)",
           marginBottom: 10,
         }}

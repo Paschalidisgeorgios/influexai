@@ -44,7 +44,7 @@ export function CampaignAutopilotSection() {
                   style={{ minHeight: 360 }}
                 >
                   <p
-                    className="mb-1 text-[0.7rem] font-bold uppercase tracking-[0.12em]"
+                    className="mb-1 text-sm font-semibold tracking-wide"
                     style={{ color: "#B4FF00" }}
                   >
                     {t(`${prefix}.title`)}
@@ -53,7 +53,7 @@ export function CampaignAutopilotSection() {
                     {t(`${prefix}.subtitle`)}
                   </h3>
                   <p
-                    className="mb-4 text-[0.66rem] font-medium uppercase tracking-[0.06em]"
+                    className="mb-4 text-sm font-medium tracking-wide"
                     style={{ color: "rgba(255,255,255,0.42)" }}
                   >
                     {tl("demoExampleCards")}
@@ -81,7 +81,7 @@ export function CampaignAutopilotSection() {
                     }}
                   >
                     <p
-                      className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.1em]"
+                      className="mb-3 text-sm font-semibold tracking-wide"
                       style={{ color: "rgba(255,255,255,0.48)" }}
                     >
                       {t("campaignSection.workflowLabel")}

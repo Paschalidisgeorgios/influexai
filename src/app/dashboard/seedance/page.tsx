@@ -397,7 +397,7 @@ export default function SeedancePage() {
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
           <Film size={32} color="#B4FF00" strokeWidth={2.2} />
-          <h1 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+          <h1 className="text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
             {SEEDANCE_UI_NAME}
           </h1>
         </div>
@@ -424,7 +424,7 @@ export default function SeedancePage() {
           <div className="flex flex-col gap-4">
             {Object.entries(groupedModels).map(([providerLabel, providerModels]) => (
               <div key={providerLabel}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[rgba(255,255,255,0.45)]">
+                <p className="mb-2 text-xs font-semibold tracking-wide text-[rgba(255,255,255,0.45)]">
                   {providerLabel}
                 </p>
                 <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -456,7 +456,7 @@ export default function SeedancePage() {
                             {model.providerLabel}
                           </span>
                           {model.isPro && (
-                            <span className="ml-2 rounded border border-[#B4FF00]/35 bg-[#B4FF00]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[#B4FF00]">
+                            <span className="ml-2 rounded border border-[#B4FF00]/35 bg-[#B4FF00]/10 px-1.5 py-0.5 text-sm font-semibold text-[#B4FF00]">
                               Pro
                             </span>
                           )}
@@ -603,7 +603,7 @@ export default function SeedancePage() {
 
           {galleryImages.length > 0 && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[rgba(255,255,255,0.65)]">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-[rgba(255,255,255,0.65)]">
                 Aus deiner Gallery
               </p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
@@ -700,7 +700,7 @@ export default function SeedancePage() {
             type="button"
             disabled={!canGenerate}
             onClick={runGenerate}
-            className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608] disabled:cursor-not-allowed disabled:opacity-45"
+            className="rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608] disabled:cursor-not-allowed disabled:opacity-45"
           >
             {generating ? "Video wird generiert…" : "Video generieren"}
           </button>

@@ -199,7 +199,7 @@ function ScriptGeneratorPageInner() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   useEffect(() => {
@@ -417,7 +417,7 @@ function ScriptGeneratorPageInner() {
             <div>
               <h1
                 style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                   fontSize: "clamp(2rem, 4vw, 3rem)",
                   letterSpacing: "0.02em",
                   color: "#F0EFE8",
@@ -644,7 +644,7 @@ function ScriptGeneratorPageInner() {
               border: "none",
               background: topic.trim().length > 0 ? "#B4FF00" : "#2a2a2a",
               color: topic.trim().length > 0 ? "#060608" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
               cursor: topic.trim().length > 0 ? "pointer" : "not-allowed",
@@ -845,7 +845,7 @@ function ScriptGeneratorPageInner() {
             <div style={{ marginTop: 28 }}>
               <h2
                 style={{
-                  fontFamily: "var(--font-bebas), sans-serif",
+                  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                   fontSize: "1.25rem",
                   color: "#F0EFE8",
                   marginBottom: 12,

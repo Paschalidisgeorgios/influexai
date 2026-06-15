@@ -34,10 +34,10 @@ export function TrustBarSection() {
       aria-label={tProof("trust_bar_label")}
     >
       <div className="mx-auto max-w-[1160px] px-[clamp(16px,5vw,64px)] py-3 md:py-3.5">
-        <p className="mb-2 text-center text-[0.68rem] leading-snug text-white/60">
+        <p className="mb-2 text-center text-sm leading-snug text-white/60">
           {t("launchBanner")}
         </p>
-        <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.72rem] leading-snug text-white/68 sm:gap-x-4">
+        <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-sm leading-snug text-white/68 sm:gap-x-4">
           {TRUST_SIGNAL_KEYS.map((key, i) => (
             <li key={key} className="flex items-center gap-3">
               {i > 0 && (
@@ -87,7 +87,7 @@ export function HowItWorksSection() {
                 <div className="glass-card h-full p-5 md:p-6">
                   <div
                     style={{
-                      fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                      fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                       fontSize: "2rem",
                       color: "var(--acid)",
                       lineHeight: 1,
@@ -140,7 +140,7 @@ export function FaqSection() {
     >
       <div className="mx-auto max-w-[1160px]">
         <p
-          className="mb-2 text-center uppercase"
+          className="mb-2 text-center"
           style={{
             fontSize: 10,
             color: "#B4FF00",
@@ -154,7 +154,7 @@ export function FaqSection() {
         <h2
           className="mb-10 text-center md:mb-12"
           style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "clamp(2rem, 5vw, 48px)",
             color: "#ffffff",
             letterSpacing: "0.02em",
@@ -311,7 +311,7 @@ export function PricingSection() {
                 (key) => (
                   <span
                     key={key}
-                    className="rounded-full border border-[#ccff00]/20 bg-[#ccff00]/8 px-3 py-1 font-mono text-[0.68rem] tracking-wide text-white/70"
+                    className="rounded-full border border-[#ccff00]/20 bg-[#ccff00]/8 px-3 py-1 font-mono text-sm tracking-wide text-white/70"
                   >
                     {t(key)}
                   </span>
@@ -319,7 +319,7 @@ export function PricingSection() {
               )}
             </div>
             <p
-              className="mt-4 font-mono text-[0.72rem] tracking-wide text-white/60"
+              className="mt-4 font-mono text-sm tracking-wide text-white/60"
               style={{ fontFamily: "var(--font-dm), sans-serif" }}
             >
               {t("credits_demo_note")}
@@ -450,7 +450,7 @@ const FOOTER_LINK_CLASS =
   "block font-sans text-sm text-white/60 transition-all hover:translate-x-0.5 hover:text-white";
 
 const FOOTER_COL_HEADING_CLASS =
-  "mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-white/60";
+  "mb-4 block font-mono text-sm font-semibold tracking-wide text-white/60";
 
 const FOOTER_SOCIAL_CLASS =
   "flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-white/60 transition-all duration-300 hover:border-[#ccff00] hover:text-[#ccff00]";
@@ -520,7 +520,7 @@ export function LandingFooter() {
           <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <Link href="/" className="mb-2 inline-block no-underline">
-                <span className="font-sans text-lg font-extrabold uppercase tracking-widest text-white">
+                <span className="font-sans text-lg font-extrabold tracking-wide text-white">
                   INFLUEX{" "}
                   <span className="text-[#ccff00] drop-shadow-[0_0_8px_rgba(204,255,0,0.4)]">
                     AI
@@ -582,7 +582,7 @@ export function LandingFooter() {
           <PoweredByFooter />
 
           <div className="flex flex-col items-center gap-4 border-t border-zinc-800/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="order-3 font-mono text-[11px] text-white/60 sm:order-1 sm:text-left">
+            <p className="order-3 font-mono text-sm text-white/60 sm:order-1 sm:text-left">
               © 2026 InfluexAI · Hechingen, DE
             </p>
             <div className="order-1 grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 sm:order-2 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">

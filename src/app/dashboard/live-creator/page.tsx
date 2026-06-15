@@ -28,14 +28,14 @@ function LiveCreatorFullPage() {
     <div className="pb-8">
       <header className="max-w-2xl mx-auto mb-6 px-1">
         <div className="flex items-center gap-2 mb-2">
-          <p className="text-[#B4FF00] text-[0.7rem] font-bold uppercase tracking-[0.14em]">
+          <p className="text-[#B4FF00] text-sm font-semibold tracking-wide">
             {t("live_creator_label")}
           </p>
-          <span className="bg-red-600 text-white text-[0.65rem] font-bold px-2 py-0.5 rounded-full animate-pulse">
+          <span className="bg-red-600 text-white text-sm font-bold px-2 py-0.5 rounded-full animate-pulse">
             LIVE
           </span>
         </div>
-        <h1 className="font-[family-name:var(--font-bebas)] text-4xl text-[#F0EFE8] leading-tight mb-2">
+        <h1 className="text-4xl text-[#F0EFE8] leading-tight mb-2">
           {t("title")}
         </h1>
         <p className="text-white/80 text-sm">{t("subtitle")}</p>

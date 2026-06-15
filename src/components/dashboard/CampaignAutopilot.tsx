@@ -124,7 +124,7 @@ function riskPillStyle(level: "low" | "medium" | "high" | undefined) {
 function ScoreBar({ label, value }: { label: string; value: number }) {
   return (
     <div className="mb-2.5 last:mb-0">
-      <div className="mb-1 flex items-center justify-between text-[10px]">
+      <div className="mb-1 flex items-center justify-between text-sm">
         <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
         <span style={{ color: "#B4FF00" }}>{value}</span>
       </div>
@@ -519,7 +519,7 @@ export default function CampaignAutopilot() {
     >
       <header className="mb-6">
         <p
-          className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.14em]"
+          className="mb-1 text-sm font-semibold tracking-wide"
           style={{ color: "#B4FF00" }}
         >
           {CAMPAIGN_AUTOPILOT_IS_PREVIEW
@@ -527,12 +527,12 @@ export default function CampaignAutopilot() {
             : "Creator Studio"}
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-[clamp(2rem,4vw,2.75rem)] leading-none">
+          <h1 className="font-bold text-[clamp(2rem,4vw,2.75rem)] leading-none">
             AUTOPILOT KAMPAGNE
           </h1>
           {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? (
             <span
-              className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+              className="px-2 py-0.5 text-sm font-semibold tracking-wide"
               style={{
                 borderRadius: 4,
                 background: "rgba(180,255,0,0.1)",
@@ -544,7 +544,7 @@ export default function CampaignAutopilot() {
             </span>
           ) : (
             <span
-              className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+              className="px-2 py-0.5 text-sm font-semibold tracking-wide"
               style={{
                 borderRadius: 4,
                 background: "rgba(180,255,0,0.1)",
@@ -627,7 +627,7 @@ export default function CampaignAutopilot() {
 
         <div className="flex items-center gap-[7px]">
           <span
-            className="shrink-0 px-2 py-0.5 text-[11px] font-semibold leading-none"
+            className="shrink-0 px-2 py-0.5 text-sm font-semibold leading-none"
             style={{
               borderRadius: 4,
               background: "rgba(180,255,0,0.08)",
@@ -641,7 +641,7 @@ export default function CampaignAutopilot() {
           <span className="flex-1" aria-hidden />
 
           <span
-            className="shrink-0 text-[10px]"
+            className="shrink-0 text-sm"
             style={{ color: "rgba(255,255,255,0.38)" }}
           >
             {CAMPAIGN_AUTOPILOT_IS_PREVIEW
@@ -773,21 +773,21 @@ export default function CampaignAutopilot() {
         <section className="mb-6">
           <div className="mb-3 flex items-center justify-between">
             <span
-              className="text-[10px] font-bold uppercase tracking-[0.14em]"
+              className="text-sm font-semibold tracking-wide"
               style={{
                 color: "rgba(255,255,255,0.45)",
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               }}
             >
               {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? "PREVIEW-AUSGABE" : "ERGEBNIS"}
             </span>
-            <span className="text-[11px] font-semibold" style={{ color: "#B4FF00" }}>
+            <span className="text-sm font-semibold" style={{ color: "#B4FF00" }}>
               {stepIdx + 1} / {TOTAL_STEPS}
             </span>
           </div>
 
           <p
-            className="mb-3 text-[10px] leading-[1.5]"
+            className="mb-3 text-sm leading-[1.5]"
             style={{ color: "rgba(255,255,255,0.42)" }}
           >
             {CAMPAIGN_AUTOPILOT_IS_PREVIEW
@@ -810,7 +810,7 @@ export default function CampaignAutopilot() {
           </div>
 
           <p
-            className="mb-4 uppercase tracking-[0.08em]"
+            className="mb-4 tracking-wide"
             style={{ fontSize: 10, color: "rgba(180,255,0,0.75)" }}
           >
             {CAMPAIGN_STEPS[stepIdx]}
@@ -838,7 +838,7 @@ export default function CampaignAutopilot() {
                 >
                   <div className="flex items-start justify-between gap-1">
                     <span
-                      className="text-[11px] leading-[1.35] sm:text-xs"
+                      className="text-sm leading-[1.35] sm:text-xs"
                       style={{
                         color: isActive
                           ? "#B4FF00"
@@ -850,7 +850,7 @@ export default function CampaignAutopilot() {
                       {label}
                     </span>
                     {isDone && (
-                      <span className="text-[9px]" style={{ color: "#B4FF00" }}>
+                      <span className="text-sm" style={{ color: "#B4FF00" }}>
                         ✓
                       </span>
                     )}
@@ -863,7 +863,7 @@ export default function CampaignAutopilot() {
           <button
             type="button"
             onClick={handleAbort}
-            className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-[rgba(255,80,80,0.4)] hover:text-[rgba(255,100,100,0.7)]"
+            className="px-3 py-1.5 text-sm font-semibold transition-colors hover:border-[rgba(255,80,80,0.4)] hover:text-[rgba(255,100,100,0.7)]"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.12)",
@@ -917,7 +917,7 @@ function ChipRow({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       <span
-        className="w-full shrink-0 text-xs font-semibold uppercase tracking-[0.06em] sm:w-[72px]"
+        className="w-full shrink-0 text-xs font-semibold tracking-wide sm:w-[72px]"
         style={{ color: "rgba(255,255,255,0.38)" }}
       >
         {label}
@@ -988,7 +988,7 @@ function CampaignResultCard({
               }}
             >
               <p
-                className="mb-2 text-[11px] font-semibold"
+                className="mb-2 text-sm font-semibold"
                 style={{ color: "rgba(180,255,0,0.8)" }}
               >
                 {CAMPAIGN_AUTOPILOT_IS_PREVIEW
@@ -996,7 +996,7 @@ function CampaignResultCard({
                   : "Getroffene Annahmen:"}
               </p>
               <ul
-                className="m-0 list-disc pl-4 text-[11px] leading-[1.55]"
+                className="m-0 list-disc pl-4 text-sm leading-[1.55]"
                 style={{ color: "rgba(180,255,0,0.8)" }}
               >
                 {result.assumptionsMade.map((item) => (
@@ -1010,7 +1010,7 @@ function CampaignResultCard({
             {overviewPills.map((pill) => (
               <span
                 key={pill.label}
-                className="px-2 py-0.5 text-[10px]"
+                className="px-2 py-0.5 text-sm"
                 style={{
                   borderRadius: 4,
                   background: "rgba(255,255,255,0.05)",
@@ -1072,7 +1072,7 @@ function CampaignResultCard({
                     </span>
                   )}
                   <span
-                    className="shrink-0 px-1.5 py-0.5 text-[9px] font-semibold"
+                    className="shrink-0 px-1.5 py-0.5 text-sm font-semibold"
                     style={{ borderRadius: 4, ...statusBadgeStyle(badge) }}
                   >
                     {badge}
@@ -1084,7 +1084,7 @@ function CampaignResultCard({
               <button
                 type="button"
                 onClick={() => setShowAllItems((v) => !v)}
-                className="px-2 py-1 text-[10px] font-semibold transition-colors hover:text-[#B4FF00]"
+                className="px-2 py-1 text-sm font-semibold transition-colors hover:text-[#B4FF00]"
                 style={{ color: "rgba(255,255,255,0.45)" }}
               >
                 {showAllItems
@@ -1104,7 +1104,7 @@ function CampaignResultCard({
             <div className="mt-3 flex flex-wrap gap-1.5">
               {scores.claimRisk && (
                 <span
-                  className="px-2 py-0.5 text-[10px] font-semibold"
+                  className="px-2 py-0.5 text-sm font-semibold"
                   style={{ borderRadius: 4, ...riskPillStyle(scores.claimRisk) }}
                 >
                   Claim: {scores.claimRisk}
@@ -1112,7 +1112,7 @@ function CampaignResultCard({
               )}
               {scores.legalRisk && (
                 <span
-                  className="px-2 py-0.5 text-[10px] font-semibold"
+                  className="px-2 py-0.5 text-sm font-semibold"
                   style={{ borderRadius: 4, ...riskPillStyle(scores.legalRisk) }}
                 >
                   Legal: {scores.legalRisk}
@@ -1121,7 +1121,7 @@ function CampaignResultCard({
             </div>
             {highRisk && (
               <p
-                className="mt-2 text-[10px] leading-[1.5]"
+                className="mt-2 text-sm leading-[1.5]"
                 style={{ color: "#fdba74" }}
               >
                 Manuelle Prüfung
@@ -1130,7 +1130,7 @@ function CampaignResultCard({
           </div>
 
           <p
-            className="mb-4 text-[10px] leading-[1.5]"
+            className="mb-4 text-sm leading-[1.5]"
             style={{ color: "rgba(255,255,255,0.4)" }}
           >
             {CAMPAIGN_AUTOPILOT_IS_PREVIEW ? (
@@ -1200,7 +1200,7 @@ function CampaignResultCard({
               <button
                 key={label}
                 type="button"
-                className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
+                className="px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
                 style={{
                   borderRadius: 4,
                   border: "1px solid rgba(180,255,0,0.3)",
@@ -1214,7 +1214,7 @@ function CampaignResultCard({
             <button
               type="button"
               onClick={onNewCampaign}
-              className="px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
+              className="px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-[#B4FF00] hover:text-[#060608]"
               style={{
                 borderRadius: 4,
                 border: "1px solid rgba(180,255,0,0.3)",
@@ -1234,7 +1234,7 @@ function CampaignResultCard({
                 ? "In der Preview noch nicht verfügbar"
                 : "Demnächst verfügbar"
             }
-            className="cursor-not-allowed px-3 py-1.5 text-[11px] font-semibold opacity-45"
+            className="cursor-not-allowed px-3 py-1.5 text-sm font-semibold opacity-45"
             style={{
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.12)",

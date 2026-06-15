@@ -177,7 +177,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
     fontSize: 10,
     letterSpacing: "0.1em",
     fontWeight: 700,
-    textTransform: "uppercase",
+    textTransform: "none",
   };
 
   return (
@@ -363,7 +363,7 @@ export function HeroWorkspaceDemo({ compact = false }: { compact?: boolean }) {
             color: "#B4FF00",
             fontWeight: 700,
             letterSpacing: "0.06em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 6,
           }}
         >

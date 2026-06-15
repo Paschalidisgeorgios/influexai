@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { AssetLoadingShader } from "@/components/canvas/AssetLoadingShader";
+import { AssetLoadingShader } from "@/components/dashboard/viewer/AssetLoadingShader";
 import { IntentLink, useIntentTracking, type IntentKey } from "@/hooks/useIntentTracking";
 import { TURNSTILE_SITE_KEY } from "@/lib/security/turnstile";
 import "@/styles/canvas.css";
@@ -83,11 +83,11 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
       className={`flex flex-col self-start rounded-xl border border-zinc-800/80 bg-zinc-950/60 p-5 backdrop-blur-md ${className}`}
     >
       <div>
-        <span className="inline-flex rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#ccff00]">
+        <span className="inline-flex rounded-full border border-[#ccff00]/30 bg-[#ccff00]/10 px-2.5 py-0.5 font-mono text-sm font-semibold tracking-wide text-[#ccff00]">
           Live-Demo
         </span>
         <h3
-          className="mt-3 font-mono text-[15px] font-bold uppercase tracking-tight text-white"
+          className="mt-3 font-mono text-[15px] font-semibold tracking-tight text-white"
         >
           Teste das KI-Gehirn
         </h3>
@@ -175,7 +175,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
               key="error"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[11px] leading-relaxed text-red-400"
+              className="text-sm leading-relaxed text-red-400"
             >
               {error}
             </motion.p>
@@ -184,7 +184,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
               key="hint"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[11px] leading-relaxed text-white/60"
+              className="text-sm leading-relaxed text-white/60"
             >
               Claude analysiert deine Nische und liefert einen scroll-stoppenden Hook — ohne
               Registrierung.
@@ -195,7 +195,7 @@ export function LandingLiveDemoPlayground({ className = "" }: LandingLiveDemoPla
 
       <IntentLink
         href="/signup"
-        className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-[#ccff00] no-underline transition-opacity hover:opacity-80"
+        className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#ccff00] no-underline transition-opacity hover:opacity-80"
         onClick={() => setIntent(DEMO_INTENT)}
       >
         Im App Studio weiterbearbeiten

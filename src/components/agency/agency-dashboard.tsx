@@ -55,7 +55,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
   if (!data || "error" in data || !("members" in data)) {
     return (
       <div style={{ padding: 40, maxWidth: 560 }}>
-        <h1 style={{ color: "#F0EFE8", fontFamily: "var(--font-bebas)" }}>
+        <h1 style={{ color: "#F0EFE8", fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}>
           Agentur Dashboard
         </h1>
         <p style={{ color: "rgba(255,255,255,0.65)" }}>
@@ -121,7 +121,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
         <div>
           <h1
             style={{
-              fontFamily: "var(--font-bebas)",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "2.5rem",
               color: "#F0EFE8",
               margin: 0,
@@ -396,7 +396,7 @@ export function AgencyDashboard({ subscribed }: { subscribed?: boolean }) {
             )}
             <span
               style={{
-                fontFamily: "var(--font-bebas)",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 color: "#F0EFE8",
               }}

@@ -26,7 +26,7 @@ export function LandingBadge({ text, visible }: LandingBadgeProps) {
           aria-hidden
         />
         <span
-          className="text-[10px] uppercase tracking-[1.5px]"
+          className="text-sm tracking-wide"
           style={{ color: "rgba(255,255,255,0.75)" }}
         >
           {text || "\u00A0"}

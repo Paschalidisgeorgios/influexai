@@ -24,7 +24,7 @@ export function LandingAudienceSection() {
           {AUDIENCE_KEYS.map((key, i) => (
             <SpringReveal key={key} delay={i * 0.06}>
               <div className="campaign-audience-card h-full rounded-2xl border border-black/[0.08] bg-white p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5a7300]">
+                <span className="text-sm font-semibold tracking-wide text-[#5a7300]">
                   {t(`${key}_kicker`)}
                 </span>
                 <h3 className="mt-2 text-xl font-semibold tracking-tight text-[#0a0a0a]">
@@ -53,10 +53,10 @@ export function LandingPricingCtaSection() {
       <div className="campaign-hero__glow pointer-events-none absolute inset-0 opacity-50" aria-hidden />
       <div className="relative z-10 mx-auto max-w-[720px] text-center">
         <SpringReveal>
-          <span className="mb-2 inline-flex text-[11px] font-semibold uppercase tracking-[0.16em] text-[#B4FF00]/80">
+          <span className="mb-2 inline-flex text-sm font-semibold tracking-wide text-[#B4FF00]/80">
             {t("kicker")}
           </span>
-          <h2 className="font-[family-name:var(--font-bebas)] text-[clamp(2rem,5vw,3rem)] leading-[0.95] text-white">
+          <h2 className="text-[clamp(2rem,5vw,3rem)] leading-[0.95] text-white">
             {t("headline")}
           </h2>
           <p className="mx-auto mt-4 max-w-[480px] text-sm leading-relaxed text-white/60 md:text-base">

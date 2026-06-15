@@ -65,7 +65,7 @@ const card: CSSProperties = {
 };
 
 const sectionTitle: CSSProperties = {
-  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
   fontSize: "1.35rem",
   letterSpacing: "0.04em",
   color: "#F0EFE8",
@@ -322,7 +322,7 @@ export default function ProductHuntLaunchKitPage() {
           <Rocket size={28} color="#B4FF00" />
           <h1
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(1.8rem, 4vw, 2.4rem)",
               color: "#F0EFE8",
               margin: 0,
@@ -394,7 +394,7 @@ export default function ProductHuntLaunchKitPage() {
                 fontSize: "0.72rem",
                 fontWeight: 800,
                 letterSpacing: "0.1em",
-                textTransform: "uppercase",
+                textTransform: "none",
                 color: "#B4FF00",
                 marginBottom: 10,
               }}

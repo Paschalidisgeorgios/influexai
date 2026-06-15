@@ -353,7 +353,7 @@ function ProduktWerbungPageInner() {
             fontWeight: 800,
             letterSpacing: "0.1em",
             color: "#B4FF00",
-            textTransform: "uppercase",
+            textTransform: "none",
           }}
         >
           {label}
@@ -419,7 +419,7 @@ function ProduktWerbungPageInner() {
       <div style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "clamp(2rem, 4vw, 3rem)",
             letterSpacing: "0.02em",
             color: "#F0EFE8",
@@ -451,7 +451,7 @@ function ProduktWerbungPageInner() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Templates */}
           <div style={cardStyle()}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 12, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 12, letterSpacing: "0.08em", textTransform: "none" }}>
               {t("templates_label")}
             </label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -479,7 +479,7 @@ function ProduktWerbungPageInner() {
 
           {/* URL Scrape */}
           <div style={cardStyle()}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "none" }}>
               {t("url_label")}
             </label>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -524,7 +524,7 @@ function ProduktWerbungPageInner() {
 
           {/* Image upload */}
           <div style={cardStyle()}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "none" }}>
               {t("image_label")}
             </label>
             <div
@@ -554,22 +554,22 @@ function ProduktWerbungPageInner() {
           {/* Product details */}
           <div style={{ ...cardStyle(), display: "flex", flexDirection: "column", gap: 14 }}>
             <div>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("name_label")}</label>
+              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "none" }}>{t("name_label")}</label>
               <input value={productName} onChange={(e) => setProductName(e.target.value)} placeholder={t("name_placeholder")} style={fieldStyle()} />
             </div>
             <div>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("audience_label")}</label>
+              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "none" }}>{t("audience_label")}</label>
               <input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder={t("audience_placeholder")} style={fieldStyle()} />
             </div>
             <div>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("cta_label")}</label>
+              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 8, letterSpacing: "0.08em", textTransform: "none" }}>{t("cta_label")}</label>
               <input value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder={t("cta_placeholder")} style={fieldStyle()} />
             </div>
           </div>
 
           {/* Platform */}
           <div style={cardStyle()}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 14, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("platform_label")}</label>
+            <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 14, letterSpacing: "0.08em", textTransform: "none" }}>{t("platform_label")}</label>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 }}>
               {PRODUCT_AD_PLATFORMS.map((p) => (
                 <button
@@ -598,7 +598,7 @@ function ProduktWerbungPageInner() {
           {/* Style + Language */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
             <div style={cardStyle()}>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("style_label")}</label>
+              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "none" }}>{t("style_label")}</label>
               <select value={style} onChange={(e) => setStyle(e.target.value as ProductAdStyle)} style={{ ...fieldStyle(), cursor: "pointer" }}>
                 {PRODUCT_AD_STYLES.map((s) => (
                   <option key={s} value={s}>{t(`style_${s}`)}</option>
@@ -606,7 +606,7 @@ function ProduktWerbungPageInner() {
               </select>
             </div>
             <div style={cardStyle()}>
-              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("language_label")}</label>
+              <label style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 10, letterSpacing: "0.08em", textTransform: "none" }}>{t("language_label")}</label>
               <select value={language} onChange={(e) => setLanguage(e.target.value as Locale)} style={{ ...fieldStyle(), cursor: "pointer" }}>
                 {PRODUCT_AD_LOCALES.map((loc) => (
                   <option key={loc} value={loc}>{LOCALE_LANGUAGE_NAMES[loc]}</option>
@@ -633,7 +633,7 @@ function ProduktWerbungPageInner() {
               border: "none",
               background: canGenerate ? "#B4FF00" : "#2a2a2a",
               color: canGenerate ? "#060608" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.3rem",
               letterSpacing: "0.04em",
               cursor: canGenerate ? "pointer" : "default",
@@ -653,7 +653,7 @@ function ProduktWerbungPageInner() {
               border: "1px solid rgba(180,255,0,0.35)",
               background: "transparent",
               color: canGenerate ? "#B4FF00" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.1rem",
               letterSpacing: "0.04em",
               cursor: canGenerate ? "pointer" : "default",
@@ -665,7 +665,7 @@ function ProduktWerbungPageInner() {
 
           {history.length > 0 && (
             <div style={cardStyle()}>
-              <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", marginBottom: 12, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t("history_title")}</div>
+              <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "rgba(255,255,255,0.65)", marginBottom: 12, letterSpacing: "0.08em", textTransform: "none" }}>{t("history_title")}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {history.map((h) => (
                   <div key={h.id} style={{ fontSize: "0.82rem", color: "rgba(240,239,232,0.7)", display: "flex", justifyContent: "space-between", gap: 8 }}>
@@ -684,7 +684,7 @@ function ProduktWerbungPageInner() {
           <p
             style={{
               textAlign: "center",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               color: "#B4FF00",
               letterSpacing: "0.04em",

@@ -126,7 +126,7 @@ function OutlierDetectorPageInner() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   useEffect(() => {
@@ -224,7 +224,7 @@ function OutlierDetectorPageInner() {
           <Flame size={32} color="#B4FF00" strokeWidth={2} />
           <h1
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(2rem, 4vw, 3rem)",
               letterSpacing: "0.02em",
               color: "#F0EFE8",
@@ -397,7 +397,7 @@ function OutlierDetectorPageInner() {
               border: "none",
               background: niche.trim() ? "#B4FF00" : "#2a2a2a",
               color: niche.trim() ? "#060608" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
               cursor: niche.trim() ? "pointer" : "default",
@@ -577,7 +577,7 @@ function OutlierDetectorPageInner() {
                         fontSize: "0.65rem",
                         fontWeight: 700,
                         color: "rgba(255,255,255,0.65)",
-                        textTransform: "uppercase",
+                        textTransform: "none",
                         letterSpacing: "0.1em",
                         marginBottom: 4,
                       }}
@@ -586,7 +586,7 @@ function OutlierDetectorPageInner() {
                     </div>
                     <div
                       style={{
-                        fontFamily: "var(--font-bebas), sans-serif",
+                        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                         fontSize: "clamp(2.5rem, 8vw, 3.5rem)",
                         lineHeight: 1,
                         color: sc,
@@ -615,7 +615,7 @@ function OutlierDetectorPageInner() {
                       fontSize: "0.72rem",
                       fontWeight: 700,
                       color: "rgba(255,255,255,0.65)",
-                      textTransform: "uppercase",
+                      textTransform: "none",
                       letterSpacing: "0.08em",
                       marginBottom: 8,
                     }}
@@ -653,7 +653,7 @@ function OutlierDetectorPageInner() {
                       fontWeight: 700,
                       color: "#B4FF00",
                       marginBottom: 6,
-                      textTransform: "uppercase",
+                      textTransform: "none",
                       letterSpacing: "0.08em",
                     }}
                   >

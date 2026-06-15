@@ -20,7 +20,7 @@ const GHOST_BTN =
   "inline-flex items-center justify-center rounded-lg border border-zinc-700/60 bg-transparent px-4 py-2.5 font-sans text-sm font-medium text-zinc-300 no-underline transition-colors hover:border-white/30 hover:bg-white/5 hover:text-white";
 
 const PREMIUM_BTN =
-  "w-full rounded-lg bg-[#ccff00] py-3 font-sans text-xs font-bold uppercase tracking-wider text-black transition-all duration-300 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-lg bg-[#ccff00] py-3 font-sans text-xs font-semibold tracking-wide text-black transition-all duration-300 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function CreditsPage() {
   const t = useTranslations("credits");
@@ -83,7 +83,7 @@ export default function CreditsPage() {
       )}
 
       <div className={`${GLASS_CARD} mb-6`}>
-        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+        <p className="mb-2 font-mono text-sm font-semibold tracking-wide text-zinc-500">
           {t("balance")}
         </p>
         <div
@@ -123,7 +123,7 @@ export default function CreditsPage() {
       </div>
 
       <div className={`${GLASS_CARD} mb-6`}>
-        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
+        <p className="mb-2 font-mono text-sm font-semibold tracking-wide text-[#ccff00]">
           {tBuy("credit_outcome_title")}
         </p>
         <p className="max-w-xl font-sans text-sm leading-relaxed text-zinc-400">
@@ -134,10 +134,10 @@ export default function CreditsPage() {
       <CreditCalculator topFeatureType={stats?.topFeatureType} />
 
       <div className={`${GLASS_CARD} mb-6`}>
-        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+        <p className="mb-2 font-mono text-sm font-semibold tracking-wide text-zinc-500">
           API Access
         </p>
-        <h3 className="mb-2 font-sans text-xl font-extrabold uppercase tracking-tight text-white">
+        <h3 className="mb-2 font-sans text-xl font-bold tracking-tight text-white">
           Developer API
         </h3>
         <p className="mb-4 font-sans text-sm leading-relaxed text-zinc-400">
@@ -160,7 +160,7 @@ export default function CreditsPage() {
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-2 font-sans text-xl font-extrabold uppercase tracking-tight text-white md:text-2xl">
+        <h2 className="mb-2 font-sans text-xl font-bold tracking-tight text-white md:text-2xl">
           {tBuy("pricing_title")}
         </h2>
         <p className="max-w-xl font-sans text-sm leading-relaxed text-zinc-400">
@@ -185,12 +185,12 @@ export default function CreditsPage() {
               }`}
             >
               {isPopular && (
-                <div className="credits-popular-badge absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ccff00]/40 bg-[#ccff00]/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-[#ccff00] backdrop-blur-md">
+                <div className="credits-popular-badge absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ccff00]/40 bg-[#ccff00]/10 px-3 py-1 font-mono text-sm font-semibold tracking-wide text-[#ccff00] backdrop-blur-md">
                   ★ Most Popular
                 </div>
               )}
 
-              <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              <p className="mb-3 font-mono text-sm font-semibold tracking-wide text-zinc-500">
                 {pkg.label}
               </p>
 
@@ -256,7 +256,7 @@ export default function CreditsPage() {
           <div
             className={`${GLASS_CARD} w-full max-w-md text-center`}
           >
-            <h2 className="mb-3 font-sans text-2xl font-extrabold uppercase tracking-tight text-white">
+            <h2 className="mb-3 font-sans text-2xl font-bold tracking-tight text-white">
               Keine Credits mehr
             </h2>
             <p className="mb-6 font-sans text-sm text-zinc-400">

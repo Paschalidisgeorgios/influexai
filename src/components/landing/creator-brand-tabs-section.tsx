@@ -49,7 +49,7 @@ function AudienceTabButton({
     <button
       type="button"
       onClick={onClick}
-      className="relative px-1 pb-2.5 text-[0.78rem] font-bold uppercase tracking-[0.14em] transition-colors duration-200"
+      className="relative px-1 pb-2.5 text-sm font-semibold tracking-wide transition-colors duration-200"
       style={{ color: active ? "var(--white)" : "rgba(255,255,255,0.4)" }}
     >
       {label}
@@ -93,7 +93,7 @@ function StudioToolCard({
         <div className="absolute inset-0 tool-card-overlay" aria-hidden />
         {disabled && (
           <span
-            className="absolute right-2 top-2 rounded-[6px] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+            className="absolute right-2 top-2 rounded-[6px] px-2 py-0.5 text-sm font-semibold tracking-wide"
             style={{
               background: "rgba(180,255,0,0.12)",
               border: "1px solid rgba(180,255,0,0.35)",
@@ -145,7 +145,7 @@ function CreatorTabPanel() {
       <div className="mx-auto max-w-[720px] text-center">
         <SpringReveal>
           <p
-            className="mb-3 font-bold uppercase tracking-[0.22em]"
+            className="mb-3 font-semibold tracking-wide"
             style={{
               fontSize: 11,
               color: "var(--accent, #B4FF00)",
@@ -189,7 +189,7 @@ function CreatorTabPanel() {
                   </span>
                 </div>
                 <p
-                  className="m-0 text-[0.68rem] leading-snug"
+                  className="m-0 text-sm leading-snug"
                   style={{ color: "rgba(255,255,255,0.5)" }}
                 >
                   {tFounding("slot_label", { slot, total: TOTAL_SLOTS })}
@@ -306,7 +306,7 @@ function BrandTabPanel() {
                 <div
                   className="flex-shrink-0"
                   style={{
-                    fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                    fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                     fontSize: "1.25rem",
                     color: "var(--acid)",
                     lineHeight: 1,
@@ -323,7 +323,7 @@ function BrandTabPanel() {
                     {t(`${key}_title`)}
                   </div>
                   <div
-                    className="text-[0.78rem] leading-[1.55]"
+                    className="text-sm leading-[1.55]"
                     style={{ color: "var(--wd)" }}
                   >
                     {t(`${key}_desc`)}
@@ -358,18 +358,18 @@ function BrandTabPanel() {
             />
             <div className="absolute bottom-0 left-0 right-0 p-3">
               <div
-                className="mb-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+                className="mb-0.5 text-sm font-semibold tracking-wide"
                 style={{ color: "var(--accent, var(--acid))" }}
               >
                 {t(`${key}_cat`)}
               </div>
               <div
-                className="feat-card-title text-[0.78rem] leading-[1.3]"
+                className="feat-card-title text-sm leading-[1.3]"
                 style={{ letterSpacing: "0.08em" }}
               >
                 {t(`${key}_title`)}
               </div>
-              <div className="feat-card-desc mt-0.5 text-[0.65rem]">
+              <div className="feat-card-desc mt-0.5 text-sm">
                 {t(`${key}_sub`)}
               </div>
             </div>
@@ -396,7 +396,7 @@ export function CreatorBrandTabsSection() {
         <SpringReveal>
           <div className="mb-8 flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
             <p
-              className="m-0 text-center text-[0.72rem] font-bold uppercase tracking-[0.18em] sm:text-left"
+              className="m-0 text-center text-sm font-semibold tracking-wide sm:text-left"
               style={{ color: "rgba(255,255,255,0.45)" }}
             >
               {tTabs("tagline")}

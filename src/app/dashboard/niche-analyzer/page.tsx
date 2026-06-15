@@ -82,7 +82,7 @@ export default function NicheAnalyzerPage() {
     display: "block" as const,
     marginBottom: 6,
     letterSpacing: "0.04em",
-    textTransform: "uppercase" as const,
+    textTransform: "none" as const,
   };
 
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function NicheAnalyzerPage() {
           <TrendingUp size={32} color="#B4FF00" strokeWidth={2} />
           <h1
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(2rem, 4vw, 3rem)",
               letterSpacing: "0.02em",
               color: "#F0EFE8",
@@ -319,7 +319,7 @@ export default function NicheAnalyzerPage() {
               border: "none",
               background: topic.trim() ? "#B4FF00" : "#2a2a2a",
               color: topic.trim() ? "#060608" : "rgba(255,255,255,0.65)",
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.04em",
               cursor: topic.trim() ? "pointer" : "default",
@@ -451,7 +451,7 @@ export default function NicheAnalyzerPage() {
             >
               <h3
                 style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                   fontSize: "1.4rem",
                   letterSpacing: "0.02em",
                   color: "#F0EFE8",

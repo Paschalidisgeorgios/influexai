@@ -48,7 +48,7 @@ export function WhitelabelLivePreview({
           </p>
 
           <label className="block mb-6">
-            <span className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2 block">
+            <span className="text-xs font-semibold tracking-wide text-white/50 mb-2 block">
               {t("name_label")}
             </span>
             <input
@@ -61,7 +61,7 @@ export function WhitelabelLivePreview({
           </label>
 
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 block">
+            <span className="text-xs font-semibold tracking-wide text-white/50 mb-3 block">
               {t("colors_label")}
             </span>
             <div className="flex flex-wrap gap-4">
@@ -74,7 +74,7 @@ export function WhitelabelLivePreview({
                     className="h-11 w-11 rounded-full border-2 border-white/20 cursor-pointer bg-transparent p-0 overflow-hidden"
                     aria-label={t("color_picker", { index: i + 1 })}
                   />
-                  <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                  <span className="text-sm text-white/40 tracking-wide">
                     {t(`color_${i + 1}`)}
                   </span>
                 </label>
@@ -100,7 +100,7 @@ export function WhitelabelLivePreview({
             <span className="font-semibold text-sm" style={{ color: colors[0] }}>
               {displayName}
             </span>
-            <span className="ml-auto text-[0.65rem] text-white/50 px-2 py-1 rounded border border-zinc-800/60">
+            <span className="ml-auto text-sm text-white/50 px-2 py-1 rounded border border-zinc-800/60">
               {t("powered_by")}
             </span>
           </div>

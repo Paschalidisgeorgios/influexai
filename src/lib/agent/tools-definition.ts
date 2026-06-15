@@ -1,4 +1,5 @@
-import type { AgentToolName } from "./types";
+import type { AgentMetaToolName, AgentToolName } from "./types";
+import { SUBMIT_TREND_INSIGHT_TOOL } from "./structured-insight";
 
 export const AGENT_TOOL_STEP_LABELS: Record<AgentToolName, string> = {
   analyze_niche: "🔍 Nische wird analysiert…",
@@ -18,6 +19,10 @@ export const AGENT_TOOL_STEP_LABELS: Record<AgentToolName, string> = {
   live_creator: "📡 Live Creator — Weiterleitung…",
 };
 
+export const AGENT_META_TOOL_STEP_LABELS: Record<AgentMetaToolName, string> = {
+  submit_trend_insight: "📊 Trend-Insights werden strukturiert…",
+};
+
 const REDIRECT_TOOL_INPUT = {
   type: "object" as const,
   properties: {
@@ -33,6 +38,40 @@ const REDIRECT_TOOL_INPUT = {
 };
 
 export const MASTER_AGENT_TOOLS = [
+  {
+    name: SUBMIT_TREND_INSIGHT_TOOL,
+    description:
+      "Pflicht-Abschluss für jede inhaltliche Antwort: strukturiertes, extrem kurzes Ergebnis für die Canvas-UI. Max. 2–3 Trends, nur Bulletpoints mit **fetten** Kernbegriffen. viralScore, detectedNiche und keywords MÜSSEN exakt zum Inhalt von htmlOrMarkdownOutput passen.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        viralScore: {
+          type: "number",
+          description: "Viral-Potenzial 1–100, passend zum Text",
+        },
+        detectedNiche: {
+          type: "string",
+          description: "Haupt-Trend-Nische, exakt passend zum Text",
+        },
+        keywords: {
+          type: "array",
+          items: { type: "string" },
+          description: "3–6 kurze Keyword-Badges, passend zum Text",
+        },
+        htmlOrMarkdownOutput: {
+          type: "string",
+          description:
+            "Kurzer, scannbarer Trend-Text: nur Bullets, max. 2–3 Haupttrends, **fette** Kernbegriffe, kein Einleitungs-/Abschlussfloskeln",
+        },
+      },
+      required: [
+        "viralScore",
+        "detectedNiche",
+        "keywords",
+        "htmlOrMarkdownOutput",
+      ],
+    },
+  },
   {
     name: "analyze_niche" as const,
     description:
@@ -249,18 +288,36 @@ Regeln:
 Tool-Workflow:
 1. Beste Sequenz planen und Tools nacheinander ausführen.
 2. Ergebnisse vorheriger Tools für spätere nutzen.
-3. Kurz erklären was du tust (1–2 Sätze pro Schritt).
+3. Keine Prozess-Erklärungen im Nutzer-Output — Ergebnisse nur in submit_trend_insight.
 
 PROFIL-NUTZUNG:
-- Nutze Profildaten (Nische, Zielgruppe etc.) NUR, wenn sie für die aktuelle Anfrage direkt relevant sind UND wenn du dich explizit darauf beziehst (z.B. 'Da du laut deinem Profil im Bereich X aktiv bist, ...').
-- Bei allgemeinen Fragen (z.B. 'was ist aktuell viral?', 'gib mir Trends') antworte ZUERST allgemein/breit gefächert über mehrere Themenbereiche, bevor du optional auf das Profil eingehst. Unterstelle NIEMALS eine Nische als gegeben, wenn der Nutzer nicht danach gefragt hat oder sie nicht bestätigt wurde.
+- Nutze Profildaten (Nische, Zielgruppe etc.) NUR, wenn sie für die aktuelle Anfrage direkt relevant sind — und auch dann nur als kurzer Kontext, nie als langer Absatz.
+- Bei allgemeinen Fragen (z.B. 'was ist aktuell viral?', 'gib mir Trends'): liefere trotzdem maximal 2–3 Haupttrends in Bulletpoints. Kein breiter Essay, kein Themensammelsurium.
+- Unterstelle NIEMALS eine Nische als gegeben, wenn der Nutzer nicht danach gefragt hat oder sie nicht bestätigt wurde.
 - Sprich den Nutzer nie mit 'deine Nische ist X' an, als wäre das eine bekannte Tatsache, die der Nutzer dir mitgeteilt hätte, wenn er das nicht in der aktuellen Konversation getan hat.
 
-ANTWORTFORMAT:
-- Antworten erscheinen in einem schmalen Panel (ca. 360px breit). Halte Antworten KURZ und PRÄGNANT — maximal 80-120 Wörter für die Hauptantwort, bevor du Rückfragen oder Vorschläge machst.
-- Nutze KEINE Markdown-Überschriften (##, ###). Nutze stattdessen kurze fette Einleitungen (**Label:**) gefolgt von normalem Text.
-- Nutze einfache Aufzählungen (- Punkt) statt nummerierter Listen mit langen GROSSGESCHRIEBENEN Titeln.
-- Bei mehreren Vorschlägen: maximal 3 Punkte, jeweils 1 Zeile.
-- Schreibe vollständige, klar getrennte Sätze mit korrekter Zeichensetzung und Leerzeichen nach Satzzeichen.
+ANTWORTFORMAT (UNMISSVERSTÄNDLICH — Verstöße machen den Output unleserlich):
+
+1. SCHREIBSTIL:
+- Extrem prägnant, kurz, fragmentiert. Kein Fließtext, keine Textwüsten.
+- NIEMALS Einleitungssätze ("Ich analysiere jetzt…", "Lass mich schauen…", "Gerne helfe ich…") oder abschließende Floskeln ("Ich hoffe das hilft…", "Viel Erfolg!").
+- Starte DIREKT mit den harten Fakten — erster sichtbarer Inhalt = Nutzwert, kein Prozess-Kommentar.
+
+2. TEXTMENGE:
+- Pro Trend oder Analyse: maximal 2–3 knackige Bulletpoints (- Punkt). Keine Fließtext-Absätze, keine mehrzeiligen Prosa-Blöcke.
+- Trend-Suchen & Analysen insgesamt: maximal 2–3 Haupttrends, danach STOPP.
+- Gesamtausgabe in htmlOrMarkdownOutput: maximal ~100 Wörter (Ausnahme: explizit angeforderte Scripts/Langtexte).
+- Bei mehreren Vorschlägen: maximal 3 Bullets, jeweils 1 Zeile.
+
+3. VISUELLE STRUKTUR:
+- **Fett** konsequent für jeden Kernbegriff (Trend-Name, Nische, Hook, Plattform, Keyword) — mindestens 1 fetter Anker pro Bullet.
+- Nutze KEINE Markdown-Überschriften (##, ###). Stattdessen: **Label:** + Bullet darunter.
+- Der Creator muss die Antwort in unter 3 Sekunden visuell scannen können.
+
+CANVAS-UI (PFLICHT):
+- Jede inhaltliche Antwort MUSS mit submit_trend_insight abgeschlossen werden — auch nach Tool-Ausführungen.
+- Der gesamte Nutzer-sichtbare Text gehört NUR in htmlOrMarkdownOutput (kein Freitext davor). Alle Regeln aus ANTWORTFORMAT gelten 1:1 dort.
+- viralScore (1–100), detectedNiche und keywords müssen exakt zum Inhalt von htmlOrMarkdownOutput passen.
+- keywords: 3–6 kurze Begriffe für Badges im Panel.
 
 Antworte in der Sprache des Users.`;

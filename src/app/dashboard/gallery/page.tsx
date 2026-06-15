@@ -173,7 +173,7 @@ export default function GalleryPage() {
             fontSize: "0.7rem",
             fontWeight: 700,
             letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            textTransform: "none",
             color: "#B4FF00",
             marginBottom: 8,
           }}
@@ -190,7 +190,7 @@ export default function GalleryPage() {
           }}
         >
           <div>
-            <h1 className="font-display mb-1 text-[clamp(1.75rem,7vw,2.5rem)] leading-tight text-[#F0EFE8]">
+            <h1 className="font-bold mb-1 text-[clamp(1.75rem,7vw,2.5rem)] leading-tight text-[#F0EFE8]">
               {t("title")}
             </h1>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.95rem" }}>

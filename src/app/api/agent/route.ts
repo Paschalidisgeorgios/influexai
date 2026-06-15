@@ -149,6 +149,7 @@ export async function POST(request: Request) {
         for await (const event of runMasterAgentStream(message, history)) {
           if (
             event.type === "text_delta" ||
+            event.type === "insight" ||
             event.type === "tool_done" ||
             event.type === "outputs"
           ) {

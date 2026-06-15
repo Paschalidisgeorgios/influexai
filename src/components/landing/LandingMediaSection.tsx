@@ -137,7 +137,7 @@ export function LandingMediaSection() {
       <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-6 md:min-h-[85vh]">
         <SpringReveal className="mb-10 md:mb-14">
           <p
-            className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] transition-colors duration-700"
+            className="mb-2 text-sm font-semibold tracking-wide transition-colors duration-700"
             style={{ color: activeItem.accent }}
           >
             Feature Theatre
@@ -178,11 +178,11 @@ export function LandingMediaSection() {
                 } as CSSProperties
               }
             >
-              <p className="mb-3 text-sm uppercase tracking-[0.25em] text-white/70">
+              <p className="mb-3 text-sm tracking-wide text-white/70">
                 {activeItem.category}
               </p>
 
-              <h3 className="text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
+              <h3 className="text-4xl font-bold tracking-tight text-white md:text-6xl">
                 {activeItem.title}
               </h3>
 
@@ -257,7 +257,7 @@ export function LandingMediaSection() {
                   {item.title}
                 </span>
                 <span
-                  className="mt-1 block text-[10px] uppercase tracking-wider transition-colors duration-300"
+                  className="mt-1 block text-sm tracking-wide transition-colors duration-300"
                   style={{
                     color: isActive ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.45)",
                   }}

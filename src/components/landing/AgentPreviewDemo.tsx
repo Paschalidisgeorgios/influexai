@@ -335,7 +335,7 @@ function ScenePanel({
               color: "#B4FF00",
               letterSpacing: "0.12em",
               fontWeight: 700,
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 4,
             }}
           >
@@ -368,7 +368,7 @@ function ScenePanel({
               color: "rgba(255,255,255,0.35)",
               letterSpacing: "0.12em",
               fontWeight: 700,
-              textTransform: "uppercase",
+              textTransform: "none",
               marginBottom: 4,
             }}
           >
@@ -423,7 +423,7 @@ function ScenePanel({
                 fontSize: 10,
                 color: "rgba(255,255,255,0.4)",
                 letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                textTransform: "none",
               }}
             >
               Ausführung
@@ -540,7 +540,7 @@ function ScenePanel({
                 color: "#B4FF00",
                 fontWeight: 700,
                 letterSpacing: "0.06em",
-                textTransform: "uppercase",
+                textTransform: "none",
               }}
             >
               ✓ {scene.title}
@@ -568,7 +568,7 @@ function ScenePanel({
                     fontSize: 9,
                     color: "rgba(180,255,0,0.6)",
                     letterSpacing: "0.1em",
-                    textTransform: "uppercase",
+                    textTransform: "none",
                     fontWeight: 700,
                     marginBottom: 3,
                   }}
@@ -628,7 +628,7 @@ function ScenePanel({
                       fontSize: 8,
                       color: "rgba(255,255,255,0.35)",
                       letterSpacing: "0.06em",
-                      textTransform: "uppercase",
+                      textTransform: "none",
                     }}
                   >
                     {label}
@@ -797,7 +797,7 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
                 color: "#B4FF00",
                 letterSpacing: "0.14em",
                 fontWeight: 700,
-                textTransform: "uppercase",
+                textTransform: "none",
                 marginBottom: 4,
               }}
             >
@@ -829,7 +829,7 @@ export function AgentPreviewDemo({ compact = false }: { compact?: boolean }) {
               fontSize: 9,
               letterSpacing: "0.12em",
               fontWeight: 700,
-              textTransform: "uppercase",
+              textTransform: "none",
               color: paused ? "rgba(255,255,255,0.45)" : "#B4FF00",
               border: `1px solid ${paused ? "rgba(255,255,255,0.12)" : "rgba(180,255,0,0.35)"}`,
               borderRadius: 999,

@@ -73,7 +73,7 @@ export default function SavedScriptsPage() {
           <FileText size={28} color="#B4FF00" strokeWidth={2} />
           <h1
             style={{
-              fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
               letterSpacing: "0.02em",
               color: "#F0EFE8",

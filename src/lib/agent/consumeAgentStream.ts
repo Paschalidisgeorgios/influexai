@@ -1,14 +1,17 @@
 import type {
+  AgentMetaToolName,
   AgentOutputs,
   AgentStreamEvent,
   AgentToolName,
+  AgentTrendInsight,
 } from "./types";
 
 export type AgentStreamHandlers = {
   onTextDelta?: (text: string) => void;
-  onToolStart?: (tool: AgentToolName, label: string) => void;
-  onToolDone?: (tool: AgentToolName, creditsUsed: number) => void;
-  onToolError?: (tool: AgentToolName, error: string) => void;
+  onInsight?: (insight: AgentTrendInsight) => void;
+  onToolStart?: (tool: AgentToolName | AgentMetaToolName, label: string) => void;
+  onToolDone?: (tool: AgentToolName | AgentMetaToolName, creditsUsed: number) => void;
+  onToolError?: (tool: AgentToolName | AgentMetaToolName, error: string) => void;
   onOutputs?: (outputs: AgentOutputs) => void;
   onCredits?: (creditsLeft: number, totalUsed: number) => void;
   onDone?: (summary: string) => void;
@@ -19,6 +22,9 @@ function dispatchEvent(event: AgentStreamEvent, handlers: AgentStreamHandlers): 
   switch (event.type) {
     case "text_delta":
       handlers.onTextDelta?.(event.text);
+      break;
+    case "insight":
+      handlers.onInsight?.(event.insight);
       break;
     case "tool_start":
       handlers.onToolStart?.(event.tool, event.label);

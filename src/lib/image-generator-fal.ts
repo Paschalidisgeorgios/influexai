@@ -6,6 +6,7 @@ import {
   buildPositivePrompt,
   FAL_IMAGE_MODELS,
   IMAGE_GEN_DEFAULTS,
+  isKreaModel,
   resolveFlux2ProImageSize,
   type FalImageSize,
   type ImageCategoryKey,
@@ -154,8 +155,67 @@ async function generateWithLegacyModel(options: {
   return { ...parsed, model: FAL_IMAGE_MODELS.FLUX_DEV };
 }
 
+/**
+ * Normalises an aspect_ratio string to one of the values the Krea API accepts.
+ * Krea accepts: 1:1, 4:3, 3:2, 16:9, 2.35:1, 4:5, 2:3, 9:16
+ * We pass through exact matches; everything else falls back to 1:1.
+ */
+function resolveKreaAspectRatio(imageSize: FalImageSize): string {
+  const KREA_VALID = new Set([
+    "1:1",
+    "4:3",
+    "3:2",
+    "16:9",
+    "2.35:1",
+    "4:5",
+    "2:3",
+    "9:16",
+  ]);
+
+  // Map fal FalImageSize strings (portrait_16_9 etc.) → Krea aspect ratios
+  const FAL_TO_KREA: Record<string, string> = {
+    portrait_16_9: "9:16",
+    landscape_16_9: "16:9",
+    square_hd: "1:1",
+    square: "1:1",
+    portrait_4_3: "4:3",
+    landscape_4_3: "4:3",
+  };
+
+  if (KREA_VALID.has(imageSize)) return imageSize;
+  return FAL_TO_KREA[imageSize] ?? "1:1";
+}
+
+async function generateWithKrea(options: {
+  fullPrompt: string;
+  modelId: string;
+  imageSize: FalImageSize;
+  seed?: number;
+}): Promise<CategoryImageResult> {
+  const aspectRatio = resolveKreaAspectRatio(options.imageSize);
+
+  console.log("[image-gen] krea model:", options.modelId);
+  console.log("[image-gen] krea aspect_ratio:", aspectRatio);
+  console.log("[image-gen] krea prompt:", options.fullPrompt);
+
+  const input: Record<string, unknown> = {
+    prompt: options.fullPrompt,
+    aspect_ratio: aspectRatio,
+    // resolution: "1K",  // currently the only supported value — Krea default
+  };
+  if (options.seed != null) {
+    input.seed = options.seed;
+  }
+
+  const result = await subscribeFalImage(options.modelId, input);
+  const parsed = extractImageResult(result);
+  if (!parsed) throw new Error("Kein Bild in der Krea-API-Antwort");
+  return { ...parsed, model: options.modelId };
+}
+
 export async function generateCategoryImage(options: {
   prompt: string;
+  modelId?: string;
   category: ImageCategoryKey;
   imageSize: FalImageSize;
   imageDimensions?: { width: number; height: number };
@@ -169,6 +229,28 @@ export async function generateCategoryImage(options: {
     options.falPrompt ?? buildCategoryPrompt(options.category, options.prompt);
   const negativePrompt =
     options.negativePrompt ?? buildCategoryNegativePrompt(options.category);
+
+  const modelId = options.modelId ?? FAL_IMAGE_MODELS.KREA_2_LARGE;
+
+  if (isKreaModel(modelId)) {
+    try {
+      return await generateWithKrea({
+        fullPrompt,
+        modelId,
+        imageSize: options.imageSize,
+        seed: options.seed,
+      });
+    } catch (error) {
+      console.log("[image-fallback] Krea failed, falling back to Flux 2 Pro:", error);
+      return generateWithFlux2Pro({
+        fullPrompt,
+        negativePrompt,
+        imageSize: options.imageSize,
+        imageDimensions: options.imageDimensions,
+        seed: options.seed,
+      });
+    }
+  }
 
   try {
     return await generateWithFlux2Pro({

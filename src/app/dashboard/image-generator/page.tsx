@@ -508,7 +508,7 @@ export default function ImageGeneratorPage() {
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
           <TablerPhoto size={32} color="#B4FF00" strokeWidth={2.2} />
-          <h1 className="font-display text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+          <h1 className="font-bold text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
             {t("title")}
           </h1>
         </div>
@@ -600,7 +600,7 @@ export default function ImageGeneratorPage() {
                   className={`flex flex-col items-start rounded-lg border px-3 py-2 text-left transition-colors ${chipClass(styleId === preset.id)}`}
                 >
                   <span className="text-sm font-semibold">{preset.labelDE}</span>
-                  <span className="text-[0.7rem] font-normal opacity-70">
+                  <span className="text-sm font-normal opacity-70">
                     {preset.subtitleDE}
                   </span>
                 </button>
@@ -682,7 +682,7 @@ export default function ImageGeneratorPage() {
               isLoading={loading}
               loadingText={standardGenerateLoadingText}
               onClick={() => void runGenerate(false)}
-              className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608]"
+              className="rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608]"
               style={{ flex: 1, minWidth: 0 }}
             >
               {t("generate_standard")}
@@ -692,7 +692,7 @@ export default function ImageGeneratorPage() {
               isLoading={loadingHighRes}
               loadingText={t("loading_highres")}
               onClick={() => void runGenerate(true)}
-              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#B4FF00]"
+              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 text-xl tracking-wide text-[#B4FF00]"
               style={{ flex: 1, minWidth: 0 }}
             >
               {t("generate_highres")}
@@ -704,7 +704,7 @@ export default function ImageGeneratorPage() {
             isLoading={characterLoading}
             loadingText="Generiere mit deinem Charakter..."
             onClick={() => void runCharacterGenerate()}
-            className="rounded-xl bg-[#B4FF00] py-3.5 font-[family-name:var(--font-bebas)] text-xl tracking-wide text-[#060608]"
+            className="rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608]"
             style={{ width: "100%" }}
           >
             {`Charakter generieren — ${IMAGE_GEN_CREDITS.standard} Credits`}
@@ -717,7 +717,7 @@ export default function ImageGeneratorPage() {
 
           {history.length > 0 && (
             <div className="mt-2 border-t border-white/8 pt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[rgba(255,255,255,0.65)]">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-[rgba(255,255,255,0.65)]">
                 {t("history_title")}
               </p>
               <ul className="max-h-36 space-y-1 overflow-y-auto text-xs">

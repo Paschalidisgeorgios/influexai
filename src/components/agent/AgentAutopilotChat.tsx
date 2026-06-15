@@ -11,7 +11,12 @@ import Link from "next/link";
 import { ArrowLeft, BrainCircuit } from "lucide-react";
 import type { AgentIntent } from "@/lib/agent-types";
 import { consumeAgentStream } from "@/lib/agent/consumeAgentStream";
-import type { AgentChatMessage, AgentOutputs, AgentToolName } from "@/lib/agent/types";
+import type {
+  AgentChatMessage,
+  AgentMetaToolName,
+  AgentOutputs,
+  AgentToolName,
+} from "@/lib/agent/types";
 import { AgentMarkdown } from "@/components/agent/AgentMarkdown";
 import { AgentTypingIndicator } from "@/components/agent/AgentTypingIndicator";
 import { AgentWorkingStatus } from "@/components/agent/AgentWorkingStatus";
@@ -26,7 +31,7 @@ type UiMessage = {
   content: string;
   intent?: AgentIntent;
   pending?: boolean;
-  activeTool?: { name: AgentToolName; label: string } | null;
+  activeTool?: { name: AgentToolName | AgentMetaToolName; label: string } | null;
   outputs?: AgentOutputs;
 };
 
@@ -144,6 +149,16 @@ export function AgentAutopilotChat({ initialPrompt = "" }: Props) {
                   : m
               )
             );
+          },
+          onInsight: (insight) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, content: insight.htmlOrMarkdownOutput }
+                  : m
+              )
+            );
+            patchAssistant({ activeTool: null });
           },
           onToolStart: (tool, label) => {
             patchAssistant({ activeTool: { name: tool, label } });

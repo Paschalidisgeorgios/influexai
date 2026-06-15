@@ -735,7 +735,7 @@ export default function AnalyticsPage() {
                     style={{
                       fontSize: "0.65rem",
                       fontWeight: 700,
-                      textTransform: "uppercase",
+                      textTransform: "none",
                       letterSpacing: "0.08em",
                       color: ACCENT,
                     }}

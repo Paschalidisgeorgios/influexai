@@ -332,7 +332,7 @@ export default function AvatarStudioPage() {
     fontWeight: 800,
     cursor: enabled ? "pointer" : "not-allowed",
     letterSpacing: "0.04em",
-    textTransform: "uppercase",
+    textTransform: "none",
     fontFamily: "inherit",
   });
 
@@ -369,7 +369,7 @@ export default function AvatarStudioPage() {
             fontSize: 10,
             color: "#B4FF00",
             letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -381,7 +381,7 @@ export default function AvatarStudioPage() {
             fontWeight: 900,
             color: "#fff",
             letterSpacing: "0.04em",
-            textTransform: "uppercase",
+            textTransform: "none",
             marginBottom: 8,
           }}
         >
@@ -418,7 +418,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 8,
                 }}
               >
@@ -490,7 +490,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 8,
                 }}
               >
@@ -765,7 +765,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 10,
                 }}
               >
@@ -793,7 +793,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 10,
                 }}
               >
@@ -819,7 +819,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 10,
                 }}
               >
@@ -845,7 +845,7 @@ export default function AvatarStudioPage() {
                   fontSize: 10,
                   color: "rgba(180,255,0,0.6)",
                   letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                   marginBottom: 10,
                 }}
               >
@@ -909,7 +909,7 @@ export default function AvatarStudioPage() {
                 fontWeight: 700,
                 color: "#B4FF00",
                 letterSpacing: "0.1em",
-                textTransform: "uppercase",
+                textTransform: "none",
                 marginBottom: 16,
               }}
             >
@@ -1104,7 +1104,7 @@ export default function AvatarStudioPage() {
                   fontWeight: 700,
                   color: "#B4FF00",
                   letterSpacing: "0.08em",
-                  textTransform: "uppercase",
+                  textTransform: "none",
                 }}
               >
                 ✓ Avatar fertig — {estimateAvatarCredits(options)} Credits abgebucht.

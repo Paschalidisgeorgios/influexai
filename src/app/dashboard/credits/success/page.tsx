@@ -56,7 +56,7 @@ function SuccessContent() {
       <ConfettiBurst />
       <h1
         style={{
-          fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
           fontSize: "2.5rem",
           letterSpacing: "0.02em",
           color: "#F0EFE8",

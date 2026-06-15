@@ -28,7 +28,7 @@ function RegistryModelPanel({ models }: { models: ToolModel[] }) {
       style={{ borderRightWidth: "0.5px" }}
     >
       <div className="border-b border-white/[0.06] px-3 py-3">
-        <p className="text-[9px] uppercase tracking-[1.5px] text-white/25">Modelle</p>
+        <p className="text-sm tracking-wide text-white/25">Modelle</p>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-2">
         {models.map((model) => {
@@ -58,14 +58,14 @@ function RegistryModelPanel({ models }: { models: ToolModel[] }) {
               >
                 {model.name}
               </p>
-              <p className="mt-1 text-[11px] text-white/35">{model.provider}</p>
-              <p className="mt-1 text-[10px] text-white/25">~{model.credits} Credits</p>
+              <p className="mt-1 text-sm text-white/35">{model.provider}</p>
+              <p className="mt-1 text-sm text-white/25">~{model.credits} Credits</p>
             </button>
           );
         })}
       </div>
       <div
-        className="mx-3 mb-3 rounded-full border px-3 py-1 text-center text-[10px]"
+        className="mx-3 mb-3 rounded-full border px-3 py-1 text-center text-sm"
         style={{
           borderColor: "var(--dash-theme-accent-25)",
           color: themeColors.accent,
@@ -84,13 +84,13 @@ function RegistryParamPanel({ model }: { model: ToolModel }) {
 
   return (
     <div className="space-y-3 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-      <p className="text-[11px] uppercase tracking-[1.2px] text-white/60">Einstellungen</p>
+      <p className="text-sm tracking-wide text-white/60">Einstellungen</p>
       {Object.entries(model.params).map(([key, schema]) => {
         if (Array.isArray(schema)) {
           const value = String(activeParams[key] ?? schema[0] ?? "");
           return (
             <label key={key} className="flex flex-col gap-1.5">
-              <span className="text-[11px] text-white/35">{key}</span>
+              <span className="text-sm text-white/35">{key}</span>
               <select
                 value={value}
                 onChange={(e) => setParam(key, e.target.value)}
@@ -109,7 +109,7 @@ function RegistryParamPanel({ model }: { model: ToolModel }) {
         const num = Number(activeParams[key] ?? schema.default);
         return (
           <label key={key} className="flex flex-col gap-1.5">
-            <span className="text-[11px] text-white/35">
+            <span className="text-sm text-white/35">
               {key} ({schema.min}–{schema.max})
             </span>
             <input
@@ -204,7 +204,7 @@ export function DynamicDashboardEngine({
         {showRegistryPanel && activeModel && (
           <aside className="hidden w-[300px] shrink-0 border-l border-white/[0.06] p-4 lg:block">
             <label className="mb-4 flex flex-col gap-2">
-              <span className="text-[11px] text-white/70">Beschreibung</span>
+              <span className="text-sm text-white/70">Beschreibung</span>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}

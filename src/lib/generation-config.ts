@@ -287,7 +287,7 @@ export function uiFormatToImageSize(
 
 export const FAL_IMAGE_MODELS = {
   FLUX_PULID: "fal-ai/flux-pulid",
-  /** Bild Generator — FLUX.2 [pro] (primary) */
+  /** Bild Generator — FLUX.2 [pro] (primary / fallback) */
   FLUX_2_PRO: "fal-ai/flux-2-pro",
   /** Bild Generator high-res fallback */
   FLUX_PRO_T2I: "fal-ai/flux-pro",
@@ -296,7 +296,43 @@ export const FAL_IMAGE_MODELS = {
   /** Bild Generator standard fallback */
   FLUX_DEV: "fal-ai/flux/dev",
   CLARITY_UPSCALER: "fal-ai/clarity-upscaler",
+  /**
+   * Krea AI models (via Fal AI official partnership, launched May 2026).
+   * Medium: faster, strong for illustration, anime, expressive styles.
+   * Large: 2× size, photorealism, motion blur, grain, raw aesthetics.
+   */
+  KREA_2_MEDIUM: "krea/v2/medium/text-to-image",
+  KREA_2_LARGE: "krea/v2/large/text-to-image",
 } as const;
+
+export type KreaModelId = typeof FAL_IMAGE_MODELS.KREA_2_MEDIUM | typeof FAL_IMAGE_MODELS.KREA_2_LARGE;
+
+export const KREA_MODEL_OPTIONS = [
+  {
+    value: FAL_IMAGE_MODELS.KREA_2_LARGE,
+    label: "Krea 2 Large — Photorealistisch",
+    description: "Maximale Bildqualität, Photorealismus & rohe Ästhetik",
+  },
+  {
+    value: FAL_IMAGE_MODELS.KREA_2_MEDIUM,
+    label: "Krea 2 Medium — Illustrativ & Anime",
+    description: "Schneller, stark bei Illustration, Anime & expressiven Stilen",
+  },
+  {
+    value: FAL_IMAGE_MODELS.FLUX_2_PRO,
+    label: "Flux 2 Pro — Universell",
+    description: "Bewährt für alle Kategorien (Flux-Architektur)",
+  },
+] as const;
+
+export const DEFAULT_IMAGE_MODEL_ID = FAL_IMAGE_MODELS.KREA_2_LARGE;
+
+export function isKreaModel(modelId: string): boolean {
+  return (
+    modelId === FAL_IMAGE_MODELS.KREA_2_MEDIUM ||
+    modelId === FAL_IMAGE_MODELS.KREA_2_LARGE
+  );
+}
 
 /** fal-ai/flux-2-pro custom sizes — short edge ≥ 1080px */
 export function resolveFlux2ProImageSize(

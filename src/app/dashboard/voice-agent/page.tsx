@@ -22,7 +22,7 @@ export default function VoiceAgentPage() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B4FF00]/10 text-[#B4FF00]">
           <Bot size={28} strokeWidth={2} />
         </div>
-        <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white/70">
+        <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/70">
           {t("badge")}
         </span>
         <h1 className="mt-4 text-2xl font-bold text-[#F0EFE8]">{t("title")}</h1>

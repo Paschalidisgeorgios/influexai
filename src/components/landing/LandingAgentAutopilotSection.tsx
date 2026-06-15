@@ -77,7 +77,7 @@ export function LandingAgentAutopilotSection() {
           </p>
           <h2
             id="agent-autopilot-heading"
-            className="whitespace-pre-line font-[family-name:var(--font-bebas)] text-[clamp(28px,6vw,52px)] leading-[0.95] tracking-[0.02em] text-white"
+            className="whitespace-pre-line text-[clamp(28px,6vw,52px)] leading-[0.95] tracking-[0.02em] text-white"
           >
             {t("headline")}
           </h2>
@@ -131,7 +131,7 @@ export function LandingAgentAutopilotSection() {
                 background: `rgba(${LANDING_NEON.magentaRgb}, 0.06)`,
               }}
             >
-              <span className="landing-neon-section-kicker landing-neon-section-kicker--violet text-[0.65rem]">
+              <span className="landing-neon-section-kicker landing-neon-section-kicker--violet text-sm">
                 Du
               </span>
               <p className="mt-1 leading-relaxed">{t("demo_user")}</p>
@@ -141,7 +141,7 @@ export function LandingAgentAutopilotSection() {
               className="max-h-[240px] overflow-y-auto rounded-xl border border-white/[0.08] bg-black/30 px-4 py-3 md:max-h-none"
               style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
             >
-              <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-white/60">
+              <span className="text-sm font-semibold tracking-wide text-white/60">
                 Agent Autopilot
               </span>
               <div className="mt-2 space-y-1.5 text-[0.82rem] leading-relaxed text-white/80">
@@ -167,7 +167,7 @@ export function LandingAgentAutopilotSection() {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-2 text-[0.72rem] text-white/60">
+            <div className="mt-4 flex items-center gap-2 text-sm text-white/60">
               <span
                 className={`h-2 w-2 rounded-full ${active ? "animate-pulse" : ""}`}
                 style={{ background: LANDING_NEON.cyan }}

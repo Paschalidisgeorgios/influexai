@@ -230,7 +230,7 @@ function FeaturePreviewCard({ preview }: { preview: PreviewVariant }) {
       <div className="feature-explorer-preview__visual" aria-hidden />
       <div className="feature-explorer-preview__overlay">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#B4FF00] font-[family-name:var(--font-bebas)] text-sm text-[#060608]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#B4FF00] text-sm text-[#060608]">
             I
           </span>
           <span className="text-sm font-semibold text-white">
@@ -238,7 +238,7 @@ function FeaturePreviewCard({ preview }: { preview: PreviewVariant }) {
           </span>
         </div>
 
-        <blockquote className="mt-auto pt-8 font-[family-name:var(--font-bebas)] text-[clamp(1.75rem,4vw,2.25rem)] leading-[0.95] tracking-wide text-white">
+        <blockquote className="mt-auto pt-8 text-[clamp(1.75rem,4vw,2.25rem)] leading-[0.95] tracking-wide text-white">
           „{t(`${preview}.quote`)}“
         </blockquote>
 

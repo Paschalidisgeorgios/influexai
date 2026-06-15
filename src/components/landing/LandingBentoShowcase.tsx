@@ -185,7 +185,7 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
       )}
       <div className="relative z-[1] flex h-full flex-col p-6">
         <span
-          className="mb-3 inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em]"
+          className="mb-3 inline-flex w-fit rounded-full border px-2.5 py-0.5 text-sm font-semibold tracking-wide"
           style={{
             borderColor: card.accent
               ? "rgba(180,255,0,0.25)"
@@ -199,7 +199,7 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
           {card.tag}
         </span>
         <h3
-          className="mb-2 font-display text-white"
+          className="mb-2 font-bold text-white"
           style={{
             fontSize: card.large ? "clamp(1.35rem, 2.5vw, 1.75rem)" : "1.25rem",
             letterSpacing: "0.02em",
@@ -212,7 +212,7 @@ function BentoCard({ card, hoveredId, onHover, onLongHover }: BentoCardProps) {
 
         {card.checkItems && (
           <div
-            className="mt-auto space-y-2 pt-6 font-mono text-[0.72rem] leading-relaxed text-[#B4FF00]/80"
+            className="mt-auto space-y-2 pt-6 font-mono text-sm leading-relaxed text-[#B4FF00]/80"
             aria-live="polite"
           >
             {card.checkItems.map((item, i) => (
@@ -273,14 +273,14 @@ export function LandingBentoShowcase({
     >
       <div className="mx-auto w-full max-w-[1160px]">
         <p
-          className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.14em]"
+          className="mb-2 text-center text-sm font-semibold tracking-wide"
           style={{ color: "var(--theme-accent)" }}
         >
           Studio Showcase
         </p>
         <h2
           id="bento-showcase-heading"
-          className="mb-10 text-center font-display text-[clamp(28px,6vw,48px)] tracking-wide text-white md:mb-12"
+          className="mb-10 text-center font-bold text-[clamp(28px,6vw,48px)] tracking-wide text-white md:mb-12"
         >
           ALLES DRIN.
         </h2>

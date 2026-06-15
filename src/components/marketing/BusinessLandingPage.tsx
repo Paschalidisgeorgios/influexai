@@ -69,7 +69,7 @@ function SectionHeading({
     <h2
       className="text-center"
       style={{
-        fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
         fontSize:
           size === "large"
             ? "clamp(2.25rem, 5vw, 56px)"
@@ -212,7 +212,7 @@ export function BusinessLandingPage() {
               <h1
                 className="mb-5"
                 style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                  fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                   fontSize: "clamp(2.75rem, 6vw, 72px)",
                   lineHeight: 0.95,
                   letterSpacing: "0.02em",
@@ -294,7 +294,7 @@ export function BusinessLandingPage() {
                       className="text-lg font-semibold"
                       style={{
                         color: GOLD,
-                        fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                         letterSpacing: "0.02em",
                       }}
                     >
@@ -329,7 +329,7 @@ export function BusinessLandingPage() {
                   </div>
                   <h3
                     style={{
-                      fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                      fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                       fontSize: "1.35rem",
                       color: "#ffffff",
                       letterSpacing: "0.02em",
@@ -344,7 +344,7 @@ export function BusinessLandingPage() {
                     {t(`features.${key}_desc`)}
                   </p>
                   <span
-                    className="inline-flex w-fit rounded-full border px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.06em]"
+                    className="inline-flex w-fit rounded-full border px-3 py-1 text-sm font-semibold tracking-wide"
                     style={{
                       borderColor: "rgba(224,169,81,0.25)",
                       background: "rgba(224,169,81,0.08)",
@@ -373,12 +373,12 @@ export function BusinessLandingPage() {
             </div>
 
             <div className="relative studio-glass-card border-[#ccff00]/30 p-8 text-left md:p-10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#ccff00] px-4 py-1 text-xs font-bold uppercase tracking-[0.08em] text-black">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#ccff00] px-4 py-1 text-xs font-semibold tracking-wide text-black">
                 {t("pricing.badge")}
               </div>
 
               <p
-                className="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-white"
+                className="mb-1 text-xs font-semibold tracking-wide text-white"
                 style={{ fontFamily: "var(--font-dm), 'DM Sans', sans-serif" }}
               >
                 {t("pricing.plan_name")}
@@ -386,7 +386,7 @@ export function BusinessLandingPage() {
               <div className="mb-2 flex items-baseline gap-1">
                 <span
                   style={{
-                    fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                    fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                     fontSize: "3.5rem",
                     lineHeight: 1,
                     color: "#ffffff",
@@ -461,7 +461,7 @@ export function BusinessLandingPage() {
               id="business-cta-heading"
               className="mb-4"
               style={{
-                fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "clamp(2.25rem, 5vw, 56px)",
                 color: "#ffffff",
                 letterSpacing: "0.02em",

@@ -9,6 +9,15 @@ export type AgentExecutableToolName =
   | "generate_video_from_image"
   | "generate_product_preview";
 
+export type AgentMetaToolName = "submit_trend_insight";
+
+export type AgentTrendInsight = {
+  viralScore: number;
+  detectedNiche: string;
+  keywords: string[];
+  htmlOrMarkdownOutput: string;
+};
+
 export type AgentRedirectToolName =
   | "ugc_video"
   | "produkt_werbung"
@@ -84,9 +93,22 @@ export type AgentStreamEvent =
       label: string;
     }
   | { type: "text_delta"; text: string }
-  | { type: "tool_start"; tool: AgentToolName; label: string }
-  | { type: "tool_done"; tool: AgentToolName; creditsUsed: number }
-  | { type: "tool_error"; tool: AgentToolName; error: string }
+  | { type: "insight"; insight: AgentTrendInsight }
+  | {
+      type: "tool_start";
+      tool: AgentToolName | AgentMetaToolName;
+      label: string;
+    }
+  | {
+      type: "tool_done";
+      tool: AgentToolName | AgentMetaToolName;
+      creditsUsed: number;
+    }
+  | {
+      type: "tool_error";
+      tool: AgentToolName | AgentMetaToolName;
+      error: string;
+    }
   | { type: "outputs"; outputs: AgentOutputs }
   | { type: "credits"; creditsLeft: number; totalUsed: number }
   | { type: "done"; summary: string }

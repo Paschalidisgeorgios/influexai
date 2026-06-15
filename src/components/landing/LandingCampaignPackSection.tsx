@@ -46,7 +46,7 @@ export function LandingCampaignPackSection() {
           </p>
           <h2
             id="campaign-pack-heading"
-            className="font-[family-name:var(--font-bebas)] text-[clamp(28px,6vw,48px)] leading-[0.95] tracking-[0.02em] text-white"
+            className="text-[clamp(28px,6vw,48px)] leading-[0.95] tracking-[0.02em] text-white"
           >
             {t("headline")}
           </h2>
@@ -71,7 +71,7 @@ export function LandingCampaignPackSection() {
               }}
             >
               <span
-                className="landing-neon-section-kicker landing-neon-section-kicker--green text-[0.65rem]"
+                className="landing-neon-section-kicker landing-neon-section-kicker--green text-sm"
               >
                 {t("briefing_label")}
               </span>

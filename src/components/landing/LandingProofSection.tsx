@@ -57,7 +57,7 @@ function ProofDemoCard({
         />
         <div className="absolute inset-0 tool-card-overlay" aria-hidden />
         <span
-          className="absolute left-2 top-2 rounded-[6px] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+          className="absolute left-2 top-2 rounded-[6px] px-2 py-0.5 text-sm font-semibold tracking-wide"
           style={{
             background: "rgba(0,0,0,0.55)",
             border: "1px solid rgba(180,255,0,0.35)",
@@ -73,10 +73,10 @@ function ProofDemoCard({
         </h3>
         <p className="text-[0.82rem] leading-[1.55] text-white/68">{benefit}</p>
         <div
-          className="rounded-[8px] border px-3 py-2 text-[0.78rem] leading-[1.5] text-white/62"
+          className="rounded-[8px] border px-3 py-2 text-sm leading-[1.5] text-white/62"
           style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)" }}
         >
-          <span className="text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white/60">
+          <span className="text-sm font-semibold tracking-wide text-white/60">
             Prompt ·{" "}
           </span>
           {prompt}
@@ -94,7 +94,7 @@ function ProofDemoCard({
           >
             {ctaWorkflow}
           </Link>
-          <p className="text-center text-[0.68rem] leading-snug text-white/60">{previewNote}</p>
+          <p className="text-center text-sm leading-snug text-white/60">{previewNote}</p>
         </div>
       </div>
     </article>
@@ -132,7 +132,7 @@ export function LandingProofSection() {
         </SpringReveal>
 
         <SpringReveal delay={0.05}>
-          <p className="mb-4 text-center text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[#B4FF00]/75">
+          <p className="mb-4 text-center text-sm font-semibold tracking-wide text-[#B4FF00]/75">
             {t("demo_label")}
           </p>
         </SpringReveal>

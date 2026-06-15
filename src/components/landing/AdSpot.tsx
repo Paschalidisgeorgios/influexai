@@ -269,7 +269,7 @@ export function AdSpot() {
           ref={logoRef}
           className="opacity-0 transition-all duration-700 ease-out"
           style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
             fontSize: "clamp(3.5rem, 14vw, 9rem)",
             letterSpacing: "0.08em",
             lineHeight: 0.88,

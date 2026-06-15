@@ -142,6 +142,7 @@ function defaultParams(toolId: ToolId): Record<string, unknown> {
     else if (p.type === "boolean") params[p.key] = false;
     else if (p.type === "slider" || p.type === "number") params[p.key] = p.min ?? 0;
     else if (p.type === "multiselect") params[p.key] = p.defaultValue ?? [];
+    else if (p.type === "file-list") params[p.key] = [];
     else params[p.key] = "";
   }
   return params;
