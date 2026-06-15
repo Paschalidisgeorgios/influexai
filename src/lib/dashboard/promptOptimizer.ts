@@ -589,7 +589,7 @@ export async function optimizeUserPrompt(
 
 const AKOOL_TOOLS = new Set<ToolId>([
   "face-swap-video", "character-swap", "char-studio-video", "avatar-video",
-  "video-translation", "talking-avatar", "talking-photo", "ai-video-editor",
+  "video-translation", "talking-avatar", "talking-photo",
   "face-swap-image", "char-studio-image", "live-camera", "streaming-avatar",
   "live-face-swap", "akool-production", "holographic-avatar", "akool-edge",
   "ai-support-agent",
@@ -619,6 +619,7 @@ export function calculateExactCredits(
   }
 
   if (toolId === "video-to-video" || toolId === "ref-to-video") return 15;
+  if (toolId === "ai-video-editor")                              return 40; // AKOOL_TOOL_CREDITS.videoEditor
   if (AKOOL_TOOLS.has(toolId))                                   return 10;
   if (toolId === "ecommerce-ads")                                return 8;
   if (toolId === "tts" || toolId === "voice-clone" || toolId === "voice-changer") return 2;

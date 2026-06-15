@@ -40,6 +40,7 @@ import {
   SendHorizonal,
   Bot,
   ArrowRight,
+  Clapperboard,
 } from "lucide-react";
 import type { ToolId } from "./DashboardLayout";
 import {
@@ -107,7 +108,7 @@ const DEFAULTS: Record<string, FormValues> = {
   "img-to-video":     { startFrameUrl: "", endFrameUrl: "", motionPrompt: "" } satisfies ImgToVideoValues,
 };
 
-const MEDIA_TOOLS = new Set<ToolId>(["image-gen", "ecommerce-ads", "img-to-video", "text-to-video", "video-to-video"]);
+const MEDIA_TOOLS = new Set<ToolId>(["image-gen", "ecommerce-ads", "img-to-video", "text-to-video", "video-to-video", "ai-video-editor"]);
 
 // ---------------------------------------------------------------------------
 // Prompt-Builder — Single source of truth für alle Claude-Prompts
@@ -811,6 +812,7 @@ const TOOL_META: Record<string, {
   "img-to-video":      { label: "Bild zu Video",     icon: <Film size={14} />,       accent: "#8B5DFF", description: "Animiere Standbilder mit Kinofilm-Physik via Kling 3.0 & Nano Banana." },
   "text-to-video":     { label: "Text → Video",      icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Text direkt in Video umwandeln" },
   "video-to-video":    { label: "Video → Video",     icon: <Sparkles size={14} />,   accent: "#8B5DFF", description: "Video re-generieren & anpassen" },
+  "ai-video-editor":   { label: "KI-Videoeditor",   icon: <Clapperboard size={14} />, accent: "#FFD84D", description: "Stil-Transfer & KI-Bearbeitung via Akool" },
 };
 
 const FALLBACK_META = {

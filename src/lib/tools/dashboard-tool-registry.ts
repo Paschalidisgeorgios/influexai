@@ -285,12 +285,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "ai-video-editor",
     category: "video",
     name: "KI-Videoeditor",
-    credits: 10,
-    apiRoute: null,
+    credits: 40,
+    apiRoute: "/api/akool/video-to-video",
     hasRightPanel: false,
-    isMediaTool: false,
-    status: "coming-soon",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    isMediaTool: true,
+    status: "active",
+    sourceNotes: "AKOOL_TOOL_CREDITS.videoEditor = 40 (akool-credits.ts). Route: /api/akool/video-to-video/route.ts, echter Akool-Call (/v3/video/style-transfer), pollType 'videoEditor'. Pre-Pay via runAkoolAsyncPost (deductAkoolToolCredits vor Job-Start, refundAkoolToolCredits bei Fehler). Dedicated Dashboard-Seite: /dashboard/video-editor/page.tsx. AgentBox: MEDIA_TOOLS, TOOL_META. [AKTIVIERT v4: coming-soon→active, credits 10→40, apiRoute ergänzt]",
   },
 
   "ecommerce-ads": {
@@ -364,7 +364,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "promptOptimizer Z.623 → 1 Credit. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für Content-Moderation in src/lib/akool*.ts oder src/app/api/akool/* referenziert. Akool bietet keine moderierte Content-Moderation-API im SDK. Würde neuen Provider (z.B. AWS Rekognition, Google Vision SafeSearch) oder eigenständigen Akool-Moderations-Endpoint erfordern — nicht im aktuellen Code vorhanden. Status bleibt 'coming-soon'. [Diagnose v4]",
   },
 
   // ── Audio Tools ───────────────────────────────────────────────────────────
@@ -452,7 +452,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für AI-Support/Chat-Agent in src/lib/akool*.ts oder src/app/api/akool/* referenziert. Konzept eines autonomen Support-Agenten erfordert eigene Backend-Logik (z.B. RAG-Pipeline, Ticketing-Integration, Websocket-Chat) — weit über Akool-Wrapper hinaus. Würde komplett neue Architektur erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
   },
 
   "akool-production": {
@@ -464,7 +464,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Production'-Feature in src/lib/akool*.ts oder AkoolJobPollType referenziert. 'Production' könnte Akools Enterprise-Rendering-Pipeline bezeichnen — kein öffentlicher v4-Endpoint dafür im Codebase bekannt. Würde Akool-API-Dokumentationsrecherche und neuen Wrapper erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
   },
 
   "holographic-avatar": {
@@ -476,7 +476,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für holografische/3D-Avatar-Darstellung in src/lib/akool*.ts oder AkoolJobPollType referenziert. Holografische Displays erfordern Hardware-Integration (Looking Glass, HoloLens etc.) oder spezialisierte 3D-Rendering-Pipeline — weit außerhalb der aktuellen Akool-API-Abdeckung. Status bleibt 'coming-soon'. [Diagnose v4]",
   },
 
   "akool-edge": {
@@ -488,7 +488,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Keine API-Route in /api/ gefunden. Sidebar-Eintrag vorhanden. Status 'coming-soon'.",
+    sourceNotes: "NICHT BUILDBAR: Kein Akool-Endpoint für 'Edge'-Feature in src/lib/akool*.ts oder AkoolJobPollType referenziert. 'Akool Edge' könnte Edge-Deployment/CDN-Beschleunigung oder Real-Time-Inference bezeichnen — kein Wrapper/Typ/Konstante im Codebase vorhanden. Würde Akool Enterprise-API-Recherche und komplett neuen Wrapper erfordern. Status bleibt 'coming-soon'. [Diagnose v4]",
   },
 } satisfies Record<string, ToolDefinition>;
 
