@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { addCredits, deductCredits, isCreditExemptUser } from "@/lib/credits";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { uploadDataUrlImageToFal } from "@/lib/upload-media-fal";
 
@@ -74,6 +74,25 @@ export async function POST(req: NextRequest) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
+  // Pre-Pay: Credits upfront abziehen, bevor der fal.ai-Call startet.
+  const deduction = await deductCredits(
+    supabase,
+    userId,
+    CREDIT_COST,
+    "Live Portrait",
+    {
+      generationType: "live-portrait",
+      prompt: "live-portrait",
+    }
+  );
+
+  if (!deduction.success) {
+    return NextResponse.json(
+      { error: deduction.error ?? "Nicht genug Credits." },
+      { status: 402 }
+    );
+  }
+
   try {
     configureFalClient();
 
@@ -101,29 +120,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      "Live Portrait",
-      {
-        generationType: "live-portrait",
-        prompt: "live-portrait",
-      }
-    );
-
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits." },
-        { status: 402 }
-      );
-    }
-
     return NextResponse.json({
       videoUrl,
       creditsLeft: deduction.remainingCredits,
     });
   } catch (err: unknown) {
+    // Refund on failure: Credits zurückbuchen wenn fal.ai fehlschlägt.
+    if (!(await isCreditExemptUser(supabase, userId))) {
+      await addCredits(supabase, userId, CREDIT_COST, "Live Portrait — Refund");
+    }
     const message = err instanceof Error ? err.message : "Fehler";
     return NextResponse.json({ error: message }, { status: 500 });
   }
