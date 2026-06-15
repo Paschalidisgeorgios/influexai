@@ -125,12 +125,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "content-calendar",
     category: "text",
     name: "Content Kalender",
-    credits: 1,
+    credits: null,
     apiRoute: "/api/agent",
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "TEXT_TOOLS-Set in promptOptimizer (Z.598) → 1 Credit. AgentBox.tsx: buildPrompt() generiert Kalender-Prompt, Submit via /api/agent (SSE). Eigene /api/content-kalender-Route nicht im api-Verzeichnis gefunden.",
+    sourceNotes: "UI-Falschanzeige-Risiko: zeigt ~1 Credit (promptOptimizer TEXT_TOOLS), AgentBox-Pfad kann bis zu 3 abziehen (1 Base ORCHESTRATOR_BASE_COST + 2 Tool via content_calendar-Orchestrator). Standalone /api/content-kalender/route.ts zieht CONTENT_KALENDER_TOOL_CREDIT_COST=2 ab (Anthropic-Call). Kein eindeutiger Fixwert → null. [KORRIGIERT v3: credits 1→null, UI-Falschanzeige-Risiko dokumentiert]",
   },
 
   "trend-script": {
@@ -202,11 +202,11 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     category: "video",
     name: "Gesichtstausch Video",
     credits: 10,
-    apiRoute: null,
+    apiRoute: "/api/faceswap",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set in promptOptimizer (Z.591) → 10 Credits. /api/faceswap-Ordner existiert, aber unklar ob Video-Faceswap oder Image-Faceswap abdeckt. Keine explizite Zuordnung in AgentBox oder DashboardLayout-Routing gefunden.",
+    status: "active",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront, generationType='live-creator-faceswap'. Gleiche Route wie face-swap-image (unterscheidet nach Eingabe-Typ: Video→10 Credits, Bild→5 Credits). [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap]",
   },
 
   "character-swap": {
@@ -242,7 +242,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: dynamisch via estimateAvatarCredits() — Basis 5 (15s), 9 (30s), 16 (60s) + Addons (1080p+3, Untertitel+1, Voiceover+2, Branding+1), Bereich 5–21. /api/avatar/create-job erstellt Supabase-Job-Record + schätzt Credits; Ausführung via /api/avatar/start-render + RunPod. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, apiRoute präzisiert, Bereich 5–21]",
+    sourceNotes: "Credits: dynamisch via estimateAvatarCredits() — Basis 5 (15s), 9 (30s), 16 (60s) + Addons (1080p+3, Untertitel+1, Voiceover+2, Branding+1), Bereich 5–21. /api/avatar/create-job erstellt Supabase-Job-Record + schätzt Credits (kein Abzug). Post-Pay-Risiko: chargeAvatarCredits RPC läuft nach fal.ai-Render in /api/avatar/start-render — wenn RPC nach Render fehlschlägt, entstehen fal.ai-Kosten ohne Credit-Abzug. [KORRIGIERT v3: Post-Pay-Risiko dokumentiert]",
   },
 
   "video-translation": {
@@ -261,24 +261,24 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "talking-avatar",
     category: "video",
     name: "Sprechender Avatar",
-    credits: 10,
-    apiRoute: null,
+    credits: 20,
+    apiRoute: "/api/akool/lipsync",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. Kein direktes /api/akool/talking-avatar oder ähnliches Route-File gefunden. /api/akool/lipsync könnte verwandt sein. Status 'unknown'.",
+    status: "active",
+    sourceNotes: "AKOOL_TOOL_CREDITS.lipsync=20 (akool-credits.ts). /api/akool/lipsync/route.ts: echter Akool-Call (/v3/lipsync/create), runAkoolAsyncPost → deductAkoolToolCredits upfront. Semantisch: Lipsync = Video mit synchronisierten Lippen → entspricht 'Sprechender Avatar'. promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→20, apiRoute null→/api/akool/lipsync]",
   },
 
   "talking-photo": {
     id: "talking-photo",
     category: "video",
     name: "Sprechendes Foto",
-    credits: 10,
-    apiRoute: null,
+    credits: 5,
+    apiRoute: "/api/live-portrait",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/live-portrait/route.ts existiert (könnte relevant sein), Zuordnung nicht eindeutig. Status 'unknown'.",
+    status: "active",
+    sourceNotes: "CREDIT_COST=5 in /api/live-portrait/route.ts (hardcoded). Echter fal.ai-Call (fal-ai/live-portrait). assertKiToolAccess(5) Pre-Check. Post-Pay-Risiko: fal.ai-Call läuft vor deductCredits — wenn Abzug nach Generierung fehlschlägt, entsteht fal.ai-Kosten ohne Credit-Abzug. promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/live-portrait, Post-Pay-Risiko dokumentiert]",
   },
 
   "ai-video-editor": {
@@ -311,12 +311,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "face-swap-image",
     category: "image",
     name: "Gesichtstausch Bild",
-    credits: 10,
-    apiRoute: null,
+    credits: 5,
+    apiRoute: "/api/faceswap",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/faceswap-Ordner gefunden, aber Aufteilung Video vs. Image unklar. Status 'unknown'.",
+    status: "active",
+    sourceNotes: "CREDIT_IMAGE=5 in /api/faceswap/route.ts, echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video (CREDIT_VIDEO=10 für Video-Input, CREDIT_IMAGE=5 für Bild-Input). promptOptimizer-AKOOL_TOOLS-Set nannte fälschlich 10. [KORRIGIERT v3: status unknown→active, credits 10→5, apiRoute null→/api/faceswap]",
   },
 
   "image-gen": {
@@ -416,7 +416,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE = 1 pro Minute (akool-live-avatar.ts) — laufend abgezogen, kein fixer Einmalwert. /api/live-avatar/session/route.ts: echter Akool Live-Avatar-Call (Agora-Credentials). hasEnoughCredits-Check auf 1 Credit minimum. promptOptimizer-AKOOL_TOOLS-Set nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null, Abrechnungsmodell 1/Min ergänzt]",
+    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE=1 pro Minute — laufend via /api/live-avatar/heartbeat abgezogen. /api/live-avatar/session/route.ts: echter Akool Live-Avatar-Call (Agora-Credentials). Billing-Lücke: Session-Start hat keinen Credit-Abzug, nur hasEnoughCredits-Check. Abrechnung ausschließlich via Heartbeat (1 Credit/Minute) — Client-Absturz vor erstem Heartbeat → Session aktiv, 0 Credits abgezogen. [KORRIGIERT v3: Billing-Lücke dokumentiert]",
   },
 
   "streaming-avatar": {
@@ -428,7 +428,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "active",
-    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE = 1 pro Minute — laufend abgezogen wie live-camera. Teilt /api/live-avatar/session (Akool Live Avatar Session-Management, Agora-Credentials). promptOptimizer nennt fälschlich 10 fix. [KORRIGIERT v2: credits 10→null]",
+    sourceNotes: "Credits: LIVE_AVATAR_CREDITS_PER_MINUTE=1 pro Minute — laufend via /api/live-avatar/heartbeat abgezogen. Teilt /api/live-avatar/session mit live-camera. Billing-Lücke: Session-Start hat keinen Credit-Abzug, nur hasEnoughCredits-Check. Abrechnung ausschließlich via Heartbeat (1 Credit/Minute) — Client-Absturz vor erstem Heartbeat → Session aktiv, 0 Credits abgezogen. [KORRIGIERT v3: Billing-Lücke dokumentiert]",
   },
 
   "live-face-swap": {
@@ -436,11 +436,11 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     category: "live",
     name: "Live-Gesichtstausch",
     credits: 10,
-    apiRoute: null,
+    apiRoute: "/api/faceswap",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits. /api/live-avatar existiert, aber Zuordnung zu live-face-swap nicht eindeutig verifizierbar. Status 'unknown'.",
+    status: "active",
+    sourceNotes: "CREDIT_VIDEO=10 in /api/faceswap/route.ts, generationType='live-creator-faceswap' (Name deutet auf Live-Kontext hin). Echter Akool-Call (v3/v4), withCreditDeduction upfront. Gleiche Route wie face-swap-video/face-swap-image, unterscheidet per Eingabe-Typ. [KORRIGIERT v3: status unknown→active, apiRoute null→/api/faceswap]",
   },
 
   "ai-support-agent": {
