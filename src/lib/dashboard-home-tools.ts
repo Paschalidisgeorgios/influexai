@@ -37,7 +37,7 @@ export const DASHBOARD_HOME_TOOLS: DashboardHomeTool[] = [
     href: "/dashboard/content-kalender",
     title: "Content Kalender",
     description: "30-Tage-Plan mit Hooks & Zeiten",
-    creditLabel: "5 Credits",
+    creditLabel: "ab 2 Credits",
     icon: Calendar,
   },
   {

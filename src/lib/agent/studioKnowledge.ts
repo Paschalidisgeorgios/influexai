@@ -7,7 +7,7 @@ export const STUDIO_KNOWLEDGE = `
 
 ### ERSTELLEN
 - **Viral Hook** (/dashboard/viral-hook) — Scroll-stoppende Hooks für Short-Form. ~3 Credits.
-- **Content Kalender** (/dashboard/content-kalender) — Content-Plan mit Themen & Formaten. ~5 Credits.
+- **Content Kalender** (/dashboard/content-kalender) — Content-Plan mit Themen & Formaten. 2 Credits (direkt) / 3 Credits via KI-Agent (1 Basis + 2 Tool).
 - **Trend Script** (/dashboard/trend-to-script) — Trend-Thema → Sprecher-Skript mit B-Roll-Regie. ~4 Credits.
 - **Script Generator** (/dashboard/script-generator) — Video-Skript mit Hook, Body, CTA. ~2 Credits.
 - **Produkt-Werbung** (/dashboard/produkt) — Werbetexte und Spot-Texte aus Produkt-USPs.

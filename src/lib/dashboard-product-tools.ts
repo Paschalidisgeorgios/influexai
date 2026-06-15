@@ -55,7 +55,7 @@ export const DASHBOARD_PRODUCT_TOOLS: DashboardProductTool[] = [
     href: "/dashboard/content-kalender",
     title: "Content Kalender",
     description: "30-Tage-Plan mit Hooks und Posting-Zeiten",
-    creditLabel: "5 Credits",
+    creditLabel: "ab 2 Credits",
     icon: Calendar,
     categoryKey: "erstellen",
     categoryLabel: "Erstellen",
