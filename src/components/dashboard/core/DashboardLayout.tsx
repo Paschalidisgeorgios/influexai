@@ -1031,17 +1031,46 @@ export function DashboardLayout() {
       setIsGalleryLoading(true);
 
       try {
-        // ── Ersetze diesen Block durch echten fetch() wenn die Medien-API bereit ist:
-        //
-        // const endpoint = isImageTool ? "/api/generate-image" : "/api/seedance";
-        // const res = await fetch(endpoint, {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ prompt: payload, ...settings }),
-        // });
-        // if (!res.ok) throw new Error(`API error ${res.status}`);
-        // const { url } = await res.json() as { url: string };
-        //
+        // ── img-to-img: echter /api/generate-image-Call mit variation:true ──────
+        if (tool === "img-to-img") {
+          const res = await fetch("/api/generate-image", {
+            method:  "POST",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify({ prompt: payload, ...(settings as object), variation: true }),
+          });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({})) as { error?: string };
+            throw new Error(errData.error ?? `HTTP ${res.status}`);
+          }
+          const data = await res.json() as { imageUrl?: string; creditsLeft?: number };
+          if (!data.imageUrl) throw new Error("Keine Bild-URL in der Antwort");
+          // /api/generate-image hat deductCredits() bereits aufgerufen → skipDeduction:true
+          const saved = await saveAsset({
+            type:          "image",
+            url:           data.imageUrl,
+            prompt:        payload,
+            tool:          toolLabel,
+            cost:          0,
+            skipDeduction: true,
+          });
+          if (saved) {
+            setGalleryAssets((prev) => [saved.asset, ...prev]);
+            setCredits(saved.remainingCredits);
+          } else {
+            setGalleryAssets((prev) => [{
+              id:        Date.now().toString(),
+              type:      "image",
+              url:       data.imageUrl!,
+              prompt:    payload,
+              tool:      toolLabel,
+              createdAt: new Date().toISOString(),
+            }, ...prev]);
+            if (typeof data.creditsLeft === "number") setCredits(data.creditsLeft);
+          }
+          return;
+        }
+
+        // ── Mock für alle anderen Medien-Tools (TODO: durch echte Calls ersetzen) ─
         await new Promise<void>((resolve) => setTimeout(resolve, 3000));
         const placeholderUrl = isImageTool
           ? "https://images.unsplash.com/photo-1686191128892-3b37add4c844?w=800&q=80"

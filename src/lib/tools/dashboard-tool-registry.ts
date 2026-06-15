@@ -191,8 +191,8 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     apiRoute: null,
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "promptOptimizer Z.619 → 15 Credits (zusammen mit video-to-video). Keine dedizierte API-Route in /api/ gefunden. Kein Form in AgentBox. Status 'unknown' bis Route identifiziert.",
+    status: "coming-soon",
+    sourceNotes: "Sidebar-Eintrag + TOOL_LABEL vorhanden, aber kein TOOL_META/MEDIA_TOOLS-Eintrag in AgentBox, keine API-Route. Aktuell nur 3s-Mock mit Unsplash-Placeholder via handleActionExecute — Credits werden trotzdem über /api/dashboard/asset mit skipDeduction:false abgezogen (Mock-Billing-Risiko: echte Credits für Placeholder). Status 'coming-soon': erfordert eigene Implementierung (kein bestehender Akool/fal.ai-Endpoint im Code referenziert). [KORRIGIERT v5: unknown→coming-soon]",
   },
 
   // ── Video Tools (Akool – Face/Character) ──────────────────────────────────
@@ -213,12 +213,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "character-swap",
     category: "video",
     name: "Character Swap",
-    credits: 10,
-    apiRoute: null,
+    credits: 25,
+    apiRoute: "/api/akool/character-studio",
     hasRightPanel: false,
     isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "AKOOL_TOOLS-Set → 10 Credits (promptOptimizer, nicht verifiziert). /api/akool/character-studio verwendet pollType='characterSwap' — könnte character-swap bedienen, aber explizite Zuordnung fehlt. Keine eigene Route identifizierbar. Status 'unknown'. [KORRIGIERT v2: Hinweis auf mögliche Route ergänzt]",
+    status: "active",
+    sourceNotes: "Duplikat von char-studio-video — beide rufen /api/akool/character-studio mit pollType='characterSwap' (/v4/characterSwap/create) auf, identische Backend-Logik (AKOOL_TOOL_CREDITS.characterStudio=25), nur UI-Label unterscheidet sich. Sidebar-Konsolidierung (zwei Einträge für eine Funktion) als UX-Thema für später vermerkt. WICHTIG: Registry korrekt, aber UI via AgentBox nutzt weiterhin Mock-Path — Aktivierung erfordert dediziertes Formular in AgentBox für image_url + video_url Eingaben (handleActionExecute kann ohne diese Inputs nicht auf /api/akool/character-studio routen). Dedizierte Seite /dashboard/character-studio ist der funktionierende Einstiegspunkt. [KORRIGIERT v5: unknown→active, credits 10→25, apiRoute ergänzt]",
   },
 
   "char-studio-video": {
@@ -335,12 +335,12 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "img-to-img",
     category: "image",
     name: "Bild zu Bild",
-    credits: null,
-    apiRoute: null,
+    credits: 3,
+    apiRoute: "/api/generate-image",
     hasRightPanel: true,
-    isMediaTool: false,
-    status: "unknown",
-    sourceNotes: "Credits: würden wie image-gen standard=5/highRes=8 sein (gleiche fal.ai-Basis), aber kein eigener Abzug verifizierbar. TOOLS_WITH_RIGHT_PANEL. IMAGE_TOOL_IDS in SettingsPanel (Z.59). Keine eigenständige API-Route in AgentBox oder /api/ gefunden. Könnte /api/generate-image mit variation=true teilen. [KORRIGIERT v2: sourceNotes aktualisiert]",
+    isMediaTool: true,
+    status: "active",
+    sourceNotes: "Shared Route mit image-gen via variation:true Parameter. IMAGE_GEN_CREDITS.variation = FAL_CREDITS.fluxDev ≈ 3 Credits. TOOLS_WITH_RIGHT_PANEL + IMAGE_TOOL_IDS (SettingsPanel). TODO in handleActionExecute (DashboardLayout.tsx) aktiviert: eigener Branch für img-to-img ruft /api/generate-image mit variation:true auf, skipDeduction:true (API deducted bereits). [AKTIVIERT v5: unknown→active, credits null→3, apiRoute ergänzt, isMediaTool false→true]",
   },
 
   "char-studio-image": {
