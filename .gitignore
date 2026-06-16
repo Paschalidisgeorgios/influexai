@@ -49,3 +49,8 @@ public/videos/landing/*.mp4
 next-env.d.ts
 
 .vercel
+
+# Local dashboard video exports
+public/videos/dashboard/*.mp4
+public/videos/dashboard/*.webm
+public/videos/dashboard/*.mov

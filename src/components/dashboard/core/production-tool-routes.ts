@@ -59,30 +59,30 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   {
     id: "text",
     title: "Text & Kampagne",
-    description: "Hooks, Scripts, Kalender.",
+    description: "Hooks, Scripts und Kampagnenplanung.",
     tools: [
-      { id: "viral-hook", label: "Viral Hook", description: "Hook aus Thema oder Link" },
-      { id: "content-calendar", label: "Content Kalender", description: "Plan mit Hooks" },
-      { id: "trend-script", label: "Trend Script", description: "Trend → Script" },
+      { id: "viral-hook", label: "Viral Hook", description: "Einstiege für Reels, Shorts und Ads" },
+      { id: "content-calendar", label: "Content Kalender", description: "Themen, Formate und Rhythmus planen" },
+      { id: "trend-script", label: "Trend Script", description: "Trend-Thema in ein Script überführen" },
     ],
   },
   {
     id: "photo",
-    title: "Foto",
-    description: "Bilder generieren und variieren.",
+    title: "Bild & Produktvisuals",
+    description: "Visuals für Social, Ads und Produktpräsentation.",
     tools: [
-      { id: "image-gen", label: "Bildgenerator", description: "Prompt → Bild" },
+      { id: "image-gen", label: "Bildgenerator", description: "Produkt- und Kampagnenmotive erstellen" },
       { id: "img-to-img", label: "Bild zu Bild", description: "Variationen und Remix" },
     ],
   },
   {
     id: "video",
-    title: "Video",
-    description: "Clips, Szenen und Video-Transformation.",
+    title: "Video-Produktion",
+    description: "Clips und Motion aus Bild oder Text.",
     tools: [
-      { id: "img-to-video", label: "Bild zu Video", description: "Statisches Bild animieren" },
-      { id: "text-to-video", label: "Text zu Video", description: "Prompt → Video-Clip" },
-      { id: "ai-video-editor", label: "KI-Videoeditor", description: "Stil-Transfer & Bearbeitung" },
+      { id: "img-to-video", label: "Bild zu Video", description: "Startbild in Motion-Clip verwandeln" },
+      { id: "text-to-video", label: "Text zu Video", description: "Szene aus Videobeschreibung" },
+      { id: "ai-video-editor", label: "Videoeditor", description: "Stil-Transfer und Bearbeitung" },
       { id: "ecommerce-ads", label: "E-Commerce Ads", description: "Produkt-Clips für Ads" },
     ],
   },
@@ -99,8 +99,8 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   },
   {
     id: "brand",
-    title: "Brand / Assets",
-    description: "Outputs verwalten und weiterverwenden.",
+    title: "Brand & Assets",
+    description: "Fertige Assets sammeln und weiterverwenden.",
     tools: [
       { id: "gallery", label: "Galerie", description: "Generierte Assets ansehen" },
     ],

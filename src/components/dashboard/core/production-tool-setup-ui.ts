@@ -10,28 +10,43 @@ export const SETUP_MVP_TOOL_IDS = new Set<ToolId>([
   "text-to-video",
 ]);
 
+export const SETUP_COPY = {
+  creditsBeforeStart: "Credits werden vor dem Start angezeigt.",
+  agentSecondary: "Mit Agent vorbereiten",
+  agentPrimary: "Im Agent vorbereiten",
+  errorGeneric:
+    "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
+  galleryResult: "Output wird in deiner Galerie gespeichert.",
+  toolCardCta: "Tool einrichten",
+} as const;
+
 const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {
-  "viral-hook": "Text",
+  "viral-hook": "Text & Kampagne",
   "content-calendar": "Text & Kampagne",
-  "image-gen": "Foto",
-  "img-to-img": "Foto",
-  "img-to-video": "Video",
-  "text-to-video": "Video",
+  "image-gen": "Bild & Produktvisuals",
+  "img-to-img": "Bild & Produktvisuals",
+  "img-to-video": "Video-Produktion",
+  "text-to-video": "Video-Produktion",
 };
 
 const TOOL_SETUP_SUBTITLE: Partial<Record<ToolId, string>> = {
-  "viral-hook": "Thema oder Link eingeben, Hook generieren.",
-  "content-calendar": "Nische und Rhythmus wählen, Plan erstellen.",
-  "image-gen": "Prompt und Format wählen, Bild generieren.",
-  "img-to-video": "Startbild, Prompt und Modell — dann Video.",
-  "text-to-video": "Prompt und Modell wählen, Clip starten.",
+  "viral-hook":
+    "Erstelle starke Einstiege für Reels, TikToks, Shorts oder Ads — passend zu deinem Thema, Produkt oder Angebot.",
+  "content-calendar":
+    "Plane mehrere Inhalte für eine Woche oder einen Monat — mit Themen, Formaten und klarer Veröffentlichungsstruktur.",
+  "image-gen":
+    "Erstelle hochwertige Visuals für Produkte, Social Posts, Ads oder Kampagnenmotive.",
+  "img-to-video":
+    "Verwandle ein Bild in einen kurzen Motion-Clip für Reels, Ads oder Produktpräsentationen.",
+  "text-to-video":
+    "Erstelle ein Video aus einer Idee, einem Produkttext oder einer kurzen Szene.",
 };
 
 /** UI-only credit labels — no registry edits */
 const CREDIT_UI_OVERRIDES: Partial<Record<ToolId, string>> = {
   "viral-hook": "1 Credit",
   "content-calendar": "2–5 Credits",
-  "text-to-video": "Dynamisch · ab 50 Credits",
+  "text-to-video": "Ab 50 Credits · abhängig von Modell und Dauer",
   "img-to-video": "Dynamisch nach Modell & Dauer",
   "image-gen": "5–8 Credits",
 };
@@ -48,7 +63,7 @@ export function getSetupCreditLabel(
     return "2–5 Credits";
   }
   if (/Fallback/i.test(raw)) {
-    return raw.replace(/Fallback\s*/i, "ab ").replace(/\s+/g, " ").trim();
+    return "Ab 50 Credits · abhängig von Modell und Dauer";
   }
   return raw;
 }
@@ -58,7 +73,7 @@ export function getToolSetupCategory(toolId: ToolId): string {
 }
 
 export function getToolSetupSubtitle(toolId: ToolId): string {
-  return TOOL_SETUP_SUBTITLE[toolId] ?? "Optionen wählen und starten.";
+  return TOOL_SETUP_SUBTITLE[toolId] ?? "Wähle Ziel, Format und Modell.";
 }
 
 export function getToolSetupTitle(toolId: ToolId): string {
