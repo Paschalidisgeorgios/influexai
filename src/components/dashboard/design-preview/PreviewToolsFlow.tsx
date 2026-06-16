@@ -291,7 +291,7 @@ function ToolPicker({
                   {tc.outputLabel}: {tool.outputType}
                 </p>
                 <p className="mt-0.5 font-mono text-[12px] font-medium" style={{ color: DARK }}>
-                  {tool.credits === 0 ? tc.free : `${tool.credits} ${tc.credits}`}
+                  {tool.id === "asset-gal" ? tc.free : tc.statusPreview}
                 </p>
               </div>
             </button>
@@ -348,7 +348,7 @@ function EnginePicker({
               </div>
               <div className="mt-4 flex items-end justify-between">
                 <p className="font-mono text-[12px] font-medium" style={{ color: ACCENT }}>
-                  {engine.credits} {tc.credits}
+                  {tc.statusPreview}
                 </p>
                 <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-neutral-500 group-hover:text-white">
                   {tc.startCta}
@@ -469,7 +469,7 @@ function GenerationPanel({
               {generateLabel}
             </button>
             <p className="mt-3 font-mono text-[10px] uppercase tracking-wide" style={{ color: "rgba(8,8,8,0.35)" }}>
-              Preview Mode · {engine.credits} {tc.credits}
+              Preview Mode · {tc.statusPreview}
             </p>
           </div>
         </div>
@@ -504,7 +504,7 @@ function GenerationPanel({
                 {tc.emptyState}
               </p>
               <p className="mt-5 font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-600">
-                {engine.name} · {engine.credits} {tc.credits}
+                {engine.name} · {tc.statusPreview}
               </p>
             </div>
           </div>

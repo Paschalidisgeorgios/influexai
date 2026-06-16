@@ -216,9 +216,55 @@ Both must pass before commit.
 | `generateThumbnailConcepts` | Post-pay | `withCreditDeduction` | Pre-pay 1 | Auto | Low — DB save failure does not refund (intentional, credits for LLM) |
 | `generateContentCalendar` | Post-pay | `withCreditDeduction` | Pre-pay 5 | Auto | Low |
 
-### Still open (Phase 1C)
+### Still open (Phase 1C billing)
 
-- `generate-trend-script`, `extract-viral-hook`, `detect-outliers` (partial), `generate-voice` and other actions not in Phase 1B scope
 - `campaign-autopilot` lump-sum overcharge / no refund
-- Credit display drift (`calculateExactCredits` vs API constants)
 - Live-creator async Akool failure refund policy
+
+---
+
+## Phase 1C Credit Display Sync
+
+**Date:** 2026-06-16  
+**Scope:** Sync visible UI credit labels with API/runtime truth via `src/lib/tools/credit-display.ts`. No billing logic changes.
+
+**New helpers:** `getCreditDisplayLabel`, `getCreditDisplayMeta`, `formatCreditPolicy`, `formatCreditsAmount`  
+**Wired into:** `calculateExactCredits`, `formatCreditCostForTool`, `AgentBox`, `DynamicDashboardEngine`, `text-to-video` page, preview tools flow.
+
+### Corrected tools
+
+| Tool | UI vorher | Runtime/API | Neue Anzeige | Quelle | Rest-Risiko |
+|------|-----------|---------------|--------------|--------|-------------|
+| video-to-video / ai-video-editor | 15 | 40 | 40 Credits | `AKOOL_TOOL_CREDITS.videoEditor` | Low |
+| ecommerce-ads | 8 | 15 | 15 Credits | canonical / API | Low |
+| szenen-generator / img-to-video | flat 15/30 | dynamic unit×duration | Dynamisch nach Modell & Dauer | canonical dynamic | Model-specific estimate on studio page |
+| text-to-video | flat 10 / 15–30 | dynamic + fallback 50 | Dynamisch · Fallback 50 | canonical + API | Page uses fallback for affordance check |
+| image-gen | 3 default | 5 / 8 highRes | 5–8 Credits | `IMAGE_GEN_CREDITS` | Model whitelist drift (docs) |
+| img-to-img | 3 | 5 | 5 Credits | API variation | Low |
+| talking-avatar / lipsync | 10 | 20 | 20 Credits | `AKOOL_TOOL_CREDITS.lipsync` | Low |
+| character-studio | 10 | 25 | 25 Credits | `AKOOL_TOOL_CREDITS.characterStudio` | Low |
+| melodia TTS | 2 | 3 | 3 Credits | `AKOOL_TOOL_CREDITS.tts` | Low |
+| voice-clone / voice-changer | 2 | 5 | 5 Credits | `AKOOL_TOOL_CREDITS` | Low |
+| content-calendar | 2 flat | 2 AgentBox / 5 action | 2 Credits (AgentBox) · 5 (Dashboard) | canonical variants | Three paths documented |
+| agent-autopilot | 5 (tool-registry) | 1 base + tools | 1 Credit Basis · Tools extra | `ORCHESTRATOR_BASE_COST` | Per-tool charges vary |
+
+### Dynamische Tools (neue Labels)
+
+| Tool | Anzeige |
+|------|---------|
+| szenen-generator | Je Modell & Dauer / Dynamisch nach Modell & Dauer |
+| text-to-video | Dynamisch · Fallback 50 |
+| avatar-video | Dynamisch nach Optionen |
+| video-translation | Je Minute · ab 30 Credits |
+| Preview mock tools | Preview (keine erfundenen Preise) |
+
+### calculateExactCredits
+
+**Geändert** — delegiert an `getCreditAffordanceAmount()` aus `credit-display.ts`. Liefert numerischen Mindestwert für Affordance-Checks; dynamische Tools ohne sicheren Mindestwert → 0 (UI blockiert nicht hart).
+
+### Offene Display-Risiken
+
+- `talking-photo`: Route 5 vs live-creator portrait-frame 20 — UI zeigt kanonischen Wert pro Seite
+- Akool catalog model pricing ohne vollständige UI-Schätzung auf allen Seiten
+- `campaign-autopilot` geschätzte Credits vs tatsächliche Summe
+- Canvas `tool-credit-costs.ts` noch nicht an canonical angebunden

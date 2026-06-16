@@ -11,6 +11,11 @@
  */
 
 import type { ToolId } from "@/components/dashboard/core/DashboardLayout";
+import {
+  formatCreditsAmount,
+  getCreditAffordanceAmount,
+  getCreditDisplayMeta,
+} from "@/lib/tools/credit-display";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -586,52 +591,27 @@ export async function optimizeUserPrompt(
 }
 
 // ─── calculateExactCredits ────────────────────────────────────────────────────
-
-const AKOOL_TOOLS = new Set<ToolId>([
-  "face-swap-video", "character-swap", "char-studio-video", "avatar-video",
-  "video-translation", "talking-avatar", "talking-photo",
-  "face-swap-image", "char-studio-image", "live-camera", "streaming-avatar",
-  "live-face-swap", "akool-production", "holographic-avatar", "akool-edge",
-  "ai-support-agent",
-]);
-
-const TEXT_TOOLS = new Set<ToolId>(["viral-hook"]);
+//
+// Display / affordance estimate — delegates to canonical credit-display SSOT.
+// Runtime billing remains in API routes (unchanged in Phase 1C).
 
 export function calculateExactCredits(
   toolId: ToolId,
   settings?: Record<string, unknown> | null
 ): number {
-  if (toolId === "gallery" || toolId === "settings") return 0;
-  if (toolId === "content-calendar") return 2; // CONTENT_KALENDER_TOOL_CREDIT_COST
-  if (toolId === "trend-script")     return 3; // TREND_SCRIPT_TOOL_CREDIT_COST
-  if (TEXT_TOOLS.has(toolId)) return 1;
-
-  if (toolId === "image-gen" || toolId === "img-to-img") {
-    const model = (settings?.model as string) ?? "";
-    if (model === "nano-banana-pro") return 5;
-    if (model === "flux-2-pro")      return 5;
-    return 3; // nano-banana-2 + defaults
-  }
-
-  if (toolId === "img-to-video" || toolId === "text-to-video") {
-    const duration = (settings?.durationSeconds as number) ?? 5;
-    return duration >= 10 ? 30 : 15;
-  }
-
-  if (toolId === "video-to-video" || toolId === "ref-to-video") return 15;
-  if (toolId === "ai-video-editor")                              return 40; // AKOOL_TOOL_CREDITS.videoEditor
-  if (AKOOL_TOOLS.has(toolId))                                   return 10;
-  if (toolId === "ecommerce-ads")                                return 8;
-  if (toolId === "tts" || toolId === "voice-clone" || toolId === "voice-changer") return 2;
-  if (toolId === "jarvis-moderator")                             return 1;
-
-  return 5;
+  return getCreditAffordanceAmount(toolId, settings);
 }
 
 // ─── Helper: format credit label for UI ──────────────────────────────────────
 
 export function formatCreditCost(credits: number): string {
-  if (credits === 0) return "Kostenlos";
-  if (credits === 1) return "1 Credit";
-  return `${credits} Credits`;
+  return formatCreditsAmount(credits);
+}
+
+/** Full display label (dynamic tools, ranges, etc.). */
+export function formatCreditCostForTool(
+  toolId: ToolId,
+  settings?: Record<string, unknown> | null
+): string {
+  return getCreditDisplayMeta(toolId, settings).label;
 }

@@ -46,9 +46,10 @@ import type { ToolId } from "./DashboardLayout";
 import {
   optimizeUserPrompt,
   calculateExactCredits,
-  formatCreditCost,
+  formatCreditCostForTool,
   type OptimizedPromptResult,
 } from "@/lib/dashboard/promptOptimizer";
+import { canAffordCreditDisplay } from "@/lib/tools/credit-display";
 import { getToolDefinition } from "@/lib/tools/dashboard-tool-registry";
 
 // ---------------------------------------------------------------------------
@@ -319,12 +320,12 @@ function TinySelect({
 
 /** Gemeinsame Bottom-Aktionszeile: optionales linkes Element + ActionButton */
 function FormActionRow({
-  left, loading, disabled, creditCost, canAfford,
+  left, loading, disabled, creditLabel, canAfford,
 }: {
   left?: React.ReactNode;
   loading: boolean;
   disabled: boolean;
-  creditCost: number;
+  creditLabel: string;
   canAfford: boolean;
 }) {
   const notAffordable = !canAfford && !loading;
@@ -354,7 +355,7 @@ function FormActionRow({
               transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
               {notAffordable
                 ? <><AlertCircle size={11} /> Credits</>
-                : <><Sparkles size={11} /> {formatCreditCost(creditCost)}</>
+                : <><Sparkles size={11} /> {creditLabel}</>
               }
             </motion.span>
           )}
@@ -364,12 +365,12 @@ function FormActionRow({
   );
 }
 
-function ViralHookForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
+function ViralHookForm({ values, onChange, disabled, loading, creditLabel, canAfford }: {
   values: ViralHookValues;
   onChange: (v: Partial<ViralHookValues>) => void;
   disabled: boolean;
   loading: boolean;
-  creditCost: number;
+  creditLabel: string;
   canAfford: boolean;
 }) {
   return (
@@ -383,7 +384,7 @@ function ViralHookForm({ values, onChange, disabled, loading, creditCost, canAff
       <FormActionRow
         loading={loading}
         disabled={!values.thema.trim()}
-        creditCost={creditCost}
+        creditLabel={creditLabel}
         canAfford={canAfford}
         left={
           <TinySelect
@@ -404,12 +405,12 @@ function ViralHookForm({ values, onChange, disabled, loading, creditCost, canAff
   );
 }
 
-function ContentCalendarForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
+function ContentCalendarForm({ values, onChange, disabled, loading, creditLabel, canAfford }: {
   values: ContentCalendarValues;
   onChange: (v: Partial<ContentCalendarValues>) => void;
   disabled: boolean;
   loading: boolean;
-  creditCost: number;
+  creditLabel: string;
   canAfford: boolean;
 }) {
   return (
@@ -423,7 +424,7 @@ function ContentCalendarForm({ values, onChange, disabled, loading, creditCost, 
       <FormActionRow
         loading={loading}
         disabled={!values.thema.trim()}
-        creditCost={creditCost}
+        creditLabel={creditLabel}
         canAfford={canAfford}
         left={
           <PlatformLinks
@@ -438,12 +439,12 @@ function ContentCalendarForm({ values, onChange, disabled, loading, creditCost, 
   );
 }
 
-function TrendScriptForm({ values, onChange, disabled, loading, creditCost, canAfford }: {
+function TrendScriptForm({ values, onChange, disabled, loading, creditLabel, canAfford }: {
   values: TrendScriptValues;
   onChange: (v: Partial<TrendScriptValues>) => void;
   disabled: boolean;
   loading: boolean;
-  creditCost: number;
+  creditLabel: string;
   canAfford: boolean;
 }) {
   return (
@@ -457,7 +458,7 @@ function TrendScriptForm({ values, onChange, disabled, loading, creditCost, canA
       <FormActionRow
         loading={loading}
         disabled={!values.trendLink.trim()}
-        creditCost={creditCost}
+        creditLabel={creditLabel}
         canAfford={canAfford}
         left={
           <TinySelect
@@ -636,11 +637,11 @@ function ImgToVideoForm({
 // ---------------------------------------------------------------------------
 
 function MediaActionButton({
-  loading, disabled, creditCost, canAfford,
+  loading, disabled, creditLabel, canAfford,
 }: {
   loading: boolean;
   disabled: boolean;
-  creditCost: number;
+  creditLabel: string;
   canAfford: boolean;
 }) {
   const notAffordable = !canAfford && !loading;
@@ -669,7 +670,7 @@ function MediaActionButton({
               transition={{ duration: 0.1 }} className="flex items-center gap-1.5">
               {notAffordable
                 ? <><AlertCircle size={11} /> Credits</>
-                : <><Sparkles size={11} /> {formatCreditCost(creditCost)}</>
+                : <><Sparkles size={11} /> {creditLabel}</>
               }
             </motion.span>
           )}
@@ -1264,9 +1265,14 @@ export const AgentBox = memo(function AgentBox({
   const isMedia    = MEDIA_TOOLS.has(activeTool);
   const isTextTool = !isMedia && activeTool in TOOL_META;
 
-  // Credit calculation — live based on tool + settings
+  // Credit display — canonical SSOT (Phase 1C)
+  const creditLabel = formatCreditCostForTool(activeTool, toolSettings);
   const creditCost = calculateExactCredits(activeTool, toolSettings);
-  const canAfford  = currentCredits >= creditCost;
+  const canAfford = canAffordCreditDisplay(
+    currentCredits,
+    activeTool,
+    toolSettings
+  );
 
   // ── Dev-only: TOOL_REGISTRY consistency check ─────────────────────────────
   // Vergleicht calculateExactCredits() mit dem validierten Wert in
@@ -1443,7 +1449,7 @@ export const AgentBox = memo(function AgentBox({
                 onChange={patchValues}
                 disabled={loading}
                 loading={loading}
-                creditCost={creditCost}
+                creditLabel={creditLabel}
                 canAfford={canAfford}
               />
             )}
@@ -1453,7 +1459,7 @@ export const AgentBox = memo(function AgentBox({
                 onChange={patchValues}
                 disabled={loading}
                 loading={loading}
-                creditCost={creditCost}
+                creditLabel={creditLabel}
                 canAfford={canAfford}
               />
             )}
@@ -1463,7 +1469,7 @@ export const AgentBox = memo(function AgentBox({
                 onChange={patchValues}
                 disabled={loading}
                 loading={loading}
-                creditCost={creditCost}
+                creditLabel={creditLabel}
                 canAfford={canAfford}
               />
             )}
@@ -1487,7 +1493,7 @@ export const AgentBox = memo(function AgentBox({
             <MediaActionButton
               loading={loading}
               disabled={!(formValues as ImgToVideoValues).startFrameUrl}
-              creditCost={creditCost}
+              creditLabel={creditLabel}
               canAfford={canAfford}
             />
           </>
@@ -1500,7 +1506,7 @@ export const AgentBox = memo(function AgentBox({
             <MediaActionButton
               loading={loading}
               disabled={false}
-              creditCost={creditCost}
+              creditLabel={creditLabel}
               canAfford={canAfford}
             />
           </>

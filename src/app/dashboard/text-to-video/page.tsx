@@ -9,6 +9,7 @@ import {
   akoolInputClass,
   akoolLabelClass,
 } from "@/components/akool/AkoolToolShell";
+import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
@@ -26,6 +27,7 @@ export default function TextToVideoPage() {
   const [err, setErr] = useState<string | null>(null);
 
   const selected = useMemo(() => models.find((m) => m.value === modelId), [models, modelId]);
+  const creditHint = getCreditDisplayLabel("text-to-video");
   const creditCost = AKOOL_TOOL_CREDITS.textToVideo;
 
   const { generating, elapsedSec, error, startPolling } = useAkoolJobPoll({
@@ -69,7 +71,7 @@ export default function TextToVideoPage() {
       icon={Clapperboard}
       title="TEXT ZU VIDEO"
       description="Erstelle Videos allein aus einer Textbeschreibung."
-      creditHint={`${creditCost} Credits pro Video`}
+      creditHint={creditHint}
       loading={loading}
       generating={generating}
       elapsedSec={elapsedSec}

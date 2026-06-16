@@ -59,7 +59,11 @@ function RegistryModelPanel({ models }: { models: ToolModel[] }) {
                 {model.name}
               </p>
               <p className="mt-1 text-sm text-white/35">{model.provider}</p>
-              <p className="mt-1 text-sm text-white/25">~{model.credits} Credits</p>
+              <p className="mt-1 text-sm text-white/25">
+                {model.credits > 0
+                  ? `~${model.credits} Credits`
+                  : "Je Modell & Dauer"}
+              </p>
             </button>
           );
         })}

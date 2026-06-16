@@ -46,7 +46,7 @@ export const TOOL_REGISTRY: ToolRegistry = {
       primaryInput: "textarea",
       showPayload: true,
     },
-    credits: { base: 5, unit: "pro Anfrage" },
+    credits: { base: 1, unit: "pro Anfrage" },
     payload: (prompt: string, _model: ToolModel | null, params: ToolParams) => ({
       tool: "agent-autopilot",
       prompt,
@@ -74,7 +74,7 @@ export const TOOL_REGISTRY: ToolRegistry = {
         name: "Seedance 2.0 Fast",
         provider: "Seedance",
         theme: "green",
-        credits: 900,
+        credits: 0,
         durations: ["2s", "5s", "8s"],
         resolutions: ["720p"],
         capabilities: {
@@ -108,7 +108,7 @@ export const TOOL_REGISTRY: ToolRegistry = {
         name: "Seedance 2.0",
         provider: "Seedance",
         theme: "blue",
-        credits: 1100,
+        credits: 0,
         durations: ["2s", "5s", "8s", "10s"],
         resolutions: ["720p", "1080p"],
         capabilities: {
@@ -151,7 +151,7 @@ export const TOOL_REGISTRY: ToolRegistry = {
         name: "Kling 3.0 Omni",
         provider: "Kling",
         theme: "violet",
-        credits: 800,
+        credits: 0,
         durations: ["5s", "10s"],
         resolutions: ["1080p"],
         capabilities: {
@@ -187,7 +187,7 @@ export const TOOL_REGISTRY: ToolRegistry = {
       primaryInput: "textarea",
       showPayload: true,
     },
-    credits: { base: 900, unit: "pro Video" },
+    credits: { base: 0, unit: "je Modell & Dauer" },
     payload: (
       prompt: string,
       model: ToolModel | null,

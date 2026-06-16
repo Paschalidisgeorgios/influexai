@@ -211,7 +211,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["aspectRatio", "highRes", "modelId", "category", "variation", "platform"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 3,
+      displayedCredits: 5,
       baseCredits: 5,
       variants: [
         { key: "standard", label: "IMAGE_GEN_CREDITS.standard / fluxDev", credits: 5 },
@@ -247,7 +247,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["variation", "aspectRatio"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 3,
+      displayedCredits: 5,
       baseCredits: 5,
       variants: [{ key: "api-variation", label: "variation:true", credits: 5 }],
       chargeTiming: "prepay",
@@ -411,13 +411,11 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["modelId", "duration", "resolution"],
     creditPolicy: {
       mode: "dynamic",
-      displayedCredits: 10,
+      displayedCredits: "dynamic",
       baseCredits: null,
       variants: [
         { key: "dynamic", label: "calculateAkoolModelCredits", credits: "dynamic" },
         { key: "fallback", label: "AKOOL_TOOL_CREDITS.textToVideo", credits: 50 },
-        { key: "ui-akool-flat", label: "calculateExactCredits AKOOL_TOOLS", credits: 10 },
-        { key: "ui-duration", label: "calculateExactCredits duration branch", credits: 15, condition: "5s; 30 if >=10s" },
       ],
       chargeTiming: "prepay",
       refundPolicy: "auto_refund",
@@ -446,7 +444,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["style"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 15,
+      displayedCredits: 40,
       baseCredits: 40,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.videoEditor", credits: 40 }],
       chargeTiming: "prepay",
@@ -477,7 +475,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: [],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 8,
+      displayedCredits: 15,
       baseCredits: 15,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.ecommerceAds", credits: 15 }],
       chargeTiming: "prepay",
@@ -637,7 +635,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["voiceId", "ttsText"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 10,
+      displayedCredits: 20,
       baseCredits: 20,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.lipsync", credits: 20 }],
       chargeTiming: "prepay",
@@ -735,7 +733,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["mode:animate|replace"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 10,
+      displayedCredits: 25,
       baseCredits: 25,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.characterStudio", credits: 25 }],
       chargeTiming: "prepay",
@@ -924,7 +922,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: ["voiceId"],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 2,
+      displayedCredits: 3,
       baseCredits: 3,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.tts", credits: 3 }],
       chargeTiming: "prepay",
@@ -955,7 +953,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: [],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 2,
+      displayedCredits: 5,
       baseCredits: 5,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.voiceClone", credits: 5 }],
       chargeTiming: "prepay",
@@ -986,7 +984,7 @@ export const PRODUCTION_CANONICAL_TOOLS: CanonicalToolDefinition[] = [
     uiOptions: [],
     creditPolicy: {
       mode: "fixed",
-      displayedCredits: 2,
+      displayedCredits: 5,
       baseCredits: 5,
       variants: [{ key: "api", label: "AKOOL_TOOL_CREDITS.voiceChanger", credits: 5 }],
       chargeTiming: "prepay",

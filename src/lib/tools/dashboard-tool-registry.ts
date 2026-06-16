@@ -346,7 +346,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     id: "img-to-img",
     category: "image",
     name: "Bild zu Bild",
-    credits: 3,
+    credits: 5,
     apiRoute: "/api/generate-image",
     hasRightPanel: true,
     isMediaTool: true,

@@ -13,9 +13,10 @@
  *
  * NOT YET WIRED INTO:
  *   - API route billing (deductCredits / withCreditDeduction)
- *   - calculateExactCredits (promptOptimizer.ts)
  *   - Agent orchestrator / planner
- *   - Dashboard UI components
+ *
+ * WIRED (Phase 1C):
+ *   - calculateExactCredits / AgentBox via credit-display.ts
  *
  * Legacy registries remain runtime adapters until Phase 1B+:
  *   - dashboard-tool-registry.ts (audit + AgentBox dev validation)
@@ -129,6 +130,13 @@ export function summarizeCreditMismatches(): CreditMismatchSummary[] {
     registryNote: t.knownMismatches.join("; "),
   }));
 }
+
+export {
+  getCreditDisplayLabel,
+  getCreditDisplayMeta,
+  formatCreditPolicy,
+  formatCreditsAmount,
+} from "./credit-display";
 
 export function getCanonicalRegistrySummary(): {
   production: number;
