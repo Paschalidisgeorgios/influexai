@@ -9,6 +9,9 @@ import { SettingsView } from "./SettingsView";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
+import { ProductionToolsOverview } from "./ProductionToolsOverview";
+import { ProductionToolLaunch } from "./ProductionToolLaunch";
+import { resolveToolRoute } from "./production-tool-routes";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_SHELL_BG,
@@ -52,7 +55,7 @@ import {
 
 export type ToolId =
   // Navigation & Core
-  | "studio"           | "gallery"          | "settings"
+  | "studio"           | "tools"          | "gallery"          | "settings"
   // Text Tools
   | "viral-hook"       | "content-calendar"  | "trend-script"
   // Video Tools (Akool + fal.ai)
@@ -201,7 +204,11 @@ function LeftSidebar({
   toolsGenerating: Partial<Record<ToolId, boolean>>;
   onSelect: (id: ToolId) => void;
 }) {
-  const isActiveTool = activeTool !== "studio" && activeTool !== "gallery" && activeTool !== "settings";
+  const isActiveTool =
+    activeTool !== "studio" &&
+    activeTool !== "tools" &&
+    activeTool !== "gallery" &&
+    activeTool !== "settings";
 
   return (
     <aside
@@ -385,6 +392,7 @@ function WelcomeBar({ activeTool }: { activeTool: ToolId }) {
 const TOOL_LABEL: Record<ToolId, string> = {
   // Navigation & Core
   "studio":              "Studio",
+  "tools":               "Tools",
   "gallery":             "Galerie",
   "settings":            "Einstellungen",
   // Text
@@ -428,7 +436,7 @@ const TOOL_LABEL: Record<ToolId, string> = {
 const TEXT_TOOLS = new Set<ToolId>(["viral-hook", "content-calendar", "trend-script"]);
 
 const TOOL_QUERY_IDS = new Set<string>([
-  "studio", "gallery", "settings",
+  "studio", "tools", "gallery", "settings",
   "viral-hook", "content-calendar", "trend-script",
   "image-gen", "img-to-img", "img-to-video", "text-to-video",
   "ecommerce-ads", "avatar-video", "tts",
@@ -626,10 +634,35 @@ export function DashboardLayout() {
   // ── Supabase Init: Credits + Gallery beim Mount laden ─────────────────────
   useEffect(() => {
     const toolParam = searchParams.get("tool");
-    if (toolParam && TOOL_QUERY_IDS.has(toolParam)) {
+    if (!toolParam) return;
+
+    if (toolParam === "studio") {
+      setActiveTool("studio");
+      return;
+    }
+    if (toolParam === "tools") {
+      setActiveTool("tools");
+      return;
+    }
+    if (toolParam === "gallery") {
+      router.replace("/dashboard/gallery");
+      return;
+    }
+    if (toolParam === "settings") {
+      router.replace("/dashboard/settings");
+      return;
+    }
+
+    const dedicated = resolveToolRoute(toolParam as ToolId);
+    if (dedicated) {
+      router.replace(dedicated);
+      return;
+    }
+
+    if (TOOL_QUERY_IDS.has(toolParam)) {
       setActiveTool(toolParam as ToolId);
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -664,9 +697,9 @@ export function DashboardLayout() {
   const toolSettingsRef                   = useRef<ToolSettings | null>(null);
   const [toolSettings, setToolSettings]   = useState<ToolSettings | null>(null);
 
-  // Rechtes Panel automatisch öffnen/schließen
+  // Rechtes Panel — nur für inline AgentBox (entfernt in 2B.3); Launch-Views ohne Panel
   useEffect(() => {
-    setIsRightPanel(TOOLS_WITH_RIGHT_PANEL.has(activeTool));
+    setIsRightPanel(false);
   }, [activeTool]);
 
   // Settings-Änderungen vom SettingsPanel empfangen (ref + state synchron)
@@ -678,6 +711,16 @@ export function DashboardLayout() {
   // Tool-Auswahl — bestimmte Tools leiten zu fertigen dedizierten Seiten weiter
   // statt den AgentBox-Mock zu öffnen.
   const handleToolSelect = useCallback((id: ToolId) => {
+    if (id === "studio") {
+      router.push("/dashboard");
+      setActiveTool("studio");
+      return;
+    }
+    if (id === "tools") {
+      router.push("/dashboard?tool=tools");
+      setActiveTool("tools");
+      return;
+    }
     if (id === "gallery") {
       router.push("/dashboard/gallery");
       return;
@@ -686,49 +729,14 @@ export function DashboardLayout() {
       router.push("/dashboard/settings");
       return;
     }
-    if (id === "img-to-video") {
-      router.push("/dashboard/szenen-generator");
+
+    const dedicated = resolveToolRoute(id);
+    if (dedicated) {
+      router.push(dedicated);
       return;
     }
-    // face-studio vereint beide Tabs (Video + Foto) — keine URL-Parameter da
-    // face-studio/page.tsx nur lokalen useState nutzt (kein useSearchParams)
-    if (id === "face-swap-video" || id === "face-swap-image") {
-      router.push("/dashboard/face-studio");
-      return;
-    }
-    if (id === "talking-photo") {
-      router.push("/dashboard/live-portrait");
-      return;
-    }
-    if (id === "talking-avatar") {
-      router.push("/dashboard/lipsync-studio");
-      return;
-    }
-    // character-swap und char-studio-video sind Sidebar-Duplikate derselben Funktion
-    // (/dashboard/character-studio, /api/akool/character-studio) — beide Einträge
-    // leiten auf dieselbe Seite. char-studio-image ebenfalls.
-    if (id === "character-swap" || id === "char-studio-video" || id === "char-studio-image") {
-      router.push("/dashboard/character-studio");
-      return;
-    }
-    if (id === "avatar-video") {
-      router.push("/dashboard/avatar-studio");
-      return;
-    }
-    if (id === "video-translation") {
-      router.push("/dashboard/video-translation");
-      return;
-    }
-    if (id === "live-face-swap") {
-      router.push("/dashboard/face-studio");
-      return;
-    }
-    // melodia vereint tts/voice-clone/voice-changer als Tabs — kein useSearchParams,
-    // alle drei landen auf Default-Tab "tts". Nutzer muss ggf. Tab manuell wechseln.
-    if (id === "tts" || id === "voice-clone" || id === "voice-changer") {
-      router.push("/dashboard/melodia");
-      return;
-    }
+
+    router.push(`/dashboard?tool=${encodeURIComponent(id)}`);
     setActiveTool(id);
   }, [router]);
 
@@ -920,57 +928,13 @@ export function DashboardLayout() {
             />
           </DashboardStage>
         ) : (
-        <div className="mx-auto flex w-full max-w-xl flex-col px-4 pt-8 pb-12">
-
-          {activeTool === "settings" ? (
-
-            /* ── EINSTELLUNGEN: nur Header + SettingsView ──────────────────── */
-            <>
-              <WelcomeBar activeTool={activeTool} />
-              <SettingsView credits={credits} creditsLoaded={creditsLoaded} />
-            </>
-
-          ) : activeTool === "gallery" ? (
-
-            /* ── GALERIE: kein AgentBox, Grid nimmt vollen Raum ───────────── */
-            <>
-              <WelcomeBar activeTool={activeTool} />
-              <GalleryFilterBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                activeFilter={activeFilter}
-                setActiveFilter={setActiveFilter}
-              />
-              <div className="mt-4">
-                <GalleryOrEmpty
-                  filteredAssets={filteredAssets}
-                  isGalleryLoading={isGalleryLoading}
-                  searchQuery={searchQuery}
-                  onRePrompt={handleRePrompt}
-                  onDeleteAsset={handleDeleteAsset}
-                  onResetFilter={() => { setSearchQuery(""); setActiveFilter("all"); }}
-                />
-              </div>
-            </>
-
-          ) : (
-
-            /* ── TOOL: Floating AgentBox only ────────────────────────────── */
-            <>
-              {/* Spacer für das fixierte Floating-Panel */}
-              <div className="h-56" />
-              <WelcomeBar activeTool={activeTool} />
-              <AgentBox
-                activeTool={activeTool}
-                toolSettings={toolSettings as unknown as Record<string, unknown> | null}
-                currentCredits={credits}
-                onActionExecute={handleActionExecute}
-                onNavigate={setActiveTool}
-              />
-            </>
-
-          )}
-        </div>
+          <DashboardStage>
+            {activeTool === "tools" ? (
+              <ProductionToolsOverview onSelect={handleToolSelect} />
+            ) : (
+              <ProductionToolLaunch toolId={activeTool} onOpenTool={handleToolSelect} />
+            )}
+          </DashboardStage>
         )}
         </div>
       </main>

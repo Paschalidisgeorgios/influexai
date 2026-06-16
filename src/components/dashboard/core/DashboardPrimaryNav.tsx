@@ -9,6 +9,7 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
+import { isDedicatedToolPath } from "./production-tool-routes";
 
 export type DashboardNavId =
   | "studio"
@@ -41,12 +42,9 @@ export const DASHBOARD_PRIMARY_NAV: {
   {
     id: "tools",
     label: "Tools",
-    href: "/dashboard?tool=viral-hook",
+    href: "/dashboard?tool=tools",
     icon: <Sparkles size={15} />,
-    match: (p) =>
-      p.startsWith("/dashboard/viral-hook") ||
-      p.startsWith("/dashboard/szenen-generator") ||
-      p.startsWith("/dashboard/image-generator"),
+    match: (p) => isDedicatedToolPath(p),
   },
   {
     id: "gallery",
@@ -66,7 +64,9 @@ export const DASHBOARD_PRIMARY_NAV: {
 
 function isDashboardToolView(searchParams: URLSearchParams): boolean {
   const tool = searchParams.get("tool");
-  return Boolean(tool && tool !== "studio" && tool !== "gallery" && tool !== "settings");
+  return Boolean(
+    tool && tool !== "studio" && tool !== "gallery" && tool !== "settings"
+  );
 }
 
 function isActive(

@@ -63,9 +63,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
     return <Providers>{children}</Providers>;
   }
 
+  const isStudioSpa = pathname === "/dashboard" || pathname === "/dashboard/";
+
+  if (isStudioSpa) {
+    return (
+      <Providers>
+        <DashboardLayout />
+      </Providers>
+    );
+  }
+
   const showStandalone = STANDALONE_CHILD_ROUTES.some((p) => pathname.startsWith(p));
 
-  if (showStandalone) {
+  if (showStandalone || pathname.startsWith("/dashboard/")) {
     return (
       <Providers>
         <LegacyChrome>{children}</LegacyChrome>
@@ -73,7 +83,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
     );
   }
 
-  // Alle Tool-Seiten + Übersicht → neues Krea-Layout
   return (
     <Providers>
       <DashboardLayout />

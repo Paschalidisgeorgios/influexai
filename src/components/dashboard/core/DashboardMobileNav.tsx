@@ -9,11 +9,12 @@ import {
   Images,
   Settings,
 } from "lucide-react";
+import { isDedicatedToolPath } from "./production-tool-routes";
 
 export const DASHBOARD_MOBILE_NAV = [
   { id: "studio", label: "Studio", href: "/dashboard", icon: LayoutDashboard },
   { id: "agent", label: "Agent", href: "/dashboard/ki-agent", icon: Bot },
-  { id: "tools", label: "Tools", href: "/dashboard?tool=viral-hook", icon: Sparkles },
+  { id: "tools", label: "Tools", href: "/dashboard?tool=tools", icon: Sparkles },
   { id: "gallery", label: "Galerie", href: "/dashboard/gallery", icon: Images },
   {
     id: "settings",
@@ -40,13 +41,7 @@ function isMobileNavActive(
   }
   if (itemId === "tools") {
     if (isDashboardToolView(searchParams)) return true;
-    return (
-      pathname.startsWith("/dashboard/viral-hook") ||
-      pathname.startsWith("/dashboard/szenen-generator") ||
-      pathname.startsWith("/dashboard/image-generator") ||
-      pathname.startsWith("/dashboard/content-kalender") ||
-      pathname.startsWith("/dashboard/trend-to-script")
-    );
+    return isDedicatedToolPath(pathname);
   }
   if (itemId === "settings") {
     return (

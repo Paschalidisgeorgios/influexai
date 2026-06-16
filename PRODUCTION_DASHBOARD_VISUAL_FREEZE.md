@@ -240,3 +240,68 @@ Stage wirkt auf Desktop breiter; Mobile behält `px-3` (12px).
 - `src/components/dashboard/core/DashboardMobileNav.tsx`
 - `src/app/dashboard/gallery/page.tsx`
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
+
+---
+
+## Phase 2B.3 Tool Query View Fix
+
+**Date:** 2026-06-16  
+**Scope:** Fix black/empty legacy tool query views (`/dashboard?tool=…`). No billing/credit logic, provider routes, registry, or landing page changes.
+
+### Ursache schwarzer Tool-Screen
+
+1. **`DashboardShell`** renderte für alle Nicht-Standalone-Routen nur `<DashboardLayout />` und **ignorierte `children`** — dedizierte Tool-Seiten wie `/dashboard/viral-hook` kamen nie zum Zug.
+2. **`DashboardLayout`** bei `?tool=*`: kein `DashboardStage`, schwarzer Shell-Hintergrund, schmale `max-w-xl`-Spalte, **`AgentBox` mit `fixed left-1/2 top-16`** — auf Mobile unsichtbar/leer, horizontal verschoben.
+3. **`handleToolSelect`** leitete `viral-hook`, `content-calendar`, `trend-script`, `image-gen` nicht auf dedizierte Routen um → Fallback auf kaputten AgentBox-Pfad.
+4. **Tools-Nav** verlinkte direkt auf `/dashboard?tool=viral-hook` statt auf eine Übersicht.
+
+### Angepasste Tool-Query-Views / Komponenten
+
+| Bereich | Änderung |
+|---------|----------|
+| `DashboardShell.tsx` | Nur exakt `/dashboard` → SPA `DashboardLayout`; alle `/dashboard/*`-Unterrouten → `DashboardStandaloneChrome` + Seiten-`children` |
+| `DashboardLayout.tsx` | `tool=tools` + `ProductionToolsOverview`; sonst `ProductionToolLaunch` in `DashboardStage`; Query-Redirect zu dedizierten Routen; AgentBox-Branch entfernt |
+| `production-tool-routes.ts` | Zentralisierte `TOOL_DEDICATED_ROUTES`, Kategorien, `resolveToolRoute`, `isDedicatedToolPath` |
+| `ProductionToolsOverview.tsx` | Kategorien: Foto, Video, Avatar & Voice, Text & Kampagne, Brand/Assets — Credit-Labels aus `credit-display.ts` |
+| `ProductionToolLaunch.tsx` | Tool-Header, Beschreibung, Credits, „Tool öffnen“ / „Im Agent starten“ |
+| `DashboardPrimaryNav.tsx` | Tools → `/dashboard?tool=tools`; Active-State via Query + dedizierte Pfade |
+| `DashboardMobileNav.tsx` | Tools → `/dashboard?tool=tools`; Active-State erweitert |
+
+### Tool-Anzeige jetzt
+
+- **`/dashboard?tool=tools`** — saubere Tools-Übersicht in ivory `DashboardStage`
+- **`/dashboard?tool=viral-hook`** (und andere mit dedizierter Route) — **Redirect** zu `/dashboard/viral-hook` etc., Seite in `DashboardStandaloneChrome` + `DashboardStage`
+- **Tools ohne dedizierte Route** (z. B. `img-to-img`) — `ProductionToolLaunch` in Stage (kein schwarzer Fullscreen)
+- **Quick Start** (`StudioCockpit`) — `handleToolSelect` → dedizierte Routen oder Launch-View
+
+### Echte Tool-Seiten — später noch redesignen
+
+Diese Seiten **funktionieren** jetzt (Shell rendert `children`), behalten aber **eigenes Dark/Legacy-UI innerhalb der Stage**:
+
+- `/dashboard/viral-hook` — dunkle Inline-Cards
+- `/dashboard/content-kalender`, `/dashboard/trend-to-script`
+- `/dashboard/image-generator`, `/dashboard/szenen-generator` (DynamicDashboardEngine)
+- Avatar/Voice-Routen (`avatar-studio`, `melodia`, `live-portrait`, …)
+- Weitere `/dashboard/*`-Tool-Pages mit Legacy-Styling
+
+**Inline Legacy in `DashboardLayout` (noch vorhanden, ungenutzt im Main-Render):**
+
+- `SettingsView`, `GalleryFilterBar`, `AgentBox`-Import, `handleActionExecute` — nicht mehr im Haupt-UI-Pfad; Deprecation in späterer Phase
+
+### Offene Risiken
+
+- Dedizierte Tool-Pages: Dark-UI in heller Stage kann visuell gemischt wirken (push-safe, kein Blocker)
+- Zwei Settings-/Galerie-Einstiege in `DashboardLayout`-Code (toter Pfad) vs. Routen
+- `img-to-img` und ähnliche ohne dedizierte Route: nur Launch-View, kein Voll-Tool bis Anbindung
+- `SettingsPanel` / rechtes Panel deaktiviert in SPA (kein AgentBox mehr)
+
+### Geänderte Dateien (2B.3)
+
+- `src/components/dashboard/core/DashboardShell.tsx`
+- `src/components/dashboard/core/DashboardLayout.tsx`
+- `src/components/dashboard/core/DashboardPrimaryNav.tsx`
+- `src/components/dashboard/core/DashboardMobileNav.tsx`
+- `src/components/dashboard/core/production-tool-routes.ts` (neu)
+- `src/components/dashboard/core/ProductionToolsOverview.tsx` (neu)
+- `src/components/dashboard/core/ProductionToolLaunch.tsx` (neu)
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
