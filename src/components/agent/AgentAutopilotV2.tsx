@@ -137,10 +137,15 @@ export function AgentAutopilotV2() {
       </div>
 
       <div>
+        <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+          Agent
+        </p>
         <h1 className="font-display mb-1 text-3xl leading-none font-semibold tracking-tight text-white">
-          {T.title}
+          Idee eingeben
         </h1>
-        <p className="font-sans text-sm text-white/30">{T.sub}</p>
+        <p className="font-sans text-sm text-white/40">
+          {T.sub} — Briefing wird analysiert, Tool wird gewählt, Output vorbereitet.
+        </p>
       </div>
 
       {!profileLoading && !profile && (
@@ -202,7 +207,7 @@ export function AgentAutopilotV2() {
         disabled={!prompt.trim()}
         className="h-12 w-full rounded-xl bg-[#B4FF00] text-sm font-semibold tracking-wide text-[#08080a] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_30px_rgba(180,255,0,0.3)] active:scale-[0.99] disabled:opacity-40"
       >
-        ERSTELLEN
+        ERSTELLEN — Produktionspfad starten
       </LoadingButton>
 
       <p className="text-center text-[9px] tracking-wide text-white/20">
@@ -212,9 +217,9 @@ export function AgentAutopilotV2() {
 
       <div className="flex items-center justify-center gap-3 py-1">
         {[
-          { icon: "📝", label: "Beschreibe dein Ziel" },
-          { icon: "🤖", label: "Agent plant & erstellt" },
-          { icon: "✅", label: "Content ist fertig" },
+          { icon: "📝", label: "Briefing eingeben" },
+          { icon: "🤖", label: "Tool wird gewählt" },
+          { icon: "✅", label: "Output wird vorbereitet" },
         ].map((step, i) => (
           <div key={step.label} className="flex items-center gap-2">
             {i > 0 && <span className="text-xs text-white/15">→</span>}

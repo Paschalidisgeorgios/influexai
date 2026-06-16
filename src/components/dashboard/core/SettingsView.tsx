@@ -192,11 +192,11 @@ function ApiTab() {
           InfluexAI Pro Plan · monatliche Abrechnung
         </p>
         <a
-          href="/dashboard/settings/billing"
+          href="/dashboard/credits"
           className="inline-flex items-center gap-1.5 rounded border border-white/5 bg-neutral-900 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-white"
         >
           <ExternalLink size={11} />
-          Abonnement verwalten
+          Credits & Abo verwalten
         </a>
       </div>
     </div>

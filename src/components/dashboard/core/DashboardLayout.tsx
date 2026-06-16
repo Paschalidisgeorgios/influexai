@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
-import { DashboardSectionHeader }   from "@/components/dashboard/ui/DashboardSectionHeader";
-import { DashboardCard }            from "@/components/dashboard/ui/DashboardCard";
-import { StudioCommandCenter }      from "./StudioCommandCenter";
+import { StudioCockpit }          from "./StudioCockpit";
+import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -19,7 +19,6 @@ import {
   Video,
   Images,
   Settings,
-  CreditCard,
   X,
   ChevronRight,
   Sparkles,
@@ -36,7 +35,6 @@ import {
 
   Clapperboard,
   ShoppingBag,
-  Layers,
   Volume2,
   Camera,
   Bot,
@@ -167,34 +165,8 @@ const TOOLS_WITH_RIGHT_PANEL = new Set<ToolId>([
 // SettingsPanel wird aus SettingsPanel.tsx importiert (s. import oben)
 
 // ---------------------------------------------------------------------------
-// Left Sidebar — kompaktes Studio-Nav
+// Left Sidebar — Studio-Nav (Studio ≠ Agent)
 // ---------------------------------------------------------------------------
-
-type TopNavId = "studio" | "agent" | "tools" | "projects" | "my-brand";
-
-interface TopNavItem {
-  id: TopNavId;
-  label: string;
-  icon: React.ReactNode;
-  toolTarget?: ToolId;   // welches ToolId beim Klick aktiviert wird
-}
-
-const TOP_NAV: TopNavItem[] = [
-  { id: "agent",    label: "Agent",     icon: <Bot size={15} />,       toolTarget: "gallery"  },
-  { id: "tools",    label: "Tools",     icon: <Sparkles size={15} />,  toolTarget: "viral-hook" },
-  { id: "projects", label: "Projects",  icon: <Images size={15} />,    toolTarget: "gallery"  },
-  { id: "my-brand", label: "My Brand",  icon: <UserRound size={15} />, toolTarget: "settings" },
-];
-
-// Welche TopNavItem ist gerade "aktiv"?
-function resolveTopNav(toolId: ToolId): TopNavId | null {
-  if (toolId === "studio") return "studio";
-  if (toolId === "gallery") return "projects";
-  if (toolId === "settings") return "my-brand";
-  const textTools: ToolId[] = ["viral-hook", "content-calendar", "trend-script"];
-  if (textTools.includes(toolId)) return "agent";
-  return "tools";
-}
 
 function AnimatedCredits({ credits }: { credits: number }) {
   const low   = credits < 10;
@@ -226,9 +198,6 @@ function LeftSidebar({
   onSelect: (id: ToolId) => void;
 }) {
   const [toolsExpanded, setToolsExpanded] = useState(false);
-  const activeTopNav = resolveTopNav(activeTool);
-
-  // Wenn ein Tool aktiv wird das kein Top-Nav-Element ist, Tools automatisch ausklappen
   const isActiveTool = activeTool !== "studio" && activeTool !== "gallery" && activeTool !== "settings";
 
   return (
@@ -253,63 +222,44 @@ function LeftSidebar({
         </span>
       </button>
 
-      {/* ── Top Nav ────────────────────────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto px-3" style={{ scrollbarWidth: "none" }}>
-        <div className="space-y-0.5 pt-1">
-          {TOP_NAV.map((item) => {
-            const isActive = activeTopNav === item.id;
-            const anyGenerating = item.id === "tools"
-              ? Object.values(toolsGenerating).some(Boolean)
-              : false;
+      {/* ── Primary Nav + Tools ──────────────────────────────────────────── */}
+      <nav className="flex-1 overflow-y-auto px-1" style={{ scrollbarWidth: "none" }}>
+        <DashboardPrimaryNav />
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  if (item.id === "tools") {
-                    setToolsExpanded((v) => !v);
-                    if (item.toolTarget) onSelect(item.toolTarget);
-                  } else if (item.toolTarget) {
-                    onSelect(item.toolTarget);
-                    setToolsExpanded(false);
-                  }
-                }}
-                className="flex w-full items-center gap-3 rounded-lg py-2 pl-3 pr-3 text-left transition-all"
-                style={{
-                  background:  isActive ? "rgba(255,255,255,0.04)" : "transparent",
-                  borderLeft:  isActive ? "2px solid #b4ff00" : "2px solid transparent",
-                  paddingLeft: isActive ? "calc(0.75rem - 2px)" : "0.75rem",
-                }}
-              >
-                <span
-                  className="shrink-0 transition-colors"
-                  style={{ color: isActive ? "#ffffff" : "rgba(255,255,255,0.28)" }}
-                >
-                  {anyGenerating && item.id === "tools"
-                    ? <Loader2 size={15} className="animate-spin" />
-                    : item.icon
-                  }
-                </span>
-                <span
-                  className="flex-1 text-xs font-medium transition-colors"
-                  style={{ color: isActive ? "#ffffff" : "rgba(255,255,255,0.38)" }}
-                >
-                  {item.label}
-                </span>
-                {item.id === "tools" && (
-                  <ChevronRight
-                    size={11}
-                    className="shrink-0 text-white/15 transition-transform"
-                    style={{ transform: (toolsExpanded || isActiveTool) ? "rotate(90deg)" : "none" }}
-                  />
-                )}
-              </button>
-            );
-          })}
+        <div className="mt-4 px-2">
+          <button
+            type="button"
+            onClick={() => {
+              setToolsExpanded((v) => !v);
+              if (!toolsExpanded) onSelect("viral-hook");
+            }}
+            className="flex w-full items-center gap-3 rounded-lg py-2 pl-3 pr-3 text-left transition-all"
+            style={{
+              background: isActiveTool ? "rgba(255,255,255,0.04)" : "transparent",
+              borderLeft: isActiveTool ? "2px solid #b4ff00" : "2px solid transparent",
+            }}
+          >
+            <span style={{ color: isActiveTool ? "#ffffff" : "rgba(255,255,255,0.28)" }}>
+              {Object.values(toolsGenerating).some(Boolean) ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Sparkles size={15} />
+              )}
+            </span>
+            <span
+              className="flex-1 text-xs font-medium"
+              style={{ color: isActiveTool ? "#ffffff" : "rgba(255,255,255,0.38)" }}
+            >
+              Tools
+            </span>
+            <ChevronRight
+              size={11}
+              className="shrink-0 text-white/15 transition-transform"
+              style={{ transform: toolsExpanded || isActiveTool ? "rotate(90deg)" : "none" }}
+            />
+          </button>
         </div>
 
-        {/* ── Tool-Liste (ausklappbar unter "Tools") ─────────────────────── */}
         <AnimatePresence>
           {(toolsExpanded || isActiveTool) && (
             <motion.div
@@ -334,12 +284,12 @@ function LeftSidebar({
                             key={item.id}
                             type="button"
                             onClick={() => onSelect(item.id)}
-                          className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
-                          style={{
-                            background:  active ? "rgba(255,255,255,0.04)" : "transparent",
-                            borderLeft:  active ? "2px solid #b4ff00" : "2px solid transparent",
-                            paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
-                          }}
+                            className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
+                            style={{
+                              background:  active ? "rgba(255,255,255,0.04)" : "transparent",
+                              borderLeft:  active ? "2px solid #b4ff00" : "2px solid transparent",
+                              paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
+                            }}
                           >
                             <span className="shrink-0" style={{ color: active ? item.accent : "rgba(255,255,255,0.22)" }}>
                               {item.icon}
@@ -368,31 +318,6 @@ function LeftSidebar({
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* ── Advanced Sektion ───────────────────────────────────────────── */}
-        <div className="mt-6">
-          <p className="mb-1.5 px-3 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/15">
-            Advanced
-          </p>
-          <button
-            type="button"
-            onClick={() => { onSelect("studio"); setToolsExpanded(false); }}
-            className="flex w-full items-center gap-3 rounded-lg py-2 pr-3 text-left transition-all"
-            style={{
-              background:  activeTool === "studio" ? "rgba(255,255,255,0.04)" : "transparent",
-              borderLeft:  activeTool === "studio" ? "2px solid #b4ff00" : "2px solid transparent",
-              paddingLeft: activeTool === "studio" ? "calc(0.75rem - 2px)" : "0.75rem",
-            }}
-          >
-            <Layers size={14} style={{ color: activeTool === "studio" ? "#b4ff00" : "rgba(255,255,255,0.25)" }} />
-            <span
-              className="text-xs font-medium"
-              style={{ color: activeTool === "studio" ? "#ffffff" : "rgba(255,255,255,0.38)" }}
-            >
-              Studio
-            </span>
-          </button>
-        </div>
       </nav>
 
       {/* ── Credits + Logout ───────────────────────────────────────────────── */}
@@ -400,26 +325,24 @@ function LeftSidebar({
         className="shrink-0 px-4 py-4"
         style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
       >
-        {/* Credits */}
-        <div className="mb-3 flex items-center justify-between">
+        <Link
+          href="/dashboard/credits"
+          className="mb-3 flex items-center justify-between rounded-lg px-1 py-1 transition-colors hover:bg-white/[0.03]"
+        >
           <span className="font-mono text-[10px] uppercase tracking-widest text-white/20">Credits</span>
           {creditsLoaded ? (
-            <span className="flex items-center gap-1 text-white/50">
-              <AnimatedCredits credits={credits} />
-              <span className="text-[11px] text-white/20">⚡</span>
-            </span>
+            <AnimatedCredits credits={credits} />
           ) : (
             <span className="h-4 w-10 animate-pulse rounded bg-white/5" />
           )}
-        </div>
+        </Link>
 
-        {/* Logout */}
         <button
           type="button"
           className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-all hover:bg-red-500/5"
         >
-          <LogOut size={13} className="shrink-0text-white/20" />
-          <span className="text-[11px] text-white/25">Sign out</span>
+          <LogOut size={13} className="shrink-0 text-white/20" />
+          <span className="text-[11px] text-white/25">Abmelden</span>
         </button>
       </div>
     </aside>
@@ -427,352 +350,30 @@ function LeftSidebar({
 }
 
 // ---------------------------------------------------------------------------
-// Studio Home — Cinematic 2026
+// Studio Home — Cockpit (kein Copilot)
 // ---------------------------------------------------------------------------
-
-interface HeroCard {
-  id:          ToolId;
-  eyebrow:     string;
-  cta:         string;
-  sub:         string;
-  imgUrl?:     string;
-  accentGlow?: string;
-  bgGradient?: string;
-  grid?:       boolean;
-}
-
-const HERO_CARDS: HeroCard[] = [
-  {
-    id:         "img-to-video",
-    eyebrow:    "Video",
-    cta:        "AD FLOW →",
-    sub:        "Build ads on one visual canvas",
-    // Dark abstract film/light-rays — no cinema screen visible
-    imgUrl:     "https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=900&q=70",
-    accentGlow: "#b4ff00",
-  },
-  {
-    id:      "avatar-video",
-    eyebrow: "Avatar",
-    cta:     "AVATAR VIDEO →",
-    sub:     "Create talking videos with AI actors",
-    // Local avatar asset — person/face, perfect for "talking AI actors"
-    imgUrl:  "/avatars/avatar-1.jpg",
-  },
-  {
-    id:         "viral-hook",
-    eyebrow:    "AI Agent",
-    cta:        "AI MEDIA BUYER →",
-    sub:        "Your copilot across every ad account",
-    grid:       true,
-    // Dark navy gradient — suggests tech/data without a photo
-    bgGradient: "linear-gradient(135deg, #070d1f 0%, #0b0b12 60%, #080810 100%)",
-    accentGlow: "#0055ff",
-  },
-];
-
-interface SmallCard {
-  id:      ToolId;
-  label:   string;
-  desc:    string;
-  icon:    React.ReactNode;
-  badge?:  BadgeVariant;
-  credits: number;
-}
-
-const SMALL_CARDS_CREATE: SmallCard[] = [
-  { id: "image-gen",     label: "Asset Generator", desc: "From concept to campaign visual in seconds",   icon: <Image size={13} />,   badge: "hot", credits: 3  },
-  { id: "ecommerce-ads", label: "Video Ad",         desc: "AI-powered campaign video via Akool",          icon: <Video size={13} />,   badge: "new", credits: 15 },
-  { id: "img-to-img",    label: "Image Ad",          desc: "Transform images with AI variation",          icon: <Images size={13} />,               credits: 3  },
-];
-
-const SMALL_CARDS_ANALYZE: SmallCard[] = [
-  { id: "viral-hook",       label: "Viral Hook",       desc: "5 scroll-stopping hooks via Claude",    icon: <Zap size={13} />,        credits: 1 },
-  { id: "content-calendar", label: "Content Calendar", desc: "7-day platform-ready calendar",         icon: <Calendar size={13} />,   credits: 2 },
-  { id: "trend-script",     label: "Trend Script",     desc: "Script built from trending content",    icon: <TrendingUp size={13} />, credits: 3 },
-];
-
-const WORKFLOW_STEPS = [
-  { num: "01", label: "Idea"     },
-  { num: "02", label: "Brand"    },
-  { num: "03", label: "Generate" },
-  { num: "04", label: "Review"   },
-  { num: "05", label: "Export"   },
-] as const;
 
 function StudioHome({
   onSelect,
   credits,
   creditsLoaded,
   recentAssets,
+  toolsGenerating,
 }: {
-  onSelect:      (id: ToolId) => void;
-  credits:       number;
-  creditsLoaded: boolean;
-  recentAssets:  GalleryItem[];
+  onSelect:        (id: ToolId) => void;
+  credits:         number;
+  creditsLoaded:   boolean;
+  recentAssets:    GalleryItem[];
+  toolsGenerating: Partial<Record<ToolId, boolean>>;
 }) {
   return (
-    <div className="relative w-full space-y-6 md:space-y-8">
-
-      {/* Layered ambient glows — lime top-centre + blue right — create depth without neon */}
-      <div
-        className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full opacity-[0.08] blur-[100px]"
-        style={{ background: "#b4ff00" }}
-      />
-      <div
-        className="pointer-events-none absolute top-64 right-0 h-[400px] w-[400px] rounded-full opacity-[0.035] blur-[120px]"
-        style={{ background: "#0055ff" }}
-      />
-
-      {/* ── 1. Agent Command Center ───────────────────────────────────────── */}
-      <StudioCommandCenter
-        onSelect={onSelect}
-        credits={credits}
-        creditsLoaded={creditsLoaded}
-      />
-
-      {/* ── 2. Bento Hero Grid ────────────────────────────────────────────── */}
-      {/* Ad Flow takes 2/3 width; Avatar + Agent stack in the remaining 1/3 */}
-      <div className="flex flex-col gap-3 md:flex-row md:min-h-[380px]">
-
-        {/* Large feature card — Ad Flow */}
-        {(() => {
-          const card = HERO_CARDS[0];
-          return (
-            <motion.button
-              key={card.id}
-              type="button"
-              onClick={() => onSelect(card.id)}
-              whileHover="hover"
-              whileTap={{ scale: 0.985 }}
-              transition={{ duration: 0.22 }}
-              className="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-[#b4ff00]/20 hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)] md:min-h-0 md:[flex:2]"
-              style={{ background: "#0C0C0E" }}
-            >
-              {card.imgUrl && (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-opacity duration-500 group-hover:opacity-50" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/[0.06]" />
-                </>
-              )}
-              {card.accentGlow && (
-                <div
-                  className="absolute -bottom-10 -right-10 h-56 w-56 rounded-full opacity-[0.20] blur-3xl transition-opacity duration-500 group-hover:opacity-35"
-                  style={{ background: card.accentGlow }}
-                />
-              )}
-              <motion.div
-                variants={{ hover: { opacity: 1 } }}
-                initial={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
-              />
-              <div className="relative z-10 flex h-full flex-col justify-between p-7">
-                <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
-                  {card.eyebrow}
-                </span>
-                <div>
-                  <p className="text-2xl font-semibold tracking-tight text-white">{card.cta}</p>
-                  <p className="mt-2 text-[12px] leading-relaxed text-neutral-400">{card.sub}</p>
-                  <div className="mt-4 flex items-center gap-1.5">
-                    <span className="text-[11px] font-medium text-[#b4ff00]/60">Open Studio</span>
-                    <ChevronRight size={11} className="text-[#b4ff00]/40" />
-                  </div>
-                </div>
-              </div>
-            </motion.button>
-          );
-        })()}
-
-        {/* Right column — Avatar Video + AI Media Buyer stacked */}
-        <div className="flex flex-col gap-3 md:flex-[1]">
-          {HERO_CARDS.slice(1).map((card) => (
-            <motion.button
-              key={card.id}
-              type="button"
-              onClick={() => onSelect(card.id)}
-              whileHover="hover"
-              whileTap={{ scale: 0.985 }}
-              transition={{ duration: 0.22 }}
-              className="group relative min-h-[190px] cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_24px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)] md:min-h-0 md:flex-1"
-              style={{ background: card.bgGradient ?? "#0C0C0E" }}
-            >
-              {card.imgUrl && (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={card.imgUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-500 group-hover:opacity-55" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/[0.05]" />
-                </>
-              )}
-              {card.grid && (
-                <>
-                  <div className="absolute inset-0 opacity-[0.07]" style={{
-                    backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-                    backgroundSize: "24px 24px",
-                  }} />
-                  <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.08] blur-3xl" style={{ background: "white" }} />
-                </>
-              )}
-              {/* Accent glow — colour per-card (lime for Avatar, blue for Agent) */}
-              {card.accentGlow && (
-                <div
-                  className="absolute -bottom-6 -right-6 h-32 w-32 rounded-full opacity-[0.22] blur-2xl transition-opacity duration-500 group-hover:opacity-35"
-                  style={{ background: card.accentGlow }}
-                />
-              )}
-              <motion.div
-                variants={{ hover: { opacity: 1 } }}
-                initial={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"
-              />
-              <div className="relative z-10 flex h-full flex-col justify-between p-6">
-                <span className="w-fit rounded-full border border-white/[0.08] bg-black/40 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45 backdrop-blur-sm">
-                  {card.eyebrow}
-                </span>
-                <div>
-                  <p className="text-base font-semibold tracking-tight text-white">{card.cta}</p>
-                  <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">{card.sub}</p>
-                  <div className="mt-3 flex items-center gap-1">
-                    <span className="text-[10px] text-white/25">Open</span>
-                    <ChevronRight size={10} className="text-white/20" />
-                  </div>
-                </div>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-
-      </div>
-
-      {/* ── 3. Workflow Strip ─────────────────────────────────────────────── */}
-      {/* Premium stage indicator — thin lime accent line at top, first step highlighted */}
-      <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.01]">
-        {/* Lime top-accent hairline */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#b4ff00]/25 to-transparent" />
-        <div className="flex items-center overflow-x-auto px-6 py-4" style={{ scrollbarWidth: "none" }}>
-          {WORKFLOW_STEPS.map((step, i) => (
-            <div key={step.label} className="flex shrink-0 items-center">
-              <div className="flex items-center gap-2.5">
-                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[8px] transition-colors ${
-                  i === 0
-                    ? "border border-[#b4ff00]/30 bg-[#b4ff00]/10 text-[#b4ff00]"
-                    : "border border-white/[0.08] text-white/25"
-                }`}>
-                  {step.num}
-                </span>
-                <span className={`text-[11px] font-medium tracking-wide ${i === 0 ? "text-zinc-300" : "text-zinc-600"}`}>
-                  {step.label}
-                </span>
-              </div>
-              {i < WORKFLOW_STEPS.length - 1 && (
-                <div className="mx-4 h-px w-8 shrink-0 bg-gradient-to-r from-white/[0.08] to-transparent" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── 4. Tool Categories ────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-
-        {/* More ways to create */}
-        <div>
-          <div className="mb-4">
-            <DashboardSectionHeader eyebrow="Studio" title="More ways to create" />
-          </div>
-          <div className="space-y-1.5">
-            {SMALL_CARDS_CREATE.map((card) => (
-              <button
-                key={card.id}
-                type="button"
-                onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03]"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors group-hover:text-zinc-200">
-                  {card.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[11px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
-                </div>
-                {card.badge && (
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
-                    {BADGE_LABEL[card.badge]}
-                  </span>
-                )}
-                <span className="shrink-0 font-mono text-[10px] text-zinc-600">~{card.credits}cr</span>
-                <ChevronRight size={11} className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400" />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Analyze & launch */}
-        <div>
-          <div className="mb-4">
-            <DashboardSectionHeader eyebrow="Analytics" title="Analyze &amp; launch" />
-          </div>
-          <div className="space-y-1.5">
-            {SMALL_CARDS_ANALYZE.map((card) => (
-              <button
-                key={card.id}
-                type="button"
-                onClick={() => onSelect(card.id)}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3.5 text-left transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03]"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors group-hover:text-zinc-200">
-                  {card.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[11px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
-                </div>
-                <span className="shrink-0 font-mono text-[10px] text-zinc-600">~{card.credits}cr</span>
-                <ChevronRight size={11} className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400" />
-              </button>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* ── 5. Recent Outputs — only shown when real assets exist ─────────── */}
-      {recentAssets.length > 0 && (
-        <div>
-          <div className="mb-4">
-            <DashboardSectionHeader title="Recent outputs" />
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            {recentAssets.slice(0, 3).map((asset) => (
-              <div
-                key={asset.id}
-                className="relative overflow-hidden rounded-xl border border-white/[0.04] bg-zinc-950/40"
-                style={{ aspectRatio: "16/9" }}
-              >
-                {asset.url && asset.type === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={asset.url} alt={asset.prompt.slice(0, 40)} className="h-full w-full object-cover opacity-80" />
-                ) : asset.url && asset.type === "video" ? (
-                  <video src={asset.url} className="h-full w-full object-cover opacity-80" muted playsInline />
-                ) : (
-                  <div className="flex h-full items-center justify-center p-3">
-                    <p className="line-clamp-4 text-center text-[10px] leading-relaxed text-zinc-500">
-                      {asset.content ?? asset.prompt}
-                    </p>
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
-                  <p className="truncate font-mono text-[9px] text-zinc-500">{asset.tool}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-    </div>
+    <StudioCockpit
+      onSelect={onSelect}
+      credits={credits}
+      creditsLoaded={creditsLoaded}
+      recentAssets={recentAssets}
+      toolsGenerating={toolsGenerating}
+    />
   );
 }
 
@@ -1087,6 +688,14 @@ export function DashboardLayout() {
   // Tool-Auswahl — bestimmte Tools leiten zu fertigen dedizierten Seiten weiter
   // statt den AgentBox-Mock zu öffnen.
   const handleToolSelect = useCallback((id: ToolId) => {
+    if (id === "gallery") {
+      router.push("/dashboard/gallery");
+      return;
+    }
+    if (id === "settings") {
+      router.push("/dashboard/settings");
+      return;
+    }
     if (id === "img-to-video") {
       router.push("/dashboard/szenen-generator");
       return;
@@ -1317,6 +926,7 @@ export function DashboardLayout() {
               credits={credits}
               creditsLoaded={creditsLoaded}
               recentAssets={galleryAssets}
+              toolsGenerating={toolsGenerating}
             />
           </div>
         ) : (
@@ -1381,18 +991,27 @@ export function DashboardLayout() {
       >
         {(
           [
-            { id: "studio",   label: "Home",     icon: <LayoutDashboard size={18} /> },
-            { id: "gallery",  label: "Gallery",   icon: <Images size={18} />          },
-            { id: "viral-hook", label: "Tools",   icon: <Sparkles size={18} />        },
-            { id: "settings", label: "Settings",  icon: <Settings size={18} />        },
-          ] as { id: ToolId; label: string; icon: React.ReactNode }[]
+            { id: "studio" as ToolId,   label: "Studio",      href: "/dashboard",              icon: <LayoutDashboard size={18} /> },
+            { id: "agent" as const,      label: "Agent",       href: "/dashboard/ki-agent",     icon: <Bot size={18} /> },
+            { id: "viral-hook" as ToolId, label: "Tools",      href: null,                      icon: <Sparkles size={18} /> },
+            { id: "gallery" as ToolId,  label: "Galerie",     href: "/dashboard/gallery",      icon: <Images size={18} /> },
+            { id: "settings" as ToolId, label: "Einstellungen", href: "/dashboard/settings",   icon: <Settings size={18} /> },
+          ]
         ).map((item) => {
-          const isActive = activeTool === item.id || (item.id === "viral-hook" && resolveTopNav(activeTool) === "tools");
+          const isActive =
+            item.href === null
+              ? activeTool !== "studio" && activeTool !== "gallery" && activeTool !== "settings"
+              : item.id === "studio"
+                ? activeTool === "studio"
+                : false;
           return (
             <button
-              key={item.id}
+              key={item.label}
               type="button"
-              onClick={() => handleToolSelect(item.id)}
+              onClick={() => {
+                if (item.href) router.push(item.href);
+                else handleToolSelect(item.id as ToolId);
+              }}
               className="flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors active:bg-white/[0.04]"
               aria-label={item.label}
             >

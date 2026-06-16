@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
     "/dashboard/mein-ki-ich": "/dashboard/ki-ich",
     "/dashboard/ki-influencer": "/dashboard/ki-ich",
     "/dashboard/produkt-werbung": "/dashboard/produkt",
-    "/dashboard/agent": "/dashboard",
+    "/dashboard/agent": "/dashboard/ki-agent",
     "/dashboard/voice-agent": "/dashboard/melodia",
     "/dashboard/story-creator": "/dashboard/seedance",
   };
