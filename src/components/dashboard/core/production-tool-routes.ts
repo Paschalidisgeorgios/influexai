@@ -156,6 +156,17 @@ export function isToolPushSafeToOpen(_toolId: ToolId): boolean {
   return false;
 }
 
+export function resolveDashboardToolFromQuery(
+  searchParams: Pick<URLSearchParams, "get">
+): ToolId {
+  const toolParam = searchParams.get("tool");
+  if (!toolParam) return "studio";
+  if (toolParam === "studio") return "studio";
+  if (toolParam === "tools") return "tools";
+  const normalized = normalizeToolQueryParam(toolParam);
+  return normalized ?? "studio";
+}
+
 export function normalizeToolQueryParam(raw: string): ToolId | null {
   const id = (TOOL_QUERY_ALIASES[raw] ?? raw) as ToolId;
   return LAUNCH_TOOL_IDS.has(id) ? id : null;

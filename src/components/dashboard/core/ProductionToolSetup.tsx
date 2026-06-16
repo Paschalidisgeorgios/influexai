@@ -5,6 +5,7 @@ import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED } from "./DashboardSurface";
 import { ProductionToolSetupBody } from "./ProductionToolSetupBody";
 import {
+  GALLERY_PERSISTED_TOOL_IDS,
   getSetupCreditLabel,
   getToolSetupCategory,
   getToolSetupSubtitle,
@@ -34,7 +35,11 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
           >
             <div className="space-y-3">
               <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
-              <StudioCreditNote>{SETUP_COPY.galleryResult}</StudioCreditNote>
+              {GALLERY_PERSISTED_TOOL_IDS.has(toolId) ? (
+                <StudioCreditNote>{SETUP_COPY.galleryResult}</StudioCreditNote>
+              ) : (
+                <StudioCreditNote>{SETUP_COPY.resultInline}</StudioCreditNote>
+              )}
             </div>
             <Link
               href="/dashboard?tool=tools"

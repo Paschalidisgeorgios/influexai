@@ -14,6 +14,7 @@ import { BuyCreditsProvider } from "@/components/credits/BuyCreditsProvider";
 import { PlanGateProvider } from "@/components/plan-gate/PlanGateProvider";
 import { DashboardToolProvider } from "@/contexts/DashboardToolContext";
 import { DashboardProvider } from "@/components/dashboard/DashboardProvider";
+import { DashboardStudioSpa } from "./DashboardStudioSpa";
 import { DashboardLayout } from "./DashboardLayout";
 import { DashboardStandaloneChrome } from "./DashboardStandaloneChrome";
 import { LegacyToolRedirect } from "./LegacyToolRedirect";
@@ -70,7 +71,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   if (isStudioSpa) {
     return (
       <Providers>
-        <DashboardLayout />
+        <DashboardStudioSpa />
       </Providers>
     );
   }

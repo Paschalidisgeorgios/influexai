@@ -1,10 +1,21 @@
 import type { ToolId } from "./DashboardLayout";
 import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
 import { getToolDisplayLabel } from "./production-tool-routes";
+import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
+import { CONTENT_CALENDAR_CREDIT_COST } from "@/lib/content-calendar-analysis";
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 
 export const SETUP_MVP_TOOL_IDS = new Set<ToolId>([
   "viral-hook",
   "content-calendar",
+  "image-gen",
+  "img-to-video",
+  "text-to-video",
+]);
+
+/** Tools whose output is persisted to the user gallery (media generations). */
+export const GALLERY_PERSISTED_TOOL_IDS = new Set<ToolId>([
   "image-gen",
   "img-to-video",
   "text-to-video",
@@ -16,8 +27,11 @@ export const SETUP_COPY = {
   agentPrimary: "Im Agent vorbereiten",
   errorGeneric:
     "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
-  galleryResult: "Ergebnis landet in deiner Galerie.",
+  galleryResult: "Ergebnis wird in deiner Galerie gespeichert.",
+  resultInline: "Ergebnis erscheint direkt hier.",
   toolCardCta: "Tool einrichten",
+  modelsLoading: "Modelle werden geladen…",
+  videoGenerating: "Video wird erstellt — das kann einige Minuten dauern.",
 } as const;
 
 const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {
@@ -42,13 +56,13 @@ const TOOL_SETUP_SUBTITLE: Partial<Record<ToolId, string>> = {
     "Aus einer Szenenbeschreibung entsteht ein Video-Clip.",
 };
 
-/** UI-only credit labels — no registry edits */
+/** UI-only credit labels — sourced from existing cost constants */
 const CREDIT_UI_OVERRIDES: Partial<Record<ToolId, string>> = {
-  "viral-hook": "1 Credit",
-  "content-calendar": "2–5 Credits",
-  "text-to-video": "Ab 50 Credits · abhängig von Modell und Dauer",
-  "img-to-video": "Dynamisch nach Modell & Dauer",
-  "image-gen": "5–8 Credits",
+  "viral-hook": `${VIRAL_HOOK_CREDIT_COST} Credits`,
+  "content-calendar": `${CONTENT_CALENDAR_CREDIT_COST} Credits`,
+  "text-to-video": `Ab ${AKOOL_TOOL_CREDITS.textToVideo} Credits · Modell & Dauer`,
+  "img-to-video": "Dynamisch · Modell & Dauer",
+  "image-gen": `${IMAGE_GEN_CREDITS.standard}–${IMAGE_GEN_CREDITS.highRes} Credits`,
 };
 
 export function getSetupCreditLabel(

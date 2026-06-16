@@ -5,26 +5,44 @@ import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
-import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { PLATFORM_FORMATS } from "@/lib/ai/imageStylePresets";
 import type { AkoolImageToVideoModel } from "@/lib/akool-models";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
-import type { ContentCalendarFrequency } from "@/lib/content-calendar-analysis";
-import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import type {
+  ContentCalendarFrequency,
+  ContentCalendarResult,
+} from "@/lib/content-calendar-analysis";
+import {
+  calendarToExportText,
+  CONTENT_CALENDAR_CREDIT_COST,
+} from "@/lib/content-calendar-analysis";
+import type { ViralHookResult } from "@/lib/viral-hook-analysis";
+import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
+import {
+  handleApiInsufficientCredits,
+  notifyGenerationComplete,
+  shouldShowInlineGenerationError,
+} from "@/lib/client-credits-ui";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { mergeSzenenGeneratorModels, type SzenenGeneratorModel } from "@/lib/szenen-generator-models";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { buildAgentPrepareHref, SETUP_COPY } from "./production-tool-setup-ui";
+import {
+  SetupErrorBanner,
+  SetupLoadingBanner,
+  SetupModelsEmpty,
+  SetupResultPanel,
+} from "./ProductionToolSetupStates";
 import {
   StudioActionBar,
   StudioFieldHelper,
   StudioFieldLabel,
   StudioInput,
   StudioOptionPills,
-  StudioPanel,
   StudioSegmentedControl,
   StudioSelect,
   StudioTextarea,
@@ -113,28 +131,15 @@ function DesktopSetupActions(props: SetupActionsProps) {
   );
 }
 
-function SetupError({ message }: { message: string }) {
-  return <p className="text-sm text-red-700">{message}</p>;
-}
-
-function ResultPanel({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <StudioPanel title={title}>
-      <div className="space-y-3 text-sm leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
-        {children}
-      </div>
-      <AiOutputDisclaimer tone="light" className="mt-4 border-t border-black/[0.08] pt-3" />
-      <p className="mt-3 text-xs" style={{ color: DASHBOARD_MUTED }}>
-        {SETUP_COPY.galleryResult}
-      </p>
-    </StudioPanel>
-  );
+function viralHookExportText(result: ViralHookResult): string {
+  return [
+    result.hook,
+    result.adaptedForNiche ? `\nAngepasst: ${result.adaptedForNiche}` : "",
+    result.whyViral ? `\n\nWarum es wirkt:\n${result.whyViral}` : "",
+    result.psychology ? `\n\nPsychologie:\n${result.psychology}` : "",
+  ]
+    .join("")
+    .trim();
 }
 
 function ViralHookSetup() {
@@ -143,12 +148,12 @@ function ViralHookSetup() {
   const [link, setLink] = useState("");
   const [niche, setNiche] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<ViralHookResult | null>(null);
   const { credits } = useUserCredits();
   const { generate, isGenerating } = useOptimisticGeneration();
 
   const canGenerate =
-    mode === "topic" ? topic.trim().length >= 10 : link.trim().length > 0;
+    mode === "topic" ? topic.trim().length >= 20 : link.trim().length > 0;
 
   const run = async () => {
     setError(null);
@@ -165,15 +170,18 @@ function ViralHookSetup() {
                   userNiche: niche || undefined,
                 }
           ),
-        3,
+        VIRAL_HOOK_CREDIT_COST,
         credits ?? 0
       );
-      onGenerationActionResult(res);
       if (!res.success) {
-        setError(sanitizeUserMessage(res.error));
+        onGenerationActionResult(res);
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         return;
       }
-      setResult(res.result.hook);
+      onGenerationActionResult(res);
+      setResult(res.result);
     } catch (e) {
       setError(
         sanitizeUserMessage(
@@ -231,13 +239,15 @@ function ViralHookSetup() {
         />
       </div>
 
-      {error ? <SetupError message={error} /> : null}
+      {error ? <SetupErrorBanner message={error} /> : null}
 
-      {!result && !error ? (
+      {!result && !error && !isGenerating ? (
         <StudioFieldHelper>
-          Gute Hooks erklären nicht alles. Sie erzeugen Neugier in den ersten Sekunden.
+          Beschreibe Thema oder Produkt in mindestens 20 Zeichen — der Hook entsteht daraus.
         </StudioFieldHelper>
       ) : null}
+
+      {isGenerating ? <SetupLoadingBanner label="Hooks werden erstellt…" /> : null}
 
       <ResponsiveSetupActions
         primaryLabel="Hooks generieren"
@@ -248,9 +258,25 @@ function ViralHookSetup() {
       />
 
       {result ? (
-        <ResultPanel title="Hook">
-          <p className="whitespace-pre-wrap font-medium">{result}</p>
-        </ResultPanel>
+        <SetupResultPanel
+          title="Hook"
+          copyText={viralHookExportText(result)}
+        >
+          <p className="whitespace-pre-wrap text-base font-semibold">{result.hook}</p>
+          {result.adaptedForNiche ? (
+            <p className="text-[13px]" style={{ color: DASHBOARD_MUTED }}>
+              {result.adaptedForNiche}
+            </p>
+          ) : null}
+          {result.whyViral ? (
+            <div className="border-t border-black/[0.06] pt-3">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide" style={{ color: DASHBOARD_MUTED }}>
+                Warum es wirkt
+              </p>
+              <p className="whitespace-pre-wrap">{result.whyViral}</p>
+            </div>
+          ) : null}
+        </SetupResultPanel>
       ) : null}
     </div>
   );
@@ -268,13 +294,13 @@ function ContentCalendarSetup() {
   const [platform, setPlatform] = useState(CAL_PLATFORMS[0]);
   const [frequency, setFrequency] = useState<ContentCalendarFrequency>("daily");
   const [error, setError] = useState<string | null>(null);
-  const [summary, setSummary] = useState<string | null>(null);
+  const [plan, setPlan] = useState<ContentCalendarResult | null>(null);
   const { credits } = useUserCredits();
   const { generate, isGenerating } = useOptimisticGeneration();
 
   const run = async () => {
     setError(null);
-    setSummary(null);
+    setPlan(null);
     try {
       const res = await generate(
         () =>
@@ -284,15 +310,18 @@ function ContentCalendarSetup() {
             frequency,
             language: "de",
           }),
-        5,
+        CONTENT_CALENDAR_CREDIT_COST,
         credits ?? 0
       );
-      onGenerationActionResult(res);
       if (!res.success) {
-        setError(sanitizeUserMessage(res.error));
+        onGenerationActionResult(res);
+        if (shouldShowInlineGenerationError(res)) {
+          setError(sanitizeUserMessage(res.error));
+        }
         return;
       }
-      setSummary(res.result.summary);
+      onGenerationActionResult(res);
+      setPlan(res.result);
     } catch (e) {
       setError(
         sanitizeUserMessage(
@@ -326,7 +355,7 @@ function ContentCalendarSetup() {
           </StudioSelect>
         </div>
         <div className="min-w-0">
-          <StudioFieldLabel>Zeitraum</StudioFieldLabel>
+          <StudioFieldLabel>Posting-Rhythmus</StudioFieldLabel>
           <StudioSelect
             value={frequency}
             onChange={(e) => setFrequency(e.target.value as ContentCalendarFrequency)}
@@ -340,20 +369,52 @@ function ContentCalendarSetup() {
         </div>
       </div>
 
-      {error ? <SetupError message={error} /> : null}
+      {error ? <SetupErrorBanner message={error} /> : null}
+
+      {isGenerating ? <SetupLoadingBanner label="Plan wird erstellt…" /> : null}
 
       <ResponsiveSetupActions
-        primaryLabel="Kalender erstellen"
+        primaryLabel="Plan erstellen"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("content-calendar", { niche, platform, frequency })}
         primaryDisabled={!niche.trim()}
         loading={isGenerating}
       />
 
-      {summary ? (
-        <ResultPanel title="Plan">
-          <p className="whitespace-pre-wrap">{summary}</p>
-        </ResultPanel>
+      {plan ? (
+        <SetupResultPanel
+          title="Content-Plan"
+          copyText={calendarToExportText(plan)}
+        >
+          {plan.summary ? (
+            <p className="whitespace-pre-wrap font-medium">{plan.summary}</p>
+          ) : null}
+          <ul className="mt-4 space-y-3">
+            {plan.days.slice(0, 8).map((day) => (
+              <li
+                key={day.day}
+                className="rounded-[14px] border border-black/[0.05] px-4 py-3"
+                style={{ background: "rgba(255,252,247,0.65)" }}
+              >
+                <p className="text-xs font-semibold" style={{ color: DASHBOARD_MUTED }}>
+                  Tag {day.day} · {day.dateLabel}
+                </p>
+                <p className="mt-1 font-medium">{day.topic}</p>
+                <p className="mt-1 text-[13px]" style={{ color: DASHBOARD_MUTED }}>
+                  {day.format} · {day.bestPostingTime}
+                </p>
+                {day.hook ? (
+                  <p className="mt-2 text-[13px] italic">&ldquo;{day.hook}&rdquo;</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          {plan.days.length > 8 ? (
+            <p className="text-xs" style={{ color: DASHBOARD_MUTED }}>
+              + {plan.days.length - 8} weitere Einträge — vollständiger Plan im kopierten Text.
+            </p>
+          ) : null}
+        </SetupResultPanel>
       ) : null}
     </div>
   );
@@ -387,9 +448,18 @@ function ImageGenSetup() {
         error?: string;
         imageUrl?: string;
         generationId?: string;
-        credits?: number;
+        creditsLeft?: number;
       };
       if (!res.ok) {
+        if (
+          handleApiInsufficientCredits(
+            res.status,
+            data,
+            highRes ? IMAGE_GEN_CREDITS.highRes : IMAGE_GEN_CREDITS.standard
+          )
+        ) {
+          return;
+        }
         setError(sanitizeUserMessage(data.error ?? SETUP_COPY.errorGeneric));
         return;
       }
@@ -403,7 +473,12 @@ function ImageGenSetup() {
         return;
       }
       setImageUrl(url);
-      window.dispatchEvent(new Event("credits-updated"));
+      if (typeof data.creditsLeft === "number") {
+        notifyGenerationComplete(data.creditsLeft);
+      } else {
+        window.dispatchEvent(new Event("credits-updated"));
+        window.dispatchEvent(new Event("generations-updated"));
+      }
     } catch (e) {
       setError(
         sanitizeUserMessage(
@@ -451,10 +526,13 @@ function ImageGenSetup() {
         Für bessere Ergebnisse: Motiv, Stil, Licht, Hintergrund und gewünschtes Format beschreiben.
       </StudioFieldHelper>
 
-      {error ? <SetupError message={error} /> : null}
+      {error ? <SetupErrorBanner message={error} /> : null}
+
+      {loading ? <SetupLoadingBanner label="Bild wird generiert…" /> : null}
 
       <ResponsiveSetupActions
         primaryLabel="Bild generieren"
+        primaryLoadingLabel="Bild wird generiert…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}
         primaryDisabled={!prompt.trim()}
@@ -462,14 +540,14 @@ function ImageGenSetup() {
       />
 
       {imageUrl ? (
-        <ResultPanel title="Ergebnis">
+        <SetupResultPanel title="Ergebnis" galleryNote>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
             alt="Generiertes Bild"
             className="w-full max-w-md rounded-xl border border-black/[0.08]"
           />
-        </ResultPanel>
+        </SetupResultPanel>
       ) : null}
     </div>
   );
@@ -477,6 +555,8 @@ function ImageGenSetup() {
 
 function TextToVideoSetup() {
   const [models, setModels] = useState<AkoolImageToVideoModel[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsError, setModelsError] = useState<string | null>(null);
   const [modelId, setModelId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [duration, setDuration] = useState(5);
@@ -489,15 +569,23 @@ function TextToVideoSetup() {
     [models, modelId]
   );
 
-  const { generating, startPolling } = useAkoolJobPoll({
+  const { generating, startPolling, error: pollError } = useAkoolJobPoll({
     onSuccess: ({ resultUrl }) => setVideoUrl(resultUrl),
   });
 
+  const displayError = err ?? pollError;
+
   useEffect(() => {
+    setModelsLoading(true);
+    setModelsError(null);
     fetch("/api/akool/text-to-video")
       .then((r) => r.json())
       .then((d) => {
         const list = (d.models ?? []) as AkoolImageToVideoModel[];
+        if (list.length === 0) {
+          setModelsError("Keine Video-Modelle verfügbar.");
+          return;
+        }
         setModels(list);
         if (list[0]) {
           setModelId(list[0].value);
@@ -505,7 +593,8 @@ function TextToVideoSetup() {
           setResolution(list[0].resolutionList[0]?.value ?? "720p");
         }
       })
-      .catch(() => setErr(SETUP_COPY.errorGeneric));
+      .catch(() => setModelsError(SETUP_COPY.errorGeneric))
+      .finally(() => setModelsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -551,18 +640,23 @@ function TextToVideoSetup() {
         />
       </div>
 
-      {err ? <SetupError message={err} /> : null}
+      {displayError ? <SetupErrorBanner message={displayError} /> : null}
+      {modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
+      {modelsLoading ? <SetupLoadingBanner label={SETUP_COPY.modelsLoading} /> : null}
+      {generating && !videoUrl ? (
+        <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
+      ) : null}
 
       <MobileEarlySetupActions
-        primaryLabel="Video vorbereiten"
+        primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
-        primaryDisabled={!prompt.trim() || !modelId || generating}
+        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
         loading={generating}
       />
 
-      {models.length > 0 ? (
+      {!modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
@@ -608,18 +702,18 @@ function TextToVideoSetup() {
       ) : null}
 
       <DesktopSetupActions
-        primaryLabel="Video vorbereiten"
+        primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
-        primaryDisabled={!prompt.trim() || !modelId || generating}
+        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
         loading={generating}
       />
 
       {videoUrl ? (
-        <ResultPanel title="Video">
+        <SetupResultPanel title="Video" galleryNote>
           <video src={videoUrl} controls className="w-full max-w-lg rounded-xl" />
-        </ResultPanel>
+        </SetupResultPanel>
       ) : null}
     </div>
   );
@@ -627,6 +721,8 @@ function TextToVideoSetup() {
 
 function ImgToVideoSetup() {
   const [models, setModels] = useState<SzenenGeneratorModel[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsError, setModelsError] = useState<string | null>(null);
   const [modelId, setModelId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -640,16 +736,24 @@ function ImgToVideoSetup() {
     [models, modelId]
   );
 
-  const { generating, startPolling } = useAkoolJobPoll({
+  const { generating, startPolling, error: pollError } = useAkoolJobPoll({
     onSuccess: ({ resultUrl }) => setVideoUrl(resultUrl),
   });
 
+  const displayError = err ?? pollError;
+
   useEffect(() => {
+    setModelsLoading(true);
+    setModelsError(null);
     fetch("/api/seedance/models")
       .then((r) => r.json())
       .then((d) => {
         const apiModels = (d.models ?? []) as AkoolImageToVideoModel[];
         const merged = mergeSzenenGeneratorModels(apiModels);
+        if (merged.length === 0) {
+          setModelsError("Keine Video-Modelle verfügbar.");
+          return;
+        }
         setModels(merged);
         if (merged[0]) {
           setModelId(merged[0].id);
@@ -657,7 +761,8 @@ function ImgToVideoSetup() {
           setResolution(merged[0].resolutions[0] ?? "720p");
         }
       })
-      .catch(() => setErr(SETUP_COPY.errorGeneric));
+      .catch(() => setModelsError(SETUP_COPY.errorGeneric))
+      .finally(() => setModelsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -684,6 +789,11 @@ function ImgToVideoSetup() {
         }),
       });
       const data = (await res.json()) as { jobId?: string; error?: string; credits?: number };
+      if (
+        handleApiInsufficientCredits(res.status, data, AKOOL_TOOL_CREDITS.textToVideo)
+      ) {
+        return;
+      }
       if (!res.ok || !data.jobId) throw new Error(data.error ?? SETUP_COPY.errorGeneric);
       startPolling(data.jobId, "image2video");
     } catch (e) {
@@ -721,18 +831,23 @@ function ImgToVideoSetup() {
         />
       </div>
 
-      {err ? <SetupError message={err} /> : null}
+      {displayError ? <SetupErrorBanner message={displayError} /> : null}
+      {modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
+      {modelsLoading ? <SetupLoadingBanner label={SETUP_COPY.modelsLoading} /> : null}
+      {generating && !videoUrl ? (
+        <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
+      ) : null}
 
       <MobileEarlySetupActions
-        primaryLabel="Video vorbereiten"
+        primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
-        primaryDisabled={!canGenerate || generating}
+        primaryDisabled={!canGenerate || generating || modelsLoading}
         loading={generating}
       />
 
-      {models.length > 0 ? (
+      {!modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
@@ -782,18 +897,18 @@ function ImgToVideoSetup() {
       </StudioFieldHelper>
 
       <DesktopSetupActions
-        primaryLabel="Video vorbereiten"
+        primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
-        primaryDisabled={!canGenerate || generating}
+        primaryDisabled={!canGenerate || generating || modelsLoading}
         loading={generating}
       />
 
       {videoUrl ? (
-        <ResultPanel title="Video">
+        <SetupResultPanel title="Video" galleryNote>
           <video src={videoUrl} controls className="w-full max-w-lg rounded-xl" />
-        </ResultPanel>
+        </SetupResultPanel>
       ) : null}
     </div>
   );
