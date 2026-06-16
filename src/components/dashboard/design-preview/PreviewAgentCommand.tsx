@@ -60,7 +60,7 @@ function TypewriterText({ prompts, visible }: { prompts: string[]; visible: bool
 
   return (
     <>
-      <span className="break-words text-neutral-300">{text || "\u200B"}</span>
+      <span className="break-words text-neutral-200">{text || "\u200B"}</span>
       <span
         className="inline-block align-bottom"
         style={{
@@ -141,16 +141,20 @@ export function PreviewAgentCommand({
   const idleBorder = isActive
     ? {
         border:     `2px solid ${ACCENT}`,
-        boxShadow:  `0 0 0 4px rgba(180,255,0,0.12), 0 0 48px rgba(180,255,0,0.22), 0 0 96px rgba(180,255,0,0.08), inset 0 0 28px rgba(180,255,0,0.04)`,
+        boxShadow:  `0 0 0 4px rgba(180,255,0,0.12), 0 0 48px rgba(180,255,0,0.24), 0 0 96px rgba(180,255,0,0.08), inset 0 0 28px rgba(180,255,0,0.04)`,
         transition: "border-color 0.15s, box-shadow 0.15s",
       }
     : {
-        border:     "1px solid rgba(255,255,255,0.10)",
+        border:     "1px solid rgba(255,255,255,0.09)",
         boxShadow:  elevated
-          ? "0 20px 56px rgba(8,8,8,0.28), 0 0 0 1px rgba(8,8,8,0.08)"
+          ? "0 16px 48px rgba(8,8,8,0.24), 0 0 0 1px rgba(8,8,8,0.06)"
           : "0 12px 40px rgba(0,0,0,0.28)",
         transition: "border-color 0.15s, box-shadow 0.15s",
       };
+
+  const inputRows = embedded && compact ? 2 : compact ? 3 : 4;
+  const inputMinH = embedded ? "min-h-[72px] md:min-h-[100px]" : "min-h-[96px] md:min-h-[112px]";
+  const inputText = embedded ? "text-[15px] md:text-[18px]" : "text-[16px] md:text-[18px]";
 
   return (
     <div className={`w-full max-w-full min-w-0 ${embedded ? "py-0" : "py-1 md:py-3"}`}>
@@ -160,12 +164,12 @@ export function PreviewAgentCommand({
             {ta.overline}
           </p>
           <h1
-            className="mb-5 text-[2rem] font-extrabold leading-[1.03] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+            className="mb-5 text-[1.875rem] font-extrabold leading-[1.02] sm:text-[2.125rem] md:text-6xl lg:text-7xl xl:text-8xl"
             style={{
               ...HL,
               color: DARK,
               WebkitTextFillColor: DARK,
-              letterSpacing: "-0.03em",
+              letterSpacing: "-0.035em",
               fontWeight: 800,
             }}
           >
@@ -175,7 +179,7 @@ export function PreviewAgentCommand({
               </span>
             ))}
           </h1>
-          <p className="max-w-xl text-[16px] leading-[1.7] md:text-[18px]" style={{ color: SUBLINE }}>
+          <p className="max-w-xl text-[16px] leading-[1.65] md:text-[19px]" style={{ color: SUBLINE }}>
             {ta.subline}
           </p>
         </div>
@@ -183,18 +187,18 @@ export function PreviewAgentCommand({
 
       <div className="relative min-w-0 max-w-full overflow-x-clip">
         <div
-          className="pointer-events-none absolute inset-x-0 -top-2 bottom-0 -z-0 rounded-lg md:-inset-x-4 md:-top-4"
+          className="pointer-events-none absolute inset-x-0 -top-1 bottom-0 -z-0 rounded-lg md:-inset-x-3 md:-top-3"
           style={{
             background: isActive || isLoading
-              ? `radial-gradient(ellipse 95% 75% at 50% 100%, rgba(180,255,0,0.14) 0%, rgba(80,60,220,0.06) 50%, transparent 78%)`
-              : "radial-gradient(ellipse 85% 65% at 50% 100%, rgba(180,255,0,0.05) 0%, transparent 72%)",
+              ? `radial-gradient(ellipse 95% 75% at 50% 100%, rgba(180,255,0,0.16) 0%, rgba(80,60,220,0.06) 50%, transparent 78%)`
+              : "radial-gradient(ellipse 85% 65% at 50% 100%, rgba(180,255,0,0.06) 0%, transparent 72%)",
           }}
         />
 
-        <div className={isLoading ? "relative max-w-full overflow-hidden rounded-md p-[3px]" : "relative max-w-full overflow-hidden rounded-md"}>
+        <div className={isLoading ? "relative max-w-full overflow-hidden rounded-lg p-[3px]" : "relative max-w-full overflow-hidden rounded-lg"}>
           {isLoading && (
             <div
-              className="absolute animate-spin rounded-md"
+              className="absolute animate-spin rounded-lg"
               style={{
                 top: "-50%", left: "-50%",
                 width: "200%", height: "200%",
@@ -205,7 +209,7 @@ export function PreviewAgentCommand({
           )}
 
           <div
-            className="relative max-w-full overflow-hidden rounded-md"
+            className="relative max-w-full overflow-hidden rounded-lg"
             style={{ background: SURFACE, ...(isLoading ? {} : idleBorder) }}
           >
             {!isLoading && (
@@ -219,38 +223,37 @@ export function PreviewAgentCommand({
               />
             )}
 
-            <div
-              className="flex min-w-0 items-center justify-between gap-2 border-b px-4 py-3 md:px-8"
-              style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.20)" }}
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-white/22" />
-                <span className="h-2 w-2 shrink-0 rounded-full bg-white/12" />
-                <span className="h-2 w-2 shrink-0 rounded-full bg-white/08" />
-                <span className="truncate font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-500">
-                  Agent Command
-                </span>
+            {!embedded && (
+              <div
+                className="flex min-w-0 items-center justify-between gap-2 border-b px-4 py-3 md:px-8"
+                style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.18)" }}
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-white/22" />
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-white/12" />
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-white/08" />
+                  <span className="truncate font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-500">
+                    Agent Command
+                  </span>
+                </div>
               </div>
-              <span className="shrink-0 font-mono text-[11px] tracking-[0.12em] uppercase text-neutral-500">
-                {t.mock}
-              </span>
-            </div>
+            )}
 
-            <div className="relative min-w-0 px-4 py-6 md:px-9 md:py-8">
+            <div className={`relative min-w-0 px-4 md:px-8 ${embedded ? "py-4 md:py-6" : "py-6 md:py-8"}`}>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onFocus={() => setIsActive(true)}
                 onBlur={() => { if (!input) setIsActive(false); }}
                 onKeyDown={handleKeyDown}
-                rows={compact ? 3 : 4}
+                rows={inputRows}
                 disabled={isLoading}
                 placeholder=""
-                className="relative z-10 box-border min-h-[96px] w-full max-w-full resize-none bg-transparent text-[16px] leading-[1.7] text-neutral-100 outline-none placeholder:text-neutral-500 disabled:opacity-60 md:min-h-[112px] md:text-[18px] md:leading-[1.75]"
+                className={`relative z-10 box-border w-full max-w-full resize-none bg-transparent leading-[1.65] text-neutral-100 outline-none placeholder:text-neutral-500 disabled:opacity-60 md:leading-[1.75] ${inputMinH} ${inputText}`}
               />
               {!input && (
                 <div
-                  className="pointer-events-none absolute left-4 right-4 top-6 z-0 text-[16px] leading-[1.7] md:left-9 md:right-9 md:top-8 md:text-[18px] md:leading-[1.75]"
+                  className={`pointer-events-none absolute left-4 right-4 z-0 leading-[1.65] md:left-8 md:right-8 md:leading-[1.75] ${embedded ? "top-4 md:top-6" : "top-6 md:top-8"} ${inputText}`}
                   aria-hidden
                 >
                   <TypewriterText prompts={ta.prompts} visible={!input && !isLoading} />
@@ -259,21 +262,21 @@ export function PreviewAgentCommand({
             </div>
 
             <div
-              className="flex min-w-0 flex-col gap-4 px-4 py-5 md:flex-row md:items-end md:justify-between md:gap-6 md:px-9 md:py-6"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.30)" }}
+              className={`flex min-w-0 flex-col gap-3 px-4 md:flex-row md:items-end md:justify-between md:gap-5 md:px-8 ${embedded ? "pb-4 pt-0 md:pb-5" : "py-5 md:py-6"}`}
+              style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.22)" }}
             >
-              <div className="grid w-full min-w-0 grid-cols-2 gap-2.5 md:flex md:flex-wrap md:gap-2.5">
+              <div className="grid w-full min-w-0 grid-cols-2 gap-2 md:flex md:flex-wrap md:gap-2">
                 {ta.quickActions.map((label) => (
                   <button
                     key={label}
                     type="button"
                     onClick={() => handleQuickAction(label)}
-                    className="rounded-sm border px-3 py-2.5 text-center font-mono text-[11px] leading-snug tracking-[0.05em] transition-all hover:border-white/22 hover:bg-white/[0.07] md:px-4 md:text-[13px]"
+                    className="rounded-md border px-2 py-2 text-center font-mono text-[10px] leading-snug tracking-[0.04em] transition-all hover:border-white/20 hover:bg-white/[0.06] md:px-3.5 md:py-2 md:text-[12px]"
                     style={{
-                      borderColor: "rgba(255,255,255,0.14)",
-                      color: "rgba(255,255,255,0.88)",
-                      background: "rgba(255,255,255,0.05)",
-                      minHeight: "44px",
+                      borderColor: "rgba(255,255,255,0.10)",
+                      color: "rgba(255,255,255,0.78)",
+                      background: "rgba(255,255,255,0.03)",
+                      minHeight: embedded ? "38px" : "40px",
                     }}
                   >
                     {label}
@@ -285,13 +288,14 @@ export function PreviewAgentCommand({
                 type="button"
                 onClick={handleGenerate}
                 disabled={isLoading || !input.trim()}
-                className="w-full shrink-0 rounded-sm px-10 py-4 font-mono text-[13px] font-bold tracking-[0.14em] uppercase transition-all disabled:opacity-50 md:w-auto md:min-w-[168px] md:text-[14px]"
+                className="w-full shrink-0 rounded-md px-8 font-mono text-[12px] font-bold tracking-[0.12em] uppercase transition-all disabled:opacity-50 md:w-auto md:min-w-[152px] md:text-[13px]"
                 style={{
-                  background: input.trim() && !isLoading ? ACCENT : "rgba(255,255,255,0.07)",
+                  background: input.trim() && !isLoading ? ACCENT : "rgba(255,255,255,0.06)",
                   color:      input.trim() && !isLoading ? DARK   : "rgba(255,255,255,0.38)",
                   border:     input.trim() ? "none" : "1px solid rgba(255,255,255,0.10)",
-                  boxShadow:  input.trim() && !isLoading ? `0 0 36px rgba(180,255,0,0.45), 0 4px 20px rgba(0,0,0,0.22)` : "none",
-                  minHeight:  "52px",
+                  boxShadow:  input.trim() && !isLoading ? `0 0 28px rgba(180,255,0,0.38)` : "none",
+                  minHeight:  embedded ? "44px" : "48px",
+                  padding:    embedded ? "10px 24px" : "14px 32px",
                 }}
               >
                 {isLoading ? ta.generating : ta.generate}
@@ -300,7 +304,7 @@ export function PreviewAgentCommand({
           </div>
         </div>
 
-        <div className="mt-3 flex min-h-[20px] min-w-0 items-center gap-2.5">
+        <div className="mt-2 flex min-h-[18px] min-w-0 items-center gap-2 md:mt-3">
           {isLoading && (
             <>
               <span
@@ -313,7 +317,7 @@ export function PreviewAgentCommand({
             </>
           )}
           {!isLoading && (!compact || showEnterHint) && (
-            <span className="font-mono text-[13px] text-neutral-500">
+            <span className="font-mono text-[12px] text-neutral-500 md:text-[13px]">
               {ta.enterHint}
             </span>
           )}

@@ -28,14 +28,14 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
 
   return (
     <div
-      className={`relative flex w-full min-w-0 flex-col overflow-hidden ${tall ? "h-full min-h-[520px] lg:min-h-[580px]" : "min-h-[300px] md:min-h-[360px]"}`}
+      className={`relative flex w-full min-w-0 flex-col overflow-hidden rounded-sm ${tall ? "h-full min-h-[540px] lg:min-h-[600px]" : "min-h-[280px] md:min-h-[340px]"}`}
       style={{
         background: "#0a0a10",
         border: integrated
-          ? "1px solid rgba(8,8,8,0.18)"
+          ? "1px solid rgba(8,8,8,0.14)"
           : "1px solid rgba(255,255,255,0.08)",
         boxShadow: integrated
-          ? "0 20px 56px rgba(8,8,8,0.22), 0 0 0 1px rgba(8,8,8,0.06), inset 0 1px 0 rgba(255,255,255,0.07)"
+          ? "0 24px 64px rgba(8,8,8,0.20), 0 0 0 1px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.06)"
           : "0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
       }}
     >
@@ -324,24 +324,27 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
 
   return (
     <div className="min-w-0">
-      {/* Hero: Desktop = Mission+Agent left | Monitor right. Mobile = Headline → Subline → Agent → Monitor */}
-      <section className="mb-14 md:mb-20">
-        <div className="grid min-w-0 grid-cols-1 items-start gap-0 md:grid-cols-2 md:items-stretch md:gap-10 lg:gap-14 xl:gap-16">
-          {/* Left — Mission + Agent entry point */}
+      {/* Hero: Desktop = Mission+Agent left | Monitor right. Mobile = Headline → Agent → Monitor */}
+      <section className="mb-12 md:mb-20">
+        <div
+          className="grid min-w-0 grid-cols-1 items-stretch gap-0 md:grid-cols-[minmax(0,1.14fr)_minmax(0,0.86fr)] md:gap-8 lg:gap-10 xl:gap-12"
+          style={{ alignItems: "stretch" }}
+        >
+          {/* Left — Mission + Agent */}
           <div className="min-w-0 flex flex-col">
             <p
-              className="mb-4 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-5"
+              className="mb-3 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-4"
               style={{ color: META }}
             >
               {ts.overline}
             </p>
             <h1
-              className="mb-5 text-[2rem] font-extrabold leading-[1.03] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+              className="mb-4 text-[1.875rem] font-extrabold leading-[1.02] sm:text-[2.125rem] md:text-6xl lg:text-7xl xl:text-8xl"
               style={{
                 ...HL,
                 color: DARK,
                 WebkitTextFillColor: DARK,
-                letterSpacing: "-0.03em",
+                letterSpacing: "-0.035em",
                 fontWeight: 800,
               }}
             >
@@ -352,16 +355,13 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
               ))}
             </h1>
             <p
-              className="max-w-xl text-[16px] leading-[1.7] md:text-[18px]"
+              className="max-w-2xl text-[16px] leading-[1.65] md:text-[19px] md:leading-[1.7]"
               style={{ color: SUBLINE }}
             >
               {ts.subline}
             </p>
 
-            <div className="mt-7 min-w-0 md:mt-8">
-              <p className="mb-4 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
-                {t.agent.overline}
-              </p>
+            <div className="mt-5 min-w-0 md:mt-7">
               <PreviewAgentCommand
                 onNavigate={onNavigate}
                 compact
@@ -372,14 +372,13 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
             </div>
           </div>
 
-          {/* Right — Production Monitor (desktop only, aligned with hero) */}
-          <div className="hidden min-w-0 md:flex md:flex-col">
+          {/* Right — Production Monitor (desktop, full height of hero block) */}
+          <div className="hidden min-w-0 md:flex md:flex-col md:justify-stretch">
             <HeroMonitor integrated tall />
           </div>
         </div>
 
-        {/* Mobile — Monitor after Agent, before Pipeline */}
-        <div className="mt-8 min-w-0 md:hidden">
+        <div className="mt-6 min-w-0 md:hidden">
           <HeroMonitor integrated />
         </div>
       </section>

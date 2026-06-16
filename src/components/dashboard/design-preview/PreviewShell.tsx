@@ -161,25 +161,25 @@ function PreviewInner() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <PreviewTopbar active={active} />
 
-        {/* Main scroll — dark shell framing a warm editorial stage */}
+        {/* Main scroll — stage uses ~86% width on desktop */}
         <div
           className="flex-1 overflow-y-auto overflow-x-hidden"
           style={{ scrollbarWidth: "none", background: SHELL_BG }}
         >
-          <div className="mx-auto w-full min-w-0 max-w-[96rem] px-1.5 pb-36 pt-1.5 md:px-3 md:pb-10 md:pt-3">
+          <div className="w-full px-2.5 pb-40 pt-2 md:px-[7%] md:pb-10 md:pt-4 lg:px-[6%]">
             <div
-              className="min-h-[calc(100vh-6.5rem)] min-w-0 overflow-x-clip overflow-y-visible rounded-lg"
+              className="min-h-[calc(100vh-6.5rem)] w-full min-w-0 overflow-x-clip overflow-y-visible rounded-xl"
               style={{
                 background: IVORY,
-                border: "1px solid rgba(8,8,8,0.10)",
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 12px 48px rgba(0,0,0,0.28)",
+                border: "1px solid rgba(8,8,8,0.08)",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 16px 64px rgba(0,0,0,0.32)",
               }}
             >
               <div
-                className="h-[3px] w-full"
-                style={{ background: `linear-gradient(90deg, ${ACCENT}88, ${ACCENT}33 40%, transparent 85%)` }}
+                className="h-[3px] w-full rounded-t-xl"
+                style={{ background: `linear-gradient(90deg, ${ACCENT}99, ${ACCENT}44 35%, transparent 80%)` }}
               />
-              <div className="min-w-0 px-4 pb-12 pt-5 md:px-14 md:pb-14 md:pt-10 lg:px-16">
+              <div className="min-w-0 px-4 pb-14 pt-5 md:px-12 md:pb-16 md:pt-10 lg:px-16 xl:px-20">
                 {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}
                 {active === "agent"   && <PreviewAgentView  onNavigate={setActive} />}
                 {active === "tools"   && <PreviewToolsFlow />}
