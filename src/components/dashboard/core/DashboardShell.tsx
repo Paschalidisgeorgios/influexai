@@ -28,6 +28,8 @@ const LEGACY_CHILD_ROUTES = [
   "/dashboard/referral",
   "/dashboard/profile",
   "/dashboard/api",
+  // Design preview — isolated, renders as fixed full-screen overlay over legacy chrome
+  "/dashboard/design-preview",
 ];
 
 interface DashboardShellProps {
