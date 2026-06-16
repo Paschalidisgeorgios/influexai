@@ -29,6 +29,7 @@ import {
   DashboardPageHeader,
   DashboardPanel,
 } from "./DashboardSurface";
+import { STUDIO_RADIUS } from "../studio-ui";
 
 interface QuickAction {
   id: ToolId;
@@ -75,7 +76,7 @@ export function StudioCockpit({
       <DashboardPageHeader
         kicker="Creator Studio"
         title="Studio"
-        subtitle="Überblick über Produktionen, Assets und Credits."
+        subtitle="Produktionen, Assets und Credits im Überblick."
       />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">

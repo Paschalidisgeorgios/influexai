@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { ToolId } from "./DashboardLayout";
-import {
-  DASHBOARD_ACCENT,
-  DASHBOARD_MUTED,
-  DASHBOARD_TEXT,
-  DashboardPageHeader,
-  DashboardPanel,
-  DashboardSection,
-} from "./DashboardSurface";
-import { getSetupCreditLabel } from "./production-tool-setup-ui";
+import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
+import { SETUP_COPY } from "./production-tool-setup-ui";
 import { TOOL_OVERVIEW_CATEGORIES } from "./production-tool-routes";
+import {
+  STUDIO_RADIUS,
+  STUDIO_SHADOW,
+  StudioCreditNote,
+  StudioPageHeader,
+  StudioPanel,
+  StudioSection,
+} from "../studio-ui";
 
 export function ProductionToolsOverview({
   onSelect,
@@ -20,76 +21,79 @@ export function ProductionToolsOverview({
   onSelect: (id: ToolId) => void;
 }) {
   return (
-    <div className="w-full min-w-0 space-y-8">
-      <DashboardPageHeader
-        kicker="Tools"
-        title="Arbeitsflächen"
-        subtitle="Tool wählen, Setup ausfüllen, generieren."
+    <div className="w-full min-w-0 space-y-10 md:space-y-12">
+      <StudioPageHeader
+        kicker="Studio"
+        title="Tools"
+        subtitle="Wähle das passende Tool für Bild, Video, Text, Avatar oder Kampagnenplanung."
       />
 
-      <div className="space-y-8">
+      <div className="space-y-10 md:space-y-12">
         {TOOL_OVERVIEW_CATEGORIES.map((category) => (
-          <DashboardSection key={category.id} title={category.title}>
-            <p className="mb-3 text-sm" style={{ color: DASHBOARD_MUTED }}>
-              {category.description}
-            </p>
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-              {category.tools.map((tool) => {
-                const creditLabel = getSetupCreditLabel(tool.id);
-                return (
-                  <button
-                    key={tool.id}
-                    type="button"
-                    onClick={() => onSelect(tool.id)}
-                    className="flex min-h-[88px] flex-col rounded-xl border p-4 text-left transition-colors hover:border-[#B4FF00]/28"
-                    style={{
-                      borderColor: "rgba(8,8,8,0.11)",
-                      background: "#FFFCF7",
-                    }}
+          <StudioSection key={category.id} title={category.title} description={category.description}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {category.tools.map((tool) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  onClick={() => onSelect(tool.id)}
+                  className={`group flex min-h-[108px] flex-col p-5 text-left transition-all hover:-translate-y-0.5 ${STUDIO_RADIUS.card}`}
+                  style={{
+                    background: "rgba(255,252,247,0.65)",
+                    border: "1px solid rgba(8,8,8,0.05)",
+                    boxShadow: STUDIO_SHADOW.card,
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span
+                      className="text-[14px] font-semibold tracking-tight"
+                      style={{ color: DASHBOARD_TEXT }}
+                    >
+                      {tool.label}
+                    </span>
+                    <ChevronRight
+                      size={15}
+                      className="shrink-0 opacity-40 transition-opacity group-hover:opacity-80"
+                      style={{ color: DASHBOARD_MUTED }}
+                    />
+                  </div>
+                  <p
+                    className="mt-2 flex-1 text-[12px] leading-relaxed"
+                    style={{ color: DASHBOARD_MUTED }}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <span
-                        className="text-[13px] font-semibold"
-                        style={{ color: DASHBOARD_TEXT }}
-                      >
-                        {tool.label}
-                      </span>
-                      <ChevronRight
-                        size={14}
-                        className="shrink-0"
-                        style={{ color: DASHBOARD_MUTED }}
-                      />
-                    </div>
-                    <p className="mt-1.5 flex-1 text-[11px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-                      {tool.description}
-                    </p>
-                    <p className="mt-2 font-mono text-[10px]" style={{ color: DASHBOARD_ACCENT }}>
-                      {creditLabel}
-                    </p>
-                  </button>
-                );
-              })}
+                    {tool.description}
+                  </p>
+                  <p
+                    className="mt-3 text-[11px] font-semibold tracking-wide"
+                    style={{ color: DASHBOARD_TEXT }}
+                  >
+                    {SETUP_COPY.toolCardCta} →
+                  </p>
+                </button>
+              ))}
             </div>
-          </DashboardSection>
+          </StudioSection>
         ))}
       </div>
 
-      <DashboardPanel title="Agent">
-        <p className="mb-4 text-sm" style={{ color: DASHBOARD_MUTED }}>
-          Briefing statt Setup? Agent öffnen.
+      <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
+
+      <StudioPanel title="Agent">
+        <p className="mb-5 max-w-lg text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Der Agent hilft beim Briefing. Du behältst Kontrolle über Tool, Modell und Output.
         </p>
         <Link
           href="/dashboard/ki-agent"
-          className="inline-flex rounded-lg border px-4 py-2.5 text-sm font-semibold no-underline transition-colors hover:border-[#B4FF00]/30"
+          className={`inline-flex min-h-[44px] items-center px-6 text-sm font-semibold no-underline transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
           style={{
-            borderColor: "rgba(8,8,8,0.12)",
-            background: "rgba(180,255,0,0.10)",
+            background: "rgba(180,255,0,0.12)",
+            border: "1px solid rgba(180,255,0,0.22)",
             color: DASHBOARD_TEXT,
           }}
         >
-          Zum Agent →
+          {SETUP_COPY.agentPrimary} →
         </Link>
-      </DashboardPanel>
+      </StudioPanel>
     </div>
   );
 }

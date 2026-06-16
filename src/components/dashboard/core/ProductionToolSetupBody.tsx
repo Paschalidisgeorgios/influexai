@@ -22,9 +22,13 @@ import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import type { ContentCalendarFrequency } from "@/lib/content-calendar-analysis";
 import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { onGenerationActionResult } from "@/lib/handle-generation-result";
-import { mergeSzenenGeneratorModels } from "@/lib/szenen-generator-models";
+import { mergeSzenenGeneratorModels, type SzenenGeneratorModel } from "@/lib/szenen-generator-models";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { buildAgentPrepareHref } from "./production-tool-setup-ui";
+import { buildAgentPrepareHref, SETUP_COPY } from "./production-tool-setup-ui";
+
+const IMAGE_SETUP_FORMATS = PLATFORM_FORMATS.filter((f) =>
+  ["1:1", "9:16", "16:9"].includes(f.aspectLabel)
+);
 
 const inputClass =
   "w-full rounded-xl border px-4 py-3.5 text-[15px] leading-relaxed outline-none transition-colors placeholder:text-black/30 focus:border-[#B4FF00]/40 focus:shadow-[0_0_0_4px_rgba(180,255,0,0.08)]";
@@ -38,6 +42,14 @@ const inputStyle = {
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: DASHBOARD_MUTED }}>
+      {children}
+    </p>
+  );
+}
+
+function FieldHelper({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-5 text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
       {children}
     </p>
   );
@@ -77,7 +89,7 @@ function SetupActions({
           color: DASHBOARD_TEXT,
         }}
       >
-        Mit Agent vorbereiten
+        {SETUP_COPY.agentSecondary}
       </Link>
     </div>
   );
@@ -96,6 +108,9 @@ function ResultPanel({
         {children}
       </div>
       <AiOutputDisclaimer tone="light" className="mt-4 border-t border-black/[0.08] pt-3" />
+      <p className="mt-3 text-xs" style={{ color: DASHBOARD_MUTED }}>
+        {SETUP_COPY.galleryResult}
+      </p>
     </DashboardPanel>
   );
 }
@@ -138,7 +153,11 @@ function ViralHookSetup() {
       }
       setResult(res.result.hook);
     } catch (e) {
-      setError(sanitizeUserMessage(e instanceof Error ? e.message : "Fehler"));
+      setError(
+        sanitizeUserMessage(
+          e instanceof Error ? e.message : SETUP_COPY.errorGeneric
+        )
+      );
     }
   };
 
@@ -149,7 +168,7 @@ function ViralHookSetup() {
   });
 
   return (
-    <DashboardPanel>
+    <div className="space-y-6">
       <div className="mb-6 flex gap-2">
         {(["topic", "link"] as const).map((m) => (
           <button
@@ -163,26 +182,26 @@ function ViralHookSetup() {
               color: DASHBOARD_TEXT,
             }}
           >
-            {m === "topic" ? "Aus Thema" : "Aus Link"}
+            {m === "topic" ? "Hook aus Thema" : "Hook aus Link"}
           </button>
         ))}
       </div>
 
       {mode === "topic" ? (
         <div className="mb-5">
-          <FieldLabel>Thema / Briefing</FieldLabel>
+          <FieldLabel>Thema oder Produkt</FieldLabel>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             rows={5}
-            placeholder="Worum geht es? Was soll der Hook auslösen?"
+            placeholder="z. B. Neuer Beauty-Launch für junge Frauen auf TikTok"
             className={`${inputClass} min-h-[140px] resize-none`}
             style={inputStyle}
           />
         </div>
       ) : (
         <div className="mb-5">
-          <FieldLabel>YouTube-Link</FieldLabel>
+          <FieldLabel>Link</FieldLabel>
           <input
             type="url"
             value={link}
@@ -195,23 +214,29 @@ function ViralHookSetup() {
       )}
 
       <div className="mb-6">
-        <FieldLabel>Nische (optional)</FieldLabel>
+        <FieldLabel>Zielgruppe / Nische (optional)</FieldLabel>
         <input
           type="text"
           value={niche}
           onChange={(e) => setNiche(e.target.value)}
-          placeholder="z. B. Fitness, Finance"
+          placeholder="z. B. Fitness, Beauty, B2B"
           className={inputClass}
           style={inputStyle}
         />
       </div>
+
+      {!result && !error ? (
+        <FieldHelper>
+          Gute Hooks erklären nicht alles. Sie erzeugen Neugier in den ersten Sekunden.
+        </FieldHelper>
+      ) : null}
 
       {error ? (
         <p className="mb-4 text-sm text-red-700">{error}</p>
       ) : null}
 
       <SetupActions
-        primaryLabel="Hook generieren"
+        primaryLabel="Hooks generieren"
         onPrimary={() => void run()}
         agentHref={agentHref}
         primaryDisabled={!canGenerate}
@@ -225,15 +250,15 @@ function ViralHookSetup() {
           </ResultPanel>
         </div>
       ) : null}
-    </DashboardPanel>
+    </div>
   );
 }
 
-const CAL_PLATFORMS = ["TikTok", "YouTube Shorts", "Instagram Reels", "Alle Plattformen"];
+const CAL_PLATFORMS = ["Instagram", "TikTok", "YouTube Shorts", "LinkedIn"];
 const CAL_FREQUENCIES: { id: ContentCalendarFrequency; label: string }[] = [
+  { id: "weekly", label: "30 Tage · 1× pro Woche" },
+  { id: "three_per_week", label: "30 Tage · 3× pro Woche" },
   { id: "daily", label: "30 Tage · täglich" },
-  { id: "three_per_week", label: "12 Posts · 3× / Woche" },
-  { id: "weekly", label: "4 Posts · wöchentlich" },
 ];
 
 function ContentCalendarSetup() {
@@ -267,19 +292,23 @@ function ContentCalendarSetup() {
       }
       setSummary(res.result.summary);
     } catch (e) {
-      setError(sanitizeUserMessage(e instanceof Error ? e.message : "Fehler"));
+      setError(
+        sanitizeUserMessage(
+          e instanceof Error ? e.message : SETUP_COPY.errorGeneric
+        )
+      );
     }
   };
 
   return (
-    <DashboardPanel>
+    <div className="space-y-6">
       <div className="mb-5">
-        <FieldLabel>Thema / Nische</FieldLabel>
+        <FieldLabel>Thema, Branche oder Angebot</FieldLabel>
         <input
           type="text"
           value={niche}
           onChange={(e) => setNiche(e.target.value)}
-          placeholder="Wofür planst du Content?"
+          placeholder="z. B. Griechisches Restaurant in Stuttgart, mehr Reservierungen über Instagram"
           className={inputClass}
           style={inputStyle}
         />
@@ -321,7 +350,7 @@ function ContentCalendarSetup() {
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
 
       <SetupActions
-        primaryLabel="Kalender generieren"
+        primaryLabel="Kalender erstellen"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("content-calendar", { niche, platform, frequency })}
         primaryDisabled={!niche.trim()}
@@ -335,13 +364,14 @@ function ContentCalendarSetup() {
           </ResultPanel>
         </div>
       ) : null}
-    </DashboardPanel>
+    </div>
   );
 }
 
 function ImageGenSetup() {
   const [prompt, setPrompt] = useState("");
-  const [platform, setPlatform] = useState(PLATFORM_FORMATS[0].id);
+  const [platform, setPlatform] = useState(IMAGE_SETUP_FORMATS[0]?.id ?? PLATFORM_FORMATS[0].id);
+  const [highRes, setHighRes] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -354,7 +384,7 @@ function ImageGenSetup() {
       const res = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, platform }),
+        body: JSON.stringify({ prompt, platform, highRes }),
       });
       const data = (await res.json()) as {
         error?: string;
@@ -363,7 +393,9 @@ function ImageGenSetup() {
         credits?: number;
       };
       if (!res.ok) {
-        setError(sanitizeUserMessage(data.error ?? "Generierung fehlgeschlagen"));
+        setError(
+          sanitizeUserMessage(data.error ?? SETUP_COPY.errorGeneric)
+        );
         return;
       }
       const url =
@@ -378,30 +410,34 @@ function ImageGenSetup() {
       setImageUrl(url);
       window.dispatchEvent(new Event("credits-updated"));
     } catch (e) {
-      setError(sanitizeUserMessage(e instanceof Error ? e.message : "Fehler"));
+      setError(
+        sanitizeUserMessage(
+          e instanceof Error ? e.message : SETUP_COPY.errorGeneric
+        )
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardPanel>
+    <div className="space-y-6">
       <div className="mb-5">
-        <FieldLabel>Prompt</FieldLabel>
+        <FieldLabel>Bildbeschreibung</FieldLabel>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={5}
-          placeholder="Was soll auf dem Bild zu sehen sein?"
+          placeholder="z. B. Premium Produktfoto einer schwarzen Parfumflasche auf hellem Stein, cinematic lighting"
           className={`${inputClass} min-h-[140px] resize-none`}
           style={inputStyle}
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-5">
         <FieldLabel>Format</FieldLabel>
         <div className="flex flex-wrap gap-2">
-          {PLATFORM_FORMATS.map((fmt) => (
+          {IMAGE_SETUP_FORMATS.map((fmt) => (
             <button
               key={fmt.id}
               type="button"
@@ -414,11 +450,42 @@ function ImageGenSetup() {
                 color: DASHBOARD_TEXT,
               }}
             >
-              {fmt.aspectLabel} · {fmt.labelDE}
+              {fmt.aspectLabel}
             </button>
           ))}
         </div>
       </div>
+
+      <div className="mb-5">
+        <FieldLabel>Qualität</FieldLabel>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { id: false, label: "Standard" },
+              { id: true, label: "High Resolution" },
+            ] as const
+          ).map((q) => (
+            <button
+              key={String(q.id)}
+              type="button"
+              onClick={() => setHighRes(q.id)}
+              className="rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
+              style={{
+                borderColor:
+                  highRes === q.id ? "rgba(180,255,0,0.35)" : "rgba(8,8,8,0.10)",
+                background: highRes === q.id ? "rgba(180,255,0,0.12)" : "#FFFCF7",
+                color: DASHBOARD_TEXT,
+              }}
+            >
+              {q.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <FieldHelper>
+        Für bessere Ergebnisse: Motiv, Stil, Licht, Hintergrund und gewünschtes Format beschreiben.
+      </FieldHelper>
 
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
 
@@ -442,7 +509,7 @@ function ImageGenSetup() {
           </ResultPanel>
         </div>
       ) : null}
-    </DashboardPanel>
+    </div>
   );
 }
 
@@ -476,7 +543,7 @@ function TextToVideoSetup() {
           setResolution(list[0].resolutionList[0]?.value ?? "720p");
         }
       })
-      .catch(() => setErr("Modelle konnten nicht geladen werden."));
+      .catch(() => setErr(SETUP_COPY.errorGeneric));
   }, []);
 
   useEffect(() => {
@@ -498,22 +565,26 @@ function TextToVideoSetup() {
       if (handleApiInsufficientCredits(res.status, data, AKOOL_TOOL_CREDITS.textToVideo)) {
         return;
       }
-      if (!res.ok || !data.jobId) throw new Error(data.error ?? "Fehler");
+      if (!res.ok || !data.jobId) throw new Error(data.error ?? SETUP_COPY.errorGeneric);
       startPolling(data.jobId, "text2video");
     } catch (e) {
-      setErr(sanitizeUserMessage(e instanceof Error ? e.message : "Fehler"));
+      setErr(
+        sanitizeUserMessage(
+          e instanceof Error ? e.message : SETUP_COPY.errorGeneric
+        )
+      );
     }
   };
 
   return (
-    <DashboardPanel>
+    <div className="space-y-6">
       <div className="mb-5">
-        <FieldLabel>Prompt</FieldLabel>
+        <FieldLabel>Videobeschreibung</FieldLabel>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={4}
-          placeholder="Beschreibe die Szene…"
+          placeholder="z. B. Eine moderne Fashion-Ad-Szene in einer hellen Stadt, langsame Kamerafahrt, hochwertiger Look"
           className={`${inputClass} min-h-[120px] resize-none`}
           style={inputStyle}
         />
@@ -548,13 +619,13 @@ function TextToVideoSetup() {
                 >
                   {selected.durationList.map((d) => (
                     <option key={d} value={d}>
-                      {d}s
+                      {d} Sekunden
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <FieldLabel>Auflösung</FieldLabel>
+                <FieldLabel>Format</FieldLabel>
                 <select
                   value={resolution}
                   onChange={(e) => setResolution(e.target.value)}
@@ -576,7 +647,7 @@ function TextToVideoSetup() {
       {err ? <p className="mb-4 text-sm text-red-700">{err}</p> : null}
 
       <SetupActions
-        primaryLabel={generating ? "Wird gerendert…" : "Video generieren"}
+        primaryLabel={generating ? "Erstellung gestartet…" : "Video vorbereiten"}
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
         primaryDisabled={!prompt.trim() || !modelId || generating}
@@ -590,12 +661,12 @@ function TextToVideoSetup() {
           </ResultPanel>
         </div>
       ) : null}
-    </DashboardPanel>
+    </div>
   );
 }
 
 function ImgToVideoSetup() {
-  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
+  const [models, setModels] = useState<SzenenGeneratorModel[]>([]);
   const [modelId, setModelId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -603,6 +674,11 @@ function ImgToVideoSetup() {
   const [resolution, setResolution] = useState("720p");
   const [err, setErr] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+
+  const selected = useMemo(
+    () => models.find((m) => m.id === modelId),
+    [models, modelId]
+  );
 
   const { generating, startPolling } = useAkoolJobPoll({
     onSuccess: ({ resultUrl }) => setVideoUrl(resultUrl),
@@ -614,15 +690,21 @@ function ImgToVideoSetup() {
       .then((d) => {
         const apiModels = (d.models ?? []) as AkoolImageToVideoModel[];
         const merged = mergeSzenenGeneratorModels(apiModels);
-        setModels(merged.map((m) => ({ id: m.id, name: m.name })));
+        setModels(merged);
         if (merged[0]) {
           setModelId(merged[0].id);
           setDuration(merged[0].durations[0] ?? 5);
           setResolution(merged[0].resolutions[0] ?? "720p");
         }
       })
-      .catch(() => setErr("Modelle konnten nicht geladen werden."));
+      .catch(() => setErr(SETUP_COPY.errorGeneric));
   }, []);
+
+  useEffect(() => {
+    if (!selected) return;
+    setDuration(selected.durations[0] ?? 5);
+    setResolution(selected.resolutions[0] ?? "720p");
+  }, [selected]);
 
   const canGenerate = Boolean(prompt.trim() && imageUrl.trim() && modelId);
 
@@ -642,72 +724,113 @@ function ImgToVideoSetup() {
         }),
       });
       const data = (await res.json()) as { jobId?: string; error?: string; credits?: number };
-      if (!res.ok || !data.jobId) throw new Error(data.error ?? "Fehler");
+      if (!res.ok || !data.jobId) throw new Error(data.error ?? SETUP_COPY.errorGeneric);
       startPolling(data.jobId, "image2video");
     } catch (e) {
-      setErr(sanitizeUserMessage(e instanceof Error ? e.message : "Fehler"));
+      setErr(
+        sanitizeUserMessage(
+          e instanceof Error ? e.message : SETUP_COPY.errorGeneric
+        )
+      );
     }
   };
 
   return (
-    <DashboardPanel>
+    <div className="space-y-6">
       <div className="mb-5">
-        <FieldLabel>Startbild (URL)</FieldLabel>
+        <FieldLabel>Startbild</FieldLabel>
         <input
           type="url"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://…"
+          placeholder="Bild-URL einfügen — z. B. aus der Galerie"
           className={inputClass}
           style={inputStyle}
         />
+        <p className="mt-2 text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+          Datei hochladen folgt im nächsten Schritt. Bis dahin: URL aus Galerie oder externem Link.
+        </p>
       </div>
 
       <div className="mb-5">
-        <FieldLabel>Prompt</FieldLabel>
+        <FieldLabel>Bewegung beschreiben</FieldLabel>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={4}
-          placeholder="Wie soll sich das Bild bewegen?"
+          placeholder="z. B. Kamera fährt langsam nach vorne, Licht reflektiert auf dem Produkt, cinematic motion"
           className={`${inputClass} min-h-[120px] resize-none`}
           style={inputStyle}
         />
       </div>
 
       {models.length > 0 ? (
-        <div className="mb-5">
-          <FieldLabel>Modell</FieldLabel>
-          <select
-            value={modelId}
-            onChange={(e) => setModelId(e.target.value)}
-            className={inputClass}
-            style={inputStyle}
-          >
-            {models.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
+        <div className="mb-5 grid gap-4 sm:grid-cols-3">
+          <div className="sm:col-span-3">
+            <FieldLabel>Modell</FieldLabel>
+            <select
+              value={modelId}
+              onChange={(e) => setModelId(e.target.value)}
+              className={inputClass}
+              style={inputStyle}
+            >
+              {models.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selected ? (
+            <>
+              <div>
+                <FieldLabel>Dauer</FieldLabel>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  {selected.durations.map((d) => (
+                    <option key={d} value={d}>
+                      {d} Sekunden
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <FieldLabel>Format</FieldLabel>
+                <select
+                  value={resolution}
+                  onChange={(e) => setResolution(e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  {selected.resolutions.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : null}
         </div>
       ) : null}
+
+      <FieldHelper>
+        Je klarer die gewünschte Bewegung beschrieben ist, desto besser wird der Clip.
+      </FieldHelper>
 
       {err ? <p className="mb-4 text-sm text-red-700">{err}</p> : null}
 
       <SetupActions
-        primaryLabel={generating ? "Wird gerendert…" : "Video generieren"}
+        primaryLabel={generating ? "Erstellung gestartet…" : "Video vorbereiten"}
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
         primaryDisabled={!canGenerate || generating}
         loading={generating}
       />
-
-      {!canGenerate ? (
-        <p className="mt-4 text-xs" style={{ color: DASHBOARD_MUTED }}>
-          Startbild-URL, Prompt und Modell ausfüllen — oder über den Agent starten.
-        </p>
-      ) : null}
 
       {videoUrl ? (
         <div className="mt-6">
@@ -716,7 +839,7 @@ function ImgToVideoSetup() {
           </ResultPanel>
         </div>
       ) : null}
-    </DashboardPanel>
+    </div>
   );
 }
 

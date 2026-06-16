@@ -9,14 +9,14 @@ import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
   DASHBOARD_TEXT,
-  DashboardPanel,
 } from "@/components/dashboard/core/DashboardSurface";
+import { STUDIO_RADIUS, StudioPanel } from "@/components/dashboard/studio-ui";
 import type { AgentUiMessage } from "@/hooks/useAgentAutopilotChat";
 
 function statusLabel(message: AgentUiMessage): string {
-  if (message.activeTool) return "Tool wird gewählt";
+  if (message.activeTool) return "Modell und Tool werden gewählt";
   if (message.content) return "Output wird vorbereitet";
-  return "Briefing wird analysiert";
+  return "Briefing wird ausgewertet";
 }
 
 type Props = {
@@ -36,26 +36,26 @@ export function AgentRunMessages({ messages, running, error, onRetry }: Props) {
   if (messages.length === 0 && !running && !error) return null;
 
   return (
-    <div ref={scrollRef} className="w-full min-w-0 space-y-4">
+    <div ref={scrollRef} className="w-full min-w-0 space-y-5">
       {messages.map((m) => {
         if (m.role === "user") {
           return (
             <div
               key={m.id}
-              className="rounded-xl border px-4 py-3"
+              className={`px-5 py-4 ${STUDIO_RADIUS.panel}`}
               style={{
-                borderColor: "rgba(180,255,0,0.28)",
-                background: "rgba(180,255,0,0.10)",
+                border: "1px solid rgba(180,255,0,0.22)",
+                background: "rgba(180,255,0,0.08)",
               }}
             >
               <p
-                className="mb-1 font-mono text-[9px] uppercase tracking-widest"
+                className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]"
                 style={{ color: DASHBOARD_MUTED }}
               >
                 Dein Briefing
               </p>
               <p
-                className="whitespace-pre-wrap text-sm leading-relaxed"
+                className="whitespace-pre-wrap text-[15px] leading-relaxed"
                 style={{ color: DASHBOARD_TEXT }}
               >
                 {m.content}
@@ -65,9 +65,9 @@ export function AgentRunMessages({ messages, running, error, onRetry }: Props) {
         }
 
         return (
-          <DashboardPanel key={m.id} title="Agent">
+          <StudioPanel key={m.id} title="Agent">
             {m.pending && m.activeTool ? (
-              <div className="mb-3 space-y-2">
+              <div className="mb-4 space-y-2">
                 <p className="text-xs font-medium" style={{ color: DASHBOARD_MUTED }}>
                   {statusLabel(m)}
                 </p>
@@ -82,9 +82,9 @@ export function AgentRunMessages({ messages, running, error, onRetry }: Props) {
             {m.pending && !m.activeTool && !m.content ? (
               <div className="space-y-2">
                 <p className="text-xs font-medium" style={{ color: DASHBOARD_MUTED }}>
-                  Briefing wird analysiert
+                  Briefing wird ausgewertet
                 </p>
-                <AgentTypingIndicator label="Tool wird gewählt…" variant="light" />
+                <AgentTypingIndicator label="Tool wird vorbereitet…" variant="light" />
               </div>
             ) : null}
 
@@ -92,39 +92,39 @@ export function AgentRunMessages({ messages, running, error, onRetry }: Props) {
               <>
                 <AgentMarkdown content={m.content} variant="light" />
                 {!m.pending ? (
-                  <AiOutputDisclaimer className="mt-3 border-t pt-2" tone="light" />
+                  <AiOutputDisclaimer className="mt-4 border-t border-black/[0.06] pt-3" tone="light" />
                 ) : null}
               </>
             ) : null}
-          </DashboardPanel>
+          </StudioPanel>
         );
       })}
 
       {running && messages.length === 0 ? (
-        <DashboardPanel title="Status">
+        <StudioPanel title="Status">
           <p className="mb-2 text-xs font-medium" style={{ color: DASHBOARD_MUTED }}>
-            Briefing wird analysiert
+            Briefing wird ausgewertet
           </p>
-          <AgentTypingIndicator label="Tool wird gewählt…" variant="light" />
-        </DashboardPanel>
+          <AgentTypingIndicator label="Tool wird vorbereitet…" variant="light" />
+        </StudioPanel>
       ) : null}
 
       {error ? (
-        <DashboardPanel title="Hinweis">
-          <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
-            Der Vorgang konnte nicht abgeschlossen werden.
+        <StudioPanel title="Hinweis">
+          <p className="mb-5 text-sm leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
+            Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.
           </p>
           {onRetry ? (
             <button
               type="button"
               onClick={onRetry}
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90"
+              className={`inline-flex min-h-[48px] items-center justify-center px-7 text-sm font-bold transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
               style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
             >
               Erneut versuchen
             </button>
           ) : null}
-        </DashboardPanel>
+        </StudioPanel>
       ) : null}
     </div>
   );

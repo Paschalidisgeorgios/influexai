@@ -121,7 +121,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             key={tool}
             type="button"
             onClick={() => switchTool(tool)}
-            className={`rounded-xl border px-4 py-2.5 text-xs font-semibold tracking-wide uppercase transition-all duration-300 ${
+            className={`rounded-full border px-4 py-2.5 text-xs font-semibold tracking-wide uppercase transition-all duration-300 ${
               activeTool === tool
                 ? "border-[#B4FF00]/40 bg-[#B4FF00]/14 text-[#080808]"
                 : "border-black/[0.10] bg-[#FFFCF7] text-black/55 hover:border-black/18 hover:text-black/80"
@@ -134,7 +134,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
 
       <div>
         <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-widest" style={{ color: DASHBOARD_MUTED }}>
-          Command Center
+          Agent
         </p>
         <h1
           className="font-display mb-2 text-3xl leading-none font-extrabold tracking-tight md:text-[2.75rem]"
@@ -145,7 +145,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         <p className="max-w-2xl font-sans text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           {activeTool === "campaign"
             ? "Kampagne planen — Briefing eingeben."
-            : "Briefing eingeben — Tool und Output vorbereiten."}
+            : "Der Agent hilft beim Briefing. Du behältst Kontrolle über Tool, Modell und Output."}
         </p>
       </div>
 
@@ -216,7 +216,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
           isLoading={running}
           onClick={() => void handleGenerate()}
           disabled={!prompt.trim()}
-          className="mt-4 h-[3.25rem] w-full rounded-xl bg-[#B4FF00] text-sm font-bold tracking-wide text-[#08080a] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_6px_32px_rgba(180,255,0,0.32)] active:scale-[0.99] disabled:opacity-40"
+          className="mt-4 h-[3.25rem] w-full rounded-full bg-[#B4FF00] text-sm font-bold tracking-wide text-[#08080a] transition-all duration-200 hover:opacity-90 active:scale-[0.99] disabled:opacity-40"
         >
           ERSTELLEN — Produktionspfad starten
         </LoadingButton>
@@ -272,7 +272,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             <Link
               key={tool.href}
               href={tool.href}
-              className="group cursor-pointer rounded-2xl border p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B4FF00]/28"
+              className="group cursor-pointer rounded-[20px] border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B4FF00]/28"
               style={{
                 borderColor: "rgba(8,8,8,0.11)",
                 background: "#FFFCF7",

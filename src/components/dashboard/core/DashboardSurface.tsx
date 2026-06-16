@@ -2,16 +2,25 @@
 
 /**
  * Production dashboard surface primitives — layout/surface only, no business logic.
- * Visual language aligned with design-preview ivory stage on dark shell.
+ * Visual language aligned with Studio UI foundation (ivory stage on dark shell).
  */
 
+import { StudioStage } from "../studio-ui/StudioStage";
+import {
+  STUDIO_ACCENT,
+  STUDIO_MUTED,
+  STUDIO_PANEL_BG,
+  STUDIO_RADIUS,
+  STUDIO_SHADOW,
+  STUDIO_SURFACE,
+  STUDIO_TEXT,
+} from "../studio-ui/tokens";
+
 export const DASHBOARD_SHELL_BG = "#050506";
-export const DASHBOARD_ACCENT = "#b4ff00";
-export const DASHBOARD_TEXT = "#080808";
-export const DASHBOARD_MUTED = "rgba(8,8,8,0.58)";
-/** Warm ivory/stone — no gray wash, full readability */
-export const DASHBOARD_STAGE_SURFACE =
-  "linear-gradient(148deg, #FAF6EE 0%, #F5EFE3 46%, #EBE2D2 100%)";
+export const DASHBOARD_ACCENT = STUDIO_ACCENT;
+export const DASHBOARD_TEXT = STUDIO_TEXT;
+export const DASHBOARD_MUTED = STUDIO_MUTED;
+export const DASHBOARD_STAGE_SURFACE = STUDIO_SURFACE;
 
 function joinClasses(...parts: (string | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -27,37 +36,9 @@ export function DashboardStage({
   innerClassName?: string;
 }) {
   return (
-    <div
-      className={joinClasses(
-        "w-full min-w-0 overflow-x-hidden px-3 py-3 md:px-3 md:py-4 lg:px-4",
-        className
-      )}
-    >
-      <div
-        className="mx-auto w-full min-w-0 max-w-[96rem] rounded-xl"
-        style={{
-          background: DASHBOARD_STAGE_SURFACE,
-          border: "1px solid rgba(8,8,8,0.08)",
-          boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.35), 0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.72)",
-        }}
-      >
-        <div
-          className="h-[2px] w-full rounded-t-xl"
-          style={{
-            background: `linear-gradient(90deg, ${DASHBOARD_ACCENT}66, ${DASHBOARD_ACCENT}28 45%, transparent 88%)`,
-          }}
-        />
-        <div
-          className={joinClasses(
-            "min-w-0 px-4 pb-10 pt-5 md:px-8 md:pb-12 md:pt-7 lg:px-12 xl:px-14",
-            innerClassName
-          )}
-        >
-          {children}
-        </div>
-      </div>
-    </div>
+    <StudioStage className={className} innerClassName={innerClassName}>
+      {children}
+    </StudioStage>
   );
 }
 
@@ -98,14 +79,14 @@ export function DashboardPageHeader({
         <div className="min-w-0 flex-1">
           {kicker ? <DashboardKicker>{kicker}</DashboardKicker> : null}
           <h1
-            className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl"
-            style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
+            className="text-[1.75rem] font-extrabold tracking-tight sm:text-4xl md:text-[2.5rem]"
+            style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.03em", lineHeight: 1.05 }}
           >
             {title}
           </h1>
           {subtitle ? (
             <p
-              className="mt-1.5 max-w-2xl text-[13px] leading-relaxed md:text-sm"
+              className="mt-2 max-w-2xl text-sm leading-relaxed md:text-[15px]"
               style={{ color: DASHBOARD_MUTED }}
             >
               {subtitle}
@@ -131,8 +112,8 @@ export function DashboardSection({
     <section className={joinClasses("space-y-3", className)}>
       {title ? (
         <h2
-          className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em]"
-          style={{ color: DASHBOARD_MUTED }}
+          className="text-lg font-bold tracking-tight md:text-xl"
+          style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
         >
           {title}
         </h2>
@@ -153,17 +134,16 @@ export function DashboardPanel({
 }) {
   return (
     <div
-      className={joinClasses("rounded-xl border p-4 md:p-5", className)}
+      className={joinClasses(STUDIO_RADIUS.panel, "p-5 md:p-6", className)}
       style={{
-        background: "#FFFCF7",
-        borderColor: "rgba(8,8,8,0.11)",
-        boxShadow:
-          "0 1px 2px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.9)",
+        background: STUDIO_PANEL_BG,
+        border: "1px solid rgba(8,8,8,0.05)",
+        boxShadow: STUDIO_SHADOW.panel,
       }}
     >
       {title ? (
         <h3
-          className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em]"
+          className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em]"
           style={{ color: DASHBOARD_MUTED }}
         >
           {title}

@@ -31,7 +31,7 @@ const SECTIONS: { id: SettingsSection; label: string }[] = [
 ];
 
 const inputClassName =
-  "w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors focus:border-[#B4FF00]/40 focus:ring-2 focus:ring-[#B4FF00]/10";
+  "w-full rounded-[18px] border px-4 py-3.5 text-sm outline-none transition-colors focus:border-[#B4FF00]/40 focus:shadow-[0_0_0_4px_rgba(180,255,0,0.08)]";
 
 const inputStyle = {
   background: "rgba(255,255,255,0.65)",
