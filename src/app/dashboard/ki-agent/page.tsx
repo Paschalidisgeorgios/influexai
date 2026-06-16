@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { Suspense, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { AgentAutopilotV2 } from "@/components/agent/AgentAutopilotV2";
 import { capsuleShow } from "@/components/agent/SmartCapsule";
 import { useDashboardTool } from "@/contexts/DashboardToolContext";
 
-export default function KiAgentPage() {
+function KiAgentPageInner() {
+  const searchParams = useSearchParams();
+  const initialPrompt = searchParams.get("prompt")?.trim() ?? "";
   const { userName } = useDashboardTool();
   const lastScrollYRef = useRef(0);
   const lastScrollTimeRef = useRef(Date.now());
@@ -35,7 +38,15 @@ export default function KiAgentPage() {
 
   return (
     <div className="dashboard-scroll-area w-full" onScroll={handleScroll}>
-      <AgentAutopilotV2 />
+      <AgentAutopilotV2 initialPrompt={initialPrompt} />
     </div>
+  );
+}
+
+export default function KiAgentPage() {
+  return (
+    <Suspense fallback={null}>
+      <KiAgentPageInner />
+    </Suspense>
   );
 }

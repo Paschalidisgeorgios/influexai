@@ -1,36 +1,28 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { AgentAutopilotChat } from "@/components/agent/AgentAutopilotChat";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDashboardTool } from "@/contexts/DashboardToolContext";
 
-function KiAgentChatInner() {
+function KiAgentChatRedirectInner() {
   const searchParams = useSearchParams();
-  const initialPrompt = searchParams.get("prompt")?.trim() ?? "";
+  const router = useRouter();
   const { setPrompt } = useDashboardTool();
 
   useEffect(() => {
+    const initialPrompt = searchParams.get("prompt")?.trim() ?? "";
     if (initialPrompt) setPrompt(initialPrompt);
-  }, [initialPrompt, setPrompt]);
+    const query = searchParams.toString();
+    router.replace(query ? `/dashboard/ki-agent?${query}` : "/dashboard/ki-agent");
+  }, [router, searchParams, setPrompt]);
 
-  return (
-    <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col bg-[#08080a] md:py-4">
-      <AgentAutopilotChat initialPrompt={initialPrompt} />
-    </div>
-  );
+  return null;
 }
 
 export default function KiAgentChatPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="mx-auto max-w-3xl px-6 py-8 text-sm text-white/50">
-          Agent Chat wird geladen…
-        </div>
-      }
-    >
-      <KiAgentChatInner />
+    <Suspense fallback={null}>
+      <KiAgentChatRedirectInner />
     </Suspense>
   );
 }

@@ -2,9 +2,12 @@
 
 type Props = {
   label?: string;
+  variant?: "dark" | "light";
 };
 
-export function AgentTypingIndicator({ label }: Props) {
+export function AgentTypingIndicator({ label, variant = "dark" }: Props) {
+  const labelClass = variant === "light" ? "text-black/50" : "text-white/50";
+
   return (
     <div
       className="flex items-center gap-3 text-sm"
@@ -24,7 +27,7 @@ export function AgentTypingIndicator({ label }: Props) {
           <span className="agent-typing-dot agent-typing-dot--3 h-2 w-2 rounded-full bg-[#B4FF00]" />
         </span>
         {label ? (
-          <span className="text-white/50">{label}</span>
+          <span className={labelClass}>{label}</span>
         ) : null}
       </span>
     </div>

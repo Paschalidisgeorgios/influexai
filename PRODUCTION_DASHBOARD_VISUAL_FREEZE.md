@@ -355,3 +355,53 @@ Seiten existieren weiterhin im Repo, werden aber **nicht** mehr aus Nav/Quick-St
 - `src/components/dashboard/core/DashboardLayout.tsx`
 - `src/lib/szenen-generator-models.ts`
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
+
+---
+
+## Fast Phase 2B.5 Remove Legacy Agent Run UI
+
+**Date:** 2026-06-16  
+**Scope:** Remove black Agent run/chat UI after „Erstellen“. No Agent API or billing changes.
+
+### Ursache schwarzer Run-State
+
+1. **`AgentAutopilotV2`** leitete nach Submit auf `/dashboard/ki-agent/chat` weiter (`router.push`).
+2. **`ki-agent/chat/page.tsx`** nutzte `bg-[#08080a]`-Wrapper.
+3. **`AgentAutopilotChat.tsx`** renderte dunklen Chat: `AGENT AUTOPILOT`-Header, `bg-[#0d0d0f]`-Bubbles, sticky `bg-[#060608]`-Input, „Agent Autopilot denkt…“.
+
+### Entfernt / ersetzt
+
+| Legacy | Ersetzung |
+|--------|-----------|
+| Redirect zu `/ki-agent/chat` | Inline-Run in `AgentAutopilotV2` via `useAgentAutopilotChat` |
+| Dunkler `AgentAutopilotChat` Run-Layout | `AgentRunMessages` + helle `DashboardPanel`-Cards |
+| Schwarzer Chat-Canvas | Ivory Cards, dunkler Text, Lime-tinted User-Briefing |
+| `/ki-agent/chat` Dark Page | Redirect → `/dashboard/ki-agent?prompt=…` |
+
+### Agent-Zustände (hell)
+
+- **Initial:** `AgentAutopilotV2` — Tabs, Header, helle Prompt-Card (unverändert)
+- **Loading:** Status in `AgentRunMessages` — „Briefing wird analysiert“ / „Tool wird gewählt“
+- **Messages/Result:** User lime-card + Agent `DashboardPanel` + `AgentMarkdown variant="light"`
+- **Campaign:** gleicher heller Flow; Subtitle „Kampagnen-Autopilot wird über den Agent vorbereitet.“
+- **Error:** helle Hinweis-Card + „Erneut versuchen“
+
+### Offene Risiken
+
+- `AgentResultCard`, `AgentStructuredResults`, `AgentRedirectCards` — noch dark-themed, derzeit nicht im Haupt-Agent-Pfad
+- Alte Bookmarks `/dashboard/ki-agent/chat` → Redirect mit Auto-Run via `?prompt=`
+- Quick-Tool-Links in Agent zeigen noch auf Legacy-Routen (separates Thema)
+
+### Geänderte Dateien (2B.5)
+
+- `src/hooks/useAgentAutopilotChat.ts` (neu)
+- `src/components/agent/AgentRunMessages.tsx` (neu)
+- `src/components/agent/AgentAutopilotV2.tsx`
+- `src/components/agent/AgentAutopilotChat.tsx`
+- `src/components/agent/AgentMarkdown.tsx`
+- `src/components/agent/AgentTypingIndicator.tsx`
+- `src/components/agent/AgentWorkingStatus.tsx`
+- `src/components/ui/AiOutputDisclaimer.tsx`
+- `src/app/dashboard/ki-agent/page.tsx`
+- `src/app/dashboard/ki-agent/chat/page.tsx`
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`

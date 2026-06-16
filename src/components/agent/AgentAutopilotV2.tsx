@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   AGENT_TOOLS,
   type AgentToolKey,
 } from "@/lib/tools/agent-tool-registry";
+import { AgentRunMessages } from "./AgentRunMessages";
 import { capsuleShow } from "./SmartCapsule";
 import { LoadingButton } from "@/components/ui/LoadingButton";
+import { useAgentAutopilotChat } from "@/hooks/useAgentAutopilotChat";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
 import {
   DASHBOARD_ACCENT,
@@ -48,15 +49,15 @@ const QUICK_TOOLS = [
   },
 ] as const;
 
-export function AgentAutopilotV2() {
-  const router = useRouter();
+export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: string } = {}) {
   const [activeTool, setActiveTool] = useState<AgentToolKey>("agent");
-  const [prompt, setPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [prompt, setPrompt] = useState(initialPrompt);
   const [payloadOpen, setPayloadOpen] = useState(false);
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { profile, loading: profileLoading } = useCreatorProfile();
+  const { messages, running, error, sendMessage, retryLast } =
+    useAgentAutopilotChat(initialPrompt);
 
   const T = AGENT_TOOLS[activeTool];
 
@@ -73,12 +74,14 @@ export function AgentAutopilotV2() {
       textareaRef.current?.focus();
       return;
     }
-    setIsGenerating(true);
     capsuleShow("Agent berechnet deine Anfrage…", 3000);
-    router.push(
-      `/dashboard/ki-agent/chat?prompt=${encodeURIComponent(prompt.trim())}&tool=${activeTool}`
-    );
-  }, [prompt, router, activeTool]);
+    const ok = await sendMessage(prompt.trim());
+    if (ok) {
+      setPrompt("");
+      setSelectedChip(null);
+      requestAnimationFrame(handleInput);
+    }
+  }, [prompt, sendMessage, handleInput]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -153,7 +156,9 @@ export function AgentAutopilotV2() {
           Idee eingeben
         </h1>
         <p className="max-w-2xl font-sans text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          {T.sub} — Briefing wird analysiert, Tool wird gewählt, Output vorbereitet.
+          {activeTool === "campaign"
+            ? "Kampagnen-Autopilot wird über den Agent vorbereitet."
+            : `${T.sub} — Briefing wird analysiert, Tool wird gewählt, Output vorbereitet.`}
         </p>
       </div>
 
@@ -205,7 +210,7 @@ export function AgentAutopilotV2() {
             onChange={(e) => handlePromptChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={T.placeholder}
-            disabled={isGenerating}
+            disabled={running}
             rows={5}
             className="max-h-[260px] min-h-[140px] w-full resize-none rounded-2xl border px-4 py-4 font-sans text-[15px] leading-relaxed outline-none transition-all duration-300 placeholder:text-black/35 focus:border-[#B4FF00]/40 focus:shadow-[0_0_0_4px_rgba(180,255,0,0.10)] disabled:cursor-not-allowed disabled:opacity-50"
             style={{
@@ -221,7 +226,7 @@ export function AgentAutopilotV2() {
 
         <LoadingButton
           mode="agent"
-          isLoading={isGenerating}
+          isLoading={running}
           onClick={() => void handleGenerate()}
           disabled={!prompt.trim()}
           className="mt-4 h-[3.25rem] w-full rounded-xl bg-[#B4FF00] text-sm font-bold tracking-wide text-[#08080a] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_6px_32px_rgba(180,255,0,0.32)] active:scale-[0.99] disabled:opacity-40"
@@ -233,6 +238,13 @@ export function AgentAutopilotV2() {
           Kostet {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} — ehrliche Abrechnung pro Anfrage
         </p>
       </DashboardPanel>
+
+      <AgentRunMessages
+        messages={messages}
+        running={running}
+        error={error}
+        onRetry={retryLast}
+      />
 
       <div className="flex flex-wrap items-center justify-center gap-2 py-1 md:gap-3">
         {[

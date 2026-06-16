@@ -10,18 +10,26 @@ import {
 type Props = {
   content: string;
   className?: string;
+  variant?: "dark" | "light";
   onToolCallsParsed?: (calls: ParsedToolCall[]) => void;
 };
 
-export function AgentMarkdown({ content, className = "", onToolCallsParsed }: Props) {
+export function AgentMarkdown({
+  content,
+  className = "",
+  variant = "dark",
+  onToolCallsParsed,
+}: Props) {
   const parsed = useMemo(() => parseAgentResponse(content), [content]);
 
   useEffect(() => {
     onToolCallsParsed?.(parsed.toolCalls);
   }, [onToolCallsParsed, parsed.toolCalls]);
 
+  const textClass = variant === "light" ? "text-[#080808]" : "text-white";
+
   return (
-    <div className={`agent-markdown text-sm leading-relaxed text-white ${className}`}>
+    <div className={`agent-markdown text-sm leading-relaxed ${textClass} ${className}`}>
       <ReactMarkdown
         components={{
           a: ({ href, children }) => (
