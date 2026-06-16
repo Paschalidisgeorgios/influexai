@@ -1,8 +1,51 @@
 # Legacy Cleanup Audit — Phase 3A.0.6
 
-**Date:** 2026-06-16 (updated)  
-**HEAD:** `8f39205` + Settings Credits cleanup  
-**Scope:** Dashboard legacy UI, dead components, upgrade/pricing path review, Settings/Credits Studio migration. No API/auth/credit/billing/migration changes.
+**Date:** 2026-06-16 (updated Phase 3A.0.7)  
+**HEAD:** `8bf30c8` + Credits/Upgrade Studio final  
+**Scope:** Dashboard legacy UI, Credits/Upgrade Studio migration, modal cleanup. No API/auth/credit/billing changes.
+
+---
+
+## Phase 3A.0.7 — Credits / Upgrade UI Final Cleanup
+
+### Status je Route
+
+| Route | Status |
+|-------|--------|
+| `/dashboard/settings` (Billing & Credits) | **Studio** — inline `StudioCreditsSection` (Übersicht, CTAs, Beispiele) |
+| `/dashboard/credits` | **Studio** — `StudioCreditsSection` full (Pakete 4-col xl, API) |
+| `/pricing` | **Landing dark glass** — bewusst unverändert (öffentliche Marketing-Seite) |
+| `/preise` | **308 → /pricing** (middleware) |
+| Dashboard global modal | **Studio** — `NoCreditsModal` Ivory (via `BuyCreditsProvider`) |
+
+### Gefundene / behobene Legacy-Credits-Komponenten
+
+| Datei | Vorher | Nachher |
+|-------|--------|---------|
+| `StudioCreditsSection.tsx` | Bereits Studio (8bf30c8) | Volle Breite, neutraler Progress, 4-col Paket-Grid |
+| `NoCreditsModal.tsx` | Dark `#060608`, Neon-Lime dominant | Ivory `#FAF6EE`, Studio-Paketkarten, Lime nur CTA |
+| `BuyCreditsModal.tsx` | Dark, ungenutzt | **Gelöscht** |
+| `low-credits-sidebar.tsx` | Dark sidebar widget, ungenutzt | **Gelöscht** |
+| `credit-calculator.tsx` | Bereits gelöscht (8bf30c8) | — |
+
+### FIRST20
+
+- **Kein UI-Banner** in Settings/Credits/Modal
+- **`first-purchase-stripe.ts` behalten** — serverseitige Stripe-Promo optional aktiv
+
+### Upgrade-Pfad (final)
+
+1. **Öffentlich:** `/pricing` (Abo + Credit-Packs Section)
+2. **Eingeloggt Top-up:** `/dashboard/credits` oder `NoCreditsModal` → `/api/credits/checkout`
+3. **Ohne Plan:** `BuyCreditsProvider` redirect → `/pricing`
+4. **Settings:** Inline Studio-Übersicht + „Pläne & Abo“ / „Alle Credit-Pakete“
+
+### Bewusst behalten (Billing-relevant)
+
+- `BuyCreditsProvider.tsx`, `client-credits-ui.ts`
+- `first-purchase-stripe.ts`, `credit-packages.ts`
+- `/api/credits/checkout`, Stripe routes
+- `CreditPacksSection.tsx` auf `/pricing` (Landing-Stil)
 
 ---
 
@@ -70,11 +113,16 @@
 
 ---
 
-## Gelöschte Dateien (34)
+## Gelöschte Dateien (36)
 
-### Credits Legacy
+### Credits Legacy (Phase 3A.0.7)
 
-- `src/components/credit-calculator.tsx` — Dark slider widget, nur von alter credits page genutzt
+- `src/components/credits/BuyCreditsModal.tsx` — ungenutzte Dark-Modal-Duplikat
+- `src/components/low-credits-sidebar.tsx` — ungenutztes Dark-Sidebar-Widget
+
+### Credits Legacy (Phase 3A.0.6b)
+
+- `src/components/credit-calculator.tsx` — Dark slider widget
 
 ### Canvas-Board-Subtree (nie gemountet)
 

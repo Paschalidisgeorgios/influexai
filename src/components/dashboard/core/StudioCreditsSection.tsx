@@ -78,10 +78,10 @@ export function StudioCreditsSection({
   const progressColor =
     credits < 10
       ? "linear-gradient(90deg, #f87171, #ef4444)"
-      : "linear-gradient(90deg, rgba(180,255,0,0.55), rgba(180,255,0,0.85))";
+      : "linear-gradient(90deg, rgba(8,8,8,0.12), rgba(8,8,8,0.22))";
 
   return (
-    <div className="w-full min-w-0 max-w-3xl space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-6">
       {showLowBalance ? (
         <div
           className="rounded-[18px] border px-4 py-3 text-sm"
@@ -271,7 +271,7 @@ export function StudioCreditsSection({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {CREDIT_PACKAGES.map((pkg) => {
               const isPopular = pkg.id === "large";
               const highlighted =
