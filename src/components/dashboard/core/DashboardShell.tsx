@@ -16,6 +16,8 @@ import { DashboardToolProvider } from "@/contexts/DashboardToolContext";
 import { DashboardProvider } from "@/components/dashboard/DashboardProvider";
 import { DashboardLayout } from "./DashboardLayout";
 import { DashboardStandaloneChrome } from "./DashboardStandaloneChrome";
+import { LegacyToolRedirect } from "./LegacyToolRedirect";
+import { resolveLaunchToolFromPath } from "./production-tool-routes";
 import "@/styles/studio-glass.css";
 
 // Routen mit eigenem Seiteninhalt + gemeinsamer Dashboard-Navigation
@@ -69,6 +71,15 @@ export function DashboardShell({ children }: DashboardShellProps) {
     return (
       <Providers>
         <DashboardLayout />
+      </Providers>
+    );
+  }
+
+  const legacyLaunchTool = resolveLaunchToolFromPath(pathname);
+  if (legacyLaunchTool) {
+    return (
+      <Providers>
+        <LegacyToolRedirect toolId={legacyLaunchTool} />
       </Providers>
     );
   }

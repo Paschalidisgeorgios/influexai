@@ -261,7 +261,7 @@ function formatCreditEstimate(
   entry: CatalogEntry,
   apiModel?: AkoolImageToVideoModel
 ): string {
-  if (!apiModel) return entry.creditEstimate;
+  if (!apiModel) return "Dynamisch nach Modell & Dauer";
   const resolution = apiModel.resolutionList[0]?.value ?? "720p";
   const durations = getDurationsForModel(apiModel, resolution);
   const duration = durations[durations.length - 1] ?? durations[0] ?? 5;

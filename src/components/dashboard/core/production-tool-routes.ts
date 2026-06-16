@@ -1,6 +1,6 @@
 import type { ToolId } from "./DashboardLayout";
 
-/** Dedicated dashboard pages — prefer these over ?tool= query + AgentBox legacy. */
+/** Dedicated dashboard pages — exist but locked from nav until redesign (Phase 2B.4). */
 export const TOOL_DEDICATED_ROUTES: Partial<Record<ToolId, string>> = {
   "viral-hook": "/dashboard/viral-hook",
   "content-calendar": "/dashboard/content-kalender",
@@ -24,6 +24,25 @@ export const TOOL_DEDICATED_ROUTES: Partial<Record<ToolId, string>> = {
   "ecommerce-ads": "/dashboard/ecommerce-ads",
   "text-to-video": "/dashboard/text-to-video",
 };
+
+/** Query-param aliases → canonical ToolId for launch views */
+export const TOOL_QUERY_ALIASES: Record<string, ToolId> = {
+  "image-generator": "image-gen",
+  "bild-generator": "image-gen",
+  "video-generator": "img-to-video",
+  "szenen-generator": "img-to-video",
+};
+
+const LAUNCH_TOOL_IDS = new Set<ToolId>([
+  ...(Object.keys(TOOL_DEDICATED_ROUTES) as ToolId[]),
+  ...Object.values(TOOL_QUERY_ALIASES),
+  "img-to-img",
+]);
+
+const PATH_TO_LAUNCH_TOOL = new Map<string, ToolId>();
+for (const [toolId, path] of Object.entries(TOOL_DEDICATED_ROUTES) as [ToolId, string][]) {
+  PATH_TO_LAUNCH_TOOL.set(path, toolId);
+}
 
 export type ToolOverviewCategory = {
   id: string;
@@ -88,12 +107,47 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   },
 ];
 
+const TOOL_DISPLAY_LABELS: Partial<Record<ToolId, string>> = Object.fromEntries(
+  TOOL_OVERVIEW_CATEGORIES.flatMap((c) => c.tools.map((t) => [t.id, t.label]))
+) as Partial<Record<ToolId, string>>;
+
 export function resolveToolRoute(toolId: ToolId): string | null {
   return TOOL_DEDICATED_ROUTES[toolId] ?? null;
 }
 
+/** Phase 2B.4: dedicated pages stay locked until visual redesign */
+export function isToolPushSafeToOpen(_toolId: ToolId): boolean {
+  return false;
+}
+
+export function normalizeToolQueryParam(raw: string): ToolId | null {
+  const id = (TOOL_QUERY_ALIASES[raw] ?? raw) as ToolId;
+  return LAUNCH_TOOL_IDS.has(id) ? id : null;
+}
+
+export function resolveLaunchToolFromPath(pathname: string): ToolId | null {
+  for (const [path, toolId] of PATH_TO_LAUNCH_TOOL) {
+    if (pathname === path || pathname.startsWith(`${path}/`)) {
+      return toolId;
+    }
+  }
+  return null;
+}
+
+export function isLegacyLockedToolPath(pathname: string): boolean {
+  return resolveLaunchToolFromPath(pathname) !== null;
+}
+
 export function isDedicatedToolPath(pathname: string): boolean {
-  return Object.values(TOOL_DEDICATED_ROUTES).some((route) =>
-    pathname.startsWith(route)
+  return isLegacyLockedToolPath(pathname);
+}
+
+export function getToolDisplayLabel(toolId: ToolId): string {
+  return (
+    TOOL_DISPLAY_LABELS[toolId] ??
+    toolId
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ")
   );
 }

@@ -11,7 +11,11 @@ import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
 import { ProductionToolsOverview } from "./ProductionToolsOverview";
 import { ProductionToolLaunch } from "./ProductionToolLaunch";
-import { resolveToolRoute } from "./production-tool-routes";
+import {
+  isToolPushSafeToOpen,
+  normalizeToolQueryParam,
+  resolveToolRoute,
+} from "./production-tool-routes";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_SHELL_BG,
@@ -438,8 +442,9 @@ const TEXT_TOOLS = new Set<ToolId>(["viral-hook", "content-calendar", "trend-scr
 const TOOL_QUERY_IDS = new Set<string>([
   "studio", "tools", "gallery", "settings",
   "viral-hook", "content-calendar", "trend-script",
-  "image-gen", "img-to-img", "img-to-video", "text-to-video",
-  "ecommerce-ads", "avatar-video", "tts",
+  "image-gen", "image-generator", "bild-generator",
+  "img-to-img", "img-to-video", "video-generator", "szenen-generator",
+  "text-to-video", "ecommerce-ads", "avatar-video", "tts",
 ]);
 
 // ─── GalleryFilterBar ─────────────────────────────────────────────────────────
@@ -596,10 +601,10 @@ async function deleteAsset(id: string): Promise<void> {
 
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
-export function DashboardLayout() {
+export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeTool, setActiveTool]         = useState<ToolId>("studio");
+  const [activeTool, setActiveTool]         = useState<ToolId>(bootstrapTool ?? "studio");
   const [isRightPanelOpen, setIsRightPanel] = useState(false);
 
   // ── Credits — aus Supabase geladen (Fallback: 0 während Ladevorgang) ───────
@@ -653,9 +658,9 @@ export function DashboardLayout() {
       return;
     }
 
-    const dedicated = resolveToolRoute(toolParam as ToolId);
-    if (dedicated) {
-      router.replace(dedicated);
+    const normalized = normalizeToolQueryParam(toolParam);
+    if (normalized) {
+      setActiveTool(normalized);
       return;
     }
 
@@ -708,8 +713,7 @@ export function DashboardLayout() {
     setToolSettings(settings);
   }, []);
 
-  // Tool-Auswahl — bestimmte Tools leiten zu fertigen dedizierten Seiten weiter
-  // statt den AgentBox-Mock zu öffnen.
+  // Tool-Auswahl — Phase 2B.4: Launch-View in SPA; keine Legacy-Dedicated-Pages aus Nav
   const handleToolSelect = useCallback((id: ToolId) => {
     if (id === "studio") {
       router.push("/dashboard");
@@ -729,15 +733,28 @@ export function DashboardLayout() {
       router.push("/dashboard/settings");
       return;
     }
-
-    const dedicated = resolveToolRoute(id);
-    if (dedicated) {
-      router.push(dedicated);
+    if (id === "content-calendar") {
+      router.push("/dashboard/ki-agent");
       return;
+    }
+
+    if (isToolPushSafeToOpen(id)) {
+      const dedicated = resolveToolRoute(id);
+      if (dedicated) {
+        router.push(dedicated);
+        return;
+      }
     }
 
     router.push(`/dashboard?tool=${encodeURIComponent(id)}`);
     setActiveTool(id);
+  }, [router]);
+
+  const handleOpenDedicatedTool = useCallback((id: ToolId) => {
+    const dedicated = resolveToolRoute(id);
+    if (dedicated && isToolPushSafeToOpen(id)) {
+      router.push(dedicated);
+    }
   }, [router]);
 
   // ── AgentBox Callback ─────────────────────────────────────────────────────
@@ -932,7 +949,10 @@ export function DashboardLayout() {
             {activeTool === "tools" ? (
               <ProductionToolsOverview onSelect={handleToolSelect} />
             ) : (
-              <ProductionToolLaunch toolId={activeTool} onOpenTool={handleToolSelect} />
+              <ProductionToolLaunch
+                toolId={activeTool}
+                onOpenDedicated={handleOpenDedicatedTool}
+              />
             )}
           </DashboardStage>
         )}

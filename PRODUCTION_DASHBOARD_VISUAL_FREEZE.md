@@ -305,3 +305,53 @@ Diese Seiten **funktionieren** jetzt (Shell rendert `children`), behalten aber *
 - `src/components/dashboard/core/ProductionToolsOverview.tsx` (neu)
 - `src/components/dashboard/core/ProductionToolLaunch.tsx` (neu)
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
+
+---
+
+## Phase 2B.4 Tool Legacy Push-Safe Lockdown
+
+**Date:** 2026-06-16  
+**Scope:** Lock all Tools entrypoints to launch/overview views. No auto-open of legacy dark tool pages. Fix stale 1100-credit UI fallback.
+
+### Tool-Routen → Launch-View (push-safe)
+
+| Query / Einstieg | Verhalten |
+|------------------|-----------|
+| `/dashboard?tool=tools` | `ProductionToolsOverview` |
+| `/dashboard?tool=viral-hook` | `ProductionToolLaunch` (kein Redirect zu `/dashboard/viral-hook`) |
+| `/dashboard?tool=image-generator` / `image-gen` | Launch-View, Credits aus `credit-display.ts` |
+| `/dashboard?tool=video-generator` / `img-to-video` | Launch-View, „Dynamisch nach Modell & Dauer“ |
+| Quick Start (Studio) | Launch-View oder Agent (`content-calendar` → Agent) |
+| Legacy-Pfade (`/dashboard/viral-hook`, `/dashboard/szenen-generator`, …) | `LegacyToolRedirect` → `/dashboard?tool=…` |
+
+**`isToolPushSafeToOpen`:** derzeit `false` für alle Tools — Button „Tool öffnen“ ausgeblendet bis Redesign.
+
+### Dedizierte Tool-Seiten — später redesignen
+
+Seiten existieren weiterhin im Repo, werden aber **nicht** mehr aus Nav/Quick-Start/Query geöffnet:
+
+- `/dashboard/viral-hook`, `/dashboard/content-kalender`, `/dashboard/trend-to-script`
+- `/dashboard/image-generator` (DynamicDashboardEngine + Registry-Panel)
+- `/dashboard/szenen-generator` (Video Generator / SzenenGeneratorStudio)
+- Avatar/Voice/Video-Unterrouten aus `TOOL_DEDICATED_ROUTES`
+
+### 1100 Credits
+
+- **Gefunden:** `src/lib/szenen-generator-models.ts` — Katalog-Fallback `~1100 Credits` / `~900 Credits` wenn kein Akool-API-Modell gematcht
+- **Entfernt/ersetzt:** `formatCreditEstimate()` ohne API-Modell → `"Dynamisch nach Modell & Dauer"` (keine feste falsche Zahl)
+- Launch-View nutzt weiterhin `getCreditDisplayLabel()` aus `credit-display.ts` (Registry unverändert)
+
+### Issue Badge (unten links)
+
+- **Ursache:** Next.js Dev-Overlay (`Issues`-Badge bei Hydration-/Console-Warnungen im Dev-Modus), nicht Production-UI
+- Kein neuer React-Render-Fehler durch 2B.4-Änderungen in tsc/build reproduzierbar
+
+### Geänderte Dateien (2B.4)
+
+- `src/components/dashboard/core/production-tool-routes.ts`
+- `src/components/dashboard/core/LegacyToolRedirect.tsx` (neu)
+- `src/components/dashboard/core/ProductionToolLaunch.tsx`
+- `src/components/dashboard/core/DashboardShell.tsx`
+- `src/components/dashboard/core/DashboardLayout.tsx`
+- `src/lib/szenen-generator-models.ts`
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`

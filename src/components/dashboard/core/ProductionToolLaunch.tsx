@@ -10,7 +10,11 @@ import {
   DashboardPanel,
 } from "./DashboardSurface";
 import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
-import { resolveToolRoute } from "./production-tool-routes";
+import {
+  getToolDisplayLabel,
+  isToolPushSafeToOpen,
+  resolveToolRoute,
+} from "./production-tool-routes";
 
 const TOOL_DESCRIPTIONS: Partial<Record<ToolId, string>> = {
   "viral-hook": "Hooks und Story-Struktur aus Trends oder Briefings.",
@@ -25,37 +29,35 @@ const TOOL_DESCRIPTIONS: Partial<Record<ToolId, string>> = {
   "tts": "Text-to-Speech, Voice Clone und Voice Changer.",
 };
 
-function toolLabel(toolId: ToolId): string {
-  return toolId
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
 export function ProductionToolLaunch({
   toolId,
-  onOpenTool,
+  onOpenDedicated,
 }: {
   toolId: ToolId;
-  onOpenTool: (id: ToolId) => void;
+  onOpenDedicated?: (id: ToolId) => void;
 }) {
   const dedicatedRoute = resolveToolRoute(toolId);
+  const canOpenDedicated = Boolean(dedicatedRoute && isToolPushSafeToOpen(toolId));
   const creditLabel = getCreditDisplayLabel(toolId);
-  const label = toolLabel(toolId);
+  const label = getToolDisplayLabel(toolId);
   const description =
     TOOL_DESCRIPTIONS[toolId] ??
-    "Dieses Tool öffnet sich in der dedizierten Produktionsansicht.";
+    "Starte im Agent — die dedizierte Tool-Oberfläche wird als Nächstes an die Studio-Shell angebunden.";
+
+  const agentHref =
+    toolId === "content-calendar"
+      ? "/dashboard/ki-agent"
+      : `/dashboard/ki-agent?tool=${encodeURIComponent(toolId)}`;
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-6">
-      <DashboardPageHeader
-        kicker="Tool"
-        title={label}
-        subtitle={description}
-      />
+      <DashboardPageHeader kicker="Tool" title={label} subtitle={description} />
 
       <DashboardPanel>
-        <p className="mb-1 font-mono text-[10px] uppercase tracking-widest" style={{ color: DASHBOARD_MUTED }}>
+        <p
+          className="mb-1 font-mono text-[10px] uppercase tracking-widest"
+          style={{ color: DASHBOARD_MUTED }}
+        >
           Credit-Kosten
         </p>
         <p className="mb-5 text-lg font-semibold" style={{ color: DASHBOARD_TEXT }}>
@@ -63,24 +65,28 @@ export function ProductionToolLaunch({
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          {dedicatedRoute ? (
+          <Link
+            href={agentHref}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-5 py-2.5 text-sm font-bold no-underline transition-opacity hover:opacity-90"
+            style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
+          >
+            Im Agent starten
+          </Link>
+
+          {canOpenDedicated && onOpenDedicated ? (
             <button
               type="button"
-              onClick={() => onOpenTool(toolId)}
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90"
-              style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
+              onClick={() => onOpenDedicated(toolId)}
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg border px-5 py-2.5 text-sm font-medium transition-colors hover:border-black/15"
+              style={{
+                borderColor: "rgba(8,8,8,0.12)",
+                background: "#FFFCF7",
+                color: DASHBOARD_TEXT,
+              }}
             >
               Tool öffnen
             </button>
-          ) : (
-            <Link
-              href={`/dashboard/ki-agent?tool=${encodeURIComponent(toolId)}`}
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-5 py-2.5 text-sm font-bold no-underline transition-opacity hover:opacity-90"
-              style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
-            >
-              Im Agent starten
-            </Link>
-          )}
+          ) : null}
 
           <Link
             href="/dashboard/ki-agent"
@@ -103,12 +109,10 @@ export function ProductionToolLaunch({
           </Link>
         </div>
 
-        {!dedicatedRoute ? (
-          <p className="mt-4 text-[12px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-            Die dedizierte Tool-Oberfläche wird als Nächstes an die Studio-Shell angebunden.
-            Bis dahin startest du sicher über den Agent.
-          </p>
-        ) : null}
+        <p className="mt-4 text-[12px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Die klassische Tool-Oberfläche wird gerade an die Studio-Shell angebunden.
+          Bis dahin startest du sicher über den Agent — ohne Legacy-Dark-UI.
+        </p>
       </DashboardPanel>
     </div>
   );
