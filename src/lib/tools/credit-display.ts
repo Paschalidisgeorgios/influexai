@@ -10,6 +10,7 @@
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { CONTENT_KALENDER_TOOL_CREDIT_COST } from "@/lib/content-kalender-tool";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import { LIVE_CREATOR_PORTRAIT_CREDIT_COST } from "@/lib/live-creator-config";
 import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 import type { ToolId } from "@/components/dashboard/core/DashboardLayout";
@@ -31,6 +32,10 @@ export interface CreditDisplayMeta {
    * null = dynamic/unknown — UI should not hard-block on balance alone.
    */
   affordanceAmount: number | null;
+  /** Documented minimum from runtime when known (same as affordance when fixed). */
+  minimumCredits: number | null;
+  /** Starting balance hint for dynamic tools (e.g. Akool fallback). */
+  startingCredits: number | null;
   isDynamic: boolean;
   isFree: boolean;
 }
@@ -58,9 +63,35 @@ const DASHBOARD_TOOL_ALIASES: Record<string, string> = {
   "avatar-video": "avatar-video",
   "video-translation": "video-translation",
   "talking-photo": "talking-photo",
+  "live-creator": "live-creator",
+  "live-creator-portrait": "live-creator",
   "face-swap-video": "face-swap",
   "face-swap-image": "face-swap",
 };
+
+/** Live Creator Akool talking-photo video (POST pre-pay). */
+const LIVE_CREATOR_VIDEO_CREDITS = 10;
+
+function meta(
+  label: string,
+  opts: {
+    affordance?: number | null;
+    minimum?: number | null;
+    starting?: number | null;
+    isDynamic?: boolean;
+    isFree?: boolean;
+  } = {}
+): CreditDisplayMeta {
+  const affordance = opts.affordance ?? null;
+  return {
+    label,
+    affordanceAmount: affordance,
+    minimumCredits: opts.minimum ?? affordance,
+    startingCredits: opts.starting ?? affordance,
+    isDynamic: opts.isDynamic ?? false,
+    isFree: opts.isFree ?? false,
+  };
+}
 
 function resolveCanonicalId(toolId: string): string {
   return DASHBOARD_TOOL_ALIASES[toolId] ?? toolId;
@@ -141,20 +172,16 @@ function imageGenDisplayLabel(
     : IMAGE_GEN_CREDITS.standard;
 
   if (toolId === "img-to-img") {
-    return {
-      label: formatCreditsAmount(IMAGE_GEN_CREDITS.variation),
-      affordanceAmount: IMAGE_GEN_CREDITS.variation,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(IMAGE_GEN_CREDITS.variation), {
+      affordance: IMAGE_GEN_CREDITS.variation,
+    });
   }
 
-  return {
-    label: highRes ? formatCreditsAmount(amount) : "5–8 Credits",
-    affordanceAmount: amount,
-    isDynamic: false,
-    isFree: false,
-  };
+  return meta(highRes ? formatCreditsAmount(amount) : "5–8 Credits", {
+    affordance: amount,
+    minimum: IMAGE_GEN_CREDITS.standard,
+    starting: IMAGE_GEN_CREDITS.standard,
+  });
 }
 
 function metaFromCanonical(
@@ -162,6 +189,21 @@ function metaFromCanonical(
   settings?: Record<string, unknown> | null
 ): CreditDisplayMeta {
   const toolId = tool.id;
+
+  if (toolId === "talking-photo") {
+    return meta("Live Portrait (fal.ai) · 5 Credits", { affordance: 5 });
+  }
+  if (toolId === "talking-avatar") {
+    const n = AKOOL_TOOL_CREDITS.lipsync;
+    return meta(`Lip Sync (Akool) · ${n} Credits`, { affordance: n });
+  }
+  if (toolId === "live-creator") {
+    return meta(`Live Creator Video (Akool) · ${LIVE_CREATOR_VIDEO_CREDITS} Credits`, {
+      affordance: LIVE_CREATOR_VIDEO_CREDITS,
+      minimum: LIVE_CREATOR_VIDEO_CREDITS,
+      starting: LIVE_CREATOR_VIDEO_CREDITS,
+    });
+  }
 
   if (toolId === "image-gen" || tool.aliases?.includes("image-gen")) {
     return imageGenDisplayLabel("image-gen", settings);
@@ -173,21 +215,19 @@ function metaFromCanonical(
   if (toolId === "content-calendar") {
     const agentCost = CONTENT_KALENDER_TOOL_CREDIT_COST;
     const actionCost = 5;
-    return {
-      label: `${agentCost} Credits (AgentBox) · ${actionCost} (Dashboard)`,
-      affordanceAmount: Math.max(agentCost, actionCost),
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(`${agentCost} Credits (AgentBox) · ${actionCost} (Dashboard)`, {
+      affordance: Math.max(agentCost, actionCost),
+      minimum: agentCost,
+      starting: actionCost,
+    });
   }
 
   if (toolId === "agent-autopilot") {
-    return {
-      label: `${ORCHESTRATOR_BASE_COST} Credit Basis · Tools extra`,
-      affordanceAmount: ORCHESTRATOR_BASE_COST,
+    return meta(`${ORCHESTRATOR_BASE_COST} Credit Basis · Tools extra`, {
+      affordance: ORCHESTRATOR_BASE_COST,
+      minimum: ORCHESTRATOR_BASE_COST,
       isDynamic: true,
-      isFree: false,
-    };
+    });
   }
 
   const label = formatCreditPolicy(tool.creditPolicy, { settings, toolId });
@@ -195,29 +235,33 @@ function metaFromCanonical(
 
   if (p.mode === "dynamic" || p.displayedCredits === "dynamic") {
     let affordance: number | null = null;
+    let starting: number | null = null;
     if (toolId === "text-to-video") {
       affordance = AKOOL_TOOL_CREDITS.textToVideo;
+      starting = AKOOL_TOOL_CREDITS.textToVideo;
     } else if (toolId === "szenen-generator") {
       affordance = null;
+      starting = null;
     } else if (toolId === "avatar-video") {
       affordance = 5;
+      starting = 5;
     }
-    return {
-      label,
-      affordanceAmount: affordance,
+    return meta(label, {
+      affordance,
+      minimum: affordance,
+      starting,
       isDynamic: true,
-      isFree: false,
-    };
+    });
   }
 
   if (p.mode === "per_minute") {
     const perMin = p.baseCredits ?? AKOOL_TOOL_CREDITS.videoTranslationPerMinute;
-    return {
-      label,
-      affordanceAmount: perMin,
+    return meta(label, {
+      affordance: perMin,
+      minimum: perMin,
+      starting: perMin,
       isDynamic: true,
-      isFree: false,
-    };
+    });
   }
 
   const base =
@@ -233,20 +277,15 @@ function metaFromCanonical(
         ? Math.max(base, ...variantNums)
         : base;
 
-    return {
-      label,
-      affordanceAmount: affordance,
-      isDynamic: false,
+    return meta(label, {
+      affordance,
+      minimum: base,
+      starting: affordance,
       isFree: base === 0,
-    };
+    });
   }
 
-  return {
-    label,
-    affordanceAmount: null,
-    isDynamic: true,
-    isFree: false,
-  };
+  return meta(label, { isDynamic: true });
 }
 
 /** Runtime fallback when canonical entry is missing (preview mocks, legacy ids). */
@@ -255,64 +294,48 @@ function metaFromRuntime(
   settings?: Record<string, unknown> | null
 ): CreditDisplayMeta {
   if (toolId === "gallery" || toolId === "settings" || toolId === "studio") {
-    return {
-      label: "Kostenlos",
-      affordanceAmount: 0,
-      isDynamic: false,
-      isFree: true,
-    };
+    return meta("Kostenlos", { affordance: 0, isFree: true });
   }
 
   if (toolId === "viral-hook") {
-    return {
-      label: formatCreditsAmount(VIRAL_HOOK_EXTRACTOR_CREDIT_COST),
-      affordanceAmount: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(VIRAL_HOOK_EXTRACTOR_CREDIT_COST), {
+      affordance: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
+    });
   }
 
   if (toolId === "trend-script") {
-    return {
-      label: formatCreditsAmount(TREND_SCRIPT_TOOL_CREDIT_COST),
-      affordanceAmount: TREND_SCRIPT_TOOL_CREDIT_COST,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(TREND_SCRIPT_TOOL_CREDIT_COST), {
+      affordance: TREND_SCRIPT_TOOL_CREDIT_COST,
+    });
   }
 
   if (toolId === "image-gen" || toolId === "img-to-img") {
     return imageGenDisplayLabel(toolId, settings);
   }
 
+  if (toolId === "talking-photo") {
+    return meta("Live Portrait (fal.ai) · 5 Credits", { affordance: 5 });
+  }
+
+  if (toolId === "live-creator") {
+    return meta(`Live Creator Video (Akool) · ${LIVE_CREATOR_VIDEO_CREDITS} Credits`, {
+      affordance: LIVE_CREATOR_VIDEO_CREDITS,
+    });
+  }
+
   if (toolId === "video-to-video" || toolId === "ai-video-editor") {
     const n = AKOOL_TOOL_CREDITS.videoEditor;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(n), { affordance: n });
   }
 
   if (toolId === "ecommerce-ads") {
     const n = AKOOL_TOOL_CREDITS.ecommerceAds;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(n), { affordance: n });
   }
 
   if (toolId === "talking-avatar") {
     const n = AKOOL_TOOL_CREDITS.lipsync;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(`Lip Sync (Akool) · ${n} Credits`, { affordance: n });
   }
 
   if (
@@ -321,88 +344,69 @@ function metaFromRuntime(
     toolId === "character-swap"
   ) {
     const n = AKOOL_TOOL_CREDITS.characterStudio;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(n), { affordance: n });
   }
 
   if (toolId === "tts") {
-    const n = AKOOL_TOOL_CREDITS.tts;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(AKOOL_TOOL_CREDITS.tts), {
+      affordance: AKOOL_TOOL_CREDITS.tts,
+    });
   }
 
   if (toolId === "voice-clone") {
-    const n = AKOOL_TOOL_CREDITS.voiceClone;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(AKOOL_TOOL_CREDITS.voiceClone), {
+      affordance: AKOOL_TOOL_CREDITS.voiceClone,
+    });
   }
 
   if (toolId === "voice-changer") {
-    const n = AKOOL_TOOL_CREDITS.voiceChanger;
-    return {
-      label: formatCreditsAmount(n),
-      affordanceAmount: n,
-      isDynamic: false,
-      isFree: false,
-    };
+    return meta(formatCreditsAmount(AKOOL_TOOL_CREDITS.voiceChanger), {
+      affordance: AKOOL_TOOL_CREDITS.voiceChanger,
+    });
   }
 
   if (toolId === "img-to-video" || toolId === "text-to-video") {
-    return {
-      label:
-        toolId === "text-to-video"
-          ? `Dynamisch · Fallback ${AKOOL_TOOL_CREDITS.textToVideo}`
-          : "Dynamisch nach Modell & Dauer",
-      affordanceAmount:
-        toolId === "text-to-video" ? AKOOL_TOOL_CREDITS.textToVideo : null,
-      isDynamic: true,
-      isFree: false,
-    };
+    const fallback = AKOOL_TOOL_CREDITS.textToVideo;
+    return meta(
+      toolId === "text-to-video"
+        ? `Dynamisch · Fallback ${fallback}`
+        : "Dynamisch nach Modell & Dauer",
+      {
+        affordance: toolId === "text-to-video" ? fallback : null,
+        starting: toolId === "text-to-video" ? fallback : null,
+        isDynamic: true,
+      }
+    );
   }
 
   if (toolId === "video-translation") {
     const perMin = AKOOL_TOOL_CREDITS.videoTranslationPerMinute;
-    return {
-      label: `Je Minute · ab ${perMin} Credits`,
-      affordanceAmount: perMin,
+    return meta(`Je Minute · ab ${perMin} Credits`, {
+      affordance: perMin,
+      minimum: perMin,
+      starting: perMin,
       isDynamic: true,
-      isFree: false,
-    };
+    });
   }
 
   if (toolId.startsWith("preview:")) {
-    return {
-      label: "Preview",
-      affordanceAmount: 0,
-      isDynamic: false,
-      isFree: true,
-    };
+    return meta("Preview", { affordance: 0, isFree: true });
   }
 
-  return {
-    label: "Credits variieren",
-    affordanceAmount: null,
-    isDynamic: true,
-    isFree: false,
-  };
+  return meta("Credits variieren", { isDynamic: true });
 }
 
 export function getCreditDisplayMeta(
   toolId: string,
   settings?: Record<string, unknown> | null
 ): CreditDisplayMeta {
+  if (toolId === "live-creator-portrait") {
+    return meta(
+      `Live Creator Portrait · ${LIVE_CREATOR_PORTRAIT_CREDIT_COST} Credits`,
+      { affordance: LIVE_CREATOR_PORTRAIT_CREDIT_COST }
+    );
+  }
+
   const canonicalId = resolveCanonicalId(toolId);
   const tool =
     getCanonicalToolByAlias(canonicalId) ?? getCanonicalToolByAlias(toolId);
@@ -426,8 +430,8 @@ export function getCreditAffordanceAmount(
   toolId: string,
   settings?: Record<string, unknown> | null
 ): number {
-  const meta = getCreditDisplayMeta(toolId, settings);
-  return meta.affordanceAmount ?? 0;
+  const m = getCreditDisplayMeta(toolId, settings);
+  return m.affordanceAmount ?? m.startingCredits ?? m.minimumCredits ?? 0;
 }
 
 export function canAffordCreditDisplay(
@@ -435,10 +439,12 @@ export function canAffordCreditDisplay(
   toolId: string,
   settings?: Record<string, unknown> | null
 ): boolean {
-  const meta = getCreditDisplayMeta(toolId, settings);
-  if (meta.isFree) return true;
-  if (meta.affordanceAmount === null) return true;
-  return currentCredits >= meta.affordanceAmount;
+  const m = getCreditDisplayMeta(toolId, settings);
+  if (m.isFree) return true;
+  const required =
+    m.affordanceAmount ?? m.minimumCredits ?? m.startingCredits;
+  if (required === null) return true;
+  return currentCredits >= required;
 }
 
 /** AgentBox / DashboardLayout ToolId entry point. */

@@ -27,7 +27,7 @@
 | `agent/tool-registry.ts` | Agent planner metadata, consent modes | **Adapter** — merge into canonical |
 | `agent-tool-registry.ts` | Agent Autopilot v2 (2 modes) | **Adapter** |
 | `canvas/toolApiSchema.ts` | Canvas workspace tools | **Adapter** |
-| `canvas/tool-credit-costs.ts` | Canvas coin display | **Replace** with canonical creditPolicy |
+| `canvas/tool-credit-costs.ts` | Canvas coin display | **Adapter** — Phase 1D delegates to `credit-display.ts` |
 | `promptOptimizer.calculateExactCredits` | AgentBox UI credit display | **Replace** — highest mismatch source |
 | `PreviewToolsFlow.tsx` TOOLS const | Design-preview mock | **Isolate** — never import for prod |
 
@@ -77,7 +77,7 @@ Full list: `summarizeCreditMismatches()` in canonical-tool-registry.ts
 | ~~`/api/stimme/speak`, `/api/stimme/clone`~~ | ~~postpay~~ | **Fixed Phase 1B** |
 | ~~Server actions: niche, script, thumbnail, content calendar~~ | ~~postpay~~ | **Fixed Phase 1B** |
 | ~~`/api/v1/*`~~ | ~~postpay~~ | **Fixed Phase 1B** — pre-pay + refund |
-| `/api/live-creator` POST→GET | deferred → pre-pay POST | Legacy GET jobs + async Akool fail — see Phase 1B |
+| `/api/live-creator` POST→GET | prepay POST + async refund GET | Legacy GET jobs without POST record — see Phase 1D |
 | ~~`/api/agent/copilot`~~ | ~~none~~ | **Fixed Phase 1B** |
 | ~~`/api/agent/stream-tool`~~ | ~~none~~ | **Fixed Phase 1B** |
 
@@ -216,10 +216,10 @@ Both must pass before commit.
 | `generateThumbnailConcepts` | Post-pay | `withCreditDeduction` | Pre-pay 1 | Auto | Low — DB save failure does not refund (intentional, credits for LLM) |
 | `generateContentCalendar` | Post-pay | `withCreditDeduction` | Pre-pay 5 | Auto | Low |
 
-### Still open (Phase 1C billing)
+### Still open (Phase 1C billing) — resolved in Phase 1D
 
-- `campaign-autopilot` lump-sum overcharge / no refund
-- Live-creator async Akool failure refund policy
+- ~~`campaign-autopilot` lump-sum overcharge / no refund~~ → partial refund on total failure (Phase 1D)
+- ~~Live-creator async Akool failure refund policy~~ → GET refund with `paidOnPost` (Phase 1D)
 
 ---
 
@@ -262,9 +262,95 @@ Both must pass before commit.
 
 **Geändert** — delegiert an `getCreditAffordanceAmount()` aus `credit-display.ts`. Liefert numerischen Mindestwert für Affordance-Checks; dynamische Tools ohne sicheren Mindestwert → 0 (UI blockiert nicht hart).
 
-### Offene Display-Risiken
+### Offene Display-Risiken (nach Phase 1D)
 
-- `talking-photo`: Route 5 vs live-creator portrait-frame 20 — UI zeigt kanonischen Wert pro Seite
 - Akool catalog model pricing ohne vollständige UI-Schätzung auf allen Seiten
-- `campaign-autopilot` geschätzte Credits vs tatsächliche Summe
-- Canvas `tool-credit-costs.ts` noch nicht an canonical angebunden
+- `campaign-autopilot` geschätzte Credits vs tatsächliche Summe (partial failure)
+- `szenen-generator` — kein sicheres UI-Minimum
+
+---
+
+## Phase 1D Remaining Credit Consistency
+
+**Date:** 2026-06-16  
+**Scope:** Close remaining credit display mismatches, dynamic affordance minimums, Canvas SSOT wiring, partial refund hardening, server-action pre-pay. No landing/design changes, no billing architecture refactor.
+
+### Talking Photo / Talking Avatar Entscheidung
+
+**Separate provider flows — not merged into one tool id.**
+
+| Display id | Label (UI) | Route / Page | Credits | Provider |
+|------------|------------|--------------|---------|----------|
+| `talking-photo` | Live Portrait (fal.ai) · 5 Credits | `/api/live-portrait`, `/dashboard/live-portrait` | **5** | fal.ai live-portrait |
+| `talking-avatar` | Lip Sync (Akool) · 20 Credits | `/api/akool/lipsync`, `/dashboard/lipsync-studio` | **20** | Akool lipsync |
+| `live-creator` | Live Creator Video (Akool) · 10 Credits | `/api/live-creator` POST | **10** | Akool talking-photo video |
+| `live-creator-portrait` | Live Creator Portrait · 20 Credits | `/api/live-creator/portrait-frame` | **20** | fal portrait frame |
+
+Sidebar: `talking-avatar` → "Lip Sync", `talking-photo` → "Live Portrait".  
+Canonical registry updated (`displayedCredits` talking-photo 5, live-creator prepay).
+
+### Dynamische Tool-Minimums
+
+| Tool | Anzeige | Mindest-/Startwert | Quelle |
+|------|---------|-------------------|--------|
+| `text-to-video` | Dynamisch · Fallback 50 | startingCredits **50** | API runtime fallback |
+| `video-translation` | Je Minute · ab 30 Credits | minimumCredits **30** | `AKOOL_TOOL_CREDITS.videoTranslationPerMinute` |
+| `live-creator` | 10 Credits | minimum/starting **10** | POST `CREDIT_COST` |
+| `szenen-generator` | Dynamisch nach Modell & Dauer | null (kein fixes Minimum) | Akool unit×duration — DOCS_REQUIRED |
+| `agent-autopilot` | 1 Credit Basis · Tools extra | minimum **1** | `ORCHESTRATOR_BASE_COST` |
+
+`getCreditAffordanceAmount()` resolves: `affordanceAmount ?? startingCredits ?? minimumCredits ?? 0`.
+
+### Canvas Credit Status
+
+**Angebunden (display-only)** — `src/lib/canvas/tool-credit-costs.ts` delegates mapped tools to `credit-display.ts` via `CANVAS_CANONICAL_MAP` + `getCanvasToolDisplayLabel()`.  
+Unmapped tools keep legacy `CANVAS_TOOL_BASE_COINS` constants.  
+Runtime billing unchanged (API routes). Canvas is workspace/experimental — not a second billing SSOT.
+
+Fixed display drift: `melodia-studio` 3 (tts), `agent-autopilot` 1, `trend-script` uses `TREND_SCRIPT_TOOL_CREDIT_COST`.
+
+### Campaign Autopilot
+
+| Field | Value |
+|-------|-------|
+| **Status** | Partially hardened |
+| **Änderung** | `executeRealCampaign`: refund lump sum if deduct succeeded but **zero** plan steps completed (`toolRuns.length === 0`) |
+| **Nicht gelöst** | Partial failure (some steps OK, later step throws) — no per-step refund; overcharge vs actual tool usage remains |
+| **Phase-2** | Per-step `withCreditDeduction` or post-hoc reconciliation against `sumCampaignPlanCredits` |
+
+### Live Creator Async Refund
+
+| Field | Value |
+|-------|-------|
+| **Status** | **Gelöst** (POST-paid jobs) |
+| **Mechanismus** | GET poll: if Akool `failed` + generation `paidOnPost: true` + not `refundedOnFail` → `addCredits(10)` + flag |
+| **POST failure** | Unchanged Phase 1B — refund on throw after deduct |
+| **Legacy** | Jobs without POST generation record still deduct on GET complete (documented) |
+
+### Weitere Actions
+
+| Action | Vorher | Nachher |
+|--------|--------|---------|
+| `generate-trend-script` | Post-pay Claude | `withCreditDeduction` pre-pay (4 credits — dashboard action cost, API route uses 3) |
+| `extract-viral-hook` | Post-pay Claude | `withCreditDeduction` pre-pay (local `VIRAL_HOOK_CREDIT_COST`) |
+| `generate-voice` | ElevenLabs before deduct | `withCreditDeduction` pre-pay + refund on TTS fail |
+
+**Documented mismatch:** trend-script action 4 vs `/api/trend-script` 3 — intentional dual path, not changed in 1D.
+
+### Lint-Status (Phase 1D)
+
+| Check | Result |
+|-------|--------|
+| Pre-existing errors | **17** (before Phase 1A) |
+| Phase 1D new errors | None expected — fix only if introduced |
+| Policy | Do not mass-fix legacy lint in Phase 1D |
+
+### Offene Risiken nach Phase 1D
+
+| Risk | Phase |
+|------|-------|
+| Campaign partial failure / overcharge lump sum | Phase 2 |
+| Live-creator legacy GET-only jobs | Phase 2 |
+| Szenen-generator per-model UI estimate | Phase 2 / DOCS_REQUIRED |
+| trend-script 4 vs 3 credit paths | Phase 2 unify |
+| Akool catalog pricing completeness | Phase 3 |

@@ -2,7 +2,7 @@
 
 import { getLocale } from "next-intl/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createAnthropicMessage,
@@ -64,58 +64,50 @@ export async function generateTrendScript(
 
   await getLocale();
 
-  try {
-    const claude = await createAnthropicMessage({
-      system: TREND_SCRIPT_SYSTEM_PROMPT,
-      user: buildTrendScriptUserPrompt({
-        trend,
-        niche,
-        platform: input.platform,
-        tone: input.tone,
-        language: input.language,
-      }),
-      model: SCRIPT_GENERATOR_MODEL,
-      maxTokens: 4096,
-    });
-
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-
-    const result = parseTrendScriptResult(claude.text);
-
-    const deduction = await deductCredits(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      TREND_SCRIPT_CREDIT_COST,
-      "Trend → Script",
-      {
-        generationType: "trend-to-script",
-        prompt: `${trend} · ${niche}`.slice(0, 200),
+      amount: TREND_SCRIPT_CREDIT_COST,
+      description: "Trend → Script",
+      generationType: "trend-to-script",
+      prompt: `${trend} · ${niche}`.slice(0, 200),
+    },
+    async () => {
+      const claude = await createAnthropicMessage({
+        system: TREND_SCRIPT_SYSTEM_PROMPT,
+        user: buildTrendScriptUserPrompt({
+          trend,
+          niche,
+          platform: input.platform,
+          tone: input.tone,
+          language: input.language,
+        }),
+        model: SCRIPT_GENERATOR_MODEL,
+        maxTokens: 4096,
+      });
+
+      if (!claude.ok) {
+        throw new Error(claude.error);
       }
-    );
 
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      return parseTrendScriptResult(claude.text);
     }
+  );
 
-    return {
-      success: true,
-      result,
-      creditsLeft: deduction.remainingCredits,
-    };
-  } catch (e) {
-    console.error("generateTrendScript:", e);
-    if (e instanceof Error && e.stack) console.error(e.stack);
-    return {
-      success: false,
-      error:
-        e instanceof Error && e.message.length <= 180
-          ? e.message
-          : "Script-Generierung fehlgeschlagen. Bitte erneut versuchen.",
-    };
+  if (!deductionResult.ok) {
+    if (deductionResult.remainingCredits !== undefined) {
+      return insufficientCreditsError(
+        deductionResult.remainingCredits,
+        TREND_SCRIPT_CREDIT_COST
+      );
+    }
+    return { success: false, error: deductionResult.error };
   }
+
+  return {
+    success: true,
+    result: deductionResult.data,
+    creditsLeft: deductionResult.remainingCredits,
+  };
 }

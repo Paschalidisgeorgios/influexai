@@ -62,6 +62,37 @@ export async function GET(request: NextRequest) {
     const job = await getAkoolVideoResult(jobId);
     const mapped = mapAkoolVideoStatus(job.video_status);
 
+    if (mapped.status === "failed") {
+      const failedGen = await getGenerationForJob(supabase, user.id, jobId);
+      if (failedGen) {
+        const resultMeta = (failedGen.result ?? {}) as Record<string, unknown>;
+        if (
+          resultMeta.paidOnPost === true &&
+          resultMeta.refundedOnFail !== true
+        ) {
+          await addCredits(
+            supabase,
+            user.id,
+            CREDIT_COST,
+            "Live Creator — Refund"
+          );
+          await supabase
+            .from("generations")
+            .update({
+              result: { ...resultMeta, refundedOnFail: true },
+            })
+            .eq("id", failedGen.id);
+        }
+      }
+      return NextResponse.json({
+        success: true,
+        status: "failed",
+        progress: 0,
+        videoUrl: null,
+        error: "Video-Generierung fehlgeschlagen",
+      });
+    }
+
     if (mapped.status !== "completed" || !job.video) {
       return NextResponse.json({
         success: true,

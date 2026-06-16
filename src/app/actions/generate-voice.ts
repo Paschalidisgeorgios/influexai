@@ -3,7 +3,7 @@
 import { randomUUID } from "crypto";
 
 import { requireKiToolAccessForAction } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createGenerationRecord,
@@ -53,65 +53,67 @@ export async function generateVoice(
   }
   const { userId, supabase } = access;
 
-  try {
-    const tts = await synthesizeElevenLabsSpeech(
-      trimmed,
-      voiceId,
-      stabilityPercent
-    );
-
-    if (!tts.ok) {
-      return { success: false, error: tts.error };
-    }
-
-    const generationId = randomUUID();
-    const finalPath = await ingestAudioFromDataUrl(
-      userId,
-      generationId,
-      tts.audioDataUrl
-    );
-
-    await createGenerationRecord(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      "audio",
-      {
-        finalPath,
-        assetKind: "audio",
-        paid: true,
-        mimeType: "audio/mpeg",
-      },
-      CREDIT_COST,
-      trimmed,
-      generationId
-    );
+      amount: CREDIT_COST,
+      description: `KI Stimme (${voiceId})`,
+      generationType: "audio",
+      prompt: trimmed.slice(0, 500),
+      refundDescription: "KI Stimme — Refund",
+    },
+    async () => {
+      const tts = await synthesizeElevenLabsSpeech(
+        trimmed,
+        voiceId,
+        stabilityPercent
+      );
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      `KI Stimme (${voiceId})`,
-      { generationType: "audio", prompt: trimmed.slice(0, 500) }
-    );
+      if (!tts.ok) {
+        throw new Error(tts.error);
+      }
 
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      const generationId = randomUUID();
+      const finalPath = await ingestAudioFromDataUrl(
+        userId,
+        generationId,
+        tts.audioDataUrl
+      );
+
+      await createGenerationRecord(
+        supabase,
+        userId,
+        "audio",
+        {
+          finalPath,
+          assetKind: "audio",
+          paid: true,
+          mimeType: "audio/mpeg",
+        },
+        CREDIT_COST,
+        trimmed,
+        generationId
+      );
+
+      return { audioDataUrl: tts.audioDataUrl, generationId };
     }
+  );
 
-    return {
-      success: true,
-      audioUrl: tts.audioDataUrl,
-      generationId,
-      creditsLeft: deduction.remainingCredits,
-    };
-  } catch (e) {
-    console.error("generateVoice:", e);
-    return {
-      success: false,
-      error: "Unerwarteter Fehler bei der Generierung.",
-    };
+  if (!deductionResult.ok) {
+    if (deductionResult.remainingCredits !== undefined) {
+      return insufficientCreditsError(
+        deductionResult.remainingCredits,
+        CREDIT_COST
+      );
+    }
+    return { success: false, error: deductionResult.error };
   }
+
+  return {
+    success: true,
+    audioUrl: deductionResult.data.audioDataUrl,
+    generationId: deductionResult.data.generationId,
+    creditsLeft: deductionResult.remainingCredits,
+  };
 }

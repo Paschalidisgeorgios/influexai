@@ -2,7 +2,7 @@
 
 import { getLocale } from "next-intl/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
-import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createAnthropicMessage,
@@ -109,55 +109,57 @@ export async function extractViralHook(
   const language = localeToPromptLanguage[locale] ?? "German";
 
   try {
-    const claude = await createAnthropicMessage({
-      system: VIRAL_HOOK_SYSTEM_PROMPT,
-      user: buildViralHookUserPrompt({
-        title,
-        description,
-        channelTitle,
-        manualDescription:
-          input.mode === "manual" ? input.manualDescription : undefined,
-        userNiche: input.userNiche,
-        language,
-      }),
-      model: SCRIPT_GENERATOR_MODEL,
-      maxTokens: 4096,
-    });
-
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-
-    const result = parseViralHookResult(claude.text);
-    if (!result.sourceTitle) {
-      result.sourceTitle = title;
-    }
-
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      VIRAL_HOOK_CREDIT_COST,
-      "Viral Hook Extraktor",
+    const deductionResult = await withCreditDeduction(
       {
+        supabase,
+        userId,
+        amount: VIRAL_HOOK_CREDIT_COST,
+        description: "Viral Hook Extraktor",
         generationType: "viral-hook",
         prompt: (input.youtubeUrl ?? input.manualDescription ?? title).slice(
           0,
           200
         ),
+      },
+      async () => {
+        const claude = await createAnthropicMessage({
+          system: VIRAL_HOOK_SYSTEM_PROMPT,
+          user: buildViralHookUserPrompt({
+            title,
+            description,
+            channelTitle,
+            manualDescription:
+              input.mode === "manual" ? input.manualDescription : undefined,
+            userNiche: input.userNiche,
+            language,
+          }),
+          model: SCRIPT_GENERATOR_MODEL,
+          maxTokens: 4096,
+        });
+
+        if (!claude.ok) {
+          throw new Error(claude.error);
+        }
+
+        const result = parseViralHookResult(claude.text);
+        if (!result.sourceTitle) {
+          result.sourceTitle = title;
+        }
+        return result;
       }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return {
         success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
+        error: deductionResult.error,
       };
     }
 
     return {
       success: true,
-      result,
-      creditsLeft: deduction.remainingCredits,
+      result: deductionResult.data,
+      creditsLeft: deductionResult.remainingCredits,
       usedYouTubeApi,
     };
   } catch (e) {

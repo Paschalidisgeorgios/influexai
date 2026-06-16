@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { deductCredits } from "@/lib/credits";
+import { addCredits, deductCredits } from "@/lib/credits";
 import { enhanceImagePromptForAgent } from "@/lib/ai/imagePromptEnhancer";
 import { inferImageStyleAndPlatform } from "@/lib/ai/imageStylePresets";
 import { parseScriptBlocks } from "@/lib/script-format";
@@ -280,22 +280,27 @@ export async function executeRealCampaign(params: {
   });
 
   const totalCredits = sumCampaignPlanCredits(plan);
-  if (totalCredits > 0) {
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      totalCredits,
-      "Campaign Autopilot",
-      {
-        generationType: "campaign-autopilot",
-        skipGenerationLog: true,
-        prompt: exec.prompt.slice(0, 500),
+  let deductedCredits = 0;
+  const toolRuns: AgentTextToolRun[] = [];
+
+  try {
+    if (totalCredits > 0) {
+      const deduction = await deductCredits(
+        supabase,
+        userId,
+        totalCredits,
+        "Campaign Autopilot",
+        {
+          generationType: "campaign-autopilot",
+          skipGenerationLog: true,
+          prompt: exec.prompt.slice(0, 500),
+        }
+      );
+      if (!deduction.success) {
+        throw new Error(deduction.error ?? "Nicht genug Credits.");
       }
-    );
-    if (!deduction.success) {
-      throw new Error(deduction.error ?? "Nicht genug Credits.");
+      deductedCredits = totalCredits;
     }
-  }
 
   const steps: AgentExecutionStep[] = CAMPAIGN_STEPS.map((label, i) => ({
     id: `step-${i}`,
@@ -304,7 +309,6 @@ export async function executeRealCampaign(params: {
   }));
 
   const items: ContentItem[] = fullCampaignStepsToItems(fullCampaign, defaultPlatform);
-  const toolRuns: AgentTextToolRun[] = [];
 
   const markStep = async (idx: number, status: AgentExecutionStep["status"]) => {
     steps[idx] = { ...steps[idx], status };
@@ -400,4 +404,15 @@ export async function executeRealCampaign(params: {
   }
 
   return result;
+  } catch (err) {
+    if (deductedCredits > 0 && toolRuns.length === 0) {
+      await addCredits(
+        supabase,
+        userId,
+        deductedCredits,
+        "Campaign Autopilot — Refund"
+      );
+    }
+    throw err;
+  }
 }
