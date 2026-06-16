@@ -10,27 +10,126 @@ import {
   DASHBOARD_MUTED,
   DASHBOARD_TEXT,
   DashboardPageHeader,
+  DashboardPanel,
 } from "@/components/dashboard/core/DashboardSurface";
-import "@/styles/settings-glass.css";
-import "@/styles/studio-glass.css";
+
+type SettingsSection =
+  | "account"
+  | "billing"
+  | "memory"
+  | "generation"
+  | "privacy"
+  | "integrations";
+
+const SECTIONS: { id: SettingsSection; label: string }[] = [
+  { id: "account", label: "Account" },
+  { id: "billing", label: "Billing & Credits" },
+  { id: "memory", label: "Brand Defaults" },
+  { id: "generation", label: "Generation Defaults" },
+  { id: "privacy", label: "Datenschutz & Sicherheit" },
+  { id: "integrations", label: "Integrationen & API" },
+];
+
+const inputClassName =
+  "w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors focus:border-[#B4FF00]/40 focus:ring-2 focus:ring-[#B4FF00]/10";
+
+const inputStyle = {
+  background: "rgba(255,255,255,0.65)",
+  borderColor: "rgba(8,8,8,0.12)",
+  color: DASHBOARD_TEXT,
+};
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label
+      className="mb-1.5 block text-[0.78rem] font-semibold tracking-wide"
+      style={{ color: DASHBOARD_MUTED }}
+    >
+      {children}
+    </label>
+  );
+}
+
+function StatusMessage({ type, text }: { type: "ok" | "err"; text: string }) {
+  return (
+    <div
+      className="rounded-lg px-3.5 py-2.5 text-sm"
+      style={{
+        background: type === "ok" ? "rgba(180,255,0,0.10)" : "rgba(255,71,87,0.08)",
+        border: `1px solid ${type === "ok" ? "rgba(180,255,0,0.28)" : "rgba(255,71,87,0.25)"}`,
+        color: type === "ok" ? "#3d5200" : "#b91c1c",
+      }}
+    >
+      {text}
+    </div>
+  );
+}
+
+function PrimaryButton({
+  children,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="rounded-lg px-4 py-2.5 text-sm font-bold transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+      style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({
+  children,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50"
+      style={{
+        borderColor: "rgba(8,8,8,0.12)",
+        background: "#FFFCF7",
+        color: DASHBOARD_TEXT,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
+  const tDelete = useTranslations("settings.deleteAccount");
+  const supabase = createClient();
+
+  const [activeSection, setActiveSection] = useState<SettingsSection>("account");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [credits, setCredits] = useState<number | null>(null);
   const [dailyIdeasEmail, setDailyIdeasEmail] = useState(true);
   const [savingDailyEmail, setSavingDailyEmail] = useState(false);
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [saving, setSaving] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
-  const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(
-    null
-  );
-  const [msgPw, setMsgPw] = useState<{
-    type: "ok" | "err";
-    text: string;
-  } | null>(null);
+  const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [msgPw, setMsgPw] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
@@ -45,8 +144,6 @@ export default function SettingsPage() {
     type: "ok" | "err";
     text: string;
   } | null>(null);
-  const tDelete = useTranslations("settings.deleteAccount");
-  const supabase = createClient();
 
   useEffect(() => {
     const load = async () => {
@@ -54,16 +151,21 @@ export default function SettingsPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, email, daily_suggestions_email, stripe_subscription_id")
+        .select(
+          "full_name, email, daily_suggestions_email, stripe_subscription_id, credits"
+        )
         .eq("id", user.id)
         .single();
+
       if (data) {
         setName(data.full_name ?? "");
         setEmail(data.email ?? "");
         setDailyIdeasEmail(data.daily_suggestions_email !== false);
         setHasActiveSubscription(Boolean(data.stripe_subscription_id));
+        if (typeof data.credits === "number") setCredits(data.credits);
       }
 
       const { data: tenant } = await supabase
@@ -78,6 +180,7 @@ export default function SettingsPage() {
         .select("nische, zielgruppe, tonalitaet, plattformen, produkte")
         .eq("user_id", user.id)
         .maybeSingle();
+
       if (creatorProfile) {
         setCreatorNische(creatorProfile.nische ?? "");
         setCreatorZielgruppe(creatorProfile.zielgruppe ?? "");
@@ -86,7 +189,7 @@ export default function SettingsPage() {
         setCreatorProdukte((creatorProfile.produkte ?? []).join(", "));
       }
     };
-    load();
+    void load();
   }, [supabase]);
 
   const saveCreatorMemory = async () => {
@@ -119,7 +222,7 @@ export default function SettingsPage() {
     setMsgCreatorMemory(
       error
         ? { type: "err", text: "Speichern fehlgeschlagen." }
-        : { type: "ok", text: "Studio-Gedächtnis gespeichert! ✓" }
+        : { type: "ok", text: "Brand Defaults gespeichert." }
     );
     setSavingCreatorMemory(false);
   };
@@ -148,7 +251,7 @@ export default function SettingsPage() {
     setMsgCreatorMemory(
       error
         ? { type: "err", text: "Zurücksetzen fehlgeschlagen." }
-        : { type: "ok", text: "Gedächtnis zurückgesetzt." }
+        : { type: "ok", text: "Brand Defaults zurückgesetzt." }
     );
     setSavingCreatorMemory(false);
   };
@@ -168,7 +271,7 @@ export default function SettingsPage() {
     setMsg(
       error
         ? { type: "err", text: "Fehler beim Speichern." }
-        : { type: "ok", text: "Name gespeichert! ✓" }
+        : { type: "ok", text: "Name gespeichert." }
     );
     setSaving(false);
   };
@@ -205,7 +308,7 @@ export default function SettingsPage() {
     setMsgPw(
       error
         ? { type: "err", text: "Fehler: " + error.message }
-        : { type: "ok", text: "Passwort geändert! ✓" }
+        : { type: "ok", text: "Passwort geändert." }
     );
     if (!error) {
       setNewPw("");
@@ -214,445 +317,358 @@ export default function SettingsPage() {
     setSavingPw(false);
   };
 
-  const inputStyle = {
-    width: "100%",
-    padding: "12px 16px",
-    borderRadius: 10,
-    background: "rgba(255,255,255,0.55)",
-    border: "1px solid rgba(8,8,8,0.12)",
-    color: DASHBOARD_TEXT,
-    fontSize: "0.95rem",
-    outline: "none",
-    fontFamily: "var(--font-dm), sans-serif",
-    transition: "border-color 0.2s",
-  };
-
-  const label = (text: string) => (
-    <label
-      style={{
-        fontSize: "0.78rem",
-        fontWeight: 600,
-        color: DASHBOARD_MUTED,
-        display: "block",
-        marginBottom: 6,
-        letterSpacing: "0.04em",
-      }}
-    >
-      {text}
-    </label>
-  );
-
-  const card = (children: React.ReactNode) => (
-    <div
-      className="flex flex-col gap-3.5 rounded-xl border p-6"
-      style={{
-        background: "#FFFCF7",
-        borderColor: "rgba(8,8,8,0.11)",
-        boxShadow: "0 1px 2px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.9)",
-      }}
-    >
-      {children}
-    </div>
-  );
-
-  return (
-    <div className="mx-auto w-full min-w-0 max-w-2xl">
-      <DashboardPageHeader
-        title="Einstellungen"
-        subtitle="Profil und Sicherheit verwalten"
-      />
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {/* Profil */}
-        {card(
-          <>
-            <h2
-              style={{
-                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-                fontSize: "1.2rem",
-                letterSpacing: "0.02em",
-                color: DASHBOARD_TEXT,
-              }}
-            >
-              Profil
-            </h2>
-            <Link
-              href="/dashboard/profile/public"
-              style={{
-                display: "block",
-                padding: "12px 14px",
-                borderRadius: 10,
-                background: "rgba(180,255,0,0.08)",
-                border: "1px solid rgba(180,255,0,0.2)",
-                color: DASHBOARD_ACCENT,
-                fontSize: "0.88rem",
-                fontWeight: 600,
-                textDecoration: "none",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              Öffentliches Creator-Profil einrichten →
-            </Link>
-            <div>
-              {label("Name")}
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Dein Name"
-                style={inputStyle}
-                onFocus={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(180,255,0,0.4)")
-                }
-                onBlur={(e) =>
-                  ((e.target as HTMLInputElement).style.borderColor =
-                    "rgba(255,255,255,0.09)")
-                }
-              />
-            </div>
-            <div>
-              {label("E-Mail (nicht änderbar)")}
-              <input
-                value={email}
-                disabled
-                style={{ ...inputStyle, opacity: 0.5, cursor: "not-allowed" }}
-              />
-            </div>
-            {msg && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 9,
-                  fontSize: "0.85rem",
-                  background:
-                    msg.type === "ok"
-                      ? "rgba(180,255,0,0.08)"
-                      : "rgba(255,71,87,0.08)",
-                  border: `1px solid ${msg.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
-                  color: msg.type === "ok" ? "#B4FF00" : "#ff6b7a",
-                }}
-              >
-                {msg.text}
-              </div>
-            )}
-            <button
-              onClick={saveName}
-              disabled={saving}
-              style={{
-                padding: "12px",
-                borderRadius: 10,
-                border: "none",
-                background: saving ? "#2a2a2a" : "#B4FF00",
-                color: saving ? "rgba(255,255,255,0.65)" : "#060608",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                cursor: saving ? "default" : "pointer",
-                fontFamily: "var(--font-dm), sans-serif",
-              }}
-            >
-              {saving ? "Wird gespeichert..." : "Name speichern"}
-            </button>
-          </>
-        )}
-
-        {card(
-          <>
-            <h2
-              style={{
-                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-                fontSize: "1.2rem",
-                letterSpacing: "0.02em",
-                color: DASHBOARD_TEXT,
-              }}
-            >
-              {t("growth_agent_title")}
-            </h2>
-            <p style={{ margin: 0, fontSize: "0.88rem", color: DASHBOARD_MUTED, lineHeight: 1.5 }}>
-              {t("daily_suggestions_email_desc")}
-            </p>
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 16,
-                cursor: savingDailyEmail ? "wait" : "pointer",
-              }}
-            >
-              <span style={{ color: DASHBOARD_TEXT, fontSize: "0.92rem", fontWeight: 600 }}>
-                {t("daily_suggestions_email_label")}
-              </span>
-              <input
-                type="checkbox"
-                checked={dailyIdeasEmail}
-                disabled={savingDailyEmail}
-                onChange={(e) => void saveDailyIdeasEmail(e.target.checked)}
-                style={{
-                  width: 44,
-                  height: 24,
-                  accentColor: "#B4FF00",
-                  cursor: savingDailyEmail ? "wait" : "pointer",
-                }}
-              />
-            </label>
-          </>
-        )}
-
-        {card(
-          <>
-            <h2
-              style={{
-                fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-                fontSize: "1.2rem",
-                letterSpacing: "0.02em",
-                color: DASHBOARD_TEXT,
-              }}
-            >
-              Was dein Studio über dich weiß
-            </h2>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.88rem",
-                color: DASHBOARD_MUTED,
-                lineHeight: 1.5,
-              }}
-            >
-              Der KI Agent merkt sich hier deine Nische, Produkte und
-              Plattformen — du kannst alles jederzeit anpassen.
-            </p>
-            <div>
-              {label("Nische")}
-              <input
-                value={creatorNische}
-                onChange={(e) => setCreatorNische(e.target.value)}
-                placeholder="z. B. Fitness, Immobilien"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              {label("Zielgruppe")}
-              <input
-                value={creatorZielgruppe}
-                onChange={(e) => setCreatorZielgruppe(e.target.value)}
-                placeholder="z. B. Berufstätige 25–40"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              {label("Tonalität")}
-              <input
-                value={creatorTonalitaet}
-                onChange={(e) => setCreatorTonalitaet(e.target.value)}
-                placeholder="z. B. locker, direkt, vertrauensvoll"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              {label("Plattformen (kommagetrennt)")}
-              <input
-                value={creatorPlattformen}
-                onChange={(e) => setCreatorPlattformen(e.target.value)}
-                placeholder="TikTok, Instagram, YouTube"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              {label("Produkte (kommagetrennt)")}
-              <input
-                value={creatorProdukte}
-                onChange={(e) => setCreatorProdukte(e.target.value)}
-                placeholder="Kurse, Coaching, physische Produkte"
-                style={inputStyle}
-              />
-            </div>
-            {msgCreatorMemory && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 9,
-                  fontSize: "0.85rem",
-                  background:
-                    msgCreatorMemory.type === "ok"
-                      ? "rgba(180,255,0,0.08)"
-                      : "rgba(255,71,87,0.08)",
-                  border: `1px solid ${msgCreatorMemory.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
-                  color:
-                    msgCreatorMemory.type === "ok" ? "#B4FF00" : "#ff6b7a",
-                }}
-              >
-                {msgCreatorMemory.text}
-              </div>
-            )}
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => void saveCreatorMemory()}
-                disabled={savingCreatorMemory}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: 10,
-                  border: "none",
-                  background: savingCreatorMemory ? "#2a2a2a" : "#B4FF00",
-                  color: savingCreatorMemory ? "rgba(255,255,255,0.65)" : "#060608",
-                  fontWeight: 700,
-                  fontSize: "0.9rem",
-                  cursor: savingCreatorMemory ? "default" : "pointer",
-                }}
-              >
-                Speichern
-              </button>
-              <button
-                type="button"
-                onClick={() => setResetConfirmOpen(true)}
-                disabled={savingCreatorMemory}
-                className="settings-memory-reset-btn"
-              >
-                Gedächtnis zurücksetzen
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* Passwort */}
-        <div
-          className="flex flex-col gap-3.5 rounded-2xl border p-6"
+  const sectionContent: Record<SettingsSection, React.ReactNode> = {
+    account: (
+      <DashboardPanel title="Account">
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Profil und öffentliche Creator-Identität verwalten.
+        </p>
+        <Link
+          href="/dashboard/profile/public"
+          className="mb-5 block rounded-lg border px-3.5 py-3 text-sm font-semibold no-underline transition-colors hover:opacity-90"
           style={{
-            background: "rgba(255,255,255,0.42)",
-            borderColor: "rgba(8,8,8,0.08)",
+            background: "rgba(180,255,0,0.10)",
+            borderColor: "rgba(180,255,0,0.28)",
+            color: DASHBOARD_TEXT,
           }}
         >
-          <h2
-            style={{
-              fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-              fontSize: "1.2rem",
-              letterSpacing: "0.02em",
-              color: DASHBOARD_TEXT,
-              margin: 0,
-            }}
-          >
-            Passwort ändern
-          </h2>
+          Öffentliches Creator-Profil einrichten →
+        </Link>
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            {label("Neues Passwort")}
+            <FieldLabel>Name</FieldLabel>
             <input
-              type="password"
-              value={newPw}
-              onChange={(e) => setNewPw(e.target.value)}
-              placeholder="Mindestens 6 Zeichen"
-              className="settings-glass-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Dein Name"
+              className={inputClassName}
+              style={inputStyle}
             />
           </div>
           <div>
-            {label("Passwort bestätigen")}
+            <FieldLabel>E-Mail</FieldLabel>
             <input
-              type="password"
-              value={confirmPw}
-              onChange={(e) => setConfirmPw(e.target.value)}
-              placeholder="Passwort wiederholen"
-              className="settings-glass-input"
+              value={email}
+              disabled
+              className={inputClassName}
+              style={{ ...inputStyle, opacity: 0.55, cursor: "not-allowed" }}
             />
           </div>
-          {msgPw && (
-            <div
-              style={{
-                padding: "10px 14px",
-                borderRadius: 9,
-                fontSize: "0.85rem",
-                background:
-                  msgPw.type === "ok"
-                    ? "rgba(180,255,0,0.08)"
-                    : "rgba(255,71,87,0.08)",
-                border: `1px solid ${msgPw.type === "ok" ? "rgba(180,255,0,0.25)" : "rgba(255,71,87,0.25)"}`,
-                color: msgPw.type === "ok" ? "#B4FF00" : "#ff6b7a",
-              }}
-            >
-              {msgPw.text}
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => void savePw()}
-            disabled={savingPw}
-            className="settings-glass-btn-outline w-full"
-          >
-            {savingPw ? "Wird gespeichert..." : "Passwort ändern"}
-          </button>
         </div>
+        {msg ? <div className="mt-4"><StatusMessage {...msg} /></div> : null}
+        <div className="mt-5">
+          <PrimaryButton disabled={saving} onClick={() => void saveName()}>
+            {saving ? "Wird gespeichert…" : "Name speichern"}
+          </PrimaryButton>
+        </div>
+      </DashboardPanel>
+    ),
 
-        {/* Danger Zone */}
-        <div className="settings-danger-card settings-glass-card flex flex-col gap-3.5 rounded-2xl border border-red-900/30 bg-red-950/5 p-6 backdrop-blur-md">
-          <h2 className="m-0 font-mono text-sm font-bold tracking-[0.2em] text-red-400 [text-shadow:0_0_14px_rgba(248,113,113,0.35)]">
-            GEFAHRENZONE
-          </h2>
-          <p
-            style={{
-              fontSize: "0.875rem",
-              color: "rgba(255,255,255,0.65)",
-              lineHeight: 1.65,
-              margin: 0,
-            }}
+    billing: (
+      <DashboardPanel title="Billing & Credits">
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Credits, Plan und Abrechnung verwalten.
+        </p>
+        {credits !== null ? (
+          <p className="mb-4 text-sm" style={{ color: DASHBOARD_TEXT }}>
+            Aktuell verfügbar:{" "}
+            <span className="font-mono text-lg font-bold" style={{ color: DASHBOARD_ACCENT }}>
+              {credits}
+            </span>{" "}
+            Credits
+          </p>
+        ) : (
+          <p className="mb-4 text-sm" style={{ color: DASHBOARD_MUTED }}>
+            Credits werden geladen…
+          </p>
+        )}
+        <Link
+          href="/dashboard/credits"
+          className="inline-flex rounded-lg border px-4 py-2.5 text-sm font-semibold no-underline transition-colors hover:border-[#B4FF00]/30"
+          style={{
+            borderColor: "rgba(8,8,8,0.12)",
+            background: "#FFFCF7",
+            color: DASHBOARD_TEXT,
+          }}
+        >
+          Credits & Plan verwalten →
+        </Link>
+      </DashboardPanel>
+    ),
+
+    memory: (
+      <DashboardPanel title="Brand Defaults">
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Nische, Zielgruppe und Tonalität für den KI Agent — echte Profildaten aus deinem
+          Workspace.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <FieldLabel>Nische</FieldLabel>
+            <input
+              value={creatorNische}
+              onChange={(e) => setCreatorNische(e.target.value)}
+              placeholder="z. B. Fitness, Immobilien"
+              className={inputClassName}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <FieldLabel>Zielgruppe</FieldLabel>
+            <input
+              value={creatorZielgruppe}
+              onChange={(e) => setCreatorZielgruppe(e.target.value)}
+              placeholder="z. B. Berufstätige 25–40"
+              className={inputClassName}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <FieldLabel>Tonalität</FieldLabel>
+            <input
+              value={creatorTonalitaet}
+              onChange={(e) => setCreatorTonalitaet(e.target.value)}
+              placeholder="z. B. locker, direkt, vertrauensvoll"
+              className={inputClassName}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <FieldLabel>Plattformen (kommagetrennt)</FieldLabel>
+            <input
+              value={creatorPlattformen}
+              onChange={(e) => setCreatorPlattformen(e.target.value)}
+              placeholder="TikTok, Instagram, YouTube"
+              className={inputClassName}
+              style={inputStyle}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <FieldLabel>Produkte (kommagetrennt)</FieldLabel>
+            <input
+              value={creatorProdukte}
+              onChange={(e) => setCreatorProdukte(e.target.value)}
+              placeholder="Kurse, Coaching, physische Produkte"
+              className={inputClassName}
+              style={inputStyle}
+            />
+          </div>
+        </div>
+        {msgCreatorMemory ? (
+          <div className="mt-4">
+            <StatusMessage {...msgCreatorMemory} />
+          </div>
+        ) : null}
+        <div className="mt-5 flex flex-wrap gap-3">
+          <PrimaryButton
+            disabled={savingCreatorMemory}
+            onClick={() => void saveCreatorMemory()}
           >
+            Speichern
+          </PrimaryButton>
+          <SecondaryButton
+            disabled={savingCreatorMemory}
+            onClick={() => setResetConfirmOpen(true)}
+          >
+            Zurücksetzen
+          </SecondaryButton>
+        </div>
+      </DashboardPanel>
+    ),
+
+    generation: (
+      <DashboardPanel title="Generation Defaults">
+        <p className="text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Standard-Formate und Stil-Presets für Bild- und Video-Tools folgen in einer
+          späteren Phase. Bis dahin werden Tool-Defaults pro Generierung gewählt.
+        </p>
+        <div
+          className="mt-5 rounded-lg border border-dashed px-4 py-8 text-center text-sm"
+          style={{ borderColor: "rgba(8,8,8,0.12)", color: DASHBOARD_MUTED }}
+        >
+          Noch keine Workspace-weiten Generation Defaults gespeichert.
+        </div>
+      </DashboardPanel>
+    ),
+
+    privacy: (
+      <div className="space-y-4">
+        <DashboardPanel title="Passwort">
+          <div className="grid max-w-md gap-4">
+            <div>
+              <FieldLabel>Neues Passwort</FieldLabel>
+              <input
+                type="password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                placeholder="Mindestens 6 Zeichen"
+                className={inputClassName}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <FieldLabel>Passwort bestätigen</FieldLabel>
+              <input
+                type="password"
+                value={confirmPw}
+                onChange={(e) => setConfirmPw(e.target.value)}
+                placeholder="Passwort wiederholen"
+                className={inputClassName}
+                style={inputStyle}
+              />
+            </div>
+          </div>
+          {msgPw ? <div className="mt-4"><StatusMessage {...msgPw} /></div> : null}
+          <div className="mt-5">
+            <PrimaryButton disabled={savingPw} onClick={() => void savePw()}>
+              {savingPw ? "Wird gespeichert…" : "Passwort ändern"}
+            </PrimaryButton>
+          </div>
+        </DashboardPanel>
+
+        <DashboardPanel title="Benachrichtigungen">
+          <p className="mb-3 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+            {t("daily_suggestions_email_desc")}
+          </p>
+          <label className="flex cursor-pointer items-center justify-between gap-4">
+            <span className="text-sm font-medium" style={{ color: DASHBOARD_TEXT }}>
+              {t("daily_suggestions_email_label")}
+            </span>
+            <input
+              type="checkbox"
+              checked={dailyIdeasEmail}
+              disabled={savingDailyEmail}
+              onChange={(e) => void saveDailyIdeasEmail(e.target.checked)}
+              className="h-5 w-5 accent-[#B4FF00]"
+            />
+          </label>
+        </DashboardPanel>
+
+        <DashboardPanel title="Konto löschen">
+          <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
             {tDelete("danger_desc")}
           </p>
           <button
             type="button"
-            className="settings-danger-delete-btn"
             onClick={() => setDeleteModalOpen(true)}
+            className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-red-50"
+            style={{
+              borderColor: "rgba(185,28,28,0.25)",
+              color: "#991b1b",
+              background: "#FFFCF7",
+            }}
           >
             {tDelete("danger_button")}
           </button>
-        </div>
+        </DashboardPanel>
+      </div>
+    ),
 
-        {resetConfirmOpen ? (
-          <div
-            className="settings-confirm-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="reset-memory-title"
-            onClick={() => setResetConfirmOpen(false)}
-          >
-            <div
-              className="w-full max-w-sm rounded-xl border border-zinc-800/60 bg-zinc-950/80 p-5 shadow-[0_12px_48px_rgba(0,0,0,0.5)] backdrop-blur-xl"
-              onClick={(e) => e.stopPropagation()}
+    integrations: (
+      <DashboardPanel title="Integrationen & API">
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          API-Zugang und externe Integrationen verwalten — keine Keys in dieser Übersicht.
+        </p>
+        <Link
+          href="/dashboard/api"
+          className="inline-flex rounded-lg border px-4 py-2.5 text-sm font-semibold no-underline transition-colors hover:border-[#B4FF00]/30"
+          style={{
+            borderColor: "rgba(8,8,8,0.12)",
+            background: "#FFFCF7",
+            color: DASHBOARD_TEXT,
+          }}
+        >
+          API-Dashboard öffnen →
+        </Link>
+      </DashboardPanel>
+    ),
+  };
+
+  return (
+    <div className="mx-auto w-full min-w-0 max-w-5xl">
+      <DashboardPageHeader
+        title="Einstellungen"
+        subtitle="Account, Workspace, Brand Defaults und Sicherheit verwalten."
+      />
+
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
+        <nav
+          className="flex shrink-0 gap-1 overflow-x-auto pb-1 lg:w-[220px] lg:flex-col lg:overflow-visible lg:pb-0"
+          style={{ scrollbarWidth: "none" }}
+          aria-label="Einstellungsbereiche"
+        >
+          {SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => setActiveSection(section.id)}
+              className="shrink-0 rounded-lg py-2.5 text-left text-[13px] transition-colors lg:w-full"
+              style={{
+                paddingLeft: "12px",
+                borderLeft:
+                  activeSection === section.id
+                    ? `2px solid ${DASHBOARD_ACCENT}`
+                    : "2px solid transparent",
+                color:
+                  activeSection === section.id ? DASHBOARD_TEXT : DASHBOARD_MUTED,
+                fontWeight: activeSection === section.id ? 600 : 400,
+                whiteSpace: "nowrap",
+              }}
             >
-              <p
-                id="reset-memory-title"
-                className="m-0 text-sm leading-relaxed text-zinc-300"
+              {section.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="min-w-0 flex-1">{sectionContent[activeSection]}</div>
+      </div>
+
+      {resetConfirmOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reset-memory-title"
+          onClick={() => setResetConfirmOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-xl border p-5 shadow-xl"
+            style={{
+              background: "#FFFCF7",
+              borderColor: "rgba(8,8,8,0.10)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p
+              id="reset-memory-title"
+              className="text-sm leading-relaxed"
+              style={{ color: DASHBOARD_TEXT }}
+            >
+              Brand Defaults zurücksetzen? Der Agent vergisst Nische und Tonalität.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <SecondaryButton onClick={() => setResetConfirmOpen(false)}>
+                Abbrechen
+              </SecondaryButton>
+              <PrimaryButton
+                onClick={() => {
+                  setResetConfirmOpen(false);
+                  void resetCreatorMemory();
+                }}
               >
-                Bist du sicher? Die KI vergisst deine Nische und Tonalität
-                vollständig.
-              </p>
-              <div className="mt-4 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setResetConfirmOpen(false)}
-                  className="settings-glass-btn-outline !px-3 !py-2 text-xs"
-                >
-                  Abbrechen
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResetConfirmOpen(false);
-                    void resetCreatorMemory();
-                  }}
-                  className="settings-memory-reset-btn !px-3 !py-2 text-xs"
-                >
-                  Zurücksetzen
-                </button>
-              </div>
+                Zurücksetzen
+              </PrimaryButton>
             </div>
           </div>
-        ) : null}
+        </div>
+      ) : null}
 
-        <DeleteAccountModal
-          open={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          hasActiveSubscription={hasActiveSubscription}
-          isAgencyOwner={isAgencyOwner}
-        />
-      </div>
+      <DeleteAccountModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        hasActiveSubscription={hasActiveSubscription}
+        isAgencyOwner={isAgencyOwner}
+      />
     </div>
   );
 }

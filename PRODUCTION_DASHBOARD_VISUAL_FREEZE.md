@@ -163,3 +163,80 @@ Stage wirkt auf Desktop breiter; Mobile behält `px-3` (12px).
 - `src/app/dashboard/gallery/page.tsx`
 - `src/app/dashboard/settings/page.tsx` (Panel-Tokens)
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
+
+---
+
+## Phase 2B.2 Legacy Production View Cleanup
+
+**Date:** 2026-06-16  
+**Scope:** Clean up legacy production views — primarily `/dashboard/settings`, mobile nav, gallery copy. No billing/credit logic changes.
+
+### Gefundene Legacy-Komponenten
+
+| Komponente / Text | Route | Status |
+|-------------------|-------|--------|
+| `settings/page.tsx` schmale `max-w-2xl`-Spalte | `/dashboard/settings` | **Ersetzt** durch Section-Layout |
+| „Creator Growth Agent“ Headline | Settings | **Entfernt** → „Benachrichtigungen“ |
+| „Was dein Studio über dich weiß“ | Settings | **Umbenannt** → „Brand Defaults“ |
+| „GEFAHRENZONE“ roter Dark-Block | Settings | **Ersetzt** → „Konto löschen“ Panel (light) |
+| `settings-glass.css` / inline Dark-Styles | Settings | **Entfernt** aus Settings-Route |
+| `SettingsView.tsx` | `/dashboard?tool=settings` (inline) | **Legacy** — weiterhin in `DashboardLayout` |
+| Tool-Views schmales Dark-Layout | `/dashboard?tool=…` | **Legacy dokumentiert** |
+| Gallery „Meine Gallery“ / „Verlauf“ i18n | `/dashboard/gallery` | **Header lokalisiert** → Asset Library / Galerie |
+| Mobile Nav: Tools vs Studio bei `?tool=` | Alle Mobile-Routen | **Korrigiert** |
+
+### Settings vorher / nachher
+
+| | Vorher | Nachher |
+|---|--------|---------|
+| Breite | `max-w-2xl` schmale Spalte | `max-w-5xl`, Nav + Content |
+| Struktur | Gestapelte alte Cards | 6 Sections: Account, Billing, Brand, Generation, Privacy, API |
+| Credits | nicht auf Settings-Seite | echte `profiles.credits` + Link `/dashboard/credits` |
+| Generation Defaults | nicht vorhanden | Empty State (kein Fake) |
+| Gefahrenzone | roter Legacy-Block | sauberes Panel in Datenschutz-Section |
+| Mock/Fake | keine Fake-Daten | weiterhin nur Supabase-Echtdata |
+
+### Gallery Status
+
+- **Geprüft + minimal geändert**
+- Echte Daten via `getGallery()` unverändert
+- Header: „Asset Library“ / „Galerie“ statt i18n „Meine Gallery“ / „Verlauf“
+- Empty State Copy verbessert (kein Preview-Sprache)
+- Filter: horizontal scroll (2B.1) — unverändert funktional
+
+### Tool-View Legacy Status
+
+**Noch Legacy (bewusst nicht umgebaut in 2B.2):**
+
+- `/dashboard?tool=*` — schmales Dark-Layout, `max-w-xl`, Floating AgentBox
+- Inline `SettingsView` bei `activeTool === "settings"` in `DashboardLayout`
+- Inline Gallery bei `activeTool === "gallery"` in `DashboardLayout`
+
+**Priorität für nächste Phase:**
+
+1. Tool-Views in `DashboardStage` einbetten (globaler Shell-Fix)
+2. Inline Settings/Gallery aus `DashboardLayout` entfernen (nur Routen nutzen)
+3. `SettingsView.tsx` deprecaten zugunsten `/dashboard/settings`
+
+**Credit-Labels:** Tool-Views nutzen weiterhin `calculateExactCredits` / Registry aus Phase 1C/1D — unverändert.
+
+### Mobile Nav Status
+
+- **Korrigiert:** Studio aktiv nur ohne `?tool=` Query
+- **Korrigiert:** Tools aktiv bei `?tool=viral-hook` etc.
+- **Korrigiert:** „Mehr“ aktiv für `/dashboard/settings`, `/dashboard/credits`, `/dashboard/api`, `/dashboard/profile`
+- Agent / Galerie: pathname-basiert — OK
+
+### Offene Risiken
+
+- Zwei Settings-Einstiege: Route vs. inline `SettingsView` in `DashboardLayout`
+- Zwei Galerie-Quellen (`gallery_assets` vs `generations`) unverändert
+- `SettingsView.tsx` weiterhin Legacy-Krea-Style für inline Tool-Settings
+- Gallery-Cards behalten eigene Card-Optik
+
+### Geänderte Dateien (2B.2)
+
+- `src/app/dashboard/settings/page.tsx`
+- `src/components/dashboard/core/DashboardMobileNav.tsx`
+- `src/app/dashboard/gallery/page.tsx`
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`

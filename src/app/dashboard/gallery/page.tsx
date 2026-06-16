@@ -174,9 +174,13 @@ export default function GalleryPage() {
         </div>
       )}
       <DashboardPageHeader
-        kicker={t("eyebrow")}
-        title={t("title")}
-        subtitle={t("count", { count: total })}
+        kicker="Asset Library"
+        title="Galerie"
+        subtitle={
+          total > 0
+            ? `${total} gespeicherte Assets in deinem Workspace`
+            : "Deine generierten Assets erscheinen hier nach der ersten Produktion."
+        }
       />
 
       <input
@@ -259,7 +263,7 @@ export default function GalleryPage() {
             {t("emptyTitle")}
           </p>
           <p className="mb-6 text-[0.9rem]" style={{ color: DASHBOARD_MUTED }}>
-            {t("emptyDescription")}
+            Starte im Agent oder einem Tool — fertige Assets landen automatisch hier.
           </p>
           <Link
             href="/dashboard"
