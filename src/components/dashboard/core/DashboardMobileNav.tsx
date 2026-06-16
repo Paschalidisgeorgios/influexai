@@ -17,7 +17,7 @@ export const DASHBOARD_MOBILE_NAV = [
   { id: "gallery", label: "Galerie", href: "/dashboard/gallery", icon: Images },
   {
     id: "settings",
-    label: "Einstellungen",
+    label: "Mehr",
     href: "/dashboard/settings",
     icon: Settings,
   },
@@ -37,10 +37,11 @@ export function DashboardMobileNav() {
   const pathname = usePathname() ?? "";
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t border-white/[0.04] md:hidden"
+    <div
+      className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t md:hidden"
       style={{
-        background: "#09090A",
+        background: "#050506",
+        borderColor: "rgba(255,255,255,0.06)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
@@ -67,6 +68,6 @@ export function DashboardMobileNav() {
           </Link>
         );
       })}
-    </nav>
+    </div>
   );
 }

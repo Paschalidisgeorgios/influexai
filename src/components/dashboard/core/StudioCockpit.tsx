@@ -23,6 +23,14 @@ import {
 import type { ToolId } from "./DashboardLayout";
 import type { GalleryItem } from "./GalleryGrid";
 import { getCreditAffordanceAmount } from "@/lib/tools/credit-display";
+import {
+  DASHBOARD_ACCENT,
+  DASHBOARD_MUTED,
+  DASHBOARD_TEXT,
+  DashboardPageHeader,
+  DashboardPanel,
+  DashboardSection,
+} from "./DashboardSurface";
 
 interface QuickAction {
   id: ToolId;
@@ -46,30 +54,11 @@ interface StudioCockpitProps {
   toolsGenerating: Partial<Record<ToolId, boolean>>;
 }
 
-function CockpitCard({
-  title,
-  children,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 ${className}`}
-    >
-      <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
-        {title}
-      </h3>
-      {children}
-    </div>
-  );
-}
-
 function EmptyHint({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[12px] leading-relaxed text-zinc-600">{children}</p>
+    <p className="text-[12px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+      {children}
+    </p>
   );
 }
 
@@ -85,40 +74,45 @@ export function StudioCockpit({
 
   return (
     <div className="relative w-full space-y-6 md:space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Studio
-          </h1>
-          <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-zinc-500">
-            Überblick über Produktionen, Assets und Credits.
-          </p>
-        </div>
-        {creditsLoaded && (
-          <Link
-            href="/dashboard/credits"
-            className="shrink-0 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5 transition-colors hover:border-[#b4ff00]/20"
-          >
-            <p className="font-mono text-sm font-bold text-[#b4ff00]">{credits}</p>
-            <p className="mt-0.5 text-[9px] uppercase tracking-widest text-zinc-600">
-              Credits · Plan
-            </p>
-          </Link>
-        )}
-      </div>
+      <DashboardPageHeader
+        kicker="Creator Studio"
+        title="Studio"
+        subtitle="Überblick über Produktionen, Assets und Credits."
+        action={
+          creditsLoaded ? (
+            <Link
+              href="/dashboard/credits"
+              className="shrink-0 rounded-xl border px-4 py-2.5 transition-colors hover:border-[#b4ff00]/30"
+              style={{
+                background: "rgba(255,255,255,0.45)",
+                borderColor: "rgba(8,8,8,0.10)",
+              }}
+            >
+              <p className="font-mono text-sm font-bold" style={{ color: DASHBOARD_ACCENT }}>
+                {credits}
+              </p>
+              <p
+                className="mt-0.5 text-[9px] uppercase tracking-widest"
+                style={{ color: DASHBOARD_MUTED }}
+              >
+                Credits · Plan
+              </p>
+            </Link>
+          ) : undefined
+        }
+      />
 
-      {/* Cockpit grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
-        <CockpitCard title="Aktive Produktionen">
+        <DashboardPanel title="Aktive Produktionen">
           {activeJobs.length > 0 ? (
             <ul className="space-y-2">
               {activeJobs.map(([toolId]) => (
                 <li
                   key={toolId}
-                  className="flex items-center gap-2 text-[12px] text-zinc-300"
+                  className="flex items-center gap-2 text-[12px]"
+                  style={{ color: DASHBOARD_TEXT }}
                 >
-                  <Loader2 size={12} className="animate-spin text-[#b4ff00]" />
+                  <Loader2 size={12} className="animate-spin" style={{ color: DASHBOARD_ACCENT }} />
                   <span>{toolId}</span>
                 </li>
               ))}
@@ -126,9 +120,9 @@ export function StudioCockpit({
           ) : (
             <EmptyHint>Keine laufenden Generierungen.</EmptyHint>
           )}
-        </CockpitCard>
+        </DashboardPanel>
 
-        <CockpitCard title="Letzte Assets">
+        <DashboardPanel title="Letzte Assets">
           {recentAssets.length > 0 ? (
             <div className="space-y-2">
               {recentAssets.slice(0, 3).map((asset) => (
@@ -136,17 +130,18 @@ export function StudioCockpit({
                   key={asset.id}
                   type="button"
                   onClick={() => onSelect("gallery")}
-                  className="flex w-full items-center gap-2 rounded-lg px-1 py-1 text-left transition-colors hover:bg-white/[0.03]"
+                  className="flex w-full items-center gap-2 rounded-lg px-1 py-1 text-left transition-colors hover:bg-black/[0.04]"
                 >
-                  <span className="truncate text-[12px] text-zinc-300">
+                  <span className="truncate text-[12px]" style={{ color: DASHBOARD_TEXT }}>
                     {asset.tool || asset.prompt.slice(0, 40)}
                   </span>
-                  <ChevronRight size={11} className="shrink-0 text-zinc-600" />
+                  <ChevronRight size={11} className="shrink-0" style={{ color: DASHBOARD_MUTED }} />
                 </button>
               ))}
               <Link
                 href="/dashboard/gallery"
-                className="mt-1 inline-flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300"
+                className="mt-1 inline-flex items-center gap-1 text-[11px] hover:opacity-80"
+                style={{ color: DASHBOARD_MUTED }}
               >
                 Alle in Galerie
                 <ChevronRight size={10} />
@@ -157,29 +152,35 @@ export function StudioCockpit({
               Noch keine Assets. Starte eine Generierung im Agent oder einem Tool.
             </EmptyHint>
           )}
-        </CockpitCard>
+        </DashboardPanel>
 
-        <CockpitCard title="Credits & Plan">
+        <DashboardPanel title="Credits & Plan">
           {creditsLoaded ? (
             <div className="space-y-2">
-              <p className="text-[13px] text-zinc-300">
-                <span className="font-mono font-semibold text-[#b4ff00]">{credits}</span>{" "}
+              <p className="text-[13px]" style={{ color: DASHBOARD_TEXT }}>
+                <span className="font-mono font-semibold" style={{ color: DASHBOARD_ACCENT }}>
+                  {credits}
+                </span>{" "}
                 Credits verfügbar
               </p>
               <Link
                 href="/dashboard/credits"
-                className="inline-flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300"
+                className="inline-flex items-center gap-1 text-[11px] hover:opacity-80"
+                style={{ color: DASHBOARD_MUTED }}
               >
                 <CreditCard size={11} />
                 Credits & Plan verwalten
               </Link>
             </div>
           ) : (
-            <div className="h-10 animate-pulse rounded bg-white/[0.04]" />
+            <div
+              className="h-10 animate-pulse rounded"
+              style={{ background: "rgba(8,8,8,0.06)" }}
+            />
           )}
-        </CockpitCard>
+        </DashboardPanel>
 
-        <CockpitCard title="Schnell starten">
+        <DashboardPanel title="Schnell starten">
           <div className="flex flex-wrap gap-2">
             {QUICK_ACTIONS.map((action) => {
               const cost = getCreditAffordanceAmount(action.id);
@@ -188,41 +189,51 @@ export function StudioCockpit({
                   key={action.id}
                   type="button"
                   onClick={() => onSelect(action.id)}
-                  className="flex min-h-[40px] items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[11px] text-zinc-300 transition-colors hover:border-[#b4ff00]/20 hover:text-white"
+                  className="flex min-h-[40px] items-center gap-2 rounded-lg border px-3 py-2 text-[11px] transition-colors hover:border-[#b4ff00]/25"
+                  style={{
+                    borderColor: "rgba(8,8,8,0.10)",
+                    background: "rgba(255,255,255,0.35)",
+                    color: DASHBOARD_TEXT,
+                  }}
                 >
-                  <span className="text-zinc-500">{action.icon}</span>
+                  <span style={{ color: DASHBOARD_MUTED }}>{action.icon}</span>
                   {action.label}
                   {cost > 0 && (
-                    <span className="font-mono text-[9px] text-zinc-600">~{cost}</span>
+                    <span className="font-mono text-[9px]" style={{ color: DASHBOARD_MUTED }}>
+                      ~{cost}
+                    </span>
                   )}
                 </button>
               );
             })}
           </div>
-        </CockpitCard>
+        </DashboardPanel>
       </div>
 
-      {/* Weiterarbeiten */}
-      <CockpitCard title="Weiterarbeiten" className="border-[#b4ff00]/10">
+      <DashboardPanel title="Weiterarbeiten" className="border-[#b4ff00]/15">
         {lastAsset ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-[12px] text-zinc-400">Letztes Asset</p>
-              <p className="truncate text-[13px] font-medium text-zinc-200">
+              <p className="text-[12px]" style={{ color: DASHBOARD_MUTED }}>
+                Letztes Asset
+              </p>
+              <p className="truncate text-[13px] font-medium" style={{ color: DASHBOARD_TEXT }}>
                 {lastAsset.tool || lastAsset.prompt.slice(0, 60)}
               </p>
             </div>
             <div className="flex shrink-0 gap-2">
               <Link
                 href="/dashboard/ki-agent"
-                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-[#b4ff00]/25 bg-[#b4ff00]/10 px-3 text-[11px] font-medium text-[#b4ff00]"
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-[#b4ff00]/30 bg-[#b4ff00]/12 px-3 text-[11px] font-medium"
+                style={{ color: DASHBOARD_TEXT }}
               >
-                <Bot size={12} />
+                <Bot size={12} style={{ color: DASHBOARD_ACCENT }} />
                 Zum Agent
               </Link>
               <Link
                 href="/dashboard/gallery"
-                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] text-zinc-400 hover:text-white"
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border px-3 text-[11px] hover:opacity-80"
+                style={{ borderColor: "rgba(8,8,8,0.12)", color: DASHBOARD_MUTED }}
               >
                 Galerie öffnen
               </Link>
@@ -235,52 +246,49 @@ export function StudioCockpit({
             </EmptyHint>
             <Link
               href="/dashboard/ki-agent"
-              className="inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-lg border border-[#b4ff00]/25 bg-[#b4ff00]/10 px-4 text-[12px] font-medium text-[#b4ff00]"
+              className="inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-lg border border-[#b4ff00]/30 bg-[#b4ff00]/12 px-4 text-[12px] font-medium"
+              style={{ color: DASHBOARD_TEXT }}
             >
-              <Bot size={13} />
+              <Bot size={13} style={{ color: DASHBOARD_ACCENT }} />
               Idee eingeben
             </Link>
           </div>
         )}
-      </CockpitCard>
+      </DashboardPanel>
 
-      {/* System status */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <CockpitCard title="Brand Kit">
+        <DashboardPanel title="Brand Kit">
           <EmptyHint>
             Creator-Profil in{" "}
-            <Link href="/dashboard/settings" className="text-zinc-400 underline hover:text-white">
+            <Link
+              href="/dashboard/settings"
+              className="underline hover:opacity-80"
+              style={{ color: DASHBOARD_TEXT }}
+            >
               Einstellungen
             </Link>{" "}
             hinterlegen.
           </EmptyHint>
-        </CockpitCard>
-        <CockpitCard title="Workspace">
+        </DashboardPanel>
+        <DashboardPanel title="Workspace">
           <EmptyHint>Workspace-Status folgt in einer späteren Phase.</EmptyHint>
-        </CockpitCard>
-        <CockpitCard title="Exporte">
+        </DashboardPanel>
+        <DashboardPanel title="Exporte">
           <EmptyHint>
             Exporte erscheinen nach Share/Download-Aktionen in der Galerie.
           </EmptyHint>
-        </CockpitCard>
-        <CockpitCard title="Fehlgeschlagene Jobs">
+        </DashboardPanel>
+        <DashboardPanel title="Fehlgeschlagene Jobs">
           <div className="flex items-start gap-2">
-            <AlertCircle size={14} className="mt-0.5 shrink-0 text-zinc-600" />
+            <AlertCircle size={14} className="mt-0.5 shrink-0" style={{ color: DASHBOARD_MUTED }} />
             <EmptyHint>
               Keine zentrale Job-Übersicht. Einzelfehler in Tool- und Agent-Ansichten.
             </EmptyHint>
           </div>
-        </CockpitCard>
+        </DashboardPanel>
       </div>
 
-      {/* Tool shortcuts — functional, no marketing */}
-      <div>
-        <div className="mb-3 flex items-center gap-2">
-          <Package size={13} className="text-zinc-600" />
-          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
-            Tools
-          </h2>
-        </div>
+      <DashboardSection title="Tools">
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           {[
             { id: "viral-hook" as ToolId, label: "Viral Hook", icon: <Zap size={13} /> },
@@ -291,15 +299,20 @@ export function StudioCockpit({
               key={item.id}
               type="button"
               onClick={() => onSelect(item.id)}
-              className="flex items-center gap-2 rounded-lg border border-white/[0.05] bg-white/[0.01] px-3 py-2.5 text-left text-[12px] text-zinc-400 transition-colors hover:border-white/[0.1] hover:text-zinc-200"
+              className="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left text-[12px] transition-colors hover:border-black/15"
+              style={{
+                borderColor: "rgba(8,8,8,0.08)",
+                background: "rgba(255,255,255,0.35)",
+                color: DASHBOARD_TEXT,
+              }}
             >
-              {item.icon}
+              <span style={{ color: DASHBOARD_MUTED }}>{item.icon}</span>
               {item.label}
-              <ChevronRight size={11} className="ml-auto text-zinc-700" />
+              <ChevronRight size={11} className="ml-auto" style={{ color: DASHBOARD_MUTED }} />
             </button>
           ))}
         </div>
-      </div>
+      </DashboardSection>
     </div>
   );
 }

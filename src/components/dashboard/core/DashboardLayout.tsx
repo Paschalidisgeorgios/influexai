@@ -9,6 +9,11 @@ import { SettingsView } from "./SettingsView";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
+import {
+  DASHBOARD_ACCENT,
+  DASHBOARD_SHELL_BG,
+  DashboardStage,
+} from "./DashboardSurface";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -201,8 +206,11 @@ function LeftSidebar({
 
   return (
     <aside
-      className="fixed left-0 top-0 z-20 hidden h-screen w-[240px] flex-col border-r border-white/[0.02] md:flex"
-      style={{ background: "#09090A" }}
+      className="fixed left-0 top-0 z-20 hidden h-screen w-[240px] flex-col border-r md:flex"
+      style={{
+        background: DASHBOARD_SHELL_BG,
+        borderColor: "rgba(255,255,255,0.06)",
+      }}
     >
       {/* ── Brand ──────────────────────────────────────────────────────────── */}
       <button
@@ -212,12 +220,12 @@ function LeftSidebar({
       >
         {/* Icon — abgerundetes Lime-Quadrat */}
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: "#ccff00" }}>
+          style={{ background: DASHBOARD_ACCENT }}>
           <span className="text-lg font-black leading-none text-black">I</span>
         </div>
         {/* Wortmarke */}
         <span className="text-[14px] font-bold tracking-wide text-white">
-          INFLUEX<span style={{ color: "#ccff00" }}>AI</span>
+          INFLUEX<span style={{ color: DASHBOARD_ACCENT }}>AI</span>
         </span>
       </button>
 
@@ -911,7 +919,7 @@ export function DashboardLayout() {
   );
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#000000" }}>
+    <div className="flex min-h-dvh" style={{ background: DASHBOARD_SHELL_BG }}>
 
       {/* ── Left Sidebar ──────────────────────────────────────────────────────── */}
       <LeftSidebar
@@ -924,17 +932,17 @@ export function DashboardLayout() {
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
       <main
-        className={`ml-0 flex h-screen flex-1 flex-col overflow-y-auto pb-[4.5rem] transition-all duration-200 md:ml-[240px] md:pb-0 ${
+        className={`ml-0 flex h-dvh min-w-0 flex-1 flex-col overflow-hidden pb-[4.5rem] transition-all duration-200 md:ml-[240px] md:pb-0 ${
           isRightPanelOpen ? "md:mr-[280px]" : "mr-0"
         }`}
-        style={{
-          background:     "#000000",
-          scrollbarWidth: "none",
-        }}
       >
-        {/* Studio Home hat eigenes breiteres Layout */}
+        <div
+          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
+        {/* Studio Home — breite Premium-Stage */}
         {activeTool === "studio" ? (
-          <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-6 sm:px-6 sm:pt-10 md:px-8 md:pt-12">
+          <DashboardStage>
             <StudioHome
               onSelect={handleToolSelect}
               credits={credits}
@@ -942,9 +950,9 @@ export function DashboardLayout() {
               recentAssets={galleryAssets}
               toolsGenerating={toolsGenerating}
             />
-          </div>
+          </DashboardStage>
         ) : (
-        <div className="mx-auto flex w-full max-w-xl flex-col pt-8 pb-12">
+        <div className="mx-auto flex w-full max-w-xl flex-col px-4 pt-8 pb-12">
 
           {activeTool === "settings" ? (
 
@@ -996,6 +1004,7 @@ export function DashboardLayout() {
           )}
         </div>
         )}
+        </div>
       </main>
 
       <DashboardMobileNav />

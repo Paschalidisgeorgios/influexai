@@ -34,13 +34,8 @@ export default function KiAgentPage() {
   );
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-      <div
-        className="dashboard-scroll-area space-y-4"
-        onScroll={handleScroll}
-      >
-        <AgentAutopilotV2 />
-      </div>
+    <div className="dashboard-scroll-area w-full" onScroll={handleScroll}>
+      <AgentAutopilotV2 />
     </div>
   );
 }

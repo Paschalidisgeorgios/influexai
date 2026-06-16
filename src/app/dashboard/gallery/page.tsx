@@ -14,6 +14,12 @@ import type { GalleryFilter, GalleryItem } from "@/lib/gallery-types";
 import { collectGalleryMedia } from "@/lib/gallery-media-client";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
+import {
+  DASHBOARD_ACCENT,
+  DASHBOARD_MUTED,
+  DASHBOARD_TEXT,
+  DashboardPageHeader,
+} from "@/components/dashboard/core/DashboardSurface";
 
 const VALID_FILTERS = new Set<GalleryFilter>([
   "all",
@@ -156,7 +162,7 @@ export default function GalleryPage() {
   const { pulling, refreshing } = usePullToRefresh(refreshGallery);
 
   return (
-    <div className="min-w-0 max-w-full overflow-x-hidden" style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 48 }}>
+    <div className="min-w-0 w-full max-w-full overflow-x-hidden pb-6">
       {(pulling || refreshing) && (
         <div
           className="fixed top-14 left-0 right-0 z-40 flex justify-center pointer-events-none md:hidden"
@@ -167,54 +173,22 @@ export default function GalleryPage() {
           </span>
         </div>
       )}
-      <div style={{ marginBottom: 28 }}>
-        <p
-          style={{
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "none",
-            color: "#B4FF00",
-            marginBottom: 8,
-          }}
-        >
-          {t("eyebrow")}
-        </p>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <div>
-            <h1 className="font-bold mb-1 text-[clamp(1.75rem,7vw,2.5rem)] leading-tight text-[#F0EFE8]">
-              {t("title")}
-            </h1>
-            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.95rem" }}>
-              {t("count", { count: total })}
-            </p>
-          </div>
-        </div>
-      </div>
+      <DashboardPageHeader
+        kicker={t("eyebrow")}
+        title={t("title")}
+        subtitle={t("count", { count: total })}
+      />
 
       <input
         type="search"
         placeholder={t("searchPlaceholder")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        className="mb-4 w-full rounded-xl border px-4 py-3 text-[0.95rem] outline-none"
         style={{
-          width: "100%",
-          padding: "12px 16px",
-          borderRadius: 12,
-          background: "#18181d",
-          border: "1px solid rgba(255,255,255,0.1)",
-          color: "#F0EFE8",
-          fontSize: "0.95rem",
-          marginBottom: 16,
-          outline: "none",
+          background: "rgba(255,255,255,0.55)",
+          borderColor: "rgba(8,8,8,0.12)",
+          color: DASHBOARD_TEXT,
         }}
       />
 
@@ -238,9 +212,9 @@ export default function GalleryPage() {
                 borderRadius: 999,
                 fontSize: "0.78rem",
                 fontWeight: 600,
-                border: `1px solid ${active ? "rgba(180,255,0,0.4)" : "rgba(255,255,255,0.08)"}`,
-                background: active ? "rgba(180,255,0,0.1)" : "transparent",
-                color: active ? "#B4FF00" : "rgba(255,255,255,0.75)",
+                border: `1px solid ${active ? "rgba(180,255,0,0.45)" : "rgba(8,8,8,0.10)"}`,
+                background: active ? "rgba(180,255,0,0.12)" : "rgba(255,255,255,0.35)",
+                color: active ? DASHBOARD_TEXT : DASHBOARD_MUTED,
                 cursor: "pointer",
               }}
             >
@@ -274,50 +248,27 @@ export default function GalleryPage() {
         </div>
       ) : items.length === 0 ? (
         <div
+          className="rounded-2xl border border-dashed px-6 py-16 text-center"
           style={{
-            textAlign: "center",
-            padding: "64px 24px",
-            background: "rgba(255,255,255,0.02)",
-            borderRadius: 20,
-            border: "1px dashed rgba(255,255,255,0.1)",
+            background: "rgba(255,255,255,0.35)",
+            borderColor: "rgba(8,8,8,0.12)",
           }}
         >
           <Images
             size={48}
             strokeWidth={1.25}
-            color="rgba(240,239,232,0.2)"
-            style={{ margin: "0 auto 16px" }}
+            style={{ margin: "0 auto 16px", color: "rgba(8,8,8,0.20)" }}
           />
-          <p
-            style={{
-              color: "#F0EFE8",
-              fontWeight: 600,
-              fontSize: "1.1rem",
-              marginBottom: 8,
-            }}
-          >
+          <p className="mb-2 text-[1.1rem] font-semibold" style={{ color: DASHBOARD_TEXT }}>
             {t("emptyTitle")}
           </p>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.75)",
-              fontSize: "0.9rem",
-              marginBottom: 24,
-            }}
-          >
+          <p className="mb-6 text-[0.9rem]" style={{ color: DASHBOARD_MUTED }}>
             {t("emptyDescription")}
           </p>
           <Link
             href="/dashboard"
-            style={{
-              display: "inline-block",
-              padding: "12px 24px",
-              borderRadius: 12,
-              background: "#B4FF00",
-              color: "#060608",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
+            className="inline-block rounded-xl px-6 py-3 font-bold no-underline"
+            style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
           >
             {t("emptyCta")}
           </Link>
@@ -344,14 +295,7 @@ export default function GalleryPage() {
             />
           )}
 
-          <p
-            style={{
-              textAlign: "center",
-              color: "rgba(255,255,255,0.65)",
-              fontSize: "0.85rem",
-              marginTop: 24,
-            }}
-          >
+          <p className="mt-6 text-center text-[0.85rem]" style={{ color: DASHBOARD_MUTED }}>
             {t("showing", { shown, total })}
           </p>
 
@@ -365,8 +309,8 @@ export default function GalleryPage() {
                   padding: "12px 28px",
                   borderRadius: 12,
                   border: "1px solid rgba(180,255,0,0.35)",
-                  background: "rgba(180,255,0,0.08)",
-                  color: "#B4FF00",
+                  background: "rgba(180,255,0,0.12)",
+                  color: DASHBOARD_TEXT,
                   fontWeight: 700,
                   cursor: loadingMore ? "wait" : "pointer",
                   opacity: loadingMore ? 0.6 : 1,

@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import {
+  DASHBOARD_ACCENT,
+  DASHBOARD_MUTED,
+  DASHBOARD_TEXT,
+  DashboardPageHeader,
+} from "@/components/dashboard/core/DashboardSurface";
 import "@/styles/settings-glass.css";
 import "@/styles/studio-glass.css";
 
@@ -212,9 +218,9 @@ export default function SettingsPage() {
     width: "100%",
     padding: "12px 16px",
     borderRadius: 10,
-    background: "rgba(24, 24, 27, 0.6)",
-    border: "1px solid rgba(39, 39, 42, 0.6)",
-    color: "#F0EFE8",
+    background: "rgba(255,255,255,0.55)",
+    border: "1px solid rgba(8,8,8,0.12)",
+    color: DASHBOARD_TEXT,
     fontSize: "0.95rem",
     outline: "none",
     fontFamily: "var(--font-dm), sans-serif",
@@ -226,7 +232,7 @@ export default function SettingsPage() {
       style={{
         fontSize: "0.78rem",
         fontWeight: 600,
-        color: "rgba(255,255,255,0.65)",
+        color: DASHBOARD_MUTED,
         display: "block",
         marginBottom: 6,
         letterSpacing: "0.04em",
@@ -237,27 +243,24 @@ export default function SettingsPage() {
   );
 
   const card = (children: React.ReactNode) => (
-    <div className="studio-glass-card flex flex-col gap-3.5 p-6">{children}</div>
+    <div
+      className="flex flex-col gap-3.5 rounded-xl border p-6"
+      style={{
+        background: "rgba(255,255,255,0.42)",
+        borderColor: "rgba(8,8,8,0.08)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
+      }}
+    >
+      {children}
+    </div>
   );
 
   return (
-    <div style={{ maxWidth: 560, margin: "0 auto" }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-            fontSize: "clamp(2rem,4vw,3rem)",
-            letterSpacing: "0.02em",
-            color: "#F0EFE8",
-            marginBottom: 6,
-          }}
-        >
-          ⚙️ Einstellungen
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.9rem" }}>
-          Profil und Sicherheit verwalten
-        </p>
-      </div>
+    <div className="mx-auto w-full min-w-0 max-w-2xl">
+      <DashboardPageHeader
+        title="Einstellungen"
+        subtitle="Profil und Sicherheit verwalten"
+      />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Profil */}
@@ -268,7 +271,7 @@ export default function SettingsPage() {
                 fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
-                color: "#F0EFE8",
+                color: DASHBOARD_TEXT,
               }}
             >
               Profil
@@ -281,7 +284,7 @@ export default function SettingsPage() {
                 borderRadius: 10,
                 background: "rgba(180,255,0,0.08)",
                 border: "1px solid rgba(180,255,0,0.2)",
-                color: "#B4FF00",
+                color: DASHBOARD_ACCENT,
                 fontSize: "0.88rem",
                 fontWeight: 600,
                 textDecoration: "none",
@@ -359,12 +362,12 @@ export default function SettingsPage() {
                 fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
-                color: "#F0EFE8",
+                color: DASHBOARD_TEXT,
               }}
             >
               {t("growth_agent_title")}
             </h2>
-            <p style={{ margin: 0, fontSize: "0.88rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: "0.88rem", color: DASHBOARD_MUTED, lineHeight: 1.5 }}>
               {t("daily_suggestions_email_desc")}
             </p>
             <label
@@ -376,7 +379,7 @@ export default function SettingsPage() {
                 cursor: savingDailyEmail ? "wait" : "pointer",
               }}
             >
-              <span style={{ color: "#F0EFE8", fontSize: "0.92rem", fontWeight: 600 }}>
+              <span style={{ color: DASHBOARD_TEXT, fontSize: "0.92rem", fontWeight: 600 }}>
                 {t("daily_suggestions_email_label")}
               </span>
               <input
@@ -402,7 +405,7 @@ export default function SettingsPage() {
                 fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
                 fontSize: "1.2rem",
                 letterSpacing: "0.02em",
-                color: "#F0EFE8",
+                color: DASHBOARD_TEXT,
               }}
             >
               Was dein Studio über dich weiß
@@ -411,7 +414,7 @@ export default function SettingsPage() {
               style={{
                 margin: 0,
                 fontSize: "0.88rem",
-                color: "rgba(255,255,255,0.65)",
+                color: DASHBOARD_MUTED,
                 lineHeight: 1.5,
               }}
             >
@@ -512,13 +515,19 @@ export default function SettingsPage() {
         )}
 
         {/* Passwort */}
-        <div className="settings-glass-card flex flex-col gap-3.5 rounded-2xl p-6">
+        <div
+          className="flex flex-col gap-3.5 rounded-2xl border p-6"
+          style={{
+            background: "rgba(255,255,255,0.42)",
+            borderColor: "rgba(8,8,8,0.08)",
+          }}
+        >
           <h2
             style={{
               fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
               fontSize: "1.2rem",
               letterSpacing: "0.02em",
-              color: "#F0EFE8",
+              color: DASHBOARD_TEXT,
               margin: 0,
             }}
           >
