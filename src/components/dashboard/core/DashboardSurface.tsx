@@ -52,7 +52,7 @@ export function DashboardKicker({
   return (
     <p
       className={joinClasses(
-        "mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em]",
+        "mb-2 text-xs font-medium tracking-wide",
         className
       )}
       style={{ color: DASHBOARD_MUTED }}
@@ -143,7 +143,7 @@ export function DashboardPanel({
     >
       {title ? (
         <h3
-          className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em]"
+          className="mb-4 text-sm font-semibold tracking-tight"
           style={{ color: DASHBOARD_MUTED }}
         >
           {title}

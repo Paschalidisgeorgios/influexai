@@ -22,7 +22,7 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
   const creditLabel = getSetupCreditLabel(toolId);
 
   return (
-    <div className="mx-auto w-full min-w-0 max-w-6xl space-y-8">
+    <div className="mx-auto w-full min-w-0 max-w-full space-y-8 xl:max-w-6xl">
       <ToolSetupLayout
         context={
           <ToolSetupContext
@@ -42,7 +42,7 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
           </ToolSetupContext>
         }
         setup={
-          <div className="min-w-0 overflow-visible">
+          <div className="min-w-0 max-w-full overflow-x-hidden">
             <ProductionToolSetupBody toolId={toolId} />
           </div>
         }

@@ -15,12 +15,12 @@ export function ToolSetupLayout({
   return (
     <div
       className={cn(
-        "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.5fr)] lg:gap-10 xl:gap-14",
+        "grid w-full min-w-0 max-w-full gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-8 xl:gap-10",
         className
       )}
     >
       <div className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">{context}</div>
-      <div className="min-w-0">{setup}</div>
+      <div className="min-w-0 max-w-full overflow-x-hidden">{setup}</div>
     </div>
   );
 }

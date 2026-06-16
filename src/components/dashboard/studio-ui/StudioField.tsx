@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { cn } from "./cn";
 import {
   STUDIO_INPUT_BG,
@@ -10,13 +11,13 @@ import {
 
 const fieldBase = cn(
   STUDIO_RADIUS.input,
-  "w-full border border-black/[0.08] px-4 text-[15px] leading-relaxed outline-none transition-[border-color,box-shadow]",
+  "w-full min-w-0 max-w-full border border-black/[0.08] px-4 text-[15px] leading-relaxed outline-none transition-[border-color,box-shadow]",
   "placeholder:text-black/30",
   "focus:border-[#B4FF00]/35 focus:shadow-[0_0_0_4px_rgba(180,255,0,0.07)]"
 );
 
 const fieldStyle = {
-  background: STUDIO_INPUT_BG,
+  backgroundColor: STUDIO_INPUT_BG,
   color: STUDIO_TEXT,
 } as const;
 
@@ -71,21 +72,26 @@ export function StudioSelect({
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select
-      className={cn(
-        fieldBase,
-        "cursor-pointer appearance-none bg-no-repeat py-3.5 pr-10",
-        className
-      )}
-      style={{
-        ...fieldStyle,
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23080808' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-        backgroundPosition: "right 14px center",
-      }}
-      {...props}
-    >
-      {children}
-    </select>
+    <div className="relative w-full min-w-0 max-w-full">
+      <select
+        className={cn(
+          fieldBase,
+          "cursor-pointer appearance-none py-3.5 pr-10",
+          className
+        )}
+        style={fieldStyle}
+        {...props}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        size={16}
+        strokeWidth={2}
+        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"
+        style={{ color: STUDIO_MUTED }}
+        aria-hidden
+      />
+    </div>
   );
 }
 

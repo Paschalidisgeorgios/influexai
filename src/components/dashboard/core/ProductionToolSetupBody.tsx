@@ -39,6 +39,18 @@ const VIRAL_HOOK_MODES = [
   { value: "link" as const, label: "Hook aus Link" },
 ];
 
+const SETUP_FORM_CLASS =
+  "relative min-w-0 max-w-full space-y-5 overflow-x-hidden pb-2 md:pb-0";
+
+type SetupActionsProps = {
+  primaryLabel: string;
+  primaryLoadingLabel?: string;
+  onPrimary: () => void;
+  agentHref: string;
+  primaryDisabled?: boolean;
+  loading?: boolean;
+};
+
 function SetupActions({
   primaryLabel,
   primaryLoadingLabel,
@@ -46,17 +58,9 @@ function SetupActions({
   agentHref,
   primaryDisabled,
   loading,
-}: {
-  primaryLabel: string;
-  primaryLoadingLabel?: string;
-  onPrimary: () => void;
-  agentHref: string;
-  primaryDisabled?: boolean;
-  loading?: boolean;
-}) {
+}: SetupActionsProps) {
   return (
     <StudioActionBar
-      stickyMobile
       primaryLabel={primaryLabel}
       primaryLoadingLabel={primaryLoadingLabel}
       onPrimary={onPrimary}
@@ -65,6 +69,47 @@ function SetupActions({
       primaryDisabled={primaryDisabled}
       primaryLoading={loading}
     />
+  );
+}
+
+function ResponsiveSetupActions(props: SetupActionsProps) {
+  return (
+    <>
+      <div className="md:hidden">
+        <StudioActionBar
+          stickyMobile
+          {...props}
+          secondaryHref={props.agentHref}
+          secondaryLabel={SETUP_COPY.agentSecondary}
+          primaryLoading={props.loading}
+        />
+      </div>
+      <div className="hidden md:block">
+        <SetupActions {...props} />
+      </div>
+    </>
+  );
+}
+
+function MobileEarlySetupActions(props: SetupActionsProps) {
+  return (
+    <div className="md:hidden">
+      <StudioActionBar
+        stickyMobile
+        {...props}
+        secondaryHref={props.agentHref}
+        secondaryLabel={SETUP_COPY.agentSecondary}
+        primaryLoading={props.loading}
+      />
+    </div>
+  );
+}
+
+function DesktopSetupActions(props: SetupActionsProps) {
+  return (
+    <div className="hidden md:block">
+      <SetupActions {...props} />
+    </div>
   );
 }
 
@@ -145,7 +190,7 @@ function ViralHookSetup() {
   });
 
   return (
-    <div className="relative min-w-0 space-y-5 overflow-visible pb-2">
+    <div className={SETUP_FORM_CLASS}>
       <div>
         <StudioFieldLabel>Quelle</StudioFieldLabel>
         <StudioSegmentedControl
@@ -188,19 +233,19 @@ function ViralHookSetup() {
 
       {error ? <SetupError message={error} /> : null}
 
-      <SetupActions
+      {!result && !error ? (
+        <StudioFieldHelper>
+          Gute Hooks erklären nicht alles. Sie erzeugen Neugier in den ersten Sekunden.
+        </StudioFieldHelper>
+      ) : null}
+
+      <ResponsiveSetupActions
         primaryLabel="Hooks generieren"
         onPrimary={() => void run()}
         agentHref={agentHref}
         primaryDisabled={!canGenerate}
         loading={isGenerating}
       />
-
-      {!result && !error ? (
-        <StudioFieldHelper>
-          Gute Hooks erklären nicht alles. Sie erzeugen Neugier in den ersten Sekunden.
-        </StudioFieldHelper>
-      ) : null}
 
       {result ? (
         <ResultPanel title="Hook">
@@ -258,7 +303,7 @@ function ContentCalendarSetup() {
   };
 
   return (
-    <div className="relative min-w-0 space-y-5 overflow-visible pb-2">
+    <div className={SETUP_FORM_CLASS}>
       <div>
         <StudioFieldLabel>Thema, Branche oder Angebot</StudioFieldLabel>
         <StudioInput
@@ -269,18 +314,8 @@ function ContentCalendarSetup() {
         />
       </div>
 
-      {error ? <SetupError message={error} /> : null}
-
-      <SetupActions
-        primaryLabel="Kalender erstellen"
-        onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("content-calendar", { niche, platform, frequency })}
-        primaryDisabled={!niche.trim()}
-        loading={isGenerating}
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+        <div className="min-w-0">
           <StudioFieldLabel>Plattform</StudioFieldLabel>
           <StudioSelect value={platform} onChange={(e) => setPlatform(e.target.value)}>
             {CAL_PLATFORMS.map((p) => (
@@ -290,7 +325,7 @@ function ContentCalendarSetup() {
             ))}
           </StudioSelect>
         </div>
-        <div>
+        <div className="min-w-0">
           <StudioFieldLabel>Zeitraum</StudioFieldLabel>
           <StudioSelect
             value={frequency}
@@ -304,6 +339,16 @@ function ContentCalendarSetup() {
           </StudioSelect>
         </div>
       </div>
+
+      {error ? <SetupError message={error} /> : null}
+
+      <ResponsiveSetupActions
+        primaryLabel="Kalender erstellen"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("content-calendar", { niche, platform, frequency })}
+        primaryDisabled={!niche.trim()}
+        loading={isGenerating}
+      />
 
       {summary ? (
         <ResultPanel title="Plan">
@@ -371,7 +416,7 @@ function ImageGenSetup() {
   };
 
   return (
-    <div className="relative min-w-0 space-y-5 overflow-visible pb-2">
+    <div className={SETUP_FORM_CLASS}>
       <div>
         <StudioFieldLabel>Bildbeschreibung</StudioFieldLabel>
         <StudioTextarea
@@ -381,17 +426,7 @@ function ImageGenSetup() {
         />
       </div>
 
-      {error ? <SetupError message={error} /> : null}
-
-      <SetupActions
-        primaryLabel="Bild generieren"
-        onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}
-        primaryDisabled={!prompt.trim()}
-        loading={loading}
-      />
-
-      <div>
+      <div className="min-w-0">
         <StudioFieldLabel>Format</StudioFieldLabel>
         <StudioOptionPills
           value={platform}
@@ -400,7 +435,7 @@ function ImageGenSetup() {
         />
       </div>
 
-      <div>
+      <div className="min-w-0">
         <StudioFieldLabel>Qualität</StudioFieldLabel>
         <StudioOptionPills
           value={quality}
@@ -415,6 +450,16 @@ function ImageGenSetup() {
       <StudioFieldHelper>
         Für bessere Ergebnisse: Motiv, Stil, Licht, Hintergrund und gewünschtes Format beschreiben.
       </StudioFieldHelper>
+
+      {error ? <SetupError message={error} /> : null}
+
+      <ResponsiveSetupActions
+        primaryLabel="Bild generieren"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}
+        primaryDisabled={!prompt.trim()}
+        loading={loading}
+      />
 
       {imageUrl ? (
         <ResultPanel title="Ergebnis">
@@ -494,7 +539,7 @@ function TextToVideoSetup() {
   };
 
   return (
-    <div className="relative min-w-0 space-y-5 overflow-visible pb-2">
+    <div className={SETUP_FORM_CLASS}>
       <div>
         <StudioFieldLabel>Videobeschreibung</StudioFieldLabel>
         <StudioTextarea
@@ -508,7 +553,7 @@ function TextToVideoSetup() {
 
       {err ? <SetupError message={err} /> : null}
 
-      <SetupActions
+      <MobileEarlySetupActions
         primaryLabel="Video vorbereiten"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
@@ -518,8 +563,8 @@ function TextToVideoSetup() {
       />
 
       {models.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="sm:col-span-3">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+          <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
             <StudioSelect value={modelId} onChange={(e) => setModelId(e.target.value)}>
               {models.map((m) => (
@@ -531,7 +576,7 @@ function TextToVideoSetup() {
           </div>
           {selected ? (
             <>
-              <div>
+              <div className="min-w-0">
                 <StudioFieldLabel>Dauer</StudioFieldLabel>
                 <StudioSelect
                   value={String(duration)}
@@ -544,7 +589,7 @@ function TextToVideoSetup() {
                   ))}
                 </StudioSelect>
               </div>
-              <div>
+              <div className="min-w-0">
                 <StudioFieldLabel>Format</StudioFieldLabel>
                 <StudioSelect
                   value={resolution}
@@ -561,6 +606,15 @@ function TextToVideoSetup() {
           ) : null}
         </div>
       ) : null}
+
+      <DesktopSetupActions
+        primaryLabel="Video vorbereiten"
+        primaryLoadingLabel="Erstellung gestartet…"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
+        primaryDisabled={!prompt.trim() || !modelId || generating}
+        loading={generating}
+      />
 
       {videoUrl ? (
         <ResultPanel title="Video">
@@ -642,7 +696,7 @@ function ImgToVideoSetup() {
   };
 
   return (
-    <div className="relative min-w-0 space-y-5 overflow-visible pb-2">
+    <div className={SETUP_FORM_CLASS}>
       <div>
         <StudioFieldLabel>Startbild</StudioFieldLabel>
         <StudioInput
@@ -669,7 +723,7 @@ function ImgToVideoSetup() {
 
       {err ? <SetupError message={err} /> : null}
 
-      <SetupActions
+      <MobileEarlySetupActions
         primaryLabel="Video vorbereiten"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
@@ -679,8 +733,8 @@ function ImgToVideoSetup() {
       />
 
       {models.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="sm:col-span-3">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+          <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
             <StudioSelect value={modelId} onChange={(e) => setModelId(e.target.value)}>
               {models.map((m) => (
@@ -692,7 +746,7 @@ function ImgToVideoSetup() {
           </div>
           {selected ? (
             <>
-              <div>
+              <div className="min-w-0">
                 <StudioFieldLabel>Dauer</StudioFieldLabel>
                 <StudioSelect
                   value={String(duration)}
@@ -705,7 +759,7 @@ function ImgToVideoSetup() {
                   ))}
                 </StudioSelect>
               </div>
-              <div>
+              <div className="min-w-0">
                 <StudioFieldLabel>Format</StudioFieldLabel>
                 <StudioSelect
                   value={resolution}
@@ -726,6 +780,15 @@ function ImgToVideoSetup() {
       <StudioFieldHelper>
         Je klarer die gewünschte Bewegung beschrieben ist, desto besser wird der Clip.
       </StudioFieldHelper>
+
+      <DesktopSetupActions
+        primaryLabel="Video vorbereiten"
+        primaryLoadingLabel="Erstellung gestartet…"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
+        primaryDisabled={!canGenerate || generating}
+        loading={generating}
+      />
 
       {videoUrl ? (
         <ResultPanel title="Video">

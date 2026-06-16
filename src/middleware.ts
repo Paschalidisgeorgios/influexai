@@ -65,6 +65,7 @@ export async function middleware(request: NextRequest) {
     "/dashboard/agent": "/dashboard/ki-agent",
     "/dashboard/voice-agent": "/dashboard/melodia",
     "/dashboard/story-creator": "/dashboard/seedance",
+    "/dashboard/tools": "/dashboard?tool=tools",
   };
 
   const legacyDashboardTarget = legacyDashboardRedirects[pathname];

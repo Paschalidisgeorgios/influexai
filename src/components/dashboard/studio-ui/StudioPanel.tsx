@@ -34,7 +34,7 @@ export function StudioPanel({
     >
       {title ? (
         <h3
-          className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em]"
+          className="mb-4 text-sm font-semibold tracking-tight"
           style={{ color: STUDIO_MUTED }}
         >
           {title}

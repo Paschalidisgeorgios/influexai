@@ -84,20 +84,22 @@ export function StudioCockpit({
                 key={action.id}
                 type="button"
                 onClick={() => onSelect(action.id)}
-                className={`flex min-h-[52px] items-center gap-3 border px-4 py-3 text-left text-[13px] font-medium transition-colors hover:border-[#b4ff00]/30 ${STUDIO_RADIUS.input}`}
+                className={`flex min-h-[52px] items-center gap-3 border px-4 py-3 text-left text-[13px] font-medium transition-colors hover:border-black/20 ${STUDIO_RADIUS.input}`}
                 style={{
-                  borderColor: "rgba(8,8,8,0.10)",
-                  background: "#FFFCF7",
-                  color: DASHBOARD_TEXT,
+                  borderColor: "rgba(8,8,8,0.14)",
+                  background: "#FFFFFF",
+                  color: "#080808",
                 }}
               >
                 <span
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "rgba(180,255,0,0.10)", color: DASHBOARD_ACCENT }}
+                  style={{ background: "rgba(8,8,8,0.05)", color: "rgba(8,8,8,0.62)" }}
                 >
                   {action.icon}
                 </span>
-                <span className="min-w-0 flex-1">{action.label}</span>
+                <span className="min-w-0 flex-1 font-medium" style={{ color: "#080808" }}>
+                  {action.label}
+                </span>
                 {cost > 0 ? (
                   <span className="font-mono text-[10px]" style={{ color: DASHBOARD_MUTED }}>
                     ~{cost}
