@@ -1,40 +1,24 @@
 "use client";
 
 /**
- * PreviewShell — Main orchestrator for the design preview.
- *
- * Architecture:
- *   LangProvider
- *   └── Fixed overlay (z-[100], covers legacy DashboardShell without modifying it)
- *       ├── PreviewSidebar   (desktop left nav)
- *       ├── PreviewTopbar    (system line + credits + lang toggle + profile)
- *       └── Content area     (scrollable, routes to active view)
- *           ├── PreviewStudioHome  (studio view)
- *           ├── PreviewAgentView   (full-screen agent)
- *           ├── PreviewToolsFlow   (4-step tool flow)
- *           ├── PreviewGallery     (gallery with filters)
- *           └── PreviewSettings    (settings sections)
- *       └── Mobile bottom navigation
- *
- * ALL DATA IS MOCK. No API calls, no credits, no assets saved.
- * Isolated to /dashboard/design-preview.
+ * PreviewShell — High-contrast Creator Production OS shell.
+ * Studio + Agent only. ALL DATA IS MOCK.
  */
 
 import { useState } from "react";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewStudioHome, PreviewAgentView } from "./PreviewStudioHome";
-import { PreviewToolsFlow } from "./PreviewToolsFlow";
-import { PreviewGallery }   from "./PreviewGallery";
-import { PreviewSettings }  from "./PreviewSettings";
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
-
-const ACCENT = "#b4ff00";
+const ACCENT   = "#b4ff00";
+const SHELL_BG = "#050506";
+const IVORY    = "#F4F0E8";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-// ─── PreviewSidebar ───────────────────────────────────────────────────────────
+const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent"];
+
+// ─── Sidebar (220px) ──────────────────────────────────────────────────────────
 
 function PreviewSidebar({
   active,
@@ -45,37 +29,34 @@ function PreviewSidebar({
 }) {
   const { t } = useLang();
 
-  const NAV: PreviewView[] = ["studio", "agent", "tools", "gallery", "settings"];
-
   return (
     <aside
-      className="hidden h-full w-[210px] shrink-0 flex-col border-r md:flex"
-      style={{ background: "#050506", borderColor: "rgba(255,255,255,0.03)" }}
+      className="hidden h-full w-[220px] shrink-0 flex-col border-r md:flex"
+      style={{ background: SHELL_BG, borderColor: "rgba(255,255,255,0.06)" }}
     >
-      {/* Logo */}
-      <div className="px-6 pb-8 pt-8">
-        <span className="font-mono text-[12px] font-bold tracking-[0.18em] uppercase text-white" style={HL}>
+      <div className="px-7 pb-10 pt-9">
+        <span className="font-mono text-[13px] font-bold tracking-[0.16em] uppercase text-white" style={HL}>
           INFLUEX<span style={{ color: ACCENT }}>AI</span>
         </span>
-        <p className="mt-1 font-mono text-[9px] tracking-[0.14em] uppercase text-neutral-800">
+        <p className="mt-2 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
           Production OS · Preview
         </p>
       </div>
 
-      {/* Nav items */}
-      <nav className="flex flex-col gap-0.5 px-3">
-        {NAV.map((view) => {
+      <nav className="flex flex-col gap-1 px-4">
+        {ACTIVE_VIEWS.map((view) => {
           const isActive = active === view;
           return (
             <button
               key={view}
               type="button"
               onClick={() => onNavigate(view)}
-              className="rounded-sm py-2.5 text-left text-[13px] transition-colors"
+              className="rounded py-3 text-left text-[14px] font-medium transition-colors"
               style={{
-                paddingLeft: "12px",
+                paddingLeft: "14px",
                 borderLeft:  isActive ? `2px solid ${ACCENT}` : "2px solid transparent",
-                color:       isActive ? "#ffffff" : "rgba(255,255,255,0.25)",
+                color:       isActive ? "#ffffff" : "rgba(255,255,255,0.40)",
+                background:  isActive ? "rgba(255,255,255,0.04)" : "transparent",
               }}
             >
               {t.nav[view]}
@@ -84,24 +65,22 @@ function PreviewSidebar({
         })}
       </nav>
 
-      <div className="mx-6 mt-6 h-px" style={{ background: "rgba(255,255,255,0.04)" }} />
+      <div className="mx-7 mt-10 h-px bg-white/[0.06]" />
 
-      {/* Credits + Plan — MOCK */}
-      <div className="mt-5 px-6">
+      <div className="mt-6 px-7">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-700">{t.credits}</p>
-          <p className="font-mono text-[11px] font-bold" style={{ color: ACCENT }}>240</p>
+          <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-500">{t.credits}</p>
+          <p className="font-mono text-[12px] font-bold" style={{ color: ACCENT }}>240</p>
         </div>
-        <div className="mt-1.5 flex items-center justify-between">
-          <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-700">{t.plan}</p>
-          <p className="font-mono text-[10px] text-neutral-600">{t.proPlan}</p>
+        <div className="mt-2 flex items-center justify-between">
+          <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-500">{t.plan}</p>
+          <p className="font-mono text-[11px] text-neutral-300">{t.proPlan}</p>
         </div>
       </div>
 
-      {/* Bottom meta */}
-      <div className="mt-auto border-t px-6 py-4" style={{ borderColor: "rgba(255,255,255,0.03)" }}>
-        <p className="font-mono text-[9px] tracking-[0.14em] uppercase text-neutral-800">
-          {t.mock} · /dashboard/design-preview
+      <div className="mt-auto border-t px-7 py-5" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+        <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-600">
+          {t.mock} · design-preview
         </p>
       </div>
     </aside>
@@ -117,57 +96,48 @@ function LangToggle() {
     <button
       type="button"
       onClick={() => setLang(other)}
-      className="flex items-center gap-1 border px-2.5 py-1 font-mono text-[10px] tracking-[0.18em] uppercase transition-all"
-      style={{
-        borderColor: "rgba(255,255,255,0.08)",
-        color:       "rgba(255,255,255,0.50)",
-      }}
-      title={`Switch to ${other.toUpperCase()}`}
+      className="flex items-center gap-1.5 rounded border px-3 py-1.5 font-mono text-[11px] tracking-[0.12em] uppercase transition-colors hover:border-white/20"
+      style={{ borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.70)" }}
     >
-      <span style={{ color: "rgba(255,255,255,0.30)" }}>{lang.toUpperCase()}</span>
-      <span className="mx-1 text-neutral-800">/</span>
+      <span style={{ color: ACCENT }}>{lang.toUpperCase()}</span>
+      <span className="text-neutral-600">/</span>
       <span>{other.toUpperCase()}</span>
     </button>
   );
 }
 
-// ─── PreviewTopbar ────────────────────────────────────────────────────────────
+// ─── Topbar ───────────────────────────────────────────────────────────────────
 
 function PreviewTopbar({ active }: { active: PreviewView }) {
   const { t } = useLang();
   return (
     <header
-      className="flex shrink-0 items-center justify-between border-b px-5 py-3 md:px-8"
-      style={{ borderColor: "rgba(255,255,255,0.03)" }}
+      className="flex shrink-0 items-center justify-between border-b px-5 py-3.5 md:px-8"
+      style={{ background: SHELL_BG, borderColor: "rgba(255,255,255,0.06)" }}
     >
-      {/* System line */}
-      <div className="flex items-center gap-3">
-        {/* Mobile logo */}
-        <span className="font-mono text-[11px] font-bold tracking-[0.18em] uppercase text-white md:hidden">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="shrink-0 font-mono text-[12px] font-bold tracking-[0.14em] uppercase text-white md:hidden" style={HL}>
           INFLUEX<span style={{ color: ACCENT }}>AI</span>
         </span>
-        <span className="hidden font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-700 md:block">
+        <span className="hidden truncate font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-400 md:block">
           {t.systemLine}
         </span>
-        <span className="hidden text-neutral-800 md:block">//</span>
-        <span className="hidden font-mono text-[10px] tracking-widest uppercase text-neutral-600 md:block">
+        <span className="hidden text-neutral-700 md:block">//</span>
+        <span className="hidden font-mono text-[11px] tracking-[0.12em] uppercase text-neutral-300 md:block">
           {t.nav[active]}
         </span>
       </div>
 
-      {/* Right controls */}
-      <div className="flex items-center gap-3 md:gap-4">
-        {/* Credits — MOCK */}
-        <span className="hidden font-mono text-[10px] tracking-widest uppercase text-neutral-700 md:block">
+      <div className="flex shrink-0 items-center gap-4">
+        <span className="hidden font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-400 md:block">
           240 {t.credits}
         </span>
-        <span className="hidden h-3 w-px bg-white/[0.04] md:block" />
-        {/* Lang Toggle */}
+        <span className="hidden font-mono text-[11px] text-neutral-500 md:block">{t.proPlan}</span>
+        <span className="hidden h-4 w-px bg-white/10 md:block" />
         <LangToggle />
-        {/* Profile avatar — MOCK */}
         <div
-          className="flex h-7 w-7 items-center justify-center rounded-full font-mono text-[10px] font-bold"
-          style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.35)" }}
+          className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-[11px] font-bold text-neutral-300"
+          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.10)" }}
         >
           M
         </div>
@@ -176,63 +146,63 @@ function PreviewTopbar({ active }: { active: PreviewView }) {
   );
 }
 
-// ─── Content Router ───────────────────────────────────────────────────────────
-
-function ContentRouter({
-  active,
-  onNavigate,
-}: {
-  active:     PreviewView;
-  onNavigate: (v: PreviewView) => void;
-}) {
-  switch (active) {
-    case "studio":   return <PreviewStudioHome onNavigate={onNavigate} />;
-    case "agent":    return <PreviewAgentView  onNavigate={onNavigate} />;
-    case "tools":    return <PreviewToolsFlow />;
-    case "gallery":  return <PreviewGallery />;
-    case "settings": return <PreviewSettings />;
-    default:         return <PreviewStudioHome onNavigate={onNavigate} />;
-  }
-}
-
-// ─── Inner shell (consumes lang context) ─────────────────────────────────────
+// ─── Inner ────────────────────────────────────────────────────────────────────
 
 function PreviewInner() {
   const [active, setActive] = useState<PreviewView>("studio");
   const { t } = useLang();
-  const NAV: PreviewView[] = ["studio", "agent", "tools", "gallery", "settings"];
 
   return (
-    <div className="fixed inset-0 z-[100] flex bg-[#080808]">
-      {/* Sidebar (desktop) */}
+    <div className="fixed inset-0 z-[100] flex" style={{ background: SHELL_BG }}>
       <PreviewSidebar active={active} onNavigate={setActive} />
 
-      {/* Main canvas */}
-      <div className="flex min-h-full flex-1 flex-col overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+      <div className="flex min-h-0 flex-1 flex-col">
         <PreviewTopbar active={active} />
 
-        {/* Scrollable content — max-width centered, generous padding */}
-        <div className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 md:px-12 md:pb-12">
-          <ContentRouter active={active} onNavigate={setActive} />
+        {/* Main scroll — dark shell framing a warm editorial stage */}
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden"
+          style={{ scrollbarWidth: "none", background: SHELL_BG }}
+        >
+          <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-6 md:px-8 md:pb-12 md:pt-8">
+            <div
+              className="min-h-[calc(100vh-8rem)] overflow-hidden rounded-sm"
+              style={{
+                background: IVORY,
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 0 0 1px rgba(0,0,0,0.4), 0 24px 80px rgba(0,0,0,0.45)",
+              }}
+            >
+              <div className="px-5 py-8 md:px-10 md:py-12">
+                {active === "studio"
+                  ? <PreviewStudioHome onNavigate={setActive} />
+                  : <PreviewAgentView onNavigate={setActive} />
+                }
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Mobile bottom nav */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-10 flex items-stretch border-t md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-10 flex border-t md:hidden"
         style={{
-          background:    "#050506",
-          borderColor:   "rgba(255,255,255,0.04)",
+          background:    SHELL_BG,
+          borderColor:   "rgba(255,255,255,0.08)",
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
         }}
       >
-        {NAV.map((view) => (
+        {ACTIVE_VIEWS.map((view) => (
           <button
             key={view}
             type="button"
             onClick={() => setActive(view)}
-            className="flex flex-1 items-center justify-center py-3.5 font-mono text-[9px] tracking-widest uppercase transition-colors"
-            style={{ color: active === view ? ACCENT : "rgba(255,255,255,0.22)" }}
+            className="flex flex-1 items-center justify-center py-4 font-mono text-[11px] tracking-[0.12em] uppercase transition-colors"
+            style={{
+              color:      active === view ? ACCENT : "rgba(255,255,255,0.35)",
+              background: active === view ? "rgba(180,255,0,0.06)" : "transparent",
+            }}
           >
             {t.nav[view]}
           </button>
@@ -241,8 +211,6 @@ function PreviewInner() {
     </div>
   );
 }
-
-// ─── Main Export (wraps with LangProvider) ────────────────────────────────────
 
 export function PreviewShell() {
   return (
