@@ -116,7 +116,6 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { id: "img-to-video",      label: "Bild zu Video",        icon: <Film size={14} />,          accent: "#8B5DFF", badge: "hot"       },
       { id: "text-to-video",     label: "Text zu Video",        icon: <Video size={14} />,         accent: "#8B5DFF"                      },
       { id: "video-to-video",    label: "Video to Video",       icon: <Repeat2 size={14} />,       accent: "#8B5DFF"                      },
-      { id: "ref-to-video",      label: "Reference to Video",   icon: <Layers size={14} />,        accent: "#8B5DFF"                      },
       { id: "face-swap-video",   label: "Gesichtstausch",       icon: <Shuffle size={14} />,       accent: "#FF6B6B", badge: "new"       },
       { id: "char-studio-video", label: "Character Studio",     icon: <UserRound size={14} />,     accent: "#FF6B6B", badge: "new"       },
       { id: "avatar-video",      label: "Avatar Video",         icon: <UserRound size={14} />,     accent: "#00D5FF", badge: "unlimited" },
@@ -1375,7 +1374,7 @@ export function DashboardLayout() {
 
           ) : (
 
-            /* ── TOOL: Floating AgentBox (fixed) + Gallery darunter ──────── */
+            /* ── TOOL: Floating AgentBox only ────────────────────────────── */
             <>
               {/* Spacer für das fixierte Floating-Panel */}
               <div className="h-56" />
@@ -1387,30 +1386,6 @@ export function DashboardLayout() {
                 onActionExecute={handleActionExecute}
                 onNavigate={setActiveTool}
               />
-              <div className="mt-16">
-                <GalleryFilterBar
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  activeFilter={activeFilter}
-                  setActiveFilter={setActiveFilter}
-                />
-                <div className="mt-4">
-                  <GalleryOrEmpty
-                    filteredAssets={filteredAssets}
-                    isGalleryLoading={isGalleryLoading}
-                    searchQuery={searchQuery}
-                    onRePrompt={handleRePrompt}
-                    onDeleteAsset={handleDeleteAsset}
-                    onResetFilter={() => { setSearchQuery(""); setActiveFilter("all"); }}
-                  />
-                </div>
-              </div>
-              {!creditsLoaded && (
-                <div className="flex items-center justify-center gap-2 py-4">
-                  <Loader2 size={14} className="animate-spin text-white/20" />
-                  <span className="text-[12px] text-white/25">Konto wird geladen…</span>
-                </div>
-              )}
             </>
 
           )}

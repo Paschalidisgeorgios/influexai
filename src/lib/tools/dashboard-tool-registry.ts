@@ -192,7 +192,7 @@ export const TOOL_REGISTRY: Record<string, ToolDefinition> = {
     hasRightPanel: false,
     isMediaTool: false,
     status: "coming-soon",
-    sourceNotes: "Sidebar-Eintrag + TOOL_LABEL vorhanden, aber kein TOOL_META/MEDIA_TOOLS-Eintrag in AgentBox, keine API-Route. Aktuell nur 3s-Mock mit Unsplash-Placeholder via handleActionExecute — Credits werden trotzdem über /api/dashboard/asset mit skipDeduction:false abgezogen (Mock-Billing-Risiko: echte Credits für Placeholder). Status 'coming-soon': erfordert eigene Implementierung (kein bestehender Akool/fal.ai-Endpoint im Code referenziert). [KORRIGIERT v5: unknown→coming-soon]",
+    sourceNotes: "Sidebar-Eintrag + TOOL_LABEL vorhanden, aber kein TOOL_META/MEDIA_TOOLS-Eintrag in AgentBox, keine API-Route. Aktuell nur 3s-Mock mit Unsplash-Placeholder via handleActionExecute — Credits werden trotzdem über /api/dashboard/asset mit skipDeduction:false abgezogen (Mock-Billing-Risiko: echte Credits für Placeholder). Status 'coming-soon': erfordert eigene Implementierung (kein bestehender Akool/fal.ai-Endpoint im Code referenziert). [KORRIGIERT v5: unknown→coming-soon] [SIDEBAR-ENTFERNT] Kein sinnvolles Formular in AgentBox (FALLBACK_META), Bug: speichert Placeholder-Video statt Text-Output.",
   },
 
   // ── Video Tools (Akool – Face/Character) ──────────────────────────────────
