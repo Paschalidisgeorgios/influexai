@@ -11,7 +11,10 @@ import { useLang, type PreviewView } from "./PreviewLang";
 
 const ACCENT  = "#b4ff00";
 const ACCENT2 = "#ccff00";
-const SURFACE = "#0e0e16";
+const DARK    = "#080808";
+const BODY    = "rgba(8,8,8,0.68)";
+const META    = "rgba(8,8,8,0.42)";
+const SURFACE = "#0a0a10";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -56,7 +59,7 @@ function TypewriterText({ prompts, visible }: { prompts: string[]; visible: bool
 
   return (
     <>
-      <span className="text-neutral-300">{text || "\u200B"}</span>
+      <span className="text-neutral-400">{text || "\u200B"}</span>
       <span
         className="inline-block align-bottom"
         style={{
@@ -78,12 +81,11 @@ interface Props {
   onNavigate: (v: PreviewView) => void;
   compact?: boolean;
   showEnterHint?: boolean;
-  /** elevated = sits on ivory stage with strong shadow */
   elevated?: boolean;
 }
 
 export function PreviewAgentCommand({
-  onNavigate,
+  onNavigate: _onNavigate,
   compact = false,
   showEnterHint = false,
   elevated = false,
@@ -136,27 +138,27 @@ export function PreviewAgentCommand({
   const idleBorder = isActive
     ? {
         border:     `2px solid ${ACCENT}`,
-        boxShadow:  `0 0 0 4px rgba(180,255,0,0.12), 0 0 40px rgba(180,255,0,0.20), 0 0 80px rgba(180,255,0,0.08), inset 0 0 24px rgba(180,255,0,0.04)`,
+        boxShadow:  `0 0 0 4px rgba(180,255,0,0.12), 0 0 48px rgba(180,255,0,0.22), 0 0 96px rgba(180,255,0,0.08), inset 0 0 28px rgba(180,255,0,0.04)`,
         transition: "border-color 0.15s, box-shadow 0.15s",
       }
     : {
-        border:     "1px solid rgba(255,255,255,0.14)",
+        border:     "1px solid rgba(255,255,255,0.10)",
         boxShadow:  elevated
-          ? "0 20px 60px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.20)"
-          : "0 8px 32px rgba(0,0,0,0.25)",
+          ? "0 28px 72px rgba(0,0,0,0.32), 0 0 0 1px rgba(255,255,255,0.04)"
+          : "0 12px 40px rgba(0,0,0,0.28)",
         transition: "border-color 0.15s, box-shadow 0.15s",
       };
 
   return (
-    <div className="w-full">
+    <div className="w-full py-2 md:py-4">
       {!compact && (
-        <div className="mb-10">
-          <p className="mb-4 font-mono text-[12px] tracking-[0.1em] uppercase" style={{ color: "rgba(8,8,8,0.45)" }}>
+        <div className="mb-12 md:mb-14">
+          <p className="mb-5 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
             {ta.overline}
           </p>
           <h1
-            className="mb-4 text-4xl font-extrabold leading-[1.05] md:text-6xl lg:text-[64px]"
-            style={{ ...HL, color: "#080808", letterSpacing: "-0.03em" }}
+            className="mb-5 text-[2rem] font-extrabold leading-[1.06] sm:text-5xl md:text-6xl lg:text-7xl"
+            style={{ ...HL, color: DARK, letterSpacing: "-0.03em", fontWeight: 800 }}
           >
             {ta.headline.split("\n").map((line, i) => (
               <span key={i}>
@@ -165,30 +167,26 @@ export function PreviewAgentCommand({
               </span>
             ))}
           </h1>
-          <p className="max-w-lg text-[16px] leading-[1.6]" style={{ color: "rgba(8,8,8,0.58)" }}>
+          <p className="max-w-xl text-[16px] leading-[1.7] md:text-[17px]" style={{ color: BODY }}>
             {ta.subline}
           </p>
         </div>
       )}
 
       <div className="relative">
-        {/* Atmospheric glow */}
         <div
-          className="pointer-events-none absolute -inset-8 -z-0 rounded-lg"
+          className="pointer-events-none absolute -inset-6 -z-0 rounded-lg md:-inset-10"
           style={{
             background: isActive || isLoading
-              ? `radial-gradient(ellipse 90% 70% at 50% 100%, rgba(180,255,0,0.14) 0%, rgba(80,60,220,0.08) 50%, transparent 75%)`
-              : "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(180,255,0,0.06) 0%, transparent 70%)",
+              ? `radial-gradient(ellipse 95% 75% at 50% 100%, rgba(180,255,0,0.16) 0%, rgba(80,60,220,0.08) 50%, transparent 78%)`
+              : "radial-gradient(ellipse 85% 65% at 50% 100%, rgba(180,255,0,0.07) 0%, transparent 72%)",
           }}
         />
 
-        {/* Loading spinner wrapper */}
-        <div
-          className={isLoading ? "relative overflow-hidden rounded-sm p-[3px]" : "relative rounded-sm"}
-        >
+        <div className={isLoading ? "relative overflow-hidden rounded-md p-[3px]" : "relative rounded-md"}>
           {isLoading && (
             <div
-              className="absolute animate-spin rounded-sm"
+              className="absolute animate-spin rounded-md"
               style={{
                 top: "-60%", left: "-60%",
                 width: "220%", height: "220%",
@@ -198,19 +196,40 @@ export function PreviewAgentCommand({
             />
           )}
 
-          {/* Command surface */}
           <div
-            className="relative overflow-hidden rounded-sm"
+            className="relative overflow-hidden rounded-md"
             style={{ background: SURFACE, ...(isLoading ? {} : idleBorder) }}
           >
-            {/* Top accent when idle */}
-            {!isLoading && !isActive && (
-              <div className="h-[2px] w-full" style={{
-                background: `linear-gradient(90deg, transparent, ${ACCENT}44, transparent)`,
-              }} />
+            {!isLoading && (
+              <div
+                className="h-[2px] w-full"
+                style={{
+                  background: isActive
+                    ? `linear-gradient(90deg, ${ACCENT}, ${ACCENT}66, transparent 80%)`
+                    : `linear-gradient(90deg, transparent 10%, ${ACCENT}55 50%, transparent 90%)`,
+                }}
+              />
             )}
 
-            <div className="relative px-6 py-5 md:px-8 md:py-6">
+            {/* Command header strip */}
+            <div
+              className="flex items-center justify-between border-b px-6 py-3.5 md:px-9"
+              style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.20)" }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-white/22" />
+                <span className="h-2 w-2 rounded-full bg-white/12" />
+                <span className="h-2 w-2 rounded-full bg-white/08" />
+                <span className="ml-2 font-mono text-[10px] tracking-[0.14em] uppercase text-neutral-500">
+                  Agent Command
+                </span>
+              </div>
+              <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
+                {t.mock}
+              </span>
+            </div>
+
+            <div className="relative px-6 py-7 md:px-9 md:py-8">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -220,11 +239,11 @@ export function PreviewAgentCommand({
                 rows={compact ? 3 : 4}
                 disabled={isLoading}
                 placeholder=""
-                className="relative z-10 w-full resize-none bg-transparent text-[16px] leading-[1.65] text-neutral-100 outline-none placeholder:text-neutral-500 disabled:opacity-60 md:text-[17px]"
+                className="relative z-10 min-h-[88px] w-full resize-none bg-transparent text-[17px] leading-[1.7] text-neutral-100 outline-none placeholder:text-neutral-500 disabled:opacity-60 md:min-h-[104px] md:text-[18px]"
               />
               {!input && (
                 <div
-                  className="pointer-events-none absolute left-6 top-5 z-0 text-[16px] leading-[1.65] md:left-8 md:top-6 md:text-[17px]"
+                  className="pointer-events-none absolute left-6 top-7 z-0 text-[17px] leading-[1.7] md:left-9 md:top-8 md:text-[18px]"
                   aria-hidden
                 >
                   <TypewriterText prompts={ta.prompts} visible={!input && !isLoading} />
@@ -232,10 +251,9 @@ export function PreviewAgentCommand({
               )}
             </div>
 
-            {/* Action bar */}
             <div
-              className="flex flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-8"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.25)" }}
+              className="flex flex-col gap-5 px-6 py-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-9 md:py-6"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.30)" }}
             >
               <div className="flex flex-wrap gap-2">
                 {ta.quickActions.map((label) => (
@@ -243,11 +261,12 @@ export function PreviewAgentCommand({
                     key={label}
                     type="button"
                     onClick={() => handleQuickAction(label)}
-                    className="rounded-full border px-3.5 py-2 font-mono text-[11px] tracking-wide transition-all hover:border-white/25 hover:bg-white/[0.08]"
+                    className="rounded-sm border px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] transition-all hover:border-white/22 hover:bg-white/[0.07]"
                     style={{
-                      borderColor: "rgba(255,255,255,0.14)",
-                      color: "rgba(255,255,255,0.75)",
-                      background: "rgba(255,255,255,0.05)",
+                      borderColor: "rgba(255,255,255,0.12)",
+                      color: "rgba(255,255,255,0.82)",
+                      background: "rgba(255,255,255,0.04)",
+                      minHeight: "44px",
                     }}
                   >
                     {label}
@@ -259,12 +278,14 @@ export function PreviewAgentCommand({
                 type="button"
                 onClick={handleGenerate}
                 disabled={isLoading || !input.trim()}
-                className="shrink-0 px-8 py-3 font-mono text-[12px] font-bold tracking-[0.12em] uppercase transition-all disabled:opacity-50"
+                className="shrink-0 rounded-sm px-10 py-3.5 font-mono text-[12px] font-bold tracking-[0.14em] uppercase transition-all disabled:opacity-50"
                 style={{
-                  background: input.trim() && !isLoading ? ACCENT : "rgba(255,255,255,0.08)",
-                  color:      input.trim() && !isLoading ? "#000" : "rgba(255,255,255,0.35)",
+                  background: input.trim() && !isLoading ? ACCENT : "rgba(255,255,255,0.07)",
+                  color:      input.trim() && !isLoading ? DARK   : "rgba(255,255,255,0.38)",
                   border:     input.trim() ? "none" : "1px solid rgba(255,255,255,0.10)",
-                  boxShadow:  input.trim() && !isLoading ? `0 0 24px rgba(180,255,0,0.35)` : "none",
+                  boxShadow:  input.trim() && !isLoading ? `0 0 32px rgba(180,255,0,0.40), 0 4px 16px rgba(0,0,0,0.20)` : "none",
+                  minHeight:  "48px",
+                  minWidth:   "140px",
                 }}
               >
                 {isLoading ? ta.generating : ta.generate}
@@ -273,8 +294,7 @@ export function PreviewAgentCommand({
           </div>
         </div>
 
-        {/* Status / hint row */}
-        <div className="mt-3 flex min-h-[20px] items-center gap-2">
+        <div className="mt-4 flex min-h-[22px] items-center gap-2.5">
           {isLoading && (
             <>
               <span
@@ -287,7 +307,7 @@ export function PreviewAgentCommand({
             </>
           )}
           {!isLoading && (!compact || showEnterHint) && (
-            <span className="font-mono text-[11px] text-neutral-400">
+            <span className="font-mono text-[11px] text-neutral-500">
               {ta.enterHint}
             </span>
           )}
@@ -295,18 +315,18 @@ export function PreviewAgentCommand({
       </div>
 
       {!compact && (
-        <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-          <span className="shrink-0 font-mono text-[11px] tracking-[0.1em] uppercase" style={{ color: "rgba(8,8,8,0.40)" }}>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-5">
+          <span className="shrink-0 font-mono text-[11px] tracking-[0.14em] uppercase" style={{ color: META }}>
             {ta.promptsLabel}
           </span>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
             {ta.prompts.slice(0, 3).map((p) => (
               <button
                 key={p}
                 type="button"
                 onClick={() => { setInput(p); setIsActive(true); }}
-                className="text-left text-[13px] leading-[1.5] transition-colors hover:text-neutral-900"
-                style={{ color: "rgba(8,8,8,0.50)" }}
+                className="text-left text-[14px] leading-[1.55] transition-colors hover:text-neutral-900"
+                style={{ color: BODY, minHeight: "44px" }}
               >
                 {p}
               </button>
