@@ -25,32 +25,11 @@ import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Zap,
-  Calendar,
-  TrendingUp,
   Image,
   Video,
-  Images,
-  Settings,
-  X,
-  ChevronRight,
-  Sparkles,
   LogOut,
   Search,
   FileText,
-  Loader2,
-  // extended tool icons
-  Film,
-  Repeat2,
-  UserRound,
-  Languages,
-
-  Clapperboard,
-  ShoppingBag,
-  Volume2,
-  Camera,
-  MessageCircle,
-  Shuffle,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -86,77 +65,8 @@ export type FalModelPreset =
   | "nano-banana-pro";
 
 // ---------------------------------------------------------------------------
-// Nav data
+// Nav data — primary nav lives in DashboardPrimaryNav
 // ---------------------------------------------------------------------------
-
-type BadgeVariant = "hot" | "new" | "unlimited";
-
-interface NavItem {
-  id: ToolId;
-  label: string;
-  icon: React.ReactNode;
-  accent: string;
-  badge?: BadgeVariant;
-}
-
-const BADGE_STYLE: Record<BadgeVariant, string> = {
-  hot:       "bg-red-500/10   text-red-400   border border-red-500/20",
-  new:       "bg-blue-500/10  text-blue-400  border border-blue-500/20",
-  unlimited: "bg-cyan-500/10  text-cyan-400  border border-cyan-500/20",
-};
-
-const BADGE_LABEL: Record<BadgeVariant, string> = {
-  hot:       "Hot",
-  new:       "New",
-  unlimited: "∞",
-};
-
-const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
-  {
-    title: "Erstellen",
-    items: [
-      { id: "viral-hook",       label: "Viral Hook",           icon: <Zap size={14} />,          accent: "#b4ff00" },
-      { id: "content-calendar", label: "Content Kalender",     icon: <Calendar size={14} />,     accent: "#00D5FF" },
-      { id: "trend-script",     label: "Trend Script",         icon: <TrendingUp size={14} />,   accent: "#FFD84D" },
-    ],
-  },
-  {
-    title: "Video Tools",
-    items: [
-      { id: "img-to-video",      label: "Bild zu Video",        icon: <Film size={14} />,          accent: "#8B5DFF", badge: "hot"       },
-      { id: "text-to-video",     label: "Text zu Video",        icon: <Video size={14} />,         accent: "#8B5DFF"                      },
-      { id: "video-to-video",    label: "Video to Video",       icon: <Repeat2 size={14} />,       accent: "#8B5DFF"                      },
-      { id: "face-swap-video",   label: "Gesichtstausch",       icon: <Shuffle size={14} />,       accent: "#FF6B6B", badge: "new"       },
-      { id: "char-studio-video", label: "Character Studio",     icon: <UserRound size={14} />,     accent: "#FF6B6B", badge: "new"       },
-      { id: "avatar-video",      label: "Avatar Video",         icon: <UserRound size={14} />,     accent: "#00D5FF", badge: "unlimited" },
-      { id: "video-translation", label: "Videoübersetzung",     icon: <Languages size={14} />,     accent: "#00D5FF"                      },
-      { id: "talking-avatar",    label: "Lip Sync",             icon: <MessageCircle size={14} />, accent: "#00D5FF"                      },
-      { id: "talking-photo",     label: "Live Portrait",        icon: <Camera size={14} />,        accent: "#00D5FF"                      },
-      { id: "ai-video-editor",   label: "KI-Videoeditor",       icon: <Clapperboard size={14} />,  accent: "#FFD84D"                      },
-      { id: "ecommerce-ads",     label: "E-Commerce Product Ads", icon: <ShoppingBag size={14} />, accent: "#FFD84D"                      },
-    ],
-  },
-  {
-    title: "Image Tools",
-    items: [
-      { id: "image-gen",         label: "Bildgenerator",        icon: <Image size={14} />,         accent: "#8B5DFF" },
-      { id: "img-to-img",        label: "Bild zu Bild",         icon: <Repeat2 size={14} />,       accent: "#8B5DFF" },
-    ],
-  },
-  {
-    title: "Audio Tools",
-    items: [
-      { id: "tts",           label: "Melodia Studio",     icon: <Volume2 size={14} />, accent: "#00D5FF" },
-    ],
-  },
-];
-// "Live & Akool" section removed [v10]: live-camera + streaming-avatar hidden pending
-// dedicated Agora-SDK UI. APIs remain fully functional (/api/live-avatar/session + heartbeat).
-
-const NAV_BOTTOM: NavItem[] = [
-  { id: "gallery",  label: "Galerie",       icon: <Images size={14} />,   accent: "#b4ff00" },
-  { id: "settings", label: "Einstellungen", icon: <Settings size={14} />, accent: "#b4ff00" },
-];
 
 // Tools die automatisch das rechte Panel öffnen
 const TOOLS_WITH_RIGHT_PANEL = new Set<ToolId>([
@@ -196,24 +106,14 @@ function AnimatedCredits({ credits }: { credits: number }) {
 }
 
 function LeftSidebar({
-  activeTool,
   credits,
   creditsLoaded,
-  toolsGenerating,
   onSelect,
 }: {
-  activeTool: ToolId;
   credits: number;
   creditsLoaded: boolean;
-  toolsGenerating: Partial<Record<ToolId, boolean>>;
   onSelect: (id: ToolId) => void;
 }) {
-  const isActiveTool =
-    activeTool !== "studio" &&
-    activeTool !== "tools" &&
-    activeTool !== "gallery" &&
-    activeTool !== "settings";
-
   return (
     <aside
       className="fixed left-0 top-0 z-20 hidden h-screen w-[240px] flex-col border-r md:flex"
@@ -239,71 +139,9 @@ function LeftSidebar({
         </span>
       </button>
 
-      {/* ── Primary Nav + Tools ──────────────────────────────────────────── */}
+      {/* ── Primary Nav ──────────────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-1" style={{ scrollbarWidth: "none" }}>
         <DashboardPrimaryNav />
-
-        {isActiveTool && (
-          <div className="mt-3 border-t border-white/[0.06] pt-3">
-            <div className="space-y-4 pb-2 pl-2">
-              {NAV_SECTIONS.map((section) => (
-                <div key={section.title}>
-                  <p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-white/18">
-                    {section.title}
-                  </p>
-                  <div className="space-y-0.5">
-                    {section.items.map((item) => {
-                      const active = activeTool === item.id;
-                      const generating = !!toolsGenerating[item.id];
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => onSelect(item.id)}
-                          className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
-                          style={{
-                            background: active ? "rgba(255,255,255,0.04)" : "transparent",
-                            borderLeft: active ? "2px solid #b4ff00" : "2px solid transparent",
-                            paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
-                          }}
-                        >
-                          <span
-                            className="shrink-0"
-                            style={{ color: active ? item.accent : "rgba(255,255,255,0.22)" }}
-                          >
-                            {item.icon}
-                          </span>
-                          <span
-                            className="flex-1 truncate text-[11px]"
-                            style={{
-                              color: active ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.38)",
-                            }}
-                          >
-                            {item.label}
-                          </span>
-                          {item.badge && !generating && !active && (
-                            <span
-                              className={`shrink-0 rounded px-1 text-[9px] font-semibold leading-[1.6] ${BADGE_STYLE[item.badge]}`}
-                            >
-                              {BADGE_LABEL[item.badge]}
-                            </span>
-                          )}
-                          {generating && (
-                            <Loader2
-                              size={10}
-                              className="ml-auto animate-spin"
-                              style={{ color: item.accent }}
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* ── Credits + Logout ───────────────────────────────────────────────── */}
@@ -362,36 +200,6 @@ function StudioHome({
     />
   );
 }
-
-// ---------------------------------------------------------------------------
-// Welcome Bar
-// ---------------------------------------------------------------------------
-
-function WelcomeBar({ activeTool }: { activeTool: ToolId }) {
-  const allItems = [...NAV_SECTIONS.flatMap((s) => s.items), ...NAV_BOTTOM];
-  const tool = allItems.find((t) => t.id === activeTool);
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.p
-        key={activeTool}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="mb-8 font-mono text-xs uppercase tracking-widest text-neutral-600"
-      >
-        {tool?.label ?? "Dashboard"}
-      </motion.p>
-    </AnimatePresence>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Main Export
-// ---------------------------------------------------------------------------
-
-// ─── Tool-ID → Anzeigename (für GalleryItem.tool) ────────────────────────────
 
 const TOOL_LABEL: Record<ToolId, string> = {
   // Navigation & Core
@@ -916,10 +724,8 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
 
       {/* ── Left Sidebar ──────────────────────────────────────────────────────── */}
       <LeftSidebar
-        activeTool={activeTool}
         credits={credits}
         creditsLoaded={creditsLoaded}
-        toolsGenerating={toolsGenerating}
         onSelect={handleToolSelect}
       />
 
