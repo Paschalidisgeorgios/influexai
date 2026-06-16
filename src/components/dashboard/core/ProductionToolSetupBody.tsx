@@ -650,15 +650,6 @@ function TextToVideoSetup() {
         <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
       ) : null}
 
-      <MobileEarlySetupActions
-        primaryLabel="Video generieren"
-        primaryLoadingLabel="Erstellung gestartet…"
-        onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
-        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
-        loading={generating}
-      />
-
       {!modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
@@ -703,6 +694,15 @@ function TextToVideoSetup() {
           ) : null}
         </div>
       ) : null}
+
+      <MobileEarlySetupActions
+        primaryLabel="Video generieren"
+        primaryLoadingLabel="Erstellung gestartet…"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
+        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
+        loading={generating}
+      />
 
       <DesktopSetupActions
         primaryLabel="Video generieren"
@@ -841,15 +841,6 @@ function ImgToVideoSetup() {
         <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
       ) : null}
 
-      <MobileEarlySetupActions
-        primaryLabel="Video generieren"
-        primaryLoadingLabel="Erstellung gestartet…"
-        onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
-        primaryDisabled={!canGenerate || generating || modelsLoading}
-        loading={generating}
-      />
-
       {!modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
@@ -894,6 +885,15 @@ function ImgToVideoSetup() {
           ) : null}
         </div>
       ) : null}
+
+      <MobileEarlySetupActions
+        primaryLabel="Video generieren"
+        primaryLoadingLabel="Erstellung gestartet…"
+        onPrimary={() => void run()}
+        agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
+        primaryDisabled={!canGenerate || generating || modelsLoading}
+        loading={generating}
+      />
 
       <StudioFieldHelper>
         Je klarer die gewünschte Bewegung beschrieben ist, desto besser wird der Clip.

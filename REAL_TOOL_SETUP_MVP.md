@@ -127,3 +127,44 @@ Shared components in `ProductionToolSetupStates.tsx`:
 2. img-to-video: file upload when existing upload path is product-ready
 3. Text tools: optional save-to-notes / gallery text assets
 4. Tool setup: prefill prompt from gallery re-prompt flow (partially exists in `DashboardLayout.handleRePrompt`)
+
+---
+
+## Phase 3A.2A — Pre-Push Polish (2026-06-17)
+
+### Studio video assets (`public/videos/studio/`)
+
+| File | Size (after polish) | Status |
+|------|---------------------|--------|
+| `studio-loop.mp4` | ~1.8 MB | **Replaced** — was ~37 MB (5K HEVC); re-encoded to 1920px H.264, no audio |
+| `studio-loop.webm` | ~2.3 MB | **Added** — VP9 for desktop `<video>` first source |
+| `studio-poster.webp` | ~23 KB | **Added** — mobile hero fallback frame |
+
+**Decision:** Keep compressed MP4 in repo (push-safe). Original 37 MB master should stay local only if re-export needed.
+
+Used by `StudioCockpit` → `StudioVideoHero` (desktop: webm/mp4; mobile: poster with gradient fallback).
+
+### Mobile video setup order
+
+**Fixed** in `ProductionToolSetupBody.tsx` for `text-to-video` and `img-to-video`:
+
+- Before: Input → sticky mobile CTA → Modell/Dauer/Format → helper
+- After: Input → Modell/Dauer/Format → sticky mobile CTA → helper (img-to-video) / result
+
+Desktop unchanged (`DesktopSetupActions` after mobile block).
+
+### Credits page examples (`StudioCreditsSection`)
+
+Synchronized `CREDIT_EXAMPLES` with setup constants (no invented values):
+
+| Beispiel | Wert | Quelle |
+|----------|------|--------|
+| Viral Hooks | 3 | `VIRAL_HOOK_CREDIT_COST` |
+| Content Kalender | 5 | `CONTENT_CALENDAR_CREDIT_COST` |
+| Bild-Generierung | 5–8 | `IMAGE_GEN_CREDITS.standard`–`highRes` |
+| Image → Video | variabel | `calculateAkoolModelCredits` (dynamic) |
+| Text → Video | ab 50 | `AKOOL_TOOL_CREDITS.textToVideo` fallback + model/duration |
+
+### NoCreditsModal visual check
+
+**Not run** in this pass — opening the modal dispatches a global checkout-capable event (`BuyCreditsProvider`). Safe static review only: ivory tokens (`STUDIO_TEXT`, `STUDIO_MUTED`, `STUDIO_RADIUS`) applied in `NoCreditsModal.tsx`. Recommend manual spot-check on `/dashboard` with zero-credit test account before release.

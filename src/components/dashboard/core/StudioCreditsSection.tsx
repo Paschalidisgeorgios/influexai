@@ -10,6 +10,10 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   type CreditPackageId,
 } from "@/lib/credit-packages";
+import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
+import { CONTENT_CALENDAR_CREDIT_COST } from "@/lib/content-calendar-analysis";
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
@@ -21,10 +25,31 @@ import { STUDIO_MUTED, STUDIO_RADIUS, STUDIO_TEXT } from "../studio-ui/tokens";
 type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
 
 const CREDIT_EXAMPLES = [
-  { label: "Viral Hooks", credits: "1–3", note: "pro Generierung" },
-  { label: "Content Kalender", credits: "2", note: "pro Plan" },
-  { label: "Bild-Generierung", credits: "3–8", note: "je Modell" },
-  { label: "Image → Video", credits: "variabel", note: "Modell & Dauer" },
+  {
+    label: "Viral Hooks",
+    credits: String(VIRAL_HOOK_CREDIT_COST),
+    note: "pro Generierung",
+  },
+  {
+    label: "Content Kalender",
+    credits: String(CONTENT_CALENDAR_CREDIT_COST),
+    note: "pro Plan",
+  },
+  {
+    label: "Bild-Generierung",
+    credits: `${IMAGE_GEN_CREDITS.standard}–${IMAGE_GEN_CREDITS.highRes}`,
+    note: "je Qualität",
+  },
+  {
+    label: "Image → Video",
+    credits: "variabel",
+    note: "abhängig von Modell und Dauer",
+  },
+  {
+    label: "Text → Video",
+    credits: `ab ${AKOOL_TOOL_CREDITS.textToVideo}`,
+    note: "Modell & Dauer",
+  },
 ] as const;
 
 const primaryBtnClass = `inline-flex min-h-[44px] items-center justify-center px-6 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 ${STUDIO_RADIUS.button}`;
