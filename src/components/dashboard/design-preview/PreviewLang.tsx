@@ -47,6 +47,18 @@ const de = {
     toolsCta:      "Alle anzeigen →",
     recentLabel:   "Letzte Outputs · Mock",
     recentCta:     "Galerie →",
+    mediaLabel:    "Production Output · Mock",
+    mediaHeadline: "Deine Kampagne — visualisiert.",
+    mediaSubline:  "Bild, Video, Hook und Assets aus einer einzigen Idee.",
+    mediaPrimaryTag:   "Kampagne · Mock",
+    mediaPrimaryTitle: "Beauty Launch — Q3",
+    mediaPrimaryDesc:  "Kampagnenvisual, Kurzvideo und Hooks — generiert, reviewt, exportiert.",
+    mediaOutputs: [
+      { type: "Bild",  label: "Kampagnenvisual",  ratio: "4/5"  },
+      { type: "Video", label: "TikTok Ad",        ratio: "9/16" },
+      { type: "Hook",  label: "5 Scroll-Stoppers", ratio: "1/1" },
+    ],
+    mediaExportLine: "Kampagnenpaket — bereit für alle Plattformen",
   },
 
   agent: {
@@ -79,8 +91,14 @@ const de = {
   },
 
   tools: {
-    overline:      "Studio-Werkzeuge",
-    headline:      "Capabilities.",
+    overline:      "Production Tools",
+    headline:      "Wähle deinen Produktionsbereich.",
+    subline:       "Starte mit Foto, Video, Avatar, Text oder Brand Assets — InfluexAI führt dich zur passenden Engine.",
+    flowLabel:     "Produktionspfad",
+    stepCategory:  "Bereich",
+    stepTool:      "Tool",
+    stepEngine:    "Engine",
+    stepGenerate:  "Generierung",
     backCta:       "← Zurück",
     selectCta:     "Auswählen →",
     startCta:      "Starten →",
@@ -113,7 +131,7 @@ const de = {
     generateVideoLabel: "Video generieren",
     generateHookLabel:  "Hooks generieren",
     mockNote:           "Mock · {credits} Credits",
-    emptyState:         "Starte die Generierung,\num dein erstes Asset zu sehen.",
+    emptyState:         "Starte die Generierung, um dein erstes Asset zu sehen.",
   },
 
   gallery: {
@@ -168,6 +186,18 @@ const en: typeof de = {
     toolsCta:      "View all →",
     recentLabel:   "Recent Outputs · Mock",
     recentCta:     "Gallery →",
+    mediaLabel:    "Production Output · Mock",
+    mediaHeadline: "Your campaign — visualized.",
+    mediaSubline:  "Image, video, hooks and assets from a single idea.",
+    mediaPrimaryTag:   "Campaign · Mock",
+    mediaPrimaryTitle: "Beauty Launch — Q3",
+    mediaPrimaryDesc:  "Campaign visual, short video and hooks — generated, reviewed, exported.",
+    mediaOutputs: [
+      { type: "Image", label: "Campaign Visual",  ratio: "4/5"  },
+      { type: "Video", label: "TikTok Ad",        ratio: "9/16" },
+      { type: "Hook",  label: "5 Scroll-Stoppers", ratio: "1/1" },
+    ],
+    mediaExportLine: "Campaign pack — ready for all platforms",
   },
 
   agent: {
@@ -196,8 +226,14 @@ const en: typeof de = {
   },
 
   tools: {
-    overline:      "Studio Tools",
-    headline:      "Capabilities.",
+    overline:      "Production Tools",
+    headline:      "Choose your production area.",
+    subline:       "Start with image, video, avatar, text or brand assets — InfluexAI guides you to the right engine.",
+    flowLabel:     "Production Path",
+    stepCategory:  "Area",
+    stepTool:      "Tool",
+    stepEngine:    "Engine",
+    stepGenerate:  "Generation",
     backCta:       "← Back",
     selectCta:     "Select →",
     startCta:      "Start →",
@@ -230,7 +266,7 @@ const en: typeof de = {
     generateVideoLabel: "Generate video",
     generateHookLabel:  "Generate hooks",
     mockNote:           "Mock · {credits} Credits",
-    emptyState:         "Start generation to\nsee your first asset.",
+    emptyState:         "Start generation to see your first asset.",
   },
 
   gallery: {

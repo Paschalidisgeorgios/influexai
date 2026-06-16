@@ -2,12 +2,13 @@
 
 /**
  * PreviewShell — High-contrast Creator Production OS shell.
- * Studio + Agent only. ALL DATA IS MOCK.
+ * Studio + Agent + Tools. ALL DATA IS MOCK.
  */
 
 import { useState } from "react";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewStudioHome, PreviewAgentView } from "./PreviewStudioHome";
+import { PreviewToolsFlow } from "./PreviewToolsFlow";
 
 const ACCENT   = "#b4ff00";
 const SHELL_BG = "#050506";
@@ -16,7 +17,7 @@ const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent"];
+const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent", "tools"];
 
 // ─── Sidebar (220px) ──────────────────────────────────────────────────────────
 
@@ -174,10 +175,9 @@ function PreviewInner() {
               }}
             >
               <div className="px-5 py-8 md:px-10 md:py-12">
-                {active === "studio"
-                  ? <PreviewStudioHome onNavigate={setActive} />
-                  : <PreviewAgentView onNavigate={setActive} />
-                }
+                {active === "studio" && <PreviewStudioHome onNavigate={setActive} />}
+                {active === "agent"  && <PreviewAgentView  onNavigate={setActive} />}
+                {active === "tools"  && <PreviewToolsFlow />}
               </div>
             </div>
           </div>
