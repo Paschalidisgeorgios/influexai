@@ -12,8 +12,11 @@ import { useLang } from "./PreviewLang";
 
 const ACCENT = "#b4ff00";
 const DARK   = "#080808";
-const IVORY  = "#F4F0E8";
-const STONE  = "#DDD4C4";
+const STONE  = "rgba(221,212,196,0.55)";
+const LIGHT_CARD = "rgba(221,212,196,0.28)";
+const LIGHT_BORDER = "rgba(8,8,8,0.07)";
+const STAGE_DOT = "rgba(244,240,232,0.72)";
+const DARK_CARD = "rgba(10,10,16,0.90)";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -149,7 +152,7 @@ function FlowIndicator({
                 className="relative z-10 mb-2 h-[22px] w-[22px] rounded-full border-2"
                 style={{
                   borderColor: s.done || s.active ? ACCENT : STONE,
-                  background:  s.done || s.active ? ACCENT : IVORY,
+                  background:  s.done || s.active ? ACCENT : STAGE_DOT,
                 }}
               />
               <p className="font-mono text-[11px] tracking-[0.08em] uppercase" style={{ color: s.active ? DARK : "rgba(8,8,8,0.40)" }}>
@@ -201,11 +204,15 @@ function CategoryPicker({
               onClick={() => onSelect(id)}
               className="group relative flex min-h-[130px] flex-col justify-between p-6 text-left transition-all md:min-h-[150px] md:p-7"
               style={{
-                background:  isLight ? STONE : "#0a0a10",
+                background:  isLight ? LIGHT_CARD : DARK_CARD,
                 border:      isActive
-                  ? `2px solid ${ACCENT}`
-                  : isLight ? "1px solid rgba(8,8,8,0.08)" : "1px solid rgba(255,255,255,0.08)",
-                boxShadow:   isActive ? `0 0 0 3px rgba(180,255,0,0.10)` : "none",
+                  ? `1.5px solid ${ACCENT}`
+                  : isLight ? `1px solid ${LIGHT_BORDER}` : "1px solid rgba(255,255,255,0.08)",
+                boxShadow:   isActive
+                  ? `0 0 0 2px rgba(180,255,0,0.08), inset 0 1px 0 rgba(255,255,255,0.30)`
+                  : isLight
+                    ? "inset 0 1px 0 rgba(255,255,255,0.32)"
+                    : "inset 0 1px 0 rgba(255,255,255,0.04)",
               }}
             >
               {isActive && (
@@ -267,8 +274,9 @@ function ToolPicker({
               disabled={disabled}
               className="group flex w-full flex-col gap-3 p-5 text-left transition-all md:flex-row md:items-center md:justify-between md:p-6 disabled:cursor-not-allowed disabled:opacity-50"
               style={{
-                background: isActive ? "rgba(180,255,0,0.08)" : STONE,
-                border: isActive ? `2px solid ${ACCENT}` : "1px solid rgba(8,8,8,0.07)",
+                background: isActive ? "rgba(180,255,0,0.07)" : LIGHT_CARD,
+                border: isActive ? `1.5px solid ${ACCENT}` : `1px solid ${LIGHT_BORDER}`,
+                boxShadow: isActive ? "none" : "inset 0 1px 0 rgba(255,255,255,0.28)",
               }}
             >
               <div className="min-w-0 flex-1">
@@ -322,9 +330,11 @@ function EnginePicker({
               onClick={() => onSelect(engine)}
               className="group relative flex min-h-[140px] flex-col justify-between p-6 text-left transition-all"
               style={{
-                background: "#0a0a10",
-                border: isActive ? `2px solid ${ACCENT}` : "1px solid rgba(8,8,8,0.12)",
-                boxShadow: isActive ? `0 0 24px rgba(180,255,0,0.12)` : "0 8px 24px rgba(0,0,0,0.08)",
+                background: DARK_CARD,
+                border: isActive ? `1.5px solid ${ACCENT}` : `1px solid ${LIGHT_BORDER}`,
+                boxShadow: isActive
+                  ? `0 0 16px rgba(180,255,0,0.08), inset 0 1px 0 rgba(255,255,255,0.05)`
+                  : "0 6px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
               }}
             >
               {isActive && (
@@ -380,7 +390,11 @@ function GenerationPanel({
         {/* Input panel — Stone */}
         <div
           className="flex w-full shrink-0 flex-col gap-5 p-6 md:p-7 lg:w-[340px]"
-          style={{ background: STONE, border: "1px solid rgba(8,8,8,0.08)" }}
+          style={{
+            background: LIGHT_CARD,
+            border: `1px solid ${LIGHT_BORDER}`,
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
+          }}
         >
           <div>
             <label className="mb-2 block font-mono text-[11px] tracking-[0.1em] uppercase" style={{ color: "rgba(8,8,8,0.45)" }}>
@@ -403,7 +417,7 @@ function GenerationPanel({
               </label>
               <div
                 className="flex min-h-[88px] cursor-pointer flex-col items-center justify-center border border-dashed py-5 transition-colors hover:border-neutral-400"
-                style={{ borderColor: "rgba(8,8,8,0.18)", background: "rgba(255,255,255,0.25)" }}
+                style={{ borderColor: "rgba(8,8,8,0.14)", background: "rgba(255,255,255,0.12)" }}
               >
                 <p className="font-mono text-[11px] uppercase tracking-wide" style={{ color: "rgba(8,8,8,0.45)" }}>
                   {tc.uploadHint.split("—")[0]?.trim() ?? tc.uploadHint}
@@ -449,13 +463,13 @@ function GenerationPanel({
               style={{
                 background: prompt.trim() ? ACCENT : "rgba(8,8,8,0.08)",
                 color:      prompt.trim() ? DARK   : "rgba(8,8,8,0.30)",
-                boxShadow:  prompt.trim() ? `0 0 20px rgba(180,255,0,0.25)` : "none",
+                boxShadow:  prompt.trim() ? `0 0 16px rgba(180,255,0,0.18)` : "none",
               }}
             >
               {generateLabel}
             </button>
             <p className="mt-3 font-mono text-[10px] uppercase tracking-wide" style={{ color: "rgba(8,8,8,0.35)" }}>
-              {tc.mockNote.replace("{credits}", String(engine.credits))}
+              Preview Mode · {engine.credits} {tc.credits}
             </p>
           </div>
         </div>
@@ -464,19 +478,21 @@ function GenerationPanel({
         <div
           className="relative flex min-h-[360px] flex-1 flex-col overflow-hidden lg:min-h-[480px]"
           style={{
-            background: "#0a0a10",
-            border: "1px solid rgba(8,8,8,0.15)",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.12)",
+            background: DARK_CARD,
+            border: `1px solid ${LIGHT_BORDER}`,
+            boxShadow: "0 12px 40px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.05)",
           }}
         >
-          <div className="absolute left-0 top-0 h-[2px] w-full" style={{
-            background: `linear-gradient(90deg, ${ACCENT}, transparent 55%)`,
+          <div className="absolute left-0 top-0 h-[1px] w-full" style={{
+            background: `linear-gradient(90deg, ${ACCENT}88, transparent 55%)`,
           }} />
           <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <span className="font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-500">
               {tc.outputLabel} · {tool.outputType}
             </span>
-            <span className="ml-auto font-mono text-[10px] text-neutral-600">{t.mock}</span>
+            <span className="ml-auto font-mono text-[10px] tracking-[0.08em] uppercase text-neutral-600">
+              Studio Preview
+            </span>
           </div>
           <div className="relative flex flex-1 flex-col items-center justify-center px-8 py-12">
             <div className="pointer-events-none absolute inset-0 opacity-30" style={{

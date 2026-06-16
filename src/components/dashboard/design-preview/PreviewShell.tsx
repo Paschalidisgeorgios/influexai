@@ -13,7 +13,8 @@ import { PreviewGallery } from "./PreviewGallery";
 
 const ACCENT   = "#b4ff00";
 const SHELL_BG = "#050506";
-const IVORY    = "#F4F0E8";
+const STAGE_SURFACE =
+  "linear-gradient(135deg, rgba(244,240,232,0.90), rgba(244,240,232,0.78), rgba(221,212,196,0.68))";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -82,7 +83,7 @@ function PreviewSidebar({
 
       <div className="mt-auto border-t px-7 py-5" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
         <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-600">
-          {t.mock} · design-preview
+          Preview Mode · design-preview
         </p>
       </div>
     </aside>
@@ -163,21 +164,33 @@ function PreviewInner() {
 
         {/* Main scroll — stage uses ~86% width on desktop */}
         <div
-          className="flex-1 overflow-y-auto overflow-x-hidden"
-          style={{ scrollbarWidth: "none", background: SHELL_BG }}
+          className="relative flex-1 overflow-y-auto overflow-x-hidden"
+          style={{
+            scrollbarWidth: "none",
+            background: SHELL_BG,
+          }}
         >
-          <div className="w-full px-2.5 pb-40 pt-2 md:px-[7%] md:pb-10 md:pt-4 lg:px-[6%]">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 45% at 50% 0%, rgba(180,255,0,0.04), transparent 55%)," +
+                "radial-gradient(ellipse 90% 60% at 50% 100%, rgba(255,255,255,0.02), transparent 50%)",
+            }}
+          />
+          <div className="relative w-full px-2.5 pb-40 pt-2 md:px-[7%] md:pb-10 md:pt-4 lg:px-[6%]">
             <div
-              className="min-h-[calc(100vh-6.5rem)] w-full min-w-0 overflow-x-clip overflow-y-visible rounded-xl"
+              className="min-h-[calc(100vh-6.5rem)] w-full min-w-0 overflow-x-clip overflow-y-visible rounded-xl backdrop-blur-2xl"
               style={{
-                background: IVORY,
-                border: "1px solid rgba(8,8,8,0.08)",
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 16px 64px rgba(0,0,0,0.32)",
+                background: STAGE_SURFACE,
+                border: "1px solid rgba(255,255,255,0.10)",
+                boxShadow:
+                  "0 0 0 1px rgba(255,255,255,0.04), 0 28px 88px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.42), inset 0 -1px 0 rgba(8,8,8,0.04)",
               }}
             >
               <div
-                className="h-[3px] w-full rounded-t-xl"
-                style={{ background: `linear-gradient(90deg, ${ACCENT}99, ${ACCENT}44 35%, transparent 80%)` }}
+                className="h-[2px] w-full rounded-t-xl"
+                style={{ background: `linear-gradient(90deg, ${ACCENT}55, ${ACCENT}22 40%, transparent 85%)` }}
               />
               <div className="min-w-0 px-4 pb-14 pt-5 md:px-12 md:pb-16 md:pt-10 lg:px-16 xl:px-20">
                 {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}

@@ -14,8 +14,10 @@ const DARK   = "#080808";
 const SUBLINE = "rgba(8,8,8,0.72)";
 const BODY   = "rgba(8,8,8,0.68)";
 const META   = "rgba(8,8,8,0.45)";
-const STONE  = "#DDD4C4";
-const STONE2 = "#E8E0D4";
+const STONE  = "rgba(221,212,196,0.55)";
+const LIGHT_CARD = "rgba(221,212,196,0.28)";
+const LIGHT_CARD_ALT = "rgba(0,0,0,0.035)";
+const LIGHT_BORDER = "rgba(8,8,8,0.07)";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -76,11 +78,12 @@ function ProductionPathBar() {
 
       {/* Desktop — horizontal, max ~72px */}
       <div
-        className="hidden min-w-0 items-center gap-0 rounded-sm px-3 py-2.5 md:flex"
+        className="hidden min-w-0 items-center gap-0 rounded-sm px-3 py-2 md:flex"
         style={{
           maxHeight: "72px",
-          background: STONE2,
-          border: "1px solid rgba(8,8,8,0.07)",
+          background: LIGHT_CARD,
+          border: `1px solid ${LIGHT_BORDER}`,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
         }}
       >
         {os.pathSteps.map((label, i) => (
@@ -90,7 +93,7 @@ function ProductionPathBar() {
                 className="h-1.5 w-1.5 shrink-0 rounded-full"
                 style={{
                   background: i === ACTIVE_PATH_STEP ? ACCENT : i < ACTIVE_PATH_STEP ? "rgba(8,8,8,0.25)" : STONE,
-                  boxShadow: i === ACTIVE_PATH_STEP ? `0 0 8px ${ACCENT}66` : "none",
+                  boxShadow: i === ACTIVE_PATH_STEP ? `0 0 4px ${ACCENT}44` : "none",
                 }}
               />
               <span
@@ -116,7 +119,11 @@ function ProductionPathBar() {
       {/* Mobile — 2-column wrap, no horizontal scroll */}
       <div
         className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-sm p-3 md:hidden"
-        style={{ background: STONE2, border: "1px solid rgba(8,8,8,0.07)" }}
+        style={{
+          background: LIGHT_CARD,
+          border: `1px solid ${LIGHT_BORDER}`,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.30)",
+        }}
       >
         {os.pathSteps.map((label, i) => (
           <div key={label} className="flex min-w-0 items-center gap-2">
@@ -124,7 +131,7 @@ function ProductionPathBar() {
               className="h-1.5 w-1.5 shrink-0 rounded-full"
               style={{
                 background: i === ACTIVE_PATH_STEP ? ACCENT : STONE,
-                boxShadow: i === ACTIVE_PATH_STEP ? `0 0 6px ${ACCENT}55` : "none",
+                boxShadow: i === ACTIVE_PATH_STEP ? `0 0 4px ${ACCENT}44` : "none",
               }}
             />
             <span
@@ -152,49 +159,55 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
 
   return (
     <div
-      className={`relative flex w-full min-w-0 flex-col overflow-hidden rounded-sm ${tall ? "h-full min-h-[540px] lg:min-h-[600px]" : "min-h-[260px] md:min-h-[320px]"}`}
+      className={`relative flex w-full min-w-0 flex-col overflow-hidden rounded-sm ${tall ? "h-full min-h-[460px] lg:min-h-[500px]" : "min-h-[200px] md:min-h-[280px]"}`}
       style={{
-        background: "#0a0a10",
+        background: "rgba(10,10,16,0.92)",
         border: integrated
-          ? "1px solid rgba(8,8,8,0.14)"
+          ? `1px solid ${LIGHT_BORDER}`
           : "1px solid rgba(255,255,255,0.08)",
         boxShadow: integrated
-          ? "0 24px 64px rgba(8,8,8,0.20), 0 0 0 1px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.06)"
-          : "0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
+          ? "0 16px 48px rgba(8,8,8,0.16), inset 0 1px 0 rgba(255,255,255,0.05)"
+          : "0 16px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
       }}
     >
       {integrated && (
         <div
-          className="pointer-events-none absolute -left-8 top-[42%] hidden h-px w-8 md:block lg:-left-10 lg:w-10"
-          style={{ background: `linear-gradient(90deg, ${ACCENT}55, transparent)` }}
+          className="pointer-events-none absolute -left-6 top-[38%] hidden h-px w-6 md:block lg:-left-8 lg:w-8"
+          style={{ background: `linear-gradient(90deg, ${ACCENT}33, transparent)` }}
         />
       )}
 
       <div
-        className="absolute left-0 top-0 h-[2px] w-full"
-        style={{ background: `linear-gradient(90deg, ${ACCENT} 0%, ${ACCENT}55 40%, transparent 80%)` }}
+        className="absolute left-0 top-0 h-[1px] w-full"
+        style={{ background: `linear-gradient(90deg, ${ACCENT}88 0%, ${ACCENT}33 45%, transparent 80%)` }}
       />
 
-      {/* Route status — linked to agent */}
-      <div className="border-b px-4 py-3 md:px-5 md:py-3.5" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.25)" }}>
-        <div className="mb-2.5 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" style={{ background: ACCENT, boxShadow: `0 0 6px ${ACCENT}` }} />
+      {/* Route status — compact, linked to agent */}
+      <div
+        className="border-b px-3 py-2 md:px-4 md:py-2.5"
+        style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.22)" }}
+      >
+        <div className="mb-1.5 flex items-center gap-2 md:mb-2">
+          <span
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ background: ACCENT, boxShadow: `0 0 4px ${ACCENT}55` }}
+          />
           <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-300 md:text-[11px]">
             {os.routeActive}
           </span>
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 md:flex-row md:flex-wrap md:gap-x-4 md:gap-y-1">
           {os.routePoints.map((point, i) => (
-            <div key={point} className="flex min-w-0 items-center gap-2">
+            <div key={point} className="flex min-w-0 items-center gap-1.5">
               <span
                 className="font-mono text-[9px] uppercase tracking-wider"
-                style={{ color: i < 2 ? ACCENT : "rgba(255,255,255,0.35)" }}
+                style={{ color: i < 2 ? ACCENT : "rgba(255,255,255,0.30)" }}
               >
                 {i < 2 ? "✓" : "○"}
               </span>
               <span
                 className="truncate font-mono text-[10px] tracking-[0.06em]"
-                style={{ color: i < 2 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.40)" }}
+                style={{ color: i < 2 ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.38)" }}
               >
                 {point}
               </span>
@@ -203,46 +216,46 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-b px-4 py-2.5 md:px-5" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-        <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-        <span className="h-1.5 w-1.5 rounded-full bg-white/12" />
+      <div className="flex items-center gap-2 border-b px-3 py-2 md:px-4" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+        <span className="h-1.5 w-1.5 rounded-full bg-white/18" />
+        <span className="h-1.5 w-1.5 rounded-full bg-white/10" />
         <span className="ml-1 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
           {os.monitorOutput}
         </span>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-end p-5 md:p-7">
+      <div className="relative flex flex-1 flex-col justify-end p-4 md:p-5 lg:p-6">
         <div
-          className="pointer-events-none absolute inset-0 opacity-45"
-          style={{ background: "radial-gradient(ellipse 85% 65% at 58% 28%, rgba(100,80,255,0.35), transparent)" }}
+          className="pointer-events-none absolute inset-0 opacity-35"
+          style={{ background: "radial-gradient(ellipse 85% 65% at 58% 28%, rgba(100,80,255,0.28), transparent)" }}
         />
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.20]"
+          className="pointer-events-none absolute inset-0 opacity-[0.16]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)," +
-              "linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)," +
+              "linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />
         <div className="relative">
-          <p className="mb-2 font-mono text-[10px] tracking-[0.14em] uppercase text-neutral-500">
+          <p className="mb-1.5 font-mono text-[10px] tracking-[0.14em] uppercase text-neutral-500">
             {ts.mediaPrimaryTitle}
           </p>
-          <h3 className="mb-2 text-xl font-extrabold text-neutral-100 md:text-[1.625rem]" style={{ ...HL, fontWeight: 800 }}>
+          <h3 className="mb-1.5 text-lg font-extrabold text-neutral-100 md:text-xl lg:text-[1.375rem]" style={{ ...HL, fontWeight: 800 }}>
             {ts.mediaOutputs[0]?.label ?? "Campaign Visual"}
           </h3>
-          <p className="max-w-sm text-[13px] leading-[1.6] text-neutral-400 md:text-[14px]">
+          <p className="max-w-sm text-[12px] leading-[1.55] text-neutral-400 md:text-[13px]">
             {ts.mediaPrimaryDesc}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.06)" }}>
+      <div className="grid grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.05)" }}>
         {ts.mediaOutputs.map((out) => (
-          <div key={out.label} className="px-3 py-3 md:px-4 md:py-3.5" style={{ background: "#0e0e16" }}>
+          <div key={out.label} className="px-2.5 py-2.5 md:px-3 md:py-3" style={{ background: "rgba(14,14,22,0.95)" }}>
             <p className="font-mono text-[9px] tracking-[0.12em] uppercase text-neutral-500">{out.type}</p>
-            <p className="mt-0.5 truncate text-[12px] font-semibold text-neutral-100 md:text-[13px]">{out.label}</p>
+            <p className="mt-0.5 truncate text-[11px] font-semibold text-neutral-100 md:text-[12px]">{out.label}</p>
           </div>
         ))}
       </div>
@@ -277,7 +290,7 @@ function ProductionPipeline() {
                 left: `${(i / (ts.pipelineSteps.length - 1)) * 100}%`,
                 transform: "translate(-50%, -50%)",
                 background: i <= 1 ? ACCENT : STONE,
-                boxShadow: i === 1 ? `0 0 12px ${ACCENT}88` : "none",
+                boxShadow: i === 1 ? `0 0 8px ${ACCENT}55` : "none",
               }}
             />
           ))}
@@ -340,10 +353,11 @@ function ProductionStage() {
   return (
     <section className="pb-2">
       <div
-        className="mb-6 rounded-sm border px-5 py-5 md:mb-8 md:px-8 md:py-6"
+        className="mb-6 rounded-sm border px-5 py-4 md:mb-8 md:px-7 md:py-5"
         style={{
-          background: `linear-gradient(135deg, ${STONE2} 0%, rgba(221,212,196,0.55) 100%)`,
-          borderColor: "rgba(8,8,8,0.08)",
+          background: LIGHT_CARD,
+          borderColor: LIGHT_BORDER,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.38)",
         }}
       >
         <p className="mb-1 font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: META }}>
@@ -363,10 +377,10 @@ function ProductionStage() {
             key={out.name}
             className="relative min-w-0 overflow-hidden rounded-sm"
             style={{
-              background: hues[i] ?? "#0a0a10",
-              border: "1px solid rgba(255,255,255,0.07)",
-              boxShadow: "0 8px 32px rgba(8,8,8,0.12), inset 0 1px 0 rgba(255,255,255,0.05)",
-              minHeight: "132px",
+              background: hues[i] ?? "rgba(10,10,16,0.92)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 6px 24px rgba(8,8,8,0.10), inset 0 1px 0 rgba(255,255,255,0.04)",
+              minHeight: "128px",
             }}
           >
             <div
@@ -465,7 +479,7 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
           </div>
         </div>
 
-        <div className="mt-5 min-w-0 md:hidden">
+        <div className="mt-4 min-w-0 md:hidden">
           <HeroMonitor integrated />
         </div>
       </section>
@@ -495,8 +509,12 @@ export function PreviewAgentView({ onNavigate }: { onNavigate: (v: PreviewView) 
           {ta.workflowSteps.map(({ step, title, desc }) => (
             <div
               key={step}
-              className="rounded-sm p-7 md:p-8"
-              style={{ background: STONE, border: "1px solid rgba(8,8,8,0.06)" }}
+              className="rounded-sm p-6 md:p-7"
+              style={{
+                background: LIGHT_CARD,
+                border: `1px solid ${LIGHT_BORDER}`,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.32)",
+              }}
             >
               <p className="mb-4 font-mono text-[11px] tracking-[0.14em] uppercase" style={{ color: META }}>
                 {step}
