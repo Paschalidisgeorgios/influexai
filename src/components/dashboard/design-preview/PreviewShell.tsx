@@ -166,16 +166,20 @@ function PreviewInner() {
           className="flex-1 overflow-y-auto overflow-x-hidden"
           style={{ scrollbarWidth: "none", background: SHELL_BG }}
         >
-          <div className="mx-auto w-full min-w-0 max-w-[92rem] px-2 pb-32 pt-2 md:px-4 md:pb-10 md:pt-4">
+          <div className="mx-auto w-full min-w-0 max-w-[96rem] px-1.5 pb-36 pt-1.5 md:px-3 md:pb-10 md:pt-3">
             <div
-              className="min-h-[calc(100vh-7rem)] min-w-0 overflow-x-clip overflow-y-visible rounded-md"
+              className="min-h-[calc(100vh-6.5rem)] min-w-0 overflow-x-clip overflow-y-visible rounded-lg"
               style={{
                 background: IVORY,
-                border: "1px solid rgba(255,255,255,0.10)",
-                boxShadow: "0 0 0 1px rgba(0,0,0,0.25), 0 8px 40px rgba(0,0,0,0.30)",
+                border: "1px solid rgba(8,8,8,0.10)",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 12px 48px rgba(0,0,0,0.28)",
               }}
             >
-              <div className="min-w-0 px-4 pb-10 pt-4 md:px-12 md:pb-12 md:pt-10 lg:px-14">
+              <div
+                className="h-[3px] w-full"
+                style={{ background: `linear-gradient(90deg, ${ACCENT}88, ${ACCENT}33 40%, transparent 85%)` }}
+              />
+              <div className="min-w-0 px-4 pb-12 pt-5 md:px-14 md:pb-14 md:pt-10 lg:px-16">
                 {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}
                 {active === "agent"   && <PreviewAgentView  onNavigate={setActive} />}
                 {active === "tools"   && <PreviewToolsFlow />}

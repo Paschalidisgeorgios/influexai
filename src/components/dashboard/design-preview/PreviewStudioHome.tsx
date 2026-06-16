@@ -22,13 +22,13 @@ const HL: React.CSSProperties = {
 
 // ─── Hero Production Monitor (right column) ───────────────────────────────────
 
-function HeroMonitor({ integrated = false }: { integrated?: boolean }) {
+function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolean; tall?: boolean }) {
   const { t } = useLang();
   const ts = t.studio;
 
   return (
     <div
-      className="relative flex min-h-[280px] w-full min-w-0 flex-col overflow-hidden md:min-h-[400px] lg:min-h-[440px]"
+      className={`relative flex w-full min-w-0 flex-col overflow-hidden ${tall ? "h-full min-h-[520px] lg:min-h-[580px]" : "min-h-[300px] md:min-h-[360px]"}`}
       style={{
         background: "#0a0a10",
         border: integrated
@@ -48,7 +48,7 @@ function HeroMonitor({ integrated = false }: { integrated?: boolean }) {
         <span className="h-2 w-2 rounded-full bg-white/25" />
         <span className="h-2 w-2 rounded-full bg-white/14" />
         <span className="h-2 w-2 rounded-full bg-white/08" />
-        <span className="ml-2 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
+        <span className="ml-2 font-mono text-[11px] tracking-[0.12em] uppercase text-neutral-500">
           Production Output
         </span>
       </div>
@@ -68,13 +68,13 @@ function HeroMonitor({ integrated = false }: { integrated?: boolean }) {
           }}
         />
         <div className="relative">
-          <p className="mb-3 font-mono text-[10px] tracking-[0.14em] uppercase text-neutral-500">
+          <p className="mb-3 font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-500">
             {ts.mediaPrimaryTag}
           </p>
-          <h3 className="mb-3 text-2xl font-extrabold text-neutral-100 md:text-[2rem]" style={{ ...HL, fontWeight: 800 }}>
+          <h3 className="mb-3 text-[1.375rem] font-extrabold text-neutral-100 md:text-[2.125rem]" style={{ ...HL, fontWeight: 800 }}>
             {ts.mediaPrimaryTitle}
           </h3>
-          <p className="max-w-sm text-[14px] leading-[1.65] text-neutral-300">
+          <p className="max-w-sm text-[14px] leading-[1.65] text-neutral-300 md:text-[15px]">
             {ts.mediaPrimaryDesc}
           </p>
         </div>
@@ -83,8 +83,8 @@ function HeroMonitor({ integrated = false }: { integrated?: boolean }) {
       <div className="grid grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.07)" }}>
         {ts.mediaOutputs.map((out) => (
           <div key={out.label} className="px-4 py-4" style={{ background: "#0e0e16" }}>
-            <p className="font-mono text-[9px] tracking-[0.12em] uppercase text-neutral-500">{out.type}</p>
-            <p className="mt-1 truncate text-[12px] font-semibold text-neutral-100">{out.label}</p>
+            <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">{out.type}</p>
+            <p className="mt-1 truncate text-[13px] font-semibold text-neutral-100">{out.label}</p>
           </div>
         ))}
       </div>
@@ -324,18 +324,19 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
 
   return (
     <div className="min-w-0">
-      {/* A) Hero + Agent — mobile: headline → agent → monitor */}
-      <section className="mb-12 md:mb-16">
-        <div className="grid min-w-0 grid-cols-1 items-start md:grid-cols-2 md:gap-8 lg:gap-10">
-          <div className="min-w-0 flex flex-col justify-start">
+      {/* Hero: Desktop = Mission+Agent left | Monitor right. Mobile = Headline → Subline → Agent → Monitor */}
+      <section className="mb-14 md:mb-20">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-0 md:grid-cols-2 md:items-stretch md:gap-10 lg:gap-14 xl:gap-16">
+          {/* Left — Mission + Agent entry point */}
+          <div className="min-w-0 flex flex-col">
             <p
-              className="mb-3 font-mono text-[11px] tracking-[0.16em] uppercase"
+              className="mb-4 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-5"
               style={{ color: META }}
             >
               {ts.overline}
             </p>
             <h1
-              className="mb-4 text-[1.875rem] font-extrabold leading-[1.05] sm:text-[2.25rem] md:text-[3.5rem] lg:text-[4.25rem]"
+              className="mb-5 text-[2rem] font-extrabold leading-[1.03] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
               style={{
                 ...HL,
                 color: DARK,
@@ -351,34 +352,39 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
               ))}
             </h1>
             <p
-              className="max-w-lg text-[15px] leading-[1.65] md:text-[17px]"
+              className="max-w-xl text-[16px] leading-[1.7] md:text-[18px]"
               style={{ color: SUBLINE }}
             >
               {ts.subline}
             </p>
+
+            <div className="mt-7 min-w-0 md:mt-8">
+              <p className="mb-4 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
+                {t.agent.overline}
+              </p>
+              <PreviewAgentCommand
+                onNavigate={onNavigate}
+                compact
+                embedded
+                showEnterHint
+                elevated
+              />
+            </div>
           </div>
 
-          <div className="hidden min-w-0 md:block md:-mt-1">
-            <HeroMonitor integrated />
+          {/* Right — Production Monitor (desktop only, aligned with hero) */}
+          <div className="hidden min-w-0 md:flex md:flex-col">
+            <HeroMonitor integrated tall />
           </div>
         </div>
 
-        <div className="mt-8 min-w-0 md:mt-10">
-          <p className="mb-4 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
-            {t.agent.overline}
-          </p>
-          <PreviewAgentCommand onNavigate={onNavigate} compact showEnterHint elevated />
-        </div>
-
+        {/* Mobile — Monitor after Agent, before Pipeline */}
         <div className="mt-8 min-w-0 md:hidden">
           <HeroMonitor integrated />
         </div>
       </section>
 
-      {/* C) Production Pipeline */}
       <ProductionPipeline />
-
-      {/* D) Production Stage */}
       <ProductionStage />
     </div>
   );
