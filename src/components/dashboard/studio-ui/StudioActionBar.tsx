@@ -16,10 +16,12 @@ type ActionProps = {
   primaryHref?: string;
   primaryDisabled?: boolean;
   primaryLoading?: boolean;
+  primaryLoadingLabel?: string;
   secondaryLabel?: string;
   secondaryHref?: string;
   hint?: string;
   className?: string;
+  stickyMobile?: boolean;
 };
 
 const primaryClass = cn(
@@ -38,10 +40,12 @@ export function StudioActionBar({
   primaryHref,
   primaryDisabled,
   primaryLoading,
+  primaryLoadingLabel = "Wird gestartet…",
   secondaryLabel = "Mit Agent vorbereiten",
   secondaryHref,
   hint,
   className,
+  stickyMobile = false,
 }: ActionProps) {
   const primaryStyle = { background: STUDIO_ACCENT, color: "#060608" } as const;
   const secondaryStyle = {
@@ -50,12 +54,21 @@ export function StudioActionBar({
     color: STUDIO_TEXT,
   } as const;
 
+  const loadingLabel = primaryLoading ? primaryLoadingLabel : primaryLabel;
+
   return (
-    <div className={cn("space-y-3 pt-1", className)}>
+    <div
+      className={cn(
+        "space-y-3 pt-1",
+        stickyMobile &&
+          "sticky bottom-[4.75rem] z-10 -mx-0.5 border-t border-black/[0.06] bg-[rgba(250,246,238,0.96)] px-0.5 py-3 backdrop-blur-md md:static md:border-t-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none",
+        className
+      )}
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         {primaryHref ? (
           <Link href={primaryHref} className={primaryClass} style={primaryStyle}>
-            {primaryLoading ? "Wird gestartet…" : primaryLabel}
+            {loadingLabel}
           </Link>
         ) : (
           <button
@@ -65,7 +78,7 @@ export function StudioActionBar({
             className={primaryClass}
             style={primaryStyle}
           >
-            {primaryLoading ? "Wird gestartet…" : primaryLabel}
+            {loadingLabel}
           </button>
         )}
         {secondaryHref ? (

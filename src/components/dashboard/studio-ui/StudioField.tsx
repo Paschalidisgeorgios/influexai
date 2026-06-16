@@ -29,7 +29,7 @@ export function StudioFieldLabel({
 }) {
   return (
     <p
-      className={cn("mb-2.5 text-[11px] font-semibold uppercase tracking-[0.14em]", className)}
+      className={cn("mb-2.5 text-sm font-medium", className)}
       style={{ color: STUDIO_MUTED }}
     >
       {children}

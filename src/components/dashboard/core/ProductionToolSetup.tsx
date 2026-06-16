@@ -16,7 +16,6 @@ import {
   StudioCreditPill,
   ToolSetupContext,
   ToolSetupLayout,
-  ToolSetupSurface,
 } from "../studio-ui";
 
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
@@ -43,9 +42,9 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
           </ToolSetupContext>
         }
         setup={
-          <ToolSetupSurface>
+          <div className="min-w-0 overflow-visible">
             <ProductionToolSetupBody toolId={toolId} />
-          </ToolSetupSurface>
+          </div>
         }
       />
     </div>

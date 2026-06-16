@@ -15,7 +15,7 @@ export function ToolSetupLayout({
   return (
     <div
       className={cn(
-        "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)] lg:gap-10 xl:gap-14",
+        "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.5fr)] lg:gap-10 xl:gap-14",
         className
       )}
     >
@@ -42,7 +42,7 @@ export function ToolSetupContext({
     <div className="space-y-5">
       {kicker ? (
         <p
-          className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+          className="text-xs font-medium tracking-wide"
           style={{ color: STUDIO_MUTED }}
         >
           {kicker}

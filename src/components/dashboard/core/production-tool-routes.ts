@@ -31,6 +31,7 @@ export const TOOL_QUERY_ALIASES: Record<string, ToolId> = {
   "bild-generator": "image-gen",
   "video-generator": "img-to-video",
   "szenen-generator": "img-to-video",
+  "image-to-video": "img-to-video",
 };
 
 const LAUNCH_TOOL_IDS = new Set<ToolId>([
