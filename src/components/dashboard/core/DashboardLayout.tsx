@@ -26,6 +26,7 @@ import {
   Search,
   FileText,
   Loader2,
+  LayoutDashboard,
   // extended tool icons
   Film,
   Repeat2,
@@ -232,7 +233,7 @@ function LeftSidebar({
 
   return (
     <aside
-      className="fixed left-0 top-0 z-20 flex h-screen w-[240px] flex-col border-r border-white/[0.02]"
+      className="fixed left-0 top-0 z-20 hidden h-screen w-[240px] flex-col border-r border-white/[0.02] md:flex"
       style={{ background: "#09090A" }}
     >
       {/* ── Brand ──────────────────────────────────────────────────────────── */}
@@ -511,7 +512,7 @@ function StudioHome({
   recentAssets:  GalleryItem[];
 }) {
   return (
-    <div className="relative w-full space-y-8">
+    <div className="relative w-full space-y-6 md:space-y-8">
 
       {/* Layered ambient glows — lime top-centre + blue right — create depth without neon */}
       <div
@@ -527,6 +528,7 @@ function StudioHome({
       <DashboardSectionHeader
         eyebrow="Creator Studio"
         title="What are you making today?"
+        titleClassName="text-xl font-bold sm:text-2xl"
         description="Generate campaign-ready images, videos and creator assets from one place."
         action={
           creditsLoaded ? (
@@ -551,7 +553,7 @@ function StudioHome({
 
       {/* ── 2. Bento Hero Grid ────────────────────────────────────────────── */}
       {/* Ad Flow takes 2/3 width; Avatar + Agent stack in the remaining 1/3 */}
-      <div className="flex gap-3" style={{ minHeight: "380px" }}>
+      <div className="flex flex-col gap-3 md:flex-row md:min-h-[380px]">
 
         {/* Large feature card — Ad Flow */}
         {(() => {
@@ -564,8 +566,8 @@ function StudioHome({
               whileHover="hover"
               whileTap={{ scale: 0.985 }}
               transition={{ duration: 0.22 }}
-              className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-[#b4ff00]/20 hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
-              style={{ flex: 2, background: "#0C0C0E" }}
+              className="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_32px_rgba(0,0,0,0.6)] transition-all duration-300 hover:border-[#b4ff00]/20 hover:shadow-[0_8px_40px_rgba(0,0,0,0.7)] md:min-h-0 md:[flex:2]"
+              style={{ background: "#0C0C0E" }}
             >
               {card.imgUrl && (
                 <>
@@ -604,7 +606,7 @@ function StudioHome({
         })()}
 
         {/* Right column — Avatar Video + AI Media Buyer stacked */}
-        <div className="flex flex-1 flex-col gap-3">
+        <div className="flex flex-col gap-3 md:flex-[1]">
           {HERO_CARDS.slice(1).map((card) => (
             <motion.button
               key={card.id}
@@ -613,7 +615,7 @@ function StudioHome({
               whileHover="hover"
               whileTap={{ scale: 0.985 }}
               transition={{ duration: 0.22 }}
-              className="group relative flex-1 cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_24px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+              className="group relative min-h-[190px] cursor-pointer overflow-hidden rounded-2xl border border-white/[0.05] text-left shadow-[0_4px_24px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)] md:min-h-0 md:flex-1"
               style={{ background: card.bgGradient ?? "#0C0C0E" }}
             >
               {card.imgUrl && (
@@ -669,9 +671,9 @@ function StudioHome({
       <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.01]">
         {/* Lime top-accent hairline */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#b4ff00]/25 to-transparent" />
-        <div className="flex items-center px-6 py-4">
+        <div className="flex items-center overflow-x-auto px-6 py-4" style={{ scrollbarWidth: "none" }}>
           {WORKFLOW_STEPS.map((step, i) => (
-            <div key={step.label} className="flex flex-1 items-center">
+            <div key={step.label} className="flex shrink-0 items-center">
               <div className="flex items-center gap-2.5">
                 <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[8px] transition-colors ${
                   i === 0
@@ -685,7 +687,7 @@ function StudioHome({
                 </span>
               </div>
               {i < WORKFLOW_STEPS.length - 1 && (
-                <div className="mx-4 h-px flex-1 bg-gradient-to-r from-white/[0.08] to-transparent" />
+                <div className="mx-4 h-px w-8 shrink-0 bg-gradient-to-r from-white/[0.08] to-transparent" />
               )}
             </div>
           ))}
@@ -693,7 +695,7 @@ function StudioHome({
       </div>
 
       {/* ── 4. Tool Categories ────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
 
         {/* More ways to create */}
         <div>
@@ -713,7 +715,7 @@ function StudioHome({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[10px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
                 </div>
                 {card.badge && (
                   <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold ${BADGE_STYLE[card.badge]}`}>
@@ -745,7 +747,7 @@ function StudioHome({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-zinc-200 transition-colors group-hover:text-white">{card.label}</p>
-                  <p className="mt-0.5 truncate text-[10px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-zinc-500 transition-colors group-hover:text-zinc-400">{card.desc}</p>
                 </div>
                 <span className="shrink-0 font-mono text-[10px] text-zinc-600">~{card.credits}cr</span>
                 <ChevronRight size={11} className="shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-400" />
@@ -762,7 +764,7 @@ function StudioHome({
           <div className="mb-4">
             <DashboardSectionHeader title="Recent outputs" />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {recentAssets.slice(0, 3).map((asset) => (
               <div
                 key={asset.id}
@@ -1319,8 +1321,8 @@ export function DashboardLayout() {
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
       <main
-        className={`ml-[240px] flex h-screen flex-1 flex-col overflow-y-auto transition-all duration-200 ${
-          isRightPanelOpen ? "mr-[280px]" : "mr-0"
+        className={`ml-0 flex h-screen flex-1 flex-col overflow-y-auto pb-16 transition-all duration-200 md:ml-[240px] md:pb-0 ${
+          isRightPanelOpen ? "md:mr-[280px]" : "mr-0"
         }`}
         style={{
           background:     "#000000",
@@ -1329,7 +1331,7 @@ export function DashboardLayout() {
       >
         {/* Studio Home hat eigenes breiteres Layout */}
         {activeTool === "studio" ? (
-          <div className="mx-auto w-full max-w-6xl px-8 pb-14 pt-12">
+          <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-6 sm:px-6 sm:pt-10 md:px-8 md:pt-12">
             <StudioHome
               onSelect={handleToolSelect}
               credits={credits}
@@ -1415,6 +1417,42 @@ export function DashboardLayout() {
         </div>
         )}
       </main>
+
+      {/* ── Mobile Bottom Nav — visible only on < md, replaces sidebar ──────── */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t border-white/[0.04] md:hidden"
+        style={{ background: "#09090A", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        {(
+          [
+            { id: "studio",   label: "Home",     icon: <LayoutDashboard size={18} /> },
+            { id: "gallery",  label: "Gallery",   icon: <Images size={18} />          },
+            { id: "viral-hook", label: "Tools",   icon: <Sparkles size={18} />        },
+            { id: "settings", label: "Settings",  icon: <Settings size={18} />        },
+          ] as { id: ToolId; label: string; icon: React.ReactNode }[]
+        ).map((item) => {
+          const isActive = activeTool === item.id || (item.id === "viral-hook" && resolveTopNav(activeTool) === "tools");
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleToolSelect(item.id)}
+              className="flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors active:bg-white/[0.04]"
+              aria-label={item.label}
+            >
+              <span style={{ color: isActive ? "#b4ff00" : "rgba(255,255,255,0.28)" }}>
+                {item.icon}
+              </span>
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: isActive ? "#b4ff00" : "rgba(255,255,255,0.28)" }}
+              >
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
 
       {/* ── Right Settings Panel ──────────────────────────────────────────────── */}
       <AnimatePresence>

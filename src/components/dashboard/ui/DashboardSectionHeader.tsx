@@ -25,6 +25,8 @@ export interface DashboardSectionHeaderProps {
   /** Optional slot for a button or link rendered to the right */
   action?: React.ReactNode;
   className?: string;
+  /** Override title size/weight — defaults to "text-base font-semibold" */
+  titleClassName?: string;
 }
 
 export function DashboardSectionHeader({
@@ -33,6 +35,7 @@ export function DashboardSectionHeader({
   description,
   action,
   className = "",
+  titleClassName,
 }: DashboardSectionHeaderProps) {
   return (
     <div className={["flex items-start justify-between gap-4", className].filter(Boolean).join(" ")}>
@@ -42,7 +45,7 @@ export function DashboardSectionHeader({
             {eyebrow}
           </p>
         )}
-        <h2 className={`text-base font-semibold leading-snug ${text.primary}`}>
+        <h2 className={["leading-snug", text.primary, titleClassName ?? "text-base font-semibold"].join(" ")}>
           {title}
         </h2>
         {description && (
