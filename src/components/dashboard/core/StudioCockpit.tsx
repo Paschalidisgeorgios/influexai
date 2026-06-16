@@ -19,6 +19,7 @@ import {
 import type { ToolId } from "./DashboardLayout";
 import type { GalleryItem } from "./GalleryGrid";
 import { getCreditAffordanceAmount } from "@/lib/tools/credit-display";
+import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
 import { STUDIO_RADIUS, STUDIO_SHADOW } from "../studio-ui";
 import {
@@ -45,6 +46,12 @@ const QUICK_ACTIONS: QuickAction[] = [
   { id: "content-calendar", label: "Kampagne planen", icon: <Calendar size={16} strokeWidth={1.75} /> },
   { id: "avatar-video", label: "Avatar Studio", icon: <UserRound size={16} strokeWidth={1.75} /> },
 ];
+
+function formatQuickActionCredits(toolId: ToolId, affordance: number): string | null {
+  if (toolId === "viral-hook") return `${VIRAL_HOOK_CREDIT_COST} Credits`;
+  if (affordance > 0) return `ab ${affordance}`;
+  return null;
+}
 
 interface StudioCockpitProps {
   onSelect: (id: ToolId) => void;
@@ -207,6 +214,7 @@ export function StudioCockpit({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {QUICK_ACTIONS.map((action) => {
             const cost = getCreditAffordanceAmount(action.id);
+            const creditHint = formatQuickActionCredits(action.id, cost);
             return (
               <button
                 key={action.id}
@@ -228,9 +236,9 @@ export function StudioCockpit({
                 <span className="min-w-0 flex-1 text-[14px] font-semibold tracking-tight">
                   {action.label}
                 </span>
-                {cost > 0 ? (
+                {creditHint ? (
                   <span className="font-mono text-[10px] tabular-nums" style={{ color: DASHBOARD_MUTED }}>
-                    ab {cost}
+                    {creditHint}
                   </span>
                 ) : null}
                 <ChevronRight
