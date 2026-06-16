@@ -12,6 +12,7 @@ import {
   DashboardPageHeader,
   DashboardPanel,
 } from "@/components/dashboard/core/DashboardSurface";
+import { StudioCreditsSection } from "@/components/dashboard/core/StudioCreditsSection";
 
 type SettingsSection =
   | "account"
@@ -121,7 +122,6 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>("account");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [credits, setCredits] = useState<number | null>(null);
   const [dailyIdeasEmail, setDailyIdeasEmail] = useState(true);
   const [savingDailyEmail, setSavingDailyEmail] = useState(false);
   const [newPw, setNewPw] = useState("");
@@ -155,7 +155,7 @@ export default function SettingsPage() {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "full_name, email, daily_suggestions_email, stripe_subscription_id, credits"
+          "full_name, email, daily_suggestions_email, stripe_subscription_id"
         )
         .eq("id", user.id)
         .single();
@@ -165,7 +165,6 @@ export default function SettingsPage() {
         setEmail(data.email ?? "");
         setDailyIdeasEmail(data.daily_suggestions_email !== false);
         setHasActiveSubscription(Boolean(data.stripe_subscription_id));
-        if (typeof data.credits === "number") setCredits(data.credits);
       }
 
       const { data: tenant } = await supabase
@@ -365,35 +364,7 @@ export default function SettingsPage() {
     ),
 
     billing: (
-      <DashboardPanel title="Billing & Credits">
-        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Credits, Plan und Abrechnung verwalten.
-        </p>
-        {credits !== null ? (
-          <p className="mb-4 text-sm" style={{ color: DASHBOARD_TEXT }}>
-            Aktuell verfügbar:{" "}
-            <span className="font-mono text-lg font-bold" style={{ color: DASHBOARD_ACCENT }}>
-              {credits}
-            </span>{" "}
-            Credits
-          </p>
-        ) : (
-          <p className="mb-4 text-sm" style={{ color: DASHBOARD_MUTED }}>
-            Credits werden geladen…
-          </p>
-        )}
-        <Link
-          href="/dashboard/credits"
-          className="inline-flex rounded-lg border px-4 py-2.5 text-sm font-semibold no-underline transition-colors hover:border-[#B4FF00]/30"
-          style={{
-            borderColor: "rgba(8,8,8,0.12)",
-            background: "#FFFCF7",
-            color: DASHBOARD_TEXT,
-          }}
-        >
-          Credits & Plan verwalten →
-        </Link>
-      </DashboardPanel>
+      <StudioCreditsSection showPackages={false} showApi={false} />
     ),
 
     memory: (

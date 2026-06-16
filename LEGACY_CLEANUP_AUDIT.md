@@ -1,8 +1,46 @@
 # Legacy Cleanup Audit — Phase 3A.0.6
 
-**Date:** 2026-06-16  
-**HEAD before cleanup:** `667dfbc` (clip fix)  
-**Scope:** Dashboard legacy UI, dead components, upgrade/pricing path review. No API/auth/credit/billing/migration changes.
+**Date:** 2026-06-16 (updated)  
+**HEAD:** `8f39205` + Settings Credits cleanup  
+**Scope:** Dashboard legacy UI, dead components, upgrade/pricing path review, Settings/Credits Studio migration. No API/auth/credit/billing/migration changes.
+
+---
+
+## Settings Credits Legacy Cleanup (Phase 3A.0.6b)
+
+### Alte Credits-Komponente
+
+| Datei | Rolle |
+|-------|-------|
+| `src/app/dashboard/credits/page.tsx` | Dark glass UI (`GLASS_CARD`, `#ccff00`, dot-grid) — **ersetzt** |
+| `src/components/credit-calculator.tsx` | Slider „Credit Rechner“, „DEIN FAVORIT“, neon bars — **gelöscht** |
+
+**Import-Kette:** Settings „Billing & Credits“ verlinkte auf `/dashboard/credits` → Legacy-Seite. Nutzer sahen Legacy-UI beim Klick oder direkt auf `/dashboard/credits`.
+
+### Neue Studio-Komponente
+
+| Datei | Rolle |
+|-------|-------|
+| `src/components/dashboard/core/StudioCreditsSection.tsx` | Ivory `StudioPanel`-basierte Credits-UI |
+
+**Verwendung:**
+- `/dashboard/settings` → Tab „Billing & Credits“ (`showPackages={false}`)
+- `/dashboard/credits` → volle Seite mit Paket-Grid + API
+
+### FIRST20 / Rabatt
+
+- **UI-Banner entfernt** („Erster Kauf? FIRST20 …“) — kein Marketing-Schrei in Settings/Credits
+- **Stripe-Logik unverändert:** `src/lib/first-purchase-stripe.ts` bleibt; Promo kann weiterhin serverseitig im Checkout greifen, wenn konfiguriert
+- Keine falschen Rabatt-Anzeigen in der Studio-UI
+
+### Upgrade-Pfad (bestätigt)
+
+| Ziel | Pfad |
+|------|------|
+| Abo / Pläne (öffentlich) | `/pricing` |
+| Credit-Top-up (eingeloggt) | `/dashboard/credits` → `/api/credits/checkout` |
+| Settings Billing | Inline `StudioCreditsSection` + Link „Pläne & Abo“ → `/pricing` |
+| Alte Aliase | `/preise` → `/pricing` (middleware) |
 
 ---
 
@@ -25,14 +63,18 @@
 | `src/app/preise/` | Kein Ordner — Redirect in `middleware.ts` → `/pricing` |
 | `src/app/login/`, `src/app/signup/` | Kein Ordner — Redirect → `/auth/sign-in`, `/auth/sign-up` |
 | `src/app/dashboard/settings/` | Production settings page; „späteren Phase“-Text entfernt |
-| `src/app/dashboard/credits/` | Aktiver Credit-Kauf (Stripe), kein Legacy-Duplikat von `/pricing` |
+| `src/app/dashboard/credits/` | **Studio UI** — `StudioCreditsSection` (Ivory, kein Dark Glass) |
 | `src/lib/tools/` | Audit-Registries behalten (Credit-Dokumentation, AgentBox-Referenzen) |
 | `src/components/agent/` | Nicht angefasst — Agent-Runtime aktiv |
 | `src/components/pricing/` | Nicht angefasst — Landing-Pricing aktiv |
 
 ---
 
-## Gelöschte Dateien (33)
+## Gelöschte Dateien (34)
+
+### Credits Legacy
+
+- `src/components/credit-calculator.tsx` — Dark slider widget, nur von alter credits page genutzt
 
 ### Canvas-Board-Subtree (nie gemountet)
 

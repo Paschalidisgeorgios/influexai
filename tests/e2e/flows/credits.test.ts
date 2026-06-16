@@ -22,11 +22,9 @@ test.describe("Credits Page", () => {
     await expect(page.getByTestId("pricing-card")).toHaveCount(4);
   });
 
-  test("marks Creator plan as most popular", async ({ page }) => {
-    const creatorCard = page.getByTestId("pricing-card").nth(1);
-    await expect(
-      creatorCard.getByText(/most popular|beliebtesten|empfohlen/i)
-    ).toBeVisible();
+  test("marks recommended pack", async ({ page }) => {
+    const popularCard = page.getByTestId("pricing-card").filter({ hasText: /Empfohlen/i });
+    await expect(popularCard).toBeVisible();
   });
 
   test("clicking buy calls Stripe checkout API", async ({ page }) => {
@@ -46,22 +44,9 @@ test.describe("Credits Page", () => {
     expect(response.status()).toBe(200);
   });
 
-  test("shows credit calculator", async ({ page }) => {
-    const slider = page.getByTestId("credit-calculator-slider");
-    await expect(slider).toBeVisible();
-
-    await slider.evaluate((el) => {
-      const input = el as HTMLInputElement;
-      input.value = "1";
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-
-    await expect(
-      page
-        .locator("li")
-        .filter({ hasText: /scripts/i })
-        .getByText("60")
-    ).toBeVisible();
+  test("shows credit usage examples", async ({ page }) => {
+    const examples = page.getByTestId("credit-usage-examples");
+    await expect(examples).toBeVisible();
+    await expect(examples.getByText(/Viral Hooks/i)).toBeVisible();
   });
 });
