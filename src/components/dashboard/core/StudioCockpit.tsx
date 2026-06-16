@@ -1,9 +1,10 @@
 "use client";
 
 /**
- * StudioCockpit — Produktionszentrale ohne Agent-first Copy.
+ * StudioCockpit — Produktionszentrale mit Video-Hero.
  */
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   ImageIcon,
@@ -18,13 +19,13 @@ import {
 import type { ToolId } from "./DashboardLayout";
 import type { GalleryItem } from "./GalleryGrid";
 import { getCreditAffordanceAmount } from "@/lib/tools/credit-display";
-import {
-  DASHBOARD_MUTED,
-  DASHBOARD_TEXT,
-  DashboardPageHeader,
-} from "./DashboardSurface";
-import { STUDIO_RADIUS } from "../studio-ui";
+import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
+import { STUDIO_RADIUS, STUDIO_SHADOW } from "../studio-ui";
 import { getStageCreditStyles } from "../studio-ui/credit-status";
+
+const STUDIO_VIDEO_WEBM = "/videos/studio/studio-loop.webm";
+const STUDIO_VIDEO_MP4 = "/videos/studio/studio-loop.mp4";
+const STUDIO_VIDEO_POSTER = "/videos/studio/studio-poster.webp";
 
 interface QuickAction {
   id: ToolId;
@@ -56,6 +57,92 @@ function Muted({ children }: { children: React.ReactNode }) {
   );
 }
 
+function StudioVideoHero({ onSelect }: { onSelect: (id: ToolId) => void }) {
+  const [posterFailed, setPosterFailed] = useState(false);
+
+  return (
+    <section
+      className={`relative w-full min-w-0 overflow-hidden ${STUDIO_RADIUS.panel}`}
+      style={{ boxShadow: STUDIO_SHADOW.featured }}
+      aria-label="Creator Studio"
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(135deg, #E8E0D0 0%, #F2EBE0 45%, #DDD4C4 100%)",
+        }}
+        aria-hidden
+      />
+
+      <video
+        className="absolute inset-0 hidden h-full w-full object-cover md:block"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden
+      >
+        <source src={STUDIO_VIDEO_WEBM} type="video/webm" />
+        <source src={STUDIO_VIDEO_MP4} type="video/mp4" />
+      </video>
+
+      {!posterFailed ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={STUDIO_VIDEO_POSTER}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover md:hidden"
+          onError={() => setPosterFailed(true)}
+        />
+      ) : null}
+
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/42 to-black/18 md:bg-gradient-to-r md:from-black/62 md:via-black/38 md:to-black/12"
+        aria-hidden
+      />
+
+      <div className="relative z-10 flex min-h-[240px] max-w-3xl flex-col justify-end px-6 pb-7 pt-14 sm:min-h-[260px] md:min-h-[300px] md:px-10 md:pb-9 md:pt-16 lg:min-h-[320px] lg:px-12">
+        <p
+          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55"
+        >
+          Creator Studio
+        </p>
+        <h1
+          className="max-w-xl text-[1.65rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-[1.85rem] md:text-[2.15rem]"
+          style={{ letterSpacing: "-0.03em" }}
+        >
+          Dein Creator Studio für Kampagnen, Bilder und Motion.
+        </h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72 md:text-[15px]">
+          Starte mit einem Tool oder bereite dein Briefing mit dem Agenten vor.
+        </p>
+        <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+          <button
+            type="button"
+            onClick={() => onSelect("tools")}
+            className={`inline-flex min-h-[44px] items-center justify-center px-6 text-sm font-semibold transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
+            style={{ background: "#FAF6EE", color: "#080808" }}
+          >
+            Tool auswählen
+          </button>
+          <Link
+            href="/dashboard/ki-agent"
+            className={`inline-flex min-h-[44px] items-center justify-center border px-6 text-sm font-medium no-underline transition-colors hover:border-white/35 ${STUDIO_RADIUS.button}`}
+            style={{
+              borderColor: "rgba(255,255,255,0.22)",
+              color: "rgba(255,255,255,0.92)",
+            }}
+          >
+            Mit Agent vorbereiten
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function StudioCockpit({
   onSelect,
   credits,
@@ -68,11 +155,7 @@ export function StudioCockpit({
 
   return (
     <div className="relative w-full min-w-0 space-y-8 md:space-y-10">
-      <DashboardPageHeader
-        kicker="Creator Studio"
-        title="Produktionszentrale"
-        subtitle="Bild, Video und Text — direkt starten. Alles an einem Ort."
-      />
+      <StudioVideoHero onSelect={onSelect} />
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
