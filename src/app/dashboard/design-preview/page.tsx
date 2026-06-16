@@ -1,16 +1,14 @@
 /**
- * /dashboard/design-preview — InfluexAI Editorial Luxury AI Production Studio
+ * /dashboard/design-preview — InfluexAI Creator Production OS
+ * Design Preview · Clean-room rebuild
  *
- * Loads Plus Jakarta Sans from Google Fonts via next/font (isolated to this
- * route — does NOT affect any other page).  Requires authentication (inherits
- * dashboard auth check).
- *
- * ALL DATA IS MOCK. No API calls. No credit deductions. No asset writes.
- * Does NOT replace the production dashboard.
+ * Loads Plus Jakarta Sans (isolated to this route via CSS variable).
+ * Does NOT affect any other page or the production dashboard.
+ * ALL DATA IS MOCK. No API calls, no credits, no assets.
  */
 
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { MonolithicStudioPreview } from "@/components/dashboard/design-preview/MonolithicStudioPreview";
+import { PreviewShell } from "@/components/dashboard/design-preview/PreviewShell";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets:  ["latin"],
@@ -22,7 +20,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 export default function DesignPreviewPage() {
   return (
     <div className={plusJakarta.variable}>
-      <MonolithicStudioPreview />
+      <PreviewShell />
     </div>
   );
 }
