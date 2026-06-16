@@ -1,8 +1,19 @@
 /**
- * dashboard-tool-registry.ts — Zentrale Datenstruktur aller Dashboard-Tools
+ * dashboard-tool-registry.ts — Legacy audit registry (DashboardLayout ToolId union)
  *
- * HINWEIS: Diese Datei ist bewusst NICHT in andere Dateien integriert (Step 1 only).
- * Sie dient als Single Source of Truth für spätere Integrationsschritte.
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SUPERSEDED FOR PRODUCT TRUTH BY:
+ *   src/lib/tools/canonical-tool-registry.ts  (Phase 1A — canonical SSOT)
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * This file remains for:
+ *   - ToolId-aligned audit entries (35 dashboard tools)
+ *   - AgentBox dev-time validation via getToolDefinition()
+ *
+ * Do NOT add new tools here without mirroring in canonical-tool-registry.ts.
+ * @see PRODUCT_TRUTH_FREEZE.md
+ *
+ * HINWEIS: Diese Datei ist bewusst NICHT in Billing/API integriert (Step 1 only).
  *
  * Datenquellen:
  *  - ToolId-Union-Type:      src/components/dashboard/core/DashboardLayout.tsx (Z. 52–68)
