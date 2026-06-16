@@ -11,8 +11,9 @@ import { PreviewAgentCommand } from "./PreviewAgentCommand";
 
 const ACCENT = "#b4ff00";
 const DARK   = "#080808";
+const SUBLINE = "rgba(8,8,8,0.72)";
 const BODY   = "rgba(8,8,8,0.68)";
-const META   = "rgba(8,8,8,0.42)";
+const META   = "rgba(8,8,8,0.45)";
 const STONE  = "#DDD4C4";
 const STONE2 = "#E8E0D4";
 const HL: React.CSSProperties = {
@@ -21,17 +22,21 @@ const HL: React.CSSProperties = {
 
 // ─── Hero Production Monitor (right column) ───────────────────────────────────
 
-function HeroMonitor() {
+function HeroMonitor({ integrated = false }: { integrated?: boolean }) {
   const { t } = useLang();
   const ts = t.studio;
 
   return (
     <div
-      className="relative flex min-h-[320px] flex-col overflow-hidden md:min-h-[420px] lg:min-h-[480px]"
+      className="relative flex min-h-[280px] w-full min-w-0 flex-col overflow-hidden md:min-h-[400px] lg:min-h-[440px]"
       style={{
         background: "#0a0a10",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
+        border: integrated
+          ? "1px solid rgba(8,8,8,0.18)"
+          : "1px solid rgba(255,255,255,0.08)",
+        boxShadow: integrated
+          ? "0 20px 56px rgba(8,8,8,0.22), 0 0 0 1px rgba(8,8,8,0.06), inset 0 1px 0 rgba(255,255,255,0.07)"
+          : "0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
       }}
     >
       <div
@@ -318,44 +323,55 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
   const ts = t.studio;
 
   return (
-    <div>
+    <div className="min-w-0">
       {/* A) Hero + Agent — mobile: headline → agent → monitor */}
-      <section className="mb-14 md:mb-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-12 lg:gap-16">
-          <div className="flex flex-col justify-center">
-            <p className="mb-5 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
+      <section className="mb-12 md:mb-16">
+        <div className="grid min-w-0 grid-cols-1 items-start md:grid-cols-2 md:gap-8 lg:gap-10">
+          <div className="min-w-0 flex flex-col justify-start">
+            <p
+              className="mb-3 font-mono text-[11px] tracking-[0.16em] uppercase"
+              style={{ color: META }}
+            >
               {ts.overline}
             </p>
             <h1
-              className="mb-5 text-[2rem] font-extrabold leading-[1.06] sm:text-5xl md:text-6xl lg:text-7xl"
-              style={{ ...HL, color: DARK, letterSpacing: "-0.03em", fontWeight: 800 }}
+              className="mb-4 text-[1.875rem] font-extrabold leading-[1.05] sm:text-[2.25rem] md:text-[3.5rem] lg:text-[4.25rem]"
+              style={{
+                ...HL,
+                color: DARK,
+                WebkitTextFillColor: DARK,
+                letterSpacing: "-0.03em",
+                fontWeight: 800,
+              }}
             >
               {ts.headline.split("\n").map((line, i) => (
-                <span key={i}>
+                <span key={i} className="block" style={{ color: DARK }}>
                   {line}
-                  {i < ts.headline.split("\n").length - 1 && <br />}
                 </span>
               ))}
             </h1>
-            <p className="max-w-lg text-[16px] leading-[1.7] md:text-[17px]" style={{ color: BODY }}>
+            <p
+              className="max-w-lg text-[15px] leading-[1.65] md:text-[17px]"
+              style={{ color: SUBLINE }}
+            >
               {ts.subline}
             </p>
           </div>
 
-          <div className="hidden md:block">
-            <HeroMonitor />
+          <div className="hidden min-w-0 md:block md:-mt-1">
+            <HeroMonitor integrated />
           </div>
         </div>
 
-        <div className="mt-10 md:mt-16">
-          <p className="mb-6 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
+        <div className="mt-8 min-w-0 md:mt-10">
+          <p className="mb-4 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
             {t.agent.overline}
           </p>
           <PreviewAgentCommand onNavigate={onNavigate} compact showEnterHint elevated />
         </div>
 
-        <div className="mt-10 md:hidden">
-          <HeroMonitor />
+        <div className="mt-8 min-w-0 md:hidden">
+          <HeroMonitor integrated />
         </div>
       </section>
 

@@ -158,7 +158,7 @@ function PreviewInner() {
     <div className="fixed inset-0 z-[100] flex" style={{ background: SHELL_BG }}>
       <PreviewSidebar active={active} onNavigate={setActive} />
 
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <PreviewTopbar active={active} />
 
         {/* Main scroll — dark shell framing a warm editorial stage */}
@@ -166,16 +166,16 @@ function PreviewInner() {
           className="flex-1 overflow-y-auto overflow-x-hidden"
           style={{ scrollbarWidth: "none", background: SHELL_BG }}
         >
-          <div className="mx-auto w-full max-w-[92rem] px-2.5 pb-28 pt-3 md:px-4 md:pb-10 md:pt-5">
+          <div className="mx-auto w-full min-w-0 max-w-[92rem] px-2 pb-32 pt-2 md:px-4 md:pb-10 md:pt-4">
             <div
-              className="min-h-[calc(100vh-7rem)] overflow-hidden rounded-md"
+              className="min-h-[calc(100vh-7rem)] min-w-0 overflow-x-clip overflow-y-visible rounded-md"
               style={{
                 background: IVORY,
                 border: "1px solid rgba(255,255,255,0.10)",
                 boxShadow: "0 0 0 1px rgba(0,0,0,0.25), 0 8px 40px rgba(0,0,0,0.30)",
               }}
             >
-              <div className="px-5 py-7 md:px-12 md:py-14 lg:px-16 lg:py-16">
+              <div className="min-w-0 px-4 pb-10 pt-4 md:px-12 md:pb-12 md:pt-10 lg:px-14">
                 {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}
                 {active === "agent"   && <PreviewAgentView  onNavigate={setActive} />}
                 {active === "tools"   && <PreviewToolsFlow />}
