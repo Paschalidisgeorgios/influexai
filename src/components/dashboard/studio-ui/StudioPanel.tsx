@@ -6,6 +6,7 @@ import {
   STUDIO_PANEL_BG,
   STUDIO_RADIUS,
   STUDIO_SHADOW,
+  STUDIO_STAGE_BORDER,
 } from "./tokens";
 
 export function StudioPanel({
@@ -24,11 +25,12 @@ export function StudioPanel({
       className={cn(
         STUDIO_RADIUS.panel,
         "w-full min-w-0 max-w-full p-5 md:p-6",
-        variant === "soft" && "border border-black/[0.05]",
+        variant === "soft" && "border backdrop-blur-sm",
         className
       )}
       style={{
         background: variant === "flat" ? "transparent" : STUDIO_PANEL_BG,
+        borderColor: variant === "flat" ? undefined : STUDIO_STAGE_BORDER,
         boxShadow: variant === "flat" ? undefined : STUDIO_SHADOW.panel,
       }}
     >

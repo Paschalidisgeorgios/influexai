@@ -12,15 +12,17 @@ import {
   STUDIO_PANEL_BG,
   STUDIO_RADIUS,
   STUDIO_SHADOW,
-  STUDIO_SURFACE,
+  STUDIO_SHELL_GRADIENT,
+  STUDIO_STAGE_BORDER,
+  STUDIO_SURFACE_GLASS,
   STUDIO_TEXT,
 } from "../studio-ui/tokens";
 
-export const DASHBOARD_SHELL_BG = "#050506";
+export const DASHBOARD_SHELL_BG = STUDIO_SHELL_GRADIENT;
 export const DASHBOARD_ACCENT = STUDIO_ACCENT;
 export const DASHBOARD_TEXT = STUDIO_TEXT;
 export const DASHBOARD_MUTED = STUDIO_MUTED;
-export const DASHBOARD_STAGE_SURFACE = STUDIO_SURFACE;
+export const DASHBOARD_STAGE_SURFACE = STUDIO_SURFACE_GLASS;
 
 function joinClasses(...parts: (string | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -137,7 +139,7 @@ export function DashboardPanel({
       className={joinClasses(STUDIO_RADIUS.panel, "p-5 md:p-6", className)}
       style={{
         background: STUDIO_PANEL_BG,
-        border: "1px solid rgba(8,8,8,0.04)",
+        border: `1px solid ${STUDIO_STAGE_BORDER}`,
         boxShadow: STUDIO_SHADOW.panel,
       }}
     >

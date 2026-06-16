@@ -1,7 +1,14 @@
 "use client";
 
 import { cn } from "./cn";
-import { STUDIO_MUTED, STUDIO_RADIUS, STUDIO_TEXT } from "./tokens";
+import {
+  STUDIO_MUTED,
+  STUDIO_PANEL_BG,
+  STUDIO_RADIUS,
+  STUDIO_SHADOW,
+  STUDIO_STAGE_BORDER,
+  STUDIO_TEXT,
+} from "./tokens";
 
 export function ToolSetupLayout({
   context,
@@ -80,10 +87,11 @@ export function ToolSetupSurface({
 }) {
   return (
     <div
-      className={cn(STUDIO_RADIUS.panel, "border border-black/[0.05] p-5 md:p-7", className)}
+      className={cn(STUDIO_RADIUS.panel, "border backdrop-blur-sm p-5 md:p-7", className)}
       style={{
-        background: "rgba(255,252,247,0.82)",
-        boxShadow: "0 2px 28px rgba(8,8,8,0.035)",
+        background: STUDIO_PANEL_BG,
+        borderColor: STUDIO_STAGE_BORDER,
+        boxShadow: STUDIO_SHADOW.panel,
       }}
     >
       {children}

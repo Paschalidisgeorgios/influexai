@@ -393,8 +393,11 @@ function ContentCalendarSetup() {
             {plan.days.slice(0, 8).map((day) => (
               <li
                 key={day.day}
-                className="rounded-[14px] border border-black/[0.05] px-4 py-3"
-                style={{ background: "rgba(255,252,247,0.65)" }}
+                className="rounded-[14px] border px-4 py-3"
+                style={{
+                  background: "rgba(255,250,242,0.52)",
+                  borderColor: "rgba(255,255,255,0.45)",
+                }}
               >
                 <p className="text-xs font-semibold" style={{ color: DASHBOARD_MUTED }}>
                   Tag {day.day} · {day.dateLabel}

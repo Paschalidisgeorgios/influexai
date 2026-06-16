@@ -21,6 +21,11 @@ import type { GalleryItem } from "./GalleryGrid";
 import { getCreditAffordanceAmount } from "@/lib/tools/credit-display";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
 import { STUDIO_RADIUS, STUDIO_SHADOW } from "../studio-ui";
+import {
+  STUDIO_CARD_BG,
+  STUDIO_CARD_BORDER,
+  STUDIO_PANEL_BG,
+} from "../studio-ui/tokens";
 import { getStageCreditStyles } from "../studio-ui/credit-status";
 
 const STUDIO_VIDEO_WEBM = "/videos/studio/studio-loop.webm";
@@ -175,8 +180,8 @@ export function StudioCockpit({
               href="/dashboard/credits"
               className="inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium no-underline transition-colors hover:border-black/12"
               style={{
-                borderColor: "rgba(8,8,8,0.08)",
-                background: "rgba(255,252,247,0.75)",
+                borderColor: STUDIO_CARD_BORDER,
+                background: STUDIO_CARD_BG,
                 color: DASHBOARD_TEXT,
               }}
             >
@@ -209,8 +214,8 @@ export function StudioCockpit({
                 onClick={() => onSelect(action.id)}
                 className={`group flex min-h-[58px] items-center gap-3 border px-4 py-3.5 text-left transition-all hover:-translate-y-px hover:border-black/14 hover:shadow-[0_4px_20px_rgba(8,8,8,0.05)] ${STUDIO_RADIUS.input}`}
                 style={{
-                  borderColor: "rgba(8,8,8,0.08)",
-                  background: "rgba(255,252,247,0.92)",
+                  borderColor: STUDIO_CARD_BORDER,
+                  background: STUDIO_CARD_BG,
                   color: DASHBOARD_TEXT,
                 }}
               >
@@ -265,9 +270,11 @@ export function StudioCockpit({
 
       <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         <div
-          className={`p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
+          className={`border backdrop-blur-sm p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
           style={{
-            background: "rgba(255,252,247,0.55)",
+            background: STUDIO_PANEL_BG,
+            borderColor: STUDIO_CARD_BORDER,
+            boxShadow: STUDIO_SHADOW.panel,
           }}
         >
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: DASHBOARD_MUTED }}>
@@ -323,9 +330,11 @@ export function StudioCockpit({
         </div>
 
         <div
-          className={`flex flex-col justify-between p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
+          className={`flex flex-col justify-between border backdrop-blur-sm p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
           style={{
-            background: "rgba(255,252,247,0.55)",
+            background: STUDIO_PANEL_BG,
+            borderColor: STUDIO_CARD_BORDER,
+            boxShadow: STUDIO_SHADOW.panel,
           }}
         >
           <div>

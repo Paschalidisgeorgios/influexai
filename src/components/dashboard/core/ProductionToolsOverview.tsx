@@ -10,6 +10,11 @@ import {
   type FeaturedTool,
 } from "./production-tool-routes";
 import {
+  STUDIO_CARD_BG,
+  STUDIO_CARD_BG_FEATURED,
+  STUDIO_CARD_BG_HOVER,
+  STUDIO_CARD_BG_SOFT,
+  STUDIO_CARD_BORDER,
   STUDIO_RADIUS,
   STUDIO_SHADOW,
   StudioCreditNote,
@@ -30,8 +35,8 @@ function FeaturedToolCard({
       onClick={() => onSelect(tool.id)}
       className={`group flex min-h-[196px] flex-col p-6 text-left transition-all duration-300 hover:-translate-y-0.5 md:min-h-[220px] md:p-7 ${STUDIO_RADIUS.panel}`}
       style={{
-        background: "rgba(255,252,247,0.94)",
-        border: "1px solid rgba(8,8,8,0.045)",
+        background: STUDIO_CARD_BG_FEATURED,
+        border: `1px solid ${STUDIO_CARD_BORDER}`,
         boxShadow: STUDIO_SHADOW.featured,
       }}
       onMouseEnter={(e) => {
@@ -84,17 +89,17 @@ function StandardToolCard({
       onClick={onClick}
       className={`group flex min-h-[108px] flex-col p-4 text-left transition-all duration-200 hover:-translate-y-px md:p-5 ${STUDIO_RADIUS.card}`}
       style={{
-        background: "rgba(255,252,247,0.72)",
-        border: "1px solid rgba(8,8,8,0.04)",
+        background: STUDIO_CARD_BG_SOFT,
+        border: `1px solid ${STUDIO_CARD_BORDER}`,
         boxShadow: STUDIO_SHADOW.card,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = STUDIO_SHADOW.cardHover;
-        e.currentTarget.style.background = "rgba(255,252,247,0.88)";
+        e.currentTarget.style.background = STUDIO_CARD_BG_HOVER;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = STUDIO_SHADOW.card;
-        e.currentTarget.style.background = "rgba(255,252,247,0.72)";
+        e.currentTarget.style.background = STUDIO_CARD_BG_SOFT;
       }}
     >
       <span
@@ -184,8 +189,8 @@ export function ProductionToolsOverview({
           href="/dashboard/ki-agent"
           className={`inline-flex shrink-0 min-h-[44px] items-center px-5 text-sm font-medium no-underline transition-colors hover:border-black/16 ${STUDIO_RADIUS.button}`}
           style={{
-            border: "1px solid rgba(8,8,8,0.08)",
-            background: "rgba(255,252,247,0.85)",
+            border: `1px solid ${STUDIO_CARD_BORDER}`,
+            background: STUDIO_CARD_BG,
             color: DASHBOARD_TEXT,
           }}
         >

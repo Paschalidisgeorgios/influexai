@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "./cn";
-import { STUDIO_RADIUS, STUDIO_SHADOW, STUDIO_SURFACE } from "./tokens";
+import {
+  STUDIO_RADIUS,
+  STUDIO_SHADOW,
+  STUDIO_STAGE_BORDER,
+  STUDIO_SURFACE_GLASS,
+} from "./tokens";
 
 export function StudioStage({
   children,
@@ -20,10 +25,13 @@ export function StudioStage({
       )}
     >
       <div
-        className={cn("mx-auto w-full min-w-0 max-w-[88rem]", STUDIO_RADIUS.stage)}
+        className={cn(
+          "mx-auto w-full min-w-0 max-w-[88rem] backdrop-blur-xl backdrop-saturate-150",
+          STUDIO_RADIUS.stage
+        )}
         style={{
-          background: STUDIO_SURFACE,
-          border: "1px solid rgba(8,8,8,0.04)",
+          background: STUDIO_SURFACE_GLASS,
+          border: `1px solid ${STUDIO_STAGE_BORDER}`,
           boxShadow: STUDIO_SHADOW.stage,
         }}
       >

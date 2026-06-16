@@ -21,6 +21,7 @@ import {
   DASHBOARD_SHELL_BG,
   DashboardStage,
 } from "./DashboardSurface";
+import { STUDIO_SHELL_BG } from "../studio-ui/tokens";
 import { SidebarCreditsLink } from "../studio-ui";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
@@ -103,7 +104,7 @@ function LeftSidebar({
     <aside
       className="fixed left-0 top-0 z-20 hidden h-screen w-[240px] flex-col border-r md:flex"
       style={{
-        background: DASHBOARD_SHELL_BG,
+        background: STUDIO_SHELL_BG,
         borderColor: "rgba(255,255,255,0.06)",
       }}
     >
