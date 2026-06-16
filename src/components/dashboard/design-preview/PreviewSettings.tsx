@@ -14,6 +14,7 @@ import { useLang } from "./PreviewLang";
 const ACCENT    = "#b4ff00";
 const IVORY     = "#F4F0E8";
 const DARK_TEXT = "#080808";
+const MUTED_ON_LIGHT = "rgba(8,8,8,0.45)";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -68,7 +69,14 @@ function Toggle({ on = false }: { on?: boolean }) {
 }
 
 function SectionHead({ children }: { children: React.ReactNode }) {
-  return <h3 className="mb-6 text-xl font-extrabold tracking-tight text-white" style={HL}>{children}</h3>;
+  return (
+    <h3
+      className="mb-6 text-xl font-extrabold tracking-tight"
+      style={{ ...HL, color: DARK_TEXT }}
+    >
+      {children}
+    </h3>
+  );
 }
 
 function SaveBtn({ label }: { label: string }) {
@@ -88,8 +96,8 @@ function AccountSection() {
     <div className="flex flex-col gap-6">
       <SectionHead>Account</SectionHead>
       <IvoryPanel>
-        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>
-          {t.mock} — Persönliche Informationen
+        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: MUTED_ON_LIGHT }}>
+          Persönliche Informationen
         </p>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {[["Vorname","Max"],["Nachname","Mustermann"],["E-Mail","max@influexai.com"],["Unternehmen","InfluexAI GmbH"]].map(([l,v])=>(
@@ -133,7 +141,7 @@ function BillingSection() {
         <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 translate-x-1/2 -translate-y-1/2 rounded-full opacity-15" style={{ background:`radial-gradient(circle, ${ACCENT} 0%, transparent 70%)` }} />
         <div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="mb-1 font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-600">{t.mock}</p>
+            <p className="mb-1 font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500">Plan</p>
             <p className="text-2xl font-extrabold text-white" style={HL}>{t.proPlan}</p>
             <p className="mt-1 text-[13px] text-neutral-500">€79/Monat · Verlängerung 01 Jul 2026</p>
           </div>
@@ -147,8 +155,10 @@ function BillingSection() {
         </div>
       </div>
       {/* Transactions */}
-      <div>
-        <p className="mb-4 font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-700">Letzte Transaktionen · {t.mock}</p>
+      <div className="border border-white/[0.05] bg-[#0d0d10] p-6">
+        <p className="mb-4 font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500">
+          Letzte Transaktionen
+        </p>
         {[
           ["01 Jun 2026","Pro Plan — Monatlich","−€79,00","charge"],
           ["28 Mai 2026","Credits Top-Up 500","−€49,00","charge"],
@@ -176,7 +186,9 @@ function WorkspaceSection() {
     <div className="flex flex-col gap-6">
       <SectionHead>{ts.sections.workspace}</SectionHead>
       <IvoryPanel>
-        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>{t.mock}</p>
+        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>
+          Team & Projekt-Einstellungen
+        </p>
         <div className="flex flex-col gap-5">
           {[["Workspace-Name","InfluexAI Studio"],["Default-Projekt","Kampagnen Q3 2026"],["Sprache","Deutsch"]].map(([l,v])=>(
             <div key={l}><FieldLabel text={l} /><TextInput defaultValue={v} /></div>
@@ -204,7 +216,9 @@ function BrandSection() {
     <div className="flex flex-col gap-6">
       <SectionHead>{ts.sections.brand}</SectionHead>
       <IvoryPanel>
-        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>{t.mock}</p>
+        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>
+          Markenidentität & Voice
+        </p>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {[["Markenname","InfluexAI GmbH"],["Zielgruppe","Creator & E-Commerce Brands"],["Keywords","AI, Creator, Premium, Viral"],["Brand Voice","Professionell, direkt, modern"]].map(([l,v])=>(
             <div key={l}><FieldLabel text={l} /><TextInput defaultValue={v} /></div>
@@ -236,7 +250,9 @@ function GenerationSection() {
     <div className="flex flex-col gap-6">
       <SectionHead>{ts.sections.generation}</SectionHead>
       <IvoryPanel>
-        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>{t.mock}</p>
+        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>
+          Defaults für Bild & Video
+        </p>
         <div className="flex flex-col gap-5">
           {[
             { l:"Standard-Bildformat",  opts:["1:1 Square","4:5 Portrait","16:9 Landscape"],  def:"1:1 Square"   },
@@ -324,7 +340,9 @@ function ApiSection() {
     <div className="flex flex-col gap-6">
       <SectionHead>{ts.sections.api}</SectionHead>
       <IvoryPanel>
-        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>{t.mock}</p>
+        <p className="mb-5 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color:"rgba(8,8,8,0.35)" }}>
+          API-Zugang & Schlüssel
+        </p>
         <div className="flex flex-col gap-3 md:flex-row md:items-end">
           <div className="flex-1">
             <FieldLabel text="Aktiver API Key" />
@@ -339,7 +357,9 @@ function ApiSection() {
 
       {/* Integrations */}
       <div>
-        <p className="mb-4 font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-700">Verbundene Dienste · {t.mock}</p>
+        <p className="mb-4 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: MUTED_ON_LIGHT }}>
+          Verbundene Dienste
+        </p>
         {[
           { n:"Zapier",   s:"connected"    },
           { n:"Make",     s:"connected"    },
@@ -390,17 +410,24 @@ export function PreviewSettings() {
   const [active, setActive] = useState<Section>("account");
 
   return (
-    <div className="pb-24 pt-12 md:pt-16">
-      <p className="mb-5 font-mono text-[10px] tracking-[0.28em] uppercase text-neutral-700">{ts.overline}</p>
-      <h2 className="mb-10 text-4xl font-extrabold text-white md:text-5xl" style={{ ...HL, letterSpacing:"-0.03em" }}>
+    <div className="pb-8 pt-4 md:pt-8">
+      <p
+        className="mb-5 font-mono text-[10px] tracking-[0.28em] uppercase"
+        style={{ color: MUTED_ON_LIGHT }}
+      >
+        {ts.overline}
+      </p>
+      <h2
+        className="mb-8 text-3xl font-extrabold md:mb-10 md:text-4xl"
+        style={{ ...HL, letterSpacing: "-0.03em", color: DARK_TEXT }}
+      >
         {ts.headline}
       </h2>
 
       <div className="flex flex-col gap-8 md:flex-row">
-        {/* Settings nav */}
         <nav
           className="flex shrink-0 flex-row gap-0.5 overflow-x-auto pb-1 md:w-[200px] md:flex-col md:overflow-visible md:pb-0"
-          style={{ scrollbarWidth:"none" }}
+          style={{ scrollbarWidth: "none" }}
         >
           {SECTIONS.map((id) => (
             <button
@@ -410,9 +437,12 @@ export function PreviewSettings() {
               className="shrink-0 py-2.5 text-left text-[13px] transition-colors"
               style={{
                 paddingLeft: "12px",
-                borderLeft:  active === id ? "2px solid #b4ff00" : "2px solid transparent",
-                color:       active === id ? "#ffffff" : "rgba(255,255,255,0.28)",
-                whiteSpace:  "nowrap",
+                borderLeft:
+                  active === id ? "2px solid #b4ff00" : "2px solid transparent",
+                color:
+                  active === id ? DARK_TEXT : "rgba(8,8,8,0.40)",
+                whiteSpace: "nowrap",
+                fontWeight: active === id ? 600 : 400,
               }}
             >
               {ts.sections[id]}
@@ -420,10 +450,7 @@ export function PreviewSettings() {
           ))}
         </nav>
 
-        {/* Content */}
-        <div className="min-w-0 flex-1">
-          {SECTION_CONTENT[active]}
-        </div>
+        <div className="min-w-0 flex-1">{SECTION_CONTENT[active]}</div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export default function DesignPreviewPage() {
   return (
-    <div className={plusJakarta.variable}>
+    <div className={`${plusJakarta.variable} h-dvh max-h-dvh w-full overflow-hidden`}>
       <PreviewShell />
     </div>
   );

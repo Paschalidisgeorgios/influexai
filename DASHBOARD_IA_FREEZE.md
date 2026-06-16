@@ -203,3 +203,70 @@ Erwartung: weiterhin ~17 bestehende Errors — keine Massen-Fixes in 2A.
 - `AgentAutopilotV2.tsx` — funktionale Agent-Texte
 - `SettingsView.tsx` — Billing-Link → Credits
 - `middleware.ts` — `/dashboard/agent` → ki-agent
+
+---
+
+## Phase 2A.2 Preview Content Render Fix
+
+**Date:** 2026-06-16  
+**Scope:** Restore visible content in `/dashboard/design-preview` for all nav tabs (desktop + mobile). No billing/provider/landing changes.
+
+### Ursache des leeren Contents
+
+1. **Mobile-Layout:** `PreviewShell` nutzte `fixed inset-0 z-[100]` mit einer flex-Struktur, bei der der Stage-Bereich auf ~390px nicht sichtbar skalierte — schwarzer Main-Bereich unter dem Header, Bottom Nav teils außerhalb des sichtbaren Viewports.
+2. **Fehlender zentraler Render-Switch:** View-Content war implizit/fragmentiert; kein einheitliches Mapping von `PreviewView` → Komponente.
+3. **Settings-Kontrast:** `PreviewSettings` nutzte `text-white` auf hellem Ivory-Stage (`STAGE_SURFACE`) — Content war im DOM, aber unsichtbar.
+
+### Korrigierte View-IDs
+
+Einheitlich mit `PreviewLang.PreviewView` und `t.nav`:
+
+| View ID | Nav-Label (DE) |
+|---------|----------------|
+| `studio` | Studio |
+| `agent` | Agent |
+| `tools` | Tools |
+| `gallery` | Galerie |
+| `settings` | Einstellungen |
+
+Keine Duplikate (`galerie`/`gallery`, `einstellungen`/`settings`, `tool`/`tools`).
+
+### Gerenderte Komponenten pro View
+
+| View | Komponente |
+|------|------------|
+| `studio` | `PreviewStudioHome` |
+| `agent` | `PreviewAgentView` (aus `PreviewStudioHome.tsx`) |
+| `tools` | `PreviewToolsFlow` |
+| `gallery` | `PreviewGallery` |
+| `settings` | `PreviewSettings` |
+
+Zentraler Switch: `PreviewViewContent.tsx`.
+
+### Layout-Fixes
+
+- `PreviewShell`: `h-dvh` Flex-Column statt `fixed inset-0`; Mobile Nav als `shrink-0` Footer innerhalb der Column (nicht fixed sibling).
+- `design-preview/page.tsx`: Wrapper mit `h-dvh max-h-dvh overflow-hidden`.
+- Main: `min-h-0 flex-1 overflow-y-auto`, Stage mit `minHeight: min(100%, 28rem)`.
+- Kein `hidden md:block` auf View-Content.
+
+### Mobile-Ergebnis
+
+- Header, Content Stage und Bottom Nav sichtbar; kein Content hinter fixed Layers.
+- Alle fünf Tabs rendern sichtbaren Preview-Content (Cockpit, Command Center, Tools, Gallery, Settings).
+- Horizontales Scrollen vermieden (`overflow-x-hidden`, `max-w-full`).
+
+### Offene Risiken
+
+- Preview weiterhin Mock-Daten (240 Credits, Beispiel-Assets) — nur als „Design Preview“ / „Preview Mode“ gekennzeichnet.
+- Settings-Sektionen Privacy/Notifications/API nutzen dunkle Karten auf hellem Stage — beabsichtigt, Kontrast geprüft.
+- `?tool=` Deep-Link nur in Produktions-`DashboardLayout`, nicht in Preview.
+- Lint: weiterhin ~17 bestehende Errors (nicht Teil von 2A.2).
+
+### Geänderte Dateien (2A.2)
+
+- `PreviewViewContent.tsx` (neu)
+- `PreviewShell.tsx`
+- `PreviewSettings.tsx`
+- `src/app/dashboard/design-preview/page.tsx`
+- `DASHBOARD_IA_FREEZE.md`
