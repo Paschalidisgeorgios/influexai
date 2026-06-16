@@ -9,7 +9,6 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan } from "@/lib/access";
 import {
@@ -98,7 +97,6 @@ function stripCheckoutQueryParams() {
 }
 
 export function BuyCreditsProvider({ children }: { children: React.ReactNode }) {
-  const t = useTranslations("buyCredits");
   const searchParams = useSearchParams();
   const supabase = createClient();
 
