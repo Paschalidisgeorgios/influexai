@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { addCredits, deductCredits } from "@/lib/credits";
 import { calcLoraCredits } from "@/lib/lora-credits";
 import {
   LORA_STEPS_DEFAULT,
@@ -95,10 +95,21 @@ export async function POST(request: NextRequest) {
   }
 
   const creditCost = calcLoraCredits(steps);
-  const creditCheck = await hasEnoughCredits(supabase, user.id, creditCost);
-  if (!creditCheck.ok) {
+
+  const deduction = await deductCredits(
+    supabase,
+    user.id,
+    creditCost,
+    `LoRA Training — ${type}`,
+    {
+      generationType: "lora_training",
+      prompt: name.slice(0, 500),
+      skipGenerationLog: true,
+    }
+  );
+  if (!deduction.success) {
     return NextResponse.json(
-      { error: "Not enough credits", credits: creditCheck.credits },
+      { error: deduction.error ?? "Not enough credits", credits: deduction.remainingCredits },
       { status: 402 }
     );
   }
@@ -123,6 +134,12 @@ export async function POST(request: NextRequest) {
 
   if (insertErr || !loraRow?.id) {
     console.error("lora train insert:", insertErr?.message);
+    await addCredits(
+      supabase,
+      user.id,
+      creditCost,
+      `LoRA Training — Refund`
+    );
     return NextResponse.json({ error: "Could not create model record" }, { status: 500 });
   }
 
@@ -143,29 +160,6 @@ export async function POST(request: NextRequest) {
       .eq("id", loraId)
       .eq("user_id", user.id);
 
-    const deduction = await deductCredits(
-      supabase,
-      user.id,
-      creditCost,
-      `LoRA Training — ${type}`,
-      {
-        generationType: "lora_training",
-        prompt: name.slice(0, 500),
-        skipGenerationLog: true,
-      }
-    );
-
-    if (!deduction.success) {
-      await supabase
-        .from("lora_models")
-        .update({ status: "failed", error_message: "Credit deduction failed" })
-        .eq("id", loraId);
-      return NextResponse.json(
-        { error: deduction.error ?? "Not enough credits" },
-        { status: 402 }
-      );
-    }
-
     await supabase
       .from("lora_models")
       .update({ credits_used: creditCost })
@@ -183,6 +177,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("lora train submit:", error);
+    await addCredits(
+      supabase,
+      user.id,
+      creditCost,
+      `LoRA Training — Refund`
+    );
     await supabase
       .from("lora_models")
       .update({

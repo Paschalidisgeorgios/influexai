@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { deductCredits, hasEnoughCredits, addCredits } from "@/lib/credits";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import {
   isValidElevenLabsVoiceId,
@@ -75,6 +75,7 @@ export async function GET(request: NextRequest) {
     let creditsLeft: number | undefined;
 
     if (!generation) {
+      // Legacy deferred billing — jobs started before POST pre-pay
       const deduction = await deductCredits(
         supabase,
         user.id,
@@ -205,41 +206,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let finalAudioDataUrl: string;
-  const trimmedScript = script?.trim() ?? "";
-
-  if (audioSource === "own") {
-    if (!audioDataUrl) {
-      return NextResponse.json(
-        { error: "Bitte nimm deine Stimme auf" },
-        { status: 400 }
-      );
-    }
-    finalAudioDataUrl = audioDataUrl;
-  } else {
-    if (!trimmedScript) {
-      return NextResponse.json({ error: "Script ist erforderlich" }, { status: 400 });
-    }
-    if (trimmedScript.length > 500) {
-      return NextResponse.json({ error: "Maximal 500 Zeichen" }, { status: 400 });
-    }
-    if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {
-      return NextResponse.json({ error: "Ungültige Stimme" }, { status: 400 });
-    }
-    if (!process.env.ELEVENLABS_API_KEY) {
-      return NextResponse.json(
-        { error: "ElevenLabs ist gerade nicht verfügbar." },
-        { status: 503 }
-      );
-    }
-
-    const tts = await synthesizeElevenLabsSpeech(trimmedScript, voiceId, 75);
-    if (!tts.ok) {
-      return NextResponse.json({ error: tts.error }, { status: 502 });
-    }
-    finalAudioDataUrl = tts.audioDataUrl;
-  }
-
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -256,7 +222,68 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let finalAudioDataUrl: string;
+  const trimmedScript = script?.trim() ?? "";
+
+  if (audioSource === "own") {
+    if (!audioDataUrl) {
+      return NextResponse.json(
+        { error: "Bitte nimm deine Stimme auf" },
+        { status: 400 }
+      );
+    }
+  } else {
+    if (!trimmedScript) {
+      return NextResponse.json({ error: "Script ist erforderlich" }, { status: 400 });
+    }
+    if (trimmedScript.length > 500) {
+      return NextResponse.json({ error: "Maximal 500 Zeichen" }, { status: 400 });
+    }
+    if (!voiceId || !isValidElevenLabsVoiceId(voiceId)) {
+      return NextResponse.json({ error: "Ungültige Stimme" }, { status: 400 });
+    }
+    if (!process.env.ELEVENLABS_API_KEY) {
+      return NextResponse.json(
+        { error: "ElevenLabs ist gerade nicht verfügbar." },
+        { status: 503 }
+      );
+    }
+  }
+
+  let creditsReserved = false;
+  let creditsLeft: number | undefined;
+
   try {
+    const deduction = await deductCredits(
+      supabase,
+      user.id,
+      CREDIT_COST,
+      "Live Creator",
+      {
+        generationType: "live-creator",
+        prompt: `${JOB_PROMPT_PREFIX}pending`,
+        skipGenerationLog: true,
+      }
+    );
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error ?? "Credit-Abzug fehlgeschlagen" },
+        { status: 402 }
+      );
+    }
+    creditsReserved = true;
+    creditsLeft = deduction.remainingCredits;
+
+    if (audioSource === "own") {
+      finalAudioDataUrl = audioDataUrl!;
+    } else {
+      const tts = await synthesizeElevenLabsSpeech(trimmedScript, voiceId!, 75);
+      if (!tts.ok) {
+        throw new Error(tts.error);
+      }
+      finalAudioDataUrl = tts.audioDataUrl;
+    }
+
     configureFalClient();
     const akoolAudioUrl = await uploadAudioDataUrlToFal(finalAudioDataUrl);
     const talkingPhotoUrl = trimmedCustomAvatarUrl
@@ -268,12 +295,32 @@ export async function POST(request: NextRequest) {
       audio_url: akoolAudioUrl,
     });
 
+    await createGenerationRecord(
+      supabase,
+      user.id,
+      "live-creator",
+      {
+        jobId: job._id,
+        paid: true,
+        paidOnPost: true,
+        downloadPaid: true,
+        assetKind: "video",
+        mode: "final",
+      },
+      CREDIT_COST,
+      `${JOB_PROMPT_PREFIX}${job._id}`
+    );
+
     return NextResponse.json({
       success: true,
       jobId: job._id,
       status: "processing",
+      creditsLeft,
     });
   } catch (err: unknown) {
+    if (creditsReserved) {
+      await addCredits(supabase, user.id, CREDIT_COST, "Live Creator — Refund");
+    }
     console.error("[live-creator POST]", err);
     const raw = err instanceof Error ? err.message : "Video-Generierung fehlgeschlagen";
     return NextResponse.json(

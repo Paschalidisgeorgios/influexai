@@ -73,13 +73,13 @@ Full list: `summarizeCreditMismatches()` in canonical-tool-registry.ts
 
 | Tool / route | chargeTiming | Risk |
 |--------------|--------------|------|
-| `/api/lora/train` | postpay | fal job submitted before deductCredits |
-| `/api/stimme/speak`, `/api/stimme/clone` | postpay | ElevenLabs before debit |
-| Server actions: niche, script, thumbnail, content calendar | postpay | provider before debit |
-| `/api/v1/*` | postpay | withCredits after generation |
-| `/api/live-creator` POST→GET | deferred | Akool job before debit on poll |
-| `/api/agent/copilot` | none | no plan/credit gate |
-| `/api/agent/stream-tool` | none | unbilled stream |
+| ~~`/api/lora/train`~~ | ~~postpay~~ | **Fixed Phase 1B** — pre-pay |
+| ~~`/api/stimme/speak`, `/api/stimme/clone`~~ | ~~postpay~~ | **Fixed Phase 1B** |
+| ~~Server actions: niche, script, thumbnail, content calendar~~ | ~~postpay~~ | **Fixed Phase 1B** |
+| ~~`/api/v1/*`~~ | ~~postpay~~ | **Fixed Phase 1B** — pre-pay + refund |
+| `/api/live-creator` POST→GET | deferred → pre-pay POST | Legacy GET jobs + async Akool fail — see Phase 1B |
+| ~~`/api/agent/copilot`~~ | ~~none~~ | **Fixed Phase 1B** |
+| ~~`/api/agent/stream-tool`~~ | ~~none~~ | **Fixed Phase 1B** |
 
 ---
 
@@ -127,3 +127,98 @@ npm run build
 ```
 
 Both must pass before commit.
+
+---
+
+## Phase 1B Credit Hardening
+
+**Date:** 2026-06-16  
+**Scope:** Close critical unbilled-LLM and provider-before-credit leaks using existing helpers (`assertKiToolAccess`, `requireKiToolAccessForAction`, `withCreditDeduction`, `deductCredits`/`addCredits`). No full canonical-registry runtime migration.
+
+### `/api/agent/copilot`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Auth only, 0 credits, unbilled Anthropic stream |
+| **Änderung** | `assertKiToolAccess(ORCHESTRATOR_BASE_COST)` + pre-pay 1 credit before stream |
+| **Charge timing nachher** | Pre-pay (1 credit, orchestrator base) |
+| **Refund** | `addCredits` on stream/Anthropic failure |
+| **Admin bypass** | OK — via `deductCredits` / `isCreditExemptUser` |
+| **Free-user** | Blocked — no active plan |
+| **Rest-Risiko** | Low — single deduct per request |
+
+### `/api/agent/stream-tool`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Auth only, 0 credits |
+| **Änderung** | `assertKiToolAccess` + pre-pay per tool (`viral-hook` 1, `content-calendar` 2, `trend-script` 3, default 1) |
+| **Charge timing nachher** | Pre-pay before Anthropic fetch |
+| **Refund** | `addCredits` on HTTP/body failure |
+| **Admin bypass** | OK |
+| **Free-user** | Blocked |
+| **Rest-Risiko** | Low |
+
+### `/api/stimme/speak` & `/api/stimme/clone`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Post-pay — ElevenLabs before debit |
+| **Änderung** | `withCreditDeduction` wraps provider call |
+| **Charge timing nachher** | Pre-pay (2 credits speak / clone costs unchanged) |
+| **Refund** | Auto via `withCreditDeduction` on provider error |
+| **Admin bypass** | OK |
+| **Free-user** | Blocked via `assertGatedFeature` |
+| **Rest-Risiko** | Low — clone consent gate unchanged |
+
+### `/api/lora/train`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Post-pay — fal submit before `deductCredits` |
+| **Änderung** | `deductCredits` moved before DB insert + fal submit |
+| **Charge timing nachher** | Pre-pay (`calcLoraCredits(steps)`) |
+| **Refund** | `addCredits` on DB insert failure or fal submit failure |
+| **Admin bypass** | OK |
+| **Free-user** | Blocked via `assertGatedFeature("lora-training")` + consent |
+| **Rest-Risiko** | Low — fal job failure after submit still consumes slot; refund on submit error only |
+
+### `/api/live-creator`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Deferred POST→GET; Akool/ElevenLabs before debit |
+| **Änderung** | POST: auth + credit check before providers; deduct before ElevenLabs TTS, fal upload, Akool job; generation record with `paidOnPost: true`. GET: legacy jobs without record still deduct once on completion |
+| **Charge timing nachher** | Pre-pay on POST for new jobs |
+| **Refund** | `addCredits` on POST failure after deduct |
+| **Admin bypass** | OK |
+| **Free-user** | Blocked via `assertGatedFeature` |
+| **Rest-Risiko** | **Phase 1C** — Akool async failure after successful POST does not auto-refund; legacy GET-poll jobs may double-charge if POST record missing |
+
+### `/api/v1/*`
+
+| Field | Value |
+|-------|-------|
+| **Status vorher** | Post-pay — `withCredits` deducted after generation |
+| **Änderung** | `withCredits` in `generators.ts` now deducts before `run()`, refunds on throw |
+| **Charge timing nachher** | Pre-pay + refund on `GENERATION_FAILED` |
+| **Refund** | `addCredits` in catch before rethrow |
+| **Admin bypass** | N/A — API key auth, service-role deduct |
+| **Free-user** | Blocked — API key requires paid account credits |
+| **Rest-Risiko** | **Phase 1C** — fal image partial success paths; rate-limit vs credit race |
+
+### Server Actions
+
+| Action | Status vorher | Änderung | Charge nachher | Refund | Rest-Risiko |
+|--------|---------------|----------|----------------|--------|--------------|
+| `analyzeNiche` | Post-pay | `withCreditDeduction` | Pre-pay 2 | Auto | Low |
+| `generateScript` / `regenerateScript` | Post-pay | `withCreditDeduction` | Pre-pay 2 / 1 | Auto | Low |
+| `generateThumbnailConcepts` | Post-pay | `withCreditDeduction` | Pre-pay 1 | Auto | Low — DB save failure does not refund (intentional, credits for LLM) |
+| `generateContentCalendar` | Post-pay | `withCreditDeduction` | Pre-pay 5 | Auto | Low |
+
+### Still open (Phase 1C)
+
+- `generate-trend-script`, `extract-viral-hook`, `detect-outliers` (partial), `generate-voice` and other actions not in Phase 1B scope
+- `campaign-autopilot` lump-sum overcharge / no refund
+- Credit display drift (`calculateExactCredits` vs API constants)
+- Live-creator async Akool failure refund policy

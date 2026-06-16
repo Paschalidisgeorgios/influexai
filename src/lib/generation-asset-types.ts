@@ -6,6 +6,8 @@ export type GenerationAssetResult = {
   finalPath?: string;
   upscaledPath?: string;
   paid: boolean;
+  /** Credits charged on POST before async provider job (live-creator) */
+  paidOnPost?: boolean;
   downloadPaid?: boolean;
   mode?: "preview" | "final";
   jobId?: string;
@@ -44,6 +46,7 @@ export function parseGenerationAssetResult(
     previewPath: typeof r.previewPath === "string" ? r.previewPath : undefined,
     finalPath: typeof r.finalPath === "string" ? r.finalPath : undefined,
     paid: r.paid === true,
+    paidOnPost: r.paidOnPost === true,
     mode: r.mode === "preview" || r.mode === "final" ? r.mode : undefined,
     jobId: typeof r.jobId === "string" ? r.jobId : undefined,
     assetKind:

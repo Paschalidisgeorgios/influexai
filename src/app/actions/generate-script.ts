@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { localeToPromptLanguage, type Locale } from "@/lib/locale";
 import {
@@ -56,24 +57,6 @@ type GenerateFailure = {
   success: false;
   error: string;
 };
-
-function scriptGenerationUserError(e: unknown): string {
-  const msg = e instanceof Error ? e.message : "";
-  if (!msg) return "Generierung fehlgeschlagen. Bitte erneut versuchen.";
-  if (msg.includes("Nicht genug Credits")) return msg;
-  if (
-    msg.includes("KI ist") ||
-    msg.includes("Zu viele Anfragen") ||
-    msg.includes("Netzwerkfehler") ||
-    msg.includes("KI-Antwort") ||
-    msg.includes("Leeres Script")
-  ) {
-    return msg;
-  }
-  return msg.length <= 180
-    ? msg
-    : "Generierung fehlgeschlagen. Bitte erneut versuchen.";
-}
 
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -220,42 +203,41 @@ export async function generateScript(
 
   const locale = (await getLocale()) as Locale;
 
-  try {
-    const text = await callClaude(
-      topic,
-      input.duration,
-      input.tone,
-      input.language,
-      input.bRoll,
-      input.hookVariants,
-      locale
-    );
-    const result = parseScriptResponse(text, input.hookVariants);
-
-    const deduction = await deductCredits(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      GENERATE_COST,
-      "Script Generator",
-      { generationType: "script-generator", prompt: topic.slice(0, 200) }
-    );
-
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      amount: GENERATE_COST,
+      description: "Script Generator",
+      generationType: "script-generator",
+      prompt: topic.slice(0, 200),
+    },
+    async () => {
+      const text = await callClaude(
+        topic,
+        input.duration,
+        input.tone,
+        input.language,
+        input.bRoll,
+        input.hookVariants,
+        locale
+      );
+      return parseScriptResponse(text, input.hookVariants);
     }
+  );
 
-    return { success: true, result, creditsLeft: deduction.remainingCredits };
-  } catch (e) {
-    console.error("generateScript:", e);
-    if (e instanceof Error && e.stack) console.error(e.stack);
+  if (!deductionResult.ok) {
     return {
       success: false,
-      error: scriptGenerationUserError(e),
+      error: deductionResult.error,
     };
   }
+
+  return {
+    success: true,
+    result: deductionResult.data,
+    creditsLeft: deductionResult.remainingCredits,
+  };
 }
 
 export async function regenerateScript(
@@ -313,45 +295,41 @@ export async function regenerateScript(
 
   const locale = (await getLocale()) as Locale;
 
-  try {
-    const text = await callClaude(
-      topic,
-      input.duration,
-      input.tone,
-      input.language,
-      input.bRoll,
-      input.hookVariants,
-      locale
-    );
-    const result = parseScriptResponse(text, input.hookVariants);
-
-    const deduction = await deductCredits(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      REGENERATE_COST,
-      "Script Generator (Neu)",
-      {
-        generationType: "script-generator",
-        prompt: `Regen: ${topic.slice(0, 180)}`,
-      }
-    );
-
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      amount: REGENERATE_COST,
+      description: "Script Generator (Neu)",
+      generationType: "script-generator",
+      prompt: `Regen: ${topic.slice(0, 180)}`,
+    },
+    async () => {
+      const text = await callClaude(
+        topic,
+        input.duration,
+        input.tone,
+        input.language,
+        input.bRoll,
+        input.hookVariants,
+        locale
+      );
+      return parseScriptResponse(text, input.hookVariants);
     }
+  );
 
-    return { success: true, result, creditsLeft: deduction.remainingCredits };
-  } catch (e) {
-    console.error("regenerateScript:", e);
-    if (e instanceof Error && e.stack) console.error(e.stack);
+  if (!deductionResult.ok) {
     return {
       success: false,
-      error: scriptGenerationUserError(e),
+      error: deductionResult.error,
     };
   }
+
+  return {
+    success: true,
+    result: deductionResult.data,
+    creditsLeft: deductionResult.remainingCredits,
+  };
 }
 
 export async function saveScript(

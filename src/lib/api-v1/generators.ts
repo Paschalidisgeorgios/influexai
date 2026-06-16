@@ -1,5 +1,5 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { addCredits, deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import {
   buildOutlierUserPrompt,
@@ -81,20 +81,21 @@ async function withCredits<T>(
     };
   }
 
+  const deduction = await deductCredits(supabase, userId, cost, action, {
+    generationType: `api:${generationType}`,
+    prompt: prompt.slice(0, 200),
+  });
+  if (!deduction.success) {
+    return {
+      ok: false,
+      error: "Insufficient credits",
+      code: "INSUFFICIENT_CREDITS",
+      creditsRemaining: deduction.remainingCredits,
+    };
+  }
+
   try {
     const data = await run();
-    const deduction = await deductCredits(supabase, userId, cost, action, {
-      generationType: `api:${generationType}`,
-      prompt: prompt.slice(0, 200),
-    });
-    if (!deduction.success) {
-      return {
-        ok: false,
-        error: "Insufficient credits",
-        code: "INSUFFICIENT_CREDITS",
-        creditsRemaining: deduction.remainingCredits,
-      };
-    }
     return {
       ok: true,
       data,
@@ -102,6 +103,7 @@ async function withCredits<T>(
       creditsRemaining: deduction.remainingCredits,
     };
   } catch {
+    await addCredits(supabase, userId, cost, `${action} — Refund`);
     throw new Error("GENERATION_FAILED");
   }
 }

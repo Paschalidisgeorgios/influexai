@@ -9,7 +9,11 @@
  * des Streams. Die AgentBox parst dieses Marker und triggert die Navigation.
  */
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+
+import { assertKiToolAccess } from "@/lib/access.server";
+import { ORCHESTRATOR_BASE_COST } from "@/lib/agent/credits";
+import { addCredits, deductCredits } from "@/lib/credits";
 import {
   getAnthropicConfigError,
   SCRIPT_GENERATOR_MODEL,
@@ -167,12 +171,29 @@ export async function POST(request: Request) {
     return Response.json({ error: "Nachricht fehlt." }, { status: 400 });
   }
 
-  // Auth — optional; Copilot ist auch ohne harte Credit-Sperre nutzbar
-  // Für Production: Authentifizierung + Rate-Limiting hier einbauen
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return Response.json({ error: "Nicht eingeloggt." }, { status: 401 });
+  const access = await assertKiToolAccess(ORCHESTRATOR_BASE_COST);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase, isAdmin } = access;
+
+  let creditsCharged = false;
+  if (!isAdmin) {
+    const deduction = await deductCredits(
+      supabase,
+      userId,
+      ORCHESTRATOR_BASE_COST,
+      "Copilot",
+      {
+        generationType: "agent-copilot",
+        prompt: message.slice(0, 200),
+      }
+    );
+    if (!deduction.success) {
+      return Response.json(
+        { error: deduction.error ?? "Nicht genug Credits." },
+        { status: 402 }
+      );
+    }
+    creditsCharged = true;
   }
 
   const history: CopilotMessage[] = Array.isArray(body.history)
@@ -186,19 +207,32 @@ export async function POST(request: Request) {
 
   const stream = new ReadableStream({
     async start(controller) {
+      let streamFailed = false;
       try {
         for await (const chunk of streamAnthropicText(INFLUEXAI_COPILOT_SYSTEM, messages)) {
           if (typeof chunk === "string") {
             controller.enqueue(sse({ type: "text_delta", text: chunk }));
           } else {
+            streamFailed = true;
             controller.enqueue(sse({ type: "error", message: chunk.error }));
           }
         }
-        controller.enqueue(sse({ type: "done" }));
+        if (!streamFailed) {
+          controller.enqueue(sse({ type: "done" }));
+        }
       } catch (err) {
+        streamFailed = true;
         console.error("[copilot] stream error:", err);
         controller.enqueue(sse({ type: "error", message: "Copilot-Fehler. Bitte erneut versuchen." }));
       } finally {
+        if (creditsCharged && streamFailed) {
+          await addCredits(
+            supabase,
+            userId,
+            ORCHESTRATOR_BASE_COST,
+            "Copilot — Refund"
+          );
+        }
         controller.close();
       }
     },

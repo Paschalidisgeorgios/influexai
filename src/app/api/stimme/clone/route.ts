@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { assertGatedFeature } from "@/lib/access.server";
 
 export const dynamic = "force-dynamic";
@@ -18,10 +18,6 @@ export async function POST(request: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user)
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok)
-    return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
 
   const formData = await request.formData();
   const audio = formData.get("audio") as File;
@@ -41,43 +37,42 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  try {
-    const elFormData = new FormData();
-    elFormData.append("name", name);
-    elFormData.append("files", audio);
-    elFormData.append("description", "InfluexAI Voice Clone");
-
-    const res = await fetch("https://api.elevenlabs.io/v1/voices/add", {
-      method: "POST",
-      headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! },
-      body: elFormData,
-    });
-
-    const data = await res.json();
-    if (!data.voice_id) throw new Error(data.detail || "Klonen fehlgeschlagen");
-
-    const deduction = await deductCredits(
+  const result = await withCreditDeduction(
+    {
       supabase,
-      user.id,
-      CREDIT_COST,
-      "Stimme klonen",
-      { generationType: "stimme-clone", prompt: name }
-    );
+      userId: user.id,
+      amount: CREDIT_COST,
+      description: "Stimme klonen",
+      generationType: "stimme-clone",
+      prompt: name,
+      refundDescription: "Stimme klonen — Refund",
+    },
+    async () => {
+      const elFormData = new FormData();
+      elFormData.append("name", name);
+      elFormData.append("files", audio);
+      elFormData.append("description", "InfluexAI Voice Clone");
 
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
-      );
+      const res = await fetch("https://api.elevenlabs.io/v1/voices/add", {
+        method: "POST",
+        headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! },
+        body: elFormData,
+      });
+
+      const data = await res.json();
+      if (!data.voice_id) {
+        throw new Error(data.detail || "Klonen fehlgeschlagen");
+      }
+      return { voiceId: data.voice_id as string, name };
     }
+  );
 
-    return NextResponse.json({ voiceId: data.voice_id, name });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("ElevenLabs Clone Error:", message);
+  if (!result.ok) {
     return NextResponse.json(
-      { error: "Stimmen-Klonung fehlgeschlagen" },
-      { status: 500 }
+      { error: result.error },
+      { status: result.status }
     );
   }
+
+  return NextResponse.json(result.data);
 }

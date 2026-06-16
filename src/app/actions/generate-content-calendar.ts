@@ -3,6 +3,7 @@
 import { getLocale } from "next-intl/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   createAnthropicMessage,
@@ -63,57 +64,49 @@ export async function generateContentCalendar(
 
   await getLocale();
 
-  try {
-    const claude = await createAnthropicMessage({
-      system: CONTENT_CALENDAR_SYSTEM_PROMPT,
-      user: buildContentCalendarUserPrompt({
-        niche,
-        platform: input.platform,
-        frequency: input.frequency,
-        language: input.language,
-      }),
-      model: SCRIPT_GENERATOR_MODEL,
-      maxTokens: 8192,
-    });
-
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-
-    const result = parseContentCalendarResult(claude.text);
-
-    const deduction = await deductCredits(
+  const deductionResult = await withCreditDeduction(
+    {
       supabase,
       userId,
-      CONTENT_CALENDAR_CREDIT_COST,
-      "Content Kalender KI",
-      {
-        generationType: "content-kalender",
-        prompt: `${niche} · ${input.platform}`.slice(0, 200),
+      amount: CONTENT_CALENDAR_CREDIT_COST,
+      description: "Content Kalender KI",
+      generationType: "content-kalender",
+      prompt: `${niche} · ${input.platform}`.slice(0, 200),
+    },
+    async () => {
+      const claude = await createAnthropicMessage({
+        system: CONTENT_CALENDAR_SYSTEM_PROMPT,
+        user: buildContentCalendarUserPrompt({
+          niche,
+          platform: input.platform,
+          frequency: input.frequency,
+          language: input.language,
+        }),
+        model: SCRIPT_GENERATOR_MODEL,
+        maxTokens: 8192,
+      });
+
+      if (!claude.ok) {
+        throw new Error(claude.error);
       }
-    );
 
-    if (!deduction.success) {
-      return {
-        success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
-      };
+      return parseContentCalendarResult(claude.text);
     }
+  );
 
-    return {
-      success: true,
-      result,
-      creditsLeft: deduction.remainingCredits,
-    };
-  } catch (e) {
-    console.error("generateContentCalendar:", e);
-    if (e instanceof Error && e.stack) console.error(e.stack);
-    return {
-      success: false,
-      error:
-        e instanceof Error && e.message.length <= 180
-          ? e.message
-          : "Kalender-Generierung fehlgeschlagen. Bitte erneut versuchen.",
-    };
+  if (!deductionResult.ok) {
+    if (deductionResult.remainingCredits !== undefined) {
+      return insufficientCreditsError(
+        deductionResult.remainingCredits,
+        CONTENT_CALENDAR_CREDIT_COST
+      );
+    }
+    return { success: false, error: deductionResult.error };
   }
+
+  return {
+    success: true,
+    result: deductionResult.data,
+    creditsLeft: deductionResult.remainingCredits,
+  };
 }

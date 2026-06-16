@@ -3,6 +3,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import { createAnthropicMessage } from "@/lib/anthropic";
 import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
@@ -254,37 +255,47 @@ export async function generateThumbnailConcepts(input: {
   const { userId, supabase } = access;
 
   try {
-    const text = await callClaude(topic, input.style, input.colorEnergy);
-    const concepts = parseConceptsResponse(text);
+    const deductionResult = await withCreditDeduction(
+      {
+        supabase,
+        userId,
+        amount: CREDIT_COST,
+        description: "Thumbnail Konzept",
+        generationType: "thumbnail-concept",
+        prompt: topic.slice(0, 200),
+      },
+      async () => {
+        const text = await callClaude(topic, input.style, input.colorEnergy);
+        const concepts = parseConceptsResponse(text);
 
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      "Thumbnail Konzept",
-      { generationType: "thumbnail-concept", prompt: topic.slice(0, 200) }
+        const { error: saveError } = await supabase
+          .from("thumbnail_concepts")
+          .insert({
+            user_id: userId,
+            topic,
+            concepts,
+          });
+
+        if (saveError) {
+          console.error("thumbnail_concepts insert:", saveError.message);
+        }
+
+        return concepts;
+      }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return {
         success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
+        error: deductionResult.error,
       };
     }
 
-    const { error: saveError } = await supabase
-      .from("thumbnail_concepts")
-      .insert({
-        user_id: userId,
-        topic,
-        concepts,
-      });
-
-    if (saveError) {
-      console.error("thumbnail_concepts insert:", saveError.message);
-    }
-
-    return { success: true, concepts, creditsLeft: deduction.remainingCredits };
+    return {
+      success: true,
+      concepts: deductionResult.data,
+      creditsLeft: deductionResult.remainingCredits,
+    };
   } catch (e) {
     if (e instanceof Error && e.message === "API_ERROR") {
       return {

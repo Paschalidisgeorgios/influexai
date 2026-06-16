@@ -3,6 +3,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireKiToolAccessForAction } from "@/lib/access.server";
 import { deductCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { insufficientCreditsError } from "@/lib/credit-action-result";
 import {
   e2eMockNiches,
@@ -136,41 +137,46 @@ Gib mir 5 profitable YouTube Nischen als JSON Array:
 }]`;
 
   try {
-    const claude = await createAnthropicMessage({
-      system: systemPrompt,
-      user: userPrompt,
-    });
-    if (!claude.ok) {
-      return { success: false, error: claude.error };
-    }
-    const text = claude.text;
-    let niches: NicheIdea[];
-    try {
-      niches = parseNiches(text);
-    } catch {
-      console.error("Niche JSON parse failed:", text.slice(0, 500));
-      return {
-        success: false,
-        error: "Antwort konnte nicht gelesen werden. Bitte erneut analysieren.",
-      };
-    }
-
-    const deduction = await deductCredits(
-      supabase,
-      userId,
-      CREDIT_COST,
-      "Niche Analyzer",
-      { generationType: "niche-analyzer", prompt: topic.trim() }
+    const deductionResult = await withCreditDeduction(
+      {
+        supabase,
+        userId,
+        amount: CREDIT_COST,
+        description: "Niche Analyzer",
+        generationType: "niche-analyzer",
+        prompt: topic.trim(),
+      },
+      async () => {
+        const claude = await createAnthropicMessage({
+          system: systemPrompt,
+          user: userPrompt,
+        });
+        if (!claude.ok) {
+          throw new Error(claude.error);
+        }
+        try {
+          return parseNiches(claude.text);
+        } catch {
+          console.error("Niche JSON parse failed:", claude.text.slice(0, 500));
+          throw new Error(
+            "Antwort konnte nicht gelesen werden. Bitte erneut analysieren."
+          );
+        }
+      }
     );
 
-    if (!deduction.success) {
+    if (!deductionResult.ok) {
       return {
         success: false,
-        error: deduction.error ?? "Nicht genug Credits.",
+        error: deductionResult.error,
       };
     }
 
-    return { success: true, niches, creditsLeft: deduction.remainingCredits };
+    return {
+      success: true,
+      niches: deductionResult.data,
+      creditsLeft: deductionResult.remainingCredits,
+    };
   } catch (e) {
     console.error("analyzeNiche:", e);
     return { success: false, error: "Unerwarteter Fehler bei der Analyse." };

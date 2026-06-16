@@ -4,17 +4,23 @@
  * Thin Anthropic streaming proxy für Dashboard-Tool-Formulare.
  * Nimmt { tool, prompt } → streamt Claude-Antwort als SSE direkt durch.
  *
- * CREDITS: Diese Route deducts keine Credits — das passiert bereits
- * in den spezifischen Tool-Routen (/api/viral-hook etc.).
- * Hier geht es nur um echtes Token-by-Token Streaming.
+ * CREDITS: Pre-pay vor Anthropic-Stream (ORCHESTRATOR_BASE_COST oder Tool-Konstante).
+ * Plan-Gate via assertKiToolAccess. Admin bypass via deductCredits/isCreditExemptUser.
  */
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+
+import { assertKiToolAccess } from "@/lib/access.server";
+import { ORCHESTRATOR_BASE_COST } from "@/lib/agent/credits";
+import { addCredits, deductCredits } from "@/lib/credits";
+import { CONTENT_KALENDER_TOOL_CREDIT_COST } from "@/lib/content-kalender-tool";
 import {
   ANTHROPIC_MODEL,
   getAnthropicConfigError,
   anthropicUserErrorFromStatus,
 } from "@/lib/anthropic";
+import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
+import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -41,6 +47,19 @@ Antworte auf Deutsch, direkt im Skript-Format. Kein Intro, kein Outro.`,
 const DEFAULT_SYSTEM = `Du bist ein KI-Content-Assistent für Creator und Unternehmen.
 Antworte präzise, strukturiert und auf Deutsch. Kein unnötiges Füllmaterial.`;
 
+function creditCostForStreamTool(tool: string): number {
+  switch (tool) {
+    case "viral-hook":
+      return VIRAL_HOOK_EXTRACTOR_CREDIT_COST;
+    case "content-calendar":
+      return CONTENT_KALENDER_TOOL_CREDIT_COST;
+    case "trend-script":
+      return TREND_SCRIPT_TOOL_CREDIT_COST;
+    default:
+      return ORCHESTRATOR_BASE_COST;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Route Handler
 // ---------------------------------------------------------------------------
@@ -51,23 +70,11 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
-  // Auth
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return Response.json({ error: "Nicht eingeloggt." }, { status: 401 });
-  }
-
-  // Config check
   const configError = getAnthropicConfigError();
   if (configError) {
     return Response.json({ error: configError }, { status: 503 });
   }
 
-  // Body
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;
@@ -86,10 +93,33 @@ export async function POST(request: Request) {
     return Response.json({ error: "Prompt zu lang (max. 10.000 Zeichen)." }, { status: 400 });
   }
 
+  const creditCost = creditCostForStreamTool(tool);
+  const access = await assertKiToolAccess(creditCost);
+  if (access instanceof NextResponse) return access;
+  const { userId, supabase, isAdmin } = access;
+
+  if (!isAdmin) {
+    const deduction = await deductCredits(
+      supabase,
+      userId,
+      creditCost,
+      `Stream Tool — ${tool || "default"}`,
+      {
+        generationType: "agent-stream-tool",
+        prompt: prompt.slice(0, 200),
+      }
+    );
+    if (!deduction.success) {
+      return Response.json(
+        { error: deduction.error ?? "Nicht genug Credits." },
+        { status: 402 }
+      );
+    }
+  }
+
   const systemPrompt = SYSTEM_PROMPTS[tool] ?? DEFAULT_SYSTEM;
   const key = process.env.ANTHROPIC_API_KEY!.trim();
 
-  // Anthropic Streaming Request
   const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -107,16 +137,31 @@ export async function POST(request: Request) {
   });
 
   if (!anthropicRes.ok) {
+    if (!isAdmin) {
+      await addCredits(
+        supabase,
+        userId,
+        creditCost,
+        `Stream Tool — Refund`
+      );
+    }
     const errBody = await anthropicRes.text();
     const message = anthropicUserErrorFromStatus(anthropicRes.status, errBody);
     return Response.json({ error: message }, { status: 502 });
   }
 
   if (!anthropicRes.body) {
+    if (!isAdmin) {
+      await addCredits(
+        supabase,
+        userId,
+        creditCost,
+        `Stream Tool — Refund`
+      );
+    }
     return Response.json({ error: "Kein Stream erhalten." }, { status: 502 });
   }
 
-  // Passthrough — Anthropic SSE direkt an den Client durchleiten
   return new Response(anthropicRes.body, {
     headers: {
       "Content-Type": "text/event-stream; charset=utf-8",

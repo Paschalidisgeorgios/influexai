@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { withCreditDeduction } from "@/lib/credits-with-refund";
 import {
   isValidElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
@@ -29,43 +29,35 @@ export async function POST(request: NextRequest) {
   if (!user)
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
 
-  const creditCheck = await hasEnoughCredits(supabase, user.id, CREDIT_COST);
-  if (!creditCheck.ok)
-    return NextResponse.json({ error: "Nicht genug Credits" }, { status: 402 });
-
-  try {
-    const tts = await synthesizeElevenLabsSpeech(text, voiceId, 50);
-    if (!tts.ok) {
-      return NextResponse.json({ error: tts.error }, { status: 502 });
-    }
-    const audioUrl = tts.audioDataUrl;
-
-    const deduction = await deductCredits(
+  const result = await withCreditDeduction(
+    {
       supabase,
-      user.id,
-      CREDIT_COST,
-      "Text zu Sprache",
-      { generationType: "stimme-speak", prompt: text.slice(0, 500) }
-    );
-
-    if (!deduction.success) {
-      return NextResponse.json(
-        { error: deduction.error ?? "Nicht genug Credits" },
-        { status: 402 }
-      );
+      userId: user.id,
+      amount: CREDIT_COST,
+      description: "Text zu Sprache",
+      generationType: "stimme-speak",
+      prompt: text.slice(0, 500),
+      refundDescription: "Text zu Sprache — Refund",
+    },
+    async () => {
+      const tts = await synthesizeElevenLabsSpeech(text, voiceId, 50);
+      if (!tts.ok) {
+        throw new Error(tts.error);
+      }
+      return tts.audioDataUrl;
     }
+  );
 
-    return NextResponse.json({
-      audioUrl,
-      creditsUsed: CREDIT_COST,
-      creditsLeft: deduction.remainingCredits,
-    });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("ElevenLabs TTS Error:", message);
+  if (!result.ok) {
     return NextResponse.json(
-      { error: "Text-zu-Sprache fehlgeschlagen" },
-      { status: 500 }
+      { error: result.error },
+      { status: result.status }
     );
   }
+
+  return NextResponse.json({
+    audioUrl: result.data,
+    creditsUsed: result.creditsCharged,
+    creditsLeft: result.remainingCredits,
+  });
 }
