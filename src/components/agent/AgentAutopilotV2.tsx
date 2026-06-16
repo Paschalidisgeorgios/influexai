@@ -12,7 +12,6 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 import { useAgentAutopilotChat } from "@/hooks/useAgentAutopilotChat";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
 import {
-  DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
   DASHBOARD_TEXT,
   DashboardPanel,
@@ -22,29 +21,29 @@ const QUICK_TOOLS = [
   {
     icon: "⚡",
     label: "Viral Hook Generator",
-    desc: "Hooks die stoppen",
-    href: "/dashboard/viral-hook",
+    desc: "Hook aus Thema",
+    href: "/dashboard?tool=viral-hook",
     color: "rgba(180,255,0,0.08)",
   },
   {
     icon: "📅",
     label: "Content Kalender",
-    desc: "30-Tage-Plan mit Hooks",
-    href: "/dashboard/content-kalender",
+    desc: "Plan mit Hooks",
+    href: "/dashboard?tool=content-calendar",
     color: "rgba(40,160,255,0.08)",
   },
   {
     icon: "📈",
     label: "Trend Script",
-    desc: "Trend → Script sofort",
-    href: "/dashboard/trend-to-script",
+    desc: "Trend → Script",
+    href: "/dashboard?tool=trend-script",
     color: "rgba(160,64,255,0.08)",
   },
   {
     icon: "🖼",
     label: "Bild Generator",
-    desc: "KI-Bilder für Content",
-    href: "/dashboard/image-generator",
+    desc: "Prompt und Format",
+    href: "/dashboard?tool=image-gen",
     color: "rgba(224,169,81,0.08)",
   },
 ] as const;
@@ -52,7 +51,6 @@ const QUICK_TOOLS = [
 export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: string } = {}) {
   const [activeTool, setActiveTool] = useState<AgentToolKey>("agent");
   const [prompt, setPrompt] = useState(initialPrompt);
-  const [payloadOpen, setPayloadOpen] = useState(false);
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { profile, loading: profileLoading } = useCreatorProfile();
@@ -115,17 +113,6 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
     requestAnimationFrame(handleInput);
   };
 
-  const realtimePayload = T.buildPayload(
-    prompt,
-    profile
-      ? {
-          nische: profile.nische,
-          tonalitaet: profile.tonalitaet,
-          plattformen: profile.plattformen,
-        }
-      : undefined
-  );
-
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 md:space-y-7">
       <div className="flex flex-wrap gap-2">
@@ -157,8 +144,8 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         </h1>
         <p className="max-w-2xl font-sans text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           {activeTool === "campaign"
-            ? "Kampagnen-Autopilot wird über den Agent vorbereitet."
-            : `${T.sub} — Briefing wird analysiert, Tool wird gewählt, Output vorbereitet.`}
+            ? "Kampagne planen — Briefing eingeben."
+            : "Briefing eingeben — Tool und Output vorbereiten."}
         </p>
       </div>
 
@@ -307,38 +294,6 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             </Link>
           ))}
         </div>
-      </div>
-
-      <div
-        className="mt-2 overflow-hidden rounded-xl border opacity-90"
-        style={{ borderColor: "rgba(8,8,8,0.07)", background: "rgba(255,255,255,0.35)" }}
-      >
-        <button
-          type="button"
-          onClick={() => setPayloadOpen(!payloadOpen)}
-          className="flex w-full items-center justify-between px-4 py-2.5 font-mono text-[9px] tracking-wider transition-colors duration-150"
-          style={{ color: "rgba(8,8,8,0.40)" }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#B4FF00] opacity-60" />
-            <span>Technische Vorschau</span>
-          </div>
-          <span
-            className={`transition-transform duration-200 ${payloadOpen ? "rotate-180" : ""}`}
-          >
-            ▼
-          </span>
-        </button>
-        {payloadOpen && (
-          <div
-            className="max-h-48 overflow-auto border-t px-4 py-3"
-            style={{ borderColor: "rgba(8,8,8,0.06)", background: "rgba(8,8,8,0.04)" }}
-          >
-            <pre className="font-mono text-[10px] leading-relaxed text-[#080808]/70">
-              {JSON.stringify(realtimePayload, null, 2)}
-            </pre>
-          </div>
-        )}
       </div>
     </div>
   );

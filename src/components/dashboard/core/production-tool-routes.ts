@@ -59,19 +59,19 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   {
     id: "text",
     title: "Text & Kampagne",
-    description: "Hooks, Scripts und Content-Planung.",
+    description: "Hooks, Scripts, Kalender.",
     tools: [
-      { id: "viral-hook", label: "Viral Hook", description: "Hook aus Trend oder Briefing extrahieren" },
-      { id: "content-calendar", label: "Content Kalender", description: "30-Tage-Plan mit Hooks" },
-      { id: "trend-script", label: "Trend Script", description: "Trend → Script in Minuten" },
+      { id: "viral-hook", label: "Viral Hook", description: "Hook aus Thema oder Link" },
+      { id: "content-calendar", label: "Content Kalender", description: "Plan mit Hooks" },
+      { id: "trend-script", label: "Trend Script", description: "Trend → Script" },
     ],
   },
   {
     id: "photo",
     title: "Foto",
-    description: "Bildgenerierung und Bild-zu-Bild.",
+    description: "Bilder generieren und variieren.",
     tools: [
-      { id: "image-gen", label: "Bildgenerator", description: "KI-Bilder für Content & Ads" },
+      { id: "image-gen", label: "Bildgenerator", description: "Prompt → Bild" },
       { id: "img-to-img", label: "Bild zu Bild", description: "Variationen und Remix" },
     ],
   },

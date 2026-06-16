@@ -11,6 +11,8 @@ import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
 import { ProductionToolsOverview } from "./ProductionToolsOverview";
 import { ProductionToolLaunch } from "./ProductionToolLaunch";
+import { ProductionToolSetup } from "./ProductionToolSetup";
+import { SETUP_MVP_TOOL_IDS } from "./production-tool-setup-ui";
 import {
   isToolPushSafeToOpen,
   normalizeToolQueryParam,
@@ -754,6 +756,8 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
           <DashboardStage>
             {activeTool === "tools" ? (
               <ProductionToolsOverview onSelect={handleToolSelect} />
+            ) : SETUP_MVP_TOOL_IDS.has(activeTool) ? (
+              <ProductionToolSetup toolId={activeTool} />
             ) : (
               <ProductionToolLaunch
                 toolId={activeTool}

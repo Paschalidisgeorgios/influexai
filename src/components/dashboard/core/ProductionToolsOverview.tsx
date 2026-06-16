@@ -11,7 +11,7 @@ import {
   DashboardPanel,
   DashboardSection,
 } from "./DashboardSurface";
-import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
+import { getSetupCreditLabel } from "./production-tool-setup-ui";
 import { TOOL_OVERVIEW_CATEGORIES } from "./production-tool-routes";
 
 export function ProductionToolsOverview({
@@ -22,9 +22,9 @@ export function ProductionToolsOverview({
   return (
     <div className="w-full min-w-0 space-y-8">
       <DashboardPageHeader
-        kicker="Production Tools"
-        title="Tools"
-        subtitle="Wähle ein Tool — dedizierte Seiten öffnen sich in der Studio-Shell."
+        kicker="Tools"
+        title="Arbeitsflächen"
+        subtitle="Tool wählen, Setup ausfüllen, generieren."
       />
 
       <div className="space-y-8">
@@ -35,7 +35,7 @@ export function ProductionToolsOverview({
             </p>
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
               {category.tools.map((tool) => {
-                const creditLabel = getCreditDisplayLabel(tool.id);
+                const creditLabel = getSetupCreditLabel(tool.id);
                 return (
                   <button
                     key={tool.id}
@@ -75,9 +75,8 @@ export function ProductionToolsOverview({
       </div>
 
       <DashboardPanel title="Agent">
-        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Unsicher welches Tool passt? Starte im Agent — Briefing analysieren, Tool wählen,
-          Output vorbereiten.
+        <p className="mb-4 text-sm" style={{ color: DASHBOARD_MUTED }}>
+          Briefing statt Setup? Agent öffnen.
         </p>
         <Link
           href="/dashboard/ki-agent"

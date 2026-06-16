@@ -405,3 +405,64 @@ Seiten existieren weiterhin im Repo, werden aber **nicht** mehr aus Nav/Quick-St
 - `src/app/dashboard/ki-agent/page.tsx`
 - `src/app/dashboard/ki-agent/chat/page.tsx`
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`
+
+---
+
+## Phase 3A Real Tool Setup MVP
+
+**Date:** 2026-06-16  
+**Scope:** Tool cards → inline Setup (not agent redirect). Five MVP tools with direct generation where existing routes/actions exist. Copy cleanup only — no billing, credit registry, or provider route changes.
+
+### Tool Setups (MVP)
+
+| Tool | Route | Setup fields | Primary CTA |
+|------|-------|--------------|-------------|
+| Viral Hook | `?tool=viral-hook` | Thema/Link, Nische, Modus | Hook generieren |
+| Content Kalender | `?tool=content-calendar` | Nische, Plattform, Zeitraum | Kalender generieren |
+| Bildgenerator | `?tool=image-gen` (+ aliases) | Prompt, Format (PLATFORM_FORMATS) | Bild generieren |
+| Bild zu Video | `?tool=img-to-video` (+ aliases) | Startbild-URL, Prompt, Modell | Video generieren |
+| Text zu Video | `?tool=text-to-video` | Prompt, Modell, Dauer, Auflösung | Video generieren |
+
+**Shell:** `ProductionToolSetup` + `ProductionToolSetupBody` on ivory `DashboardStage`. Secondary CTA on all: „Mit Agent vorbereiten“.
+
+### Direkte Generierung
+
+| Tool | Direkt | Backend |
+|------|--------|---------|
+| Viral Hook | **Ja** | `extractViralHook` server action |
+| Content Kalender | **Ja** | `generateContentCalendar` server action |
+| Bildgenerator | **Ja** | `POST /api/generate-image` |
+| Bild zu Video | **Ja** | `POST /api/akool/image-to-video` + job poll |
+| Text zu Video | **Ja** | `POST /api/akool/text-to-video` + job poll |
+
+Non-MVP tools still use `ProductionToolLaunch` → „Mit Agent vorbereiten“ only (no „Tool öffnen“ — `isToolPushSafeToOpen` remains false).
+
+### Agent-only / später
+
+Tools without Setup MVP: trend-script, img-to-img, avatar, TTS, ecommerce-ads, ai-video-editor, etc. → `ProductionToolLaunch` + Agent CTA.
+
+### Legacy Tool-Seiten (später redesign)
+
+Dedicated pages remain locked (`LegacyToolRedirect` → `?tool=`): `/dashboard/viral-hook`, `/dashboard/content-kalender`, `/dashboard/image-generator`, `/dashboard/szenen-generator`, `/dashboard/text-to-video`, and other entries in `TOOL_DEDICATED_ROUTES`.
+
+### Entfernte / gekürzte Copy
+
+- „InfluexAI übernimmt Briefing…“ / „Im Agent starten“ als Hauptpfad für MVP-Tools
+- „Tool öffnen“ auf Launch-Views
+- Credit-Labels: `AgentBox`, `Dashboard`, `Fallback` → UI-sanitized (`2–5 Credits`, `Dynamisch · ab 50 Credits`, etc.)
+- „Technische Vorschau“ JSON-Block im Agent
+- „KI-Bilder für Content“ in Overview/Quick Tools
+- Lange Agent-Subtitle („Briefing wird analysiert…“)
+- „Production Tools“ / „dedizierte Seiten“ in Tools-Overview
+
+### Geänderte / neue Dateien (3A)
+
+- `src/components/dashboard/core/ProductionToolSetup.tsx` (neu)
+- `src/components/dashboard/core/ProductionToolSetupBody.tsx` (neu)
+- `src/components/dashboard/core/production-tool-setup-ui.ts` (neu)
+- `src/components/dashboard/core/DashboardLayout.tsx`
+- `src/components/dashboard/core/ProductionToolsOverview.tsx`
+- `src/components/dashboard/core/ProductionToolLaunch.tsx`
+- `src/components/dashboard/core/production-tool-routes.ts`
+- `src/components/agent/AgentAutopilotV2.tsx`
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`

@@ -9,49 +9,37 @@ import {
   DashboardPageHeader,
   DashboardPanel,
 } from "./DashboardSurface";
-import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
+import { buildAgentPrepareHref, getSetupCreditLabel } from "./production-tool-setup-ui";
 import {
   getToolDisplayLabel,
-  isToolPushSafeToOpen,
   resolveToolRoute,
 } from "./production-tool-routes";
 
 const TOOL_DESCRIPTIONS: Partial<Record<ToolId, string>> = {
-  "viral-hook": "Hooks und Story-Struktur aus Trends oder Briefings.",
-  "content-calendar": "Content-Plan mit Hooks für mehrere Plattformen.",
-  "trend-script": "Trend-Thema in ein fertiges Script überführen.",
-  "image-gen": "KI-Bilder für Social, Ads und Thumbnails.",
-  "img-to-img": "Bestehende Bilder variieren oder remixen.",
-  "img-to-video": "Statische Frames zu kurzen Video-Clips.",
-  "text-to-video": "Text-Prompt direkt in Video umsetzen.",
-  "ecommerce-ads": "Produkt-Clips für E-Commerce und Performance Ads.",
-  "avatar-video": "Avatar-Videos mit synchroner Sprache.",
-  "tts": "Text-to-Speech, Voice Clone und Voice Changer.",
+  "viral-hook": "Hooks aus Thema oder Link.",
+  "content-calendar": "Content-Plan mit Hooks.",
+  "trend-script": "Trend-Thema in Script.",
+  "image-gen": "Prompt und Format wählen.",
+  "img-to-img": "Bilder variieren oder remixen.",
+  "img-to-video": "Startbild animieren.",
+  "text-to-video": "Prompt in Video umsetzen.",
+  "ecommerce-ads": "Produkt-Clips für Ads.",
+  "avatar-video": "Avatar-Videos mit Sprache.",
+  "tts": "Text-to-Speech und Stimme.",
 };
-
-const AGENT_LAUNCH_COPY =
-  "Starte dieses Tool über den Agent. InfluexAI übernimmt Briefing, Tool-Auswahl und Produktionspfad.";
-
-const AGENT_PREPARED_COPY = "Dieses Tool wird über den Agent vorbereitet.";
 
 export function ProductionToolLaunch({
   toolId,
-  onOpenDedicated,
 }: {
   toolId: ToolId;
   onOpenDedicated?: (id: ToolId) => void;
 }) {
-  const dedicatedRoute = resolveToolRoute(toolId);
-  const canOpenDedicated = Boolean(dedicatedRoute && isToolPushSafeToOpen(toolId));
-  const creditLabel = getCreditDisplayLabel(toolId);
+  const creditLabel = getSetupCreditLabel(toolId);
   const label = getToolDisplayLabel(toolId);
   const toolDescription = TOOL_DESCRIPTIONS[toolId];
-  const subtitle = toolDescription ?? AGENT_PREPARED_COPY;
-
-  const agentHref =
-    toolId === "content-calendar"
-      ? "/dashboard/ki-agent"
-      : `/dashboard/ki-agent?tool=${encodeURIComponent(toolId)}`;
+  const subtitle = toolDescription ?? "Setup folgt — vorerst über den Agent.";
+  const dedicatedRoute = resolveToolRoute(toolId);
+  const agentHref = buildAgentPrepareHref(toolId, {});
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-6">
@@ -62,14 +50,10 @@ export function ProductionToolLaunch({
           className="mb-1 font-mono text-[10px] uppercase tracking-widest"
           style={{ color: DASHBOARD_MUTED }}
         >
-          Credit-Kosten
+          Credits
         </p>
-        <p className="mb-5 text-lg font-semibold" style={{ color: DASHBOARD_TEXT }}>
+        <p className="mb-6 text-lg font-semibold" style={{ color: DASHBOARD_TEXT }}>
           {creditLabel}
-        </p>
-
-        <p className="mb-5 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          {AGENT_LAUNCH_COPY}
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -78,23 +62,8 @@ export function ProductionToolLaunch({
             className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-5 py-2.5 text-sm font-bold no-underline transition-opacity hover:opacity-90"
             style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
           >
-            Im Agent starten
+            Mit Agent vorbereiten
           </Link>
-
-          {canOpenDedicated && onOpenDedicated ? (
-            <button
-              type="button"
-              onClick={() => onOpenDedicated(toolId)}
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg border px-5 py-2.5 text-sm font-medium transition-colors hover:border-black/15"
-              style={{
-                borderColor: "rgba(8,8,8,0.12)",
-                background: "#FFFCF7",
-                color: DASHBOARD_TEXT,
-              }}
-            >
-              Tool öffnen
-            </button>
-          ) : null}
 
           <Link
             href="/dashboard?tool=tools"
@@ -108,6 +77,12 @@ export function ProductionToolLaunch({
             Alle Tools
           </Link>
         </div>
+
+        {dedicatedRoute ? (
+          <p className="mt-5 text-xs" style={{ color: DASHBOARD_MUTED }}>
+            Eigene Tool-Seite folgt im nächsten Redesign.
+          </p>
+        ) : null}
       </DashboardPanel>
     </div>
   );
