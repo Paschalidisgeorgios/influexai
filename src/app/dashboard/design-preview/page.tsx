@@ -1,10 +1,6 @@
 /**
- * /dashboard/design-preview — InfluexAI Creator Production OS
- * Design Preview · Clean-room rebuild
- *
- * Loads Plus Jakarta Sans (isolated to this route via CSS variable).
- * Does NOT affect any other page or the production dashboard.
- * ALL DATA IS MOCK. No API calls, no credits, no assets.
+ * /dashboard/design-preview — isolated design preview (not production dashboard).
+ * Mock data only. Use /dashboard for the real Studio cockpit.
  */
 
 import { Plus_Jakarta_Sans } from "next/font/google";

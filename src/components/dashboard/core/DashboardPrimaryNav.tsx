@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Bot,
   Images,
-  CreditCard,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -16,7 +15,6 @@ export type DashboardNavId =
   | "agent"
   | "tools"
   | "gallery"
-  | "credits"
   | "settings";
 
 export const DASHBOARD_PRIMARY_NAV: {
@@ -56,13 +54,6 @@ export const DASHBOARD_PRIMARY_NAV: {
     href: "/dashboard/gallery",
     icon: <Images size={15} />,
     match: (p) => p.startsWith("/dashboard/gallery"),
-  },
-  {
-    id: "credits",
-    label: "Credits",
-    href: "/dashboard/credits",
-    icon: <CreditCard size={15} />,
-    match: (p) => p.startsWith("/dashboard/credits"),
   },
   {
     id: "settings",

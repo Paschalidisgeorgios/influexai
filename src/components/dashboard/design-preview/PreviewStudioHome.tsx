@@ -426,66 +426,73 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
   const { t } = useLang();
   const ts = t.studio;
 
+  const cockpitCards = [
+    { title: ts.pipelineSteps[0].label, desc: ts.pipelineSteps[0].desc },
+    { title: ts.pipelineSteps[1].label, desc: ts.pipelineSteps[1].desc },
+    { title: ts.pipelineSteps[2].label, desc: ts.pipelineSteps[2].desc },
+    { title: ts.pipelineSteps[3].label, desc: ts.pipelineSteps[3].desc },
+  ];
+
   return (
     <div className="min-w-0">
-      <section className="mb-12 md:mb-20">
-        <div
-          className="grid min-w-0 grid-cols-1 items-stretch gap-0 md:grid-cols-[minmax(0,1.14fr)_minmax(0,0.86fr)] md:gap-8 lg:gap-10 xl:gap-12"
+      <section className="mb-10 md:mb-14">
+        <p className="mb-3 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-4" style={{ color: META }}>
+          {ts.overline}
+        </p>
+        <h1
+          className="mb-4 text-[1.875rem] font-extrabold leading-[1.08] sm:text-[2.125rem] md:text-5xl"
+          style={{ ...HL, color: DARK, letterSpacing: "-0.03em", fontWeight: 800 }}
         >
-          <div className="min-w-0 flex flex-col">
-            <p
-              className="mb-3 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-4"
-              style={{ color: META }}
-            >
-              {ts.overline}
-            </p>
-            <h1
-              className="mb-4 text-[1.875rem] font-extrabold leading-[1.02] sm:text-[2.125rem] md:text-6xl lg:text-7xl xl:text-8xl"
+          {ts.headline}
+        </h1>
+        <p className="max-w-2xl text-[16px] leading-[1.65] md:text-[18px]" style={{ color: SUBLINE }}>
+          {ts.subline}
+        </p>
+
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {cockpitCards.map((card) => (
+            <div
+              key={card.title}
+              className="rounded-sm p-5"
               style={{
-                ...HL,
-                color: DARK,
-                WebkitTextFillColor: DARK,
-                letterSpacing: "-0.035em",
-                fontWeight: 800,
+                background: LIGHT_CARD,
+                border: `1px solid ${LIGHT_BORDER}`,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.32)",
               }}
             >
-              {ts.headline.split("\n").map((line, i) => (
-                <span key={i} className="block" style={{ color: DARK }}>
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p
-              className="max-w-2xl text-[16px] leading-[1.65] md:text-[19px] md:leading-[1.7]"
-              style={{ color: SUBLINE }}
-            >
-              {ts.subline}
-            </p>
-
-            <div className="mt-5 min-w-0 md:mt-7">
-              <PreviewAgentCommand
-                onNavigate={onNavigate}
-                compact
-                embedded
-                showEnterHint
-                elevated
-              />
-              <ProductionPathBar />
+              <p className="mb-1 text-[14px] font-bold" style={{ ...HL, color: DARK }}>{card.title}</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: BODY }}>{card.desc}</p>
             </div>
-          </div>
-
-          <div className="relative hidden min-w-0 md:flex md:flex-col md:justify-stretch">
-            <HeroMonitor integrated tall />
-          </div>
+          ))}
         </div>
 
-        <div className="mt-4 min-w-0 md:hidden">
-          <HeroMonitor integrated />
+        <div
+          className="mt-8 flex flex-col gap-4 rounded-sm border p-5 sm:flex-row sm:items-center sm:justify-between"
+          style={{ background: LIGHT_CARD, borderColor: LIGHT_BORDER }}
+        >
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest" style={{ color: META }}>
+              Weiterarbeiten
+            </p>
+            <p className="mt-1 text-[14px] font-semibold" style={{ color: DARK }}>{ts.continueHint}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate("agent")}
+            className="rounded-sm px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-wider"
+            style={{ background: ACCENT, color: DARK }}
+          >
+            {ts.continueCta}
+          </button>
         </div>
       </section>
 
-      <ProductionPipeline />
-      <ProductionStage />
+      <section className="pb-6">
+        <p className="mb-4 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
+          {ts.mediaLabel}
+        </p>
+        <HeroMonitor integrated />
+      </section>
     </div>
   );
 }

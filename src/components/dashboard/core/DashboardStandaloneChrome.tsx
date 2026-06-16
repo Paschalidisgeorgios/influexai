@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { DashboardPrimaryNav } from "./DashboardPrimaryNav";
+import { DashboardMobileNav } from "./DashboardMobileNav";
 
 export function DashboardStandaloneChrome({
   children,
@@ -36,33 +37,11 @@ export function DashboardStandaloneChrome({
         </div>
       </aside>
 
-      <main className="ml-0 flex-1 overflow-y-auto pb-16 md:ml-[240px] md:pb-0">
+      <main className="ml-0 flex-1 overflow-y-auto pb-[4.5rem] md:ml-[240px] md:pb-0">
         {children}
       </main>
 
-      {/* Mobile bottom nav */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t border-white/[0.04] md:hidden"
-        style={{
-          background: "#09090A",
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        }}
-      >
-        {[
-          { href: "/dashboard", label: "Studio" },
-          { href: "/dashboard/ki-agent", label: "Agent" },
-          { href: "/dashboard/gallery", label: "Galerie" },
-          { href: "/dashboard/settings", label: "Settings" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium text-white/40"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      <DashboardMobileNav />
     </div>
   );
 }

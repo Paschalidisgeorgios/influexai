@@ -320,7 +320,7 @@ function EmptyState({ message }: { message: string }) {
         {message}
       </p>
       <p className="mt-2 font-mono text-[10px] tracking-[0.14em] uppercase" style={{ color: MUTED }}>
-        Mock · Preview
+        Preview Mode
       </p>
     </div>
   );

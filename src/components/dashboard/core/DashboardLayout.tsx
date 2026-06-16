@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
+import { DashboardMobileNav }     from "./DashboardMobileNav";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -26,7 +27,6 @@ import {
   Search,
   FileText,
   Loader2,
-  LayoutDashboard,
   // extended tool icons
   Film,
   Repeat2,
@@ -37,7 +37,6 @@ import {
   ShoppingBag,
   Volume2,
   Camera,
-  Bot,
   MessageCircle,
   Shuffle,
 } from "lucide-react";
@@ -452,6 +451,13 @@ const TOOL_LABEL: Record<ToolId, string> = {
 
 const TEXT_TOOLS = new Set<ToolId>(["viral-hook", "content-calendar", "trend-script"]);
 
+const TOOL_QUERY_IDS = new Set<string>([
+  "studio", "gallery", "settings",
+  "viral-hook", "content-calendar", "trend-script",
+  "image-gen", "img-to-img", "img-to-video", "text-to-video",
+  "ecommerce-ads", "avatar-video", "tts",
+]);
+
 // ─── GalleryFilterBar ─────────────────────────────────────────────────────────
 
 function GalleryFilterBar({
@@ -608,6 +614,7 @@ async function deleteAsset(id: string): Promise<void> {
 
 export function DashboardLayout() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTool, setActiveTool]         = useState<ToolId>("studio");
   const [isRightPanelOpen, setIsRightPanel] = useState(false);
 
@@ -641,6 +648,13 @@ export function DashboardLayout() {
   });
 
   // ── Supabase Init: Credits + Gallery beim Mount laden ─────────────────────
+  useEffect(() => {
+    const toolParam = searchParams.get("tool");
+    if (toolParam && TOOL_QUERY_IDS.has(toolParam)) {
+      setActiveTool(toolParam as ToolId);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     let cancelled = false;
     void (async () => {
@@ -910,7 +924,7 @@ export function DashboardLayout() {
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
       <main
-        className={`ml-0 flex h-screen flex-1 flex-col overflow-y-auto pb-16 transition-all duration-200 md:ml-[240px] md:pb-0 ${
+        className={`ml-0 flex h-screen flex-1 flex-col overflow-y-auto pb-[4.5rem] transition-all duration-200 md:ml-[240px] md:pb-0 ${
           isRightPanelOpen ? "md:mr-[280px]" : "mr-0"
         }`}
         style={{
@@ -984,50 +998,7 @@ export function DashboardLayout() {
         )}
       </main>
 
-      {/* ── Mobile Bottom Nav — visible only on < md, replaces sidebar ──────── */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t border-white/[0.04] md:hidden"
-        style={{ background: "#09090A", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
-        {(
-          [
-            { id: "studio" as ToolId,   label: "Studio",      href: "/dashboard",              icon: <LayoutDashboard size={18} /> },
-            { id: "agent" as const,      label: "Agent",       href: "/dashboard/ki-agent",     icon: <Bot size={18} /> },
-            { id: "viral-hook" as ToolId, label: "Tools",      href: null,                      icon: <Sparkles size={18} /> },
-            { id: "gallery" as ToolId,  label: "Galerie",     href: "/dashboard/gallery",      icon: <Images size={18} /> },
-            { id: "settings" as ToolId, label: "Einstellungen", href: "/dashboard/settings",   icon: <Settings size={18} /> },
-          ]
-        ).map((item) => {
-          const isActive =
-            item.href === null
-              ? activeTool !== "studio" && activeTool !== "gallery" && activeTool !== "settings"
-              : item.id === "studio"
-                ? activeTool === "studio"
-                : false;
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => {
-                if (item.href) router.push(item.href);
-                else handleToolSelect(item.id as ToolId);
-              }}
-              className="flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors active:bg-white/[0.04]"
-              aria-label={item.label}
-            >
-              <span style={{ color: isActive ? "#b4ff00" : "rgba(255,255,255,0.28)" }}>
-                {item.icon}
-              </span>
-              <span
-                className="text-[10px] font-medium"
-                style={{ color: isActive ? "#b4ff00" : "rgba(255,255,255,0.28)" }}
-              >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
+      <DashboardMobileNav />
 
       {/* ── Right Settings Panel ──────────────────────────────────────────────── */}
       <AnimatePresence>

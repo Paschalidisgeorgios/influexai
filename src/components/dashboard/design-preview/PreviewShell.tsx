@@ -6,10 +6,12 @@
  */
 
 import { useState } from "react";
+import Link from "next/link";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewStudioHome, PreviewAgentView } from "./PreviewStudioHome";
 import { PreviewToolsFlow } from "./PreviewToolsFlow";
 import { PreviewGallery } from "./PreviewGallery";
+import { PreviewSettings } from "./PreviewSettings";
 
 const ACCENT   = "#b4ff00";
 const SHELL_BG = "#050506";
@@ -19,7 +21,7 @@ const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent", "tools", "gallery"];
+const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent", "tools", "gallery", "settings"];
 
 // ─── Sidebar (220px) ──────────────────────────────────────────────────────────
 
@@ -42,7 +44,7 @@ function PreviewSidebar({
           INFLUEX<span style={{ color: ACCENT }}>AI</span>
         </span>
         <p className="mt-2 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
-          Production OS · Preview
+          Design Preview · isoliert
         </p>
       </div>
 
@@ -149,6 +151,30 @@ function PreviewTopbar({ active }: { active: PreviewView }) {
   );
 }
 
+function PreviewModeBanner() {
+  const { t } = useLang();
+  return (
+    <div
+      className="mb-4 flex flex-col gap-2 rounded-lg border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+      style={{
+        borderColor: "rgba(8,8,8,0.10)",
+        background: "rgba(180,255,0,0.08)",
+      }}
+    >
+      <p className="text-[12px] font-medium" style={{ color: "rgba(8,8,8,0.75)" }}>
+        {t.previewBanner}
+      </p>
+      <Link
+        href="/dashboard"
+        className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-wider"
+        style={{ color: ACCENT }}
+      >
+        {t.previewBannerCta}
+      </Link>
+    </div>
+  );
+}
+
 // ─── Inner ────────────────────────────────────────────────────────────────────
 
 function PreviewInner() {
@@ -193,10 +219,12 @@ function PreviewInner() {
                 style={{ background: `linear-gradient(90deg, ${ACCENT}55, ${ACCENT}22 40%, transparent 85%)` }}
               />
               <div className="min-w-0 px-4 pb-14 pt-5 md:px-12 md:pb-16 md:pt-10 lg:px-16 xl:px-20">
+                <PreviewModeBanner />
                 {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}
                 {active === "agent"   && <PreviewAgentView  onNavigate={setActive} />}
                 {active === "tools"   && <PreviewToolsFlow />}
                 {active === "gallery" && <PreviewGallery />}
+                {active === "settings" && <PreviewSettings />}
               </div>
             </div>
           </div>

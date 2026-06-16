@@ -31,8 +31,10 @@ const STANDALONE_CHILD_ROUTES = [
   "/dashboard/referral",
   "/dashboard/profile",
   "/dashboard/api",
-  "/dashboard/design-preview",
 ];
+
+/** Design preview — isolated fullscreen mock, no production chrome */
+const PREVIEW_ONLY_ROUTES = ["/dashboard/design-preview"];
 
 interface DashboardShellProps {
   children?: React.ReactNode;
@@ -56,6 +58,11 @@ function LegacyChrome({ children }: { children: React.ReactNode }) {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
+
+  if (PREVIEW_ONLY_ROUTES.some((p) => pathname.startsWith(p))) {
+    return <Providers>{children}</Providers>;
+  }
+
   const showStandalone = STANDALONE_CHILD_ROUTES.some((p) => pathname.startsWith(p));
 
   if (showStandalone) {

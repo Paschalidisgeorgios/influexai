@@ -59,19 +59,88 @@
 | „Recent outputs“ | „Letzte Assets“ (in Cockpit) |
 | Copilot auf Studio-Home | Nur noch unter Agent-Route |
 
-**Preview-only (unverändert, isoliert):** `design-preview/*` — „Creator Production OS“, „Beauty Launch“, etc.
+**Preview-only:** `design-preview/*` — isoliert, mit Preview-Banner; Studio/Agent getrennt wie Produktion (siehe Phase 2A.1).
 
 ---
 
-## Navigation korrigiert
+## Phase 2A.1 Route & Navigation Check
+
+**Date:** 2026-06-16  
+**Scope:** Route reality check, unified nav, design-preview isolation, mock headline cleanup.
+
+### Geprüfte Routen
+
+| Route | Layout | Navigation | Ergebnis |
+|-------|--------|------------|----------|
+| `/dashboard` | `DashboardLayout` + `StudioCockpit` | Sidebar Primary Nav + Tools + Mobile 5-item | **OK** |
+| `/dashboard/ki-agent` | `DashboardStandaloneChrome` + `AgentAutopilotV2` | Primary Nav + Mobile | **OK** |
+| `/dashboard/agent` | Redirect | → `/dashboard/ki-agent` | **OK** (Middleware + page) |
+| `/dashboard/settings` | `DashboardStandaloneChrome` + settings page | Primary Nav + Mobile „Einstellungen“ | **OK** |
+| `/dashboard/gallery` | `DashboardStandaloneChrome` + gallery page | Primary Nav + Mobile | **OK** |
+| `/dashboard/design-preview` | **Nur** `PreviewShell` fullscreen (kein Prod-Chrome) | Eigene Preview-Nav inkl. Settings | **Angeglichen + markiert** |
+
+### Navigation Desktop (Produktion)
+
+`DashboardPrimaryNav`: Studio · Agent · Tools (`?tool=viral-hook`) · Galerie · Einstellungen  
+Credits: Footer in `DashboardLayout` + Links im Studio-Cockpit (nicht in Primary Nav).
+
+### Navigation Mobile (Produktion)
+
+`DashboardMobileNav`: Studio · Agent · Tools · Galerie · Einstellungen (5 Items, Icons + Labels).
+
+### Settings
+
+| Check | Status |
+|-------|--------|
+| Sichtbar in Desktop-Nav | **Ja** |
+| Sichtbar in Mobile-Nav | **Ja** |
+| Route erreichbar | **Ja** (`/dashboard/settings`) |
+| Preview-Nav Settings | **Ja** (`PreviewSettings` view) |
+
+### Design-Preview Status
+
+**Entscheidung:** A + B kombiniert — angeglichen **und** klar markiert.
+
+- Kein doppeltes Prod-Chrome (`design-preview` aus `STANDALONE_CHILD_ROUTES`, eigener `PREVIEW_ONLY_ROUTES` Pfad)
+- Banner: „Design Preview — nicht das Produktions-Dashboard“ + Link zu `/dashboard`
+- Settings in Preview-Navigation ergänzt
+- Studio-Preview = Cockpit (kein eingebetteter Agent-Chat)
+- Agent-Preview = Command Center (unveränderte Rolle)
+
+### Entfernte Mock-Texte (sichtbar)
+
+| Vorher | Nachher |
+|--------|---------|
+| `STUDIO-ARCHIV · MOCK` | `Studio-Archiv` |
+| `Production Output · Mock` | `Asset Library` |
+| `Kampagne · Mock` / `Campaign · Mock` | `Beispiel` / `Sample` |
+| `Beauty Launch — Q3` (Studio headline area) | `Letztes Asset` / Cockpit-Headlines |
+| `Creator Production OS` / `AI-native Production OS` | `Design Preview` / `Heute im Studio` |
+| `Mock · Preview` (Gallery empty) | `Preview Mode` |
+| Doppelte Prod-Sidebar auf Preview | Entfernt |
+
+### Offene Risiken
+
+- `?tool=` Query wird nur in `DashboardLayout` gelesen (kein Deep-Link für alle Tool-Routen)
+- Preview nutzt weiter Mock-Daten (Asset-Karten, 240 Credits) — nur als Preview gekennzeichnet
+- Zwei Galerie-Quellen (`gallery_assets` vs `generations`) unverändert
+- Inline Settings in `DashboardLayout` technisch noch vorhanden
+
+### Lint (Phase 2A.1)
+
+Weiterhin **17 Errors** (bestehend) — keine neuen durch 2A.1 erwartet.
+
+---
+
+## Navigation korrigiert (Phase 2A)
 
 | Eintrag | Ziel | Fix |
 |---------|------|-----|
 | Studio | `/dashboard` | `DashboardPrimaryNav` + Logo |
 | Agent | `/dashboard/ki-agent` | War `toolTarget: gallery` → behoben |
 | Galerie | `/dashboard/gallery` | Standalone-Route + Nav |
-| Credits | `/dashboard/credits` | Sidebar-Link + Cockpit |
-| Einstellungen | `/dashboard/settings` | Primary Nav (nicht inline-only) |
+| Credits | `/dashboard/credits` | Cockpit + Sidebar-Footer (nicht Primary Nav) |
+| Einstellungen | `/dashboard/settings` | Primary Nav + Mobile Nav |
 | `/dashboard/agent` | `/dashboard/ki-agent` | Middleware + redirect page |
 
 **Shared Nav:** `src/components/dashboard/core/DashboardPrimaryNav.tsx`  
@@ -111,7 +180,7 @@
 
 - Provider-Routen / Billing / Credit-Logik
 - Landingpage
-- `design-preview` Inhalt (bleibt Mock)
+- `design-preview` — isoliert mit Preview-Banner (Phase 2A.1)
 - Vollständige Gallery-SSOT-Vereinigung (`gallery_assets` vs `generations`)
 - Agent-Job-Liste / Failed-Jobs-Dashboard
 - Support-Tickets, API-Integrationen in Settings
