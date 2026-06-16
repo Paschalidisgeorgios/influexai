@@ -868,7 +868,7 @@ const QUICK_SUGGESTIONS = [
   },
 ] as const;
 
-function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) {
+export function CopilotChat({ onNavigate }: { onNavigate?: (toolId: ToolId) => void }) {
   const [messages,  setMessages]  = useState<CopilotMessage[]>([]);
   const [input,     setInput]     = useState("");
   const [streaming, setStreaming]  = useState(false);

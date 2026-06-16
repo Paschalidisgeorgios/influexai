@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { SettingsView } from "./SettingsView";
-import { DashboardSectionHeader } from "@/components/dashboard/ui/DashboardSectionHeader";
-import { DashboardCard }          from "@/components/dashboard/ui/DashboardCard";
+import { DashboardSectionHeader }   from "@/components/dashboard/ui/DashboardSectionHeader";
+import { DashboardCard }            from "@/components/dashboard/ui/DashboardCard";
+import { StudioCommandCenter }      from "./StudioCommandCenter";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -523,31 +524,11 @@ function StudioHome({
         style={{ background: "#0055ff" }}
       />
 
-      {/* ── 1. Studio Header ──────────────────────────────────────────────── */}
-      <DashboardSectionHeader
-        eyebrow="Creator Studio"
-        title="What are you making today?"
-        titleClassName="text-xl font-bold sm:text-2xl"
-        description="Generate campaign-ready images, videos and creator assets from one place."
-        action={
-          creditsLoaded ? (
-            <div className="flex shrink-0 items-center gap-4 rounded-xl border border-white/[0.05] bg-white/[0.01] px-4 py-2.5">
-              <div className="text-center">
-                <p className="font-mono text-sm font-bold text-[#b4ff00]">{credits}</p>
-                <p className="mt-0.5 text-[9px] uppercase tracking-widest text-zinc-600">Credits</p>
-              </div>
-              {recentAssets.length > 0 && (
-                <>
-                  <div className="h-6 w-px bg-white/[0.06]" />
-                  <div className="text-center">
-                    <p className="font-mono text-sm font-bold text-white">{recentAssets.length}</p>
-                    <p className="mt-0.5 text-[9px] uppercase tracking-widest text-zinc-600">Assets</p>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : undefined
-        }
+      {/* ── 1. Agent Command Center ───────────────────────────────────────── */}
+      <StudioCommandCenter
+        onSelect={onSelect}
+        credits={credits}
+        creditsLoaded={creditsLoaded}
       />
 
       {/* ── 2. Bento Hero Grid ────────────────────────────────────────────── */}
