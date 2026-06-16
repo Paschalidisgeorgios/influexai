@@ -6,7 +6,7 @@
  */
 
 import { Fragment } from "react";
-import { useLang, type PreviewView } from "./PreviewLang";
+import { useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewAgentCommand } from "./PreviewAgentCommand";
 
 const ACCENT = "#b4ff00";
@@ -20,15 +20,139 @@ const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-// ─── Hero Production Monitor (right column) ───────────────────────────────────
+// ─── Local OS-flow copy (preview-only, DE/EN) ─────────────────────────────────
+
+const OS_COPY = {
+  de: {
+    pathLabel:     "Produktionspfad",
+    pathSteps:     ["Idee", "Agent", "Tool", "Review", "Export"],
+    routeActive:   "Produktionspfad aktiv",
+    routePoints:   ["Brief analysiert", "Workflow gewählt", "Assets vorbereitet"],
+    outputHeadline:"Kampagnenpaket entsteht",
+    outputs: [
+      { name: "Image Set",   status: "In Arbeit", format: "1:1"    },
+      { name: "Motion Clip", status: "Wartend",   format: "9:16"   },
+      { name: "Hooks",       status: "In Arbeit", format: "Text"   },
+      { name: "Captions",    status: "Wartend",   format: "Export" },
+    ],
+    monitorOutput: "Live Output",
+  },
+  en: {
+    pathLabel:     "Production Path",
+    pathSteps:     ["Idea Intake", "Agent Routing", "Tool / Model", "Output Review", "Export"],
+    routeActive:   "Live production route",
+    routePoints:   ["Brief analyzed", "Best workflow selected", "Assets preparing"],
+    outputHeadline:"Campaign package in progress",
+    outputs: [
+      { name: "Image Set",   status: "Preparing", format: "1:1"    },
+      { name: "Motion Clip", status: "Queued",    format: "9:16"   },
+      { name: "Hooks",       status: "Preparing", format: "Text"   },
+      { name: "Captions",    status: "Queued",    format: "Export" },
+    ],
+    monitorOutput: "Live Output",
+  },
+} as const;
+
+const ACTIVE_PATH_STEP = 1;
+
+function useOsCopy() {
+  const { lang } = useLang();
+  return OS_COPY[lang as Lang];
+}
+
+// ─── Production Path bar ──────────────────────────────────────────────────────
+
+function ProductionPathBar() {
+  const os = useOsCopy();
+
+  return (
+    <div
+      className="mt-4 min-w-0 md:mt-5"
+      aria-label={os.pathLabel}
+    >
+      <p className="mb-2 font-mono text-[10px] tracking-[0.14em] uppercase" style={{ color: META }}>
+        {os.pathLabel}
+      </p>
+
+      {/* Desktop — horizontal, max ~72px */}
+      <div
+        className="hidden min-w-0 items-center gap-0 rounded-sm px-3 py-2.5 md:flex"
+        style={{
+          maxHeight: "72px",
+          background: STONE2,
+          border: "1px solid rgba(8,8,8,0.07)",
+        }}
+      >
+        {os.pathSteps.map((label, i) => (
+          <Fragment key={label}>
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-1 px-1">
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full"
+                style={{
+                  background: i === ACTIVE_PATH_STEP ? ACCENT : i < ACTIVE_PATH_STEP ? "rgba(8,8,8,0.25)" : STONE,
+                  boxShadow: i === ACTIVE_PATH_STEP ? `0 0 8px ${ACCENT}66` : "none",
+                }}
+              />
+              <span
+                className="truncate text-center font-mono text-[9px] leading-tight tracking-[0.06em] uppercase md:text-[10px]"
+                style={{
+                  color: i === ACTIVE_PATH_STEP ? DARK : META,
+                  fontWeight: i === ACTIVE_PATH_STEP ? 600 : 400,
+                }}
+              >
+                {label}
+              </span>
+            </div>
+            {i < os.pathSteps.length - 1 && (
+              <div
+                className="h-px w-3 shrink-0 lg:w-5"
+                style={{ background: i < ACTIVE_PATH_STEP ? ACCENT : STONE }}
+              />
+            )}
+          </Fragment>
+        ))}
+      </div>
+
+      {/* Mobile — 2-column wrap, no horizontal scroll */}
+      <div
+        className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-sm p-3 md:hidden"
+        style={{ background: STONE2, border: "1px solid rgba(8,8,8,0.07)" }}
+      >
+        {os.pathSteps.map((label, i) => (
+          <div key={label} className="flex min-w-0 items-center gap-2">
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{
+                background: i === ACTIVE_PATH_STEP ? ACCENT : STONE,
+                boxShadow: i === ACTIVE_PATH_STEP ? `0 0 6px ${ACCENT}55` : "none",
+              }}
+            />
+            <span
+              className="truncate font-mono text-[10px] tracking-[0.05em] uppercase"
+              style={{
+                color: i === ACTIVE_PATH_STEP ? DARK : META,
+                fontWeight: i === ACTIVE_PATH_STEP ? 600 : 400,
+              }}
+            >
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Hero Production Monitor ──────────────────────────────────────────────────
 
 function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolean; tall?: boolean }) {
   const { t } = useLang();
   const ts = t.studio;
+  const os = useOsCopy();
 
   return (
     <div
-      className={`relative flex w-full min-w-0 flex-col overflow-hidden rounded-sm ${tall ? "h-full min-h-[540px] lg:min-h-[600px]" : "min-h-[280px] md:min-h-[340px]"}`}
+      className={`relative flex w-full min-w-0 flex-col overflow-hidden rounded-sm ${tall ? "h-full min-h-[540px] lg:min-h-[600px]" : "min-h-[260px] md:min-h-[320px]"}`}
       style={{
         background: "#0a0a10",
         border: integrated
@@ -39,27 +163,61 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
           : "0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
       }}
     >
+      {integrated && (
+        <div
+          className="pointer-events-none absolute -left-8 top-[42%] hidden h-px w-8 md:block lg:-left-10 lg:w-10"
+          style={{ background: `linear-gradient(90deg, ${ACCENT}55, transparent)` }}
+        />
+      )}
+
       <div
         className="absolute left-0 top-0 h-[2px] w-full"
-        style={{ background: `linear-gradient(90deg, ${ACCENT} 0%, ${ACCENT}66 35%, transparent 75%)` }}
+        style={{ background: `linear-gradient(90deg, ${ACCENT} 0%, ${ACCENT}55 40%, transparent 80%)` }}
       />
 
-      <div className="flex items-center gap-2 border-b px-5 py-3.5" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <span className="h-2 w-2 rounded-full bg-white/25" />
-        <span className="h-2 w-2 rounded-full bg-white/14" />
-        <span className="h-2 w-2 rounded-full bg-white/08" />
-        <span className="ml-2 font-mono text-[11px] tracking-[0.12em] uppercase text-neutral-500">
-          Production Output
+      {/* Route status — linked to agent */}
+      <div className="border-b px-4 py-3 md:px-5 md:py-3.5" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.25)" }}>
+        <div className="mb-2.5 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" style={{ background: ACCENT, boxShadow: `0 0 6px ${ACCENT}` }} />
+          <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-300 md:text-[11px]">
+            {os.routeActive}
+          </span>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {os.routePoints.map((point, i) => (
+            <div key={point} className="flex min-w-0 items-center gap-2">
+              <span
+                className="font-mono text-[9px] uppercase tracking-wider"
+                style={{ color: i < 2 ? ACCENT : "rgba(255,255,255,0.35)" }}
+              >
+                {i < 2 ? "✓" : "○"}
+              </span>
+              <span
+                className="truncate font-mono text-[10px] tracking-[0.06em]"
+                style={{ color: i < 2 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.40)" }}
+              >
+                {point}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 border-b px-4 py-2.5 md:px-5" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+        <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+        <span className="h-1.5 w-1.5 rounded-full bg-white/12" />
+        <span className="ml-1 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
+          {os.monitorOutput}
         </span>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-end p-7 md:p-9">
+      <div className="relative flex flex-1 flex-col justify-end p-5 md:p-7">
         <div
-          className="pointer-events-none absolute inset-0 opacity-50"
-          style={{ background: "radial-gradient(ellipse 85% 65% at 58% 28%, rgba(100,80,255,0.38), transparent)" }}
+          className="pointer-events-none absolute inset-0 opacity-45"
+          style={{ background: "radial-gradient(ellipse 85% 65% at 58% 28%, rgba(100,80,255,0.35), transparent)" }}
         />
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.22]"
+          className="pointer-events-none absolute inset-0 opacity-[0.20]"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)," +
@@ -68,23 +226,23 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
           }}
         />
         <div className="relative">
-          <p className="mb-3 font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-500">
-            {ts.mediaPrimaryTag}
-          </p>
-          <h3 className="mb-3 text-[1.375rem] font-extrabold text-neutral-100 md:text-[2.125rem]" style={{ ...HL, fontWeight: 800 }}>
+          <p className="mb-2 font-mono text-[10px] tracking-[0.14em] uppercase text-neutral-500">
             {ts.mediaPrimaryTitle}
+          </p>
+          <h3 className="mb-2 text-xl font-extrabold text-neutral-100 md:text-[1.625rem]" style={{ ...HL, fontWeight: 800 }}>
+            {ts.mediaOutputs[0]?.label ?? "Campaign Visual"}
           </h3>
-          <p className="max-w-sm text-[14px] leading-[1.65] text-neutral-300 md:text-[15px]">
+          <p className="max-w-sm text-[13px] leading-[1.6] text-neutral-400 md:text-[14px]">
             {ts.mediaPrimaryDesc}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.07)" }}>
+      <div className="grid grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.06)" }}>
         {ts.mediaOutputs.map((out) => (
-          <div key={out.label} className="px-4 py-4" style={{ background: "#0e0e16" }}>
-            <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">{out.type}</p>
-            <p className="mt-1 truncate text-[13px] font-semibold text-neutral-100">{out.label}</p>
+          <div key={out.label} className="px-3 py-3 md:px-4 md:py-3.5" style={{ background: "#0e0e16" }}>
+            <p className="font-mono text-[9px] tracking-[0.12em] uppercase text-neutral-500">{out.type}</p>
+            <p className="mt-0.5 truncate text-[12px] font-semibold text-neutral-100 md:text-[13px]">{out.label}</p>
           </div>
         ))}
       </div>
@@ -92,15 +250,15 @@ function HeroMonitor({ integrated = false, tall = false }: { integrated?: boolea
   );
 }
 
-// ─── Production Pipeline — system line ────────────────────────────────────────
+// ─── Production Pipeline ──────────────────────────────────────────────────────
 
 function ProductionPipeline() {
   const { t } = useLang();
   const ts = t.studio;
 
   return (
-    <section className="pb-16 md:pb-20">
-      <p className="mb-10 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
+    <section className="pb-14 md:pb-20">
+      <p className="mb-8 font-mono text-[11px] tracking-[0.16em] uppercase md:mb-10" style={{ color: META }}>
         {ts.pipelineLabel}
       </p>
 
@@ -118,8 +276,8 @@ function ProductionPipeline() {
               style={{
                 left: `${(i / (ts.pipelineSteps.length - 1)) * 100}%`,
                 transform: "translate(-50%, -50%)",
-                background: i === 0 ? ACCENT : STONE,
-                boxShadow: i === 0 ? `0 0 12px ${ACCENT}88` : "none",
+                background: i <= 1 ? ACCENT : STONE,
+                boxShadow: i === 1 ? `0 0 12px ${ACCENT}88` : "none",
               }}
             />
           ))}
@@ -130,7 +288,7 @@ function ProductionPipeline() {
             <div key={step.num}>
               <p
                 className="mb-3 font-mono text-[11px] tracking-[0.14em] uppercase"
-                style={{ color: i === 0 ? ACCENT : META }}
+                style={{ color: i <= 1 ? ACCENT : META }}
               >
                 {step.num}
               </p>
@@ -148,22 +306,22 @@ function ProductionPipeline() {
       <div className="flex flex-col gap-0 md:hidden">
         {ts.pipelineSteps.map((step, i) => (
           <Fragment key={step.num}>
-            <div className="flex gap-5 py-5">
+            <div className="flex gap-5 py-4">
               <p
                 className="shrink-0 pt-0.5 font-mono text-[11px] tracking-[0.14em] uppercase"
-                style={{ color: i === 0 ? ACCENT : META }}
+                style={{ color: i <= 1 ? ACCENT : META }}
               >
                 {step.num}
               </p>
               <div>
-                <p className="mb-1.5 text-[17px] font-extrabold" style={{ ...HL, color: DARK, fontWeight: 800 }}>
+                <p className="mb-1.5 text-[16px] font-extrabold" style={{ ...HL, color: DARK, fontWeight: 800 }}>
                   {step.label}
                 </p>
                 <p className="text-[14px] leading-[1.55]" style={{ color: BODY }}>{step.desc}</p>
               </div>
             </div>
             {i < ts.pipelineSteps.length - 1 && (
-              <div className="ml-[18px] h-5 w-px" style={{ background: STONE }} />
+              <div className="ml-[18px] h-4 w-px" style={{ background: STONE }} />
             )}
           </Fragment>
         ))}
@@ -172,145 +330,77 @@ function ProductionPipeline() {
   );
 }
 
-// ─── Production Stage — campaign pack monitor ──────────────────────────────────
+// ─── Output Stage — system result ─────────────────────────────────────────────
 
 function ProductionStage() {
-  const { t } = useLang();
-  const ts = t.studio;
+  const os = useOsCopy();
 
-  const slots = [
-    { type: ts.mediaOutputs[0]?.type ?? "Bild",  label: ts.mediaOutputs[0]?.label ?? "Visual", ratio: "4/5",  hue: "#1a1830", glow: "rgba(100,80,255,0.28)" },
-    { type: ts.mediaOutputs[1]?.type ?? "Video", label: ts.mediaOutputs[1]?.label ?? "Video",  ratio: "9/16", hue: "#101a14", glow: "rgba(80,200,120,0.22)" },
-    { type: ts.mediaOutputs[2]?.type ?? "Hook",  label: ts.mediaOutputs[2]?.label ?? "Hooks",  ratio: "1/1",  hue: "#1a1010", glow: "rgba(255,90,70,0.18)" },
-  ];
+  const hues = ["#1a1830", "#101a14", "#1a1010", "#141410"];
 
   return (
     <section className="pb-2">
-      <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-8">
-        <div>
-          <p className="mb-3 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
-            {ts.mediaLabel}
-          </p>
-          <h2
-            className="text-[1.75rem] font-extrabold md:text-4xl"
-            style={{ ...HL, color: DARK, letterSpacing: "-0.03em", fontWeight: 800 }}
-          >
-            {ts.mediaHeadline}
-          </h2>
-        </div>
-        <p className="max-w-md text-[15px] leading-[1.65] md:text-right" style={{ color: BODY }}>
-          {ts.mediaSubline}
+      <div
+        className="mb-6 rounded-sm border px-5 py-5 md:mb-8 md:px-8 md:py-6"
+        style={{
+          background: `linear-gradient(135deg, ${STONE2} 0%, rgba(221,212,196,0.55) 100%)`,
+          borderColor: "rgba(8,8,8,0.08)",
+        }}
+      >
+        <p className="mb-1 font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: META }}>
+          Output Stage
         </p>
+        <h2
+          className="text-[1.5rem] font-extrabold md:text-[2rem]"
+          style={{ ...HL, color: DARK, letterSpacing: "-0.03em", fontWeight: 800 }}
+        >
+          {os.outputHeadline}
+        </h2>
       </div>
 
-      <div className="flex flex-col gap-5 lg:flex-row lg:gap-6">
-        {/* Main monitor frame */}
-        <div
-          className="relative min-h-[340px] overflow-hidden lg:min-h-[420px] lg:flex-[6]"
-          style={{
-            aspectRatio: "16/10",
-            background: "#0a0a10",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 28px 72px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
-          }}
-        >
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        {os.outputs.map((out, i) => (
           <div
-            className="absolute left-0 top-0 h-[2px] w-full"
-            style={{ background: `linear-gradient(90deg, ${ACCENT}, transparent 55%)` }}
-          />
-          <div
-            className="absolute inset-0 opacity-55"
-            style={{ background: "radial-gradient(ellipse 75% 65% at 22% 38%, rgba(70,50,210,0.32), transparent)" }}
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.20]"
+            key={out.name}
+            className="relative min-w-0 overflow-hidden rounded-sm"
             style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)," +
-                "linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
+              background: hues[i] ?? "#0a0a10",
+              border: "1px solid rgba(255,255,255,0.07)",
+              boxShadow: "0 8px 32px rgba(8,8,8,0.12), inset 0 1px 0 rgba(255,255,255,0.05)",
+              minHeight: "132px",
             }}
-          />
-
-          <div className="relative flex h-full flex-col justify-between p-8 md:p-10">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-white/20" />
-              <span className="h-2 w-2 rounded-full bg-white/12" />
-              <span className="h-2 w-2 rounded-full bg-white/08" />
-              <span className="ml-2 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
-                Campaign Pack
-              </span>
-            </div>
-            <div>
-              <h3 className="mb-3 text-3xl font-extrabold text-neutral-100 md:text-[2.75rem]" style={{ ...HL, fontWeight: 800, letterSpacing: "-0.02em" }}>
-                {ts.mediaPrimaryTitle}
-              </h3>
-              <p className="max-w-lg text-[15px] leading-[1.65] text-neutral-300">
-                {ts.mediaExportLine}
-              </p>
+          >
+            <div
+              className="pointer-events-none absolute inset-0 opacity-30"
+              style={{ background: `radial-gradient(ellipse 80% 70% at 30% 20%, ${ACCENT}22, transparent)` }}
+            />
+            <div className="relative flex h-full flex-col justify-between p-4 md:p-5">
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-mono text-[11px] tracking-[0.08em] uppercase text-neutral-300 md:text-[12px]">
+                  {out.name}
+                </p>
+                <span
+                  className="shrink-0 rounded-sm px-2 py-0.5 font-mono text-[9px] tracking-[0.08em] uppercase"
+                  style={{
+                    background: out.status.includes("Arbeit") || out.status === "Preparing"
+                      ? "rgba(180,255,0,0.12)"
+                      : "rgba(255,255,255,0.06)",
+                    color: out.status.includes("Arbeit") || out.status === "Preparing"
+                      ? ACCENT
+                      : "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  {out.status}
+                </span>
+              </div>
+              <div className="mt-4 flex items-end justify-between gap-2">
+                <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
+                  {out.format}
+                </span>
+                <span className="h-px flex-1 max-w-[40%]" style={{ background: "rgba(255,255,255,0.08)" }} />
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Output slots — studio monitors */}
-        <div className="grid grid-cols-3 gap-3 lg:flex lg:flex-[4] lg:flex-col lg:gap-4">
-          {slots.map(({ type, label, ratio, hue, glow }) => (
-            <div
-              key={label}
-              className="relative overflow-hidden"
-              style={{
-                aspectRatio: ratio,
-                background: hue,
-                border: "1px solid rgba(255,255,255,0.07)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-                minHeight: "120px",
-              }}
-            >
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{ background: `radial-gradient(ellipse 80% 70% at 50% 30%, ${glow}, transparent)` }}
-              />
-              <div
-                className="pointer-events-none absolute inset-0 opacity-[0.18]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)," +
-                    "linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-                  backgroundSize: "20px 20px",
-                }}
-              />
-              <div className="absolute left-3 top-3">
-                <span className="font-mono text-[8px] tracking-[0.14em] uppercase text-neutral-500">{type}</span>
-              </div>
-              <div
-                className="absolute bottom-0 left-0 right-0 px-4 py-3"
-                style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.82))" }}
-              >
-                <p className="truncate text-[13px] font-semibold text-neutral-100">{label}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-sm px-7 py-6 md:px-9"
-        style={{ background: STONE2, border: "1px solid rgba(8,8,8,0.07)" }}
-      >
-        <p className="text-[15px] font-bold" style={{ ...HL, color: DARK, fontWeight: 700 }}>
-          {ts.mediaExportLine}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {["PNG", "MP4", "TXT", "PDF"].map((fmt) => (
-            <span
-              key={fmt}
-              className="rounded-sm px-3.5 py-2 font-mono text-[10px] tracking-[0.12em] uppercase"
-              style={{ background: "rgba(8,8,8,0.07)", color: BODY }}
-            >
-              {fmt}
-            </span>
-          ))}
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -324,13 +414,10 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
 
   return (
     <div className="min-w-0">
-      {/* Hero: Desktop = Mission+Agent left | Monitor right. Mobile = Headline → Agent → Monitor */}
       <section className="mb-12 md:mb-20">
         <div
           className="grid min-w-0 grid-cols-1 items-stretch gap-0 md:grid-cols-[minmax(0,1.14fr)_minmax(0,0.86fr)] md:gap-8 lg:gap-10 xl:gap-12"
-          style={{ alignItems: "stretch" }}
         >
-          {/* Left — Mission + Agent */}
           <div className="min-w-0 flex flex-col">
             <p
               className="mb-3 font-mono text-[11px] tracking-[0.18em] uppercase md:mb-4"
@@ -369,16 +456,16 @@ export function PreviewStudioHome({ onNavigate }: { onNavigate: (v: PreviewView)
                 showEnterHint
                 elevated
               />
+              <ProductionPathBar />
             </div>
           </div>
 
-          {/* Right — Production Monitor (desktop, full height of hero block) */}
-          <div className="hidden min-w-0 md:flex md:flex-col md:justify-stretch">
+          <div className="relative hidden min-w-0 md:flex md:flex-col md:justify-stretch">
             <HeroMonitor integrated tall />
           </div>
         </div>
 
-        <div className="mt-6 min-w-0 md:hidden">
+        <div className="mt-5 min-w-0 md:hidden">
           <HeroMonitor integrated />
         </div>
       </section>
@@ -396,10 +483,11 @@ export function PreviewAgentView({ onNavigate }: { onNavigate: (v: PreviewView) 
   const ta = t.agent;
 
   return (
-    <div>
+    <div className="min-w-0">
       <PreviewAgentCommand onNavigate={onNavigate} elevated />
+      <ProductionPathBar />
 
-      <div className="mt-16 border-t pt-16 md:mt-20" style={{ borderColor: "rgba(8,8,8,0.08)" }}>
+      <div className="mt-14 border-t pt-14 md:mt-16" style={{ borderColor: "rgba(8,8,8,0.08)" }}>
         <p className="mb-8 font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: META }}>
           {ta.workflowLabel}
         </p>
@@ -420,7 +508,7 @@ export function PreviewAgentView({ onNavigate }: { onNavigate: (v: PreviewView) 
         </div>
       </div>
 
-      <div className="mt-16 md:mt-20">
+      <div className="mt-14 md:mt-16">
         <ProductionStage />
       </div>
     </div>
