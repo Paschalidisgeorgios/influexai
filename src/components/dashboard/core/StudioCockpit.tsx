@@ -15,7 +15,6 @@ import {
   Bot,
   CreditCard,
   AlertCircle,
-  Package,
   Palette,
   ChevronRight,
   Loader2,
@@ -29,7 +28,6 @@ import {
   DASHBOARD_TEXT,
   DashboardPageHeader,
   DashboardPanel,
-  DashboardSection,
 } from "./DashboardSurface";
 
 interface QuickAction {
@@ -78,31 +76,9 @@ export function StudioCockpit({
         kicker="Creator Studio"
         title="Studio"
         subtitle="Überblick über Produktionen, Assets und Credits."
-        action={
-          creditsLoaded ? (
-            <Link
-              href="/dashboard/credits"
-              className="shrink-0 rounded-xl border px-4 py-2.5 transition-colors hover:border-[#b4ff00]/30"
-              style={{
-                background: "rgba(255,255,255,0.45)",
-                borderColor: "rgba(8,8,8,0.10)",
-              }}
-            >
-              <p className="font-mono text-sm font-bold" style={{ color: DASHBOARD_ACCENT }}>
-                {credits}
-              </p>
-              <p
-                className="mt-0.5 text-[9px] uppercase tracking-widest"
-                style={{ color: DASHBOARD_MUTED }}
-              >
-                Credits · Plan
-              </p>
-            </Link>
-          ) : undefined
-        }
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">
         <DashboardPanel title="Aktive Produktionen">
           {activeJobs.length > 0 ? (
             <ul className="space-y-2">
@@ -181,7 +157,7 @@ export function StudioCockpit({
         </DashboardPanel>
 
         <DashboardPanel title="Schnell starten">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {QUICK_ACTIONS.map((action) => {
               const cost = getCreditAffordanceAmount(action.id);
               return (
@@ -189,10 +165,10 @@ export function StudioCockpit({
                   key={action.id}
                   type="button"
                   onClick={() => onSelect(action.id)}
-                  className="flex min-h-[40px] items-center gap-2 rounded-lg border px-3 py-2 text-[11px] transition-colors hover:border-[#b4ff00]/25"
+                  className="flex min-h-[44px] min-w-[9rem] flex-1 items-center gap-2 rounded-lg border px-3.5 py-2.5 text-[12px] font-medium transition-colors hover:border-[#b4ff00]/30"
                   style={{
-                    borderColor: "rgba(8,8,8,0.10)",
-                    background: "rgba(255,255,255,0.35)",
+                    borderColor: "rgba(8,8,8,0.12)",
+                    background: "#FFFCF7",
                     color: DASHBOARD_TEXT,
                   }}
                 >
@@ -288,31 +264,31 @@ export function StudioCockpit({
         </DashboardPanel>
       </div>
 
-      <DashboardSection title="Tools">
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <DashboardPanel title="Beliebte Tools">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           {[
-            { id: "viral-hook" as ToolId, label: "Viral Hook", icon: <Zap size={13} /> },
-            { id: "image-gen" as ToolId, label: "Bildgenerator", icon: <Palette size={13} /> },
-            { id: "img-to-video" as ToolId, label: "Bild zu Video", icon: <Film size={13} /> },
+            { id: "viral-hook" as ToolId, label: "Viral Hook", icon: <Zap size={14} /> },
+            { id: "image-gen" as ToolId, label: "Bildgenerator", icon: <Palette size={14} /> },
+            { id: "img-to-video" as ToolId, label: "Bild zu Video", icon: <Film size={14} /> },
           ].map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => onSelect(item.id)}
-              className="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left text-[12px] transition-colors hover:border-black/15"
+              className="flex min-h-[48px] items-center gap-2.5 rounded-lg border px-3.5 py-3 text-left text-[12px] font-medium transition-colors hover:border-[#b4ff00]/28"
               style={{
-                borderColor: "rgba(8,8,8,0.08)",
-                background: "rgba(255,255,255,0.35)",
+                borderColor: "rgba(8,8,8,0.11)",
+                background: "#FFFCF7",
                 color: DASHBOARD_TEXT,
               }}
             >
-              <span style={{ color: DASHBOARD_MUTED }}>{item.icon}</span>
+              <span style={{ color: DASHBOARD_ACCENT }}>{item.icon}</span>
               {item.label}
               <ChevronRight size={11} className="ml-auto" style={{ color: DASHBOARD_MUTED }} />
             </button>
           ))}
         </div>
-      </DashboardSection>
+      </DashboardPanel>
     </div>
   );
 }

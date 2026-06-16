@@ -246,9 +246,9 @@ export default function SettingsPage() {
     <div
       className="flex flex-col gap-3.5 rounded-xl border p-6"
       style={{
-        background: "rgba(255,255,255,0.42)",
-        borderColor: "rgba(8,8,8,0.08)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
+        background: "#FFFCF7",
+        borderColor: "rgba(8,8,8,0.11)",
+        boxShadow: "0 1px 2px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.9)",
       }}
     >
       {children}

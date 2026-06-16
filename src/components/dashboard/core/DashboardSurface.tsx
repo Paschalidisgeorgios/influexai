@@ -8,9 +8,10 @@
 export const DASHBOARD_SHELL_BG = "#050506";
 export const DASHBOARD_ACCENT = "#b4ff00";
 export const DASHBOARD_TEXT = "#080808";
-export const DASHBOARD_MUTED = "rgba(8,8,8,0.45)";
+export const DASHBOARD_MUTED = "rgba(8,8,8,0.58)";
+/** Warm ivory/stone — no gray wash, full readability */
 export const DASHBOARD_STAGE_SURFACE =
-  "linear-gradient(135deg, rgba(244,240,232,0.90), rgba(244,240,232,0.78), rgba(221,212,196,0.68))";
+  "linear-gradient(148deg, #FAF6EE 0%, #F5EFE3 46%, #EBE2D2 100%)";
 
 function joinClasses(...parts: (string | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -28,28 +29,28 @@ export function DashboardStage({
   return (
     <div
       className={joinClasses(
-        "w-full min-w-0 overflow-x-hidden px-3 py-3 md:px-[5%] md:py-5 lg:px-[4%]",
+        "w-full min-w-0 overflow-x-hidden px-3 py-3 md:px-3 md:py-4 lg:px-4",
         className
       )}
     >
       <div
-        className="mx-auto w-full min-w-0 max-w-[96rem] rounded-xl backdrop-blur-2xl"
+        className="mx-auto w-full min-w-0 max-w-[96rem] rounded-xl"
         style={{
           background: DASHBOARD_STAGE_SURFACE,
-          border: "1px solid rgba(255,255,255,0.10)",
+          border: "1px solid rgba(8,8,8,0.08)",
           boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.04), 0 28px 88px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.42)",
+            "0 0 0 1px rgba(255,255,255,0.35), 0 24px 64px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.72)",
         }}
       >
         <div
           className="h-[2px] w-full rounded-t-xl"
           style={{
-            background: `linear-gradient(90deg, ${DASHBOARD_ACCENT}55, ${DASHBOARD_ACCENT}22 40%, transparent 85%)`,
+            background: `linear-gradient(90deg, ${DASHBOARD_ACCENT}66, ${DASHBOARD_ACCENT}28 45%, transparent 88%)`,
           }}
         />
         <div
           className={joinClasses(
-            "min-w-0 px-4 pb-8 pt-5 md:px-10 md:pb-12 md:pt-8 lg:px-14",
+            "min-w-0 px-4 pb-10 pt-5 md:px-8 md:pb-12 md:pt-7 lg:px-12 xl:px-14",
             innerClassName
           )}
         >
@@ -92,25 +93,27 @@ export function DashboardPageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between md:mb-10">
-      <div className="min-w-0">
-        {kicker ? <DashboardKicker>{kicker}</DashboardKicker> : null}
-        <h1
-          className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl"
-          style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
-        >
-          {title}
-        </h1>
-        {subtitle ? (
-          <p
-            className="mt-1.5 max-w-2xl text-[13px] leading-relaxed md:text-sm"
-            style={{ color: DASHBOARD_MUTED }}
+    <div className="mb-6 md:mb-8">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          {kicker ? <DashboardKicker>{kicker}</DashboardKicker> : null}
+          <h1
+            className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl"
+            style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
           >
-            {subtitle}
-          </p>
-        ) : null}
+            {title}
+          </h1>
+          {subtitle ? (
+            <p
+              className="mt-1.5 max-w-2xl text-[13px] leading-relaxed md:text-sm"
+              style={{ color: DASHBOARD_MUTED }}
+            >
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+        {action ? <div className="hidden shrink-0 sm:block">{action}</div> : null}
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
@@ -152,9 +155,10 @@ export function DashboardPanel({
     <div
       className={joinClasses("rounded-xl border p-4 md:p-5", className)}
       style={{
-        background: "rgba(255,255,255,0.42)",
-        borderColor: "rgba(8,8,8,0.08)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
+        background: "#FFFCF7",
+        borderColor: "rgba(8,8,8,0.11)",
+        boxShadow:
+          "0 1px 2px rgba(8,8,8,0.05), inset 0 1px 0 rgba(255,255,255,0.9)",
       }}
     >
       {title ? (

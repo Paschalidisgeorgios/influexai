@@ -184,21 +184,18 @@ export default function GalleryPage() {
         placeholder={t("searchPlaceholder")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full rounded-xl border px-4 py-3 text-[0.95rem] outline-none"
+        className="mb-4 w-full min-w-0 rounded-xl border px-4 py-3 text-[0.95rem] outline-none"
         style={{
-          background: "rgba(255,255,255,0.55)",
+          background: "#FFFCF7",
           borderColor: "rgba(8,8,8,0.12)",
           color: DASHBOARD_TEXT,
         }}
       />
 
       <div
-        style={{
-          display: "flex",
-          gap: 8,
-          flexWrap: "wrap",
-          marginBottom: 24,
-        }}
+        className="-mx-1 mb-6 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        role="tablist"
+        aria-label={t("filters.all")}
       >
         {filterTabs.map((tab) => {
           const active = filter === tab.id;
@@ -206,14 +203,13 @@ export default function GalleryPage() {
             <button
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={active}
               onClick={() => setFilter(tab.id)}
+              className="shrink-0 whitespace-nowrap rounded-full border px-3.5 py-2 text-[0.78rem] font-semibold transition-colors sm:px-4"
               style={{
-                padding: "8px 14px",
-                borderRadius: 999,
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                border: `1px solid ${active ? "rgba(180,255,0,0.45)" : "rgba(8,8,8,0.10)"}`,
-                background: active ? "rgba(180,255,0,0.12)" : "rgba(255,255,255,0.35)",
+                borderColor: active ? "rgba(180,255,0,0.45)" : "rgba(8,8,8,0.10)",
+                background: active ? "rgba(180,255,0,0.14)" : "#FFFCF7",
                 color: active ? DASHBOARD_TEXT : DASHBOARD_MUTED,
                 cursor: "pointer",
               }}

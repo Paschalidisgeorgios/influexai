@@ -97,3 +97,69 @@
 - `src/app/dashboard/settings/page.tsx`
 - `src/app/dashboard/gallery/page.tsx`
 - `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md` (neu)
+
+---
+
+## Phase 2B.1 Visual Polish
+
+**Date:** 2026-06-16  
+**Scope:** Layout bugfixes and contrast polish on production routes — no new design direction.
+
+### Stage-Breite
+
+| | Vorher (2B) | Nachher (2B.1) |
+|---|-------------|----------------|
+| Outer Padding Desktop | `md:px-[5%] lg:px-[4%]` (~90% nutzbar) | `md:px-3 lg:px-4` (~12–16px Rand) |
+| Stage max-width | `96rem` | `96rem` (unverändert, füllt Main fast voll) |
+| Inner Padding | `md:px-10 lg:px-14` | `md:px-8 lg:px-12 xl:px-14` |
+
+Stage wirkt auf Desktop breiter; Mobile behält `px-3` (12px).
+
+### Credit-/Plan-Badge Fix
+
+- Kaputte Header-Badge (vertikal abgeschnitten, doppelte Credit-Anzeige) **entfernt** aus `StudioCockpit`
+- Credits nur noch in Cockpit-Karte **„Credits & Plan“**
+- `DashboardPageHeader`: optionales `action` auf Mobile standardmäßig ausgeblendet (`hidden sm:block`)
+
+### Sidebar Tools-Duplizierung
+
+- Zweiter globaler **„Tools“**-Accordion unter Primary Nav **entfernt**
+- Tool-Kategorien erscheinen nur noch, wenn ein Tool aktiv ist (`isActiveTool`)
+- Primary Nav „Tools“ bleibt einmalig; Active-State berücksichtigt `?tool=` Query
+
+### Surface-Kontrast
+
+- Stage: warmes Ivory `#FAF6EE → #EBE2D2` (kein grauer Transluzenz-Schleier)
+- Panels: `#FFFCF7` mit klarer Border/Schatten
+- `DASHBOARD_MUTED`: `rgba(8,8,8,0.58)` für bessere Lesbarkeit
+
+### Mobile-Fixes
+
+- Main `pb-[5rem]` (Studio + Standalone) — mehr Abstand zur Bottom Nav
+- Studio: keine Header-Credit-Pill mehr
+- Gallery: Filter als horizontal scrollbare Chip-Leiste (`shrink-0`, Scrollbar hidden)
+
+### Agent Command Center
+
+- Breite: `max-w-6xl`
+- Eingabe + CTA in `DashboardPanel`, größeres Textarea (`min-h-[140px]`)
+- Status-Steps als Pills; Quick Tools mit `#FFFCF7`-Cards
+- Technische Vorschau dezent (`opacity-90`, weiterhin collapsed default)
+
+### Offene Risiken
+
+- Tool-Views in `DashboardLayout` (non-studio) weiterhin schmales Dark-Layout
+- Settings Passwort/Danger nutzen teils legacy CSS-Klassen
+- Gallery `GalleryCard`-Optik innerhalb Stage unverändert
+
+### Geänderte Dateien (2B.1)
+
+- `DashboardSurface.tsx`
+- `DashboardStandaloneChrome.tsx`
+- `DashboardLayout.tsx`
+- `DashboardPrimaryNav.tsx`
+- `StudioCockpit.tsx`
+- `AgentAutopilotV2.tsx`
+- `src/app/dashboard/gallery/page.tsx`
+- `src/app/dashboard/settings/page.tsx` (Panel-Tokens)
+- `PRODUCTION_DASHBOARD_VISUAL_FREEZE.md`

@@ -10,6 +10,12 @@ import {
 import { capsuleShow } from "./SmartCapsule";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
+import {
+  DASHBOARD_ACCENT,
+  DASHBOARD_MUTED,
+  DASHBOARD_TEXT,
+  DashboardPanel,
+} from "@/components/dashboard/core/DashboardSurface";
 
 const QUICK_TOOLS = [
   {
@@ -118,17 +124,17 @@ export function AgentAutopilotV2() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 md:space-y-6">
+    <div className="mx-auto w-full max-w-6xl space-y-6 md:space-y-7">
       <div className="flex flex-wrap gap-2">
         {(["agent", "campaign"] as AgentToolKey[]).map((tool) => (
           <button
             key={tool}
             type="button"
             onClick={() => switchTool(tool)}
-            className={`rounded-xl border px-4 py-2 text-xs font-medium tracking-wide uppercase transition-all duration-300 ${
+            className={`rounded-xl border px-4 py-2.5 text-xs font-semibold tracking-wide uppercase transition-all duration-300 ${
               activeTool === tool
-                ? "border-[#B4FF00]/35 bg-[#B4FF00]/12 text-[#080808]"
-                : "border-black/[0.08] bg-white/40 text-black/45 hover:border-black/15 hover:text-black/70"
+                ? "border-[#B4FF00]/40 bg-[#B4FF00]/14 text-[#080808]"
+                : "border-black/[0.10] bg-[#FFFCF7] text-black/55 hover:border-black/18 hover:text-black/80"
             }`}
           >
             {AGENT_TOOLS[tool].title}
@@ -137,19 +143,16 @@ export function AgentAutopilotV2() {
       </div>
 
       <div>
-        <p
-          className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-widest"
-          style={{ color: "rgba(8,8,8,0.45)" }}
-        >
-          Agent
+        <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-widest" style={{ color: DASHBOARD_MUTED }}>
+          Command Center
         </p>
         <h1
-          className="font-display mb-1 text-3xl leading-none font-extrabold tracking-tight md:text-4xl"
-          style={{ color: "#080808", letterSpacing: "-0.02em" }}
+          className="font-display mb-2 text-3xl leading-none font-extrabold tracking-tight md:text-[2.75rem]"
+          style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.03em" }}
         >
           Idee eingeben
         </h1>
-        <p className="font-sans text-sm" style={{ color: "rgba(8,8,8,0.50)" }}>
+        <p className="max-w-2xl font-sans text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           {T.sub} — Briefing wird analysiert, Tool wird gewählt, Output vorbereitet.
         </p>
       </div>
@@ -177,58 +180,59 @@ export function AgentAutopilotV2() {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {T.chips.map((chip, i) => (
-          <button
-            key={chip.label}
-            type="button"
-            onClick={() => selectChip(i)}
-            className={`rounded-full border px-3 py-1.5 text-[10px] transition-all duration-200 ${
-              selectedChip === i
-                ? "border-[#B4FF00]/35 bg-[#B4FF00]/12 text-[#080808]"
-                : "border-black/[0.08] bg-white/35 text-black/45 hover:border-[#B4FF00]/25 hover:text-black/70"
-            }`}
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div>
+      <DashboardPanel>
+        <div className="flex flex-wrap gap-2 pb-4">
+          {T.chips.map((chip, i) => (
+            <button
+              key={chip.label}
+              type="button"
+              onClick={() => selectChip(i)}
+              className={`rounded-full border px-3 py-1.5 text-[10px] font-medium transition-all duration-200 ${
+                selectedChip === i
+                  ? "border-[#B4FF00]/40 bg-[#B4FF00]/14 text-[#080808]"
+                  : "border-black/[0.10] bg-[#FFFCF7] text-black/50 hover:border-[#B4FF00]/28 hover:text-black/75"
+              }`}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
 
-      <div className="relative">
-        <textarea
-          ref={textareaRef}
-          value={prompt}
-          onChange={(e) => handlePromptChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={T.placeholder}
-          disabled={isGenerating}
-          rows={4}
-          className="max-h-[220px] min-h-[120px] w-full resize-none rounded-2xl border px-4 py-3.5 font-sans text-sm leading-relaxed outline-none transition-all duration-300 placeholder:text-black/30 focus:border-[#B4FF00]/35 focus:shadow-[0_0_0_3px_rgba(180,255,0,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
-          style={{
-            background: "rgba(255,255,255,0.55)",
-            borderColor: "rgba(8,8,8,0.12)",
-            color: "#080808",
-          }}
-        />
-        <p className="mt-1.5 pl-1 text-[9px] tracking-wide" style={{ color: "rgba(8,8,8,0.35)" }}>
-          Enter zum Senden · Shift+Enter für neue Zeile
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            value={prompt}
+            onChange={(e) => handlePromptChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={T.placeholder}
+            disabled={isGenerating}
+            rows={5}
+            className="max-h-[260px] min-h-[140px] w-full resize-none rounded-2xl border px-4 py-4 font-sans text-[15px] leading-relaxed outline-none transition-all duration-300 placeholder:text-black/35 focus:border-[#B4FF00]/40 focus:shadow-[0_0_0_4px_rgba(180,255,0,0.10)] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              background: "#FFFCF7",
+              borderColor: "rgba(8,8,8,0.14)",
+              color: DASHBOARD_TEXT,
+            }}
+          />
+          <p className="mt-2 pl-1 text-[10px] tracking-wide" style={{ color: DASHBOARD_MUTED }}>
+            Enter zum Senden · Shift+Enter für neue Zeile
+          </p>
+        </div>
+
+        <LoadingButton
+          mode="agent"
+          isLoading={isGenerating}
+          onClick={() => void handleGenerate()}
+          disabled={!prompt.trim()}
+          className="mt-4 h-[3.25rem] w-full rounded-xl bg-[#B4FF00] text-sm font-bold tracking-wide text-[#08080a] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_6px_32px_rgba(180,255,0,0.32)] active:scale-[0.99] disabled:opacity-40"
+        >
+          ERSTELLEN — Produktionspfad starten
+        </LoadingButton>
+
+        <p className="mt-2 text-center text-[10px] tracking-wide" style={{ color: DASHBOARD_MUTED }}>
+          Kostet {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} — ehrliche Abrechnung pro Anfrage
         </p>
-      </div>
-
-      <LoadingButton
-        mode="agent"
-        isLoading={isGenerating}
-        onClick={() => void handleGenerate()}
-        disabled={!prompt.trim()}
-        className="h-12 w-full rounded-xl bg-[#B4FF00] text-sm font-semibold tracking-wide text-[#08080a] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_30px_rgba(180,255,0,0.3)] active:scale-[0.99] disabled:opacity-40"
-      >
-        ERSTELLEN — Produktionspfad starten
-      </LoadingButton>
-
-      <p className="text-center text-[9px] tracking-wide" style={{ color: "rgba(8,8,8,0.40)" }}>
-        Kostet {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} — ehrliche Abrechnung pro
-        Anfrage
-      </p>
+      </DashboardPanel>
 
       <div className="flex flex-wrap items-center justify-center gap-2 py-1 md:gap-3">
         {[
@@ -237,8 +241,15 @@ export function AgentAutopilotV2() {
           { icon: "✅", label: "Output wird vorbereitet" },
         ].map((step, i) => (
           <div key={step.label} className="flex items-center gap-2">
-            {i > 0 && <span className="text-xs" style={{ color: "rgba(8,8,8,0.20)" }}>→</span>}
-            <div className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(8,8,8,0.45)" }}>
+            {i > 0 && <span className="text-xs" style={{ color: "rgba(8,8,8,0.22)" }}>→</span>}
+            <div
+              className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium"
+              style={{
+                borderColor: "rgba(8,8,8,0.08)",
+                background: "#FFFCF7",
+                color: DASHBOARD_MUTED,
+              }}
+            >
               <span>{step.icon}</span>
               <span>{step.label}</span>
             </div>
@@ -257,15 +268,16 @@ export function AgentAutopilotV2() {
           </span>
           <div className="h-px flex-1 bg-black/[0.06]" />
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
           {QUICK_TOOLS.map((tool) => (
             <Link
               key={tool.href}
               href={tool.href}
-              className="group cursor-pointer rounded-2xl border p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B4FF00]/25"
+              className="group cursor-pointer rounded-2xl border p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B4FF00]/28"
               style={{
-                borderColor: "rgba(8,8,8,0.08)",
-                background: "rgba(255,255,255,0.40)",
+                borderColor: "rgba(8,8,8,0.11)",
+                background: "#FFFCF7",
+                boxShadow: "0 1px 2px rgba(8,8,8,0.04)",
               }}
             >
               <div
@@ -286,8 +298,8 @@ export function AgentAutopilotV2() {
       </div>
 
       <div
-        className="overflow-hidden rounded-xl border"
-        style={{ borderColor: "rgba(8,8,8,0.08)", background: "rgba(255,255,255,0.30)" }}
+        className="mt-2 overflow-hidden rounded-xl border opacity-90"
+        style={{ borderColor: "rgba(8,8,8,0.07)", background: "rgba(255,255,255,0.35)" }}
       >
         <button
           type="button"

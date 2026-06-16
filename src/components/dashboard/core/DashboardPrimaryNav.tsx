@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   Bot,
@@ -64,20 +64,35 @@ export const DASHBOARD_PRIMARY_NAV: {
   },
 ];
 
-function isActive(pathname: string, item: (typeof DASHBOARD_PRIMARY_NAV)[number]) {
+function isDashboardToolView(searchParams: URLSearchParams): boolean {
+  const tool = searchParams.get("tool");
+  return Boolean(tool && tool !== "studio" && tool !== "gallery" && tool !== "settings");
+}
+
+function isActive(
+  pathname: string,
+  item: (typeof DASHBOARD_PRIMARY_NAV)[number],
+  searchParams: URLSearchParams
+) {
   if (item.id === "studio") {
-    return pathname === "/dashboard" || pathname === "/dashboard/";
+    const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
+    return onDashboard && !isDashboardToolView(searchParams);
+  }
+  if (item.id === "tools") {
+    if (isDashboardToolView(searchParams)) return true;
+    return item.match(pathname);
   }
   return item.match(pathname);
 }
 
 export function DashboardPrimaryNav({ compact }: { compact?: boolean }) {
   const pathname = usePathname() ?? "";
+  const searchParams = useSearchParams();
 
   return (
     <nav className={compact ? "space-y-0.5" : "space-y-0.5 px-3"}>
       {DASHBOARD_PRIMARY_NAV.map((item) => {
-        const active = isActive(pathname, item);
+        const active = isActive(pathname, item, searchParams);
         return (
           <Link
             key={item.id}

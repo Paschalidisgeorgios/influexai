@@ -201,7 +201,6 @@ function LeftSidebar({
   toolsGenerating: Partial<Record<ToolId, boolean>>;
   onSelect: (id: ToolId) => void;
 }) {
-  const [toolsExpanded, setToolsExpanded] = useState(false);
   const isActiveTool = activeTool !== "studio" && activeTool !== "gallery" && activeTool !== "settings";
 
   return (
@@ -233,98 +232,67 @@ function LeftSidebar({
       <nav className="flex-1 overflow-y-auto px-1" style={{ scrollbarWidth: "none" }}>
         <DashboardPrimaryNav />
 
-        <div className="mt-4 px-2">
-          <button
-            type="button"
-            onClick={() => {
-              setToolsExpanded((v) => !v);
-              if (!toolsExpanded) onSelect("viral-hook");
-            }}
-            className="flex w-full items-center gap-3 rounded-lg py-2 pl-3 pr-3 text-left transition-all"
-            style={{
-              background: isActiveTool ? "rgba(255,255,255,0.04)" : "transparent",
-              borderLeft: isActiveTool ? "2px solid #b4ff00" : "2px solid transparent",
-            }}
-          >
-            <span style={{ color: isActiveTool ? "#ffffff" : "rgba(255,255,255,0.28)" }}>
-              {Object.values(toolsGenerating).some(Boolean) ? (
-                <Loader2 size={15} className="animate-spin" />
-              ) : (
-                <Sparkles size={15} />
-              )}
-            </span>
-            <span
-              className="flex-1 text-xs font-medium"
-              style={{ color: isActiveTool ? "#ffffff" : "rgba(255,255,255,0.38)" }}
-            >
-              Tools
-            </span>
-            <ChevronRight
-              size={11}
-              className="shrink-0 text-white/15 transition-transform"
-              style={{ transform: toolsExpanded || isActiveTool ? "rotate(90deg)" : "none" }}
-            />
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {(toolsExpanded || isActiveTool) && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="overflow-hidden"
-            >
-              <div className="mt-2 space-y-4 pb-2 pl-2">
-                {NAV_SECTIONS.map((section) => (
-                  <div key={section.title}>
-                    <p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-white/18">
-                      {section.title}
-                    </p>
-                    <div className="space-y-0.5">
-                      {section.items.map((item) => {
-                        const active     = activeTool === item.id;
-                        const generating = !!toolsGenerating[item.id];
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => onSelect(item.id)}
-                            className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
+        {isActiveTool && (
+          <div className="mt-3 border-t border-white/[0.06] pt-3">
+            <div className="space-y-4 pb-2 pl-2">
+              {NAV_SECTIONS.map((section) => (
+                <div key={section.title}>
+                  <p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-white/18">
+                    {section.title}
+                  </p>
+                  <div className="space-y-0.5">
+                    {section.items.map((item) => {
+                      const active = activeTool === item.id;
+                      const generating = !!toolsGenerating[item.id];
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => onSelect(item.id)}
+                          className="flex w-full items-center gap-2 rounded-lg py-1.5 pr-2 text-left transition-all"
+                          style={{
+                            background: active ? "rgba(255,255,255,0.04)" : "transparent",
+                            borderLeft: active ? "2px solid #b4ff00" : "2px solid transparent",
+                            paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
+                          }}
+                        >
+                          <span
+                            className="shrink-0"
+                            style={{ color: active ? item.accent : "rgba(255,255,255,0.22)" }}
+                          >
+                            {item.icon}
+                          </span>
+                          <span
+                            className="flex-1 truncate text-[11px]"
                             style={{
-                              background:  active ? "rgba(255,255,255,0.04)" : "transparent",
-                              borderLeft:  active ? "2px solid #b4ff00" : "2px solid transparent",
-                              paddingLeft: active ? "calc(0.5rem - 2px)" : "0.5rem",
+                              color: active ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.38)",
                             }}
                           >
-                            <span className="shrink-0" style={{ color: active ? item.accent : "rgba(255,255,255,0.22)" }}>
-                              {item.icon}
-                            </span>
+                            {item.label}
+                          </span>
+                          {item.badge && !generating && !active && (
                             <span
-                              className="flex-1 truncate text-[11px]"
-                              style={{ color: active ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.38)" }}
+                              className={`shrink-0 rounded px-1 text-[9px] font-semibold leading-[1.6] ${BADGE_STYLE[item.badge]}`}
                             >
-                              {item.label}
+                              {BADGE_LABEL[item.badge]}
                             </span>
-                            {item.badge && !generating && !active && (
-                              <span className={`shrink-0 rounded px-1 text-[9px] font-semibold leading-[1.6] ${BADGE_STYLE[item.badge]}`}>
-                                {BADGE_LABEL[item.badge]}
-                              </span>
-                            )}
-                            {generating && (
-                              <Loader2 size={10} className="ml-auto animate-spin" style={{ color: item.accent }} />
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
+                          )}
+                          {generating && (
+                            <Loader2
+                              size={10}
+                              className="ml-auto animate-spin"
+                              style={{ color: item.accent }}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── Credits + Logout ───────────────────────────────────────────────── */}
@@ -932,7 +900,7 @@ export function DashboardLayout() {
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
       <main
-        className={`ml-0 flex h-dvh min-w-0 flex-1 flex-col overflow-hidden pb-[4.5rem] transition-all duration-200 md:ml-[240px] md:pb-0 ${
+        className={`ml-0 flex h-dvh min-w-0 flex-1 flex-col overflow-hidden pb-[5rem] transition-all duration-200 md:ml-[240px] md:pb-0 ${
           isRightPanelOpen ? "md:mr-[280px]" : "mr-0"
         }`}
       >
