@@ -2220,6 +2220,51 @@ header.site-header.site-header--scrolled {
   color: #b4ff00;
 }
 
+/* Agent result on ivory DashboardStage — dark body text, lime accent only */
+.agent-markdown--light {
+  color: #262626;
+}
+
+.agent-markdown--light strong {
+  color: #0a0a0a;
+  font-weight: 600;
+}
+
+.agent-markdown--light a,
+.agent-markdown--light .agent-markdown-link {
+  color: #262626;
+  text-decoration: underline;
+  text-decoration-color: rgba(180, 255, 0, 0.55);
+  text-underline-offset: 2px;
+}
+
+.agent-markdown--light a:hover,
+.agent-markdown--light .agent-markdown-link:hover {
+  color: #0a0a0a;
+  text-decoration-color: #b4ff00;
+}
+
+.agent-markdown--light ol li::marker {
+  color: #737373;
+  font-weight: 600;
+}
+
+.agent-markdown--light ul li::marker {
+  color: #737373;
+}
+
+.agent-markdown--light h1,
+.agent-markdown--light h2,
+.agent-markdown--light h3 {
+  color: #0a0a0a;
+  font-weight: 700;
+}
+
+.agent-markdown--light p,
+.agent-markdown--light li {
+  color: #262626;
+}
+
 /* ==========================================
    GLOBALES SAAS TYPOGRAFIE-UPDATE (PRO PROD)
    ========================================== */

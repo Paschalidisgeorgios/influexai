@@ -9,7 +9,7 @@ export function AiOutputDisclaimer({ className, tone = "dark" }: AiOutputDisclai
       className={className}
       style={{
         fontSize: 11,
-        color: tone === "light" ? "rgba(8,8,8,0.45)" : "rgba(255,255,255,0.28)",
+        color: tone === "light" ? "rgba(8,8,8,0.58)" : "rgba(255,255,255,0.28)",
         letterSpacing: "0.02em",
         lineHeight: 1.5,
         marginTop: 8,
