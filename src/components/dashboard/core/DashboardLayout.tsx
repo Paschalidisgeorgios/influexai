@@ -155,7 +155,7 @@ function LeftSidebar({
           href="/dashboard/credits"
           className="mb-3 flex items-center justify-between rounded-lg px-1 py-1 transition-colors hover:bg-white/[0.03]"
         >
-          <span className="font-mono text-[10px] uppercase tracking-widest text-white/20">Credits</span>
+          <span className="font-mono text-[10px] tracking-wide text-white/20">Credits</span>
           {creditsLoaded ? (
             <AnimatedCredits credits={credits} />
           ) : (
@@ -753,7 +753,13 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
             />
           </DashboardStage>
         ) : (
-          <DashboardStage>
+          <DashboardStage
+            innerClassName={
+              SETUP_MVP_TOOL_IDS.has(activeTool)
+                ? "lg:px-8 xl:px-10 2xl:px-12"
+                : undefined
+            }
+          >
             {activeTool === "tools" ? (
               <ProductionToolsOverview onSelect={handleToolSelect} />
             ) : SETUP_MVP_TOOL_IDS.has(activeTool) ? (

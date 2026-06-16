@@ -15,7 +15,7 @@ export function StudioStage({
   return (
     <div
       className={cn(
-        "w-full min-w-0 overflow-x-hidden px-3 py-3 md:px-3 md:py-4 lg:px-4",
+        "w-full min-w-0 px-3 py-3 md:px-3 md:py-4 lg:px-3",
         className
       )}
     >

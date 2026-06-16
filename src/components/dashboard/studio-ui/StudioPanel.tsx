@@ -23,7 +23,7 @@ export function StudioPanel({
     <div
       className={cn(
         STUDIO_RADIUS.panel,
-        "p-5 md:p-6",
+        "w-full min-w-0 max-w-full p-5 md:p-6",
         variant === "soft" && "border border-black/[0.05]",
         className
       )}

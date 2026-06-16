@@ -40,7 +40,7 @@ const VIRAL_HOOK_MODES = [
 ];
 
 const SETUP_FORM_CLASS =
-  "relative min-w-0 max-w-full space-y-5 overflow-x-hidden pb-2 md:pb-0";
+  "relative w-full min-w-0 max-w-full space-y-5 pb-2 md:pb-0";
 
 type SetupActionsProps = {
   primaryLabel: string;

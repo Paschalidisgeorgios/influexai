@@ -25,12 +25,12 @@ type ActionProps = {
 };
 
 const primaryClass = cn(
-  "inline-flex min-h-[48px] flex-1 items-center justify-center px-7 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 sm:flex-none sm:min-w-[11rem]",
+  "inline-flex min-h-[48px] w-full min-w-0 max-w-full flex-1 items-center justify-center px-5 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto sm:max-w-none sm:px-7 sm:flex-none",
   STUDIO_RADIUS.button
 );
 
 const secondaryClass = cn(
-  "inline-flex min-h-[48px] flex-1 items-center justify-center border px-7 text-sm font-medium no-underline transition-colors hover:border-black/18 sm:flex-none",
+  "inline-flex min-h-[48px] w-full min-w-0 max-w-full flex-1 items-center justify-center border px-5 text-sm font-medium no-underline transition-colors hover:border-black/18 sm:w-auto sm:max-w-none sm:px-7 sm:flex-none",
   STUDIO_RADIUS.button
 );
 
@@ -65,7 +65,7 @@ export function StudioActionBar({
         className
       )}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <div className="flex w-full min-w-0 max-w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
         {primaryHref ? (
           <Link href={primaryHref} className={primaryClass} style={primaryStyle}>
             {loadingLabel}
