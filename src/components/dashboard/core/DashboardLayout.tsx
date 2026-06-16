@@ -21,6 +21,7 @@ import {
   DASHBOARD_SHELL_BG,
   DashboardStage,
 } from "./DashboardSurface";
+import { SidebarCreditsLink } from "../studio-ui";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -89,22 +90,6 @@ const TOOLS_WITH_RIGHT_PANEL = new Set<ToolId>([
 // Left Sidebar — Studio-Nav (Studio ≠ Agent)
 // ---------------------------------------------------------------------------
 
-function AnimatedCredits({ credits }: { credits: number }) {
-  const low   = credits < 10;
-  const color = low ? "#ff4444" : "#b4ff00";
-  return (
-    <motion.span
-      key={credits}
-      initial={{ scale: 1.2, color: "#ccff00" }}
-      animate={{ scale: 1, color }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="font-mono text-[12px] font-semibold tabular-nums"
-    >
-      {credits}
-    </motion.span>
-  );
-}
-
 function LeftSidebar({
   credits,
   creditsLoaded,
@@ -126,16 +111,24 @@ function LeftSidebar({
       <button
         type="button"
         onClick={() => onSelect("studio")}
-        className="mb-6 flex shrink-0 items-center gap-3 px-2 py-4 transition-opacity hover:opacity-85"
+        className="mb-5 flex shrink-0 items-center gap-3 px-4 py-5 transition-opacity hover:opacity-90"
       >
-        {/* Icon — abgerundetes Lime-Quadrat */}
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: DASHBOARD_ACCENT }}>
-          <span className="text-lg font-black leading-none text-black">I</span>
+        <div
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            borderColor: "rgba(180,255,0,0.22)",
+          }}
+        >
+          <span
+            className="text-lg font-black leading-none"
+            style={{ color: DASHBOARD_ACCENT }}
+          >
+            I
+          </span>
         </div>
-        {/* Wortmarke */}
-        <span className="text-[14px] font-bold tracking-wide text-white">
-          INFLUEX<span style={{ color: DASHBOARD_ACCENT }}>AI</span>
+        <span className="text-[14px] font-semibold tracking-wide text-white/90">
+          INFLUEX<span className="text-white/55">AI</span>
         </span>
       </button>
 
@@ -146,27 +139,17 @@ function LeftSidebar({
 
       {/* ── Credits + Logout ───────────────────────────────────────────────── */}
       <div
-        className="shrink-0 px-4 py-4"
+        className="shrink-0 px-3 py-4"
         style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
       >
-        <Link
-          href="/dashboard/credits"
-          className="mb-3 flex items-center justify-between rounded-lg px-1 py-1 transition-colors hover:bg-white/[0.03]"
-        >
-          <span className="font-mono text-[10px] tracking-wide text-white/20">Credits</span>
-          {creditsLoaded ? (
-            <AnimatedCredits credits={credits} />
-          ) : (
-            <span className="h-4 w-10 animate-pulse rounded bg-white/5" />
-          )}
-        </Link>
+        <SidebarCreditsLink credits={credits} loaded={creditsLoaded} />
 
         <button
           type="button"
-          className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-all hover:bg-red-500/5"
+          className="mt-2 flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-all hover:bg-white/[0.03]"
         >
-          <LogOut size={13} className="shrink-0 text-white/20" />
-          <span className="text-[11px] text-white/25">Abmelden</span>
+          <LogOut size={13} className="shrink-0 text-white/25" />
+          <span className="text-[11px] text-white/35">Abmelden</span>
         </button>
       </div>
     </aside>

@@ -24,6 +24,7 @@ import {
   DashboardPageHeader,
 } from "./DashboardSurface";
 import { STUDIO_RADIUS } from "../studio-ui";
+import { getStageCreditStyles } from "../studio-ui/credit-status";
 
 interface QuickAction {
   id: ToolId;
@@ -63,6 +64,7 @@ export function StudioCockpit({
   toolsGenerating,
 }: StudioCockpitProps) {
   const activeJobs = Object.entries(toolsGenerating).filter(([, v]) => v);
+  const creditStyles = creditsLoaded ? getStageCreditStyles(credits) : null;
 
   return (
     <div className="relative w-full min-w-0 space-y-8 md:space-y-10">
@@ -88,13 +90,26 @@ export function StudioCockpit({
           {creditsLoaded ? (
             <Link
               href="/dashboard/credits"
-              className="inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium no-underline transition-colors hover:border-black/15"
+              className="inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium no-underline transition-colors hover:border-black/12"
               style={{
-                borderColor: "rgba(8,8,8,0.10)",
-                background: "rgba(255,252,247,0.8)",
+                borderColor: "rgba(8,8,8,0.08)",
+                background: "rgba(255,252,247,0.75)",
                 color: DASHBOARD_TEXT,
               }}
             >
+              {creditStyles?.showAccentDot ? (
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: "#b4ff00", opacity: 0.65 }}
+                  aria-hidden
+                />
+              ) : creditStyles?.warnDot ? (
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: creditStyles.warnDot }}
+                  aria-hidden
+                />
+              ) : null}
               <span className="font-mono font-semibold tabular-nums">{credits}</span>
               <span style={{ color: DASHBOARD_MUTED }}>Credits</span>
             </Link>
@@ -169,8 +184,7 @@ export function StudioCockpit({
         <div
           className={`p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
           style={{
-            background: "rgba(255,252,247,0.72)",
-            border: "1px solid rgba(8,8,8,0.05)",
+            background: "rgba(255,252,247,0.55)",
           }}
         >
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: DASHBOARD_MUTED }}>
@@ -228,8 +242,7 @@ export function StudioCockpit({
         <div
           className={`flex flex-col justify-between p-5 md:p-6 ${STUDIO_RADIUS.panel}`}
           style={{
-            background: "rgba(255,252,247,0.72)",
-            border: "1px solid rgba(8,8,8,0.05)",
+            background: "rgba(255,252,247,0.55)",
           }}
         >
           <div>

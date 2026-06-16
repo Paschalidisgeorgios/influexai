@@ -56,32 +56,59 @@ export type ToolOverviewCategory = {
   }[];
 };
 
+export type FeaturedTool = {
+  id: ToolId;
+  label: string;
+  description: string;
+  category: string;
+};
+
+export const FEATURED_TOOLS: FeaturedTool[] = [
+  {
+    id: "image-gen",
+    label: "Bildgenerator",
+    description: "Produkt- und Kampagnenmotive für Social, Ads und Präsentationen.",
+    category: "Visuals",
+  },
+  {
+    id: "img-to-video",
+    label: "Bild zu Video",
+    description: "Startbild in Motion-Clip — für Reels, Ads und Produktshows.",
+    category: "Video",
+  },
+  {
+    id: "viral-hook",
+    label: "Viral Hook",
+    description: "Einstiege für Reels, Shorts und Ads — passend zu Thema oder Link.",
+    category: "Kampagne",
+  },
+];
+
+const FEATURED_TOOL_IDS = new Set(FEATURED_TOOLS.map((t) => t.id));
+
 export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   {
     id: "text",
-    title: "Text & Kampagne",
-    description: "Hooks, Scripts und Planung für Social und Ads.",
+    title: "Kampagne",
+    description: "Planung, Scripts und Content-Rhythmus.",
     tools: [
-      { id: "viral-hook", label: "Viral Hook", description: "Einstiege für Reels, Shorts und Ads" },
       { id: "content-calendar", label: "Content Kalender", description: "Themen, Formate und Rhythmus planen" },
       { id: "trend-script", label: "Trend Script", description: "Trend-Thema in ein Script überführen" },
     ],
   },
   {
     id: "photo",
-    title: "Bild & Produktvisuals",
-    description: "Motive für Social, Ads und Produktpräsentation.",
+    title: "Visuals",
+    description: "Motive und Variationen für Markenauftritte.",
     tools: [
-      { id: "image-gen", label: "Bildgenerator", description: "Produkt- und Kampagnenmotive erstellen" },
       { id: "img-to-img", label: "Bild zu Bild", description: "Variationen und Remix aus Vorlage" },
     ],
   },
   {
     id: "video",
-    title: "Video-Produktion",
-    description: "Motion-Clips aus Bild oder Szenenbeschreibung.",
+    title: "Video",
+    description: "Clips aus Szene, Bild oder Produktkontext.",
     tools: [
-      { id: "img-to-video", label: "Bild zu Video", description: "Startbild in Motion-Clip verwandeln" },
       { id: "text-to-video", label: "Text zu Video", description: "Clip aus Szenenbeschreibung" },
       { id: "ai-video-editor", label: "Videoeditor", description: "Stil-Transfer und Bearbeitung" },
       { id: "ecommerce-ads", label: "E-Commerce Ads", description: "Produkt-Clips für Ads" },
@@ -89,8 +116,8 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   },
   {
     id: "avatar",
-    title: "Avatar & Voice",
-    description: "Avatare, Lip Sync und Stimme.",
+    title: "Stimme & Avatar",
+    description: "Sprechende Avatare, Lip Sync und Stimme.",
     tools: [
       { id: "avatar-video", label: "Avatar Studio", description: "Sprechende Avatare" },
       { id: "talking-avatar", label: "Lip Sync", description: "Video mit synchronen Lippen" },
@@ -108,9 +135,17 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   },
 ];
 
-const TOOL_DISPLAY_LABELS: Partial<Record<ToolId, string>> = Object.fromEntries(
-  TOOL_OVERVIEW_CATEGORIES.flatMap((c) => c.tools.map((t) => [t.id, t.label]))
-) as Partial<Record<ToolId, string>>;
+const TOOL_DISPLAY_LABELS: Partial<Record<ToolId, string>> = Object.fromEntries([
+  ...FEATURED_TOOLS.map((t) => [t.id, t.label] as const),
+  ...TOOL_OVERVIEW_CATEGORIES.flatMap((c) => c.tools.map((t) => [t.id, t.label] as const)),
+]) as Partial<Record<ToolId, string>>;
+
+export function getToolOverviewCategoriesExcludingFeatured(): ToolOverviewCategory[] {
+  return TOOL_OVERVIEW_CATEGORIES.map((category) => ({
+    ...category,
+    tools: category.tools.filter((tool) => !FEATURED_TOOL_IDS.has(tool.id)),
+  })).filter((category) => category.tools.length > 0);
+}
 
 export function resolveToolRoute(toolId: ToolId): string | null {
   return TOOL_DEDICATED_ROUTES[toolId] ?? null;

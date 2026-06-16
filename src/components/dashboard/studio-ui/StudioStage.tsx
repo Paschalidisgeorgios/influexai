@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "./cn";
-import { STUDIO_ACCENT, STUDIO_RADIUS, STUDIO_SHADOW, STUDIO_SURFACE } from "./tokens";
+import { STUDIO_RADIUS, STUDIO_SHADOW, STUDIO_SURFACE } from "./tokens";
 
 export function StudioStage({
   children,
@@ -15,27 +15,21 @@ export function StudioStage({
   return (
     <div
       className={cn(
-        "w-full min-w-0 px-3 py-3 md:px-3 md:py-4 lg:px-3",
+        "w-full min-w-0 px-3 py-3 md:px-4 md:py-5 lg:px-5",
         className
       )}
     >
       <div
-        className={cn("mx-auto w-full min-w-0 max-w-[96rem]", STUDIO_RADIUS.stage)}
+        className={cn("mx-auto w-full min-w-0 max-w-[88rem]", STUDIO_RADIUS.stage)}
         style={{
           background: STUDIO_SURFACE,
-          border: "1px solid rgba(8,8,8,0.06)",
+          border: "1px solid rgba(8,8,8,0.04)",
           boxShadow: STUDIO_SHADOW.stage,
         }}
       >
         <div
-          className={cn("h-[2px] w-full rounded-t-[32px]")}
-          style={{
-            background: `linear-gradient(90deg, ${STUDIO_ACCENT}55, ${STUDIO_ACCENT}22 42%, transparent 88%)`,
-          }}
-        />
-        <div
           className={cn(
-            "min-w-0 px-4 pb-10 pt-6 md:px-10 md:pb-14 md:pt-8 lg:px-14 xl:px-16",
+            "min-w-0 px-5 pb-12 pt-7 md:px-12 md:pb-16 md:pt-9 lg:px-16 xl:px-[4.5rem]",
             innerClassName
           )}
         >

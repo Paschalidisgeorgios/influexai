@@ -6,9 +6,11 @@ import { STUDIO_MUTED, STUDIO_RADIUS, STUDIO_TEXT } from "./tokens";
 export function StudioCreditPill({
   label,
   className,
+  accentDot = true,
 }: {
   label: string;
   className?: string;
+  accentDot?: boolean;
 }) {
   return (
     <span
@@ -18,15 +20,17 @@ export function StudioCreditPill({
         className
       )}
       style={{
-        background: "rgba(255,255,255,0.55)",
-        border: "1px solid rgba(8,8,8,0.08)",
+        background: "rgba(255,255,255,0.45)",
+        border: "1px solid rgba(8,8,8,0.06)",
         color: STUDIO_TEXT,
       }}
     >
-      <span
-        className="h-1.5 w-1.5 shrink-0 rounded-full"
-        style={{ background: "#b4ff00", opacity: 0.75 }}
-      />
+      {accentDot ? (
+        <span
+          className="h-1.5 w-1.5 shrink-0 rounded-full"
+          style={{ background: "#b4ff00", opacity: 0.65 }}
+        />
+      ) : null}
       {label}
     </span>
   );

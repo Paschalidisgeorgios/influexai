@@ -22,7 +22,9 @@ export const STUDIO_RADIUS = {
 
 export const STUDIO_SHADOW = {
   stage:
-    "0 0 0 1px rgba(255,255,255,0.35), 0 32px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.72)",
-  panel: "0 2px 24px rgba(8,8,8,0.04), inset 0 1px 0 rgba(255,255,255,0.85)",
-  card: "0 1px 16px rgba(8,8,8,0.04)",
+    "0 1px 0 rgba(255,255,255,0.65) inset, 0 24px 64px rgba(0,0,0,0.14)",
+  panel: "0 1px 20px rgba(8,8,8,0.03)",
+  card: "0 1px 12px rgba(8,8,8,0.035)",
+  cardHover: "0 8px 32px rgba(8,8,8,0.06)",
+  featured: "0 2px 20px rgba(8,8,8,0.04), 0 1px 0 rgba(255,255,255,0.8) inset",
 } as const;

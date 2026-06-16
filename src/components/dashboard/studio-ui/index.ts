@@ -17,6 +17,13 @@ export {
 export { StudioCreditPill, StudioCreditNote } from "./StudioCreditPill";
 export { StudioActionBar } from "./StudioActionBar";
 export {
+  getCreditBalanceStatus,
+  getShellCreditStyles,
+  getStageCreditStyles,
+  LOW_CREDIT_THRESHOLD,
+} from "./credit-status";
+export { SidebarCreditsDisplay, SidebarCreditsLink } from "./SidebarCreditsDisplay";
+export {
   ToolSetupLayout,
   ToolSetupContext,
   ToolSetupSurface,

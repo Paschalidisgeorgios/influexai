@@ -319,10 +319,10 @@ export function StudioCreditsSection({
                     onClick={() => handleCheckout(pkg.id)}
                     disabled={loading === pkg.id}
                     className={`${primaryBtnClass} w-full`}
-                    style={{
-                      background: highlighted ? DASHBOARD_ACCENT : "rgba(8,8,8,0.06)",
-                      color: highlighted ? "#060608" : STUDIO_TEXT,
-                    }}
+                  style={{
+                    background: highlighted ? DASHBOARD_ACCENT : "rgba(8,8,8,0.05)",
+                    color: highlighted ? "#060608" : STUDIO_TEXT,
+                  }}
                   >
                     {loading === pkg.id
                       ? "Wird geladen…"

@@ -83,11 +83,12 @@ export function DashboardMobileNav() {
           >
             <Icon
               size={17}
-              style={{ color: active ? "#b4ff00" : "rgba(255,255,255,0.28)" }}
+              strokeWidth={1.75}
+              style={{ color: active ? "#b4ff00" : "rgba(255,255,255,0.32)" }}
             />
             <span
               className="max-w-full truncate text-[9px] font-medium leading-tight"
-              style={{ color: active ? "#b4ff00" : "rgba(255,255,255,0.28)" }}
+              style={{ color: active ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.32)" }}
             >
               {item.label}
             </span>

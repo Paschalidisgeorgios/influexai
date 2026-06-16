@@ -137,7 +137,7 @@ export function DashboardPanel({
       className={joinClasses(STUDIO_RADIUS.panel, "p-5 md:p-6", className)}
       style={{
         background: STUDIO_PANEL_BG,
-        border: "1px solid rgba(8,8,8,0.05)",
+        border: "1px solid rgba(8,8,8,0.04)",
         boxShadow: STUDIO_SHADOW.panel,
       }}
     >

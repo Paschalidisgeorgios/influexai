@@ -28,16 +28,24 @@ export function DashboardStandaloneChrome({
       >
         <Link
           href="/dashboard"
-          className="mb-4 flex shrink-0 items-center gap-3 px-5 py-5 transition-opacity hover:opacity-85"
+          className="mb-4 flex shrink-0 items-center gap-3 px-5 py-5 transition-opacity hover:opacity-90"
         >
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
-            style={{ background: DASHBOARD_ACCENT }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              borderColor: "rgba(180,255,0,0.22)",
+            }}
           >
-            <span className="text-lg font-black leading-none text-black">I</span>
+            <span
+              className="text-lg font-black leading-none"
+              style={{ color: DASHBOARD_ACCENT }}
+            >
+              I
+            </span>
           </div>
-          <span className="text-[14px] font-bold tracking-wide text-white">
-            INFLUEX<span style={{ color: DASHBOARD_ACCENT }}>AI</span>
+          <span className="text-[14px] font-semibold tracking-wide text-white/90">
+            INFLUEX<span className="text-white/55">AI</span>
           </span>
         </Link>
         <div className="flex-1 overflow-y-auto">
