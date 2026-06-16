@@ -60,7 +60,7 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   {
     id: "text",
     title: "Text & Kampagne",
-    description: "Hooks, Scripts und Kampagnenplanung.",
+    description: "Hooks, Scripts und Planung für Social und Ads.",
     tools: [
       { id: "viral-hook", label: "Viral Hook", description: "Einstiege für Reels, Shorts und Ads" },
       { id: "content-calendar", label: "Content Kalender", description: "Themen, Formate und Rhythmus planen" },
@@ -70,19 +70,19 @@ export const TOOL_OVERVIEW_CATEGORIES: ToolOverviewCategory[] = [
   {
     id: "photo",
     title: "Bild & Produktvisuals",
-    description: "Visuals für Social, Ads und Produktpräsentation.",
+    description: "Motive für Social, Ads und Produktpräsentation.",
     tools: [
       { id: "image-gen", label: "Bildgenerator", description: "Produkt- und Kampagnenmotive erstellen" },
-      { id: "img-to-img", label: "Bild zu Bild", description: "Variationen und Remix" },
+      { id: "img-to-img", label: "Bild zu Bild", description: "Variationen und Remix aus Vorlage" },
     ],
   },
   {
     id: "video",
     title: "Video-Produktion",
-    description: "Clips und Motion aus Bild oder Text.",
+    description: "Motion-Clips aus Bild oder Szenenbeschreibung.",
     tools: [
       { id: "img-to-video", label: "Bild zu Video", description: "Startbild in Motion-Clip verwandeln" },
-      { id: "text-to-video", label: "Text zu Video", description: "Szene aus Videobeschreibung" },
+      { id: "text-to-video", label: "Text zu Video", description: "Clip aus Szenenbeschreibung" },
       { id: "ai-video-editor", label: "Videoeditor", description: "Stil-Transfer und Bearbeitung" },
       { id: "ecommerce-ads", label: "E-Commerce Ads", description: "Produkt-Clips für Ads" },
     ],

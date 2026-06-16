@@ -11,12 +11,12 @@ export const SETUP_MVP_TOOL_IDS = new Set<ToolId>([
 ]);
 
 export const SETUP_COPY = {
-  creditsBeforeStart: "Credits werden vor dem Start angezeigt.",
+  creditsBeforeStart: "Kosten siehst du vor dem Start.",
   agentSecondary: "Mit Agent vorbereiten",
   agentPrimary: "Im Agent vorbereiten",
   errorGeneric:
     "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
-  galleryResult: "Output wird in deiner Galerie gespeichert.",
+  galleryResult: "Ergebnis landet in deiner Galerie.",
   toolCardCta: "Tool einrichten",
 } as const;
 
@@ -31,15 +31,15 @@ const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {
 
 const TOOL_SETUP_SUBTITLE: Partial<Record<ToolId, string>> = {
   "viral-hook":
-    "Erstelle starke Einstiege für Reels, TikToks, Shorts oder Ads — passend zu deinem Thema, Produkt oder Angebot.",
+    "Starke Einstiege für Reels, Shorts und Ads — passend zu Thema oder Link.",
   "content-calendar":
-    "Plane mehrere Inhalte für eine Woche oder einen Monat — mit Themen, Formaten und klarer Veröffentlichungsstruktur.",
+    "Themen, Formate und Rhythmus für den nächsten Monat — strukturiert und sofort nutzbar.",
   "image-gen":
-    "Erstelle hochwertige Visuals für Produkte, Social Posts, Ads oder Kampagnenmotive.",
+    "Produkt- und Kampagnenmotive für Social, Ads und Präsentationen.",
   "img-to-video":
-    "Verwandle ein Bild in einen kurzen Motion-Clip für Reels, Ads oder Produktpräsentationen.",
+    "Ein Startbild wird zum Motion-Clip — für Reels, Ads und Produktshows.",
   "text-to-video":
-    "Erstelle ein Video aus einer Idee, einem Produkttext oder einer kurzen Szene.",
+    "Aus einer Szenenbeschreibung entsteht ein Video-Clip.",
 };
 
 /** UI-only credit labels — no registry edits */

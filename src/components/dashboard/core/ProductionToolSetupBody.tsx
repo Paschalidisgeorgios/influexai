@@ -706,7 +706,7 @@ function ImgToVideoSetup() {
           placeholder="Bild-URL einfügen — z. B. aus der Galerie"
         />
         <StudioFieldHelper className="mt-2">
-          Datei hochladen folgt im nächsten Schritt. Bis dahin: URL aus Galerie oder externem Link.
+          URL aus Galerie oder externem Link einfügen.
         </StudioFieldHelper>
       </div>
 

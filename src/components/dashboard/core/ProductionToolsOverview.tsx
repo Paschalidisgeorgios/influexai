@@ -11,7 +11,6 @@ import {
   STUDIO_SHADOW,
   StudioCreditNote,
   StudioPageHeader,
-  StudioPanel,
   StudioSection,
 } from "../studio-ui";
 
@@ -23,12 +22,12 @@ export function ProductionToolsOverview({
   return (
     <div className="w-full min-w-0 space-y-10 md:space-y-12">
       <StudioPageHeader
-        kicker="Studio"
-        title="Tools"
-        subtitle="Wähle das passende Tool für Bild, Video, Text, Avatar oder Kampagnenplanung."
+        kicker="Creator Studio"
+        title="Production Hub"
+        subtitle="Bild, Video, Text und Avatar — wähle das Tool für deinen nächsten Output."
       />
 
-      <div className="space-y-10 md:space-y-12">
+      <div className="space-y-12 md:space-y-14">
         {TOOL_OVERVIEW_CATEGORIES.map((category) => (
           <StudioSection key={category.id} title={category.title} description={category.description}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -37,38 +36,38 @@ export function ProductionToolsOverview({
                   key={tool.id}
                   type="button"
                   onClick={() => onSelect(tool.id)}
-                  className={`group flex min-h-[108px] flex-col p-5 text-left transition-all hover:-translate-y-0.5 ${STUDIO_RADIUS.card}`}
+                  className={`group flex min-h-[120px] flex-col p-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(8,8,8,0.06)] ${STUDIO_RADIUS.card}`}
                   style={{
-                    background: "rgba(255,252,247,0.65)",
-                    border: "1px solid rgba(8,8,8,0.05)",
+                    background: "rgba(255,252,247,0.88)",
+                    border: "1px solid rgba(8,8,8,0.06)",
                     boxShadow: STUDIO_SHADOW.card,
                   }}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span
-                      className="text-[14px] font-semibold tracking-tight"
+                      className="text-[15px] font-semibold tracking-tight"
                       style={{ color: DASHBOARD_TEXT }}
                     >
                       {tool.label}
                     </span>
                     <ChevronRight
-                      size={15}
-                      className="shrink-0 opacity-40 transition-opacity group-hover:opacity-80"
-                      style={{ color: DASHBOARD_MUTED }}
+                      size={16}
+                      className="shrink-0 opacity-30 transition-all group-hover:translate-x-0.5 group-hover:opacity-70"
                     />
                   </div>
                   <p
-                    className="mt-2 flex-1 text-[12px] leading-relaxed"
+                    className="mt-2.5 flex-1 text-[13px] leading-relaxed"
                     style={{ color: DASHBOARD_MUTED }}
                   >
                     {tool.description}
                   </p>
-                  <p
-                    className="mt-3 text-[11px] font-semibold tracking-wide"
+                  <span
+                    className="mt-4 inline-flex items-center text-[12px] font-semibold"
                     style={{ color: DASHBOARD_TEXT }}
                   >
-                    {SETUP_COPY.toolCardCta} →
-                  </p>
+                    {SETUP_COPY.toolCardCta}
+                    <ChevronRight size={12} className="ml-0.5 opacity-50" />
+                  </span>
                 </button>
               ))}
             </div>
@@ -78,22 +77,24 @@ export function ProductionToolsOverview({
 
       <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
 
-      <StudioPanel title="Agent">
-        <p className="mb-5 max-w-lg text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Der Agent hilft beim Briefing. Du behältst Kontrolle über Tool, Modell und Output.
+      <div
+        className="flex flex-col gap-4 border-t border-black/[0.06] pt-8 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <p className="max-w-md text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Lieber mit Briefing starten? Der Agent schlägt einen Produktionspfad vor — du entscheidest über Tool und Output.
         </p>
         <Link
           href="/dashboard/ki-agent"
-          className={`inline-flex min-h-[44px] items-center px-6 text-sm font-semibold no-underline transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
+          className={`inline-flex shrink-0 min-h-[44px] items-center px-5 text-sm font-medium no-underline transition-colors hover:border-black/18 ${STUDIO_RADIUS.button}`}
           style={{
-            background: "rgba(180,255,0,0.12)",
-            border: "1px solid rgba(180,255,0,0.22)",
+            border: "1px solid rgba(8,8,8,0.10)",
+            background: "#FFFCF7",
             color: DASHBOARD_TEXT,
           }}
         >
-          {SETUP_COPY.agentPrimary} →
+          Agent öffnen →
         </Link>
-      </StudioPanel>
+      </div>
     </div>
   );
 }

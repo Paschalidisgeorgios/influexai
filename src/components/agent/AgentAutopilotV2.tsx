@@ -32,13 +32,13 @@ const QUICK_TOOLS = [
   {
     icon: Zap,
     label: "Viral Hook",
-    desc: "Hook aus Thema",
+    desc: "Einstiege schreiben",
     href: "/dashboard?tool=viral-hook",
   },
   {
     icon: Calendar,
     label: "Content Kalender",
-    desc: "Plan mit Hooks",
+    desc: "Monat planen",
     href: "/dashboard?tool=content-calendar",
   },
   {
@@ -50,7 +50,7 @@ const QUICK_TOOLS = [
   {
     icon: ImageIcon,
     label: "Bildgenerator",
-    desc: "Prompt und Format",
+    desc: "Motive erstellen",
     href: "/dashboard?tool=image-gen",
   },
 ] as const;
@@ -141,7 +141,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
 
       <div>
         <p className="mb-1 text-xs font-medium" style={{ color: DASHBOARD_MUTED }}>
-          Assistent
+          Produktionsassistent
         </p>
         <h1
           className="font-display mb-2 text-3xl leading-none font-extrabold tracking-tight md:text-[2.75rem]"
@@ -151,8 +151,8 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         </h1>
         <p className="max-w-2xl font-sans text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           {activeTool === "campaign"
-            ? "Kampagne strukturieren — der Agent schlägt Tools und Schritte vor. Du entscheidest über Modell und Output."
-            : "Der Agent hilft beim Briefing und schlägt einen Produktionspfad vor. Tools bleiben jederzeit direkt erreichbar."}
+            ? "Kampagne strukturieren — der Agent schlägt Schritte vor. Du wählst Tool und Output."
+            : "Briefing eingeben, Produktionspfad erhalten. Tools jederzeit direkt nutzbar."}
         </p>
       </div>
 
@@ -230,7 +230,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         </LoadingButton>
 
         <p className="mt-2 text-center text-[11px]" style={{ color: DASHBOARD_MUTED }}>
-          {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} pro Anfrage
+          {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} · Ergebnis als Vorschlag, nicht als Generierung
         </p>
       </DashboardPanel>
 

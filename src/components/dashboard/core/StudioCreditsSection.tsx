@@ -75,27 +75,17 @@ export function StudioCreditsSection({
   const showLowBalance = credits > 0 && credits < 10;
   const showZeroBlock = credits === 0 && stats !== null;
 
-  const progressColor =
-    credits < 10
-      ? "linear-gradient(90deg, #f87171, #ef4444)"
-      : "linear-gradient(90deg, rgba(8,8,8,0.12), rgba(8,8,8,0.22))";
+  const progressColor = "linear-gradient(90deg, rgba(8,8,8,0.10), rgba(8,8,8,0.20))";
 
   return (
-    <div className="w-full min-w-0 max-w-full space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-8">
       {showLowBalance ? (
-        <div
-          className="rounded-[18px] border px-4 py-3 text-sm"
-          style={{
-            borderColor: "rgba(239,68,68,0.22)",
-            background: "rgba(255,247,247,0.9)",
-            color: "#991b1b",
-          }}
-        >
-          Dein Guthaben ist niedrig. Lade Credits auf, um ohne Unterbrechung weiterzuarbeiten.
-        </div>
+        <StudioCreditNote>
+          Guthaben niedrig — Top-up jederzeit unter Credit-Pakete möglich.
+        </StudioCreditNote>
       ) : null}
 
-      <StudioPanel title="Credits Übersicht">
+      <StudioPanel title="Guthaben">
         <div className="space-y-5">
           <div>
             <p className="mb-1 text-xs font-medium" style={{ color: STUDIO_MUTED }}>
@@ -147,10 +137,9 @@ export function StudioCreditsSection({
         </div>
       </StudioPanel>
 
-      <StudioPanel title="Credits kaufen & Plan">
+      <StudioPanel title="Credits & Plan">
         <p className="mb-5 max-w-xl text-sm leading-relaxed" style={{ color: STUDIO_MUTED }}>
-          Abo und Pläne verwaltest du auf der Pricing-Seite. Einmalige Credit-Pakete kannst du
-          hier direkt kaufen — Checkout läuft über Stripe.
+          Abo und Pläne auf der Pricing-Seite. Einmalige Credit-Pakete hier — Checkout über Stripe.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link

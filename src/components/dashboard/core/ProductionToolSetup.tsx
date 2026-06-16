@@ -16,6 +16,7 @@ import {
   StudioCreditPill,
   ToolSetupContext,
   ToolSetupLayout,
+  ToolSetupSurface,
 } from "../studio-ui";
 
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
@@ -31,7 +32,10 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
             subtitle={getToolSetupSubtitle(toolId)}
             credit={<StudioCreditPill label={creditLabel} />}
           >
-            <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
+            <div className="space-y-3">
+              <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
+              <StudioCreditNote>{SETUP_COPY.galleryResult}</StudioCreditNote>
+            </div>
             <Link
               href="/dashboard?tool=tools"
               className="inline-flex text-sm no-underline"
@@ -42,9 +46,9 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
           </ToolSetupContext>
         }
         setup={
-          <div className="min-w-0 w-full max-w-full">
+          <ToolSetupSurface className="min-w-0 w-full max-w-full">
             <ProductionToolSetupBody toolId={toolId} />
-          </div>
+          </ToolSetupSurface>
         }
       />
     </div>

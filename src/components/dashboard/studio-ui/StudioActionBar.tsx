@@ -47,7 +47,11 @@ export function StudioActionBar({
   className,
   stickyMobile = false,
 }: ActionProps) {
-  const primaryStyle = { background: STUDIO_ACCENT, color: "#060608" } as const;
+  const primaryStyle = {
+    background: STUDIO_ACCENT,
+    color: "#060608",
+    boxShadow: "0 1px 2px rgba(8,8,8,0.06)",
+  } as const;
   const secondaryStyle = {
     borderColor: "rgba(8,8,8,0.10)",
     background: STUDIO_INPUT_BG,
