@@ -29,6 +29,11 @@ const TOOL_DESCRIPTIONS: Partial<Record<ToolId, string>> = {
   "tts": "Text-to-Speech, Voice Clone und Voice Changer.",
 };
 
+const AGENT_LAUNCH_COPY =
+  "Starte dieses Tool über den Agent. InfluexAI übernimmt Briefing, Tool-Auswahl und Produktionspfad.";
+
+const AGENT_PREPARED_COPY = "Dieses Tool wird über den Agent vorbereitet.";
+
 export function ProductionToolLaunch({
   toolId,
   onOpenDedicated,
@@ -40,9 +45,8 @@ export function ProductionToolLaunch({
   const canOpenDedicated = Boolean(dedicatedRoute && isToolPushSafeToOpen(toolId));
   const creditLabel = getCreditDisplayLabel(toolId);
   const label = getToolDisplayLabel(toolId);
-  const description =
-    TOOL_DESCRIPTIONS[toolId] ??
-    "Starte im Agent — die dedizierte Tool-Oberfläche wird als Nächstes an die Studio-Shell angebunden.";
+  const toolDescription = TOOL_DESCRIPTIONS[toolId];
+  const subtitle = toolDescription ?? AGENT_PREPARED_COPY;
 
   const agentHref =
     toolId === "content-calendar"
@@ -51,7 +55,7 @@ export function ProductionToolLaunch({
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-6">
-      <DashboardPageHeader kicker="Tool" title={label} subtitle={description} />
+      <DashboardPageHeader kicker="Tool" title={label} subtitle={subtitle} />
 
       <DashboardPanel>
         <p
@@ -62,6 +66,10 @@ export function ProductionToolLaunch({
         </p>
         <p className="mb-5 text-lg font-semibold" style={{ color: DASHBOARD_TEXT }}>
           {creditLabel}
+        </p>
+
+        <p className="mb-5 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          {AGENT_LAUNCH_COPY}
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -89,7 +97,7 @@ export function ProductionToolLaunch({
           ) : null}
 
           <Link
-            href="/dashboard/ki-agent"
+            href="/dashboard?tool=tools"
             className="inline-flex min-h-[44px] items-center justify-center rounded-lg border px-5 py-2.5 text-sm font-medium no-underline transition-colors hover:border-black/15"
             style={{
               borderColor: "rgba(8,8,8,0.12)",
@@ -97,22 +105,9 @@ export function ProductionToolLaunch({
               color: DASHBOARD_TEXT,
             }}
           >
-            Agent Command Center
-          </Link>
-
-          <Link
-            href="/dashboard?tool=tools"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 py-2.5 text-sm no-underline"
-            style={{ color: DASHBOARD_MUTED }}
-          >
-            ← Alle Tools
+            Alle Tools
           </Link>
         </div>
-
-        <p className="mt-4 text-[12px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Die klassische Tool-Oberfläche wird gerade an die Studio-Shell angebunden.
-          Bis dahin startest du sicher über den Agent — ohne Legacy-Dark-UI.
-        </p>
       </DashboardPanel>
     </div>
   );
