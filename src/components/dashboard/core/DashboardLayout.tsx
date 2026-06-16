@@ -3,9 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AgentBox } from "./AgentBox";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
-import { SettingsView } from "./SettingsView";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";

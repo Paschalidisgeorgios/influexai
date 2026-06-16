@@ -21,5 +21,4 @@ export {
   ToolSetupContext,
   ToolSetupSurface,
 } from "./ToolSetupLayout";
-export { StudioUploadZone } from "./StudioUploadZone";
 export { StudioPageHeader } from "./StudioPageHeader";

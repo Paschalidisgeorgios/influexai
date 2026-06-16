@@ -479,8 +479,8 @@ export default function SettingsPage() {
     generation: (
       <DashboardPanel title="Generation Defaults">
         <p className="text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Standard-Formate und Stil-Presets für Bild- und Video-Tools folgen in einer
-          späteren Phase. Bis dahin werden Tool-Defaults pro Generierung gewählt.
+          Standard-Formate und Stil-Presets für Bild- und Video-Tools werden pro
+          Generierung im jeweiligen Tool gewählt.
         </p>
         <div
           className="mt-5 rounded-lg border border-dashed px-4 py-8 text-center text-sm"
