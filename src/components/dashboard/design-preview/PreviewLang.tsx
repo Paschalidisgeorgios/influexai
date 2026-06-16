@@ -136,8 +136,12 @@ const de = {
 
   gallery: {
     overline:    "Studio-Archiv · Mock",
-    headline:    "Galerie.",
+    headline:    "Dein Studio-Archiv.",
+    subline:     "Alle Bilder, Videos, Hooks und Kampagnen an einem Ort — filterbar, sichtbar und bereit für den Export.",
     assetsCount: "{count} Assets",
+    filterLabel: "Filter",
+    sizeLabel:   "Größe",
+    sortLabel:   "Sortierung",
     empty:       "Keine Assets in dieser Kategorie.",
     filters: { all:"Alle", images:"Bilder", videos:"Videos", texts:"Texte", campaigns:"Kampagnen", favorites:"Favoriten", failed:"Fehler" },
     sizes:   { small:"Klein",  medium:"Mittel",  large:"Groß"    },
@@ -271,8 +275,12 @@ const en: typeof de = {
 
   gallery: {
     overline:    "Studio Archive · Mock",
-    headline:    "Gallery.",
+    headline:    "Your studio archive.",
+    subline:     "All images, videos, hooks and campaigns in one place — filtered, visible and ready to export.",
     assetsCount: "{count} Assets",
+    filterLabel: "Filter",
+    sizeLabel:   "Size",
+    sortLabel:   "Sort",
     empty:       "No assets in this category.",
     filters: { all:"All", images:"Images", videos:"Videos", texts:"Texts", campaigns:"Campaigns", favorites:"Favorites", failed:"Failed" },
     sizes:   { small:"Small", medium:"Medium", large:"Large" },

@@ -2,13 +2,14 @@
 
 /**
  * PreviewShell — High-contrast Creator Production OS shell.
- * Studio + Agent + Tools. ALL DATA IS MOCK.
+ * Studio + Agent + Tools + Gallery. ALL DATA IS MOCK.
  */
 
 import { useState } from "react";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewStudioHome, PreviewAgentView } from "./PreviewStudioHome";
 import { PreviewToolsFlow } from "./PreviewToolsFlow";
+import { PreviewGallery } from "./PreviewGallery";
 
 const ACCENT   = "#b4ff00";
 const SHELL_BG = "#050506";
@@ -17,7 +18,7 @@ const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent", "tools"];
+const ACTIVE_VIEWS: PreviewView[] = ["studio", "agent", "tools", "gallery"];
 
 // ─── Sidebar (220px) ──────────────────────────────────────────────────────────
 
@@ -175,9 +176,10 @@ function PreviewInner() {
               }}
             >
               <div className="px-5 py-8 md:px-10 md:py-12">
-                {active === "studio" && <PreviewStudioHome onNavigate={setActive} />}
-                {active === "agent"  && <PreviewAgentView  onNavigate={setActive} />}
-                {active === "tools"  && <PreviewToolsFlow />}
+                {active === "studio"  && <PreviewStudioHome onNavigate={setActive} />}
+                {active === "agent"   && <PreviewAgentView  onNavigate={setActive} />}
+                {active === "tools"   && <PreviewToolsFlow />}
+                {active === "gallery" && <PreviewGallery />}
               </div>
             </div>
           </div>
@@ -198,7 +200,7 @@ function PreviewInner() {
             key={view}
             type="button"
             onClick={() => setActive(view)}
-            className="flex flex-1 items-center justify-center py-4 font-mono text-[11px] tracking-[0.12em] uppercase transition-colors"
+            className="flex flex-1 items-center justify-center py-3.5 font-mono text-[10px] tracking-[0.1em] uppercase transition-colors md:py-4 md:text-[11px]"
             style={{
               color:      active === view ? ACCENT : "rgba(255,255,255,0.35)",
               background: active === view ? "rgba(180,255,0,0.06)" : "transparent",
