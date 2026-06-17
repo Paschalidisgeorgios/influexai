@@ -26,6 +26,7 @@ import {
   STUDIO_CARD_BG,
   STUDIO_CARD_BORDER,
   STUDIO_PANEL_BG,
+  STUDIO_TEXT,
 } from "../studio-ui/tokens";
 import { getStageCreditStyles } from "../studio-ui/credit-status";
 
@@ -220,30 +221,30 @@ export function StudioCockpit({
                 key={action.id}
                 type="button"
                 onClick={() => onSelect(action.id)}
-                className={`group flex min-h-[58px] items-center gap-3 border px-4 py-3.5 text-left transition-all hover:-translate-y-px hover:border-black/14 hover:shadow-[0_4px_20px_rgba(8,8,8,0.05)] ${STUDIO_RADIUS.input}`}
+                className={`group flex min-h-[58px] items-center gap-3 border px-4 py-3.5 text-left text-neutral-950 transition-all hover:-translate-y-px hover:border-black/14 hover:bg-white/70 hover:shadow-[0_4px_20px_rgba(8,8,8,0.05)] ${STUDIO_RADIUS.input}`}
                 style={{
                   borderColor: STUDIO_CARD_BORDER,
                   background: STUDIO_CARD_BG,
-                  color: DASHBOARD_TEXT,
+                  color: STUDIO_TEXT,
                 }}
               >
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors group-hover:bg-black/[0.06]"
-                  style={{ background: "rgba(8,8,8,0.04)", color: "rgba(8,8,8,0.55)" }}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-600 transition-colors group-hover:bg-black/[0.06] group-hover:text-neutral-800"
+                  style={{ background: "rgba(8,8,8,0.04)" }}
                 >
                   {action.icon}
                 </span>
-                <span className="min-w-0 flex-1 text-[14px] font-semibold tracking-tight">
+                <span className="min-w-0 flex-1 text-[14px] font-semibold tracking-tight text-neutral-950">
                   {action.label}
                 </span>
                 {creditHint ? (
-                  <span className="font-mono text-[10px] tabular-nums" style={{ color: DASHBOARD_MUTED }}>
+                  <span className="font-mono text-[10px] tabular-nums text-neutral-600">
                     {creditHint}
                   </span>
                 ) : null}
                 <ChevronRight
                   size={14}
-                  className="shrink-0 opacity-30 transition-opacity group-hover:opacity-70"
+                  className="shrink-0 text-neutral-400 transition-opacity group-hover:text-neutral-600 group-hover:opacity-100"
                 />
               </button>
             );

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { usePlatformAdmin } from "@/hooks/usePlatformAdmin";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
 import {
   DASHBOARD_ACCENT,
@@ -20,9 +21,10 @@ type SettingsSection =
   | "memory"
   | "generation"
   | "privacy"
-  | "integrations";
+  | "integrations"
+  | "admin";
 
-const SECTIONS: { id: SettingsSection; label: string }[] = [
+const BASE_SECTIONS: { id: Exclude<SettingsSection, "admin">; label: string }[] = [
   { id: "account", label: "Account" },
   { id: "billing", label: "Billing & Credits" },
   { id: "memory", label: "Brand Defaults" },
@@ -118,6 +120,12 @@ export default function SettingsPage() {
   const t = useTranslations("settings");
   const tDelete = useTranslations("settings.deleteAccount");
   const supabase = createClient();
+  const { isAdmin } = usePlatformAdmin();
+
+  const sections = useMemo(() => {
+    if (!isAdmin) return BASE_SECTIONS;
+    return [...BASE_SECTIONS, { id: "admin" as const, label: "Admin" }];
+  }, [isAdmin]);
 
   const [activeSection, setActiveSection] = useState<SettingsSection>("account");
   const [name, setName] = useState("");
@@ -144,6 +152,12 @@ export default function SettingsPage() {
     type: "ok" | "err";
     text: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin && activeSection === "admin") {
+      setActiveSection("account");
+    }
+  }, [isAdmin, activeSection]);
 
   useEffect(() => {
     const load = async () => {
@@ -553,6 +567,25 @@ export default function SettingsPage() {
         </Link>
       </DashboardPanel>
     ),
+
+    admin: (
+      <DashboardPanel title="Admin">
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Plattform, Nutzer und interne Werkzeuge verwalten.
+        </p>
+        <Link
+          href="/admin"
+          className="inline-flex min-h-[44px] items-center rounded-lg border px-4 py-2.5 text-sm font-semibold no-underline transition-colors hover:border-black/16"
+          style={{
+            borderColor: "rgba(8,8,8,0.12)",
+            background: "#FFFCF7",
+            color: DASHBOARD_TEXT,
+          }}
+        >
+          Admin Panel öffnen →
+        </Link>
+      </DashboardPanel>
+    ),
   };
 
   return (
@@ -568,7 +601,7 @@ export default function SettingsPage() {
           style={{ scrollbarWidth: "none" }}
           aria-label="Einstellungsbereiche"
         >
-          {SECTIONS.map((section) => (
+          {sections.map((section) => (
             <button
               key={section.id}
               type="button"
