@@ -60,7 +60,7 @@ export function useBrandIntroReveal(
           tl.to(refs.logo.current, { opacity: 1, scale: 1, duration: 0.45 }, 0.1);
           tl.to(
             refs.logo.current,
-            { opacity: 0, scale: 1.04, duration: 0.5, ease: "power2.inOut" },
+            { opacity: 0, scale: 1.06, duration: 0.5, ease: "power2.inOut" },
             0.85
           );
         }
@@ -123,8 +123,8 @@ export function useBrandIntroReveal(
           if (logoEl) {
             gsap.set(logoEl, {
               opacity: Math.max(0, 1 - p * 1.15),
-              scale: 1 + p * 0.18,
-              filter: `blur(${p * 6}px)`,
+              scale: 1 + p * 0.12,
+              filter: `blur(${p * 4}px) brightness(${1 + p * 0.1})`,
             });
           }
 

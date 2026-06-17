@@ -137,46 +137,76 @@
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(ellipse 55% 38% at 50% 50%, rgba(180, 255, 0, 0.07) 0%, transparent 68%),
-    linear-gradient(180deg, rgba(250, 246, 238, 0.04) 0%, transparent 42%, rgba(250, 246, 238, 0.03) 100%);
+    radial-gradient(ellipse 50% 36% at 50% 50%, rgba(250, 246, 238, 0.05) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 48%, rgba(255, 255, 255, 0.015) 100%);
   pointer-events: none;
 }
 
 .landing-v2-brand-intro__mask-glow {
   position: absolute;
-  inset: 18% 22%;
+  inset: 22% 18%;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(180, 255, 0, 0.12) 0%, transparent 68%);
-  filter: blur(28px);
-  opacity: 0.65;
+  background: radial-gradient(circle, rgba(250, 246, 238, 0.08) 0%, transparent 72%);
+  filter: blur(36px);
+  opacity: 0.5;
 }
 
 .landing-v2-brand-intro__logo-wrap {
   position: relative;
   z-index: 3;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(92vw, 520px);
+  padding: 0 1rem;
   will-change: transform, opacity, filter;
 }
 
-.landing-v2-brand-intro__logo {
+.landing-v2-brand-intro__logo-halo {
+  position: absolute;
+  inset: -18% -12%;
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse 68% 58% at 50% 50%,
+    rgba(250, 246, 238, 0.07) 0%,
+    rgba(250, 246, 238, 0.02) 42%,
+    transparent 72%
+  );
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.landing-v2-brand-intro__logo-img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: clamp(200px, 42vw, 520px);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.landing-v2-brand-intro__logo-fallback {
+  position: relative;
+  z-index: 1;
   margin: 0;
+  text-align: center;
   font-family: var(--font-fraunces), Fraunces, Georgia, serif;
-  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  font-size: clamp(2.25rem, 8vw, 4.5rem);
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 0.95;
   color: var(--lv2-text-light);
 }
 
-.landing-v2-brand-intro__logo-mark {
+.landing-v2-brand-intro__logo-fallback-mark {
   display: block;
 }
 
-.landing-v2-brand-intro__logo-ai {
+.landing-v2-brand-intro__logo-fallback-ai {
   display: block;
   color: var(--lv2-lime);
   font-size: 0.92em;
-  letter-spacing: 0.02em;
 }
 
 .landing-v2-brand-intro__signals {
@@ -297,8 +327,12 @@
 }
 
 @media (max-width: 767px) {
-  .landing-v2-brand-intro__logo {
-    font-size: clamp(2.25rem, 12vw, 3.25rem);
+  .landing-v2-brand-intro__logo-img {
+    width: clamp(200px, 62vw, 280px);
+  }
+
+  .landing-v2-brand-intro__logo-wrap {
+    width: min(88vw, 280px);
   }
 
   .landing-v2-brand-intro__fragments,

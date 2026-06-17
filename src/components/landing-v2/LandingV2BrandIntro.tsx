@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Image from "next/image";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
 import { useBrandIntro } from "./BrandIntroContext";
 import { useLandingViewport } from "./hooks/useLandingViewport";
 import { useBrandIntroReveal } from "./hooks/useBrandIntroReveal";
@@ -16,6 +18,7 @@ export function LandingV2BrandIntro() {
   const signalsRef = useRef<HTMLDivElement>(null);
   const fragmentsRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
+  const [logoError, setLogoError] = useState(false);
   const { markHeroReady } = useBrandIntro();
   const { isMobile, ready, reduceMotion } = useLandingViewport();
 
@@ -64,11 +67,23 @@ export function LandingV2BrandIntro() {
         </div>
 
         <div ref={logoRef} className="landing-v2-brand-intro__logo-wrap">
-          <p className="landing-v2-brand-intro__logo" aria-hidden="true">
-            <span className="landing-v2-brand-intro__logo-mark">Influex</span>
-            <span className="landing-v2-brand-intro__logo-ai">AI</span>
-          </p>
-          <span className="sr-only">InfluexAI</span>
+          <div className="landing-v2-brand-intro__logo-halo" aria-hidden />
+          {!logoError ? (
+            <Image
+              src={LANDING_V2_ASSETS.brandLogo}
+              alt="InfluexAI"
+              width={520}
+              height={156}
+              className="landing-v2-brand-intro__logo-img"
+              priority
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <p className="landing-v2-brand-intro__logo-fallback" aria-hidden="true">
+              <span className="landing-v2-brand-intro__logo-fallback-mark">Influex</span>
+              <span className="landing-v2-brand-intro__logo-fallback-ai">AI</span>
+            </p>
+          )}
         </div>
 
         <div ref={fragmentsRef} className="landing-v2-brand-intro__fragments" aria-hidden>
