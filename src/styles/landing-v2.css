@@ -374,6 +374,16 @@
   transform-style: preserve-3d;
 }
 
+.landing-v2-proof-scene__rig--quad {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .landing-v2-proof-scene__rig--quad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 1024px) {
   .landing-v2-proof-scene {
     min-height: 360px;
@@ -381,12 +391,12 @@
 
   .landing-v2-proof-scene__rig {
     grid-template-columns: 1fr 1fr;
-    align-items: center;
+    align-items: stretch;
     gap: 2rem;
   }
 
   .landing-v2-proof-scene__rig [data-proof-motion] {
-    margin-top: 1.5rem;
+    margin-top: 0;
   }
 }
 

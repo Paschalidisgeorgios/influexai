@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
+import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingReveal } from "../hooks/useLandingReveal";
+
+const copy = LANDING_V2_COPY.finalCta;
 
 export function LandingV2FinalCta() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -16,15 +19,23 @@ export function LandingV2FinalCta() {
         data-lv2-reveal
       >
         <h2 className="landing-v2-headline text-[clamp(2rem,4vw,3rem)]">
-          Starte dein Creator Studio.
+          {copy.headline}
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-[var(--lv2-text-muted)]">
-          Produziere schneller, klarer und kontrollierter — ohne Tool-Chaos.
+          {copy.subline}
         </p>
-        <Link href="/auth/sign-up" className="landing-v2-btn-primary mt-8">
-          Studio starten
-          <ArrowRight size={18} aria-hidden />
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href="/auth/sign-up" className="landing-v2-btn-primary">
+            {copy.ctaPrimary}
+            <ArrowRight size={18} aria-hidden />
+          </Link>
+          <Link
+            href="/pricing"
+            className="landing-v2-btn-secondary !border-[rgba(8,8,8,0.14)] !bg-transparent !text-[var(--lv2-text-dark)] hover:!bg-[rgba(8,8,8,0.04)]"
+          >
+            {copy.ctaSecondary}
+          </Link>
+        </div>
       </div>
     </section>
   );

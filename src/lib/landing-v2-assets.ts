@@ -1,4 +1,6 @@
-/** Landing-v2 preview — copy, assets, scroll-story config */
+/** Landing-v2 preview — asset paths */
+
+import { LANDING_V2_COPY } from "./landing-v2-copy";
 
 export type LandingV2AssetSlot = {
   id: string;
@@ -9,12 +11,7 @@ export type LandingV2AssetSlot = {
   poster?: string;
 };
 
-export const LANDING_V2_AUDIENCE = [
-  "Creator",
-  "Brands",
-  "E-Commerce",
-  "Lokale Unternehmen",
-] as const;
+export const LANDING_V2_AUDIENCE = LANDING_V2_COPY.hero.chips;
 
 export const LANDING_V2_ASSETS = {
   hero: {
@@ -68,49 +65,5 @@ export const LANDING_V2_ASSETS = {
   } satisfies LandingV2AssetSlot,
 } as const;
 
-export const SCROLL_STORY_STATIONS = [
-  {
-    id: "briefing",
-    label: "Briefing",
-    title: "Hook und Richtung festlegen",
-    description:
-      "Starte mit einer klaren Idee — Briefing, Hook und nächster Schritt in einer Fläche.",
-  },
-  {
-    id: "path",
-    label: "Produktionspfad",
-    title: "Pfad wählen, nicht Tool suchen",
-    description:
-      "Bild, Video oder Kampagne — drei Wege statt zehn lose Tabs.",
-  },
-  {
-    id: "image",
-    label: "Bild",
-    title: "Kampagnen-Visuals erzeugen",
-    description:
-      "Produktmotive und Social Visuals direkt im Studio — bereit für den nächsten Schritt.",
-  },
-  {
-    id: "motion",
-    label: "Motion",
-    title: "Aus Bildern werden Clips",
-    description:
-      "Motion-Clips aus Visuals oder Szenenbeschreibungen — im gleichen Workflow.",
-  },
-  {
-    id: "gallery",
-    label: "Galerie",
-    title: "Assets sammeln und weiterverwenden",
-    description:
-      "Alle Outputs an einem Ort — wiederverwendbar für die nächste Kampagne.",
-  },
-] as const;
-
-export const PRODUCTION_PATH_PURPOSE: Record<string, string> = {
-  image:
-    "Für Produktbilder, Kampagnenmotive und Social Visuals — ohne Tool-Wechsel.",
-  video:
-    "Für Motion-Clips aus Bildern oder Szenen — ein klarer Video-Produktionsweg.",
-  campaign:
-    "Für Hooks, Inhalte und Rhythmus — Kampagne strukturieren statt lose planen.",
-};
+/** @deprecated Use LANDING_V2_COPY.workflow.stations */
+export const SCROLL_STORY_STATIONS = LANDING_V2_COPY.workflow.stations;

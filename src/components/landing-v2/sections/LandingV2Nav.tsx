@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+
+const copy = LANDING_V2_COPY.nav;
 
 export function LandingV2Nav() {
   return (
@@ -12,20 +15,20 @@ export function LandingV2Nav() {
         </Link>
         <nav className="hidden items-center gap-6 text-sm text-white/60 md:flex">
           <a href="#story" className="transition-colors hover:text-white">
-            Workflow
+            {copy.workflow}
           </a>
           <a href="#paths" className="transition-colors hover:text-white">
-            Produktionspfade
+            {copy.paths}
           </a>
           <a href="#studio" className="transition-colors hover:text-white">
-            Studio
+            {copy.studio}
           </a>
           <Link href="/pricing" className="transition-colors hover:text-white">
-            Preise
+            {copy.pricing}
           </Link>
         </nav>
         <Link href="/auth/sign-up" className="landing-v2-btn-primary !px-4 !py-2 text-sm">
-          Studio starten
+          {copy.cta}
           <ArrowRight size={16} aria-hidden />
         </Link>
       </div>

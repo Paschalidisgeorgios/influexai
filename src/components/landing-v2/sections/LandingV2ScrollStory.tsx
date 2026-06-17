@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SCROLL_STORY_STATIONS } from "@/lib/landing-v2-assets";
+import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+
+const STATIONS = LANDING_V2_COPY.workflow.stations;
+const sectionCopy = LANDING_V2_COPY.workflow;
 import { useLandingViewport } from "../hooks/useLandingViewport";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -49,14 +52,14 @@ export function LandingV2ScrollStory() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: `+=${SCROLL_STORY_STATIONS.length * 58}%`,
+            end: `+=${STATIONS.length * 58}%`,
             pin: pin,
             scrub: 0.55,
             anticipatePin: 1,
             onUpdate: (self) => {
               const idx = Math.min(
-                SCROLL_STORY_STATIONS.length - 1,
-                Math.floor(self.progress * SCROLL_STORY_STATIONS.length)
+                STATIONS.length - 1,
+                Math.floor(self.progress * STATIONS.length)
               );
               setActiveIndex(idx);
             },
@@ -104,14 +107,14 @@ export function LandingV2ScrollStory() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: `+=${SCROLL_STORY_STATIONS.length * 55}%`,
+            end: `+=${STATIONS.length * 55}%`,
             pin: pin,
             scrub: 0.55,
             anticipatePin: 1,
             onUpdate: (self) => {
               const idx = Math.min(
-                SCROLL_STORY_STATIONS.length - 1,
-                Math.floor(self.progress * SCROLL_STORY_STATIONS.length)
+                STATIONS.length - 1,
+                Math.floor(self.progress * STATIONS.length)
               );
               setActiveIndex(idx);
             },
@@ -146,21 +149,21 @@ export function LandingV2ScrollStory() {
       <div className="mx-auto max-w-6xl">
         <p className="landing-v2-kicker mb-3">
           <span className="landing-v2-kicker__dot" aria-hidden />
-          Workflow
+          {sectionCopy.eyebrow}
         </p>
         <h2
           id="lv2-story-heading"
           className="landing-v2-headline text-[clamp(2rem,4.5vw,3.25rem)] text-[var(--lv2-text-light)]"
         >
-          Vom Briefing zum Asset
+          {sectionCopy.headline}
         </h2>
         <p className="mt-3 max-w-2xl text-white/58">
-          Briefing, Bild, Video und Galerie in einem Workflow — nicht als lose Tool-Kette.
+          {sectionCopy.subline}
         </p>
 
         {isMobile || reduceMotion ? (
           <div className="mt-10 space-y-4">
-            {SCROLL_STORY_STATIONS.map((station, index) => (
+            {STATIONS.map((station, index) => (
               <article
                 key={station.id}
                 className="landing-v2-ivory-stage p-6"
@@ -179,7 +182,7 @@ export function LandingV2ScrollStory() {
           <div ref={pinRef} className="landing-v2-scroll-story__track mt-12">
             <div className="grid min-h-[70vh] items-center gap-10 lg:grid-cols-[220px_1fr]">
               <ol className="space-y-2" aria-label="Produktionsstationen">
-                {SCROLL_STORY_STATIONS.map((station, index) => (
+                {STATIONS.map((station, index) => (
                   <li
                     key={station.id}
                     className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${
@@ -208,7 +211,7 @@ export function LandingV2ScrollStory() {
                   ref={panelsRef}
                   className="landing-v2-scroll-story__panels-3d"
                 >
-                  {SCROLL_STORY_STATIONS.map((station) => (
+                  {STATIONS.map((station) => (
                     <article
                       key={station.id}
                       data-story-panel
