@@ -243,7 +243,7 @@ function PreviewInner() {
           >
             <div className="w-full max-w-full px-3 py-3 md:px-[7%] md:py-4 lg:px-[6%]">
               <div
-                className="w-full min-w-0 rounded-xl backdrop-blur-2xl"
+                className="w-full min-w-0 rounded-xl"
                 style={{
                   background: STAGE_SURFACE,
                   border: "1px solid rgba(255,255,255,0.10)",

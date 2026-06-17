@@ -1,7 +1,7 @@
 "use client";
 
 import type { PreviewView } from "./PreviewLang";
-import { PreviewStudioHome, PreviewAgentView } from "./PreviewStudioHome";
+import { PreviewCommandOs } from "./PreviewCommandOs";
 import { PreviewToolsFlow } from "./PreviewToolsFlow";
 import { PreviewGallery } from "./PreviewGallery";
 import { PreviewSettings } from "./PreviewSettings";
@@ -16,9 +16,8 @@ export function PreviewViewContent({
 }) {
   switch (active) {
     case "studio":
-      return <PreviewStudioHome onNavigate={onNavigate} />;
     case "agent":
-      return <PreviewAgentView onNavigate={onNavigate} />;
+      return <PreviewCommandOs onNavigate={onNavigate} variant={active} />;
     case "tools":
       return <PreviewToolsFlow />;
     case "gallery":
