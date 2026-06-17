@@ -18,7 +18,13 @@ export const LANDING_V2_ASSETS = {
     webm: "/videos/landing/hero-loop.webm",
     mp4: "/videos/landing/hero-loop.mp4",
     poster: "/images/landing/hero-poster.webp",
-    placeholderLabel: "Studio Preview",
+    placeholderLabel: "Studio Cockpit",
+  },
+  /** Existing studio loop — hero panel ambient background */
+  studioLoop: {
+    webm: "/videos/studio/studio-loop.webm",
+    mp4: "/videos/studio/studio-loop.mp4",
+    poster: "/videos/studio/studio-poster.webp",
   },
   outputVideo: {
     webm: "/videos/landing/output-video-loop-01.webm",

@@ -16,6 +16,22 @@ export const LANDING_V2_COPY = {
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
     chips: ["Creator", "Brands", "E-Commerce", "Lokale Unternehmen"] as const,
+    productPanel: {
+      label: "Studio Cockpit",
+      headline: "Briefing, Produktion und Assets in einem Workflow.",
+      briefing: {
+        title: "Campaign Briefing",
+        text: "Ziel, Hook und Stilrichtung",
+      },
+      paths: {
+        title: "Production Paths",
+        items: ["Bild erstellen", "Video erstellen", "Kampagne planen"] as const,
+      },
+      queue: {
+        title: "Asset Queue",
+        items: ["Campaign Visual", "Motion Draft", "Hook Direction"] as const,
+      },
+    },
   },
   workflow: {
     eyebrow: "Workflow",

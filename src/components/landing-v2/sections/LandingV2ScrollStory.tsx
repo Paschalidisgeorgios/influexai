@@ -143,7 +143,7 @@ export function LandingV2ScrollStory() {
     <section
       id="story"
       ref={sectionRef}
-      className="landing-v2-section relative overflow-hidden"
+      className="landing-v2-section landing-v2-section--workflow relative overflow-hidden pt-14 md:pt-20"
       aria-labelledby="lv2-story-heading"
     >
       <div className="mx-auto max-w-6xl">
