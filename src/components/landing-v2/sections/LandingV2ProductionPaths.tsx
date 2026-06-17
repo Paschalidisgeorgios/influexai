@@ -13,6 +13,28 @@ import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 const copy = LANDING_V2_COPY.paths;
 const chapterCopy = LANDING_V2_COPY.chapters.paths;
 
+const LANDING_PRODUCTION_PATHS = [
+  {
+    key: "image",
+    label: "Bild erstellen",
+    href: "/dashboard?tool=image-gen",
+  },
+  {
+    key: "video",
+    label: "Video erstellen",
+    href: "/dashboard?tool=img-to-video",
+  },
+  {
+    key: "campaign",
+    label: "Kampagne planen",
+    href: "/dashboard?tool=content-calendar",
+  },
+] as const;
+
+const pathHrefByKey: Record<string, string> = Object.fromEntries(
+  LANDING_PRODUCTION_PATHS.map((path) => [path.key, path.href])
+);
+
 export function LandingV2ProductionPaths() {
   const sectionRef = useRef<HTMLElement>(null);
   const { enableCinematicScroll } = useLandingViewport();
@@ -49,7 +71,7 @@ export function LandingV2ProductionPaths() {
           {copy.items.map((item) => (
               <Link
                 key={item.id}
-                href={item.href}
+                href={pathHrefByKey[item.id] ?? "/auth/sign-up"}
                 className="landing-v2-path-track group"
                 data-lv2-stagger
               >

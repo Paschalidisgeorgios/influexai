@@ -171,7 +171,6 @@ export const LANDING_V2_COPY = {
         title: "Visuals und Kampagnenbilder.",
         description: "Social, Ads und Produktkommunikation.",
         cta: "Bild-Workflow",
-        href: "/dashboard?tool=image-gen",
       },
       {
         id: "video",
@@ -180,7 +179,6 @@ export const LANDING_V2_COPY = {
         title: "Motion und kurze Sequenzen.",
         description: "Reels, Shorts und bewegte Kampagnen-Assets.",
         cta: "Video-Workflow",
-        href: "/dashboard?tool=img-to-video",
       },
       {
         id: "campaign",
@@ -189,7 +187,6 @@ export const LANDING_V2_COPY = {
         title: "Hooks und Content-Struktur.",
         description: "Kampagnenwinkel vor der Asset-Produktion.",
         cta: "Kampagne planen",
-        href: "/dashboard?tool=content-calendar",
       },
     ],
   },
