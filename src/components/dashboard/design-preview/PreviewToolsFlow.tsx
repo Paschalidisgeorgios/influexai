@@ -98,6 +98,107 @@ const DEFAULT_ENGINES: Engine[] = [
 
 const CAT_ORDER: CatId[] = ["foto", "video", "avatar", "text", "brand"];
 
+const MVP_TOOL_IDS = new Set([
+  "img-gen",
+  "img-vid",
+  "txt-vid",
+  "viral-hook",
+  "cont-cal",
+]);
+
+const MVP_ENGINES: Record<string, string> = {
+  "img-gen": "InfluexAI Image Engine",
+  "img-vid": "InfluexAI Motion Engine",
+  "txt-vid": "InfluexAI Motion Engine",
+  "viral-hook": "InfluexAI Campaign Engine",
+  "cont-cal": "InfluexAI Campaign Engine",
+};
+
+function allToolsFlat(): (Tool & { cat: CatId })[] {
+  return CAT_ORDER.flatMap((cat) => TOOLS[cat].map((tool) => ({ ...tool, cat })));
+}
+
+// ─── MVP + preparation lists ──────────────────────────────────────────────────
+
+function MvpWorkflowList({
+  onSelect,
+}: {
+  onSelect: (cat: CatId, tool: Tool) => void;
+}) {
+  const { t } = useLang();
+  const tc = t.tools;
+  const mvp = allToolsFlat().filter((tool) => MVP_TOOL_IDS.has(tool.id));
+
+  return (
+    <section className="mb-10">
+      <SectionLabel>{tc.mvpLabel}</SectionLabel>
+      <div className="flex flex-col gap-2">
+        {mvp.map((tool) => (
+          <button
+            key={tool.id}
+            type="button"
+            onClick={() => onSelect(tool.cat, tool)}
+            className="group flex w-full flex-col gap-2 p-5 text-left transition-all md:flex-row md:items-center md:justify-between md:p-6"
+            style={{
+              background: LIGHT_CARD,
+              border: `1px solid ${LIGHT_BORDER}`,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.28)",
+            }}
+          >
+            <div className="min-w-0">
+              <p className="mb-1 text-[16px] font-bold" style={{ ...HL, color: DARK }}>
+                {tool.name}
+              </p>
+              <p className="text-[13px] leading-[1.5]" style={{ color: "rgba(8,8,8,0.55)" }}>
+                {tool.desc}
+              </p>
+            </div>
+            <div className="shrink-0 md:text-right">
+              <p className="font-mono text-[10px] uppercase tracking-[0.1em]" style={{ color: "rgba(8,8,8,0.45)" }}>
+                {MVP_ENGINES[tool.id] ?? "InfluexAI Production Engine"}
+              </p>
+              <span className="mt-1 inline-block font-mono text-[10px] uppercase tracking-[0.08em]" style={{ color: ACCENT }}>
+                {tc.selectCta}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PreparationList() {
+  const { t } = useLang();
+  const tc = t.tools;
+  const pending = allToolsFlat().filter((tool) => !MVP_TOOL_IDS.has(tool.id));
+
+  return (
+    <section className="mb-10 border-t pt-8" style={{ borderColor: LIGHT_BORDER }}>
+      <SectionLabel>{tc.prepLabel}</SectionLabel>
+      <p className="mb-4 max-w-xl text-[13px] leading-relaxed" style={{ color: "rgba(8,8,8,0.55)" }}>
+        {tc.prepCopy}
+      </p>
+      <ul className="flex flex-col gap-1.5">
+        {pending.map((tool) => (
+          <li
+            key={tool.id}
+            className="flex min-w-0 items-center justify-between gap-3 rounded border px-3 py-2"
+            style={{ borderColor: LIGHT_BORDER, background: "rgba(244,240,232,0.22)" }}
+          >
+            <span className="truncate text-[13px]" style={{ color: "rgba(8,8,8,0.55)" }}>
+              {tool.name}
+            </span>
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.08em]" style={{ color: "rgba(8,8,8,0.35)" }}>
+              {tc.categories[tool.cat]}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -535,9 +636,16 @@ export function PreviewToolsFlow() {
     setEngine(null);
   };
 
+  const selectMvp = (c: CatId, tl: Tool) => {
+    setCat(c);
+    setTool(tl);
+    setEngine(null);
+  };
+
+  const drilling = !!(cat && tool);
+
   return (
     <div className="pb-4">
-      {/* Header */}
       <header className="mb-10 md:mb-12">
         <p className="mb-4 font-mono text-[12px] tracking-[0.1em] uppercase" style={{ color: "rgba(8,8,8,0.45)" }}>
           {tc.overline}
@@ -553,20 +661,36 @@ export function PreviewToolsFlow() {
         </p>
       </header>
 
-      <FlowIndicator cat={cat} tool={tool} engine={engine} labels={tc} />
+      {!drilling ? (
+        <>
+          <MvpWorkflowList onSelect={selectMvp} />
+          <PreparationList />
+        </>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              setCat(null);
+              setTool(null);
+              setEngine(null);
+            }}
+            className="mb-6 font-mono text-[11px] uppercase tracking-[0.1em]"
+            style={{ color: "rgba(8,8,8,0.50)" }}
+          >
+            {tc.backCta}
+          </button>
 
-      <CategoryPicker active={cat} onSelect={selectCat} />
+          <FlowIndicator cat={cat} tool={tool} engine={engine} labels={tc} />
 
-      {cat && (
-        <ToolPicker cat={cat} active={tool} onSelect={selectTool} />
-      )}
+          {cat && tool && (
+            <EnginePicker tool={tool} active={engine} onSelect={setEngine} />
+          )}
 
-      {cat && tool && (
-        <EnginePicker tool={tool} active={engine} onSelect={setEngine} />
-      )}
-
-      {cat && tool && engine && (
-        <GenerationPanel cat={cat} tool={tool} engine={engine} />
+          {cat && tool && engine && (
+            <GenerationPanel cat={cat} tool={tool} engine={engine} />
+          )}
+        </>
       )}
     </div>
   );

@@ -9,7 +9,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 // ─── View type (shared across all preview components) ─────────────────────────
 
-export type PreviewView = "studio" | "agent" | "tools" | "gallery" | "settings";
+export type PreviewView = "studio" | "tools" | "gallery" | "settings";
 
 // ─── Language ─────────────────────────────────────────────────────────────────
 
@@ -24,11 +24,17 @@ const de = {
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
   nav: {
-    studio:   "Studio",
-    agent:    "Agent",
-    tools:    "Tools",
+    studio:   "Cockpit",
+    tools:    "Workflows",
     gallery:  "Galerie",
     settings: "Einstellungen",
+  },
+
+  cockpit: {
+    overline:  "Command Center",
+    headline:  "Was möchtest du produzieren?",
+    subline:   "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und bereitet die Produktion vor.",
+    enterHint: "Enter zum Starten · Umschalt+Enter für neue Zeile",
   },
 
   studio: {
@@ -95,9 +101,12 @@ const de = {
   },
 
   tools: {
-    overline:      "Production Tools",
-    headline:      "Wähle deinen Produktionsbereich.",
-    subline:       "Starte mit Foto, Video, Avatar, Text oder Brand Assets — InfluexAI führt dich zur passenden Engine.",
+    overline:      "Workflows",
+    headline:      "Produktions-Workflows",
+    subline:       "Aktive MVP-Workflows — erreichbar über Command oder direkt hier.",
+    mvpLabel:      "Aktive Workflows",
+    prepLabel:     "In Vorbereitung",
+    prepCopy:      "Dieses Studio-Setup ist noch nicht aktiviert.",
     flowLabel:     "Produktionspfad",
     stepCategory:  "Bereich",
     stepTool:      "Tool",
@@ -176,7 +185,14 @@ const en: typeof de = {
   previewBannerCta: "Open production studio →",
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
-  nav: { studio:"Studio", agent:"Agent", tools:"Tools", gallery:"Gallery", settings:"Settings" },
+  nav: { studio:"Cockpit", tools:"Workflows", gallery:"Gallery", settings:"Settings" },
+
+  cockpit: {
+    overline:  "Command Center",
+    headline:  "What do you want to produce?",
+    subline:   "Describe your goal. InfluexAI recognizes the matching workflow and prepares production.",
+    enterHint: "Enter to start · Shift+Enter for new line",
+  },
 
   studio: {
     overline:      "Studio",
@@ -238,9 +254,12 @@ const en: typeof de = {
   },
 
   tools: {
-    overline:      "Production Tools",
-    headline:      "Choose your production area.",
-    subline:       "Start with image, video, avatar, text or brand assets — InfluexAI guides you to the right engine.",
+    overline:      "Workflows",
+    headline:      "Production workflows",
+    subline:       "Active MVP workflows — reachable via Command or directly here.",
+    mvpLabel:      "Active workflows",
+    prepLabel:     "In preparation",
+    prepCopy:      "This studio setup is not activated yet.",
     flowLabel:     "Production Path",
     stepCategory:  "Area",
     stepTool:      "Tool",

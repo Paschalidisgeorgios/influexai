@@ -18,13 +18,7 @@ const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-const ACTIVE_VIEWS: PreviewView[] = [
-  "studio",
-  "agent",
-  "tools",
-  "gallery",
-  "settings",
-];
+const ACTIVE_VIEWS: PreviewView[] = ["studio", "tools", "gallery", "settings"];
 
 function PreviewSidebar({
   active,
