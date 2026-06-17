@@ -8,6 +8,7 @@ import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
+import { LandingV2RotatingHeadline } from "../ui/LandingV2RotatingHeadline";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useBrandIntro } from "../BrandIntroContext";
@@ -53,17 +54,21 @@ export function LandingV2Hero() {
           >
             {copy.workflowLine}
           </p>
-          <h1
-            id="lv2-hero-heading"
-            className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline"
-            data-hero-headline
-          >
-            {copy.headlineLines[0]}
-            <br />
-            {copy.headlineLines[1]}
-            <br />
-            {copy.headlineLines[2]}
-          </h1>
+          {isPreview ? (
+            <LandingV2RotatingHeadline />
+          ) : (
+            <h1
+              id="lv2-hero-heading"
+              className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline"
+              data-hero-headline
+            >
+              {copy.headlineLines[0]}
+              <br />
+              {copy.headlineLines[1]}
+              <br />
+              {copy.headlineLines[2]}
+            </h1>
+          )}
           <p
             className="landing-v2-hero__subline mt-4 max-w-[42ch] md:mt-5"
             data-hero-subline

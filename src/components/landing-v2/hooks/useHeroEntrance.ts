@@ -25,13 +25,14 @@ export function useHeroEntrance(
 
     const ctx = gsap.context(() => {
       const eyebrow = section.querySelector("[data-hero-eyebrow]");
+      const rotatingHeadline = section.querySelector("[data-hero-headline-rotating]");
       const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
       const subline = section.querySelector("[data-hero-subline]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
       const panel = section.querySelector("[data-hero-video-stage]");
       const flow = section.querySelector("[data-hero-flow]");
 
-      if (headline) {
+      if (headline && !rotatingHeadline) {
         split = new SplitType(headline, {
           types: "lines",
           tagName: "span",

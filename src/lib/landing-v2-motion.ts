@@ -115,6 +115,15 @@ export const EDITORIAL_VIDEO_SCROLL = {
   video: { scaleFrom: 1.06, scaleTo: 1 },
 } as const;
 
+/** Preview hero — rotating headline copy */
+export const HERO_ROTATE_COPY = {
+  intervalMs: 3600,
+  intervalReducedMs: 8000,
+  enter: { y: 18, opacity: 0, duration: 0.68, ease: "power3.out" },
+  exit: { y: -12, opacity: 0, duration: 0.55, ease: "power3.in" },
+  keyword: { fromOpacity: 0.72, toOpacity: 1, duration: 0.72, ease: "power2.out" },
+} as const;
+
 /** Preview hero — scroll-fading backdrop video (single mp4) */
 export const HERO_VIDEO_BG = {
   opacityStart: 0.42,
