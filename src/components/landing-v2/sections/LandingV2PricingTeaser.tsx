@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LANDING_V2_PRICING_PREVIEW_HREF } from "@/lib/landing-v2-pricing-copy";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 
 const copy = LANDING_V2_COPY.pricing;
@@ -35,7 +36,7 @@ export function LandingV2PricingTeaser() {
           {copy.subline}
         </p>
         <div className="mt-8">
-          <Link href="/pricing" className="landing-v2-btn-primary">
+          <Link href={LANDING_V2_PRICING_PREVIEW_HREF} className="landing-v2-btn-primary">
             {copy.cta}
             <ArrowRight size={18} aria-hidden />
           </Link>

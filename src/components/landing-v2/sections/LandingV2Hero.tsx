@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LANDING_V2_PRICING_PREVIEW_HREF } from "@/lib/landing-v2-pricing-copy";
 import { LandingV2HeroProductPanel } from "../ui/LandingV2HeroProductPanel";
 import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
@@ -72,7 +73,7 @@ export function LandingV2Hero() {
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
-              href="/pricing"
+              href={LANDING_V2_PRICING_PREVIEW_HREF}
               className="landing-v2-btn-secondary min-h-[44px] shrink-0"
               data-hero-cta
             >

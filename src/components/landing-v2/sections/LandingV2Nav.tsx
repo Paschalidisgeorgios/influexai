@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LANDING_V2_PRICING_PREVIEW_HREF } from "@/lib/landing-v2-pricing-copy";
 
 const copy = LANDING_V2_COPY.nav;
 
@@ -23,7 +24,7 @@ export function LandingV2Nav() {
           <a href="#studio" className="transition-colors hover:text-white">
             {copy.studio}
           </a>
-          <Link href="/pricing" className="transition-colors hover:text-white">
+          <Link href={LANDING_V2_PRICING_PREVIEW_HREF} className="transition-colors hover:text-white">
             {copy.pricing}
           </Link>
         </nav>
