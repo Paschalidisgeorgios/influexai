@@ -37,7 +37,7 @@ export function LandingV2PricingTeaser() {
               {chapterCopy.headline}
             </span>
           </h2>
-          <p className="landing-v2-editorial-lead mx-auto mt-4 max-w-lg text-center" data-lv2-subline>
+          <p className="landing-v2-editorial-lead mx-auto mt-4 max-w-lg text-center text-white/55" data-lv2-subline>
             {chapterCopy.body}
           </p>
           <div className="mt-8 flex justify-center">

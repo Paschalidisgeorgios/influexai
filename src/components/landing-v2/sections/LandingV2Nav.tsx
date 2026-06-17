@@ -1,17 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useLandingNavState } from "../hooks/useLandingNavState";
-
-type LandingV2NavProps = {
-  introClass?: string;
-  isPreview?: boolean;
-};
 
 const copy = LANDING_V2_COPY.nav;
 
@@ -22,28 +15,15 @@ const NAV_SECTIONS = [
   { id: "pricing", label: copy.pricing, href: null },
 ] as const;
 
-export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2NavProps) {
+export function LandingV2Nav() {
   const links = useLandingV2Links();
   const sectionIds = NAV_SECTIONS.map((item) => item.id);
   const { scrolled, progress, activeId } = useLandingNavState(sectionIds);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const previewClass = isPreview ? "landing-v2-nav--preview" : "";
-  const headerClass = [
-    "landing-v2-nav",
-    previewClass,
-    introClass,
-    scrolled ? "landing-v2-nav--scrolled" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const header = (
-    <header className={headerClass}>
+  return (
+    <header
+      className={`landing-v2-nav ${scrolled ? "landing-v2-nav--scrolled" : ""}`.trim()}
+    >
       <div className="landing-v2-nav__shell">
         <div className="landing-v2-nav__inner">
           <Link
@@ -94,10 +74,4 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
       </div>
     </header>
   );
-
-  if (!mounted) {
-    return header;
-  }
-
-  return createPortal(header, document.body);
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { ArrowRight } from "lucide-react";
+import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LandingV2AssetImage } from "../ui/LandingV2Asset";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
@@ -12,11 +13,12 @@ import { useStudio3DScene } from "../hooks/useStudio3DScene";
 const copy = LANDING_V2_COPY.studio;
 const chapterCopy = LANDING_V2_COPY.chapters.studio;
 
-const MODULES = copy.panels.map((panel, index) => ({
-  ...panel,
-  index: String(index + 1).padStart(2, "0"),
-  region: ["cockpit", "agent", "tools", "gallery"][index] ?? "cockpit",
-}));
+const PANEL_CLASS: Record<string, string> = {
+  studio: "landing-v2-studio-world__module--cockpit",
+  agent: "landing-v2-studio-world__module--agent",
+  tools: "landing-v2-studio-world__module--tools",
+  gallery: "landing-v2-studio-world__module--gallery",
+};
 
 export function LandingV2StudioPreview() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -25,7 +27,12 @@ export function LandingV2StudioPreview() {
   const { enablePreviewMotion } = useLandingV2Links();
 
   useSectionDramaturgy(sectionRef);
-  useStudio3DScene(sectionRef, sceneRef, enableCinematicScroll && enablePreviewMotion && !isMobile);
+  useStudio3DScene(sectionRef, sceneRef, enableCinematicScroll && enablePreviewMotion);
+
+  const panels = copy.panels.map((panel) => ({
+    ...panel,
+    asset: LANDING_V2_ASSETS.products.find((p) => p.id === panel.id),
+  }));
 
   return (
     <section
@@ -46,46 +53,56 @@ export function LandingV2StudioPreview() {
             </span>
           ))}
         </h2>
-        <p className="landing-v2-editorial-lead mt-4 max-w-2xl" data-lv2-subline>
+        <p className="landing-v2-editorial-lead mt-4 max-w-2xl text-white/55" data-lv2-subline>
           {chapterCopy.body}
         </p>
 
         <div
-          ref={sceneRef}
-          className={`landing-v2-studio-map mt-12 md:mt-16 ${
-            enableCinematicScroll && !isMobile && !reduceMotion ? "landing-v2-scene-3d" : ""
+          className={`landing-v2-studio-world mt-12 md:mt-16 ${
+            isMobile || reduceMotion ? "landing-v2-studio-world--stacked" : ""
           }`}
           data-lv2-stagger
         >
-          <svg
-            className="landing-v2-studio-map__lines"
-            viewBox="0 0 1000 520"
-            preserveAspectRatio="none"
-            aria-hidden
+          <div
+            ref={sceneRef}
+            className={`landing-v2-studio-world__frame ${
+              enableCinematicScroll && !isMobile && !reduceMotion ? "landing-v2-scene-3d" : ""
+            }`}
           >
-            <path
-              d="M 180 130 L 500 130 L 820 130 L 820 390 L 180 390 L 180 130"
-              className="landing-v2-studio-map__path"
-            />
-            <path d="M 500 130 L 500 390" className="landing-v2-studio-map__path landing-v2-studio-map__path--inner" />
-          </svg>
+            <div className="landing-v2-scene-3d__rig landing-v2-studio-world__rig">
+              <div className="landing-v2-studio-world__canvas" aria-hidden>
+                <div className="landing-v2-studio-world__canvas-grid" />
+                {panels[0]?.asset ? (
+                  <div className="landing-v2-studio-world__canvas-visual">
+                    <LandingV2AssetImage slot={panels[0].asset} />
+                  </div>
+                ) : null}
+              </div>
 
-          <ul className="landing-v2-studio-map__regions">
-            {MODULES.map((module) => (
-              <li
-                key={module.id}
-                data-studio-panel
-                className={`landing-v2-studio-map__region landing-v2-studio-map__region--${module.region} landing-v2-panel-3d`}
-              >
-                <span className="landing-v2-studio-map__region-index">{module.index}</span>
-                <p className="landing-v2-studio-map__region-label">{module.label}</p>
-                <h3 className="landing-v2-headline landing-v2-studio-map__region-title">
-                  {module.title}
-                </h3>
-                <p className="landing-v2-studio-map__region-desc">{module.description}</p>
-              </li>
-            ))}
-          </ul>
+              <ul className="landing-v2-studio-world__modules">
+                {panels.map((panel, index) => (
+                  <li
+                    key={panel.id}
+                    data-studio-panel
+                    className={`landing-v2-studio-world__module landing-v2-panel-3d ${
+                      PANEL_CLASS[panel.id] ?? ""
+                    } ${index === 0 ? "landing-v2-studio-world__module--active" : ""}`}
+                  >
+                    <span className="landing-v2-studio-world__module-index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="landing-v2-studio-world__module-copy">
+                      <p className="landing-v2-studio-world__module-label">{panel.label}</p>
+                      <h3 className="landing-v2-headline landing-v2-studio-world__module-title">
+                        {panel.title}
+                      </h3>
+                      <p className="landing-v2-studio-world__module-desc">{panel.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </section>

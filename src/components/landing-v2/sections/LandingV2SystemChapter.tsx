@@ -30,7 +30,7 @@ export function LandingV2SystemChapter() {
                 {copy.headline}
               </span>
             </h2>
-            <p className="landing-v2-editorial-lead mt-5 max-w-2xl" data-lv2-subline>
+            <p className="landing-v2-editorial-lead mt-5 max-w-2xl text-white/55" data-lv2-subline>
               {copy.body}
             </p>
           </div>

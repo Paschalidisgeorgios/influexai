@@ -24,55 +24,41 @@ function LandingV2Shell() {
 
   const introStateClass = links.enableBrandIntro
     ? introDismissed
-      ? "landing-v2-page--intro-complete"
+      ? "landing-v2-root--intro-complete"
       : chromeVisible
-        ? "landing-v2-page--intro-chrome"
-        : "landing-v2-page--intro-active"
-    : "";
-
-  const introNavClass = links.enableBrandIntro
-    ? introDismissed
-      ? "landing-v2-nav--intro-complete"
-      : chromeVisible
-        ? "landing-v2-nav--intro-chrome"
-        : "landing-v2-nav--intro-active"
+        ? "landing-v2-root--intro-chrome"
+        : "landing-v2-root--intro-active"
     : "";
 
   const modeClass =
     links.mode === "live" ? "landing-v2-root--live" : "landing-v2-root--preview";
 
-  const pageClass = `landing-v2-page ${modeClass} ${introStateClass}`.trim();
-  const isPreview = links.mode === "preview";
-
   return (
-    <>
+    <div
+      className={`landing-v2-root min-h-screen overflow-x-clip ${introStateClass} ${modeClass}`.trim()}
+    >
       {links.landingPreviewBanner ? (
         <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
           {links.landingPreviewBanner}
         </div>
       ) : null}
 
-      <LandingV2Nav introClass={introNavClass} isPreview={isPreview} />
+      <LandingV2Nav />
+      {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
-      <div className={pageClass}>
-        <div className="landing-v2-root min-h-screen">
-          {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
+      <main>
+        <LandingV2Hero />
+        <LandingV2SystemChapter />
+        <LandingV2ScrollStory />
+        <LandingV2ProductionPaths />
+        <LandingV2StudioPreview />
+        <LandingV2Proof />
+        <LandingV2PricingTeaser />
+        <LandingV2FinalCta />
+      </main>
 
-          <main className="landing-v2-main overflow-x-clip">
-            <LandingV2Hero />
-            <LandingV2SystemChapter />
-            <LandingV2ScrollStory />
-            <LandingV2ProductionPaths />
-            <LandingV2StudioPreview />
-            <LandingV2Proof />
-            <LandingV2PricingTeaser />
-            <LandingV2FinalCta />
-          </main>
-
-          <LandingV2Footer />
-        </div>
-      </div>
-    </>
+      <LandingV2Footer />
+    </div>
   );
 }
 

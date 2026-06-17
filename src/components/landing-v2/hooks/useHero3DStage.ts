@@ -51,9 +51,9 @@ export function useHero3DStage({
       const y = (event.clientY - rect.top) / rect.height - 0.5;
       gsap.to(panel, {
         rotateY: x * mouse.rotateY,
-        rotateX: -mouse.rotateX * 0.5 + -y * mouse.rotateX * 0.5,
-        x: x * 8,
-        y: y * 4,
+        rotateX: -mouse.rotateX * 0.75 + -y * mouse.rotateX,
+        x: x * 10,
+        y: y * 6,
         duration: 0.55,
         ease: "power2.out",
         overwrite: "auto",
@@ -71,7 +71,7 @@ export function useHero3DStage({
       if (!enableMouse || !backPlate) return;
       gsap.to(panel, {
         rotateY: 0,
-        rotateX: -mouse.rotateX * 0.35,
+        rotateX: -mouse.rotateX * 0.75,
         x: 0,
         y: 0,
         duration: 0.75,
@@ -101,7 +101,7 @@ export function useHero3DStage({
       if (enableParallax) {
         gsap.set(panel, {
           z: scroll.z ?? 48,
-          rotateX: -mouse.rotateX * 0.35,
+          rotateX: -mouse.rotateX * 0.75,
           transformPerspective: 1200,
         });
 

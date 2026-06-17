@@ -47,11 +47,11 @@ export function LandingV2ProductionPaths() {
             </span>
           ))}
         </h2>
-        <p className="landing-v2-editorial-lead mt-4 max-w-xl" data-lv2-subline>
+        <p className="landing-v2-editorial-lead mt-4 max-w-xl text-white/55" data-lv2-subline>
           {chapterCopy.body}
         </p>
 
-        <div className="landing-v2-path-tracks mt-12 md:mt-16">
+        <div className="landing-v2-editorial-paths mt-12 md:mt-16">
           {copy.items.map((item) => {
             const toolId = pathRouteById[item.id];
             const href = toolId ? resolveToolRoute(toolId) ?? "/auth/sign-up" : "/auth/sign-up";
@@ -59,20 +59,22 @@ export function LandingV2ProductionPaths() {
               <Link
                 key={item.id}
                 href={href}
-                className="landing-v2-path-track group"
+                className="landing-v2-editorial-path group"
                 data-lv2-stagger
               >
-                <span className="landing-v2-path-track__index">{item.index}</span>
-                <div className="landing-v2-path-track__body">
-                  <p className="landing-v2-path-track__label">{item.label}</p>
-                  <h3 className="landing-v2-headline landing-v2-path-track__title">{item.title}</h3>
-                  <p className="landing-v2-path-track__desc">{item.description}</p>
+                <div className="landing-v2-editorial-path__inner">
+                  <span className="landing-v2-editorial-path__index">{item.index}</span>
+                  <p className="landing-v2-editorial-path__label">{item.label}</p>
+                  <h3 className="landing-v2-headline landing-v2-editorial-path__title">
+                    {item.title}
+                  </h3>
+                  <p className="landing-v2-editorial-path__desc">{item.description}</p>
+                  <span className="landing-v2-editorial-path__cta">
+                    {item.cta}
+                    <ArrowRight size={16} aria-hidden />
+                  </span>
                 </div>
-                <span className="landing-v2-path-track__cta">
-                  {item.cta}
-                  <ArrowRight size={16} aria-hidden />
-                </span>
-                <span className="landing-v2-path-track__line" aria-hidden />
+                <span className="landing-v2-editorial-path__line" aria-hidden />
               </Link>
             );
           })}
