@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getGallery } from "@/app/actions/get-gallery";
+import type { GalleryItem } from "@/lib/gallery-types";
+import { ImagePlus, Images, Upload, X } from "lucide-react";
 import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import type { ToolId } from "./DashboardLayout";
@@ -30,7 +33,11 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { mergeSzenenGeneratorModels, type SzenenGeneratorModel } from "@/lib/szenen-generator-models";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { buildAgentPrepareHref, SETUP_COPY } from "./production-tool-setup-ui";
+import {
+  buildAgentPrepareHref,
+  IMG_TO_VIDEO_START_IMAGE_COPY,
+  SETUP_COPY,
+} from "./production-tool-setup-ui";
 import {
   SetupErrorBanner,
   SetupLoadingBanner,
@@ -47,6 +54,14 @@ import {
   StudioSelect,
   StudioTextarea,
 } from "../studio-ui";
+import { cn } from "../studio-ui/cn";
+import {
+  STUDIO_CARD_BG_SOFT,
+  STUDIO_INPUT_BG,
+  STUDIO_MUTED,
+  STUDIO_RADIUS,
+  STUDIO_TEXT,
+} from "../studio-ui/tokens";
 
 const IMAGE_SETUP_FORMATS = PLATFORM_FORMATS.filter((f) =>
   ["1:1", "9:16", "16:9"].includes(f.aspectLabel)
@@ -722,6 +737,296 @@ function TextToVideoSetup() {
   );
 }
 
+const IMAGE_UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+function readFileAsDataUrl(file: File, onDone: (url: string) => void) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result === "string") onDone(reader.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function isStartImagePreviewUrl(url: string) {
+  const trimmed = url.trim();
+  return (
+    trimmed.startsWith("data:image/") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/api/generated-image/")
+  );
+}
+
+function StartImageAssetZone({
+  imageUrl,
+  onImageUrlChange,
+}: {
+  imageUrl: string;
+  onImageUrlChange: (url: string) => void;
+}) {
+  const copy = IMG_TO_VIDEO_START_IMAGE_COPY;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showUrlField, setShowUrlField] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryError, setGalleryError] = useState<string | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+
+  const hasPreview = isStartImagePreviewUrl(imageUrl);
+  const urlInputValue = imageUrl.startsWith("data:") ? "" : imageUrl;
+
+  useEffect(() => {
+    if (urlInputValue.trim()) setShowUrlField(true);
+  }, [urlInputValue]);
+
+  const acceptImageFile = useCallback(
+    (file: File | undefined) => {
+      if (!file || !IMAGE_UPLOAD_TYPES.includes(file.type)) return;
+      readFileAsDataUrl(file, (url) => {
+        onImageUrlChange(url);
+        setShowUrlField(false);
+      });
+    },
+    [onImageUrlChange]
+  );
+
+  const openGallery = useCallback(() => {
+    setGalleryOpen(true);
+    setGalleryLoading(true);
+    setGalleryError(null);
+    void getGallery("image", 0)
+      .then((result) => {
+        if (result.error) {
+          setGalleryError(result.error);
+          setGalleryItems([]);
+          return;
+        }
+        setGalleryItems(
+          result.items.filter((item) => item._type === "image" && item.imageUrl)
+        );
+      })
+      .catch(() => setGalleryError(SETUP_COPY.errorGeneric))
+      .finally(() => setGalleryLoading(false));
+  }, []);
+
+  const zoneButtonClass = cn(
+    "inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-2 border px-4 text-sm font-medium transition-colors hover:border-black/16 sm:flex-1",
+    STUDIO_RADIUS.button
+  );
+  const zoneButtonStyle = {
+    borderColor: "rgba(8,8,8,0.10)",
+    background: STUDIO_INPUT_BG,
+    color: STUDIO_TEXT,
+  } as const;
+
+  return (
+    <div className="min-w-0 max-w-full">
+      <div
+        className={cn(
+          "min-w-0 max-w-full border border-black/[0.08] px-4 py-5 sm:px-5",
+          STUDIO_RADIUS.card
+        )}
+        style={{ background: STUDIO_CARD_BG_SOFT }}
+      >
+        {hasPreview ? (
+          <div className="space-y-3">
+            <div
+              className={cn(
+                "relative mx-auto w-full max-w-sm overflow-hidden border border-black/[0.08]",
+                STUDIO_RADIUS.input
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt={copy.title}
+                className="aspect-[4/3] w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  onImageUrlChange("");
+                  setShowUrlField(false);
+                }}
+                className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white/90 text-black/70 transition-colors hover:text-black"
+                aria-label={copy.removeButton}
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className={zoneButtonClass}
+                style={zoneButtonStyle}
+              >
+                <Upload size={16} className="shrink-0 opacity-70" />
+                {copy.replaceButton}
+              </button>
+              <button
+                type="button"
+                onClick={openGallery}
+                className={zoneButtonClass}
+                style={zoneButtonStyle}
+              >
+                <Images size={16} className="shrink-0 opacity-70" />
+                {copy.galleryButton}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex min-w-0 flex-col items-center text-center">
+            <div
+              className="mb-3 flex h-11 w-11 items-center justify-center rounded-full border border-black/[0.08]"
+              style={{ background: STUDIO_INPUT_BG }}
+            >
+              <ImagePlus size={20} className="opacity-55" style={{ color: STUDIO_TEXT }} />
+            </div>
+            <p className="text-[15px] font-semibold" style={{ color: STUDIO_TEXT }}>
+              {copy.title}
+            </p>
+            <p className="mt-1 max-w-sm text-sm leading-relaxed" style={{ color: STUDIO_MUTED }}>
+              {copy.zoneSubtitle}
+            </p>
+            <div className="mt-4 flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className={zoneButtonClass}
+                style={zoneButtonStyle}
+              >
+                <Upload size={16} className="shrink-0 opacity-70" />
+                {copy.uploadButton}
+              </button>
+              <button
+                type="button"
+                onClick={openGallery}
+                className={zoneButtonClass}
+                style={zoneButtonStyle}
+              >
+                <Images size={16} className="shrink-0 opacity-70" />
+                {copy.galleryButton}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={IMAGE_UPLOAD_TYPES.join(",")}
+          className="hidden"
+          onChange={(e) => {
+            acceptImageFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+
+        <div className="mt-4 border-t border-black/[0.06] pt-3">
+          {!showUrlField ? (
+            <button
+              type="button"
+              onClick={() => setShowUrlField(true)}
+              className="text-xs font-medium underline decoration-black/20 underline-offset-2 transition-colors hover:decoration-black/40"
+              style={{ color: STUDIO_MUTED }}
+            >
+              {copy.linkToggle}
+            </button>
+          ) : (
+            <div className="min-w-0 space-y-2">
+              <StudioInput
+                type="url"
+                value={urlInputValue}
+                onChange={(e) => onImageUrlChange(e.target.value)}
+                placeholder={copy.linkPlaceholder}
+                className="py-2.5 text-sm"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <StudioFieldHelper className="mt-2">{copy.helper}</StudioFieldHelper>
+
+      {galleryOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={copy.galleryTitle}
+          onClick={() => setGalleryOpen(false)}
+        >
+          <div
+            className={cn(
+              "flex max-h-[min(80vh,640px)] w-full min-w-0 max-w-lg flex-col border border-black/[0.08] shadow-xl sm:rounded-[24px]",
+              STUDIO_RADIUS.panel
+            )}
+            style={{ background: STUDIO_INPUT_BG }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-black/[0.06] px-4 py-3 sm:px-5">
+              <p className="text-sm font-semibold" style={{ color: STUDIO_TEXT }}>
+                {copy.galleryTitle}
+              </p>
+              <button
+                type="button"
+                onClick={() => setGalleryOpen(false)}
+                className="text-xs font-medium"
+                style={{ color: STUDIO_MUTED }}
+              >
+                {copy.galleryClose}
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+              {galleryLoading ? (
+                <p className="text-sm" style={{ color: STUDIO_MUTED }}>
+                  {copy.galleryLoading}
+                </p>
+              ) : galleryError ? (
+                <p className="text-sm" style={{ color: STUDIO_MUTED }}>
+                  {galleryError}
+                </p>
+              ) : galleryItems.length === 0 ? (
+                <p className="text-sm" style={{ color: STUDIO_MUTED }}>
+                  {copy.galleryEmpty}
+                </p>
+              ) : (
+                <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3">
+                  {galleryItems.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        if (item.imageUrl) {
+                          onImageUrlChange(item.imageUrl);
+                          setGalleryOpen(false);
+                          setShowUrlField(false);
+                        }
+                      }}
+                      className={cn(
+                        "min-w-0 overflow-hidden border border-black/[0.08] text-left transition-colors hover:border-black/16",
+                        STUDIO_RADIUS.input
+                      )}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.imageUrl ?? ""}
+                        alt={item.title}
+                        className="aspect-square w-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function ImgToVideoSetup() {
   const [models, setModels] = useState<SzenenGeneratorModel[]>([]);
   const [modelsLoading, setModelsLoading] = useState(true);
@@ -810,18 +1115,7 @@ function ImgToVideoSetup() {
 
   return (
     <div className={SETUP_FORM_CLASS}>
-      <div>
-        <StudioFieldLabel>Startbild</StudioFieldLabel>
-        <StudioInput
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="Bild-URL einfügen — z. B. aus der Galerie"
-        />
-        <StudioFieldHelper className="mt-2">
-          URL aus Galerie oder externem Link einfügen.
-        </StudioFieldHelper>
-      </div>
+      <StartImageAssetZone imageUrl={imageUrl} onImageUrlChange={setImageUrl} />
 
       <div>
         <StudioFieldLabel>Bewegung beschreiben</StudioFieldLabel>

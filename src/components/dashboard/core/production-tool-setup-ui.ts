@@ -21,6 +21,23 @@ export const GALLERY_PERSISTED_TOOL_IDS = new Set<ToolId>([
   "text-to-video",
 ]);
 
+export const IMG_TO_VIDEO_START_IMAGE_COPY = {
+  title: "Startbild hinzufügen",
+  zoneSubtitle: "Bild hochladen oder aus Galerie wählen",
+  helper:
+    "Lade ein Bild hoch, wähle ein bestehendes Bild aus deiner Galerie oder füge optional einen Bild-Link ein.",
+  uploadButton: "Bild hochladen",
+  galleryButton: "Aus Galerie wählen",
+  linkToggle: "Bild-Link einfügen",
+  linkPlaceholder: "Bild-Link einfügen oder aus Galerie übernehmen",
+  replaceButton: "Bild ersetzen",
+  removeButton: "Entfernen",
+  galleryTitle: "Bild aus Galerie wählen",
+  galleryEmpty: "Noch keine Bilder in deiner Galerie.",
+  galleryLoading: "Galerie wird geladen…",
+  galleryClose: "Schließen",
+} as const;
+
 export const SETUP_COPY = {
   creditsBeforeStart: "Kosten siehst du vor dem Start.",
   agentSecondary: "Mit Agent vorbereiten",
