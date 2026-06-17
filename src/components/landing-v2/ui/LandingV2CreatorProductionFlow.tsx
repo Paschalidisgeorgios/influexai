@@ -39,12 +39,21 @@ export function LandingV2CreatorProductionFlow({
       aria-label={copy.kicker}
     >
       <header className="landing-v2-creator-flow__header">
-        <p className="landing-v2-creator-flow__kicker">{copy.kicker}</p>
-        <p className="landing-v2-creator-flow__headline">{copy.headline}</p>
-        <p className="landing-v2-creator-flow__subline">{copy.subline}</p>
+        <p className="landing-v2-creator-flow__kicker" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+          {copy.kicker}
+        </p>
+        <p className="landing-v2-creator-flow__headline" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+          {copy.headline}
+        </p>
+        <p className="landing-v2-creator-flow__subline" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+          {copy.subline}
+        </p>
       </header>
 
-      <div className="landing-v2-creator-flow__map">
+      {variant === "hero" ? (
+        <div className="landing-v2-creator-flow__accent" aria-hidden />
+      ) : (
+        <div className="landing-v2-creator-flow__map">
         <svg
           className="landing-v2-creator-flow__lines landing-v2-creator-flow__lines--desktop"
           viewBox="0 0 1200 120"
@@ -86,7 +95,8 @@ export function LandingV2CreatorProductionFlow({
             </li>
           ))}
         </ol>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
