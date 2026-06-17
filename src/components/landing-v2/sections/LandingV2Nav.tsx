@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useLandingNavState } from "../hooks/useLandingNavState";
+import { LandingV2Logo } from "../ui/LandingV2Logo";
 
 type LandingV2NavProps = {
   introClass?: string;
@@ -46,12 +47,7 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
     <header className={headerClass}>
       <div className="landing-v2-nav__shell">
         <div className="landing-v2-nav__inner">
-          <Link
-            href={links.home}
-            className="landing-v2-nav__brand"
-          >
-            InfluexAI
-          </Link>
+          <LandingV2Logo href={links.home} size="nav" />
 
           <nav className="landing-v2-nav__links" aria-label="Seitenabschnitte">
             {NAV_SECTIONS.map((item) => {
