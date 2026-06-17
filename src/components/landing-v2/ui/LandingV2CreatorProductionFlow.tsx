@@ -45,18 +45,12 @@ export function LandingV2CreatorProductionFlow({
         >
           {copy.kicker}
         </p>
-        <p
-          className="landing-v2-creator-flow__headline"
-          data-creator-flow-hero-item={variant === "hero" ? "" : undefined}
-        >
-          {copy.headline}
-        </p>
-        <p
-          className="landing-v2-creator-flow__subline"
-          data-creator-flow-hero-item={variant === "hero" ? "" : undefined}
-        >
-          {copy.subline}
-        </p>
+        {variant !== "hero" ? (
+          <p className="landing-v2-creator-flow__headline">{copy.headline}</p>
+        ) : null}
+        {variant !== "hero" ? (
+          <p className="landing-v2-creator-flow__subline">{copy.subline}</p>
+        ) : null}
       </header>
 
       {variant === "hero" ? (

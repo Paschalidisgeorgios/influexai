@@ -54,6 +54,8 @@ export const LANDING_V2_COPY = {
     headline: "Das Studio, das Kampagnen in Assets verwandelt.",
     headlineAlt: "Campaigns become assets here.",
     headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
+    primaryHeadlineLines: ["Aus Briefings werden Visuals.", "Aus Visuals wird Motion."] as const,
+    primaryHeadlineHighlight: "Motion",
     rotatingHeadlines: [
       {
         id: "campaigns",
@@ -82,7 +84,7 @@ export const LANDING_V2_COPY = {
       },
     ] as const,
     subline:
-      "Briefing, Visuals und Motion in einem klaren Produktionsfluss. Von der ersten Idee bis zur gespeicherten Variante — ohne Tool-Chaos. Für Creator, Marken und Teams, die schneller veröffentlichen wollen.",
+      "Ein klarer Produktionsfluss — von der Idee bis zum fertigen Asset.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
   },

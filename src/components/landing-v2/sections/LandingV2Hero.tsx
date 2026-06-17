@@ -8,12 +8,23 @@ import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
-import { LandingV2RotatingHeadline } from "../ui/LandingV2RotatingHeadline";
-import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
+
+function renderHeadlineHighlight(line: string, highlight: string) {
+  const index = line.indexOf(highlight);
+  if (index === -1) return line;
+
+  return (
+    <>
+      {line.slice(0, index)}
+      <span className="landing-v2-hero-rotate__keyword">{highlight}</span>
+      {line.slice(index + highlight.length)}
+    </>
+  );
+}
 
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,14 +59,19 @@ export function LandingV2Hero() {
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-12 lg:pb-14">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
-          <p
-            className="landing-v2-kicker landing-v2-kicker--workflow landing-v2-hero__workflow-line mb-3 md:mb-4"
-            data-hero-eyebrow
-          >
-            {copy.workflowLine}
-          </p>
           {isPreview ? (
-            <LandingV2RotatingHeadline />
+            <h1
+              id="lv2-hero-heading"
+              className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline landing-v2-hero__headline--primary"
+              data-hero-headline
+            >
+              {copy.primaryHeadlineLines[0]}
+              <br />
+              {renderHeadlineHighlight(
+                copy.primaryHeadlineLines[1],
+                copy.primaryHeadlineHighlight
+              )}
+            </h1>
           ) : (
             <h1
               id="lv2-hero-heading"

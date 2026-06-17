@@ -4239,11 +4239,13 @@
 }
 
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-display,
-.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate {
-  font-size: clamp(2.8rem, 5.2vw, 5.6rem);
+.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate,
+.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary {
+  font-size: clamp(3.1rem, 5.4vw, 5.8rem);
+  font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.04em;
-  max-width: 13ch;
+  max-width: 22ch;
 }
 
 .landing-v2-hero-rotate {
@@ -4270,6 +4272,10 @@
 .landing-v2-hero-rotate__keyword {
   color: #b4ff00;
   font-weight: inherit;
+}
+
+.landing-v2-hero__headline--primary .landing-v2-hero-rotate__keyword {
+  color: #b4ff00;
 }
 
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__subline {
@@ -4333,9 +4339,10 @@
   }
 
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-display,
-  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate {
-    font-size: clamp(2.1rem, 8vw, 3.1rem);
-    line-height: 1.04;
+  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate,
+  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary {
+    font-size: clamp(2.2rem, 8.5vw, 3.2rem);
+    line-height: 1.05;
     max-width: 100%;
   }
 

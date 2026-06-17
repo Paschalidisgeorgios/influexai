@@ -64,6 +64,9 @@ export function LandingV2RotatingHeadline({
           opacity: 1,
           duration: HERO_ROTATE_COPY.enter.duration,
           ease: HERO_ROTATE_COPY.enter.ease,
+          onComplete: () => {
+            gsap.set(body, { clearProps: "transform" });
+          },
         }
       );
 
