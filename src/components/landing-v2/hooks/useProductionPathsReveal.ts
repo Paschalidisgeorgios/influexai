@@ -4,6 +4,8 @@ import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PATHS_REVEAL } from "@/lib/landing-v2-motion";
+import { flushMissedScrollReveal } from "./scrollRevealUtils";
+import { useLandingViewport } from "./useLandingViewport";
 import { useReducedMotion } from "./useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +16,7 @@ export function useProductionPathsReveal(
   cinematic: boolean
 ) {
   const reduceMotion = useReducedMotion();
+  const { isMobile } = useLandingViewport();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -24,9 +27,12 @@ export function useProductionPathsReveal(
     if (!paths.length || !grid) return;
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
+      const tween = gsap.fromTo(
         paths,
-        { opacity: 0, y: cinematic ? PATHS_REVEAL.y : 32 },
+        {
+          opacity: isMobile ? 1 : 0,
+          y: isMobile ? 24 : cinematic ? PATHS_REVEAL.y : 32,
+        },
         {
           opacity: 1,
           y: 0,
@@ -40,8 +46,10 @@ export function useProductionPathsReveal(
           },
         }
       );
+
+      flushMissedScrollReveal(tween.scrollTrigger, paths, { opacity: 1, y: 0 });
     }, section);
 
     return () => ctx.revert();
-  }, [sectionRef, cinematic, reduceMotion]);
+  }, [sectionRef, cinematic, reduceMotion, isMobile]);
 }

@@ -4,6 +4,8 @@ import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { WORKFLOW_STAGE_MOTION } from "@/lib/landing-v2-motion";
+import { flushMissedScrollReveal } from "./scrollRevealUtils";
+import { useLandingViewport } from "./useLandingViewport";
 import { useReducedMotion } from "./useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +16,7 @@ export function useWorkflowStageMotion(
   enabled: boolean
 ) {
   const reduceMotion = useReducedMotion();
+  const { isMobile } = useLandingViewport();
 
   useEffect(() => {
     const container = chaptersRef.current;
@@ -30,9 +33,9 @@ export function useWorkflowStageMotion(
         if (!frame) return;
 
         if (!enabled) {
-          gsap.fromTo(
+          const tween = gsap.fromTo(
             frame,
-            { opacity: 0, y: 32 },
+            { opacity: isMobile ? 1 : 0, y: isMobile ? 24 : 32 },
             {
               opacity: 1,
               y: 0,
@@ -45,6 +48,7 @@ export function useWorkflowStageMotion(
               },
             }
           );
+          flushMissedScrollReveal(tween.scrollTrigger, frame, { opacity: 1, y: 0 });
           return;
         }
 
@@ -74,5 +78,5 @@ export function useWorkflowStageMotion(
     }, container);
 
     return () => ctx.revert();
-  }, [chaptersRef, enabled, reduceMotion]);
+  }, [chaptersRef, enabled, reduceMotion, isMobile]);
 }

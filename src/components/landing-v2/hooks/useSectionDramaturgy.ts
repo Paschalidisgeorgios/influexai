@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SECTION_REVEAL } from "@/lib/landing-v2-motion";
 import { useLandingV2Links } from "../LandingV2ModeContext";
+import { flushMissedScrollReveal } from "./scrollRevealUtils";
+import { useLandingViewport } from "./useLandingViewport";
 import { useReducedMotion } from "./useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -12,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 /** Eyebrow + headline lines + subline scroll reveals */
 export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) {
   const reduceMotion = useReducedMotion();
+  const { isMobile } = useLandingViewport();
   const { enablePreviewMotion } = useLandingV2Links();
   const reveal = enablePreviewMotion ? SECTION_REVEAL.preview : SECTION_REVEAL.standard;
 
@@ -24,6 +27,12 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
       const lines = section.querySelectorAll("[data-lv2-headline-line]");
       const subline = section.querySelector("[data-lv2-subline]");
       const staggerItems = section.querySelectorAll("[data-lv2-stagger]");
+      const animated = [
+        ...(eyebrow ? [eyebrow] : []),
+        ...lines,
+        ...(subline ? [subline] : []),
+        ...staggerItems,
+      ];
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -37,14 +46,17 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
       if (eyebrow) {
         tl.fromTo(
           eyebrow,
-          { opacity: 0, y: enablePreviewMotion ? 24 : 14 },
+          { opacity: isMobile ? 1 : 0, y: isMobile ? 18 : enablePreviewMotion ? 24 : 14 },
           { opacity: 1, y: 0, duration: 0.55 }
         );
       }
       if (lines.length) {
         tl.fromTo(
           lines,
-          { opacity: reveal.opacity, y: reveal.y },
+          {
+            opacity: isMobile ? 1 : reveal.opacity,
+            y: isMobile ? 24 : reveal.y,
+          },
           {
             opacity: 1,
             y: 0,
@@ -57,7 +69,7 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
       if (subline) {
         tl.fromTo(
           subline,
-          { opacity: 0, y: enablePreviewMotion ? 28 : 16 },
+          { opacity: isMobile ? 1 : 0, y: isMobile ? 20 : enablePreviewMotion ? 28 : 16 },
           { opacity: 1, y: 0, duration: 0.62 },
           "-=0.35"
         );
@@ -65,7 +77,7 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
       if (staggerItems.length) {
         tl.fromTo(
           staggerItems,
-          { opacity: 0, y: enablePreviewMotion ? 50 : 28 },
+          { opacity: isMobile ? 1 : 0, y: isMobile ? 24 : enablePreviewMotion ? 50 : 28 },
           {
             opacity: 1,
             y: 0,
@@ -75,8 +87,10 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
           "-=0.25"
         );
       }
+
+      flushMissedScrollReveal(tl.scrollTrigger, animated, { opacity: 1, y: 0 });
     }, section);
 
     return () => ctx.revert();
-  }, [sectionRef, reduceMotion, enablePreviewMotion, reveal]);
+  }, [sectionRef, reduceMotion, enablePreviewMotion, reveal, isMobile]);
 }

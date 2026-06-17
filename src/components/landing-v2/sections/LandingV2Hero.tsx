@@ -23,7 +23,8 @@ export function LandingV2Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const links = useLandingV2Links();
   const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
-  const { heroReady } = useBrandIntro();
+  const { heroReady: introHeroReady } = useBrandIntro();
+  const heroReady = links.enableBrandIntro ? introHeroReady : true;
 
   useHeroEntrance(sectionRef, heroReady);
   useHero3DStage({
