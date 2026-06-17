@@ -7,6 +7,7 @@ import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
+import { DashboardSignOutButton } from "./DashboardSignOutButton";
 import { ProductionToolsOverview } from "./ProductionToolsOverview";
 import { ProductionToolLaunch } from "./ProductionToolLaunch";
 import { ProductionToolSetup } from "./ProductionToolSetup";
@@ -29,7 +30,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Image,
   Video,
-  LogOut,
   Search,
   FileText,
 } from "lucide-react";
@@ -145,13 +145,7 @@ function LeftSidebar({
       >
         <SidebarCreditsLink credits={credits} loaded={creditsLoaded} />
 
-        <button
-          type="button"
-          className="mt-2 flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-all hover:bg-white/[0.03]"
-        >
-          <LogOut size={13} className="shrink-0 text-white/25" />
-          <span className="text-[11px] text-white/35">Abmelden</span>
-        </button>
+        <DashboardSignOutButton className="mt-2 flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-all hover:bg-white/[0.03] disabled:opacity-60" />
       </div>
     </aside>
   );
