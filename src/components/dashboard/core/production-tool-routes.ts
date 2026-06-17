@@ -1,6 +1,9 @@
 import type { ToolId } from "./DashboardLayout";
 
-/** Dedicated dashboard pages — exist but locked from nav until redesign (Phase 2B.4). */
+/**
+ * Launch routing for /dashboard?tool=*.
+ * Active MVP setups are gated via SETUP_MVP_TOOL_IDS in production-tool-setup-ui.ts.
+ */
 export const TOOL_DEDICATED_ROUTES: Partial<Record<ToolId, string>> = {
   "viral-hook": "/dashboard/viral-hook",
   "content-calendar": "/dashboard/content-kalender",

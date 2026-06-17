@@ -5,6 +5,7 @@ import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
 import {
   getToolHubCardCta,
+  INACTIVE_AGENT_HREF,
   isSetupMvpTool,
   SETUP_COPY,
 } from "./production-tool-setup-ui";
@@ -132,44 +133,59 @@ function StandardToolCard({
   );
 }
 
-function ComingSoonToolCard({
+function InactiveToolCard({
   label,
   description,
-  onClick,
+  onOpenTool,
 }: {
   label: string;
   description: string;
-  onClick: () => void;
+  onOpenTool: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group flex min-h-[96px] flex-col p-4 text-left transition-colors hover:border-black/12 md:p-5 ${STUDIO_RADIUS.card}`}
+    <div
+      className={`flex min-h-[108px] flex-col p-4 md:p-5 ${STUDIO_RADIUS.card}`}
       style={{
         background: "rgba(255,250,242,0.38)",
         border: `1px solid ${STUDIO_CARD_BORDER}`,
       }}
     >
       <span
-        className="text-[14px] font-semibold tracking-tight"
+        className={`mb-3 inline-flex w-fit items-center px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${STUDIO_RADIUS.pill}`}
+        style={{
+          background: "rgba(8,8,8,0.04)",
+          color: DASHBOARD_MUTED,
+        }}
+      >
+        {SETUP_COPY.hubInactiveBadge}
+      </span>
+      <button
+        type="button"
+        onClick={onOpenTool}
+        className="flex flex-1 flex-col text-left"
+      >
+        <span
+          className="text-[14px] font-semibold tracking-tight"
+          style={{ color: DASHBOARD_TEXT }}
+        >
+          {label}
+        </span>
+        <p
+          className="mt-2 flex-1 text-[12px] leading-relaxed"
+          style={{ color: DASHBOARD_MUTED }}
+        >
+          {description}
+        </p>
+      </button>
+      <Link
+        href={INACTIVE_AGENT_HREF}
+        className="mt-3 text-[11px] font-medium no-underline hover:opacity-80"
         style={{ color: DASHBOARD_TEXT }}
+        onClick={(e) => e.stopPropagation()}
       >
-        {label}
-      </span>
-      <p
-        className="mt-2 flex-1 text-[12px] leading-relaxed"
-        style={{ color: DASHBOARD_MUTED }}
-      >
-        {description}
-      </p>
-      <span
-        className="mt-3 text-[11px] font-medium"
-        style={{ color: DASHBOARD_MUTED }}
-      >
-        {SETUP_COPY.toolCardCtaInactive}
-      </span>
-    </button>
+        {SETUP_COPY.toolCardCtaInactiveAgent}
+      </Link>
+    </div>
   );
 }
 
@@ -250,11 +266,11 @@ export function ProductionToolsOverview({
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {comingSoonTools.map((tool) => (
-                <ComingSoonToolCard
+                <InactiveToolCard
                   key={tool.id}
                   label={tool.label}
                   description={tool.description}
-                  onClick={() => onSelect(tool.id)}
+                  onOpenTool={() => onSelect(tool.id)}
                 />
               ))}
             </div>

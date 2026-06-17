@@ -43,7 +43,11 @@ export const NON_MVP_SETUP_COPY = {
   body: "Wähle ein verfügbares Studio-Tool oder bereite dein Briefing mit dem Agenten vor.",
   primaryCta: "Verfügbare Tools ansehen",
   secondaryCta: "Mit Agent vorbereiten",
+  headerSubline: "Dieses Studio-Setup ist noch nicht aktiviert.",
 } as const;
+
+/** Inactive tools — agent entry without implying an active studio setup. */
+export const INACTIVE_AGENT_HREF = "/dashboard/ki-agent";
 
 export const SETUP_COPY = {
   creditsBeforeStart: "Kosten siehst du vor dem Start.",
@@ -54,8 +58,10 @@ export const SETUP_COPY = {
   resultInline: "Ergebnis erscheint direkt hier.",
   toolCardCta: "Tool einrichten",
   toolCardCtaInactive: "In Vorbereitung",
+  toolCardCtaInactiveAgent: "Mit Agent vorbereiten",
   toolCardCtaGallery: "Galerie öffnen",
   hubInactiveTitle: "In Vorbereitung",
+  hubInactiveBadge: "In Vorbereitung",
   hubInactiveDescription:
     "Diese Studios sind noch nicht aktiv — nutze ein verfügbares Tool oder den Agenten.",
   modelsLoading: "Modelle werden geladen…",
@@ -74,7 +80,7 @@ export function shouldRenderMvpToolSetup(toolId: ToolId): boolean {
 export function getToolHubCardCta(toolId: ToolId): string {
   if (toolId === "gallery") return SETUP_COPY.toolCardCtaGallery;
   if (isSetupMvpTool(toolId)) return SETUP_COPY.toolCardCta;
-  return SETUP_COPY.toolCardCtaInactive;
+  return SETUP_COPY.toolCardCtaInactiveAgent;
 }
 
 const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {
@@ -122,7 +128,7 @@ export function getSetupCreditLabel(
   if (raw.includes("AgentBox") || raw.includes("Dashboard")) {
     return null;
   }
-  if (/Fallback|Preview|Mock|Legacy/i.test(raw)) {
+  if (/Fallback|Preview|Mock|Legacy|Dynamisch nach Optionen/i.test(raw)) {
     return null;
   }
   return raw;
@@ -134,9 +140,9 @@ export function getToolSetupCategory(toolId: ToolId): string {
 
 export function getToolSetupSubtitle(toolId: ToolId): string {
   if (!isSetupMvpTool(toolId)) {
-    return NON_MVP_SETUP_COPY.body;
+    return NON_MVP_SETUP_COPY.headerSubline;
   }
-  return TOOL_SETUP_SUBTITLE[toolId] ?? "Wähle Ziel, Format und Modell.";
+  return TOOL_SETUP_SUBTITLE[toolId] ?? "Format und Optionen für dein Ziel wählen.";
 }
 
 export function getToolSetupTitle(toolId: ToolId): string {
