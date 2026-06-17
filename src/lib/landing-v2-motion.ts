@@ -115,12 +115,21 @@ export const EDITORIAL_VIDEO_SCROLL = {
   video: { scaleFrom: 1.06, scaleTo: 1 },
 } as const;
 
+/** Preview hero — single video backdrop (4B.9F) */
+export const HERO_VIDEO_BG = {
+  scaleStart: 1.02,
+  scaleDelta: 0.02,
+  yPercentMax: 2,
+  scrub: 0.65,
+  opacity: 0.36,
+} as const;
+
 /** Preview hero — subtle parallax only */
 export const HERO_PARALLAX_PREVIEW = {
   scroll: { y: -18, scale: 1, z: 0 },
   mouse: { rotateY: 2, rotateX: 1 },
-  video: { scaleFrom: 1.05, scaleTo: 1, yPercent: 2 },
-  ambient: { yPercent: 4, scale: 1.02 },
+  video: { scaleFrom: 1.02, scaleTo: 1, yPercent: 2 },
+  ambient: { yPercent: 2, scale: 1.02 },
 } as const;
 
 /** Section reveal presets */

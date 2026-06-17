@@ -15,8 +15,6 @@ import { LandingV2StudioPreview } from "./sections/LandingV2StudioPreview";
 import { LandingV2PricingTeaser } from "./sections/LandingV2PricingTeaser";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
-import { LandingV2MediaStage } from "./ui/LandingV2MediaStage";
-
 function LandingV2Shell() {
   const { introDismissed, chromeVisible } = useBrandIntro();
   const links = useLandingV2Links();
@@ -58,7 +56,6 @@ function LandingV2Shell() {
           {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
           <main className="landing-v2-main overflow-x-clip">
-            {isPreview ? <LandingV2MediaStage /> : null}
             <LandingV2Hero />
             <LandingV2SystemChapter />
             <LandingV2ScrollStory />

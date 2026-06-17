@@ -17,7 +17,7 @@ export function LandingV2ScrollStory() {
     <section
       id="story"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--workflow landing-v2-scroll-story landing-v2-section--media-stage"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--workflow landing-v2-scroll-story"
       aria-labelledby="lv2-story-heading"
     >
       <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">

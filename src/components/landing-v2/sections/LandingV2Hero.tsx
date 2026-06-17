@@ -7,6 +7,7 @@ import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
+import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useBrandIntro } from "../BrandIntroContext";
@@ -26,7 +27,7 @@ export function LandingV2Hero() {
     <section
       ref={sectionRef}
       className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] overflow-x-clip ${
-        isPreview ? "landing-v2-hero--media-stage" : ""
+        isPreview ? "landing-v2-hero--video-bg" : ""
       }`.trim()}
       aria-labelledby="lv2-hero-heading"
     >
@@ -38,7 +39,10 @@ export function LandingV2Hero() {
           </div>
         </>
       ) : (
-        <div className="landing-v2-hero__readability-scrim" aria-hidden />
+        <>
+          <LandingV2HeroVideoBackground sectionRef={sectionRef} />
+          <div className="landing-v2-hero__readability-scrim" aria-hidden />
+        </>
       )}
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-12 lg:pb-14">

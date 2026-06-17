@@ -19,7 +19,7 @@ export function LandingV2SystemChapter() {
     <section
       id="system"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--system landing-v2-section--media-stage"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--system"
       aria-labelledby="lv2-system-heading"
     >
       <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">
