@@ -38,7 +38,7 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
     "landing-v2-nav",
     previewClass,
     introClass,
-    scrolled ? "landing-v2-nav--scrolled" : "",
+    scrolled ? "landing-v2-nav--scrolled" : "landing-v2-nav--top",
   ]
     .filter(Boolean)
     .join(" ");
@@ -46,6 +46,7 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
   const header = (
     <header
       className={headerClass}
+      data-scrolled={scrolled ? "true" : "false"}
       style={
         isPreview
           ? ({ "--toolbar-progress": progress } as CSSProperties)
@@ -85,7 +86,7 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
 
           <Link href={links.signup} className="landing-v2-nav__cta">
             {copy.cta}
-            <ArrowRight size={15} aria-hidden />
+            <ArrowRight className="landing-v2-nav__cta-icon" size={15} aria-hidden />
           </Link>
 
           {isPreview ? (
