@@ -54,7 +54,6 @@ export function useCreatorFlowReveal(
       }
 
       const stations = container.querySelectorAll<HTMLElement>("[data-creator-flow-station]");
-      const connectorLine = container.querySelector<HTMLElement>("[data-creator-flow-line]");
 
       gsap.set(stations, { opacity: 0, y: CREATOR_FLOW_REVEAL.stationY });
 
@@ -69,27 +68,10 @@ export function useCreatorFlowReveal(
           start: CREATOR_FLOW_REVEAL.start,
           toggleActions: "play none none reverse",
         },
+        onComplete: () => {
+          gsap.set(stations, { clearProps: "transform" });
+        },
       });
-
-      if (connectorLine) {
-        const vertical = window.matchMedia("(max-width: 767px)").matches;
-        gsap.set(connectorLine, {
-          scaleX: vertical ? 1 : 0,
-          scaleY: vertical ? 0 : 1,
-          transformOrigin: vertical ? "top center" : "left center",
-        });
-        gsap.to(connectorLine, {
-          scaleX: 1,
-          scaleY: 1,
-          duration: CREATOR_FLOW_REVEAL.lineDuration,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: container,
-            start: CREATOR_FLOW_REVEAL.start,
-            toggleActions: "play none none reverse",
-          },
-        });
-      }
     }, container);
 
     return () => ctx.revert();

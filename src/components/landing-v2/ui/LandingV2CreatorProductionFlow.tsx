@@ -69,24 +69,10 @@ export function LandingV2CreatorProductionFlow({
                   <span className="landing-v2-creator-flow__station-label">{station.label}</span>
                   <p className="landing-v2-creator-flow__station-desc">{station.description}</p>
                 </div>
+                <span className="landing-v2-creator-flow__station-dot" aria-hidden />
               </li>
             ))}
           </ol>
-
-          <div className="landing-v2-creator-flow__connector" aria-hidden>
-            <div
-              className="landing-v2-creator-flow__connector-line"
-              data-creator-flow-line
-            />
-            <div className="landing-v2-creator-flow__connector-dots">
-              {copy.stations.map((station) => (
-                <span
-                  key={`${station.index}-dot`}
-                  className="landing-v2-creator-flow__station-dot"
-                />
-              ))}
-            </div>
-          </div>
         </div>
       )}
     </div>
