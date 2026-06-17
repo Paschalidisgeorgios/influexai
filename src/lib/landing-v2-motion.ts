@@ -46,8 +46,8 @@ export const STORY_PANEL_DEPTH = {
   },
 } as const;
 
-/** Viewport-heights of scroll per pinned story (reduced for stable pin release) */
-export const STORY_PIN_SCROLL_VH = 52;
+/** @deprecated Pin removed — chapters scroll normally */
+export const STORY_PIN_SCROLL_VH = 0;
 
 export const STUDIO_PANEL_DEPTH = [
   { z: 72, rotateY: -6, rotateX: 3, y: -4, scale: 1 },

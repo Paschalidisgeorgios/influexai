@@ -53,12 +53,21 @@ function HeroStudioAmbient() {
   );
 }
 
-export function LandingV2HeroProductPanel({ variant = "default" }: { variant?: "default" | "stage" }) {
+export function LandingV2HeroProductPanel({
+  variant = "default",
+}: {
+  variant?: "default" | "stage" | "compact";
+}) {
+  const isCompact = variant === "compact";
+  const queueItems = isCompact
+    ? panelCopy.queue.items.slice(0, 2)
+    : panelCopy.queue.items;
+
   return (
     <div
       className={`landing-v2-hero-product ${
         variant === "stage" ? "landing-v2-hero-product--stage" : ""
-      }`}
+      } ${isCompact ? "landing-v2-hero-product--compact" : ""}`}
     >
       <HeroStudioAmbient />
       <div className="landing-v2-hero-product__scrim" aria-hidden />
@@ -86,7 +95,7 @@ export function LandingV2HeroProductPanel({ variant = "default" }: { variant?: "
                     index === 0 ? "landing-v2-hero-product__chip--active" : ""
                   }`}
                 >
-                  {item}
+                  {isCompact && item === "Kampagne planen" ? "Kampagne" : item}
                 </span>
               </li>
             ))}
@@ -96,7 +105,7 @@ export function LandingV2HeroProductPanel({ variant = "default" }: { variant?: "
         <div className="landing-v2-hero-product__block">
           <p className="landing-v2-hero-product__section-title">{panelCopy.queue.title}</p>
           <ul className="landing-v2-hero-product__queue">
-            {panelCopy.queue.items.map((item, index) => (
+            {queueItems.map((item, index) => (
               <li key={item} className="landing-v2-hero-product__queue-item">
                 <span
                   className={`landing-v2-hero-product__queue-dot ${

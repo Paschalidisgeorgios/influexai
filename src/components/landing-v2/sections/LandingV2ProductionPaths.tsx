@@ -24,7 +24,7 @@ export function LandingV2ProductionPaths() {
     <section
       id="paths"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--editorial"
+      className="landing-v2-section landing-v2-section--editorial landing-v2-section--after-story"
       aria-labelledby="lv2-paths-heading"
     >
       <div className="mx-auto max-w-[90rem]">

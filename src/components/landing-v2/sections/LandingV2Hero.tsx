@@ -17,7 +17,7 @@ export function LandingV2Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const backPlateRef = useRef<HTMLDivElement>(null);
-  const { enableCinematicScroll, enableParallax3D } = useLandingViewport();
+  const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
 
   useHeroEntrance(sectionRef);
   useHero3DStage({
@@ -39,8 +39,8 @@ export function LandingV2Hero() {
 
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="relative z-10 mx-auto grid min-h-[inherit] w-full max-w-[90rem] grid-cols-1 items-end gap-10 px-5 pb-14 pt-28 md:px-8 md:pb-20 md:pt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-12 lg:pb-24">
-        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col justify-center lg:pb-6">
+      <div className="relative z-10 mx-auto grid min-h-[inherit] w-full max-w-[90rem] grid-cols-1 items-stretch gap-10 px-4 pb-16 pt-28 sm:px-5 md:px-8 md:pb-20 md:pt-36 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:items-center lg:gap-14 lg:pb-24">
+        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col justify-center">
           <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />
             {copy.eyebrow}
@@ -57,15 +57,15 @@ export function LandingV2Hero() {
             {copy.headlineLines[2]}
           </h1>
           <p
-            className="landing-v2-hero__subline mt-6 max-w-xl text-[clamp(1rem,2.2vw,1.15rem)] leading-relaxed text-white/60"
+            className="landing-v2-hero__subline mt-6 max-w-xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed text-white/62"
             data-hero-subline
           >
             {copy.subline}
           </p>
-          <div className="relative z-20 mt-8 flex flex-wrap items-center gap-3 md:mt-10">
+          <div className="relative z-20 mt-8 flex w-full max-w-full flex-wrap items-center gap-3 md:mt-10">
             <Link
               href="/auth/sign-up"
-              className="landing-v2-btn-primary min-h-[44px]"
+              className="landing-v2-btn-primary min-h-[44px] shrink-0"
               data-hero-cta
             >
               {copy.ctaPrimary}
@@ -73,7 +73,7 @@ export function LandingV2Hero() {
             </Link>
             <Link
               href="/pricing"
-              className="landing-v2-btn-secondary min-h-[44px]"
+              className="landing-v2-btn-secondary min-h-[44px] shrink-0"
               data-hero-cta
             >
               {copy.ctaSecondary}
@@ -83,7 +83,7 @@ export function LandingV2Hero() {
 
         <div
           ref={stageRef}
-          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 ${
+          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 max-w-full ${
             enableCinematicScroll ? "landing-v2-scene-3d" : ""
           }`}
         >
@@ -108,7 +108,7 @@ export function LandingV2Hero() {
                 enableCinematicScroll ? "landing-v2-panel-3d" : ""
               }`}
             >
-              <LandingV2HeroProductPanel variant="stage" />
+              <LandingV2HeroProductPanel variant={isMobile ? "compact" : "stage"} />
             </div>
           </div>
         </div>
