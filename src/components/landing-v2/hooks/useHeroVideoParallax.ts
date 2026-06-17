@@ -7,7 +7,7 @@ import { HERO_VIDEO_BG } from "@/lib/landing-v2-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Minimal hero video parallax — no crossfade, scale capped at 1.04 */
+/** Hero backdrop — opacity + scale fade on scroll (preview only) */
 export function useHeroVideoParallax(
   sectionRef: RefObject<HTMLElement | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
@@ -16,28 +16,67 @@ export function useHeroVideoParallax(
   useEffect(() => {
     const section = sectionRef.current;
     const video = videoRef.current;
-    if (!section || !video || !enabled) return;
+    if (!section || !video) return;
+
+    const preset = HERO_VIDEO_BG;
+    const innerScrim = section.querySelector<HTMLElement>(
+      ".landing-v2-hero-video-bg__scrim"
+    );
+    const readabilityScrim = section.querySelector<HTMLElement>(
+      ".landing-v2-hero__readability-scrim"
+    );
+
+    gsap.set(video, {
+      opacity: preset.opacityStart,
+      scale: preset.scaleStart,
+      transformOrigin: "center center",
+    });
+
+    if (!enabled) return;
 
     const ctx = gsap.context(() => {
-      gsap.set(video, {
-        scale: HERO_VIDEO_BG.scaleStart,
-        yPercent: 0,
-        transformOrigin: "center center",
-      });
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom top",
-        scrub: HERO_VIDEO_BG.scrub,
-        onUpdate: (self) => {
-          const p = self.progress;
-          gsap.set(video, {
-            yPercent: p * HERO_VIDEO_BG.yPercentMax,
-            scale: HERO_VIDEO_BG.scaleStart - p * HERO_VIDEO_BG.scaleDelta,
-          });
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: preset.scrub,
         },
       });
+
+      timeline.to(
+        video,
+        {
+          opacity: preset.opacityEnd,
+          scale: preset.scaleEnd,
+          ease: "none",
+        },
+        0
+      );
+
+      if (innerScrim) {
+        gsap.set(innerScrim, { opacity: preset.scrimOpacityStart });
+        timeline.to(
+          innerScrim,
+          {
+            opacity: preset.scrimOpacityEnd,
+            ease: "none",
+          },
+          0
+        );
+      }
+
+      if (readabilityScrim) {
+        gsap.set(readabilityScrim, { opacity: preset.readabilityScrimStart });
+        timeline.to(
+          readabilityScrim,
+          {
+            opacity: preset.readabilityScrimEnd,
+            ease: "none",
+          },
+          0
+        );
+      }
     }, section);
 
     return () => ctx.revert();

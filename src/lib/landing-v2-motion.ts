@@ -115,13 +115,17 @@ export const EDITORIAL_VIDEO_SCROLL = {
   video: { scaleFrom: 1.06, scaleTo: 1 },
 } as const;
 
-/** Preview hero — single video backdrop (4B.9F) */
+/** Preview hero — scroll-fading backdrop video (single mp4) */
 export const HERO_VIDEO_BG = {
-  scaleStart: 1.02,
-  scaleDelta: 0.02,
-  yPercentMax: 2,
-  scrub: 0.65,
-  opacity: 0.36,
+  opacityStart: 0.42,
+  opacityEnd: 0,
+  scaleStart: 1.03,
+  scaleEnd: 1,
+  scrimOpacityStart: 1,
+  scrimOpacityEnd: 1.3,
+  readabilityScrimStart: 1,
+  readabilityScrimEnd: 1.35,
+  scrub: 0.55,
 } as const;
 
 /** Preview hero — subtle parallax only */

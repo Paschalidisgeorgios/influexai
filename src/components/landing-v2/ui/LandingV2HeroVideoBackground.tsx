@@ -7,13 +7,13 @@ import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useHeroVideoParallax } from "../hooks/useHeroVideoParallax";
 
-const video = LANDING_V2_ASSETS.heroBackdrop;
+const video = LANDING_V2_ASSETS.heroPreviewVideo;
 
 type LandingV2HeroVideoBackgroundProps = {
   sectionRef: RefObject<HTMLElement | null>;
 };
 
-/** Single controlled hero backdrop — studio loop only, preview only */
+/** Preview hero backdrop — single mp4, scroll-fades within hero only */
 export function LandingV2HeroVideoBackground({
   sectionRef,
 }: LandingV2HeroVideoBackgroundProps) {
@@ -47,10 +47,9 @@ export function LandingV2HeroVideoBackground({
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         poster={video.poster}
       >
-        <source src={video.webm} type="video/webm" />
         <source src={video.mp4} type="video/mp4" />
       </video>
       <div className="landing-v2-hero-video-bg__scrim" />

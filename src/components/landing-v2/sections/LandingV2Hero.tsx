@@ -26,8 +26,8 @@ export function LandingV2Hero() {
   return (
     <section
       ref={sectionRef}
-      className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] overflow-x-clip ${
-        isPreview ? "landing-v2-hero--video-bg" : ""
+      className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] ${
+        isPreview ? "landing-v2-hero--video-bg overflow-hidden" : "overflow-x-clip"
       }`.trim()}
       aria-labelledby="lv2-hero-heading"
     >
