@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
-/** Desktop 3D enabled when wide viewport, fine pointer, and motion not reduced */
+/**
+ * enableCinematicScroll — pinned story, depth transforms (desktop only)
+ * enableParallax3D — hero mouse parallax (desktop + fine pointer)
+ */
 export function useLandingViewport() {
   const reduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(true);
-  const [isCoarsePointer, setIsCoarsePointer] = useState(true);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const widthMq = window.matchMedia("(max-width: 767px)");
@@ -15,6 +19,7 @@ export function useLandingViewport() {
     const update = () => {
       setIsMobile(widthMq.matches);
       setIsCoarsePointer(coarseMq.matches);
+      setReady(true);
     };
     update();
     widthMq.addEventListener("change", update);
@@ -25,7 +30,18 @@ export function useLandingViewport() {
     };
   }, []);
 
-  const enable3D = !reduceMotion && !isMobile && !isCoarsePointer;
+  const enableCinematicScroll = ready && !reduceMotion && !isMobile;
+  const enableParallax3D = enableCinematicScroll && !isCoarsePointer;
+  const enableLenis = ready && !reduceMotion && !isMobile;
 
-  return { reduceMotion, isMobile, enable3D };
+  return {
+    reduceMotion,
+    isMobile,
+    ready,
+    enableCinematicScroll,
+    enableParallax3D,
+    /** @deprecated use enableCinematicScroll or enableParallax3D */
+    enable3D: enableParallax3D,
+    enableLenis,
+  };
 }

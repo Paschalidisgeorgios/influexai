@@ -11,6 +11,7 @@ export const LANDING_V2_COPY = {
   hero: {
     eyebrow: "Creator Production System",
     headline: "Ein Studio für Kampagnen, Visuals und Motion.",
+    headlineLines: ["Ein Studio für", "Kampagnen, Visuals und Motion."] as const,
     subline:
       "Plane Hooks, erstelle Visuals und verwandle Ideen in Bilder, Videos und Kampagnen-Assets — ohne zwischen zehn einzelnen Tools zu springen.",
     ctaPrimary: "Studio starten",
@@ -36,6 +37,7 @@ export const LANDING_V2_COPY = {
   workflow: {
     eyebrow: "Workflow",
     headline: "Vom Briefing zum fertigen Asset.",
+    headlineLines: ["Vom Briefing zum", "fertigen Asset."] as const,
     subline:
       "Jede Produktion beginnt mit einer klaren Idee. InfluexAI führt dich vom ersten Kampagnen-Briefing bis zum speicherbaren Visual — strukturiert, nachvollziehbar und bereit für die nächste Veröffentlichung.",
     stations: [
@@ -79,6 +81,7 @@ export const LANDING_V2_COPY = {
   paths: {
     eyebrow: "Produktionspfade",
     headline: "Drei Wege statt Tool-Chaos.",
+    headlineLines: ["Drei Wege statt", "Tool-Chaos."] as const,
     subline:
       "InfluexAI ordnet deine Produktion nach dem Ergebnis, das du brauchst — nicht nach technischen Modellnamen.",
     items: [
@@ -111,6 +114,7 @@ export const LANDING_V2_COPY = {
   studio: {
     eyebrow: "Studio",
     headline: "Gebaut für den gesamten Produktionsfluss.",
+    headlineLines: ["Gebaut für den gesamten", "Produktionsfluss."] as const,
     subline:
       "Briefing, Tools, Agent und Galerie greifen ineinander. Du arbeitest nicht in einzelnen Generatoren, sondern in einem Studio, das deine Kampagne zusammenhält.",
     panels: [

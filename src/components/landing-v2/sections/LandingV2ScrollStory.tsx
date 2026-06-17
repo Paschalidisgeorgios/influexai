@@ -1,143 +1,35 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useCallback, useRef, useState } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useScrollStoryTimeline } from "../hooks/useScrollStoryTimeline";
+import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 
 const STATIONS = LANDING_V2_COPY.workflow.stations;
 const sectionCopy = LANDING_V2_COPY.workflow;
-import { useLandingViewport } from "../hooks/useLandingViewport";
-
-gsap.registerPlugin(ScrollTrigger);
-
-const PANEL_DEPTH = [
-  { enterZ: 90, activeZ: 0, exitZ: -110, enterRotX: 7, exitRotX: -5 },
-  { enterZ: 85, activeZ: 0, exitZ: -105, enterRotX: 6, exitRotX: -4 },
-  { enterZ: 95, activeZ: 0, exitZ: -115, enterRotX: 8, exitRotX: -6 },
-  { enterZ: 88, activeZ: 0, exitZ: -108, enterRotX: 7, exitRotX: -5 },
-  { enterZ: 92, activeZ: 0, exitZ: -112, enterRotX: 6, exitRotX: -4 },
-] as const;
 
 export function LandingV2ScrollStory() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<HTMLDivElement>(null);
-  const { reduceMotion, isMobile, enable3D } = useLandingViewport();
+  const { reduceMotion, isMobile, enableCinematicScroll } = useLandingViewport();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    const pin = pinRef.current;
-    const panels = panelsRef.current;
-    if (!section || !pin || !panels || reduceMotion || isMobile) return;
+  const onActiveChange = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
 
-    const panelEls = panels.querySelectorAll<HTMLElement>("[data-story-panel]");
-    const use3D = enable3D;
+  useSectionDramaturgy(sectionRef);
+  useScrollStoryTimeline(
+    pinRef,
+    panelsRef,
+    STATIONS.length,
+    enableCinematicScroll,
+    onActiveChange
+  );
 
-    const ctx = gsap.context(() => {
-      if (use3D) {
-        panelEls.forEach((panel, index) => {
-          const depth = PANEL_DEPTH[index] ?? PANEL_DEPTH[0];
-          gsap.set(panel, {
-            autoAlpha: index === 0 ? 1 : 0,
-            z: index === 0 ? depth.activeZ : depth.enterZ,
-            rotateX: index === 0 ? 0 : depth.enterRotX,
-            rotateY: 0,
-            transformPerspective: 1100,
-          });
-        });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: `+=${STATIONS.length * 58}%`,
-            pin: pin,
-            scrub: 0.55,
-            anticipatePin: 1,
-            onUpdate: (self) => {
-              const idx = Math.min(
-                STATIONS.length - 1,
-                Math.floor(self.progress * STATIONS.length)
-              );
-              setActiveIndex(idx);
-            },
-          },
-        });
-
-        panelEls.forEach((panel, index) => {
-          if (index === 0) return;
-          const prev = PANEL_DEPTH[index - 1] ?? PANEL_DEPTH[0];
-          const next = PANEL_DEPTH[index] ?? PANEL_DEPTH[0];
-          const at = index * 0.2;
-
-          tl.to(
-            panelEls[index - 1],
-            {
-              autoAlpha: 0,
-              z: prev.exitZ,
-              rotateX: prev.exitRotX,
-              duration: 0.35,
-              ease: "power1.inOut",
-            },
-            at
-          ).fromTo(
-            panel,
-            {
-              autoAlpha: 0,
-              z: next.enterZ,
-              rotateX: next.enterRotX,
-            },
-            {
-              autoAlpha: 1,
-              z: next.activeZ,
-              rotateX: 0,
-              duration: 0.45,
-              ease: "power2.out",
-            },
-            at + 0.05
-          );
-        });
-      } else {
-        gsap.set(panelEls, { autoAlpha: 0, y: 24 });
-        gsap.set(panelEls[0], { autoAlpha: 1, y: 0 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: `+=${STATIONS.length * 55}%`,
-            pin: pin,
-            scrub: 0.55,
-            anticipatePin: 1,
-            onUpdate: (self) => {
-              const idx = Math.min(
-                STATIONS.length - 1,
-                Math.floor(self.progress * STATIONS.length)
-              );
-              setActiveIndex(idx);
-            },
-          },
-        });
-
-        panelEls.forEach((panel, index) => {
-          if (index === 0) return;
-          tl.to(
-            panelEls[index - 1],
-            { autoAlpha: 0, y: -16, duration: 0.35, ease: "power1.inOut" },
-            index * 0.2
-          ).to(
-            panel,
-            { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out" },
-            index * 0.2 + 0.05
-          );
-        });
-      }
-    }, section);
-
-    return () => ctx.revert();
-  }, [reduceMotion, isMobile, enable3D]);
+  const stacked = isMobile || reduceMotion;
 
   return (
     <section
@@ -147,7 +39,7 @@ export function LandingV2ScrollStory() {
       aria-labelledby="lv2-story-heading"
     >
       <div className="mx-auto max-w-6xl">
-        <p className="landing-v2-kicker mb-3">
+        <p className="landing-v2-kicker mb-3" data-lv2-eyebrow>
           <span className="landing-v2-kicker__dot" aria-hidden />
           {sectionCopy.eyebrow}
         </p>
@@ -155,13 +47,17 @@ export function LandingV2ScrollStory() {
           id="lv2-story-heading"
           className="landing-v2-headline text-[clamp(2rem,4.5vw,3.25rem)] text-[var(--lv2-text-light)]"
         >
-          {sectionCopy.headline}
+          {sectionCopy.headlineLines.map((line) => (
+            <span key={line} className="block" data-lv2-headline-line>
+              {line}
+            </span>
+          ))}
         </h2>
-        <p className="mt-3 max-w-2xl text-white/58">
+        <p className="mt-3 max-w-2xl text-white/58" data-lv2-subline>
           {sectionCopy.subline}
         </p>
 
-        {isMobile || reduceMotion ? (
+        {stacked ? (
           <div className="mt-10 space-y-4">
             {STATIONS.map((station, index) => (
               <article
@@ -180,7 +76,7 @@ export function LandingV2ScrollStory() {
           </div>
         ) : (
           <div ref={pinRef} className="landing-v2-scroll-story__track mt-12">
-            <div className="grid min-h-[70vh] items-center gap-10 lg:grid-cols-[220px_1fr]">
+            <div className="grid min-h-[72vh] items-center gap-10 lg:grid-cols-[220px_1fr]">
               <ol className="space-y-2" aria-label="Produktionsstationen">
                 {STATIONS.map((station, index) => (
                   <li
@@ -202,11 +98,7 @@ export function LandingV2ScrollStory() {
                 ))}
               </ol>
 
-              <div
-                className={`landing-v2-scroll-story__stage-3d ${
-                  enable3D ? "" : "landing-v2-scroll-story__stage-3d--flat"
-                }`}
-              >
+              <div className="landing-v2-scroll-story__stage-3d">
                 <div
                   ref={panelsRef}
                   className="landing-v2-scroll-story__panels-3d"

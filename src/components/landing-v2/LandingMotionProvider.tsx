@@ -9,6 +9,6 @@ type LandingMotionProviderProps = {
 
 /** Client-only Lenis + GSAP ScrollTrigger sync — mount scope = landing preview only */
 export function LandingMotionProvider({ children }: LandingMotionProviderProps) {
-  useLandingLenis(true);
+  useLandingLenis();
   return <>{children}</>;
 }

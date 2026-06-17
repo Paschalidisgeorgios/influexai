@@ -4,8 +4,8 @@ import { useRef } from "react";
 import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2AssetImage } from "../ui/LandingV2Asset";
-import { useLandingReveal } from "../hooks/useLandingReveal";
 import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useStudio3DScene } from "../hooks/useStudio3DScene";
 
 const copy = LANDING_V2_COPY.studio;
@@ -20,10 +20,10 @@ const PANEL_CLASS: Record<string, string> = {
 export function LandingV2StudioPreview() {
   const sectionRef = useRef<HTMLElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const { isMobile, reduceMotion, enable3D } = useLandingViewport();
+  const { isMobile, reduceMotion, enableCinematicScroll } = useLandingViewport();
 
-  useLandingReveal(sectionRef);
-  useStudio3DScene(sectionRef, sceneRef, enable3D);
+  useSectionDramaturgy(sectionRef);
+  useStudio3DScene(sectionRef, sceneRef, enableCinematicScroll);
 
   const panels = copy.panels.map((panel) => ({
     ...panel,
@@ -38,18 +38,21 @@ export function LandingV2StudioPreview() {
       aria-labelledby="lv2-studio-heading"
     >
       <div className="mx-auto max-w-6xl">
-        <p className="landing-v2-kicker mb-3" data-lv2-reveal>
+        <p className="landing-v2-kicker mb-3" data-lv2-eyebrow>
           <span className="landing-v2-kicker__dot" aria-hidden />
           {copy.eyebrow}
         </p>
         <h2
           id="lv2-studio-heading"
           className="landing-v2-headline text-[clamp(2rem,4.5vw,3.25rem)] text-[var(--lv2-text-light)]"
-          data-lv2-reveal
         >
-          {copy.headline}
+          {copy.headlineLines.map((line) => (
+            <span key={line} className="block" data-lv2-headline-line>
+              {line}
+            </span>
+          ))}
         </h2>
-        <p className="mt-3 max-w-2xl text-white/58" data-lv2-reveal>
+        <p className="mt-3 max-w-2xl text-white/58" data-lv2-subline>
           {copy.subline}
         </p>
 
@@ -59,7 +62,7 @@ export function LandingV2StudioPreview() {
               <article
                 key={panel.id}
                 className="landing-v2-ivory-stage overflow-hidden p-4 md:p-5"
-                data-lv2-reveal
+                data-lv2-stagger
               >
                 {panel.asset ? (
                   <div className="landing-v2-product-tile">
@@ -80,7 +83,7 @@ export function LandingV2StudioPreview() {
           <div
             ref={sceneRef}
             className={`landing-v2-studio-scene ${
-              enable3D ? "landing-v2-scene-3d" : ""
+              enableCinematicScroll ? "landing-v2-scene-3d" : ""
             }`}
           >
             <div className="landing-v2-scene-3d__rig h-full min-h-[inherit]">

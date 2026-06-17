@@ -238,14 +238,14 @@
 }
 
 .landing-v2-scroll-story__stage-3d {
-  perspective: 1100px;
-  perspective-origin: 50% 42%;
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
   transform-style: preserve-3d;
 }
 
 .landing-v2-scroll-story__panels-3d {
   position: relative;
-  min-height: 320px;
+  min-height: clamp(360px, 42vh, 440px);
   transform-style: preserve-3d;
 }
 
@@ -255,10 +255,20 @@
   backface-visibility: hidden;
 }
 
+.landing-v2-scroll-story__panels-3d [data-story-panel] {
+  opacity: 0.36;
+  transform: perspective(1400px) translateZ(-190px) scale(0.94) rotateX(8deg);
+}
+
+.landing-v2-scroll-story__panels-3d [data-story-panel]:first-child {
+  opacity: 1;
+  transform: perspective(1400px) translateZ(80px) scale(1) rotateX(0deg);
+}
+
 /* —— 3D scene system —— */
 .landing-v2-scene-3d {
   position: relative;
-  perspective: 1200px;
+  perspective: 1400px;
   perspective-origin: 50% 38%;
   transform-style: preserve-3d;
   overflow: hidden;
@@ -542,7 +552,7 @@
 /* Studio preview — floating panels */
 .landing-v2-studio-scene {
   margin-top: 2.5rem;
-  height: clamp(520px, 56vw, 660px);
+  height: clamp(540px, 58vw, 700px);
   max-width: 100%;
 }
 
@@ -627,14 +637,28 @@
     rgba(250, 246, 238, 0.9) 0%,
     rgba(245, 239, 227, 0.82) 100%
   );
-  padding: 1.75rem;
+  padding: 1.85rem 2rem;
   color: var(--lv2-text-dark);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
 }
 
-.landing-v2-path-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+@media (min-width: 768px) {
+  .landing-v2-path-card {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.landing-v2-path-card:hover,
+.landing-v2-path-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(180, 255, 0, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(180, 255, 0, 0.1),
+    0 20px 56px rgba(0, 0, 0, 0.2);
+  outline: none;
 }
 
 .landing-v2-product-tile {

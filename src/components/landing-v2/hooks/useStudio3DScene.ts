@@ -3,15 +3,9 @@
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { STUDIO_PANEL_DEPTH } from "@/lib/landing-v2-motion";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const PANEL_3D = [
-  { z: 44, rotateY: -4, rotateX: 2, y: 0 },
-  { z: 18, rotateY: 3, rotateX: -1, y: 8 },
-  { z: 8, rotateY: -2, rotateX: 1, y: -6 },
-  { z: 56, rotateY: 2, rotateX: -2, y: 4 },
-] as const;
 
 export function useStudio3DScene(
   sectionRef: RefObject<HTMLElement | null>,
@@ -27,28 +21,30 @@ export function useStudio3DScene(
 
     const ctx = gsap.context(() => {
       panels.forEach((panel, index) => {
-        const cfg = PANEL_3D[index] ?? PANEL_3D[0];
+        const cfg = STUDIO_PANEL_DEPTH[index] ?? STUDIO_PANEL_DEPTH[0];
         gsap.set(panel, {
-          z: cfg.z - 70,
-          rotateY: cfg.rotateY * 1.4,
-          rotateX: cfg.rotateX + 6,
-          y: cfg.y + 24,
-          autoAlpha: 0.35,
-          transformPerspective: 1200,
+          z: cfg.z - 88,
+          rotateY: cfg.rotateY * 1.35,
+          rotateX: cfg.rotateX + 8,
+          y: cfg.y + 28,
+          scale: cfg.scale * 0.94,
+          autoAlpha: 0.32,
+          transformPerspective: 1400,
+          force3D: true,
         });
       });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: scene,
-          start: "top 78%",
-          end: "top 28%",
-          scrub: 0.55,
+          start: "top 76%",
+          end: "top 24%",
+          scrub: 0.85,
         },
       });
 
       panels.forEach((panel, index) => {
-        const cfg = PANEL_3D[index] ?? PANEL_3D[0];
+        const cfg = STUDIO_PANEL_DEPTH[index] ?? STUDIO_PANEL_DEPTH[0];
         tl.to(
           panel,
           {
@@ -56,11 +52,12 @@ export function useStudio3DScene(
             rotateY: cfg.rotateY,
             rotateX: cfg.rotateX,
             y: cfg.y,
+            scale: cfg.scale,
             autoAlpha: 1,
-            duration: 0.25,
+            duration: 0.28,
             ease: "power2.out",
           },
-          index * 0.06
+          index * 0.08
         );
       });
     }, section);

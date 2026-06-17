@@ -11,7 +11,8 @@ type UseHero3DStageOptions = {
   stageRef: RefObject<HTMLDivElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
   backPlateRef: RefObject<HTMLDivElement | null>;
-  enabled: boolean;
+  enableParallax: boolean;
+  enableMouse: boolean;
 };
 
 export function useHero3DStage({
@@ -19,84 +20,100 @@ export function useHero3DStage({
   stageRef,
   panelRef,
   backPlateRef,
-  enabled,
+  enableParallax,
+  enableMouse,
 }: UseHero3DStageOptions) {
   useEffect(() => {
     const section = sectionRef.current;
     const stage = stageRef.current;
     const panel = panelRef.current;
     const backPlate = backPlateRef.current;
-    if (!enabled || !section || !stage || !panel || !backPlate) return;
+    if (!section || !stage || !panel) return;
 
     const onMove = (event: MouseEvent) => {
+      if (!enableMouse || !backPlate) return;
       const rect = stage.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;
       const y = (event.clientY - rect.top) / rect.height - 0.5;
       gsap.to(panel, {
-        rotateY: x * 5,
-        rotateX: -2 + -y * 3.5,
+        rotateY: x * 4,
+        rotateX: -1.5 + -y * 2.5,
         duration: 0.55,
         ease: "power2.out",
+        overwrite: "auto",
       });
       gsap.to(backPlate, {
-        rotateY: x * -2.5,
-        rotateX: 5 + y * 1.5,
+        rotateY: x * -2,
+        rotateX: 4 + y * 1.2,
         duration: 0.65,
         ease: "power2.out",
+        overwrite: "auto",
       });
     };
 
     const onLeave = () => {
+      if (!enableMouse || !backPlate) return;
       gsap.to(panel, {
         rotateY: 0,
-        rotateX: -2,
+        rotateX: -1.5,
         duration: 0.75,
         ease: "power2.out",
       });
       gsap.to(backPlate, {
         rotateY: 0,
-        rotateX: 5,
+        rotateX: 4,
         duration: 0.75,
         ease: "power2.out",
       });
     };
 
-    stage.addEventListener("mousemove", onMove);
-    stage.addEventListener("mouseleave", onLeave);
+    if (enableMouse && backPlate) {
+      stage.addEventListener("mousemove", onMove);
+      stage.addEventListener("mouseleave", onLeave);
+    }
 
     const ctx = gsap.context(() => {
-      gsap.set(backPlate, { z: -90, rotateX: 5, transformPerspective: 1100 });
-      gsap.set(panel, { z: 36, rotateX: -2, transformPerspective: 1100 });
+      if (backPlate && enableParallax) {
+        gsap.set(backPlate, { z: -100, rotateX: 4, transformPerspective: 1200 });
+      }
+      if (enableParallax) {
+        gsap.set(panel, { z: 40, rotateX: -1.5, transformPerspective: 1200 });
 
-      gsap.to(panel, {
-        y: -28,
-        z: 52,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
-        },
-      });
+        gsap.to(panel, {
+          y: -36,
+          z: 20,
+          scale: 0.98,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.9,
+          },
+        });
 
-      gsap.to(backPlate, {
-        y: 12,
-        z: -110,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
-        },
-      });
+        if (backPlate) {
+          gsap.to(backPlate, {
+            y: 16,
+            z: -130,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.9,
+            },
+          });
+        }
+      }
     }, section);
 
     return () => {
-      stage.removeEventListener("mousemove", onMove);
-      stage.removeEventListener("mouseleave", onLeave);
+      if (enableMouse) {
+        stage.removeEventListener("mousemove", onMove);
+        stage.removeEventListener("mouseleave", onLeave);
+      }
       ctx.revert();
     };
-  }, [enabled, sectionRef, stageRef, panelRef, backPlateRef]);
+  }, [enableParallax, enableMouse, sectionRef, stageRef, panelRef, backPlateRef]);
 }
