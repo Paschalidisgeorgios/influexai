@@ -1,6 +1,6 @@
 # InfluexAI — Design DNA
 
-> Phase 4A foundation document. Governs the public landing experience and aligns it with the Studio product shell. Dashboard internals follow `src/components/dashboard/studio-ui/tokens.ts`; this document is the cross-surface source of truth for positioning, palette, and rules.
+> Phase 4A foundation. Governs public landing and aligns with Studio (`src/components/dashboard/studio-ui/tokens.ts`). Dashboard stays productive; landing may be cinematic.
 
 ---
 
@@ -8,20 +8,31 @@
 
 **InfluexAI = AI-native Creator Studio / Creator Production System**
 
-Ein kontrolliertes Produktionssystem für Creator und Marken: Briefing rein, Assets und Kampagnen raus — mit klaren Workflows, nicht mit einer lose gekoppelten Tool-Sammlung.
+Ein kontrolliertes Produktionssystem: Briefing rein, kampagnenfähige Assets raus — in einem Studio, nicht in zehn lose gekoppelten Tools.
 
 ### Nicht
 
 - KI-Toolliste („50 Tools in einer App“)
-- Generisches SaaS-Template (Hero + 3 Spalten + Pricing-Grid)
-- Neon-KI-Baukasten (überladene Glows, Sci-Fi-HUD, Provider-Name-Dropping als Hauptstory)
+- Generisches SaaS (Hero + 3 Spalten + Pricing-Grid)
+- Neon-KI-Baukasten (Glow-Overload, Sci-Fi-HUD, Provider-Stack als Hero-Story)
 
-### Qualitätsreferenzen (nur Niveau, nicht kopieren)
+### Qualitätsreferenzen (Niveau only — nicht kopieren)
 
-- **Terminal Industries** — cinematic restraint, große Flächen, präzise Typografie
-- **Mont-Fort** — warme Materialität, ruhige Premium-Whitespace, kontrollierte Akzente
+| Referenz | Was übernehmen | Was nicht |
+|----------|----------------|-----------|
+| **Terminal Industries** | AI-native Operating System-Gefühl; große ruhige Aussagen; klare Produktwelt | Layout, Copy, Markenoptik |
+| **Montfort** | Hochwertige Scroll-Dramaturgie; 3D-Tiefe; starke UI-Präsenz | Fremde Texte, fremde Assets |
 
-Ziel: dieselbe Wahrnehmung von Qualität und Intent wie das neue Studio — nicht deren Layout oder Markenwelt übernehmen.
+Ziel: Premium wie das neue Studio — eigene InfluexAI-Sprache.
+
+---
+
+## Zwei Oberflächen
+
+| Surface | Charakter |
+|---------|-----------|
+| **Landing / Public** | Cinematic erlaubt — Scroll-Story, Media-Reveals, 3D-Gefühl, große Typo |
+| **Dashboard / Studio** | Ruhig, schnell, produktiv — Ivory-Glass-Stage, keine Scroll-Jacking-Dramaturgie |
 
 ---
 
@@ -29,11 +40,12 @@ Ziel: dieselbe Wahrnehmung von Qualität und Intent wie das neue Studio — nich
 
 | Prinzip | Umsetzung |
 |--------|-----------|
-| **Dark Shell** | Tiefer, fast schwarzer Hintergrund als Bühne |
-| **Warme Ivory / Glass** | Produktflächen als warme, leicht transluzente Stages |
-| **Typografie** | Große, ruhige Headlines; kurze Subline; wenig Shouting |
-| **Whitespace** | Großzügig — Sektionen atmen, keine dichte Card-Wand |
-| **Lime-Akzente** | Sparsam, gezielt — nie als Vollflächen-Deko |
+| **Dark Shell** | `#050506` als äußere Bühne |
+| **Warm Ivory / Glass** | Produktflächen als warme, leicht transluzente Stages |
+| **Typografie** | Starke Headlines; kurze Subline; verkauft, erklärt nicht |
+| **Whitespace** | Premium — Sektionen atmen |
+| **Lime-Akzente** | Nur als Signal — nie Deko-Fläche |
+| **Scroll-Dramaturgie** | Landing only — „Vom Briefing zum Asset“ als visuelle Erzählung |
 
 ---
 
@@ -41,74 +53,68 @@ Ziel: dieselbe Wahrnehmung von Qualität und Intent wie das neue Studio — nich
 
 | Token | Wert | Verwendung |
 |-------|------|------------|
-| Dark Shell | `#050506` | Seitenhintergrund, äußere Bühne |
+| Dark Shell | `#050506` | Seitenhintergrund |
 | Obsidian Panel | `#0B0B0D` | Tiefe Panels, Nav-Shell |
-| Warm Ivory | `#FAF6EE` | Primäre helle Flächen (Studio-Stage) |
-| Glass Ivory | `rgba(250, 246, 238, 0.82)` | Glass-Stages mit Backdrop-Blur |
-| Soft Stone | `#D8D1C5` | Sekundäre Flächen, Trennlinien |
-| Muted Stone | `#A9A196` | Dezente Labels, Meta |
+| Warm Ivory | `#FAF6EE` | Primäre helle Flächen |
+| Glass Ivory | `rgba(250, 246, 238, 0.82)` | Glass-Stages + Backdrop-Blur |
+| Soft Stone | `#D8D1C5` | Sekundärflächen, Trennlinien |
+| Muted Stone | `#A9A196` | Labels, Meta |
 | Text Dark | `#080808` | Body auf Ivory |
 | Text Muted | `rgba(8, 8, 8, 0.58)` | Subcopy auf Ivory |
 | Text Light | `#F7F3EA` | Headlines auf Dark Shell |
 | Accent Lime | `#B4FF00` | CTA, aktive Zustände |
-| Lime Soft | `rgba(180, 255, 0, 0.18)` | Hover-Glow, dezente Highlights |
-| Warning Amber | `#F5A524` | Warnungen, Aufmerksamkeit |
-| Danger Soft | `#EF4444` | Fehler, destruktive Aktionen |
+| Lime Soft | `rgba(180, 255, 0, 0.18)` | Hover, dezente Highlights |
+| Warning Amber | `#F5A524` | Warnungen |
+| Danger Soft | `#EF4444` | Fehler, destruktiv |
 
-**Abweichungen bereinigen:** Landing nutzt teils `#ccff00`, `#050505`, Cyan/Violet-Neon (`landing-neon-theme`) — bei Umbau auf obige Tokens vereinheitlichen.
+**Legacy bereinigen:** `#ccff00`, `#050505`, Cyan/Violet-Neon (`landing-neon-theme`) → DNA-Tokens.
 
 ---
 
 ## Lime-Regel
 
-Lime (`#B4FF00`) **nur** für:
+Lime (`#B4FF00`) **nur** als Signal:
 
-- Primäre CTAs („Studio starten“, Checkout)
-- Aktive / fokussierte Zustände (Nav, Tab, Progress)
-- Statuspunkte und kleine Highlights (1–2 Wörter in Copy)
+- Primäre CTAs („Studio starten“)
+- Statuspunkte (online, aktiv, Schritt X)
+- Aktive Zustände (Nav, Tab, Progress)
+- Micro-Highlights (1–2 Wörter max.)
 
-**Nicht** für: Section-Glows, Card-Ränder, Hintergrund-Gradients, Provider-Badges, dekorative Grids.
+**Verboten:** zufällige grüne Linien, Section-Glows, Card-Ränder, Provider-Badges, Hintergrund-Gradients.
 
 ---
 
-## Typografie-Regel
+## Typografie & Copy
 
-- **Weniger All-Caps** — keine HUD-Stats (`APP_STUDIO`, `FPS: 60`, `NODES: 12`)
-- **Starke Headlines** — eine klare Aussage pro Sektion, max. 2 Zeilen
-- **Kurze Subline** — ein Satz Kontext, kein Feature-Essay
-- **Keine langen KI-Erklärtexte** — Produktionssprache statt Modell-Marketing
+- **Weniger All-Caps** — kein HUD (`APP_STUDIO`, `FPS: 60`, `NODES: 12`)
+- **Starke Headlines** — eine klare Aussage, max. 2 Zeilen
+- **Kurze Subline** — ein Satz Nutzen, kein Feature-Essay
+- **Keine langen KI-Erklärtexte** — verkaufen, nicht technisch erklären
+- **Keine Fake-Claims** — nur MVP-taugliche, belegbare Capabilities
+- **Kein KI-Schrott** — keine Buzzword-Wände („Laser-Edges“, „2026-Datenbank“)
 
-Schrift: bestehende Landing-Fonts beibehalten bis Umbau; Hierarchie über Größe und Weight, nicht über Neon-Farben.
+| Vermeiden | Stattdessen |
+|-----------|-------------|
+| „KI macht alles“ | „Produktion kontrollieren“ |
+| Provider-Stack als Story | Workflow und Output |
+| Tool-Listen (10+) | 3 Produktionspfade |
+| „KI-Creator-Plattform 2026“ | Creator Production System |
 
 ---
 
 ## UI-Regel
 
-- **Wenige große Flächen** — eine Ivory-Glass-Stage pro Sektion statt vieler kleiner Cards
-- **Keine Card-in-Card-Struktur** — Mockups und Demos flach in der Stage, nicht verschachtelt
-- **Keine zufälligen Borders** — Ränder nur wo sie Struktur geben (Stage-Rand, Input); keine dekorativen Neon-Rahmen
-- **Kein Neon-Glow-Overload** — `landing-glass-glow--violet/cyan` auf das Nötige reduzieren
+- Wenige große Flächen — eine Ivory-Glass-Stage pro Sektion
+- **Keine Card-in-Card** — flache Produkt-Screens, keine verschachtelten Mock-HUDs
+- **Keine zufälligen Borders** — nur strukturelle Ränder
+- **Kein Neon-Glow-Overload** — `landing-glass-glow--*` reduzieren
 
 Studio-Referenz: `STUDIO_RADIUS`, `STUDIO_SHADOW`, `STUDIO_SURFACE_GLASS` in `tokens.ts`.
 
 ---
 
-## Copy-Regel
-
-| Vermeiden | Stattdessen |
-|-----------|-------------|
-| „KI macht alles“ | „Produktion kontrollieren“ |
-| Provider-Stack als Hero-Story | Workflow und Output |
-| Unbelegte Metriken („2026-Datenbank“, „Viral-Score“) | Echte, MVP-taugliche Capabilities |
-| Tool-Listen mit 10+ Einträgen | 3 Produktionspfade + aktive Studio-Tools |
-| „App Studio · KI-Creator-Plattform 2026“ | Creator Studio / Production System |
-
-Ton: souverän, produktiv, ehrlich — wie das Dashboard nach Phase 2A.
-
----
-
 ## Scope (Phase 4A)
 
-- Dieses Dokument legt DNA fest; **kein** vollständiger Landing-Umbau in 4A.
-- **Nicht ändern:** Dashboard-, Tool-, Credit-, Billing-, Auth-Logik; Provider-Calls; `design-preview`.
-- Preise nur aus bestehenden Pricing-Komponenten / `getStarterPriceParams` — nichts erfinden.
+- DNA + Plan festlegen; **kein** vollständiger Landing-Umbau in 4A.
+- **Nicht ändern:** Dashboard-, Tool-, Credit-, Billing-, Auth-, Provider-Logik; `design-preview`.
+- Preise nur aus `PricingPlans` / `getStarterPriceParams` — nichts erfinden.

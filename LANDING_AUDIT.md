@@ -1,173 +1,300 @@
-# Landingpage Audit — Phase 4A
+# Landingpage Audit & Architecture Plan — Phase 4A
 
-> Stand: nach Dashboard-/Studio-Verbesserungen (Phase 2A). Kein Umbau in 4A — nur Bestandsaufnahme und Risiken für Phase 4B+.
+> Stand: nach Dashboard-/Tool-/Agent-Push. **Kein Umbau in 4A** — Audit, Foundation, Ersetzungsplan.
 
 **Entry:** `src/app/page.tsx` → `LandingPageV2`  
-**Styles:** `src/styles/landing-glass.css`, `pricing-glass.css`, `canvas.css` (Hero)  
-**Copy-Quellen:** `src/lib/landing-copy-2026.ts`, `next-intl` keys unter `landingPage.*`
+**Styles:** `landing-glass.css`, `pricing-glass.css`, `canvas.css`  
+**Copy:** `landing-copy-2026.ts`, `next-intl` → `landingPage.*`  
+**Studio-IA (Referenz):** `PRODUCTION_PATHS`, `ACTIVE_STUDIO_TOOLS` in `production-tool-routes.ts`
 
 ---
 
-## Aktive Sektionen (LandingPageV2)
+## 1. Aktuelle Landingpage-Struktur
 
-| # | Komponente | ID / Anker | Kurzbeschreibung |
-|---|------------|------------|------------------|
-| 1 | `LandingNavV2` | — | Fixed Nav, Links zu Sektionen / Auth |
-| 2 | `HeroSection` | — | Kinetic Headline, **live Concierge** (`/api/generate/concierge`), Turnstile |
-| 3 | `SentientInterface2026` | — | Bento-Features, `HeroPreview` Mock-HUD, `LandingLiveDemoPlayground` |
-| 4 | `LandingUseCasesSection` | — | 3 Use-Case-Cards mit Demo-Videos |
-| 5 | `LandingMediaSection` | — | Auto-Rotating Media-Carousel (4 Items) |
-| 6 | `LandingCampaignPackSection` | `campaign-pack` | Campaign-Pack Output-Grid (6 Outputs) |
-| 7 | `LandingAgentAutopilotSection` | — | Scriptierte Typewriter-Antwort + Feature-Bullets |
-| 8 | `PricingSection` | `pricing` | `PricingPlans` + FAQ (in Glass-Wrapper) |
-| 9 | `LandingFooter` | — | Footer, Language Switcher, Powered-by |
-
-**Hintergrund:** `LandingSectionGlowBackground` + `useSectionGlow` — section-basierte Neon-Glows.
+| # | Komponente | Anker | Status |
+|---|------------|-------|--------|
+| 1 | `LandingNavV2` | — | **Ersetzen** — Neon-Shell, alte Nav-Links |
+| 2 | `HeroSection` | — | **Ersetzen** — rotating Tool-Headlines, Concierge behalten (echt) |
+| 3 | `SentientInterface2026` | — | **Löschen** — Bento, Fake-HUD, Provider-Chips |
+| 4 | `LandingUseCasesSection` | — | **Ersetzen** — Non-MVP-Story, Blob-Videos |
+| 5 | `LandingMediaSection` | — | **Ersetzen** — Links zu inaktiven Dashboards |
+| 6 | `LandingCampaignPackSection` | `campaign-pack` | **Ersetzen** — alte Neon-Optik |
+| 7 | `LandingAgentAutopilotSection` | — | **Löschen** — Fake Typewriter-Demo |
+| 8 | `PricingSection` | `pricing` | **Behalten (Logik)** — UI an Ivory-Glass |
+| 9 | `LandingFooter` | — | **Anpassen** — DNA-Shell |
+| — | `LandingSectionGlowBackground` | — | **Löschen** — Neon-Glow-System |
 
 ---
 
-## Verwaiste / nicht gemountete Komponenten
+## 2. Alte Landing-Komponenten (57 Dateien)
 
-Noch im Repo (`src/components/landing/`), aber **nicht** in `LandingPageV2`:
+### Aktiv gemountet → vollständig ersetzen
 
-| Komponente | Problem |
-|------------|---------|
-| `LandingBentoToolsSection` | Alte Tool-Grid-Story |
-| `LandingToolsGridSection` | Tool-Liste |
-| `StackedDemoSection` | Multi-Step Fake-Demo |
-| `InteractiveDemo` | „KI-Avatar Preview“, Content-Mockup |
-| `AgentPreviewDemo` | Großes Agent-Mock-UI |
-| `LandingHeroV2`, `LandingPageV1` (falls vorhanden) | Legacy Hero |
-| `LandingProofSection`, `LandingValueSection`, `LandingShowcaseSection` | Ältere Marketing-Sektionen |
+`LandingPageV2.tsx`, `LandingNavV2`, `HeroSection`, `HeroKineticHeadline`, `HeroSection` deps (`LandingHeroBackground`, `canvas.css`), `SentientInterface2026`, `LandingLiveDemoPlayground`, `LandingUseCasesSection`, `LandingMediaSection`, `LandingCampaignPackSection`, `LandingAgentAutopilotSection`, `LandingSectionGlowBackground`, `useSectionGlow` coupling.
+
+### Verwaist / Legacy — **nicht mehr importieren**, in 4B löschen
+
+| Komponente | Grund |
+|------------|-------|
+| `LandingBentoToolsSection` | Tool-Liste |
+| `LandingToolsGridSection` | Tool-Grid |
+| `StackedDemoSection` | Fake Multi-Step Demo |
+| `InteractiveDemo` | Fake Avatar Preview |
+| `AgentPreviewDemo` | Fake Agent UI |
+| `LandingHeroV2`, `Hero3DScene` | Legacy Hero / 3D |
+| `LandingProofSection`, `LandingValueSection`, `LandingShowcaseSection` | Alte Marketing |
 | `LandingFeatureExplorerSection` | Tab-Preview-Explorer |
-| `HowItWorksSection`, `TrustBarSection` | In `Sections.tsx`, nicht in V2 Page |
+| `LandingBentoShowcase` | Bento Showcase |
+| `LandingStudioToolsSection` | Tool-Liste |
+| `CampaignAutopilotSection`, `LandingCampaignHero`, `LandingCampaignMockup` | Alte Campaign-Story |
+| `QualityIntelligenceSection`, `founding-creators-section` | Generische Social Proof |
+| `AiContentStream`, `GridReveal`, `world-transition` | Alte Motion-Experimente |
+| `LandingNeonAmbient`, `scroll-theme-provider` | Neon-Ambient |
+| `LandingNav` (V1) | Legacy Nav |
+| `HowItWorksSection`, `TrustBarSection`, `TickerStrip` | In `Sections.tsx`, nicht V2 |
+| `AdSpot`, `AdSpotLazy`, `SmartCapsule` | Legacy Ads |
+| `creator-brand-tabs-section`, `LandingAudienceSection` | Alte Zielgruppen-Tabs |
+| `HeroWorkspaceDemo`, `HeroImageCarousel`, `HeroTitle` | Legacy Hero-Teile |
+| `features/*` (MegaMenu etc.) | Altes Features-Menü |
 
-→ Bei Umbau: entweder löschen oder bewusst re-integrieren — nicht still importieren.
+### **Verbotene Re-Imports nach 4B**
 
----
+Keine dieser Dateien darf in der neuen `LandingPage` (V3) wieder eingebunden werden, ohne vollständigen Rewrite unter DNA:
 
-## Was wirkt alt / nicht Studio-DNA
-
-| Bereich | Befund |
-|---------|--------|
-| **Visuell** | `landing-neon` + Cyan/Violet-Glows (`landing-glass.css`, `LANDING_NEON`) statt Ivory-Glass-Stage |
-| **Akzent** | `#ccff00` / Multi-Color-Neon vs. Studio `#B4FF00` Lime-Regel |
-| **Hero HUD** | `SentientInterface2026` → `HeroPreview`: `APP_STUDIO`, `FPS: 60`, `NODES: 12` — Sci-Fi-Baukasten |
-| **Tool-Chips** | `Claude Script`, `B-Roll Match`, `Seedance`, `Viral Score` — Provider-Toolliste |
-| **Bento Cards** | 4 Säulen inkl. Avatar Studio, Viral-Predictor — teils Non-MVP |
-| **Card-in-Card** | Glass-Nodes, verschachtelte Mockups in Hero/Bento/Agent |
-| **Motion** | Framer + CSS drift animations — noch kein GSAP/Lenis; teils busy |
-| **Background** | `#050505` statt DNA `#050506` (minor, aber inkonsistent zu `tokens.ts`) |
-
----
-
-## Copy — zu generisch / falsch positioniert
-
-| Quelle | Text / Muster | Issue |
-|--------|---------------|-------|
-| `LANDING_HERO_2026.kicker` | „App Studio · KI-Creator-Plattform 2026“ | Generisches SaaS + Jahr-Stamp |
-| `headlineRotating` | KI-Avatare, KI-Visuals, … | Tool-Katalog-Rotation statt Production System |
-| `LANDING_STUDIO_SECTION_2026` | „Claude Script Engine online“, „Viral-Predictor synchronisiert“ | Fake-Status / unbelegte Systeme |
-| `viral-predictor` Card | „2026-Datenbank“, Viral-Score, Thumbnail-CTR | Potentiell **Fake-Claim** wenn nicht produktiv |
-| `seedance-kling` Card | Seedance 2.0 & Kling als Hero-Feature | Provider-Marketing |
-| `infinite-canvas` Card | „Laser-Edges“, „Claude-Premium-Skripten“ | Buzzword-lastig |
-| Agent Section | Scriptierte 8-Zeilen-Antwort | **Fake-Demo** (kein echter Agent-Call) |
-| `LandingLiveDemoPlayground` | Interaktive UI ohne echte Pipeline | Preview/Mock — klar kennzeichnen oder ersetzen |
-
-**Positiv:** Hero-Concierge ist **echt** (API + Turnstile) — behalten, visuell in DNA einbetten.
+`SentientInterface2026`, `LandingAgentAutopilotSection`, `LandingBentoToolsSection`, `LandingToolsGridSection`, `StackedDemoSection`, `InteractiveDemo`, `AgentPreviewDemo`, `LandingLiveDemoPlayground`, `LandingSectionGlowBackground`, `landing-neon-theme` als primäres Styling.
 
 ---
 
-## Assets
+## 3. Alte Copy & schwache Claims
 
-### Videos (aktiv genutzt)
+| Quelle | Problem |
+|--------|---------|
+| `LANDING_HERO_2026.kicker` | „App Studio · KI-Creator-Plattform 2026“ — generisch |
+| `headlineRotating` | KI-Avatare, KI-Visuals — Tool-Katalog |
+| `LANDING_STUDIO_SECTION_2026.statusMessages` | „Claude Script Engine online“ — Fake-Status |
+| `viral-predictor` Card | „2026-Datenbank“, Viral-Score — **riskant/falsch** wenn nicht live |
+| `seedance-kling` Card | Provider-Marketing |
+| `infinite-canvas` Card | „Laser-Edges“, Buzzwords |
+| Agent Section | Scriptierte Antwort — **Fake-Demo** |
+| `LandingLiveDemoPlayground` | Interaktiv ohne echte Pipeline |
+| `landing-media.ts` | Titel/Links: KI Influencer, LoRA, Avatar Studio — Non-MVP |
 
-| Asset | Quelle | Verwendung |
-|-------|--------|------------|
-| `ki-avatar.mp4` | Vercel Blob | Use Cases, Bento Avatar, Media |
-| `ki-influencer.mp4` | Vercel Blob | Use Cases, Media |
-| `lora-training.mp4` | Vercel Blob | Use Cases, Media |
-| `seedance-2-0.mp4` | Vercel Blob | Bento, Media |
-| `hero-creator-studio.mp4` | Vercel Blob | Definiert, Hero-Nutzung prüfen bei Umbau |
-
-Definiert in: `src/lib/landing-video-urls.ts` → `landing-demo-videos.ts`
-
-### Videos (lokal, git)
-
-| Pfad | Status |
-|------|--------|
-| `public/videos/studio/studio-loop.webm` / `.mp4` | Studio-Loop + Poster — **Dashboard/Studio**, nicht Landing V2 |
-| `public/videos/landing/` | Nur `.gitkeep` — **keine lokalen Landing-Videos** |
-
-### Bilder (lokal)
-
-| Pfad | Notiz |
-|------|-------|
-| `public/images/landing/hero.jpg`, `hero-2.jpg`, `hero-3.jpg`, `hero-poster.jpg` | Hero-Backgrounds |
-| `public/images/landing/feature-1.png` … `feature-3.png` | Feature-Illustrationen (Legacy-Sektionen?) |
-| `public/images/hero.jpg`, `hero-2.jpg`, `hero-3.jpg` | Root-Duplikate |
-| `public/avatars/avatar-*.jpg/png` | Testimonials / Demos |
+**Behalten (echt):** Hero-Concierge (`/api/generate/concierge` + Turnstile) — optional in neuem Hero als Secondary, nicht als Hauptstory.
 
 ---
 
-## Links zu Non-MVP / Legacy Dashboards
+## 4. Vorhandene Assets
 
-`landing-media.ts` verlinkt auf Routen, die im MVP-Hub **inaktiv** sind:
+### `public/videos/landing/`
 
-- `/dashboard/ki-influencer`
-- `/dashboard/lora-training`
-- `/dashboard/avatar-studio`
-- `/dashboard/szenen-generator`
+| Datei | Status |
+|-------|--------|
+| `.gitkeep` only | **Keine Landing-Videos lokal** |
 
-→ Landing verspricht mehr als der aktuelle Studio-Hub liefert. Umbau: nur MVP-Pfade (`image-gen`, `img-to-video`, `text-to-video`, `viral-hook`, `content-calendar`, Agent).
+### `public/videos/studio/` (Dashboard — nicht Landing)
 
----
+| Datei | Größe-Nutzung |
+|-------|---------------|
+| `studio-loop.webm` / `.mp4` | Studio-Loop |
+| `studio-poster.webp` | Poster |
 
-## Motion-Bestand
+### `public/images/landing/` (Legacy)
 
-| Technik | Wo |
-|---------|-----|
-| `framer-motion` | `HeroSection`, `HeroKineticHeadline`, `LandingMediaSection`, `LandingLiveDemoPlayground`, … |
-| `SpringReveal` | Campaign, Agent, Pricing, Use Cases |
-| CSS `@keyframes` | `landing-glass.css` (glow drift) |
-| `gsap` / `lenis` | **Installiert, 0 Imports in `src/`** |
+| Datei | Status |
+|-------|--------|
+| `hero.jpg`, `hero-2.jpg`, `hero-3.jpg` | JPG — alt, nicht DNA |
+| `hero-poster.jpg` | JPG — ersetzen durch `.webp` |
+| `feature-1.png` … `feature-3.png` | Legacy Feature-Illustrationen |
 
----
+### Extern (Vercel Blob — `landing-video-urls.ts`)
 
-## Größte Chancen (Phase 4B+)
-
-1. **Eine Ivory-Glass-Hero-Stage** — Studio-Loop oder Blob-Hero, keine HUD-Mockup
-2. **3 Produktionspfade** statt 4+ Tool-Säulen — Alignment mit `ProductionToolsOverview`
-3. **Echter Agent + echter Concierge** als einzige „live“ Demos; Rest statisch/cinematic
-4. **GSAP Scroll-Reveals** — Neon-Glow durch Lime-sparsame Motion ersetzen
-5. **Lenis** nur auf `landing-root` — cinematic scroll ohne Dashboard-Risiko
-6. **Media-Sektion** auf MVP-Tools und echte Outputs trimmen
-7. **Pricing** — bereits `PricingPlans` / echte Preise; visuell an Ivory-Glass anpassen
+`ki-avatar.mp4`, `ki-influencer.mp4`, `lora-training.mp4`, `seedance-2-0.mp4`, `hero-creator-studio.mp4` — teils Non-MVP-Story; in 4B nur noch neutral oder MVP-aligned nutzen.
 
 ---
 
-## Risiken
+## 5. Fehlende Assets (für 4B+)
 
-| Risiko | Impact | Mitigation |
-|--------|--------|------------|
-| Fake-Claims (Viral-Predictor, 2026-DB) | Trust / Legal | Copy entfernen oder durch echte Features ersetzen |
-| Non-MVP Deep-Links | Frustration nach Signup | Links auf Hub / MVP-Tools |
-| Framer + GSAP Doppelung | Performance, Jank | Pro Sektion eine Engine |
-| Lenis + Concierge-Form | UX / Focus | Lenis außerhalb Form oder `prevent` on focus |
-| Blob-Video-Ausfall | Leere Sektionen | Poster-Fallback lokal |
-| 57 Landing-Dateien | Wartungslast | Toten Code löschen nach Umbau |
-| `design-preview` | Scope-Creep | Nicht in Landing-Phase anfassen |
-| i18n-Keys | Viele Strings in JSON | Copy-Update parallel DE/EN |
+### Videos
+
+| Pfad | Zielgröße |
+|------|-----------|
+| `public/videos/landing/hero-loop.webm` | 3–8 MB |
+| `public/videos/landing/hero-loop.mp4` | 5–12 MB |
+| `public/videos/landing/output-video-loop-01.webm` | 3–8 MB |
+| `public/videos/landing/output-video-loop-01.mp4` | 5–12 MB |
+
+### Images
+
+| Pfad | Zielgröße |
+|------|-----------|
+| `public/images/landing/hero-poster.webp` | 100–400 KB |
+| `public/images/landing/product-studio.webp` | 200–700 KB (Studio Cockpit) |
+| `public/images/landing/product-tools.webp` | 200–700 KB (Tools Hub) |
+| `public/images/landing/product-agent.webp` | 200–700 KB (Agent Briefing) |
+| `public/images/landing/product-gallery.webp` | 200–700 KB (Galerie) |
+| `public/images/landing/output-image-01.webp` | 200–700 KB |
+| `public/images/landing/output-video-poster-01.webp` | 100–400 KB |
+
+**Hinweis:** Assets in 4A **nicht erfinden** — nur Bedarf dokumentieren. Screenshots aus echtem Studio exportieren.
 
 ---
 
-## Empfohlene Umbau-Reihenfolge (4B+, nicht 4A)
+## 6. Risiken beim Umbau
 
-1. Shell + Nav (Dark `#050506`, Ivory-Glass Nav)
-2. Hero (DNA-Typo, GSAP reveal, Concierge behalten)
-3. Production Paths (ersetzt Bento Tool-Liste)
-4. Media / Use Cases (MVP-only)
-5. Agent (echt oder klar als „Beispiel“)
-6. Campaign Pack (vereinfachen)
-7. Pricing + Footer (Glass → Ivory)
-8. Legacy-Komponenten entfernen
+| Risiko | Mitigation |
+|--------|------------|
+| Fake-Claims / Fake-Demos | Nur echte Features + neutrale Beispiele |
+| Non-MVP Deep-Links | Nur `PRODUCTION_PATHS` + `ACTIVE_STUDIO_TOOLS` |
+| Framer + GSAP Doppelung | Pro Sektion eine Engine |
+| Lenis + Formulare/Concierge | Lenis nur außerhalb Forms; `prevent` on focus |
+| Fehlende lokale Assets | Poster-Fallback bis Export |
+| i18n | Copy parallel DE/EN |
+| `design-preview` | Nicht anfassen |
+| SEO / `generateMetadata` | Headlines in SEO anpassen, nicht nur UI |
+| 57 Legacy-Dateien | Nach V3-Launch löschen, nicht parallel pflegen |
+| Pricing | `PricingPlans` unverändert — nur Shell-Styling |
+
+---
+
+## 7. Neue Landingpage-Architektur (Ziel V3)
+
+Ersetzt `LandingPageV2` vollständig — **kein Überkleben**.
+
+### 7.1 Hero
+
+**Headline:**  
+„Das Creator Production System für Kampagnen, Visuals und Motion.“
+
+**Subline:**  
+„Plane Hooks, erstelle Bilder und verwandle Ideen in kampagnenfähige Assets — in einem Studio statt in zehn einzelnen Tools.“
+
+| CTA | Ziel |
+|-----|------|
+| Primary: „Studio starten“ | `/auth/sign-up` oder `/dashboard` |
+| Secondary: „Preise ansehen“ | `#pricing` oder `/pricing` |
+
+**Visual:** `hero-loop` Video + `hero-poster.webp` auf Dark Shell; GSAP Reveal.  
+**Optional Secondary:** Concierge (echte API) — nicht als Fake-HUD.
+
+**Ersetzt:** `HeroSection`, `HeroKineticHeadline`, `LANDING_HERO_2026` rotating headlines.
+
+---
+
+### 7.2 Scroll Story — „Vom Briefing zum Asset“
+
+Pinned/scrubbed GSAP-Sequenz (Lenis-sync):
+
+1. **Briefing** — Hook / Agent-Idee (Text + Lime-Status)
+2. **Produktionspfad** — Pfad wählen
+3. **Bild** — Image-Gen Output (`output-image-01.webp`)
+4. **Motion** — Video-Loop (`output-video-loop-01`)
+5. **Galerie** — Asset-Übersicht
+
+**Ersetzt:** `SentientInterface2026`, `LandingCampaignPackSection`, `LandingMediaSection` (als separate Neon-Blöcke).
+
+---
+
+### 7.3 Production Paths
+
+Aligned mit `PRODUCTION_PATHS`:
+
+| Pfad | Studio-Label | Primary Tool |
+|------|--------------|--------------|
+| Bild erstellen | Bildgenerator | `image-gen` |
+| Video erstellen | Bild/Text zu Video | `img-to-video`, `text-to-video` |
+| Kampagne planen | Hook + Kalender | `viral-hook`, `content-calendar` |
+
+3 große Ivory-Glass-Cards — keine Tool-Liste, keine Provider-Namen.
+
+**Ersetzt:** `LandingUseCasesSection`, `LandingBentoToolsSection`, Bento in `SentientInterface2026`.
+
+---
+
+### 7.4 Studio Preview
+
+4 Produkt-Screens (statisch oder leichtes Video) — **echte UI**, keine Mock-HUD:
+
+| Screen | Asset | Quelle |
+|--------|-------|--------|
+| Studio Cockpit | `product-studio.webp` | Studio Home |
+| Tools Hub | `product-tools.webp` | `ProductionToolsOverview` |
+| Agent Briefing | `product-agent.webp` | `AgentAutopilotV2` |
+| Galerie | `product-gallery.webp` | Gallery |
+
+**Ersetzt:** `HeroPreview`, `LandingLiveDemoPlayground`, `LandingAgentAutopilotSection`.
+
+---
+
+### 7.5 Proof / Outputs
+
+- Nur **echte oder neutral deklarierte** Beispiele („Beispiel-Output“)
+- Keine Fake-Demos, keine scriptierten Agent-Antworten
+- Optional: 1–2 Output-Assets (`output-image-01`, Video-Poster)
+- Kein Viral-Predictor, keine „2026-Datenbank“
+
+**Ersetzt:** `LandingProofSection` (falls reaktiviert), Fake Agent Section.
+
+---
+
+### 7.6 Pricing / Credits
+
+- Bestehende `PricingSection` + `PricingPlans` — **keine Preiswerte erfinden**
+- Visuell: Ivory-Glass-Stage statt `pricing-glass` Neon
+- Klare Verbindung zu `/pricing`
+- FAQ aus `LANDING_FAQ_ITEMS` behalten
+
+---
+
+### 7.7 Final CTA
+
+**Copy:** „Starte dein Creator Studio.“  
+**CTA:** „Studio starten“  
+Dark Shell + Lime-Button — minimal, kein Glow-Overload.
+
+---
+
+## 8. Geplante Dateistruktur (4B+)
+
+```
+src/components/landing/
+  LandingPage.tsx          # neu — ersetzt LandingPageV2
+  LandingShell.tsx         # Dark shell + Lenis provider
+  sections/
+    LandingHero.tsx
+    LandingScrollStory.tsx
+    LandingProductionPaths.tsx
+    LandingStudioPreview.tsx
+    LandingProof.tsx
+    LandingFinalCta.tsx
+  LandingNav.tsx           # neu — DNA Nav
+  LandingFooter.tsx        # aus Sections.tsx extrahieren
+  pricing/                 # PricingSection wrapper (Styling only)
+src/hooks/
+  useLandingMotion.ts      # GSAP + reduced motion
+src/styles/
+  landing-dna.css          # ersetzt landing-glass neon
+```
+
+`src/app/page.tsx` → import `LandingPage` statt `LandingPageV2`.
+
+---
+
+## 9. Umbau-Reihenfolge (4B+)
+
+1. `landing-dna.css` + Shell + Nav + Lenis/GSAP hooks
+2. Hero (Copy + Assets)
+3. Scroll Story (GSAP ScrollTrigger)
+4. Production Paths
+5. Studio Preview (Screenshots exportieren)
+6. Proof (neutral)
+7. Pricing shell (Logik unverändert)
+8. Final CTA + Footer
+9. `LandingPageV2` + Legacy-Ordner löschen
+10. i18n + SEO metadata
+
+---
+
+## 10. Phase 4A Abgrenzung
+
+**In 4A erledigt:** Libraries, DNA, Motion-System, Audit, Architekturplan, Legacy-Markierung.  
+**Nicht in 4A:** Landing bauen, 3D-Scroll vollständig, Assets erfinden, Preise ändern, Dashboard ändern.

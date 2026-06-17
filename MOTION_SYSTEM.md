@@ -1,93 +1,104 @@
 # InfluexAI — Motion System
 
-> Phase 4A foundation document. Defines where motion lives, which libraries apply, and performance / accessibility guardrails.
+> Phase 4A foundation. GSAP + Lenis für Landing/Public only. Dashboard bleibt nativ und schnell.
 
 ---
 
 ## Grundprinzip
 
-| Surface | Charakter |
-|---------|-----------|
-| **Landing / Public** | Darf cinematic und motional sein — Reveals, Parallax, Hero-Sequenzen |
-| **Dashboard / Studio** | Ruhig, schnell, produktiv — keine scroll-jacking, keine schweren Timelines |
+| Surface | Motion |
+|---------|--------|
+| **Landing / Public** | Cinematic — ScrollTrigger, Lenis, Media-Reveals, Pinning |
+| **Dashboard / Studio** | Minimal — keine Lenis, kein GSAP auf Tool-Formularen |
 
-Motion soll **subtil, hochwertig und performant** wirken — nie „KI-Startup-Animation“ (blinkende Grids, übertriebene Partikel, endlose Loops).
+Motion ist **subtil, hochwertig, performant** — jede Bewegung muss eine **Verkaufsfunktion** haben (Fokus, Reihenfolge, Produktverständnis). Keine Effekte um der Effekte willen.
 
 ---
 
-## Libraries (installiert, Phase 4A)
+## Motion-Story (Landing)
 
-| Package | Version (lock) | Scope |
-|---------|----------------|-------|
+Narrative Scroll-Sequenz — aligned mit Produkt-IA:
+
+```
+Briefing → Produktionspfad → Bild → Motion → Galerie
+```
+
+| Station | Inhalt | Motion |
+|---------|--------|--------|
+| Briefing | Agent / Hook-Idee | Text-Reveal, Lime-Statuspunkt |
+| Produktionspfad | 3 Pfade wählen | Pin + Scrub oder staggered Cards |
+| Bild | Image-Gen Output | Media-Reveal, Parallax |
+| Motion | Video-Output | Video-Loop scrub oder fade-in |
+| Galerie | Asset-Übersicht | Horizontal scroll oder final reveal |
+
+Referenz-Niveau: Montfort-Qualität (Scroll-Dramaturgie, 3D-Tiefe) — **ohne** fremde Assets oder Layout zu kopieren.
+
+---
+
+## Libraries
+
+| Package | Version | Scope |
+|---------|---------|-------|
 | `gsap` | 3.15.x | Landing only |
 | `lenis` | 1.3.x | Landing / Public only |
 
-**Nicht verwenden:** `@studio-freight/lenis` (deprecated Paketname).
+**Nicht:** `@studio-freight/lenis` (deprecated).  
+**Keine weiteren Motion-Libraries** ohne explizite Entscheidung.
 
-**Bereits im Projekt (Legacy Landing):** `framer-motion`, `SpringReveal`, CSS-Keyframes in `landing-glass.css`. Bei Umbau schrittweise durch GSAP/Lenis-Patterns ersetzen, nicht parallel alles verdoppeln.
-
-**Keine weiteren Motion-Libraries** ohne explizite Entscheidung (kein AOS, Locomotive, Motion One zusätzlich).
-
----
-
-## GSAP — Einsatz
-
-**Nur Landingpage** (`src/app/page.tsx`, `src/components/landing/*`):
-
-| Use Case | Beispiel |
-|----------|----------|
-| Hero-Reveals | Headline, Subline, CTA staggered fade-up |
-| Section-Reveals | ScrollTrigger: Ivory-Stage einblenden |
-| Parallax | Hintergrund-Tiefe, dezentes Media-Offset |
-| Media-Reveals | Video-Poster → Play, Showcase-Sequenzen |
-
-**Nicht in GSAP:**
-
-- Dashboard-Layouts, Tool-Setup, Agent-Chat, Formulare
-- Credit-Pills, Billing, Auth-Flows
-- `design-preview`
-
-**Patterns:**
-
-- `gsap.context()` + Cleanup in `useEffect` return
-- `ScrollTrigger` mit `once: true` wo möglich
-- `will-change` sparsam; nach Animation entfernen
-- Timelines kurz halten (typ. 0.4–0.9 s pro Beat)
+**Legacy (bis Migration):** `framer-motion`, `SpringReveal`, CSS-Keyframes in `landing-glass.css` — pro Sektion **eine** Engine, nicht doppeln.
 
 ---
 
-## Lenis — Einsatz
+## GSAP + ScrollTrigger
 
-**Nur** auf Landing und andere **Public**-Seiten (Marketing, Legal falls gewünscht).
+**Nur** `src/app/page.tsx` und neue `src/components/landing/*` (Post-4B):
 
-```tsx
-// Ziel-Pattern (Phase 4B+), noch nicht implementiert in 4A
-// Wrapper nur um Landing-Root, nicht um Dashboard-Layout
+| Pattern | Einsatz |
+|---------|---------|
+| **Reveal** | Headline, Subline, CTA stagger (`once: true`) |
+| **Pinning** | Scroll-Story — Stationen nacheinander fixieren |
+| **Scrub** | Progress an Scroll koppeln (dezent, max. 1 pinned Block mobile) |
+| **Media-Reveal** | Poster → Video, Produkt-Screen einblenden |
+| **Parallax** | Hintergrund-Tiefe, 3D-Gefühl — sparsam |
+
+**Nicht in GSAP:** Dashboard, Tool-Setup, Agent-Chat, Formulare, Credit/Billing, `design-preview`.
+
+```ts
+// Ziel-Pattern (4B+)
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// gsap.context() + ctx.revert() in useEffect cleanup
 ```
 
-**Kein Smooth-Scroll im Dashboard**, wenn es:
+---
 
-- Formulare, Textareas, Drag-Drop stört
-- Nested Scroll-Container (Tool-Panels, Gallery) bricht
-- Focus-Management / Keyboard-Navigation verzögert
+## Lenis
 
-Dashboard behält natives `overflow` / `scroll-behavior` — optional `scroll-behavior: auto` explizit im Studio-Shell.
+**Nur** Landing-Root und Public-Marketing-Seiten.
+
+```tsx
+// Ziel-Pattern (4B+) — Wrapper nur um landing-root
+// <LandingLenisProvider>{children}</LandingLenisProvider>
+```
+
+**Kein Lenis im Dashboard** — Formulare, nested scroll, Focus und Drag würden leiden.
+
+**Lenis + GSAP:** `lenis.on("scroll", ScrollTrigger.update)` — Standard-Integration in 4B.
 
 ---
 
-## Performance
+## Performance & Accessibility
 
-- **Mobile:** Parallax und blur-lastige Effekte reduzieren oder deaktivieren unter `md`
-- **Videos:** `prefers-reduced-motion` → Poster/Static Frame statt Autoplay
-- **Intersection:** Animationen erst starten wenn Sektion sichtbar (bereits teilweise via `IntersectionObserver` / Framer)
-- **Keine Layout-Thrashing:** transform/opacity bevorzugen, keine width/height-Animationen auf großen Flächen
-- **Bundle:** GSAP nur mit benötigten Plugins importieren (`gsap/ScrollTrigger` etc.)
-
----
-
-## `prefers-reduced-motion`
-
-Pflicht für alle neuen Motion-Pfade:
+| Regel | Umsetzung |
+|-------|-----------|
+| **Mobile** | Pinning/Parallax reduzieren oder aus unter `md` |
+| **Videos** | `prefers-reduced-motion` → Poster, kein Autoplay |
+| **Bundle** | Nur `gsap/ScrollTrigger` importieren |
+| **Transforms** | `opacity` + `transform` bevorzugen |
+| **Reduced motion** | Kein Lenis, kein Scrub, Endzustand sofort |
 
 ```ts
 const reduceMotion =
@@ -95,27 +106,34 @@ const reduceMotion =
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 ```
 
-| reduceMotion | Verhalten |
-|--------------|-----------|
-| `true` | Keine Parallax, keine Lenis, sofortiger Endzustand, Videos pausiert/poster |
-| `false` | Volle Landing-Motion gemäß obigen Regeln |
+Bestehend: `useReducedMotion()` in `LandingMediaSection` — in 4B zentralisieren.
 
-Bestehend: `useReducedMotion()` in `LandingMediaSection` — bei GSAP/Lenis-Integration konsolidieren.
+---
+
+## Verkaufsfunktion-Check
+
+Vor jeder Animation fragen: *Hilft das dem Besucher, das Produkt zu verstehen oder zu konvertieren?*
+
+| Erlaubt | Nicht |
+|---------|-------|
+| Scroll-Story zeigt Workflow | Blinkende KI-Grids |
+| CTA-Reveal nach Value Prop | Endlose Glow-Loops |
+| Produkt-Screen langsam ein | Fake-HUD mit Fake-Stats |
 
 ---
 
 ## Migrations-Risiken (4A → 4B)
 
-1. **Doppel-Motion:** Framer + GSAP gleichzeitig auf derselben Sektion → Jank
-2. **Lenis + fixed Nav:** `LandingNavV2` — `position: fixed` mit transform-Parent prüfen
-3. **Hero Concierge:** Live-API-Formular — Scroll-Smooth darf Focus nicht verschlucken
-4. **Turnstile / Third-Party:** Lenis-Wrapper darf Captcha-Iframes nicht clipen
-5. **SSR:** GSAP/Lenis nur client-side (`"use client"`, dynamic import oder `useEffect`)
+1. Framer + GSAP auf derselben Sektion → Jank
+2. Lenis + fixed `LandingNavV2` → transform-Parent prüfen
+3. Hero-Concierge (Turnstile) → Lenis darf Focus nicht verschlucken
+4. Blob-Video-Ausfall → lokale Poster-Fallbacks (`public/images/landing/`)
+5. SSR → GSAP/Lenis nur client-side
 
 ---
 
 ## Phase 4A Status
 
-- [x] `gsap` + `lenis` in `package.json` / lockfile
-- [ ] Noch **keine** Integration in Komponenten (bewusst — Foundation first)
-- [ ] Framer-Motion bleibt aktiv bis section-by-section Migration
+- [x] `gsap` + `lenis` installiert (`package.json` / lockfile)
+- [ ] Keine Integration in Komponenten (bewusst)
+- [ ] Legacy Framer/CSS aktiv bis section-by-section Ersetzung
