@@ -179,6 +179,7 @@
   max-width: 100%;
   height: auto;
   object-fit: contain;
+  background: transparent;
 }
 
 .landing-v2-brand-intro__logo-fallback {

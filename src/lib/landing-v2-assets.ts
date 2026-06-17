@@ -14,8 +14,8 @@ export type LandingV2AssetSlot = {
 export const LANDING_V2_AUDIENCE = LANDING_V2_COPY.hero.chips;
 
 export const LANDING_V2_ASSETS = {
-  /** Brand mark — intro reveal & preview surfaces */
-  brandLogo: "/images/examples/logo.png",
+  /** Brand mark — intro reveal & preview surfaces (transparent PNG) */
+  brandLogo: "/images/brand/influexai-logo-transparent.png",
   hero: {
     webm: "/videos/landing/hero-loop.webm",
     mp4: "/videos/landing/hero-loop.mp4",
