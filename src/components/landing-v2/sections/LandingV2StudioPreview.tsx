@@ -31,30 +31,28 @@ export function LandingV2StudioPreview() {
     <section
       id="studio"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--studio overflow-hidden"
+      className="landing-v2-section landing-v2-section--editorial overflow-hidden"
       aria-labelledby="lv2-studio-heading"
     >
-      <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">
+      <div className="mx-auto max-w-[90rem]">
         <LandingV2ChapterMarker number={chapterCopy.number} label={chapterCopy.label} />
-        <div className="landing-v2-chapter__intro">
-          <h2
-            id="lv2-studio-heading"
-            className="landing-v2-headline landing-v2-editorial-title landing-v2-chapter__headline"
-          >
-            {chapterCopy.headlineLines.map((line) => (
-              <span key={line} className="block" data-lv2-headline-line>
-                {line}
-              </span>
-            ))}
-          </h2>
-          <p className="landing-v2-editorial-lead landing-v2-chapter__lead max-w-2xl" data-lv2-subline>
-            {chapterCopy.body}
-          </p>
-        </div>
+        <h2
+          id="lv2-studio-heading"
+          className="landing-v2-headline landing-v2-editorial-title mt-5 text-[var(--lv2-text-light)]"
+        >
+          {chapterCopy.headlineLines.map((line) => (
+            <span key={line} className="block" data-lv2-headline-line>
+              {line}
+            </span>
+          ))}
+        </h2>
+        <p className="landing-v2-editorial-lead mt-4 max-w-2xl" data-lv2-subline>
+          {chapterCopy.body}
+        </p>
 
         <div
           ref={sceneRef}
-          className={`landing-v2-studio-map landing-v2-chapter__stage ${
+          className={`landing-v2-studio-map mt-12 md:mt-16 ${
             enableCinematicScroll && !isMobile && !reduceMotion ? "landing-v2-scene-3d" : ""
           }`}
           data-lv2-stagger

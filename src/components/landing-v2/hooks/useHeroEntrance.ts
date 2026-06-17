@@ -28,8 +28,7 @@ export function useHeroEntrance(
       const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
       const subline = section.querySelector("[data-hero-subline]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
-      const panel = section.querySelector("[data-hero-video-stage]");
-      const flow = section.querySelector("[data-hero-flow]");
+      const panel = section.querySelector("[data-hero-panel]");
 
       if (headline) {
         split = new SplitType(headline, {
@@ -71,25 +70,9 @@ export function useHeroEntrance(
       if (panel) {
         tl.fromTo(
           panel,
-          { opacity: 0, y: 56, scale: 1.02 },
-          { opacity: 1, y: 0, scale: 1, duration: 1.05, ease: "power2.out" },
-          0.42
-        );
-      }
-      if (flow) {
-        tl.fromTo(
-          flow,
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.85,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(flow, { clearProps: "transform" });
-            },
-          },
-          0.72
+          { opacity: 0, y: 40, scale: 0.98 },
+          { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.out" },
+          0.38
         );
       }
     }, section);

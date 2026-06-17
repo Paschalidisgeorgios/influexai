@@ -96,40 +96,12 @@ export const HERO_PARALLAX = {
   ambient: { yPercent: 10, scale: 1.05 },
 } as const;
 
-/** Preview hero — video stage parallax (subtle — no zoom-out effect) */
-export const HERO_VIDEO_STAGE = {
-  opacityStart: 0.52,
-  opacityEnd: 0.38,
-  scrollY: 24,
-  scrollScale: 1,
-  videoScaleFrom: 1.05,
-  videoScaleTo: 1,
-  videoYPercent: 2,
-} as const;
-
-/** Editorial chapter video — enter / peak / exit on scroll */
-export const EDITORIAL_VIDEO_SCROLL = {
-  enter: { opacity: 0.38, scale: 1.03, y: 32 },
-  peak: { opacity: 0.58, scale: 1, y: 0 },
-  exit: { opacity: 0.28, scale: 0.97, y: -24 },
-  video: { scaleFrom: 1.06, scaleTo: 1 },
-} as const;
-
-/** Preview hero — single video backdrop (4B.9F) */
-export const HERO_VIDEO_BG = {
-  scaleStart: 1.02,
-  scaleDelta: 0.02,
-  yPercentMax: 2,
-  scrub: 0.65,
-  opacity: 0.36,
-} as const;
-
-/** Preview hero — subtle parallax only */
+/** Preview hero — stronger visible parallax */
 export const HERO_PARALLAX_PREVIEW = {
-  scroll: { y: -18, scale: 1, z: 0 },
-  mouse: { rotateY: 2, rotateX: 1 },
-  video: { scaleFrom: 1.02, scaleTo: 1, yPercent: 2 },
-  ambient: { yPercent: 2, scale: 1.02 },
+  scroll: { y: -24, scale: 0.99, z: 24 },
+  mouse: { rotateY: 3, rotateX: 1.5 },
+  video: { scaleFrom: 1.06, scaleTo: 1.02, yPercent: 4 },
+  ambient: { yPercent: 6, scale: 1.02 },
 } as const;
 
 /** Section reveal presets */
@@ -159,101 +131,6 @@ export const GALLERY_PARALLAX = [
   { yPercent: -5, scale: 1.015 },
   { yPercent: 7, scale: 0.985 },
 ] as const;
-
-/** Creator production flow — station reveal on scroll */
-export const CREATOR_FLOW_REVEAL = {
-  start: "top 82%",
-  stationY: 22,
-  stagger: 0.14,
-  duration: 0.75,
-  lineDuration: 1.35,
-} as const;
-
-/** Terminal product story — section dramaturgy (preview) */
-export const TERMINAL_STORY_MOTION = {
-  enterStart: "top 78%",
-  scrub: 0.85,
-  numberReveal: { y: 10, duration: 0.5 },
-  toolNameReveal: { x: -40, duration: 0.72 },
-  visualParallax: { y: 28 },
-  textParallax: { y: 8 },
-} as const;
-
-/** Social proof — neutral counter-up only */
-export const SOCIAL_PROOF_COUNTER = {
-  start: "top 82%",
-  duration: 1.15,
-  ease: "power2.out",
-} as const;
-
-export type MediaStageBlend = {
-  layers: Record<
-    "hero" | "system" | "workflow" | "studio" | "outputs",
-    number
-  >;
-  scrim: number;
-  primaryScale: number;
-  primaryY: number;
-  secondaryScale: number;
-  secondaryY: number;
-};
-
-/** Cinematic media stage — scroll blends (preview only) */
-export const MEDIA_STAGE_SCROLL = {
-  heroScrub: 0.72,
-  heroHook: {
-    heroOpacity: 1,
-    heroFade: 0.55,
-    systemRise: 0.42,
-    scrimStart: 0.32,
-    scrimDelta: 0.18,
-    scaleStart: 1.05,
-    scaleDelta: 0.04,
-    yDelta: 3,
-  },
-  blends: {
-    hero: {
-      layers: { hero: 1, system: 0, workflow: 0, studio: 0, outputs: 0 },
-      scrim: 0.32,
-      primaryScale: 1.05,
-      primaryY: 0,
-      secondaryScale: 1.03,
-      secondaryY: 0,
-    },
-    system: {
-      layers: { hero: 0.35, system: 0.85, workflow: 0.12, studio: 0, outputs: 0 },
-      scrim: 0.48,
-      primaryScale: 1.03,
-      primaryY: 2,
-      secondaryScale: 1.03,
-      secondaryY: 0,
-    },
-    workflow: {
-      layers: { hero: 0.12, system: 0.25, workflow: 0.92, studio: 0.08, outputs: 0 },
-      scrim: 0.52,
-      primaryScale: 1.02,
-      primaryY: 3,
-      secondaryScale: 1.04,
-      secondaryY: 1,
-    },
-    studio: {
-      layers: { hero: 0.08, system: 0.15, workflow: 0.28, studio: 0.88, outputs: 0.1 },
-      scrim: 0.58,
-      primaryScale: 1,
-      primaryY: 4,
-      secondaryScale: 1.03,
-      secondaryY: 2,
-    },
-    outputs: {
-      layers: { hero: 0.05, system: 0.1, workflow: 0.22, studio: 0.35, outputs: 0.9 },
-      scrim: 0.62,
-      primaryScale: 1,
-      primaryY: 5,
-      secondaryScale: 1.04,
-      secondaryY: 3,
-    },
-  } satisfies Record<string, MediaStageBlend>,
-} as const;
 
 /** Lenis / window scroll bridge — nav progress reads this when smooth scroll is active */
 let landingScrollY = 0;

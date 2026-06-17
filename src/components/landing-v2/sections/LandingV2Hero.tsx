@@ -5,57 +5,63 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
-import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
-import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
-import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
+import { LandingV2SystemSurface } from "../ui/LandingV2SystemSurface";
+import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
+import { useHero3DStage } from "../hooks/useHero3DStage";
 import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
 
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const backPlateRef = useRef<HTMLDivElement>(null);
+  const ambientRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const links = useLandingV2Links();
-  const isPreview = links.mode === "preview";
+  const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
   const { heroReady: introHeroReady } = useBrandIntro();
   const heroReady = links.enableBrandIntro ? introHeroReady : true;
 
   useHeroEntrance(sectionRef, heroReady);
+  useHero3DStage({
+    sectionRef,
+    stageRef,
+    panelRef,
+    backPlateRef,
+    ambientRef,
+    videoRef,
+    enableParallax: enableCinematicScroll,
+    enableMouse: enableParallax3D,
+    enhanced: links.enablePreviewMotion,
+  });
 
   return (
     <section
       ref={sectionRef}
-      className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] overflow-x-clip ${
-        isPreview ? "landing-v2-hero--video-bg" : ""
-      }`.trim()}
+      className="landing-v2-hero landing-v2-hero--editorial landing-v2-hero--system relative min-h-screen overflow-x-clip"
       aria-labelledby="lv2-hero-heading"
     >
-      {!isPreview ? (
-        <>
-          <div className="landing-v2-hero__gradient" aria-hidden />
-          <div className="landing-v2-hero__flow-silhouette-wrap">
-            <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
-          </div>
-        </>
-      ) : (
-        <>
-          <LandingV2HeroVideoBackground sectionRef={sectionRef} />
-          <div className="landing-v2-hero__readability-scrim" aria-hidden />
-        </>
-      )}
+      <LandingV2HeroAmbient
+        showVideo={links.enableHeroVideo}
+        ambientRef={ambientRef}
+        videoRef={videoRef}
+      />
 
-      <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-12 lg:pb-14">
-        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
-          <p
-            className="landing-v2-kicker landing-v2-kicker--workflow landing-v2-hero__workflow-line mb-3 md:mb-4"
-            data-hero-eyebrow
-          >
-            {copy.workflowLine}
+      <div className="landing-v2-hero__fade" aria-hidden />
+
+      <div className="landing-v2-hero__shell landing-v2-hero__shell--offset relative z-[2] mx-auto w-full max-w-[90rem] px-4 pb-10 sm:px-5 md:px-8 md:pb-14 lg:pb-16">
+        <div className="landing-v2-hero__copy flex min-w-0 max-w-5xl flex-col justify-center">
+          <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
+            <span className="landing-v2-kicker__dot" aria-hidden />
+            {copy.eyebrow}
           </p>
           <h1
             id="lv2-hero-heading"
-            className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline"
+            className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline text-[var(--lv2-text-light)]"
             data-hero-headline
           >
             {copy.headlineLines[0]}
@@ -65,12 +71,12 @@ export function LandingV2Hero() {
             {copy.headlineLines[2]}
           </h1>
           <p
-            className="landing-v2-hero__subline mt-4 max-w-[42ch] md:mt-5"
+            className="landing-v2-hero__subline mt-6 max-w-2xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed"
             data-hero-subline
           >
             {copy.subline}
           </p>
-          <div className="relative z-20 mt-7 flex w-full max-w-full flex-wrap items-center gap-3 md:mt-9">
+          <div className="relative z-20 mt-8 flex w-full max-w-full flex-wrap items-center gap-3 md:mt-10">
             <Link
               href={links.signup}
               className="landing-v2-btn-primary min-h-[44px] shrink-0"
@@ -89,17 +95,38 @@ export function LandingV2Hero() {
           </div>
         </div>
 
-        {isPreview ? (
-          <div data-hero-flow>
-            <LandingV2CreatorProductionFlow
-              variant="hero"
-              className="landing-v2-hero__creator-flow"
-            />
+        <div
+          ref={stageRef}
+          className={`landing-v2-hero__surface-wrap landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 max-w-full ${
+            enableCinematicScroll ? "landing-v2-scene-3d" : ""
+          }`}
+        >
+          <div className="landing-v2-scene-3d__rig landing-v2-hero-stage__rig h-full min-h-[inherit]">
+            {enableCinematicScroll ? (
+              <>
+                <div
+                  ref={backPlateRef}
+                  className="landing-v2-hero-stage__back-plate landing-v2-panel-3d"
+                  aria-hidden
+                />
+                <div
+                  className="landing-v2-hero-stage__depth landing-v2-panel-3d"
+                  aria-hidden
+                />
+              </>
+            ) : null}
+            <div
+              ref={panelRef}
+              data-hero-panel
+              className={`landing-v2-hero-stage__panel landing-v2-hero-stage__panel--editorial landing-v2-hero-stage__panel--surface ${
+                enableCinematicScroll ? "landing-v2-panel-3d" : ""
+              }`}
+            >
+              <LandingV2SystemSurface variant={isMobile ? "compact" : "hero"} />
+            </div>
           </div>
-        ) : null}
+        </div>
       </div>
-
-      <div className="landing-v2-hero__fade" aria-hidden />
     </section>
   );
 }

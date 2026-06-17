@@ -9,60 +9,20 @@ import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 
 const chapterCopy = LANDING_V2_COPY.chapters.pricing;
-const copy = LANDING_V2_COPY.pricing;
 
 export function LandingV2PricingTeaser() {
   const sectionRef = useRef<HTMLElement>(null);
   const links = useLandingV2Links();
-  const isPreview = links.mode === "preview";
   useSectionDramaturgy(sectionRef);
-
-  if (isPreview) {
-    return (
-      <section
-        id="pricing"
-        ref={sectionRef}
-        className="landing-v2-section landing-v2-section--terminal-pricing"
-        aria-labelledby="lv2-pricing-heading"
-      >
-        <div className="landing-v2-terminal-pricing mx-auto w-full max-w-[90rem]">
-          <div className="landing-v2-terminal-pricing__panel">
-            <p className="landing-v2-terminal-story__number" data-lv2-eyebrow>
-              {chapterCopy.number}
-            </p>
-            <h2
-              id="lv2-pricing-heading"
-              className="landing-v2-terminal-pricing__headline"
-              data-lv2-headline-line
-            >
-              {copy.headline}
-            </h2>
-            <p className="landing-v2-terminal-story__body landing-v2-terminal-pricing__body" data-lv2-subline>
-              {copy.subline}
-            </p>
-            <div className="landing-v2-terminal-pricing__row" aria-hidden>
-              <span>Pläne</span>
-              <span>Details</span>
-              <span>Studio-Zugang</span>
-            </div>
-            <Link href={links.pricing} className="landing-v2-btn-secondary landing-v2-terminal-pricing__cta" data-lv2-stagger>
-              {copy.cta}
-              <ArrowRight size={18} aria-hidden />
-            </Link>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section
       id="pricing"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--pricing"
+      className="landing-v2-section landing-v2-section--editorial landing-v2-section--pricing"
       aria-labelledby="lv2-pricing-heading"
     >
-      <div className="landing-v2-chapter mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl">
         <div className="landing-v2-pricing-chapter">
           <LandingV2ChapterMarker
             number={chapterCopy.number}

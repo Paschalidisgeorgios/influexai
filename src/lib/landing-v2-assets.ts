@@ -22,12 +22,7 @@ export const LANDING_V2_ASSETS = {
     poster: "/images/landing/hero-poster.jpg",
     placeholderLabel: "Studio Cockpit",
   },
-  /** Editorial landing film — not used in preview hero (studio loop only) */
-  editorialVideo: {
-    mp4: "/videos/landing/influexai-video.mp4",
-    poster: "/videos/studio/studio-poster.webp",
-  },
-  /** Hero backdrop loop — studio assets (fallback) */
+  /** Hero backdrop loop — studio assets (landing loops not in repo) */
   heroBackdrop: {
     webm: "/videos/studio/studio-loop.webm",
     mp4: "/videos/studio/studio-loop.mp4",
