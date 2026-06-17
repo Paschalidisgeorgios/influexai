@@ -4744,9 +4744,40 @@
   max-width: min(100%, 44rem);
 }
 
+.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
+  font-family: var(--font-fraunces), Fraunces, Georgia, serif;
+  font-size: clamp(4.2rem, 7.2vw, 8rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  color: #f5f2ea;
+  max-width: 11ch;
+  text-shadow: none;
+  transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.landing-v2-hero-headline span,
+.landing-v2-hero-headline .word,
+.landing-v2-hero-headline .line,
+.landing-v2-hero-headline .landing-v2-hero__headline-line,
+.landing-v2-hero-headline .landing-v2-hero__headline-word {
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+}
+
+.landing-v2-hero-headline .landing-v2-hero-rotate__keyword {
+  color: #b4ff00;
+  font-weight: inherit;
+}
+
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-display,
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate,
-.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary {
+.landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary:not(.landing-v2-hero-headline) {
   font-family: var(--font-fraunces), Fraunces, Georgia, serif;
   font-size: clamp(4.4rem, 7.4vw, 8.4rem);
   font-weight: 800;
@@ -4780,6 +4811,11 @@
   display: inline-block;
   transform: none;
   will-change: transform, opacity;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+  font-family: inherit;
 }
 
 .landing-v2-hero__motion-wrap {
@@ -4896,9 +4932,16 @@
     display: none;
   }
 
+  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
+    font-size: clamp(2.6rem, 11vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    max-width: 12ch;
+  }
+
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-display,
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-rotate,
-  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary {
+  .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero__headline--primary:not(.landing-v2-hero-headline) {
     font-size: clamp(2.7rem, 11vw, 4rem);
     line-height: 0.98;
     letter-spacing: -0.045em;

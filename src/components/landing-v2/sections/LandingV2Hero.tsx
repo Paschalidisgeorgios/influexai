@@ -68,7 +68,7 @@ export function LandingV2Hero() {
           {isPreview ? (
             <h1
               id="lv2-hero-heading"
-              className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline landing-v2-hero__headline--primary landing-v2-hero__headline--stack"
+              className="landing-v2-hero-headline landing-v2-hero__headline landing-v2-hero__headline--primary landing-v2-hero__headline--stack"
               data-hero-headline
             >
               {copy.primaryHeadlineLines.slice(0, 3).map((line) => (
