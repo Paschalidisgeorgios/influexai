@@ -9,7 +9,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 // ─── View type (shared across all preview components) ─────────────────────────
 
-export type PreviewView = "studio" | "tools" | "gallery" | "settings";
+export type PreviewView = "studio" | "gallery" | "campaigns" | "brandkit" | "settings";
 
 // ─── Language ─────────────────────────────────────────────────────────────────
 
@@ -24,17 +24,46 @@ const de = {
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
   nav: {
-    studio:   "Cockpit",
-    tools:    "Workflows",
-    gallery:  "Galerie",
-    settings: "Einstellungen",
+    studio:    "Studio",
+    gallery:   "Galerie",
+    campaigns: "Kampagnen",
+    brandkit:  "Brand Kit",
+    settings:  "Einstellungen",
   },
 
-  cockpit: {
-    overline:  "Command Center",
-    headline:  "Was möchtest du produzieren?",
-    subline:   "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und bereitet die Produktion vor.",
-    enterHint: "Enter zum Starten · Umschalt+Enter für neue Zeile",
+  studioCommand: {
+    overline:     "Studio",
+    headline:     "Was möchtest du erstellen?",
+    placeholder:  "Beschreibe, was du erstellen möchtest…",
+    enterHint:    "Enter sendet · Umschalt+Enter für neue Zeile",
+    idleHint:     "Beschreibe dein Ziel — InfluexAI erkennt den Workflow und zeigt das Ergebnis direkt hier.",
+    platformAsk:  "Für welche Plattform oder welchen Zweck soll das Asset entstehen?",
+    mvpLabel:     "MVP-Workflows · Produktions-Dashboard",
+    chips: [
+      { id: "image", prompt: { de: "Erstelle ein Bild von einem Sunset", en: "Create an image of a sunset" }, label: "Bild" },
+      { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },
+      { id: "hook",  prompt: { de: "Schreib mir Hooks für das Bild", en: "Write hooks for this image" }, label: "Hook" },
+      { id: "camp",  prompt: { de: "Starte Kampagne", en: "Start campaign" }, label: "Kampagne" },
+    ],
+    mvpLinks: [
+      { label: "image-gen", href: "/dashboard?tool=image-gen" },
+      { label: "img-to-video", href: "/dashboard?tool=img-to-video" },
+      { label: "viral-hook", href: "/dashboard?tool=viral-hook" },
+      { label: "content-calendar", href: "/dashboard?tool=content-calendar" },
+    ],
+  },
+
+  campaigns: {
+    overline:  "Kampagnen",
+    headline:  "Kampagnen planen und ausführen",
+    subline:   "Content-Kalender und Kampagnen-Workflows — erreichbar über Studio-Command oder direkt im Produktions-Dashboard.",
+    cta:       "Content-Kalender öffnen →",
+  },
+
+  brandKit: {
+    overline:  "Brand Kit",
+    headline:  "Brand Defaults & Assets",
+    subline:   "Farben, Logos und Marken-Defaults — dieses Studio-Setup ist in der Preview noch nicht aktiviert.",
   },
 
   studio: {
@@ -185,13 +214,47 @@ const en: typeof de = {
   previewBannerCta: "Open production studio →",
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
-  nav: { studio:"Cockpit", tools:"Workflows", gallery:"Gallery", settings:"Settings" },
+  nav: {
+    studio:    "Studio",
+    gallery:   "Gallery",
+    campaigns: "Campaigns",
+    brandkit:  "Brand Kit",
+    settings:  "Settings",
+  },
 
-  cockpit: {
-    overline:  "Command Center",
-    headline:  "What do you want to produce?",
-    subline:   "Describe your goal. InfluexAI recognizes the matching workflow and prepares production.",
-    enterHint: "Enter to start · Shift+Enter for new line",
+  studioCommand: {
+    overline:     "Studio",
+    headline:     "What do you want to create?",
+    placeholder:  "Describe what you want to create…",
+    enterHint:    "Enter to send · Shift+Enter for new line",
+    idleHint:     "Describe your goal — InfluexAI recognizes the workflow and shows the result right here.",
+    platformAsk:  "Which platform or purpose should this asset target?",
+    mvpLabel:     "MVP workflows · production dashboard",
+    chips: [
+      { id: "image", prompt: { de: "Erstelle ein Bild von einem Sunset", en: "Create an image of a sunset" }, label: "Image" },
+      { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },
+      { id: "hook",  prompt: { de: "Schreib mir Hooks für das Bild", en: "Write hooks for this image" }, label: "Hook" },
+      { id: "camp",  prompt: { de: "Starte Kampagne", en: "Start campaign" }, label: "Campaign" },
+    ],
+    mvpLinks: [
+      { label: "image-gen", href: "/dashboard?tool=image-gen" },
+      { label: "img-to-video", href: "/dashboard?tool=img-to-video" },
+      { label: "viral-hook", href: "/dashboard?tool=viral-hook" },
+      { label: "content-calendar", href: "/dashboard?tool=content-calendar" },
+    ],
+  },
+
+  campaigns: {
+    overline:  "Campaigns",
+    headline:  "Plan and run campaigns",
+    subline:   "Content calendar and campaign workflows — via Studio command or directly in the production dashboard.",
+    cta:       "Open content calendar →",
+  },
+
+  brandKit: {
+    overline:  "Brand Kit",
+    headline:  "Brand defaults & assets",
+    subline:   "Colors, logos and brand defaults — not activated in this preview yet.",
   },
 
   studio: {

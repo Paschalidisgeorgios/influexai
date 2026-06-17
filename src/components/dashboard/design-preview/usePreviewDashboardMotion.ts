@@ -25,6 +25,9 @@ export function usePreviewDashboardMotion(
         duration: 0.65,
         ease: "power3.out",
         stagger: 0.08,
+        onComplete: () => {
+          gsap.set(entrance, { clearProps: "transform" });
+        },
       });
 
       gsap.to(stagger, {
@@ -34,6 +37,9 @@ export function usePreviewDashboardMotion(
         ease: "power3.out",
         stagger: 0.09,
         delay: 0.12,
+        onComplete: () => {
+          gsap.set(stagger, { clearProps: "transform" });
+        },
       });
     }, root);
 
@@ -53,8 +59,16 @@ export function animatePreviewPanel(
   if (visible) {
     gsap.fromTo(
       panel,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }
+      { opacity: 0, y: 22 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        onComplete: () => {
+          gsap.set(panel, { clearProps: "transform" });
+        },
+      }
     );
   } else {
     gsap.to(panel, { opacity: 0, y: 12, duration: 0.35, ease: "power2.in" });

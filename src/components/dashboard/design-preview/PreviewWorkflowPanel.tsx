@@ -41,6 +41,7 @@ const COPY = {
     cta: {
       image_generation: "Bild erstellen",
       image_to_video: "Video erstellen",
+      hook_generation: "Hooks generieren",
       campaign_planning: "Kampagne planen",
       asset_reuse: "Variante erstellen",
       unknown: "Produktion starten",
@@ -65,6 +66,7 @@ const COPY = {
     cta: {
       image_generation: "Create image",
       image_to_video: "Create video",
+      hook_generation: "Generate hooks",
       campaign_planning: "Plan campaign",
       asset_reuse: "Create variant",
       unknown: "Start production",

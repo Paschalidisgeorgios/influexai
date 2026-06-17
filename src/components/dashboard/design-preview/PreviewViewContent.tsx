@@ -1,9 +1,10 @@
 "use client";
 
 import type { PreviewView } from "./PreviewLang";
-import { PreviewCommandCenter } from "./PreviewCommandCenter";
-import { PreviewToolsFlow } from "./PreviewToolsFlow";
+import { PreviewStudioCommand } from "./PreviewStudioCommand";
 import { PreviewGallery } from "./PreviewGallery";
+import { PreviewCampaigns } from "./PreviewCampaigns";
+import { PreviewBrandKit } from "./PreviewBrandKit";
 import { PreviewSettings } from "./PreviewSettings";
 
 /** Single render switch — view IDs must match PreviewLang nav keys exactly. */
@@ -15,11 +16,13 @@ export function PreviewViewContent({
 }) {
   switch (active) {
     case "studio":
-      return <PreviewCommandCenter />;
-    case "tools":
-      return <PreviewToolsFlow />;
+      return <PreviewStudioCommand />;
     case "gallery":
       return <PreviewGallery />;
+    case "campaigns":
+      return <PreviewCampaigns />;
+    case "brandkit":
+      return <PreviewBrandKit />;
     case "settings":
       return <PreviewSettings />;
     default: {

@@ -2,7 +2,7 @@
 
 /**
  * PreviewShell — isolated design preview (not production dashboard).
- * Studio · Agent · Tools · Gallery · Settings — each view renders visible content.
+ * Studio · Galerie · Kampagnen · Brand Kit · Einstellungen
  */
 
 import { useState } from "react";
@@ -10,15 +10,19 @@ import Link from "next/link";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewViewContent } from "./PreviewViewContent";
 
-const ACCENT   = "#b4ff00";
+const ACCENT = "#b4ff00";
 const SHELL_BG = "#050506";
-const STAGE_SURFACE =
-  "linear-gradient(135deg, rgba(244,240,232,0.90), rgba(244,240,232,0.78), rgba(221,212,196,0.68))";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
-const ACTIVE_VIEWS: PreviewView[] = ["studio", "tools", "gallery", "settings"];
+const ACTIVE_VIEWS: PreviewView[] = [
+  "studio",
+  "gallery",
+  "campaigns",
+  "brandkit",
+  "settings",
+];
 
 function PreviewSidebar({
   active,
@@ -34,19 +38,18 @@ function PreviewSidebar({
       className="hidden h-full w-[220px] shrink-0 flex-col border-r md:flex"
       style={{ background: SHELL_BG, borderColor: "rgba(255,255,255,0.06)" }}
     >
-      <div className="px-7 pb-10 pt-9">
+      <div className="px-7 pb-8 pt-9">
         <span
           className="font-mono text-[13px] font-bold tracking-[0.16em] uppercase text-white"
           style={HL}
         >
           INFLUEX<span style={{ color: ACCENT }}>AI</span>
         </span>
-        <p className="mt-2 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-500">
-          Design Preview · isoliert
-        </p>
       </div>
 
-      <nav className="flex flex-col gap-1 px-4">
+      <div className="mx-7 mb-6 h-px bg-white/[0.06]" />
+
+      <nav className="flex flex-col gap-0.5 px-4">
         {ACTIVE_VIEWS.map((view) => {
           const isActive = active === view;
           return (
@@ -68,9 +71,7 @@ function PreviewSidebar({
         })}
       </nav>
 
-      <div className="mx-7 mt-10 h-px bg-white/[0.06]" />
-
-      <div className="mt-6 px-7">
+      <div className="mt-auto border-t px-7 py-5" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
         <div className="flex items-center justify-between">
           <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-500">
             {t.credits}
@@ -79,20 +80,8 @@ function PreviewSidebar({
             240
           </p>
         </div>
-        <div className="mt-2 flex items-center justify-between">
-          <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-neutral-500">
-            {t.plan}
-          </p>
-          <p className="font-mono text-[11px] text-neutral-300">{t.proPlan}</p>
-        </div>
-      </div>
-
-      <div
-        className="mt-auto border-t px-7 py-5"
-        style={{ borderColor: "rgba(255,255,255,0.05)" }}
-      >
-        <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-600">
-          Preview Mode · design-preview
+        <p className="mt-3 font-mono text-[10px] tracking-[0.12em] uppercase text-neutral-600">
+          Preview · design-preview
         </p>
       </div>
     </aside>
@@ -125,7 +114,7 @@ function PreviewTopbar({ active }: { active: PreviewView }) {
     >
       <div className="flex min-w-0 items-center gap-2">
         <span
-          className="shrink-0 font-mono text-[12px] font-bold tracking-[0.14em] uppercase text-white"
+          className="shrink-0 font-mono text-[12px] font-bold tracking-[0.14em] uppercase text-white md:hidden"
           style={HL}
         >
           INFLUEX<span style={{ color: ACCENT }}>AI</span>
@@ -156,15 +145,13 @@ function PreviewModeBanner() {
   const { t } = useLang();
   return (
     <div
-      className="mb-4 flex flex-col gap-2 rounded-lg border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+      className="mb-6 flex flex-col gap-2 rounded-lg border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
       style={{
-        borderColor: "rgba(8,8,8,0.10)",
-        background: "rgba(180,255,0,0.08)",
+        borderColor: "rgba(255,255,255,0.08)",
+        background: "rgba(180,255,0,0.06)",
       }}
     >
-      <p className="text-[12px] font-medium" style={{ color: "rgba(8,8,8,0.75)" }}>
-        {t.previewBanner}
-      </p>
+      <p className="text-[12px] font-medium text-neutral-300">{t.previewBanner}</p>
       <Link
         href="/dashboard"
         className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-wider"
@@ -187,7 +174,7 @@ function PreviewMobileNav({
 
   return (
     <nav
-      className="flex shrink-0 border-t md:hidden"
+      className="flex shrink-0 overflow-x-hidden border-t md:hidden"
       style={{
         background: SHELL_BG,
         borderColor: "rgba(255,255,255,0.08)",
@@ -207,7 +194,7 @@ function PreviewMobileNav({
               background: isActive ? "rgba(180,255,0,0.06)" : "transparent",
             }}
           >
-            <span className="max-w-full truncate font-mono text-[9px] tracking-[0.06em] uppercase">
+            <span className="max-w-full truncate px-0.5 font-mono text-[8px] tracking-[0.04em] uppercase">
               {t.nav[view]}
             </span>
           </button>
@@ -235,28 +222,9 @@ function PreviewInner() {
             className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
             style={{ background: SHELL_BG, WebkitOverflowScrolling: "touch" }}
           >
-            <div className="w-full max-w-full px-3 py-3 md:px-[7%] md:py-4 lg:px-[6%]">
-              <div
-                className="w-full min-w-0 rounded-xl backdrop-blur-2xl"
-                style={{
-                  background: STAGE_SURFACE,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  boxShadow:
-                    "0 0 0 1px rgba(255,255,255,0.04), 0 28px 88px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.42)",
-                  minHeight: "min(100%, 28rem)",
-                }}
-              >
-                <div
-                  className="h-[2px] w-full rounded-t-xl"
-                  style={{
-                    background: `linear-gradient(90deg, ${ACCENT}55, ${ACCENT}22 40%, transparent 85%)`,
-                  }}
-                />
-                <div className="min-w-0 px-4 pb-8 pt-5 md:px-12 md:pb-16 md:pt-10 lg:px-16 xl:px-20">
-                  <PreviewModeBanner />
-                  <PreviewViewContent active={active} onNavigate={setActive} />
-                </div>
-              </div>
+            <div className="w-full max-w-full px-4 py-4 md:px-8 md:py-8 lg:px-12">
+              <PreviewModeBanner />
+              <PreviewViewContent active={active} onNavigate={setActive} />
             </div>
           </main>
         </div>
