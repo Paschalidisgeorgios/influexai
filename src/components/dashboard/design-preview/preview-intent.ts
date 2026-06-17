@@ -7,6 +7,8 @@ export type PreviewIntent =
   | "image_generation"
   | "ai_influencer"
   | "product_visual"
+  | "image_upscale"
+  | "video_upscale"
   | "image_to_video"
   | "hook_generation"
   | "campaign_planning"
@@ -104,6 +106,32 @@ const ASSET_KEYWORDS = [
   "daraus",
 ];
 
+const IMAGE_UPSCALE_KEYWORDS = [
+  "upscale",
+  "hochskalieren",
+  "verbessern",
+  "schärfer machen",
+  "bild verbessern",
+  "topaz bild",
+  "topaz image",
+  "bild upscalen",
+  "schärfer",
+  "schärfe",
+  "qualität verbessern",
+];
+
+const VIDEO_UPSCALE_KEYWORDS = [
+  "video upscalen",
+  "video verbessern",
+  "topaz video",
+  "video schärfer",
+  "hochskalieren video",
+  "bessere qualität",
+  "export in besserer qualität",
+  "video upscale",
+  "motion verbessern",
+];
+
 const LORA_TRAINING_KEYWORDS = [
   "lora",
   "training",
@@ -156,6 +184,8 @@ export function detectPreviewIntent(input: string): PreviewIntent {
     ai_influencer: 0,
     product_visual: 0,
     lora_training: 0,
+    image_upscale: 0,
+    video_upscale: 0,
     image_to_video: 0,
     hook_generation: 0,
     campaign_planning: 0,
@@ -166,6 +196,8 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   for (const w of AI_INFLUENCER_KEYWORDS) if (q.includes(w)) scores.ai_influencer += 1;
   for (const w of PRODUCT_VISUAL_KEYWORDS) if (q.includes(w)) scores.product_visual += 1;
   for (const w of LORA_TRAINING_KEYWORDS) if (q.includes(w)) scores.lora_training += 1;
+  for (const w of IMAGE_UPSCALE_KEYWORDS) if (q.includes(w)) scores.image_upscale += 1;
+  for (const w of VIDEO_UPSCALE_KEYWORDS) if (q.includes(w)) scores.video_upscale += 1;
   for (const w of VIDEO_KEYWORDS) if (q.includes(w)) scores.image_to_video += 1;
   for (const w of HOOK_KEYWORDS) if (q.includes(w)) scores.hook_generation += 1;
   for (const w of CAMPAIGN_KEYWORDS) if (q.includes(w)) scores.campaign_planning += 1;
@@ -202,6 +234,32 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   if (q.includes("variant")) scores.asset_reuse += 2;
   if (q.includes("hooks für")) scores.hook_generation += 3;
   if (q.includes("starte kampagne")) scores.campaign_planning += 3;
+
+  if (q.includes("topaz bild") || q.includes("topaz image")) scores.image_upscale += 5;
+  if (q.includes("topaz video")) scores.video_upscale += 5;
+  if (q.includes("bild upscalen") || q.includes("bild verbessern")) scores.image_upscale += 4;
+  if (q.includes("video upscalen") || q.includes("video verbessern")) scores.video_upscale += 4;
+  if (q.includes("schärfer machen") || q.includes("mach das bild schärfer")) {
+    scores.image_upscale += 5;
+    scores.image_generation -= 1;
+  }
+  if (q.includes("upscale das video") || q.includes("upscale video")) scores.video_upscale += 5;
+  if (q.includes("export in besserer qualität")) scores.video_upscale += 4;
+
+  const hasVideoSignal = VIDEO_KEYWORDS.some((w) => q.includes(w));
+  const hasImageSignal =
+    q.includes("bild") || q.includes("image") || q.includes("foto") || q.includes("photo");
+
+  if (hasVideoSignal && (q.includes("upscale") || q.includes("verbessern") || q.includes("qualität"))) {
+    scores.video_upscale += 3;
+    scores.image_upscale -= 1;
+  }
+  if (hasImageSignal && !hasVideoSignal && (q.includes("upscale") || q.includes("verbessern"))) {
+    scores.image_upscale += 3;
+    scores.video_upscale -= 1;
+  }
+  if (q.includes("bessere qualität") && hasVideoSignal) scores.video_upscale += 3;
+  if (q.includes("bessere qualität") && hasImageSignal && !hasVideoSignal) scores.image_upscale += 2;
 
   if (detectFluxUltraExplicit(q) && !VIDEO_KEYWORDS.some((w) => q.includes(w))) {
     if (scores.product_visual === 0 && scores.ai_influencer === 0) {
@@ -272,6 +330,10 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
       return `Campaign content plan, ${base}, platform-aware hooks, clear audience angle, actionable post ideas`;
     case "asset_reuse":
       return `Asset variation pipeline, ${base}, preserve brand identity, generate remix-ready outputs`;
+    case "image_upscale":
+      return `Image upscale pipeline, ${base}, preserve detail, export-ready sharpening, Topaz post-production refinement`;
+    case "video_upscale":
+      return `Video upscale pipeline, ${base}, motion detail recovery, export-ready quality, Topaz post-production refinement`;
     default:
       return `Production brief, ${base}, structured for InfluexAI workflow routing`;
   }
@@ -283,14 +345,18 @@ export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): stri
     product_visual: "Produktvisual",
     lora_training: "LoRA Training",
     image_generation: "Bild erstellen",
+    image_upscale: "Bild verbessern",
     image_to_video: "Bild zu Video",
+    video_upscale: "Video verbessern",
   };
   const en: Partial<Record<PreviewIntent, string>> = {
     ai_influencer: "AI Influencer Visual",
     product_visual: "Product visual",
     lora_training: "LoRA Training",
     image_generation: "Create image",
+    image_upscale: "Improve image",
     image_to_video: "Image to video",
+    video_upscale: "Improve video",
   };
   return (lang === "de" ? de : en)[intent] ?? intentLabelFor(intent, lang);
 }
@@ -301,7 +367,9 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
     ai_influencer: "AI Influencer",
     product_visual: "Produktvisual",
     lora_training: "LoRA Training",
+    image_upscale: "Bild verbessern",
     image_to_video: "Bild zu Video",
+    video_upscale: "Video verbessern",
     hook_generation: "Hooks schreiben",
     campaign_planning: "Kampagne planen",
     asset_reuse: "Asset weiterverwenden",
@@ -312,7 +380,9 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
     ai_influencer: "AI Influencer",
     product_visual: "Product visual",
     lora_training: "LoRA Training",
+    image_upscale: "Improve image",
     image_to_video: "Image to video",
+    video_upscale: "Improve video",
     hook_generation: "Write hooks",
     campaign_planning: "Plan campaign",
     asset_reuse: "Reuse asset",
@@ -331,12 +401,51 @@ export function needsPlatformAsk(
     intent === "campaign_planning" ||
     intent === "hook_generation" ||
     intent === "asset_reuse" ||
-    intent === "lora_training"
+    intent === "lora_training" ||
+    intent === "image_upscale" ||
+    intent === "video_upscale"
   ) {
     return false;
   }
   if (input.trim().length < 8) return false;
   return !platform;
+}
+
+export function postGenerationAgentHint(
+  intent: PreviewIntent,
+  lang: "de" | "en",
+  hasImageContext: boolean,
+  hasVideoContext: boolean
+): string | null {
+  const de = lang === "de";
+
+  if (
+    intent === "image_upscale" ||
+    intent === "video_upscale" ||
+    intent === "lora_training" ||
+    intent === "hook_generation" ||
+    intent === "campaign_planning"
+  ) {
+    return null;
+  }
+
+  if (
+    intent === "image_generation" ||
+    intent === "ai_influencer" ||
+    intent === "product_visual"
+  ) {
+    return de
+      ? "Soll ich das Bild noch für Export oder Ads verbessern? Wenn du willst, schärfe ich das Ergebnis noch mit Upscale nach."
+      : "Want me to polish this for export or ads? I can sharpen the result with Upscale next.";
+  }
+
+  if (intent === "image_to_video" || hasVideoContext) {
+    return de
+      ? "Soll ich das Video noch in höherer Qualität ausgeben? Ich kann das Ergebnis jetzt mit einer Upscale-Pipeline veredeln."
+      : "Should I export this video in higher quality? I can refine the result with an upscale pipeline now.";
+  }
+
+  return null;
 }
 
 export { engineLabelForIntent } from "./studio-engine-registry";

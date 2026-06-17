@@ -12,6 +12,7 @@ export type PreviewAssetKind =
   | "campaign"
   | "ultra_prepared"
   | "lora_prepared"
+  | "upscale_prepared"
   | "none";
 
 type AssetPreviewInlineProps = {
@@ -39,7 +40,11 @@ export function AssetPreviewInline({
       ? de
         ? "LoRA Training vorbereitet"
         : "LoRA training prepared"
-      : kind === "ultra_prepared"
+      : kind === "upscale_prepared"
+        ? de
+          ? "Upscale vorbereitet"
+          : "Upscale prepared"
+        : kind === "ultra_prepared"
       ? de
         ? "Ultra Engine vorbereitet"
         : "Ultra engine prepared"
@@ -82,6 +87,23 @@ export function AssetPreviewInline({
               {de
                 ? "Upload, Consent und Trainingsname werden im LoRA-Workflow vorbereitet — kein Training wird hier simuliert."
                 : "Upload, consent and training name are prepared in the LoRA workflow — no training is simulated here."}
+            </p>
+            <div
+              className="rounded border border-dashed px-4 py-6 text-center"
+              style={{ borderColor: "rgba(180,255,0,0.18)", background: "rgba(180,255,0,0.04)" }}
+            >
+              <p className="preview-type-meta" style={{ color: ACCENT }}>
+                {engine.executionHint[lang]}
+              </p>
+            </div>
+          </div>
+        )}
+        {kind === "upscale_prepared" && (
+          <div className="space-y-3">
+            <p className="preview-type-body text-[0.875rem]" style={{ color: "var(--studio-text-secondary)" }}>
+              {de
+                ? "Quelle und Preset sind übernommen. Die Upscale-Pipeline startet im Workflow — hier wird nichts simuliert."
+                : "Source and preset are attached. The upscale pipeline starts in the workflow — nothing is simulated here."}
             </p>
             <div
               className="rounded border border-dashed px-4 py-6 text-center"
@@ -166,7 +188,7 @@ export function AssetPreviewInline({
           </div>
         )}
         <p className="preview-type-meta mt-3">
-          {kind === "ultra_prepared" || kind === "lora_prepared"
+          {kind === "ultra_prepared" || kind === "lora_prepared" || kind === "upscale_prepared"
             ? de
               ? "Preview · Routing bereit"
               : "Preview · routing ready"

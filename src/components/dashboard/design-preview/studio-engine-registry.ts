@@ -5,6 +5,8 @@ import type { PreviewIntent } from "./preview-intent";
 export type StudioEngineId =
   | "flux-ultra-photo"
   | "lora-training"
+  | "topaz-image-upscale"
+  | "topaz-video-upscale"
   | "image-standard"
   | "reference-edit"
   | "motion-engine"
@@ -16,9 +18,14 @@ export type StudioEngineIntent =
   | "image_generation"
   | "ai_influencer"
   | "product_visual"
+  | "product_visual_refinement"
   | "campaign_visual"
   | "lora_training"
-  | "brand_style";
+  | "brand_style"
+  | "image_upscale"
+  | "video_upscale"
+  | "motion_refinement"
+  | "asset_reuse";
 
 export type StudioEngineDefinition = {
   id: StudioEngineId;
@@ -101,6 +108,76 @@ export const STUDIO_ENGINES: Record<StudioEngineId, StudioEngineDefinition> = {
     executionHint: {
       de: "Training vorbereiten · LoRA-Workflow öffnen",
       en: "Prepare training · Open LoRA workflow",
+    },
+  },
+  "topaz-image-upscale": {
+    id: "topaz-image-upscale",
+    label: "InfluexAI Upscale Engine",
+    advancedLabel: "Topaz Image Upscale",
+    provider: "fal",
+    falModel: "fal-ai/topaz/upscale/image",
+    intents: ["image_upscale", "asset_reuse", "ai_influencer", "product_visual_refinement"],
+    capabilities: [
+      "image_upload",
+      "gallery_pick",
+      "current_asset_input",
+      "upscale_factor",
+      "output_format",
+      "subject_detection",
+      "face_enhancement",
+      "face_enhancement_strength",
+      "sharpen",
+      "denoise",
+      "fix_compression",
+      "advanced_model_settings",
+    ],
+    recommendedFor: [
+      "Export-Ready Bilder",
+      "AI Influencer Portraits",
+      "Produktvisuals",
+      "Galerie-Assets",
+      "Ads & Kampagnen",
+    ],
+    mvpRoute: "/dashboard/upscaler",
+    supportsExecution: false,
+    executionHint: {
+      de: "Upscale vorbereitet · Im Upscaler öffnen",
+      en: "Upscale prepared · Open in upscaler",
+    },
+  },
+  "topaz-video-upscale": {
+    id: "topaz-video-upscale",
+    label: "InfluexAI Motion Upscale Engine",
+    advancedLabel: "Topaz Video Upscale",
+    provider: "fal",
+    falModel: "fal-ai/topaz/upscale/video",
+    intents: ["video_upscale", "asset_reuse", "motion_refinement"],
+    capabilities: [
+      "video_upload",
+      "gallery_pick",
+      "current_asset_input",
+      "upscale_factor",
+      "target_fps",
+      "compression",
+      "noise",
+      "halo",
+      "grain",
+      "recover_detail",
+      "h264_output",
+      "advanced_model_settings",
+    ],
+    recommendedFor: [
+      "Motion Export",
+      "Seedance Clips",
+      "Bild-zu-Video",
+      "Galerie-Videos",
+      "High-Detail Motion",
+    ],
+    mvpRoute: "/dashboard?tool=text-to-video",
+    supportsExecution: false,
+    executionHint: {
+      de: "Video-Upscale vorbereitet · Im Motion-Workflow öffnen",
+      en: "Video upscale prepared · Open in motion workflow",
     },
   },
   "image-standard": {
@@ -231,6 +308,8 @@ export function resolveEngineForIntent(
   const q = input.toLowerCase().trim();
 
   if (intent === "image_to_video") return STUDIO_ENGINES["motion-engine"];
+  if (intent === "image_upscale") return STUDIO_ENGINES["topaz-image-upscale"];
+  if (intent === "video_upscale") return STUDIO_ENGINES["topaz-video-upscale"];
   if (intent === "lora_training") return STUDIO_ENGINES["lora-training"];
   if (intent === "hook_generation" || intent === "campaign_planning") {
     return STUDIO_ENGINES["campaign-engine"];
@@ -285,4 +364,65 @@ export function isUltraPhotoEngine(engine: StudioEngineDefinition): boolean {
 
 export function isLoraTrainingEngine(engine: StudioEngineDefinition): boolean {
   return engine.id === "lora-training";
+}
+
+export function isTopazImageUpscaleEngine(engine: StudioEngineDefinition): boolean {
+  return engine.id === "topaz-image-upscale";
+}
+
+export function isTopazVideoUpscaleEngine(engine: StudioEngineDefinition): boolean {
+  return engine.id === "topaz-video-upscale";
+}
+
+export function getAgentCapabilityHint(
+  intent: PreviewIntent,
+  input: string,
+  lang: "de" | "en",
+  opts?: { hasImageAsset?: boolean; hasVideoAsset?: boolean }
+): string | null {
+  const de = lang === "de";
+  const q = input.toLowerCase();
+  const hasImageAsset = opts?.hasImageAsset ?? false;
+  const hasVideoAsset = opts?.hasVideoAsset ?? false;
+
+  if (intent === "image_upscale" && !hasImageAsset) {
+    return de
+      ? "Für Bild-Upscale brauche ich ein Quellbild — Upload, Galerie oder ein frisch erzeugtes Ergebnis."
+      : "Image upscale needs a source — upload, gallery, or a freshly generated result.";
+  }
+
+  if (intent === "video_upscale" && !hasVideoAsset) {
+    return de
+      ? "Für Video-Upscale brauche ich ein Quellvideo — Upload, Galerie oder ein Motion-Ergebnis."
+      : "Video upscale needs a source video — upload, gallery, or a motion result.";
+  }
+
+  if (
+    intent === "ai_influencer" ||
+    (intent === "image_generation" && q.includes("portrait"))
+  ) {
+    return de
+      ? "AI Influencer & Portrait profitieren besonders von Topaz Image Upscale vor Export."
+      : "AI influencer and portrait workflows benefit most from Topaz image upscale before export.";
+  }
+
+  if (intent === "image_to_video" || VIDEO_SIGNALS.some((k) => q.includes(k))) {
+    return de
+      ? "Seedance & generierte Motion eignen sich gut für Topaz Video Upscale nach der Erstellung."
+      : "Seedance and generated motion work well with Topaz video upscale after creation.";
+  }
+
+  if (detectFluxUltraExplicit(q) || intent === "product_visual") {
+    return de
+      ? "Flux Ultra liefert bereits High-Quality-Bilder — Upscale ist optional für Export und Ads."
+      : "Flux Ultra already delivers high-quality stills — upscale is optional for export and ads.";
+  }
+
+  if (intent === "asset_reuse") {
+    return de
+      ? "Galerie-Assets kann ich direkt mit Upscale veredeln — Bild oder Video je nach Asset."
+      : "Gallery assets can be refined with upscale — image or video depending on the asset.";
+  }
+
+  return null;
 }

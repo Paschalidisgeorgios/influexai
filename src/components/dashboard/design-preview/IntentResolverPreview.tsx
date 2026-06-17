@@ -2,6 +2,7 @@
 
 import {
   detectEngineMismatch,
+  getAgentCapabilityHint,
   resolveEngineForIntent,
 } from "./studio-engine-registry";
 import {
@@ -15,6 +16,8 @@ type IntentResolverPreviewProps = {
   input: string;
   lang: "de" | "en";
   platformAsk?: string;
+  hasImageContext?: boolean;
+  hasVideoContext?: boolean;
 };
 
 export function IntentResolverPreview({
@@ -22,11 +25,17 @@ export function IntentResolverPreview({
   input,
   lang,
   platformAsk,
+  hasImageContext = false,
+  hasVideoContext = false,
 }: IntentResolverPreviewProps) {
   if (intent === "unknown") return null;
 
   const engine = resolveEngineForIntent(intent, input);
   const mismatch = detectEngineMismatch(input, intent, lang);
+  const capabilityHint = getAgentCapabilityHint(intent, input, lang, {
+    hasImageAsset: hasImageContext,
+    hasVideoAsset: hasVideoContext,
+  });
 
   return (
     <div
@@ -50,6 +59,14 @@ export function IntentResolverPreview({
           style={{ color: "rgba(244,240,232,0.72)" }}
         >
           {mismatch}
+        </p>
+      ) : null}
+      {capabilityHint ? (
+        <p
+          className="preview-type-body w-full text-[0.8125rem]"
+          style={{ color: "rgba(244,240,232,0.72)" }}
+        >
+          {capabilityHint}
         </p>
       ) : null}
     </div>

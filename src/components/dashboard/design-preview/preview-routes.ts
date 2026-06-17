@@ -11,4 +11,6 @@ export const PREVIEW_MVP_ROUTES = {
   tools: "/dashboard?tool=tools",
   gallery: "/dashboard/gallery",
   loraTraining: "/dashboard/lora-training",
+  imageUpscale: "/dashboard/upscaler",
+  videoUpscale: "/dashboard?tool=text-to-video",
 } as const;

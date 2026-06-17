@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { PreviewIntent } from "./preview-intent";
+import { postGenerationAgentHint } from "./preview-intent";
 import { PREVIEW_MVP_ROUTES } from "./preview-routes";
 
 const ACCENT = "#b4ff00";
@@ -14,31 +15,98 @@ export type ContextAction = {
   onClick?: () => void;
 };
 
+export type FollowUpAction =
+  | "video"
+  | "hooks"
+  | "campaign"
+  | "variant"
+  | "lora"
+  | "upscale_image"
+  | "upscale_video"
+  | "remix";
+
 type PreviewContextActionsProps = {
   intent: PreviewIntent;
   lang: "de" | "en";
   hasImageContext: boolean;
-  onFollowUp?: (action: "video" | "hooks" | "campaign" | "variant" | "lora") => void;
+  hasVideoContext?: boolean;
+  onFollowUp?: (action: FollowUpAction) => void;
 };
 
 function actionsForIntent(
   intent: PreviewIntent,
   lang: "de" | "en",
   hasImageContext: boolean,
+  hasVideoContext: boolean,
   onFollowUp?: PreviewContextActionsProps["onFollowUp"]
 ): ContextAction[] {
   const de = lang === "de";
 
+  if (intent === "image_upscale") {
+    return [
+      {
+        id: "open-upscale",
+        label: de ? "→ Upscaler öffnen" : "→ Open upscaler",
+        href: PREVIEW_MVP_ROUTES.imageUpscale,
+      },
+      {
+        id: "video",
+        label: de ? "→ Zu Video" : "→ To video",
+        onClick: () => onFollowUp?.("video"),
+        href: PREVIEW_MVP_ROUTES.imgToVideo,
+      },
+      {
+        id: "hooks",
+        label: de ? "→ Hooks schreiben" : "→ Write hooks",
+        onClick: () => onFollowUp?.("hooks"),
+        href: PREVIEW_MVP_ROUTES.viralHook,
+      },
+      {
+        id: "campaign",
+        label: de ? "→ In Kampagne" : "→ To campaign",
+        onClick: () => onFollowUp?.("campaign"),
+        href: PREVIEW_MVP_ROUTES.contentCalendar,
+      },
+    ];
+  }
+
+  if (intent === "video_upscale") {
+    return [
+      {
+        id: "open-video-upscale",
+        label: de ? "→ Motion-Upscale öffnen" : "→ Open motion upscale",
+        href: PREVIEW_MVP_ROUTES.videoUpscale,
+      },
+      {
+        id: "remix",
+        label: de ? "→ Remix" : "→ Remix",
+        onClick: () => onFollowUp?.("remix"),
+      },
+      {
+        id: "hooks",
+        label: de ? "→ Hooks schreiben" : "→ Write hooks",
+        onClick: () => onFollowUp?.("hooks"),
+        href: PREVIEW_MVP_ROUTES.viralHook,
+      },
+      {
+        id: "campaign",
+        label: de ? "→ In Kampagne" : "→ To campaign",
+        onClick: () => onFollowUp?.("campaign"),
+        href: PREVIEW_MVP_ROUTES.contentCalendar,
+      },
+    ];
+  }
+
   if (intent === "ai_influencer") {
     return [
       {
-        id: "lora-train",
-        label: de ? "→ Persona trainieren" : "→ Train persona",
-        onClick: () => onFollowUp?.("lora"),
+        id: "upscale",
+        label: de ? "→ Upscale Bild" : "→ Upscale image",
+        onClick: () => onFollowUp?.("upscale_image"),
       },
       {
-        id: "lora-prep",
-        label: de ? "→ LoRA vorbereiten" : "→ Prepare LoRA",
+        id: "lora-train",
+        label: de ? "→ Persona trainieren" : "→ Train persona",
         onClick: () => onFollowUp?.("lora"),
       },
       {
@@ -49,14 +117,15 @@ function actionsForIntent(
       },
       {
         id: "hooks",
-        label: de ? "→ Hook schreiben" : "→ Write hooks",
+        label: de ? "→ Hooks schreiben" : "→ Write hooks",
         onClick: () => onFollowUp?.("hooks"),
         href: PREVIEW_MVP_ROUTES.viralHook,
       },
       {
-        id: "gallery",
-        label: de ? "→ In Galerie speichern" : "→ Save to gallery",
-        href: PREVIEW_MVP_ROUTES.gallery,
+        id: "campaign",
+        label: de ? "→ In Kampagne" : "→ To campaign",
+        onClick: () => onFollowUp?.("campaign"),
+        href: PREVIEW_MVP_ROUTES.contentCalendar,
       },
     ];
   }
@@ -95,7 +164,7 @@ function actionsForIntent(
       },
       {
         id: "hooks",
-        label: de ? "→ Hook schreiben" : "→ Write hooks",
+        label: de ? "→ Hooks schreiben" : "→ Write hooks",
         onClick: () => onFollowUp?.("hooks"),
         href: PREVIEW_MVP_ROUTES.viralHook,
       },
@@ -106,13 +175,9 @@ function actionsForIntent(
         href: PREVIEW_MVP_ROUTES.contentCalendar,
       },
       {
-        id: "download",
-        label: de ? "→ Herunterladen" : "→ Download",
-      },
-      {
-        id: "gallery",
-        label: de ? "→ In Galerie speichern" : "→ Save to gallery",
-        href: PREVIEW_MVP_ROUTES.gallery,
+        id: "upscale",
+        label: de ? "→ Upscale Bild" : "→ Upscale image",
+        onClick: () => onFollowUp?.("upscale_image"),
       },
     ];
   }
@@ -147,15 +212,72 @@ function actionsForIntent(
 
   if (intent === "image_to_video") {
     return [
-      { id: "hooks", label: de ? "→ Hook schreiben" : "→ Write hooks", href: PREVIEW_MVP_ROUTES.viralHook },
-      { id: "gallery", label: de ? "→ In Galerie" : "→ To gallery", href: PREVIEW_MVP_ROUTES.gallery },
-      { id: "download", label: de ? "→ Herunterladen" : "→ Download" },
+      {
+        id: "upscale-video",
+        label: de ? "→ Upscale Video" : "→ Upscale video",
+        onClick: () => onFollowUp?.("upscale_video"),
+      },
+      {
+        id: "remix",
+        label: de ? "→ Remix" : "→ Remix",
+        onClick: () => onFollowUp?.("remix"),
+      },
+      {
+        id: "hooks",
+        label: de ? "→ Hooks schreiben" : "→ Write hooks",
+        onClick: () => onFollowUp?.("hooks"),
+        href: PREVIEW_MVP_ROUTES.viralHook,
+      },
+      {
+        id: "campaign",
+        label: de ? "→ In Kampagne" : "→ To campaign",
+        onClick: () => onFollowUp?.("campaign"),
+        href: PREVIEW_MVP_ROUTES.contentCalendar,
+      },
+    ];
+  }
+
+  if (intent === "asset_reuse") {
+    const upscaleAction = hasVideoContext
+      ? {
+          id: "upscale-video",
+          label: de ? "→ Upscale Video" : "→ Upscale video",
+          onClick: () => onFollowUp?.("upscale_video"),
+        }
+      : hasImageContext
+        ? {
+            id: "upscale",
+            label: de ? "→ Upscale Bild" : "→ Upscale image",
+            onClick: () => onFollowUp?.("upscale_image"),
+          }
+        : null;
+
+    return [
+      ...(upscaleAction ? [upscaleAction] : []),
+      {
+        id: "variant",
+        label: de ? "→ Variante erstellen" : "→ Create variant",
+        onClick: () => onFollowUp?.("variant"),
+      },
+      {
+        id: "gallery",
+        label: de ? "→ In Galerie" : "→ To gallery",
+        href: PREVIEW_MVP_ROUTES.gallery,
+      },
     ];
   }
 
   return [
-    { id: "variant", label: de ? "→ Variante erstellen" : "→ Create variant", onClick: () => onFollowUp?.("variant") },
-    { id: "gallery", label: de ? "→ In Galerie" : "→ To gallery", href: PREVIEW_MVP_ROUTES.gallery },
+    {
+      id: "variant",
+      label: de ? "→ Variante erstellen" : "→ Create variant",
+      onClick: () => onFollowUp?.("variant"),
+    },
+    {
+      id: "gallery",
+      label: de ? "→ In Galerie" : "→ To gallery",
+      href: PREVIEW_MVP_ROUTES.gallery,
+    },
   ];
 }
 
@@ -163,13 +285,23 @@ export function PreviewContextActions({
   intent,
   lang,
   hasImageContext,
+  hasVideoContext = false,
   onFollowUp,
 }: PreviewContextActionsProps) {
-  const items = actionsForIntent(intent, lang, hasImageContext, onFollowUp);
+  const items = actionsForIntent(intent, lang, hasImageContext, hasVideoContext, onFollowUp);
   const title = lang === "de" ? "Was als Nächstes?" : "What's next?";
+  const agentHint = postGenerationAgentHint(intent, lang, hasImageContext, hasVideoContext);
 
   return (
     <div className="min-w-0" data-preview-stagger-item>
+      {agentHint ? (
+        <p
+          className="preview-type-body mb-3 text-[0.8125rem]"
+          style={{ color: "rgba(244,240,232,0.72)" }}
+        >
+          {agentHint}
+        </p>
+      ) : null}
       <p className="preview-type-meta mb-3">{title}</p>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => {

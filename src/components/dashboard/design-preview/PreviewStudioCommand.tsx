@@ -11,7 +11,7 @@ import {
   type WorkflowPhase,
 } from "./DynamicWorkflowResult";
 import { AssetPreviewInline } from "./AssetPreviewInline";
-import { PreviewContextActions } from "./PreviewContextActions";
+import { PreviewContextActions, type FollowUpAction } from "./PreviewContextActions";
 import {
   detectPreviewIntent,
   detectPreviewPlatform,
@@ -34,7 +34,9 @@ export function PreviewStudioCommand() {
   const [optimized, setOptimized] = useState("");
   const [phase, setPhase] = useState<WorkflowPhase>("idle");
   const [hasImageContext, setHasImageContext] = useState(false);
+  const [hasVideoContext, setHasVideoContext] = useState(false);
   const [forceVideoPanel, setForceVideoPanel] = useState(false);
+  const [forceUpscalePanel, setForceUpscalePanel] = useState<"image" | "video" | false>(false);
 
   const tc = t.studioCommand;
   const chips = tc.chips.map((c) => ({ ...c, prompt: c.prompt[lang] }));
@@ -42,16 +44,24 @@ export function PreviewStudioCommand() {
 
   usePreviewDashboardMotion(rootRef, true);
 
-  const intent = useMemo(
-    () => detectPreviewIntent(forceVideoPanel ? "video animieren" : submitted),
-    [submitted, forceVideoPanel]
-  );
+  const intent = useMemo(() => {
+    if (forceVideoPanel) return "image_to_video" as const;
+    if (forceUpscalePanel === "image") return "image_upscale" as const;
+    if (forceUpscalePanel === "video") return "video_upscale" as const;
+    return detectPreviewIntent(submitted);
+  }, [submitted, forceVideoPanel, forceUpscalePanel]);
   const platform = useMemo(() => detectPreviewPlatform(submitted), [submitted]);
   const platformAsk = needsPlatformAsk(submitted, intent, platform.platform)
     ? tc.platformAsk
     : undefined;
 
-  const assetKind = resolveAssetKind(intent, phase, forceVideoPanel, submitted);
+  const assetKind = resolveAssetKind(
+    intent,
+    phase,
+    forceVideoPanel,
+    submitted,
+    forceUpscalePanel
+  );
 
   useEffect(() => {
     animatePreviewPanel(flowRef, phase !== "idle");
@@ -66,12 +76,13 @@ export function PreviewStudioCommand() {
 
     setSubmitted(trimmed);
     setForceVideoPanel(false);
+    setForceUpscalePanel(false);
     const detected = detectPreviewIntent(trimmed);
     setOptimized(buildOptimizedPrompt(trimmed, detected));
     setPhase("optimizing");
 
     window.setTimeout(() => {
-      if (detected === "lora_training") {
+      if (detected === "lora_training" || detected === "image_upscale" || detected === "video_upscale") {
         setPhase("complete");
         return;
       }
@@ -85,13 +96,50 @@ export function PreviewStudioCommand() {
         ) {
           setHasImageContext(true);
         }
+        if (detected === "image_to_video") {
+          setHasVideoContext(true);
+        }
       }, 1200);
     }, 700);
   }, []);
 
   const handleSubmit = () => runWorkflow(input);
 
-  const handleFollowUp = (action: "video" | "hooks" | "campaign" | "variant" | "lora") => {
+  const handleFollowUp = (action: FollowUpAction) => {
+    if (action === "upscale_image") {
+      setForceUpscalePanel("image");
+      setForceVideoPanel(false);
+      setSubmitted(lang === "de" ? "Bild für Export verbessern" : "Improve image for export");
+      setOptimized(
+        buildOptimizedPrompt(
+          lang === "de" ? "Bild für Export verbessern" : "Improve image for export",
+          "image_upscale"
+        )
+      );
+      setPhase("optimizing");
+      window.setTimeout(() => setPhase("complete"), 700);
+      return;
+    }
+    if (action === "upscale_video") {
+      setForceUpscalePanel("video");
+      setForceVideoPanel(false);
+      setSubmitted(lang === "de" ? "Video in höherer Qualität ausgeben" : "Export video in higher quality");
+      setOptimized(
+        buildOptimizedPrompt(
+          lang === "de" ? "Video in höherer Qualität ausgeben" : "Export video in higher quality",
+          "video_upscale"
+        )
+      );
+      setPhase("optimizing");
+      window.setTimeout(() => setPhase("complete"), 700);
+      return;
+    }
+    if (action === "remix") {
+      const p = lang === "de" ? "remix dieses asset" : "remix this asset";
+      setInput(p);
+      runWorkflow(p);
+      return;
+    }
     if (action === "lora") {
       const p =
         lang === "de"
@@ -103,11 +151,15 @@ export function PreviewStudioCommand() {
     }
     if (action === "video") {
       setForceVideoPanel(true);
+      setForceUpscalePanel(false);
       setSubmitted(lang === "de" ? "Bild zu Video animieren" : "Animate image to video");
       setPhase("optimizing");
       window.setTimeout(() => {
         setPhase("generating");
-        window.setTimeout(() => setPhase("complete"), 1000);
+        window.setTimeout(() => {
+          setPhase("complete");
+          setHasVideoContext(true);
+        }, 1000);
       }, 500);
       return;
     }
@@ -159,6 +211,8 @@ export function PreviewStudioCommand() {
               input={submitted}
               lang={lang}
               platformAsk={platformAsk}
+              hasImageContext={hasImageContext}
+              hasVideoContext={hasVideoContext}
             />
 
             <DynamicWorkflowResult
@@ -170,7 +224,9 @@ export function PreviewStudioCommand() {
               format={platform.format}
               lang={lang}
               hasImageContext={hasImageContext}
+              hasVideoContext={hasVideoContext}
               forceVideoPanel={forceVideoPanel}
+              forceUpscalePanel={forceUpscalePanel}
             />
 
             <AssetPreviewInline
@@ -183,9 +239,10 @@ export function PreviewStudioCommand() {
 
             {phase === "complete" ? (
               <PreviewContextActions
-                intent={forceVideoPanel ? "image_to_video" : intent}
+                intent={intent}
                 lang={lang}
                 hasImageContext={hasImageContext}
+                hasVideoContext={hasVideoContext}
                 onFollowUp={handleFollowUp}
               />
             ) : null}

@@ -15,6 +15,8 @@ import {
 } from "./studio-engine-registry";
 import { UltraPhotoWorkflowPanel } from "./UltraPhotoWorkflowPanel";
 import { LoraTrainingWorkflowPanel } from "./LoraTrainingWorkflowPanel";
+import { ImageUpscaleWorkflowPanel } from "./ImageUpscaleWorkflowPanel";
+import { VideoUpscaleWorkflowPanel } from "./VideoUpscaleWorkflowPanel";
 
 const ACCENT = "#b4ff00";
 const META = "rgba(244,240,232,0.45)";
@@ -31,7 +33,9 @@ type DynamicWorkflowResultProps = {
   format: PreviewFormat | null;
   lang: "de" | "en";
   hasImageContext: boolean;
+  hasVideoContext?: boolean;
   forceVideoPanel?: boolean;
+  forceUpscalePanel?: "image" | "video" | false;
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -48,18 +52,20 @@ function ProgressBar({
   lang,
   ultra,
   lora,
+  upscale,
 }: {
   phase: WorkflowPhase;
   lang: "de" | "en";
   ultra: boolean;
   lora: boolean;
+  upscale: boolean;
 }) {
   if (phase === "idle") return null;
 
   const de = lang === "de";
   const label =
     phase === "optimizing"
-      ? lora
+      ? lora || upscale
         ? de
           ? "Workflow wird vorbereitet…"
           : "Preparing workflow…"
@@ -78,16 +84,20 @@ function ProgressBar({
           ? de
             ? "Vorbereitung bereit"
             : "Preparation ready"
-          : ultra
+          : upscale
             ? de
-              ? "Ultra Engine vorbereitet"
-              : "Ultra engine prepared"
-            : de
-              ? "Bereit"
-              : "Ready";
+              ? "Upscale-Pipeline vorbereitet"
+              : "Upscale pipeline prepared"
+            : ultra
+              ? de
+                ? "Ultra Engine vorbereitet"
+                : "Ultra engine prepared"
+              : de
+                ? "Bereit"
+                : "Ready";
 
   const width = phase === "optimizing" ? "35%" : phase === "generating" ? "72%" : "100%";
-  const showBar = phase === "generating" && !lora;
+  const showBar = phase === "generating" && !lora && !upscale;
 
   return (
     <div className="space-y-2">
@@ -172,10 +182,18 @@ export function DynamicWorkflowResult({
   format,
   lang,
   hasImageContext,
+  hasVideoContext = false,
   forceVideoPanel,
+  forceUpscalePanel = false,
 }: DynamicWorkflowResultProps) {
   const de = lang === "de";
-  const effectiveIntent = forceVideoPanel ? "image_to_video" : intent;
+  const effectiveIntent = forceVideoPanel
+    ? "image_to_video"
+    : forceUpscalePanel === "image"
+      ? "image_upscale"
+      : forceUpscalePanel === "video"
+        ? "video_upscale"
+        : intent;
   const showPanel = phase !== "idle" && effectiveIntent !== "unknown";
 
   const engine = resolveEngineForIntent(effectiveIntent, originalPrompt);
@@ -193,6 +211,8 @@ export function DynamicWorkflowResult({
   };
 
   const isLoraWorkflow = effectiveIntent === "lora_training";
+  const isImageUpscaleWorkflow = effectiveIntent === "image_upscale";
+  const isVideoUpscaleWorkflow = effectiveIntent === "video_upscale";
 
   const isUltraWorkflow =
     effectiveIntent === "ai_influencer" ||
@@ -218,7 +238,13 @@ export function DynamicWorkflowResult({
         </span>
       </div>
 
-      <ProgressBar phase={phase} lang={lang} ultra={ultra && isUltraWorkflow} lora={isLoraWorkflow} />
+      <ProgressBar
+        phase={phase}
+        lang={lang}
+        ultra={ultra && isUltraWorkflow}
+        lora={isLoraWorkflow}
+        upscale={isImageUpscaleWorkflow || isVideoUpscaleWorkflow}
+      />
 
       {isLoraWorkflow ? (
         <LoraTrainingWorkflowPanel
@@ -249,7 +275,28 @@ export function DynamicWorkflowResult({
         />
       ) : null}
 
+      {isImageUpscaleWorkflow ? (
+        <ImageUpscaleWorkflowPanel
+          lang={lang}
+          engine={engine}
+          phase={phase}
+          hasSourceAsset={hasImageContext}
+        />
+      ) : null}
+
+      {isVideoUpscaleWorkflow ? (
+        <VideoUpscaleWorkflowPanel
+          lang={lang}
+          engine={engine}
+          phase={phase}
+          hasSourceAsset={hasVideoContext}
+        />
+      ) : null}
+
       {!isUltraWorkflow &&
+        !isLoraWorkflow &&
+        !isImageUpscaleWorkflow &&
+        !isVideoUpscaleWorkflow &&
         (effectiveIntent === "image_generation" || effectiveIntent === "hook_generation") && (
           <div className="grid gap-3">
             <Field label={copy.original}>
@@ -390,6 +437,8 @@ export function DynamicWorkflowResult({
 
       {!isUltraWorkflow &&
         !isLoraWorkflow &&
+        !isImageUpscaleWorkflow &&
+        !isVideoUpscaleWorkflow &&
         effectiveIntent !== "image_to_video" &&
         effectiveIntent !== "campaign_planning" && (
           <StandardAdvancedSettings engine={engine} format={format} lang={lang} />
@@ -402,9 +451,12 @@ export function resolveAssetKind(
   intent: PreviewIntent,
   phase: WorkflowPhase,
   forceVideoPanel?: boolean,
-  input = ""
-): "image" | "video" | "hooks" | "campaign" | "ultra_prepared" | "lora_prepared" | "none" {
+  input = "",
+  forceUpscalePanel?: "image" | "video" | false
+): "image" | "video" | "hooks" | "campaign" | "ultra_prepared" | "lora_prepared" | "upscale_prepared" | "none" {
   if (phase !== "complete") return "none";
+  if (forceUpscalePanel === "image" || intent === "image_upscale") return "upscale_prepared";
+  if (forceUpscalePanel === "video" || intent === "video_upscale") return "upscale_prepared";
   if (forceVideoPanel || intent === "image_to_video") return "video";
   if (intent === "lora_training") return "lora_prepared";
   if (intent === "ai_influencer" || intent === "product_visual") return "ultra_prepared";
