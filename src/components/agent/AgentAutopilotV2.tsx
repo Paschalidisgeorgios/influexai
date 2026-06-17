@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  ArrowUp,
   Calendar,
   ImageIcon,
+  Loader2,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -14,7 +16,6 @@ import {
 } from "@/lib/tools/agent-tool-registry";
 import { AgentRunMessages } from "./AgentRunMessages";
 import { capsuleShow } from "./SmartCapsule";
-import { LoadingButton } from "@/components/ui/LoadingButton";
 import { useAgentAutopilotChat } from "@/hooks/useAgentAutopilotChat";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
 import { createClient } from "@/lib/supabase/client";
@@ -151,9 +152,11 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
   const [activeTool, setActiveTool] = useState<AgentToolKey>("agent");
   const [prompt, setPrompt] = useState(initialPrompt);
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
+  const [inputFocused, setInputFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const { profile, loading: profileLoading } = useCreatorProfile();
-  const { messages, running, error, sendMessage, retryLast } =
+  const { messages, running, error, sendMessage, retryLast, hasSession } =
     useAgentAutopilotChat(initialPrompt);
   const greeting = useAgentGreeting();
 
@@ -217,6 +220,36 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
     setSelectedChip(null);
     requestAnimationFrame(handleInput);
   };
+
+  const showResults = messages.length > 0 || running || Boolean(error);
+  const canSubmit = Boolean(prompt.trim()) && !running;
+
+  useEffect(() => {
+    if (!showResults) return;
+    const timer = window.setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [showResults, messages.length, running, error]);
+
+  const chipButtons = (
+    <div className="flex flex-wrap gap-2">
+      {T.chips.map((chip, i) => (
+        <button
+          key={chip.label}
+          type="button"
+          onClick={() => selectChip(i)}
+          className={`border px-3.5 py-2 text-[12px] font-medium transition-all duration-200 ${STUDIO_RADIUS.button} ${
+            selectedChip === i
+              ? "border-[#B4FF00]/35 bg-[#B4FF00]/10 text-[#080808]"
+              : "border-black/[0.08] bg-transparent text-black/55 hover:border-black/14 hover:bg-black/[0.02] hover:text-black/80"
+          }`}
+        >
+          {chip.label}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 pb-8 md:space-y-10 md:pb-10">
@@ -282,14 +315,23 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         ) : null}
       </header>
 
-      <section className="space-y-5 md:space-y-6">
-        <div className="relative">
+      <section className="space-y-4 md:space-y-5">
+        <div
+          className={`relative overflow-hidden rounded-[24px] border transition-all duration-300 ${
+            running
+              ? "animate-pulse border-[#B4FF00] shadow-[0_0_0_2px_rgba(180,255,0,0.18),0_0_28px_rgba(180,255,0,0.12)] ring-2 ring-[#B4FF00]/25"
+              : inputFocused
+                ? "border-[#B4FF00] shadow-[0_0_0_4px_rgba(180,255,0,0.1)]"
+                : "border-[#b4ff00]/45 shadow-[0_1px_2px_rgba(8,8,8,0.04)]"
+          }`}
+          style={{ background: "rgba(255,250,242,0.55)" }}
+        >
           {showRotatingPlaceholder ? (
             <p
               aria-hidden
-              className="pointer-events-none absolute left-0 top-0 z-0 max-w-full pr-2 text-lg leading-relaxed transition-opacity duration-300 md:text-xl"
+              className="pointer-events-none absolute left-5 top-5 z-0 max-w-[calc(100%-5.5rem)] pr-2 text-base leading-relaxed transition-opacity duration-300 md:text-lg"
               style={{
-                color: "rgba(8,8,8,0.32)",
+                color: "rgba(8,8,8,0.34)",
                 opacity: placeholderVisible ? 1 : 0,
               }}
             >
@@ -301,63 +343,69 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             value={prompt}
             onChange={(e) => handlePromptChange(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
             placeholder={showRotatingPlaceholder ? "" : T.placeholder}
             disabled={running}
             rows={4}
             aria-label="Briefing eingeben"
-            className={`relative z-[1] max-h-[280px] min-h-[148px] w-full resize-none border-0 border-b bg-transparent px-0 py-1 font-sans text-lg leading-relaxed outline-none transition-[border-color] duration-200 focus:border-[#B4FF00]/35 disabled:cursor-not-allowed disabled:opacity-50 md:min-h-[172px] md:text-xl md:leading-relaxed`}
+            className="relative z-[1] max-h-[280px] min-h-[148px] w-full resize-none border-0 bg-transparent px-5 pb-16 pt-5 pr-16 font-sans text-base leading-relaxed outline-none disabled:cursor-not-allowed disabled:opacity-60 md:min-h-[168px] md:text-lg md:leading-relaxed"
             style={{
-              borderBottom: "1px solid rgba(8,8,8,0.12)",
               color: DASHBOARD_TEXT,
               caretColor: DASHBOARD_TEXT,
             }}
           />
-          <p className="mt-3 text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+          <button
+            type="button"
+            onClick={() => void handleGenerate()}
+            disabled={!canSubmit}
+            aria-label={running ? "Vorschlag wird erstellt" : "Vorschlag senden"}
+            className={`absolute bottom-3 right-3 z-[2] inline-flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 hover:opacity-90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 ${STUDIO_RADIUS.button}`}
+            style={{
+              background: canSubmit ? "#B4FF00" : "rgba(8,8,8,0.08)",
+              color: canSubmit ? "#08080a" : "rgba(8,8,8,0.35)",
+              boxShadow: canSubmit ? "0 2px 10px rgba(180,255,0,0.28)" : "none",
+            }}
+          >
+            {running ? (
+              <Loader2 size={18} className="animate-spin" aria-hidden />
+            ) : (
+              <ArrowUp size={18} strokeWidth={2.25} aria-hidden />
+            )}
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
+          <p className="text-[11px]" style={{ color: DASHBOARD_MUTED }}>
             Enter zum Senden · Shift+Enter für neue Zeile
           </p>
+          {running ? (
+            <p className="text-[11px] font-medium" style={{ color: STUDIO_TEXT }}>
+              Vorschlag wird erstellt…
+            </p>
+          ) : null}
         </div>
 
-        <div className="space-y-2.5">
-          <LoadingButton
-            mode="agent"
-            isLoading={running}
-            onClick={() => void handleGenerate()}
-            disabled={!prompt.trim()}
-            className={`h-12 w-full text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 sm:h-[3.25rem] sm:max-w-xs ${STUDIO_RADIUS.button}`}
-            style={{ background: "#B4FF00", color: "#08080a" }}
-          >
-            {running ? "Vorschlag wird erstellt…" : "Vorschlag erstellen"}
-          </LoadingButton>
-          <p className="text-[11px]" style={{ color: DASHBOARD_MUTED }}>
-            {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} · Ergebnis als Vorschlag, nicht
-            als Generierung
-          </p>
-        </div>
+        <p className="px-0.5 text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+          {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} · Ergebnis als Vorschlag, nicht
+          als Generierung
+        </p>
 
-        <div className="flex flex-wrap gap-2 pt-1">
-          {T.chips.map((chip, i) => (
-            <button
-              key={chip.label}
-              type="button"
-              onClick={() => selectChip(i)}
-              className={`border px-3.5 py-2 text-[12px] font-medium transition-all duration-200 ${STUDIO_RADIUS.button} ${
-                selectedChip === i
-                  ? "border-[#B4FF00]/35 bg-[#B4FF00]/10 text-[#080808]"
-                  : "border-black/[0.08] bg-transparent text-black/55 hover:border-black/14 hover:bg-black/[0.02] hover:text-black/80"
-              }`}
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
+        {!hasSession ? chipButtons : null}
+
+        {showResults ? (
+          <div ref={resultsRef} className="scroll-mt-24 pt-1 md:scroll-mt-28">
+            <AgentRunMessages
+              messages={messages}
+              running={running}
+              error={error}
+              onRetry={retryLast}
+            />
+          </div>
+        ) : null}
+
+        {hasSession ? chipButtons : null}
       </section>
-
-      <AgentRunMessages
-        messages={messages}
-        running={running}
-        error={error}
-        onRetry={retryLast}
-      />
 
       <section className="pt-2 md:pt-4">
         <div className="mb-3 flex items-center gap-3">
