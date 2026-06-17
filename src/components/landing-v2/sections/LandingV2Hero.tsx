@@ -6,15 +6,29 @@ import { ArrowRight } from "lucide-react";
 import { LANDING_V2_ASSETS, LANDING_V2_AUDIENCE } from "@/lib/landing-v2-assets";
 import { LandingV2AssetVideo } from "../ui/LandingV2Asset";
 import { useLandingReveal } from "../hooks/useLandingReveal";
+import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useHero3DStage } from "../hooks/useHero3DStage";
 
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const backPlateRef = useRef<HTMLDivElement>(null);
+  const { enable3D } = useLandingViewport();
+
   useLandingReveal(sectionRef);
+  useHero3DStage({
+    sectionRef,
+    stageRef,
+    panelRef,
+    backPlateRef,
+    enabled: enable3D,
+  });
 
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-section relative pt-28 md:pt-36"
+      className="landing-v2-section relative overflow-hidden pt-28 md:pt-36"
       aria-labelledby="lv2-hero-heading"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -22,7 +36,7 @@ export function LandingV2Hero() {
           className="absolute left-1/2 top-0 h-[min(70vw,520px)] w-[min(90vw,900px)] -translate-x-1/2 rounded-full opacity-40"
           style={{
             background:
-              "radial-gradient(ellipse, rgba(180,255,0,0.08) 0%, transparent 68%)",
+              "radial-gradient(ellipse, rgba(180,255,0,0.06) 0%, transparent 68%)",
           }}
         />
       </div>
@@ -72,14 +86,40 @@ export function LandingV2Hero() {
           </div>
         </div>
 
-        <div className="landing-v2-ivory-stage overflow-hidden p-2 md:p-3" data-lv2-reveal>
-          <LandingV2AssetVideo
-            webm={LANDING_V2_ASSETS.hero.webm}
-            mp4={LANDING_V2_ASSETS.hero.mp4}
-            poster={LANDING_V2_ASSETS.hero.poster}
-            placeholderLabel={LANDING_V2_ASSETS.hero.placeholderLabel}
-            variant="hero"
-          />
+        <div
+          ref={stageRef}
+          className={`landing-v2-hero-stage ${enable3D ? "landing-v2-scene-3d" : ""}`}
+          data-lv2-reveal
+        >
+          <div className="landing-v2-scene-3d__rig landing-v2-hero-stage__rig h-full min-h-[inherit]">
+            {enable3D ? (
+              <>
+                <div
+                  ref={backPlateRef}
+                  className="landing-v2-hero-stage__back-plate landing-v2-panel-3d"
+                  aria-hidden
+                />
+                <div
+                  className="landing-v2-hero-stage__glow landing-v2-panel-3d"
+                  aria-hidden
+                />
+              </>
+            ) : null}
+            <div
+              ref={panelRef}
+              className={`landing-v2-hero-stage__panel landing-v2-ivory-stage overflow-hidden ${
+                enable3D ? "landing-v2-panel-3d" : ""
+              }`}
+            >
+              <LandingV2AssetVideo
+                webm={LANDING_V2_ASSETS.hero.webm}
+                mp4={LANDING_V2_ASSETS.hero.mp4}
+                poster={LANDING_V2_ASSETS.hero.poster}
+                placeholderLabel={LANDING_V2_ASSETS.hero.placeholderLabel}
+                variant="hero"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
