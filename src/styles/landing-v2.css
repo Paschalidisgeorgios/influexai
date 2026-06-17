@@ -2768,8 +2768,131 @@
 }
 
 .landing-v2-section--system {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* —— System chapter — tighter spacing & stronger scale —— */
+
+.landing-v2-section--system.landing-v2-section--chapter {
+  min-height: auto;
+  justify-content: flex-start;
+  padding-top: clamp(6rem, 8vh, 8.75rem);
+  padding-bottom: clamp(6rem, 8vh, 8.75rem);
+}
+
+.landing-v2-section--system .landing-v2-chapter {
+  gap: clamp(1.25rem, 2.8vh, 2rem);
+}
+
+.landing-v2-section--system .landing-v2-chapter-marker {
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  gap: 0.45rem 0.65rem;
+}
+
+.landing-v2-section--system .landing-v2-chapter-marker__number {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  color: var(--lv2-lime);
+}
+
+.landing-v2-section--system .landing-v2-chapter__intro {
+  max-width: 100%;
+}
+
+.landing-v2-section--system .landing-v2-chapter__headline {
+  margin-top: 0.75rem;
+  font-size: clamp(2.4rem, 4.5vw, 4.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.landing-v2-section--system .landing-v2-chapter__lead {
+  margin-top: 1rem;
+  max-width: 48ch;
+  font-size: clamp(1rem, 1.25vw, 1.25rem);
+  line-height: 1.65;
+  color: rgba(245, 242, 234, 0.82);
+}
+
+.landing-v2-section--system .landing-v2-system-model {
+  padding: clamp(1.5rem, 2.8vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem)
+    clamp(1.625rem, 3vw, 2.5rem);
+  border-radius: 20px;
+}
+
+.landing-v2-section--system .landing-v2-system-model__kicker {
+  margin-bottom: 1rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: rgba(244, 240, 232, 0.62);
+}
+
+.landing-v2-section--system .landing-v2-system-model__steps {
+  gap: clamp(0.75rem, 1.75vw, 1.125rem);
+}
+
+.landing-v2-section--system .landing-v2-system-model__step {
+  gap: 0.4rem;
+}
+
+.landing-v2-section--system .landing-v2-system-model__step-label {
+  font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+  letter-spacing: 0.04em;
+}
+
+.landing-v2-section--system .landing-v2-system-model__step-hint {
+  font-size: clamp(0.8125rem, 1.25vw, 0.9375rem);
+  line-height: 1.45;
+  color: rgba(245, 242, 234, 0.72);
+}
+
+.landing-v2-section--system .landing-v2-system-model__connector {
+  margin-top: 1.25rem;
+  min-height: 8px;
+}
+
+.landing-v2-section--system .landing-v2-system-model__dot {
+  width: 7px;
+  height: 7px;
+}
+
+@media (max-width: 767px) {
+  .landing-v2-section--system.landing-v2-section--chapter {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .landing-v2-section--system .landing-v2-chapter {
+    gap: 1.25rem;
+    padding-inline: 1rem;
+  }
+
+  .landing-v2-section--system .landing-v2-chapter__headline {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+  }
+
+  .landing-v2-section--system .landing-v2-chapter__lead {
+    max-width: none;
+    font-size: 1rem;
+  }
+
+  .landing-v2-section--system .landing-v2-system-model {
+    padding: 1.125rem 1rem 1.25rem;
+  }
+
+  .landing-v2-section--system .landing-v2-system-model__step-label {
+    font-size: 0.9375rem;
+  }
+
+  .landing-v2-section--system .landing-v2-system-model__step-hint {
+    font-size: 0.8125rem;
+  }
 }
 
 /* —— System model — command-first dashboard story —— */
@@ -3829,7 +3952,6 @@
   box-shadow: 0 0 14px rgba(180, 255, 0, 0.35);
 }
 
-.landing-v2-section--system,
 .landing-v2-section--paths,
 .landing-v2-section--studio {
   padding-left: 0;
