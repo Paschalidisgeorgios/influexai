@@ -10,4 +10,5 @@ export const PREVIEW_MVP_ROUTES = {
   contentCalendar: "/dashboard?tool=content-calendar",
   tools: "/dashboard?tool=tools",
   gallery: "/dashboard/gallery",
+  loraTraining: "/dashboard/lora-training",
 } as const;

@@ -3,6 +3,7 @@
 import { detectFluxUltraExplicit } from "./studio-engine-registry";
 
 export type PreviewIntent =
+  | "lora_training"
   | "image_generation"
   | "ai_influencer"
   | "product_visual"
@@ -103,6 +104,23 @@ const ASSET_KEYWORDS = [
   "daraus",
 ];
 
+const LORA_TRAINING_KEYWORDS = [
+  "lora",
+  "training",
+  "trainieren",
+  "modell trainieren",
+  "influencer trainieren",
+  "ki influencer trainieren",
+  "persona trainieren",
+  "style trainieren",
+  "brand look trainieren",
+  "eigenes modell",
+  "character consistency",
+  "wiedererkennbarer look",
+  "trainiere",
+  "trainings",
+];
+
 const PLATFORM_RULES: { platform: PreviewPlatform; format: PreviewFormat; keywords: string[] }[] = [
   { platform: "instagram_reel", format: "9:16", keywords: ["instagram reel", "reel", "tiktok", "9:16"] },
   { platform: "instagram_feed", format: "4:5", keywords: ["instagram feed", "instagram post", "feed", "4:5"] },
@@ -137,6 +155,7 @@ export function detectPreviewIntent(input: string): PreviewIntent {
     image_generation: 0,
     ai_influencer: 0,
     product_visual: 0,
+    lora_training: 0,
     image_to_video: 0,
     hook_generation: 0,
     campaign_planning: 0,
@@ -146,6 +165,7 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   for (const w of IMAGE_KEYWORDS) if (q.includes(w)) scores.image_generation += 1;
   for (const w of AI_INFLUENCER_KEYWORDS) if (q.includes(w)) scores.ai_influencer += 1;
   for (const w of PRODUCT_VISUAL_KEYWORDS) if (q.includes(w)) scores.product_visual += 1;
+  for (const w of LORA_TRAINING_KEYWORDS) if (q.includes(w)) scores.lora_training += 1;
   for (const w of VIDEO_KEYWORDS) if (q.includes(w)) scores.image_to_video += 1;
   for (const w of HOOK_KEYWORDS) if (q.includes(w)) scores.hook_generation += 1;
   for (const w of CAMPAIGN_KEYWORDS) if (q.includes(w)) scores.campaign_planning += 1;
@@ -157,6 +177,25 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   if (q.includes("produktbild") || q.includes("produktfoto")) scores.product_visual += 4;
   if (q.includes("kampagnenbild") || q.includes("werbebild")) scores.product_visual += 3;
   if (q.includes("product visual")) scores.product_visual += 3;
+
+  if (q.includes("lora")) scores.lora_training += 5;
+  if (q.includes("trainiere") || q.includes("trainieren")) scores.lora_training += 4;
+  if (q.includes("ki influencer trainieren") || q.includes("influencer trainieren")) {
+    scores.lora_training += 6;
+  }
+  if (q.includes("persona trainieren") || q.includes("brand look trainieren")) {
+    scores.lora_training += 5;
+  }
+  if (q.includes("eigenes modell")) scores.lora_training += 5;
+  if (q.includes("wiedererkennbar")) scores.lora_training += 3;
+
+  if (
+    (q.includes("trainiere") || q.includes("trainieren") || q.includes("training")) &&
+    (q.includes("influencer") || q.includes("persona") || q.includes("brand") || q.includes("lora"))
+  ) {
+    scores.lora_training += 4;
+    scores.ai_influencer -= 1;
+  }
 
   if (q.includes("verwandel") && q.includes("video")) scores.image_to_video += 2;
   if (q.includes("mach daraus") && q.includes("video")) scores.image_to_video += 3;
@@ -215,6 +254,8 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
     }
     case "product_visual":
       return `Premium product photography, ${base}, editorial campaign lighting, sharp macro detail, clean composition, luxury brand visual, studio-grade capture, commercial advertising quality, natural shadows, high-end campaign asset.`;
+    case "lora_training":
+      return `LoRA training brief, ${base}, reusable persona or brand style, consistent visual identity, prepared for reference upload and consent review.`;
     case "image_generation":
       if (q.includes("sunset")) {
         return "Golden hour sunset over mountains, cinematic photography, high detail, warm tones, editorial campaign quality";
@@ -240,12 +281,14 @@ export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): stri
   const de: Partial<Record<PreviewIntent, string>> = {
     ai_influencer: "AI Influencer Visual",
     product_visual: "Produktvisual",
+    lora_training: "LoRA Training",
     image_generation: "Bild erstellen",
     image_to_video: "Bild zu Video",
   };
   const en: Partial<Record<PreviewIntent, string>> = {
     ai_influencer: "AI Influencer Visual",
     product_visual: "Product visual",
+    lora_training: "LoRA Training",
     image_generation: "Create image",
     image_to_video: "Image to video",
   };
@@ -257,6 +300,7 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
     image_generation: "Bild erstellen",
     ai_influencer: "AI Influencer",
     product_visual: "Produktvisual",
+    lora_training: "LoRA Training",
     image_to_video: "Bild zu Video",
     hook_generation: "Hooks schreiben",
     campaign_planning: "Kampagne planen",
@@ -267,6 +311,7 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
     image_generation: "Create image",
     ai_influencer: "AI Influencer",
     product_visual: "Product visual",
+    lora_training: "LoRA Training",
     image_to_video: "Image to video",
     hook_generation: "Write hooks",
     campaign_planning: "Plan campaign",
@@ -285,7 +330,8 @@ export function needsPlatformAsk(
     intent === "unknown" ||
     intent === "campaign_planning" ||
     intent === "hook_generation" ||
-    intent === "asset_reuse"
+    intent === "asset_reuse" ||
+    intent === "lora_training"
   ) {
     return false;
   }

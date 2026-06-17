@@ -18,7 +18,7 @@ type PreviewContextActionsProps = {
   intent: PreviewIntent;
   lang: "de" | "en";
   hasImageContext: boolean;
-  onFollowUp?: (action: "video" | "hooks" | "campaign" | "variant") => void;
+  onFollowUp?: (action: "video" | "hooks" | "campaign" | "variant" | "lora") => void;
 };
 
 function actionsForIntent(
@@ -29,9 +29,60 @@ function actionsForIntent(
 ): ContextAction[] {
   const de = lang === "de";
 
+  if (intent === "ai_influencer") {
+    return [
+      {
+        id: "lora-train",
+        label: de ? "→ Persona trainieren" : "→ Train persona",
+        onClick: () => onFollowUp?.("lora"),
+      },
+      {
+        id: "lora-prep",
+        label: de ? "→ LoRA vorbereiten" : "→ Prepare LoRA",
+        onClick: () => onFollowUp?.("lora"),
+      },
+      {
+        id: "video",
+        label: de ? "→ Zu Video" : "→ To video",
+        onClick: () => onFollowUp?.("video"),
+        href: PREVIEW_MVP_ROUTES.imgToVideo,
+      },
+      {
+        id: "hooks",
+        label: de ? "→ Hook schreiben" : "→ Write hooks",
+        onClick: () => onFollowUp?.("hooks"),
+        href: PREVIEW_MVP_ROUTES.viralHook,
+      },
+      {
+        id: "gallery",
+        label: de ? "→ In Galerie speichern" : "→ Save to gallery",
+        href: PREVIEW_MVP_ROUTES.gallery,
+      },
+    ];
+  }
+
+  if (intent === "lora_training") {
+    return [
+      {
+        id: "open-lora",
+        label: de ? "→ LoRA-Workflow öffnen" : "→ Open LoRA workflow",
+        href: PREVIEW_MVP_ROUTES.loraTraining,
+      },
+      {
+        id: "gallery",
+        label: de ? "→ Bilder aus Galerie" : "→ Images from gallery",
+        href: PREVIEW_MVP_ROUTES.gallery,
+      },
+      {
+        id: "influencer",
+        label: de ? "→ AI Influencer Visual" : "→ AI influencer visual",
+        href: PREVIEW_MVP_ROUTES.kiInfluencer,
+      },
+    ];
+  }
+
   if (
     intent === "image_generation" ||
-    intent === "ai_influencer" ||
     intent === "product_visual" ||
     (hasImageContext && intent === "image_to_video")
   ) {

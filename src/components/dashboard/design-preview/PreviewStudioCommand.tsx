@@ -71,6 +71,10 @@ export function PreviewStudioCommand() {
     setPhase("optimizing");
 
     window.setTimeout(() => {
+      if (detected === "lora_training") {
+        setPhase("complete");
+        return;
+      }
       setPhase("generating");
       window.setTimeout(() => {
         setPhase("complete");
@@ -87,7 +91,16 @@ export function PreviewStudioCommand() {
 
   const handleSubmit = () => runWorkflow(input);
 
-  const handleFollowUp = (action: "video" | "hooks" | "campaign" | "variant") => {
+  const handleFollowUp = (action: "video" | "hooks" | "campaign" | "variant" | "lora") => {
+    if (action === "lora") {
+      const p =
+        lang === "de"
+          ? "Trainiere einen KI Influencer mit diesen Bildern"
+          : "Train an AI influencer with these images";
+      setInput(p);
+      runWorkflow(p);
+      return;
+    }
     if (action === "video") {
       setForceVideoPanel(true);
       setSubmitted(lang === "de" ? "Bild zu Video animieren" : "Animate image to video");

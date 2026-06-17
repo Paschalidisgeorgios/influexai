@@ -4,6 +4,7 @@ import type { PreviewIntent } from "./preview-intent";
 
 export type StudioEngineId =
   | "flux-ultra-photo"
+  | "lora-training"
   | "image-standard"
   | "reference-edit"
   | "motion-engine"
@@ -15,12 +16,16 @@ export type StudioEngineIntent =
   | "image_generation"
   | "ai_influencer"
   | "product_visual"
-  | "campaign_visual";
+  | "campaign_visual"
+  | "lora_training"
+  | "brand_style";
 
 export type StudioEngineDefinition = {
   id: StudioEngineId;
-  /** User-facing label — shown in workflow header */
+  /** User-facing engine label — shown in workflow header */
   label: string;
+  /** Tool label for capability registry */
+  toolLabel?: string;
   /** Technical model name — advanced settings only */
   advancedLabel?: string;
   provider?: string;
@@ -65,6 +70,38 @@ export const STUDIO_ENGINES: Record<StudioEngineId, StudioEngineDefinition> = {
     mvpRoute: "/dashboard?tool=image-gen&quality=ultra&engine=flux-ultra",
     supportsExecution: false,
     executionHint: FLUX_ULTRA_EXECUTION_HINT,
+  },
+  "lora-training": {
+    id: "lora-training",
+    label: "InfluexAI Training Engine",
+    toolLabel: "Persona & Style Training",
+    advancedLabel: "Flux LoRA",
+    provider: "fal.ai",
+    intents: ["lora_training", "ai_influencer", "brand_style"],
+    capabilities: [
+      "image_upload",
+      "gallery_pick",
+      "consent_required",
+      "training_name",
+      "training_description",
+      "training_type",
+      "quality",
+      "advanced_model_settings",
+      "training_status",
+    ],
+    recommendedFor: [
+      "AI Influencer Personas",
+      "Brand Style",
+      "Produktstil",
+      "Character Consistency",
+      "Kampagnenserien",
+    ],
+    mvpRoute: "/dashboard/lora-training",
+    supportsExecution: false,
+    executionHint: {
+      de: "Training vorbereiten · LoRA-Workflow öffnen",
+      en: "Prepare training · Open LoRA workflow",
+    },
   },
   "image-standard": {
     id: "image-standard",
@@ -194,6 +231,7 @@ export function resolveEngineForIntent(
   const q = input.toLowerCase().trim();
 
   if (intent === "image_to_video") return STUDIO_ENGINES["motion-engine"];
+  if (intent === "lora_training") return STUDIO_ENGINES["lora-training"];
   if (intent === "hook_generation" || intent === "campaign_planning") {
     return STUDIO_ENGINES["campaign-engine"];
   }
@@ -243,4 +281,8 @@ export function engineLabelForIntent(intent: PreviewIntent, input = ""): string 
 
 export function isUltraPhotoEngine(engine: StudioEngineDefinition): boolean {
   return engine.id === "flux-ultra-photo";
+}
+
+export function isLoraTrainingEngine(engine: StudioEngineDefinition): boolean {
+  return engine.id === "lora-training";
 }

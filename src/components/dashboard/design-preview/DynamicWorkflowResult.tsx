@@ -8,11 +8,13 @@ import {
 } from "./preview-intent";
 import { PREVIEW_MVP_ROUTES } from "./preview-routes";
 import {
+  isLoraTrainingEngine,
   isUltraPhotoEngine,
   resolveEngineForIntent,
   type StudioEngineDefinition,
 } from "./studio-engine-registry";
 import { UltraPhotoWorkflowPanel } from "./UltraPhotoWorkflowPanel";
+import { LoraTrainingWorkflowPanel } from "./LoraTrainingWorkflowPanel";
 
 const ACCENT = "#b4ff00";
 const META = "rgba(244,240,232,0.45)";
@@ -45,19 +47,25 @@ function ProgressBar({
   phase,
   lang,
   ultra,
+  lora,
 }: {
   phase: WorkflowPhase;
   lang: "de" | "en";
   ultra: boolean;
+  lora: boolean;
 }) {
   if (phase === "idle") return null;
 
   const de = lang === "de";
   const label =
     phase === "optimizing"
-      ? de
-        ? "Prompt optimiert"
-        : "Prompt optimized"
+      ? lora
+        ? de
+          ? "Workflow wird vorbereitet…"
+          : "Preparing workflow…"
+        : de
+          ? "Prompt optimiert"
+          : "Prompt optimized"
       : phase === "generating"
         ? ultra
           ? de
@@ -66,15 +74,20 @@ function ProgressBar({
           : de
             ? "Generiert…"
             : "Generating…"
-        : ultra
+        : lora
           ? de
-            ? "Ultra Engine vorbereitet"
-            : "Ultra engine prepared"
-          : de
-            ? "Bereit"
-            : "Ready";
+            ? "Vorbereitung bereit"
+            : "Preparation ready"
+          : ultra
+            ? de
+              ? "Ultra Engine vorbereitet"
+              : "Ultra engine prepared"
+            : de
+              ? "Bereit"
+              : "Ready";
 
   const width = phase === "optimizing" ? "35%" : phase === "generating" ? "72%" : "100%";
+  const showBar = phase === "generating" && !lora;
 
   return (
     <div className="space-y-2">
@@ -84,7 +97,7 @@ function ProgressBar({
         ) : null}
         {label}
       </p>
-      {phase === "generating" ? (
+      {showBar ? (
         <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
           <div
             className="h-full rounded-full transition-all duration-700"
@@ -167,6 +180,7 @@ export function DynamicWorkflowResult({
 
   const engine = resolveEngineForIntent(effectiveIntent, originalPrompt);
   const ultra = isUltraPhotoEngine(engine);
+  const lora = isLoraTrainingEngine(engine);
 
   if (!showPanel) return null;
 
@@ -177,6 +191,8 @@ export function DynamicWorkflowResult({
       ? "Prompts werden für die Produktions-Engine optimiert."
       : "Prompts are optimized for the production engine.",
   };
+
+  const isLoraWorkflow = effectiveIntent === "lora_training";
 
   const isUltraWorkflow =
     effectiveIntent === "ai_influencer" ||
@@ -202,7 +218,16 @@ export function DynamicWorkflowResult({
         </span>
       </div>
 
-      <ProgressBar phase={phase} lang={lang} ultra={ultra && isUltraWorkflow} />
+      <ProgressBar phase={phase} lang={lang} ultra={ultra && isUltraWorkflow} lora={isLoraWorkflow} />
+
+      {isLoraWorkflow ? (
+        <LoraTrainingWorkflowPanel
+          originalPrompt={originalPrompt}
+          lang={lang}
+          engine={engine}
+          phase={phase}
+        />
+      ) : null}
 
       {isUltraWorkflow ? (
         <UltraPhotoWorkflowPanel
@@ -364,6 +389,7 @@ export function DynamicWorkflowResult({
         )}
 
       {!isUltraWorkflow &&
+        !isLoraWorkflow &&
         effectiveIntent !== "image_to_video" &&
         effectiveIntent !== "campaign_planning" && (
           <StandardAdvancedSettings engine={engine} format={format} lang={lang} />
@@ -377,9 +403,10 @@ export function resolveAssetKind(
   phase: WorkflowPhase,
   forceVideoPanel?: boolean,
   input = ""
-): "image" | "video" | "hooks" | "campaign" | "ultra_prepared" | "none" {
+): "image" | "video" | "hooks" | "campaign" | "ultra_prepared" | "lora_prepared" | "none" {
   if (phase !== "complete") return "none";
   if (forceVideoPanel || intent === "image_to_video") return "video";
+  if (intent === "lora_training") return "lora_prepared";
   if (intent === "ai_influencer" || intent === "product_visual") return "ultra_prepared";
   if (intent === "image_generation" && isUltraPhotoEngine(resolveEngineForIntent(intent, input))) {
     return "ultra_prepared";
