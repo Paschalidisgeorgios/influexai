@@ -38,18 +38,39 @@ export const IMG_TO_VIDEO_START_IMAGE_COPY = {
   galleryClose: "Schließen",
 } as const;
 
+export const NON_MVP_SETUP_COPY = {
+  status: "Dieses Studio-Setup ist noch nicht aktiviert.",
+  body: "Du kannst dein Briefing mit dem Agenten vorbereiten oder ein verfügbares Tool auswählen.",
+  primaryCta: "Verfügbare Tools ansehen",
+  secondaryCta: "Mit Agent vorbereiten",
+} as const;
+
 export const SETUP_COPY = {
   creditsBeforeStart: "Kosten siehst du vor dem Start.",
   agentSecondary: "Mit Agent vorbereiten",
-  agentPrimary: "Im Agent vorbereiten",
   errorGeneric:
     "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
   galleryResult: "Ergebnis wird in deiner Galerie gespeichert.",
   resultInline: "Ergebnis erscheint direkt hier.",
   toolCardCta: "Tool einrichten",
+  toolCardCtaComingSoon: "Demnächst",
+  toolCardCtaGallery: "Galerie öffnen",
+  hubComingSoonTitle: "Demnächst",
+  hubComingSoonDescription:
+    "Weitere Studios folgen schrittweise — wähle bis dahin ein verfügbares Tool.",
   modelsLoading: "Modelle werden geladen…",
   videoGenerating: "Video wird erstellt — das kann einige Minuten dauern.",
 } as const;
+
+export function isSetupMvpTool(toolId: ToolId): boolean {
+  return SETUP_MVP_TOOL_IDS.has(toolId);
+}
+
+export function getToolHubCardCta(toolId: ToolId): string {
+  if (toolId === "gallery") return SETUP_COPY.toolCardCtaGallery;
+  if (isSetupMvpTool(toolId)) return SETUP_COPY.toolCardCta;
+  return SETUP_COPY.toolCardCtaComingSoon;
+}
 
 const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {
   "viral-hook": "Text & Kampagne",
@@ -85,16 +106,19 @@ const CREDIT_UI_OVERRIDES: Partial<Record<ToolId, string>> = {
 export function getSetupCreditLabel(
   toolId: ToolId,
   settings?: Record<string, unknown> | null
-): string {
+): string | null {
+  if (!isSetupMvpTool(toolId)) {
+    return null;
+  }
   if (CREDIT_UI_OVERRIDES[toolId]) {
     return CREDIT_UI_OVERRIDES[toolId]!;
   }
   const raw = getCreditDisplayLabel(toolId, settings);
   if (raw.includes("AgentBox") || raw.includes("Dashboard")) {
-    return "2–5 Credits";
+    return null;
   }
-  if (/Fallback/i.test(raw)) {
-    return "Ab 50 Credits · abhängig von Modell und Dauer";
+  if (/Fallback|Preview|Mock|Legacy/i.test(raw)) {
+    return null;
   }
   return raw;
 }

@@ -11,7 +11,6 @@ import {
   Film,
   Zap,
   Calendar,
-  UserRound,
   Bot,
   ChevronRight,
   Loader2,
@@ -43,9 +42,9 @@ interface QuickAction {
 const QUICK_ACTIONS: QuickAction[] = [
   { id: "image-gen", label: "Bild erstellen", icon: <ImageIcon size={16} strokeWidth={1.75} /> },
   { id: "img-to-video", label: "Video erstellen", icon: <Film size={16} strokeWidth={1.75} /> },
+  { id: "text-to-video", label: "Text zu Video", icon: <Film size={16} strokeWidth={1.75} /> },
   { id: "viral-hook", label: "Hook schreiben", icon: <Zap size={16} strokeWidth={1.75} /> },
   { id: "content-calendar", label: "Kampagne planen", icon: <Calendar size={16} strokeWidth={1.75} /> },
-  { id: "avatar-video", label: "Avatar Studio", icon: <UserRound size={16} strokeWidth={1.75} /> },
 ];
 
 function formatQuickActionCredits(toolId: ToolId, affordance: number): string | null {

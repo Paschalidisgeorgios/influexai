@@ -3,7 +3,11 @@
 import Link from "next/link";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
-import { SETUP_COPY } from "./production-tool-setup-ui";
+import {
+  getToolHubCardCta,
+  isSetupMvpTool,
+  SETUP_COPY,
+} from "./production-tool-setup-ui";
 import {
   FEATURED_TOOLS,
   getToolOverviewCategoriesExcludingFeatured,
@@ -75,14 +79,18 @@ function FeaturedToolCard({
 }
 
 function StandardToolCard({
+  toolId,
   label,
   description,
   onClick,
 }: {
+  toolId: ToolId;
   label: string;
   description: string;
   onClick: () => void;
 }) {
+  const cta = getToolHubCardCta(toolId);
+
   return (
     <button
       type="button"
@@ -118,7 +126,48 @@ function StandardToolCard({
         className="mt-3 text-[11px] font-medium opacity-70 transition-opacity group-hover:opacity-100"
         style={{ color: DASHBOARD_TEXT }}
       >
-        {SETUP_COPY.toolCardCta}
+        {cta}
+      </span>
+    </button>
+  );
+}
+
+function ComingSoonToolCard({
+  label,
+  description,
+  onClick,
+}: {
+  label: string;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex min-h-[96px] flex-col p-4 text-left transition-colors md:p-5 ${STUDIO_RADIUS.card}`}
+      style={{
+        background: "rgba(255,250,242,0.38)",
+        border: `1px solid ${STUDIO_CARD_BORDER}`,
+      }}
+    >
+      <span
+        className="text-[14px] font-semibold tracking-tight"
+        style={{ color: DASHBOARD_TEXT }}
+      >
+        {label}
+      </span>
+      <p
+        className="mt-2 flex-1 text-[12px] leading-relaxed"
+        style={{ color: DASHBOARD_MUTED }}
+      >
+        {description}
+      </p>
+      <span
+        className="mt-3 text-[11px] font-medium"
+        style={{ color: DASHBOARD_MUTED }}
+      >
+        {SETUP_COPY.toolCardCtaComingSoon}
       </span>
     </button>
   );
@@ -130,6 +179,21 @@ export function ProductionToolsOverview({
   onSelect: (id: ToolId) => void;
 }) {
   const categories = getToolOverviewCategoriesExcludingFeatured();
+
+  const activeCategories = categories
+    .map((category) => ({
+      ...category,
+      tools: category.tools.filter(
+        (tool) => isSetupMvpTool(tool.id) || tool.id === "gallery"
+      ),
+    }))
+    .filter((category) => category.tools.length > 0);
+
+  const comingSoonTools = categories.flatMap((category) =>
+    category.tools.filter(
+      (tool) => !isSetupMvpTool(tool.id) && tool.id !== "gallery"
+    )
+  );
 
   return (
     <div className="w-full min-w-0 space-y-14 md:space-y-16">
@@ -159,7 +223,7 @@ export function ProductionToolsOverview({
       </section>
 
       <div className="space-y-12 md:space-y-14">
-        {categories.map((category) => (
+        {activeCategories.map((category) => (
           <StudioSection
             key={category.id}
             title={category.title}
@@ -169,6 +233,7 @@ export function ProductionToolsOverview({
               {category.tools.map((tool) => (
                 <StandardToolCard
                   key={tool.id}
+                  toolId={tool.id}
                   label={tool.label}
                   description={tool.description}
                   onClick={() => onSelect(tool.id)}
@@ -177,6 +242,24 @@ export function ProductionToolsOverview({
             </div>
           </StudioSection>
         ))}
+
+        {comingSoonTools.length > 0 ? (
+          <StudioSection
+            title={SETUP_COPY.hubComingSoonTitle}
+            description={SETUP_COPY.hubComingSoonDescription}
+          >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {comingSoonTools.map((tool) => (
+                <ComingSoonToolCard
+                  key={tool.id}
+                  label={tool.label}
+                  description={tool.description}
+                  onClick={() => onSelect(tool.id)}
+                />
+              ))}
+            </div>
+          </StudioSection>
+        ) : null}
       </div>
 
       <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>

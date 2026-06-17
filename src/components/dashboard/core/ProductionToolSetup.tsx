@@ -31,7 +31,9 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
             kicker={getToolSetupCategory(toolId)}
             title={getToolSetupTitle(toolId)}
             subtitle={getToolSetupSubtitle(toolId)}
-            credit={<StudioCreditPill label={creditLabel} />}
+            credit={
+              creditLabel ? <StudioCreditPill label={creditLabel} /> : undefined
+            }
           >
             <div className="space-y-3">
               <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
