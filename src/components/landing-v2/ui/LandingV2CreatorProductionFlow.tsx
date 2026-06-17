@@ -39,13 +39,22 @@ export function LandingV2CreatorProductionFlow({
       aria-label={copy.kicker}
     >
       <header className="landing-v2-creator-flow__header">
-        <p className="landing-v2-creator-flow__kicker" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+        <p
+          className="landing-v2-creator-flow__kicker"
+          data-creator-flow-hero-item={variant === "hero" ? "" : undefined}
+        >
           {copy.kicker}
         </p>
-        <p className="landing-v2-creator-flow__headline" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+        <p
+          className="landing-v2-creator-flow__headline"
+          data-creator-flow-hero-item={variant === "hero" ? "" : undefined}
+        >
           {copy.headline}
         </p>
-        <p className="landing-v2-creator-flow__subline" data-creator-flow-hero-item={variant === "hero" ? "" : undefined}>
+        <p
+          className="landing-v2-creator-flow__subline"
+          data-creator-flow-hero-item={variant === "hero" ? "" : undefined}
+        >
           {copy.subline}
         </p>
       </header>
@@ -54,47 +63,36 @@ export function LandingV2CreatorProductionFlow({
         <div className="landing-v2-creator-flow__accent" aria-hidden />
       ) : (
         <div className="landing-v2-creator-flow__map">
-        <svg
-          className="landing-v2-creator-flow__lines landing-v2-creator-flow__lines--desktop"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <path d="M 60 60 H 1140" className="landing-v2-creator-flow__path" />
-          <path
-            d="M 60 60 H 1140"
-            className="landing-v2-creator-flow__path landing-v2-creator-flow__path--active"
-          />
-        </svg>
-        <svg
-          className="landing-v2-creator-flow__lines landing-v2-creator-flow__lines--mobile"
-          viewBox="0 0 40 520"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <path d="M 20 24 V 496" className="landing-v2-creator-flow__path" />
-          <path
-            d="M 20 24 V 496"
-            className="landing-v2-creator-flow__path landing-v2-creator-flow__path--active"
-          />
-        </svg>
+          <ol className="landing-v2-creator-flow__stations">
+            {copy.stations.map((station) => (
+              <li
+                key={station.index}
+                className="landing-v2-creator-flow__station"
+                data-creator-flow-station
+              >
+                <span className="landing-v2-creator-flow__station-index">{station.index}</span>
+                <div className="landing-v2-creator-flow__station-copy">
+                  <span className="landing-v2-creator-flow__station-label">{station.label}</span>
+                  <p className="landing-v2-creator-flow__station-desc">{station.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
 
-        <ol className="landing-v2-creator-flow__stations">
-          {copy.stations.map((station) => (
-            <li
-              key={station.index}
-              className="landing-v2-creator-flow__station"
-              data-creator-flow-station
-            >
-              <span className="landing-v2-creator-flow__station-index">{station.index}</span>
-              <div className="landing-v2-creator-flow__station-copy">
-                <span className="landing-v2-creator-flow__station-label">{station.label}</span>
-                <p className="landing-v2-creator-flow__station-desc">{station.description}</p>
-              </div>
-              <span className="landing-v2-creator-flow__station-dot" aria-hidden />
-            </li>
-          ))}
-        </ol>
+          <div className="landing-v2-creator-flow__connector" aria-hidden>
+            <div
+              className="landing-v2-creator-flow__connector-line"
+              data-creator-flow-line
+            />
+            <div className="landing-v2-creator-flow__connector-dots">
+              {copy.stations.map((station) => (
+                <span
+                  key={`${station.index}-dot`}
+                  className="landing-v2-creator-flow__station-dot"
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -3724,46 +3724,15 @@
 
 .landing-v2-creator-flow__map {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
   padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.25rem);
-}
-
-.landing-v2-creator-flow__lines {
-  position: absolute;
-  pointer-events: none;
-}
-
-.landing-v2-creator-flow__lines--desktop {
-  top: 50%;
-  left: clamp(1.25rem, 3vw, 2rem);
-  right: clamp(1.25rem, 3vw, 2rem);
-  height: 3rem;
-  transform: translateY(-50%);
-  display: block;
-}
-
-.landing-v2-creator-flow__lines--mobile {
-  display: none;
-  top: 1.5rem;
-  bottom: 1.5rem;
-  left: 1.65rem;
-  width: 2.5rem;
-}
-
-.landing-v2-creator-flow__path {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.14);
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-}
-
-.landing-v2-creator-flow__path--active {
-  stroke: rgba(180, 255, 0, 0.55);
-  stroke-width: 2;
 }
 
 .landing-v2-creator-flow__stations {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(0.75rem, 2vw, 1.25rem);
@@ -3804,13 +3773,45 @@
   color: var(--lv2-text-secondary);
 }
 
+.landing-v2-creator-flow__connector {
+  position: relative;
+  z-index: 1;
+  min-height: 7px;
+}
+
+.landing-v2-creator-flow__connector-line {
+  position: absolute;
+  top: 50%;
+  left: calc(12.5% - 3px);
+  right: calc(12.5% - 3px);
+  height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(180, 255, 0, 0) 0%,
+    rgba(180, 255, 0, 0.75) 18%,
+    rgba(180, 255, 0, 0.75) 82%,
+    rgba(180, 255, 0, 0) 100%
+  );
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.landing-v2-creator-flow__connector-dots {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  align-items: center;
+}
+
 .landing-v2-creator-flow__station-dot {
   width: 7px;
   height: 7px;
-  margin-top: 0.15rem;
   border-radius: 50%;
-  background: var(--lv2-lime);
-  box-shadow: 0 0 12px rgba(180, 255, 0, 0.35);
+  background: #b4ff00;
+  box-shadow: none;
 }
 
 .landing-v2-creator-flow--hero {
@@ -3854,17 +3855,17 @@
 
 .landing-v2-creator-flow__accent {
   display: block;
-  height: 2px;
+  height: 1px;
   width: min(42%, 220px);
   margin: 0.125rem clamp(1rem, 2.4vw, 1.375rem) clamp(0.625rem, 1.4vw, 0.75rem);
   border-radius: 1px;
   background: linear-gradient(
     90deg,
-    rgba(180, 255, 0, 0.88) 0%,
-    rgba(180, 255, 0, 0.42) 68%,
+    rgba(180, 255, 0, 0.55) 0%,
+    rgba(180, 255, 0, 0.28) 68%,
     transparent 100%
   );
-  box-shadow: 0 0 10px rgba(180, 255, 0, 0.22);
+  box-shadow: none;
 }
 
 .landing-v2-creator-flow--system {
@@ -3903,22 +3904,63 @@
 }
 
 @media (max-width: 767px) {
-  .landing-v2-creator-flow__lines--desktop {
-    display: none;
-  }
-
-  .landing-v2-creator-flow__lines--mobile {
-    display: block;
+  .landing-v2-creator-flow__map {
+    gap: 0;
+    padding-left: clamp(1rem, 4vw, 1.25rem);
+    padding-right: clamp(1rem, 4vw, 1.25rem);
   }
 
   .landing-v2-creator-flow__stations {
     grid-template-columns: 1fr;
     gap: 1.35rem;
-    padding-left: 2.25rem;
+    padding-left: 1.375rem;
+  }
+
+  .landing-v2-creator-flow__connector {
+    position: absolute;
+    top: clamp(1.25rem, 2.5vw, 2rem);
+    bottom: clamp(1.5rem, 3vw, 2.25rem);
+    left: calc(clamp(1rem, 4vw, 1.25rem) + 3px);
+    width: 7px;
+    min-height: 0;
+  }
+
+  .landing-v2-creator-flow__connector-line {
+    top: 0.35rem;
+    bottom: 0.35rem;
+    left: 50%;
+    right: auto;
+    width: 1px;
+    height: auto;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      180deg,
+      rgba(180, 255, 0, 0) 0%,
+      rgba(180, 255, 0, 0.55) 10%,
+      rgba(180, 255, 0, 0.55) 90%,
+      rgba(180, 255, 0, 0) 100%
+    );
+    transform-origin: top center;
+  }
+
+  .landing-v2-creator-flow__connector-dots {
+    display: none;
   }
 
   .landing-v2-creator-flow__station {
     position: relative;
+  }
+
+  .landing-v2-creator-flow__station::before {
+    content: "";
+    position: absolute;
+    left: -1.125rem;
+    top: 0.55rem;
+    z-index: 2;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #b4ff00;
   }
 
   .landing-v2-creator-flow--hero {
@@ -3953,8 +3995,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-v2-creator-flow__path--active {
-    stroke-dashoffset: 0 !important;
+  .landing-v2-creator-flow__connector-line {
+    scale: 1 1 !important;
   }
 }
 
