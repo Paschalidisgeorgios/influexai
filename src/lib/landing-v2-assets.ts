@@ -19,8 +19,14 @@ export const LANDING_V2_ASSETS = {
   hero: {
     webm: "/videos/landing/hero-loop.webm",
     mp4: "/videos/landing/hero-loop.mp4",
-    poster: "/images/landing/hero-poster.webp",
+    poster: "/images/landing/hero-poster.jpg",
     placeholderLabel: "Studio Cockpit",
+  },
+  /** Hero backdrop loop — studio assets (landing loops not in repo) */
+  heroBackdrop: {
+    webm: "/videos/studio/studio-loop.webm",
+    mp4: "/videos/studio/studio-loop.mp4",
+    poster: "/videos/studio/studio-poster.webp",
   },
   /** Existing studio loop — hero panel ambient background */
   studioLoop: {

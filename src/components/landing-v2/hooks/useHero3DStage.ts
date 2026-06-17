@@ -3,7 +3,7 @@
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { HERO_PARALLAX } from "@/lib/landing-v2-motion";
+import { HERO_PARALLAX, HERO_PARALLAX_PREVIEW } from "@/lib/landing-v2-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,8 +13,10 @@ type UseHero3DStageOptions = {
   panelRef: RefObject<HTMLDivElement | null>;
   backPlateRef: RefObject<HTMLDivElement | null>;
   ambientRef?: RefObject<HTMLElement | null>;
+  videoRef?: RefObject<HTMLVideoElement | null>;
   enableParallax: boolean;
   enableMouse: boolean;
+  enhanced?: boolean;
 };
 
 export function useHero3DStage({
@@ -23,8 +25,10 @@ export function useHero3DStage({
   panelRef,
   backPlateRef,
   ambientRef,
+  videoRef,
   enableParallax,
   enableMouse,
+  enhanced = false,
 }: UseHero3DStageOptions) {
   useEffect(() => {
     const section = sectionRef.current;
@@ -32,9 +36,13 @@ export function useHero3DStage({
     const panel = panelRef.current;
     const backPlate = backPlateRef.current;
     const ambient = ambientRef?.current ?? null;
+    const video = videoRef?.current ?? null;
     if (!section || !stage || !panel) return;
 
-    const { mouse, scroll, ambient: ambientMotion } = HERO_PARALLAX;
+    const preset = enhanced ? HERO_PARALLAX_PREVIEW : HERO_PARALLAX;
+    const { mouse, scroll } = preset;
+    const ambientMotion = enhanced ? HERO_PARALLAX_PREVIEW.ambient : HERO_PARALLAX.ambient;
+    const videoMotion = enhanced ? HERO_PARALLAX_PREVIEW.video : null;
 
     const onMove = (event: MouseEvent) => {
       if (!enableMouse || !backPlate) return;
@@ -44,6 +52,8 @@ export function useHero3DStage({
       gsap.to(panel, {
         rotateY: x * mouse.rotateY,
         rotateX: -mouse.rotateX * 0.75 + -y * mouse.rotateX,
+        x: x * 10,
+        y: y * 6,
         duration: 0.55,
         ease: "power2.out",
         overwrite: "auto",
@@ -62,6 +72,8 @@ export function useHero3DStage({
       gsap.to(panel, {
         rotateY: 0,
         rotateX: -mouse.rotateX * 0.75,
+        x: 0,
+        y: 0,
         duration: 0.75,
         ease: "power2.out",
       });
@@ -88,24 +100,24 @@ export function useHero3DStage({
       }
       if (enableParallax) {
         gsap.set(panel, {
-          z: 48,
+          z: scroll.z ?? 48,
           rotateX: -mouse.rotateX * 0.75,
           transformPerspective: 1200,
         });
 
         gsap.fromTo(
           panel,
-          { y: 0, z: 48, scale: 1 },
+          { y: 0, z: scroll.z ?? 48, scale: 1 },
           {
             y: scroll.y,
-            z: scroll.z,
+            z: (scroll.z ?? 48) - 12,
             scale: scroll.scale,
             ease: "none",
             scrollTrigger: {
               trigger: section,
               start: "top top",
               end: "bottom top",
-              scrub: 0.75,
+              scrub: enhanced ? 0.65 : 0.75,
             },
           }
         );
@@ -122,13 +134,29 @@ export function useHero3DStage({
                 trigger: section,
                 start: "top top",
                 end: "bottom top",
-                scrub: 0.75,
+                scrub: enhanced ? 0.65 : 0.75,
               },
             }
           );
         }
 
-        if (ambient) {
+        if (video && videoMotion) {
+          gsap.fromTo(
+            video,
+            { scale: videoMotion.scaleFrom, yPercent: -videoMotion.yPercent * 0.35 },
+            {
+              scale: videoMotion.scaleTo,
+              yPercent: videoMotion.yPercent,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: "bottom top",
+                scrub: 0.7,
+              },
+            }
+          );
+        } else if (ambient) {
           gsap.fromTo(
             ambient,
             { yPercent: 0, scale: 1 },
@@ -158,10 +186,12 @@ export function useHero3DStage({
   }, [
     enableParallax,
     enableMouse,
+    enhanced,
     sectionRef,
     stageRef,
     panelRef,
     backPlateRef,
     ambientRef,
+    videoRef,
   ]);
 }

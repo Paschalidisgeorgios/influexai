@@ -3,6 +3,8 @@
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SECTION_REVEAL } from "@/lib/landing-v2-motion";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useReducedMotion } from "./useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -10,6 +12,8 @@ gsap.registerPlugin(ScrollTrigger);
 /** Eyebrow + headline lines + subline scroll reveals */
 export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) {
   const reduceMotion = useReducedMotion();
+  const { enablePreviewMotion } = useLandingV2Links();
+  const reveal = enablePreviewMotion ? SECTION_REVEAL.preview : SECTION_REVEAL.standard;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -24,34 +28,55 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: "top 78%",
+          start: reveal.start,
           once: true,
         },
-        defaults: { ease: "power2.out" },
+        defaults: { ease: enablePreviewMotion ? "power3.out" : "power2.out" },
       });
 
-      if (eyebrow) tl.fromTo(eyebrow, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5 });
+      if (eyebrow) {
+        tl.fromTo(
+          eyebrow,
+          { opacity: 0, y: enablePreviewMotion ? 24 : 14 },
+          { opacity: 1, y: 0, duration: 0.55 }
+        );
+      }
       if (lines.length) {
         tl.fromTo(
           lines,
-          { opacity: 0, y: 22 },
-          { opacity: 1, y: 0, duration: 0.65, stagger: 0.1 },
+          { opacity: reveal.opacity, y: reveal.y },
+          {
+            opacity: 1,
+            y: 0,
+            duration: enablePreviewMotion ? 0.78 : 0.65,
+            stagger: enablePreviewMotion ? 0.12 : 0.1,
+          },
           eyebrow ? "-=0.2" : 0
         );
       }
       if (subline) {
-        tl.fromTo(subline, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55 }, "-=0.35");
+        tl.fromTo(
+          subline,
+          { opacity: 0, y: enablePreviewMotion ? 28 : 16 },
+          { opacity: 1, y: 0, duration: 0.62 },
+          "-=0.35"
+        );
       }
       if (staggerItems.length) {
         tl.fromTo(
           staggerItems,
-          { opacity: 0, y: 28 },
-          { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 },
+          { opacity: 0, y: enablePreviewMotion ? 50 : 28 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: enablePreviewMotion ? 0.8 : 0.7,
+            stagger: enablePreviewMotion ? 0.15 : 0.12,
+          },
           "-=0.25"
         );
       }
     }, section);
 
     return () => ctx.revert();
-  }, [sectionRef, reduceMotion]);
+  }, [sectionRef, reduceMotion, enablePreviewMotion, reveal]);
 }

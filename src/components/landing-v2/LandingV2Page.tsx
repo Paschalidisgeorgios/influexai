@@ -68,12 +68,12 @@ export function LandingV2Page({ mode }: LandingV2PageProps) {
   const enableBrandIntro = mode === "live";
 
   return (
-    <LandingMotionProvider>
-      <LandingV2ModeProvider mode={mode}>
+    <LandingV2ModeProvider mode={mode}>
+      <LandingMotionProvider>
         <BrandIntroProvider enabled={enableBrandIntro}>
           <LandingV2Shell />
         </BrandIntroProvider>
-      </LandingV2ModeProvider>
-    </LandingMotionProvider>
+      </LandingMotionProvider>
+    </LandingV2ModeProvider>
   );
 }

@@ -5,6 +5,7 @@ import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2WorkflowStage } from "../ui/LandingV2WorkflowStage";
 import type { StudioSurfaceVariant } from "../ui/LandingV2StudioSurface";
 import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useScrollStoryActiveChapter } from "../hooks/useScrollStoryActiveChapter";
 import { useWorkflowStageMotion } from "../hooks/useWorkflowStageMotion";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
@@ -25,6 +26,7 @@ export function LandingV2ScrollStory() {
   const introRef = useRef<HTMLDivElement>(null);
   const chaptersRef = useRef<HTMLDivElement>(null);
   const { reduceMotion, isMobile, enableCinematicScroll } = useLandingViewport();
+  const { enablePreviewMotion } = useLandingV2Links();
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onActiveChange = useCallback((index: number) => {
@@ -35,7 +37,7 @@ export function LandingV2ScrollStory() {
 
   useSectionDramaturgy(sectionRef);
   useScrollStoryActiveChapter(chaptersRef, useChapterTracking, onActiveChange);
-  useWorkflowStageMotion(chaptersRef, enableCinematicScroll);
+  useWorkflowStageMotion(chaptersRef, enableCinematicScroll && enablePreviewMotion);
 
   return (
     <section

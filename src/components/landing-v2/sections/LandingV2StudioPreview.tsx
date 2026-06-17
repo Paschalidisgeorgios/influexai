@@ -5,6 +5,7 @@ import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2AssetImage } from "../ui/LandingV2Asset";
 import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useStudio3DScene } from "../hooks/useStudio3DScene";
 
@@ -21,9 +22,10 @@ export function LandingV2StudioPreview() {
   const sectionRef = useRef<HTMLElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const { isMobile, reduceMotion, enableCinematicScroll } = useLandingViewport();
+  const { enablePreviewMotion } = useLandingV2Links();
 
   useSectionDramaturgy(sectionRef);
-  useStudio3DScene(sectionRef, sceneRef, enableCinematicScroll);
+  useStudio3DScene(sectionRef, sceneRef, enableCinematicScroll && enablePreviewMotion);
 
   const panels = copy.panels.map((panel) => ({
     ...panel,

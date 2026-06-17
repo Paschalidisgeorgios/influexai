@@ -5,14 +5,17 @@ import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLandingViewport } from "./useLandingViewport";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 
 import "lenis/dist/lenis.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Lenis smooth scroll — preview route mount scope only */
+/** Lenis smooth scroll — landing preview only */
 export function useLandingLenis() {
-  const { enableLenis } = useLandingViewport();
+  const { enableLenis: viewportLenis } = useLandingViewport();
+  const { enableLenis: previewLenis } = useLandingV2Links();
+  const enableLenis = viewportLenis && previewLenis;
 
   useEffect(() => {
     if (!enableLenis) return;

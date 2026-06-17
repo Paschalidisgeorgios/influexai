@@ -8,6 +8,7 @@ import { LandingV2Placeholder } from "../ui/LandingV2Placeholder";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useGalleryParallax } from "../hooks/useGalleryParallax";
 import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 
 const copy = LANDING_V2_COPY.outputs;
 
@@ -65,8 +66,9 @@ function GalleryItem({
 export function LandingV2Proof() {
   const sectionRef = useRef<HTMLElement>(null);
   const { enableCinematicScroll } = useLandingViewport();
+  const { enablePreviewMotion } = useLandingV2Links();
   useSectionDramaturgy(sectionRef);
-  useGalleryParallax(sectionRef, enableCinematicScroll);
+  useGalleryParallax(sectionRef, enableCinematicScroll && enablePreviewMotion);
 
   return (
     <section

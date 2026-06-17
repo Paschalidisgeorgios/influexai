@@ -11,6 +11,7 @@ import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useProductionPathsReveal } from "../hooks/useProductionPathsReveal";
 import { useLandingViewport } from "../hooks/useLandingViewport";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 
 const copy = LANDING_V2_COPY.paths;
 
@@ -21,8 +22,9 @@ const pathRouteById = Object.fromEntries(
 export function LandingV2ProductionPaths() {
   const sectionRef = useRef<HTMLElement>(null);
   const { enableCinematicScroll } = useLandingViewport();
+  const { enablePreviewMotion } = useLandingV2Links();
   useSectionDramaturgy(sectionRef);
-  useProductionPathsReveal(sectionRef, enableCinematicScroll);
+  useProductionPathsReveal(sectionRef, enableCinematicScroll && enablePreviewMotion);
 
   return (
     <section

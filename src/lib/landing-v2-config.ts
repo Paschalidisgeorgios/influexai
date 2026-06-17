@@ -5,6 +5,9 @@ export type LandingV2Mode = "preview" | "live";
 export type LandingV2Links = {
   mode: LandingV2Mode;
   enableBrandIntro: boolean;
+  enableHeroVideo: boolean;
+  enableLenis: boolean;
+  enablePreviewMotion: boolean;
   home: string;
   pricing: string;
   signup: string;
@@ -28,6 +31,9 @@ export function getLandingV2Links(mode: LandingV2Mode): LandingV2Links {
     return {
       mode,
       enableBrandIntro: true,
+      enableHeroVideo: false,
+      enableLenis: false,
+      enablePreviewMotion: false,
       home: "/",
       pricing: "/pricing",
       signup: "/auth/sign-up",
@@ -51,6 +57,9 @@ export function getLandingV2Links(mode: LandingV2Mode): LandingV2Links {
   return {
     mode,
     enableBrandIntro: false,
+    enableHeroVideo: true,
+    enableLenis: true,
+    enablePreviewMotion: true,
     home: PREVIEW_LANDING,
     pricing: PREVIEW_PRICING,
     signup: "/auth/sign-up",
