@@ -17,7 +17,7 @@ export type PreviewPlatformHint = {
 };
 
 const IMAGE_KW =
-  /\b(bild|visual|foto|produktbild|image|photo|picture|thumbnail|mockup|instagram feed|feed post)\b/i;
+  /\b(bild|visual|foto|produktbild|image|photo|picture|thumbnail|mockup|instagram feed|feed post|\bad\b|\bpost\b)\b/i;
 const VIDEO_KW =
   /\b(video|reel|motion|beweg|animier|clip|shorts|tiktok|seque)\b/i;
 const CAMPAIGN_KW =
@@ -33,6 +33,7 @@ const PLATFORM_RULES: Array<{
 }> = [
   { pattern: /\b(instagram reel|reels|tiktok|shorts|9:16)\b/i, platform: "Instagram Reel / TikTok", format: "9:16", formatLabel: "9:16 Hochformat" },
   { pattern: /\b(instagram feed|feed post|4:5)\b/i, platform: "Instagram Feed", format: "4:5", formatLabel: "4:5 Hochformat" },
+  { pattern: /\b(instagram)\b/i, platform: "Instagram", format: "4:5", formatLabel: "4:5 Hochformat" },
   { pattern: /\b(youtube thumbnail|youtube|16:9)\b/i, platform: "YouTube Thumbnail", format: "16:9", formatLabel: "16:9 Querformat" },
   { pattern: /\b(linkedin)\b/i, platform: "LinkedIn Post", format: "1:1", formatLabel: "1:1 Quadrat" },
   { pattern: /\b(website hero|landing|hero banner|wide)\b/i, platform: "Website Hero", format: "16:9", formatLabel: "16:9 Wide" },

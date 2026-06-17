@@ -6,12 +6,14 @@
  */
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import type { PreviewIntentId, PreviewPlatformHint } from "./preview-intent";
 import {
   engineLabelForIntent,
   INTENT_LABELS,
   optimizeProductionPrompt,
 } from "./preview-intent";
+import { mvpRouteForIntent } from "./preview-mvp-routes";
 import { PreviewAdvancedSettings } from "./PreviewAdvancedSettings";
 import { useLang } from "./PreviewLang";
 import {
@@ -23,6 +25,9 @@ import {
   PREVIEW_LIGHT_CARD,
   PREVIEW_META,
 } from "./preview-tokens";
+
+const PANEL_SURFACE = PREVIEW_LIGHT_CARD;
+const PANEL_BORDER = PREVIEW_LIGHT_BORDER;
 
 type Props = {
   intent: PreviewIntentId;
@@ -56,7 +61,10 @@ export function PreviewWorkflowPanel({ intent, originalPrompt, platform, onGener
   };
 
   return (
-    <div className="flex min-w-0 flex-col gap-5">
+    <div
+      className="flex min-w-0 flex-col gap-5 rounded border p-4 sm:p-5"
+      style={{ borderColor: PANEL_BORDER, background: PANEL_SURFACE }}
+    >
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: PREVIEW_META }}>
@@ -113,15 +121,26 @@ export function PreviewWorkflowPanel({ intent, originalPrompt, platform, onGener
       <PreviewAdvancedSettings />
 
       {intent !== "unknown" && (
-        <button
-          type="button"
-          disabled={generating}
-          onClick={handleGenerate}
-          className="w-full rounded py-3.5 text-[14px] font-semibold transition-opacity disabled:opacity-60 sm:w-auto sm:px-8"
-          style={{ background: PREVIEW_ACCENT, color: PREVIEW_DARK }}
+        <Link
+          href={mvpRouteForIntent(intent)}
+          onClick={(e) => {
+            e.preventDefault();
+            if (generating) return;
+            handleGenerate();
+            window.setTimeout(() => {
+              window.location.assign(mvpRouteForIntent(intent));
+            }, 1400);
+          }}
+          className="inline-flex w-full items-center justify-center rounded py-3.5 text-[14px] font-semibold transition-opacity sm:w-auto sm:px-8"
+          style={{
+            background: PREVIEW_ACCENT,
+            color: PREVIEW_DARK,
+            opacity: generating ? 0.65 : 1,
+            pointerEvents: generating ? "none" : "auto",
+          }}
         >
           {generating ? w.generating : primaryCta(intent, w)}
-        </button>
+        </Link>
       )}
     </div>
   );

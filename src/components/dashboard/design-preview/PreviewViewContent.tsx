@@ -2,7 +2,7 @@
 
 import type { PreviewView } from "./PreviewLang";
 import { PreviewCommandOs } from "./PreviewCommandOs";
-import { PreviewToolsFlow } from "./PreviewToolsFlow";
+import { PreviewProductionHub } from "./PreviewProductionHub";
 import { PreviewGallery } from "./PreviewGallery";
 import { PreviewSettings } from "./PreviewSettings";
 
@@ -16,10 +16,10 @@ export function PreviewViewContent({
 }) {
   switch (active) {
     case "studio":
-    case "agent":
+    case "command":
       return <PreviewCommandOs onNavigate={onNavigate} variant={active} />;
-    case "tools":
-      return <PreviewToolsFlow />;
+    case "production":
+      return <PreviewProductionHub />;
     case "gallery":
       return <PreviewGallery />;
     case "settings":

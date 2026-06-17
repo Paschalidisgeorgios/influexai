@@ -11,9 +11,11 @@ import {
   PREVIEW_BODY,
   PREVIEW_DARK,
   PREVIEW_HL,
-  PREVIEW_LIGHT_BORDER,
-  PREVIEW_LIGHT_CARD,
+  PREVIEW_IVORY_BORDER,
+  PREVIEW_IVORY_CARD,
   PREVIEW_META,
+  PREVIEW_SHELL_TEXT,
+  PREVIEW_SHELL_TEXT_MUTED,
 } from "./preview-tokens";
 
 const RECENT = [
@@ -31,7 +33,7 @@ export function PreviewNextActions({ onNavigate }: Props) {
   const n = t.commandOs.next;
 
   return (
-    <section className="flex flex-col gap-6 border-t pt-8" style={{ borderColor: PREVIEW_LIGHT_BORDER }}>
+    <section className="flex flex-col gap-6 border-t pt-8" style={{ borderColor: PREVIEW_IVORY_BORDER }}>
       <div>
         <p className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: PREVIEW_META }}>
           {n.recentLabel}
@@ -42,15 +44,15 @@ export function PreviewNextActions({ onNavigate }: Props) {
               key={item.id}
               type="button"
               onClick={() => onNavigate("gallery")}
-              className="flex items-center gap-3 rounded border px-3 py-3 text-left transition-colors hover:bg-white/40"
-              style={{ borderColor: PREVIEW_LIGHT_BORDER, background: PREVIEW_LIGHT_CARD }}
+              className="flex items-center gap-3 rounded border px-3 py-3 text-left transition-colors hover:bg-white/[0.06]"
+              style={{ borderColor: PREVIEW_IVORY_BORDER, background: PREVIEW_IVORY_CARD }}
             >
               <div
                 className="h-12 w-10 shrink-0 rounded border"
-                style={{ borderColor: PREVIEW_LIGHT_BORDER, background: "rgba(8,8,8,0.06)" }}
+                style={{ borderColor: PREVIEW_IVORY_BORDER, background: "rgba(255,255,255,0.04)" }}
               />
               <div className="min-w-0">
-                <p className="truncate text-[13px] font-medium" style={{ color: PREVIEW_DARK, ...PREVIEW_HL }}>
+                <p className="truncate text-[13px] font-medium" style={{ color: PREVIEW_SHELL_TEXT, ...PREVIEW_HL }}>
                   {item.label}
                 </p>
                 <p className="font-mono text-[10px]" style={{ color: PREVIEW_META }}>
@@ -71,9 +73,9 @@ export function PreviewNextActions({ onNavigate }: Props) {
             <button
               key={action}
               type="button"
-              className="rounded border px-3 py-2 text-[13px] font-medium transition-colors hover:bg-white/50"
-              style={{ borderColor: PREVIEW_LIGHT_BORDER, color: PREVIEW_BODY }}
-              onClick={() => onNavigate("tools")}
+              className="rounded border px-3 py-2 text-[13px] font-medium transition-colors hover:bg-white/[0.06]"
+              style={{ borderColor: PREVIEW_IVORY_BORDER, color: PREVIEW_SHELL_TEXT_MUTED }}
+              onClick={() => onNavigate("production")}
             >
               {action}
             </button>

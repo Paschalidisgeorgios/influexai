@@ -9,7 +9,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 // ─── View type (shared across all preview components) ─────────────────────────
 
-export type PreviewView = "studio" | "agent" | "tools" | "gallery" | "settings";
+export type PreviewView = "studio" | "command" | "production" | "gallery" | "settings";
 
 // ─── Language ─────────────────────────────────────────────────────────────────
 
@@ -24,11 +24,11 @@ const de = {
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
   nav: {
-    studio:   "Studio",
-    agent:    "Agent",
-    tools:    "Tools",
-    gallery:  "Galerie",
-    settings: "Einstellungen",
+    studio:     "Studio",
+    command:    "Command",
+    production: "Produktion",
+    gallery:    "Galerie",
+    settings:   "Einstellungen",
   },
 
   studio: {
@@ -97,7 +97,7 @@ const de = {
       defaultCta:   "Produktion starten",
       generating:   "Erstelle …",
       unknownHint:  "Beschreibe genauer, was du produzieren möchtest — Bild, Video, Kampagne oder Asset-Variante.",
-      promptHint:   "Prompts werden für Bild-/Video-Modelle intern optimiert und auf Englisch übergeben.",
+      promptHint:   "Prompts werden für die Produktions-Engine optimiert.",
       image: {
         format:           "Format",
         style:            "Stil",
@@ -157,6 +157,16 @@ const de = {
       duration:   "Dauer",
       credits:    "Credits",
     },
+  },
+
+  productionHub: {
+    overline:  "Production Workflows",
+    headline:  "Aktive MVP-Workflows — nicht die Tool-Liste.",
+    subline:   "InfluexAI führt dich über Produktionswege. Modelle und Provider bleiben im Hintergrund — erreichbar über Advanced Settings.",
+    mvpLabel:  "Aktive Workflows",
+    openCta:   "Workflow öffnen",
+    prepLabel: "In Vorbereitung",
+    prepCopy:  "Dieses Studio-Setup ist noch nicht aktiviert. Keine Credits, keine falschen Erwartungen — nur Vorschau der kommenden Flächen.",
   },
 
   agent: {
@@ -270,7 +280,7 @@ const en: typeof de = {
   previewBannerCta: "Open production studio →",
   credits: "Credits", plan: "Plan", proPlan: "Pro Plan", mock: "Preview",
 
-  nav: { studio:"Studio", agent:"Agent", tools:"Tools", gallery:"Gallery", settings:"Settings" },
+  nav: { studio:"Studio", command:"Command", production:"Production", gallery:"Gallery", settings:"Settings" },
 
   studio: {
     overline:      "Studio",
@@ -338,7 +348,7 @@ const en: typeof de = {
       defaultCta:   "Start production",
       generating:   "Creating …",
       unknownHint:  "Describe more precisely — image, video, campaign or asset variant.",
-      promptHint:   "Prompts are optimized internally for image/video models and passed in English.",
+      promptHint:   "Prompts are optimized for the production engine.",
       image: {
         format:           "Format",
         style:            "Style",
@@ -398,6 +408,16 @@ const en: typeof de = {
       duration:   "Duration",
       credits:    "Credits",
     },
+  },
+
+  productionHub: {
+    overline:  "Production Workflows",
+    headline:  "Active MVP workflows — not a tool list.",
+    subline:   "InfluexAI guides you through production paths. Models and providers stay in the background — available via advanced settings.",
+    mvpLabel:  "Active workflows",
+    openCta:   "Open workflow",
+    prepLabel: "In preparation",
+    prepCopy:  "This studio setup is not activated yet. No credits, no false expectations — preview of upcoming surfaces only.",
   },
 
   agent: {

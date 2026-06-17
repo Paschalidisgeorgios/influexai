@@ -12,16 +12,15 @@ import { PreviewViewContent } from "./PreviewViewContent";
 
 const ACCENT   = "#b4ff00";
 const SHELL_BG = "#050506";
-const STAGE_SURFACE =
-  "linear-gradient(135deg, rgba(244,240,232,0.90), rgba(244,240,232,0.78), rgba(221,212,196,0.68))";
+const STAGE_SURFACE = "transparent";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
 
 const ACTIVE_VIEWS: PreviewView[] = [
   "studio",
-  "agent",
-  "tools",
+  "command",
+  "production",
   "gallery",
   "settings",
 ];
@@ -164,11 +163,11 @@ function PreviewModeBanner() {
     <div
       className="mb-4 flex flex-col gap-2 rounded-lg border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
       style={{
-        borderColor: "rgba(8,8,8,0.10)",
-        background: "rgba(180,255,0,0.08)",
+        borderColor: "rgba(255,255,255,0.1)",
+        background: "rgba(180,255,0,0.06)",
       }}
     >
-      <p className="text-[12px] font-medium" style={{ color: "rgba(8,8,8,0.75)" }}>
+      <p className="text-[12px] font-medium" style={{ color: "rgba(245,242,234,0.78)" }}>
         {t.previewBanner}
       </p>
       <Link
@@ -246,19 +245,18 @@ function PreviewInner() {
                 className="w-full min-w-0 rounded-xl"
                 style={{
                   background: STAGE_SURFACE,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  boxShadow:
-                    "0 0 0 1px rgba(255,255,255,0.04), 0 28px 88px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.42)",
+                  border: "none",
+                  boxShadow: "none",
                   minHeight: "min(100%, 28rem)",
                 }}
               >
                 <div
-                  className="h-[2px] w-full rounded-t-xl"
+                  className="h-[2px] w-full max-w-[12rem] rounded-full"
                   style={{
-                    background: `linear-gradient(90deg, ${ACCENT}55, ${ACCENT}22 40%, transparent 85%)`,
+                    background: `linear-gradient(90deg, ${ACCENT}88, ${ACCENT}22 72%, transparent 100%)`,
                   }}
                 />
-                <div className="min-w-0 px-4 pb-8 pt-5 md:px-12 md:pb-16 md:pt-10 lg:px-16 xl:px-20">
+                <div className="min-w-0 px-1 pb-8 pt-4 md:px-2 md:pb-12 md:pt-6 lg:px-4">
                   <PreviewModeBanner />
                   <PreviewViewContent active={active} onNavigate={setActive} />
                 </div>

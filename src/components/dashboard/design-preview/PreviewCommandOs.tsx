@@ -5,7 +5,7 @@
  * MOCK intent routing · isolated to /dashboard/design-preview.
  */
 
-import { useCallback, useState, type KeyboardEvent } from "react";
+import { useCallback, useRef, useState, type KeyboardEvent } from "react";
 import {
   detectPlatform,
   detectPreviewIntent,
@@ -15,26 +15,31 @@ import {
 import { PreviewLivePreview } from "./PreviewLivePreview";
 import { PreviewNextActions } from "./PreviewNextActions";
 import { PreviewWorkflowPanel } from "./PreviewWorkflowPanel";
+import { usePreviewCommandMotion } from "./usePreviewCommandMotion";
 import { useLang, type PreviewView } from "./PreviewLang";
 import {
   PREVIEW_ACCENT,
   PREVIEW_BODY,
   PREVIEW_DARK,
   PREVIEW_HL,
-  PREVIEW_LIGHT_BORDER,
+  PREVIEW_IVORY_BORDER,
   PREVIEW_META,
-  PREVIEW_SUBLINE,
+  PREVIEW_SHELL_TEXT,
+  PREVIEW_SHELL_TEXT_MUTED,
   PREVIEW_SURFACE_DARK,
 } from "./preview-tokens";
 
 type Props = {
   onNavigate: (view: PreviewView) => void;
-  variant?: "studio" | "agent";
+  variant?: "studio" | "command";
 };
 
 export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
   const { t } = useLang();
   const c = t.commandOs;
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const workflowRef = useRef<HTMLDivElement>(null);
 
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState("");
@@ -44,6 +49,8 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
   const [platformAnswer, setPlatformAnswer] = useState("");
   const [previewGenerating, setPreviewGenerating] = useState(false);
   const [focused, setFocused] = useState(false);
+
+  usePreviewCommandMotion(rootRef, workflowRef, Boolean(intent && submitted));
 
   const resolveIntent = useCallback((text: string) => {
     const result = detectPreviewIntent(text);
@@ -81,26 +88,25 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
   const effectiveFormat = platform?.format ?? "4:5";
 
   return (
-    <div className="flex min-w-0 flex-col gap-8 lg:gap-10">
-      {/* ── Command Center ── */}
-      <section className="min-w-0">
+    <div ref={rootRef} className="flex min-w-0 flex-col gap-8 lg:gap-10">
+      <section className="min-w-0" data-preview-command>
         <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: PREVIEW_META }}>
-          {variant === "agent" ? c.agentOverline : c.overline}
+          {variant === "command" ? c.agentOverline : c.overline}
         </p>
         <h1
           className="mt-3 max-w-3xl text-[clamp(1.75rem,4vw,2.75rem)] font-semibold leading-[1.08] tracking-[-0.02em]"
-          style={{ color: PREVIEW_DARK, ...PREVIEW_HL }}
+          style={{ color: PREVIEW_SHELL_TEXT, ...PREVIEW_HL }}
         >
           {c.headline}
         </h1>
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed" style={{ color: PREVIEW_SUBLINE }}>
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed" style={{ color: PREVIEW_SHELL_TEXT_MUTED }}>
           {c.subline}
         </p>
 
         <div
           className="relative mt-8 overflow-hidden rounded border transition-shadow"
           style={{
-            borderColor: focused ? PREVIEW_ACCENT : PREVIEW_LIGHT_BORDER,
+            borderColor: focused ? PREVIEW_ACCENT : PREVIEW_IVORY_BORDER,
             background: PREVIEW_SURFACE_DARK,
             boxShadow: focused ? "0 0 0 1px rgba(180,255,0,0.35)" : "none",
           }}
@@ -144,8 +150,8 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
                 setInput(ex);
                 resolveIntent(ex);
               }}
-              className="rounded border px-2.5 py-1 text-left text-[12px] transition-colors hover:bg-white/60"
-              style={{ borderColor: PREVIEW_LIGHT_BORDER, color: PREVIEW_BODY }}
+              className="rounded border px-2.5 py-1 text-left text-[12px] transition-colors hover:bg-white/[0.06]"
+              style={{ borderColor: PREVIEW_IVORY_BORDER, color: PREVIEW_BODY }}
             >
               {ex}
             </button>
@@ -153,13 +159,12 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
         </div>
       </section>
 
-      {/* ── Platform ask ── */}
       {needsPlatform && submitted && (
         <div
           className="rounded border p-4 sm:p-5"
-          style={{ borderColor: PREVIEW_LIGHT_BORDER, background: "rgba(180,255,0,0.06)" }}
+          style={{ borderColor: PREVIEW_IVORY_BORDER, background: "rgba(180,255,0,0.06)" }}
         >
-          <p className="text-[14px] font-medium" style={{ color: PREVIEW_DARK }}>
+          <p className="text-[14px] font-medium" style={{ color: PREVIEW_SHELL_TEXT }}>
             {c.platformQuestion}
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -168,8 +173,8 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
               value={platformAnswer}
               onChange={(e) => setPlatformAnswer(e.target.value)}
               placeholder={c.platformPlaceholder}
-              className="min-w-0 flex-1 rounded border bg-white/70 px-3 py-2 text-[14px] outline-none"
-              style={{ borderColor: PREVIEW_LIGHT_BORDER }}
+              className="min-w-0 flex-1 rounded border bg-white/[0.06] px-3 py-2 text-[14px] text-neutral-100 outline-none placeholder:text-neutral-500"
+              style={{ borderColor: PREVIEW_IVORY_BORDER }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") applyPlatformAnswer();
               }}
@@ -178,7 +183,7 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
               type="button"
               onClick={applyPlatformAnswer}
               className="shrink-0 rounded px-4 py-2 text-[13px] font-semibold"
-              style={{ background: PREVIEW_DARK, color: "#fff" }}
+              style={{ background: PREVIEW_ACCENT, color: PREVIEW_DARK }}
             >
               {c.platformApply}
             </button>
@@ -186,9 +191,11 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
         </div>
       )}
 
-      {/* ── Workflow + Preview ── */}
       {intent && submitted && (
-        <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_min(100%,340px)] xl:gap-8">
+        <div
+          ref={workflowRef}
+          className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_min(100%,340px)] xl:gap-8"
+        >
           <PreviewWorkflowPanel
             intent={intent}
             originalPrompt={submitted}
@@ -204,21 +211,21 @@ export function PreviewCommandOs({ onNavigate, variant = "studio" }: Props) {
         </div>
       )}
 
-      {/* ── Flow hint when idle ── */}
       {!submitted && (
         <div
           className="grid gap-4 border-t pt-8 sm:grid-cols-3"
-          style={{ borderColor: PREVIEW_LIGHT_BORDER }}
+          style={{ borderColor: PREVIEW_IVORY_BORDER }}
+          data-preview-idle
         >
           {c.flowSteps.map((step) => (
             <div key={step.num} className="min-w-0">
               <span className="font-mono text-[10px]" style={{ color: PREVIEW_ACCENT }}>
                 {step.num}
               </span>
-              <p className="mt-1 text-[14px] font-semibold" style={{ color: PREVIEW_DARK, ...PREVIEW_HL }}>
+              <p className="mt-1 text-[14px] font-semibold" style={{ color: PREVIEW_SHELL_TEXT, ...PREVIEW_HL }}>
                 {step.title}
               </p>
-              <p className="mt-1 text-[13px] leading-relaxed" style={{ color: PREVIEW_BODY }}>
+              <p className="mt-1 text-[13px] leading-relaxed" style={{ color: PREVIEW_SHELL_TEXT_MUTED }}>
                 {step.desc}
               </p>
             </div>
