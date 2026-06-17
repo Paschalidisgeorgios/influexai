@@ -2,6 +2,8 @@
 
 import "@/styles/landing-v2.css";
 
+import { BrandIntroProvider, useBrandIntro } from "./BrandIntroContext";
+import { LandingV2BrandIntro } from "./LandingV2BrandIntro";
 import { LandingV2Nav } from "./sections/LandingV2Nav";
 import { LandingV2Hero } from "./sections/LandingV2Hero";
 import { LandingV2ScrollStory } from "./sections/LandingV2ScrollStory";
@@ -13,10 +15,15 @@ import { LandingV2FinalCta } from "./sections/LandingV2FinalCta";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
 
-export function LandingPreviewPage() {
+function LandingPreviewShell() {
+  const { heroReady } = useBrandIntro();
+
   return (
-    <LandingMotionProvider>
-    <div className="landing-v2-root min-h-screen overflow-x-clip">
+    <div
+      className={`landing-v2-root min-h-screen overflow-x-clip${
+        heroReady ? " landing-v2-root--intro-complete" : " landing-v2-root--intro-active"
+      }`}
+    >
       <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
         Interne Vorschau — nicht die Live-Landingpage unter /
       </div>
@@ -24,6 +31,7 @@ export function LandingPreviewPage() {
       <LandingV2Nav />
 
       <main>
+        <LandingV2BrandIntro />
         <LandingV2Hero />
         <LandingV2ScrollStory />
         <LandingV2ProductionPaths />
@@ -35,6 +43,15 @@ export function LandingPreviewPage() {
 
       <LandingV2Footer />
     </div>
+  );
+}
+
+export function LandingPreviewPage() {
+  return (
+    <LandingMotionProvider>
+      <BrandIntroProvider>
+        <LandingPreviewShell />
+      </BrandIntroProvider>
     </LandingMotionProvider>
   );
 }

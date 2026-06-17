@@ -10,6 +10,7 @@ import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useHero3DStage } from "../hooks/useHero3DStage";
+import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
 
@@ -19,8 +20,9 @@ export function LandingV2Hero() {
   const panelRef = useRef<HTMLDivElement>(null);
   const backPlateRef = useRef<HTMLDivElement>(null);
   const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
+  const { heroReady } = useBrandIntro();
 
-  useHeroEntrance(sectionRef);
+  useHeroEntrance(sectionRef, heroReady);
   useHero3DStage({
     sectionRef,
     stageRef,

@@ -1,6 +1,9 @@
 /** Landing-v2 preview — editorial marketing copy (DE) */
 
 export const LANDING_V2_COPY = {
+  brandIntro: {
+    scrollHint: "Scroll to enter",
+  },
   nav: {
     workflow: "Workflow",
     paths: "Produktionspfade",

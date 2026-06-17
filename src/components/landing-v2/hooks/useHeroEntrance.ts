@@ -5,12 +5,16 @@ import gsap from "gsap";
 import SplitType from "split-type";
 import { useReducedMotion } from "./useReducedMotion";
 
-export function useHeroEntrance(sectionRef: RefObject<HTMLElement | null>) {
+export function useHeroEntrance(
+  sectionRef: RefObject<HTMLElement | null>,
+  heroReady = true
+) {
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section || reduceMotion) return;
+    if (!section || !heroReady) return;
+    if (reduceMotion) return;
 
     let split: SplitType | null = null;
 
@@ -64,5 +68,5 @@ export function useHeroEntrance(sectionRef: RefObject<HTMLElement | null>) {
       split?.revert();
       ctx.revert();
     };
-  }, [sectionRef, reduceMotion]);
+  }, [sectionRef, reduceMotion, heroReady]);
 }

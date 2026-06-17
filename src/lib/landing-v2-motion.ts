@@ -1,5 +1,11 @@
 /** GSAP depth presets — landing preview scroll story */
 
+/** Brand intro scroll distance (desktop) — sticky section, no pin */
+export const BRAND_INTRO_SCROLL_VH = 85;
+
+/** Hero entrance delay after brand intro crosses reveal threshold */
+export const BRAND_INTRO_HERO_REVEAL_AT = 0.58;
+
 /** Asset-only depth — text stays flat */
 export const STORY_ASSET_DEPTH = {
   hidden: {
