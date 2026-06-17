@@ -33,8 +33,116 @@
 }
 
 .landing-v2-root {
-  background: var(--lv2-shell);
+  position: relative;
+  z-index: 1;
+  background: transparent;
   color: var(--lv2-text-light);
+}
+
+.landing-v2-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— Global landing background system —— */
+
+.landing-v2-bg-system {
+  --lv2-bg-glow-y: 0px;
+  --lv2-bg-glow-x: 52%;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.landing-v2-bg-system__base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 88% at 50% -8%, rgba(14, 14, 18, 0.55) 0%, transparent 58%),
+    linear-gradient(180deg, #050506 0%, #060608 42%, #050506 100%);
+}
+
+.landing-v2-bg-system__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.42;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 96% 92% at 50% 48%, black 24%, transparent 92%);
+}
+
+.landing-v2-bg-system__glow {
+  position: absolute;
+  left: var(--lv2-bg-glow-x, 52%);
+  top: calc(36% + var(--lv2-bg-glow-y, 0px));
+  width: min(88vw, 52rem);
+  height: min(88vw, 52rem);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(180, 255, 0, 0.085) 0%,
+    rgba(180, 255, 0, 0.038) 34%,
+    rgba(180, 255, 0, 0.012) 52%,
+    transparent 72%
+  );
+  filter: blur(52px);
+  will-change: top, left;
+}
+
+.landing-v2-bg-system__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 92% 88% at 50% 50%, transparent 42%, rgba(5, 5, 6, 0.72) 100%),
+    linear-gradient(
+      180deg,
+      rgba(5, 5, 6, 0.32) 0%,
+      transparent 22%,
+      transparent 78%,
+      rgba(5, 5, 6, 0.42) 100%
+    );
+}
+
+.landing-v2-bg-system__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+@media (max-width: 767px) {
+  .landing-v2-bg-system__grid {
+    opacity: 0.28;
+    background-size: 56px 56px;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  }
+
+  .landing-v2-bg-system__glow {
+    width: min(96vw, 28rem);
+    height: min(96vw, 28rem);
+    top: calc(42% + var(--lv2-bg-glow-y, 0px));
+    background: radial-gradient(
+      circle,
+      rgba(180, 255, 0, 0.06) 0%,
+      rgba(180, 255, 0, 0.028) 36%,
+      transparent 70%
+    );
+    filter: blur(40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-v2-bg-system__glow {
+    will-change: auto;
+  }
 }
 
 .landing-v2-preview-banner {
@@ -2769,8 +2877,6 @@
 
 .landing-v2-section--system {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
   padding-left: 0;
   padding-right: 0;
 }
@@ -4768,7 +4874,7 @@
 .landing-v2-root--preview .landing-v2-footer {
   position: relative;
   z-index: 1;
-  background: var(--lv2-shell);
+  background: transparent;
 }
 
 .landing-v2-chapter__flow-panel {
