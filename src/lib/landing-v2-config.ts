@@ -4,6 +4,7 @@ export type LandingV2Mode = "preview" | "live";
 
 export type LandingV2Links = {
   mode: LandingV2Mode;
+  enableBrandIntro: boolean;
   home: string;
   pricing: string;
   signup: string;
@@ -26,6 +27,7 @@ export function getLandingV2Links(mode: LandingV2Mode): LandingV2Links {
   if (mode === "live") {
     return {
       mode,
+      enableBrandIntro: true,
       home: "/",
       pricing: "/pricing",
       signup: "/auth/sign-up",
@@ -48,6 +50,7 @@ export function getLandingV2Links(mode: LandingV2Mode): LandingV2Links {
 
   return {
     mode,
+    enableBrandIntro: false,
     home: PREVIEW_LANDING,
     pricing: PREVIEW_PRICING,
     signup: "/auth/sign-up",

@@ -26,10 +26,15 @@ const BrandIntroContext = createContext<BrandIntroContextValue>({
   markChromeVisible: () => {},
 });
 
-export function BrandIntroProvider({ children }: { children: ReactNode }) {
-  const [heroReady, setHeroReady] = useState(false);
-  const [introDismissed, setIntroDismissed] = useState(false);
-  const [chromeVisible, setChromeVisible] = useState(false);
+type BrandIntroProviderProps = {
+  children: ReactNode;
+  enabled?: boolean;
+};
+
+export function BrandIntroProvider({ children, enabled = true }: BrandIntroProviderProps) {
+  const [heroReady, setHeroReady] = useState(!enabled);
+  const [introDismissed, setIntroDismissed] = useState(!enabled);
+  const [chromeVisible, setChromeVisible] = useState(!enabled);
 
   const markHeroReady = useCallback(() => {
     setHeroReady((prev) => (prev ? prev : true));

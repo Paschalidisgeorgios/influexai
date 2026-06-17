@@ -68,7 +68,7 @@
   transition: opacity 0.65s ease;
 }
 
-/* Brand intro — fullscreen overlay (preview only) */
+/* Brand intro — fullscreen overlay (live landing only) */
 .landing-v2-brand-intro {
   position: fixed;
   inset: 0;

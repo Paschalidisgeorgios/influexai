@@ -21,18 +21,20 @@ function LandingV2Shell() {
   const { introDismissed, chromeVisible } = useBrandIntro();
   const links = useLandingV2Links();
 
-  const introStateClass = introDismissed
-    ? "landing-v2-root--intro-complete"
-    : chromeVisible
-      ? "landing-v2-root--intro-chrome"
-      : "landing-v2-root--intro-active";
+  const introStateClass = links.enableBrandIntro
+    ? introDismissed
+      ? "landing-v2-root--intro-complete"
+      : chromeVisible
+        ? "landing-v2-root--intro-chrome"
+        : "landing-v2-root--intro-active"
+    : "";
 
   const modeClass =
     links.mode === "live" ? "landing-v2-root--live" : "landing-v2-root--preview";
 
   return (
     <div
-      className={`landing-v2-root min-h-screen overflow-x-clip ${introStateClass} ${modeClass}`}
+      className={`landing-v2-root min-h-screen overflow-x-clip ${introStateClass} ${modeClass}`.trim()}
     >
       {links.landingPreviewBanner ? (
         <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
@@ -41,7 +43,7 @@ function LandingV2Shell() {
       ) : null}
 
       <LandingV2Nav />
-      <LandingV2BrandIntro />
+      {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
       <main>
         <LandingV2Hero />
@@ -63,10 +65,12 @@ type LandingV2PageProps = {
 };
 
 export function LandingV2Page({ mode }: LandingV2PageProps) {
+  const enableBrandIntro = mode === "live";
+
   return (
     <LandingMotionProvider>
       <LandingV2ModeProvider mode={mode}>
-        <BrandIntroProvider>
+        <BrandIntroProvider enabled={enableBrandIntro}>
           <LandingV2Shell />
         </BrandIntroProvider>
       </LandingV2ModeProvider>
