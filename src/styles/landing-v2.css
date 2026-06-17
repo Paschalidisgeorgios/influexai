@@ -485,7 +485,7 @@
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
 }
 
-/* Preview toolbar — clean bottom lime signal line (no progress perimeter) */
+/* Preview toolbar — scroll progress line (no perimeter / no skew) */
 .landing-v2-nav__signal {
   position: absolute;
   left: 0;
@@ -504,33 +504,20 @@
   right: 0;
   bottom: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .landing-v2-nav__signal-accent {
   position: absolute;
   bottom: 0;
   left: 0;
+  width: 100%;
   height: 2px;
   background: #b4ff00;
   box-shadow: none;
-  transition:
-    left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.landing-v2-nav--preview.landing-v2-nav--scrolled .landing-v2-nav__signal-accent:not(.landing-v2-nav__signal-accent--mobile) {
-  height: 2px;
-}
-
-.landing-v2-nav__signal-accent--mobile {
-  left: 14%;
-  width: 22%;
-}
-
-.landing-v2-nav--preview.landing-v2-nav--scrolled .landing-v2-nav__signal-accent--mobile {
-  left: 12%;
-  width: 28%;
+  transform-origin: left center;
+  transform: scaleX(var(--toolbar-scroll-progress, 0));
+  will-change: transform;
 }
 
 .landing-v2-nav--scrolled:not(.landing-v2-nav--preview) .landing-v2-nav__inner {

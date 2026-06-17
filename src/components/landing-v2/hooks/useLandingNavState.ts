@@ -19,10 +19,12 @@ export function useLandingNavState(sectionIds: readonly string[]) {
 
     update();
     window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
     gsap.ticker.add(update);
 
     return () => {
       window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
       gsap.ticker.remove(update);
     };
   }, []);
