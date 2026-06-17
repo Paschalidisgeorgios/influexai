@@ -39,7 +39,7 @@ export const LANDING_V2_COPY = {
       label: "Studio",
       headline: "Alle Flächen deiner Produktion in einem System.",
       headlineLines: ["Alle Flächen deiner Produktion", "in einem System."] as const,
-      body: "Cockpit, Agent, Tools und Galerie arbeiten zusammen — nicht als getrennte Generatoren, sondern als Produktionsumgebung.",
+      body: "Cockpit, Agent, Workflow und Galerie arbeiten zusammen — nicht als getrennte Generatoren, sondern als Produktionsumgebung.",
     },
     pricing: {
       number: "05",
@@ -259,33 +259,76 @@ export const LANDING_V2_COPY = {
     headline: "Alle Flächen deiner Produktion in einem System.",
     headlineLines: ["Alle Flächen deiner Produktion", "in einem System."] as const,
     subline:
-      "Cockpit, Agent, Tools und Galerie — als zusammenhängende Produktionsumgebung.",
+      "Cockpit, Agent, Workflow und Galerie — als zusammenhängende Produktionsumgebung.",
     panels: [
       {
         id: "cockpit",
         label: "Cockpit",
-        title: "Überblick vor der Produktion.",
-        description: "Projekte starten, Wege wählen, aktive Assets im Blick.",
+        title: "Command-first Start.",
+        description: "Ziel beschreiben — Signale und Workflow werden erkannt.",
       },
       {
         id: "agent",
         label: "Agent",
-        title: "Aus Ideen werden Prompts.",
-        description: "Kampagnenideen in konkrete Produktionsschritte übersetzen.",
+        title: "Prompt wird produktionsreif.",
+        description: "Originalidee in optimierte Produktionssprache übersetzt.",
       },
       {
-        id: "tools",
-        label: "Tools",
-        title: "Werkzeuge zur richtigen Aufgabe.",
-        description: "Produktionswege im Vordergrund — klar strukturiert.",
+        id: "workflow",
+        label: "Workflow",
+        title: "Produktionsweg öffnet sich.",
+        description: "Format, Stil und nächste Schritte im selben Flow.",
       },
       {
         id: "gallery",
         label: "Galerie",
-        title: "Ergebnisse an einem Ort.",
-        description: "Visuals, Varianten und Motion-Entwürfe für spätere Kampagnen.",
+        title: "Assets bleiben verwertbar.",
+        description: "Visuals, Motion und Hooks für spätere Kampagnen.",
       },
-    ],
+    ] as const,
+    scenes: [
+      {
+        id: "cockpit",
+        index: "01",
+        label: "Cockpit",
+        command:
+          "Erstelle ein Kampagnenbild für Instagram für ein Premium-Olivenöl.",
+        signals: [
+          { label: "Intent", value: "Bild erstellen" },
+          { label: "Plattform", value: "Instagram" },
+          { label: "Format", value: "4:5" },
+          { label: "Engine", value: "Image" },
+        ],
+      },
+      {
+        id: "agent",
+        index: "02",
+        label: "Agent",
+        original: "Erstelle ein Bild von Olivenöl bei Sonnenuntergang.",
+        optimized:
+          "Premium product visual of Greek olive oil, golden hour lighting, editorial composition, Mediterranean atmosphere, high-detail campaign asset.",
+        chips: ["Prompt optimiert", "Format erkannt", "Rückfrage bereit"],
+      },
+      {
+        id: "workflow",
+        index: "03",
+        label: "Workflow",
+        route: "Bild erstellen",
+        options: [
+          { label: "Format", value: "4:5" },
+          { label: "Stil", value: "Premium" },
+          { label: "Qualität", value: "Standard / Premium" },
+        ],
+        nextActions: ["Zu Video", "Hook schreiben", "In Kampagne"],
+      },
+      {
+        id: "gallery",
+        index: "04",
+        label: "Galerie",
+        assets: ["Campaign Visual", "Motion Draft", "Hook Set", "Varianten"],
+        actions: ["Wiederverwenden", "Als Video", "In Kampagne"],
+      },
+    ] as const,
   },
   outputs: {
     eyebrow: "Outputs",
