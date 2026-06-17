@@ -80,9 +80,9 @@ export function useHero3DStage({
         gsap.set(panel, { z: 40, rotateX: -1.5, transformPerspective: 1200 });
 
         gsap.to(panel, {
-          y: -36,
-          z: 20,
-          scale: 0.98,
+          y: -14,
+          z: 24,
+          scale: 0.99,
           ease: "none",
           scrollTrigger: {
             trigger: section,

@@ -1,37 +1,53 @@
 /** GSAP depth presets — landing preview scroll story */
 
+/** Asset-only depth — text stays flat */
+export const STORY_ASSET_DEPTH = {
+  hidden: {
+    autoAlpha: 0,
+    scale: 0.97,
+    z: -40,
+  },
+  active: {
+    autoAlpha: 1,
+    scale: 1,
+    z: 0,
+  },
+} as const;
+
+/** @deprecated Text panels — use STORY_ASSET_DEPTH */
 export const STORY_PANEL_DEPTH = {
   hidden: {
     autoAlpha: 0,
-    scale: 0.92,
-    z: -220,
-    rotateX: 9,
+    scale: 0.97,
+    z: -40,
+    rotateX: 0,
     rotateY: 0,
   },
   inactive: {
-    autoAlpha: 0.36,
-    scale: 0.94,
-    z: -190,
-    rotateX: 8,
+    autoAlpha: 0,
+    scale: 0.97,
+    z: -40,
+    rotateX: 0,
     rotateY: 0,
   },
   previous: {
-    autoAlpha: 0.52,
-    scale: 0.96,
-    z: -120,
-    rotateX: -7,
+    autoAlpha: 0,
+    scale: 0.98,
+    z: -20,
+    rotateX: 0,
     rotateY: 0,
   },
   active: {
     autoAlpha: 1,
     scale: 1,
-    z: 80,
+    z: 0,
     rotateX: 0,
     rotateY: 0,
   },
 } as const;
 
-export const STORY_PIN_SCROLL_VH = 95;
+/** Viewport-heights of scroll per pinned story (reduced for stable pin release) */
+export const STORY_PIN_SCROLL_VH = 52;
 
 export const STUDIO_PANEL_DEPTH = [
   { z: 72, rotateY: -6, rotateX: 3, y: -4, scale: 1 },

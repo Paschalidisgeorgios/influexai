@@ -211,6 +211,8 @@
 .landing-v2-section--editorial {
   padding-top: 6rem;
   padding-bottom: 6rem;
+  position: relative;
+  z-index: auto;
 }
 
 @media (min-width: 768px) {
@@ -260,69 +262,90 @@
 
 .landing-v2-scroll-story__track {
   position: relative;
-  min-height: 100vh;
+}
+
+.landing-v2-scroll-story__track--stable {
+  isolation: isolate;
+  z-index: 1;
+}
+
+.landing-v2-scroll-story {
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .landing-v2-scroll-story__stage-3d {
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+
+.landing-v2-scroll-story__stage-3d--stable {
+  position: relative;
+  z-index: 0;
+}
+
+.landing-v2-scroll-story__asset-stage {
+  position: relative;
+  min-height: clamp(280px, 38vh, 420px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.landing-v2-scroll-story__asset-panel {
+  position: absolute;
+  inset: 0;
+  padding: 0.75rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transform-style: preserve-3d;
+  will-change: opacity, transform;
+}
+
+.landing-v2-scroll-story__asset-panel--active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.landing-v2-chapter-sidebar {
+  position: relative;
+  z-index: 2;
+}
+
+.landing-v2-chapter-active__word {
+  font-family: var(--font-fraunces), Fraunces, Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--lv2-lime);
+  margin-bottom: 0.65rem;
+}
+
+.landing-v2-chapter-active__title {
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  line-height: 1.12;
+  max-width: 20ch;
+}
+
+.landing-v2-chapter-active__desc {
+  margin-top: 0.75rem;
+  max-width: 38ch;
+  font-size: clamp(0.95rem, 1.7vw, 1.05rem);
+  line-height: 1.55;
+  color: rgba(247, 243, 234, 0.58);
 }
 
 .landing-v2-scroll-story__panels-3d {
   position: relative;
-  min-height: clamp(360px, 42vh, 440px);
   transform-style: preserve-3d;
 }
 
 .landing-v2-scroll-story__panel {
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-.landing-v2-scroll-story__panels-3d--editorial {
-  min-height: clamp(420px, 50vh, 520px);
-}
-
-.landing-v2-chapter-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  color: var(--lv2-text-light);
-}
-
-.landing-v2-chapter-panel__word {
-  font-family: var(--font-fraunces), Fraunces, Georgia, serif;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  color: rgba(247, 243, 234, 0.92);
-  margin-bottom: 0.75rem;
-}
-
-.landing-v2-chapter-panel__title {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  max-width: 16ch;
-}
-
-.landing-v2-chapter-panel__desc {
-  margin-top: 0.85rem;
-  max-width: 36ch;
-  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
-  line-height: 1.55;
-  color: rgba(247, 243, 234, 0.55);
-}
-
-.landing-v2-chapter-panel__asset {
-  margin-top: 1.75rem;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
+  will-change: opacity, transform;
 }
 
 .landing-v2-chapter-nav__list {
@@ -372,19 +395,6 @@
 .landing-v2-chapter-stack__item {
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.landing-v2-scroll-story__panels-3d [data-story-panel] {
-  opacity: 0.36;
-  transform: perspective(1400px) translateZ(-190px) scale(0.94) rotateX(8deg);
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
-.landing-v2-scroll-story__panels-3d [data-story-panel]:first-child {
-  opacity: 1;
-  transform: perspective(1400px) translateZ(80px) scale(1) rotateX(0deg);
 }
 
 /* —— 3D scene system —— */
@@ -476,30 +486,24 @@
 
 .landing-v2-hero-stage--editorial {
   position: relative;
-  margin-top: auto;
-  min-height: clamp(280px, 42vw, 520px);
+  margin-top: 0;
+  min-height: clamp(300px, 40vw, 480px);
   width: 100%;
 }
 
-@media (min-width: 1024px) {
-  .landing-v2-hero-stage--editorial {
-    position: absolute;
-    right: -2%;
-    bottom: 0;
-    width: min(58vw, 720px);
-    min-height: clamp(360px, 48vh, 560px);
-    margin-top: 0;
-  }
+.landing-v2-hero-stage.landing-v2-scene-3d {
+  overflow: visible;
 }
 
 .landing-v2-hero-stage__panel--editorial {
   max-width: none;
   width: 100%;
+  margin: 0 auto;
 }
 
 .landing-v2-hero-product--stage {
   border-radius: 28px;
-  min-height: clamp(260px, 38vw, 480px);
+  min-height: clamp(280px, 36vw, 440px);
 }
 
 .landing-v2-hero-product--stage .landing-v2-hero-product__content {

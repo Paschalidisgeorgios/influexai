@@ -32,15 +32,15 @@ export function LandingV2Hero() {
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-hero landing-v2-hero--editorial relative min-h-[90vh] overflow-hidden md:min-h-screen"
+      className="landing-v2-hero landing-v2-hero--editorial relative min-h-[90vh] overflow-x-clip md:min-h-screen"
       aria-labelledby="lv2-hero-heading"
     >
       <LandingV2HeroAmbient />
 
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="relative z-10 mx-auto flex min-h-[inherit] w-full max-w-[90rem] flex-col px-5 pb-8 pt-28 md:px-8 md:pb-12 md:pt-36 lg:relative">
-        <div className="landing-v2-hero__copy flex max-w-4xl flex-col justify-center md:min-h-[52vh] md:pb-8">
+      <div className="relative z-10 mx-auto grid min-h-[inherit] w-full max-w-[90rem] grid-cols-1 items-end gap-10 px-5 pb-14 pt-28 md:px-8 md:pb-20 md:pt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-12 lg:pb-24">
+        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col justify-center lg:pb-6">
           <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />
             {copy.eyebrow}
@@ -62,7 +62,7 @@ export function LandingV2Hero() {
           >
             {copy.subline}
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3 md:mt-10">
+          <div className="relative z-20 mt-8 flex flex-wrap items-center gap-3 md:mt-10">
             <Link
               href="/auth/sign-up"
               className="landing-v2-btn-primary min-h-[44px]"
@@ -83,7 +83,7 @@ export function LandingV2Hero() {
 
         <div
           ref={stageRef}
-          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial ${
+          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 ${
             enableCinematicScroll ? "landing-v2-scene-3d" : ""
           }`}
         >
