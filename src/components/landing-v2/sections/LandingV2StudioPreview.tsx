@@ -31,7 +31,7 @@ export function LandingV2StudioPreview() {
     <section
       id="studio"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--studio overflow-hidden"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--studio overflow-hidden landing-v2-section--media-stage"
       aria-labelledby="lv2-studio-heading"
     >
       <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">

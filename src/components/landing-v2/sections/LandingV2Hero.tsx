@@ -5,54 +5,41 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
-import { LandingV2EditorialVideo } from "../ui/LandingV2EditorialVideo";
 import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
-import { useHeroVideoStage } from "../hooks/useHeroVideoStage";
 import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
 
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoStageRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const links = useLandingV2Links();
   const isPreview = links.mode === "preview";
-  const { enableCinematicScroll, isMobile } = useLandingViewport();
   const { heroReady: introHeroReady } = useBrandIntro();
   const heroReady = links.enableBrandIntro ? introHeroReady : true;
-  const motionEnabled = links.enablePreviewMotion && enableCinematicScroll && !isMobile;
 
   useHeroEntrance(sectionRef, heroReady);
-  useHeroVideoStage({
-    sectionRef,
-    stageRef: videoStageRef,
-    videoRef,
-    enabled: motionEnabled,
-  });
 
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] overflow-x-clip"
+      className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] overflow-x-clip ${
+        isPreview ? "landing-v2-hero--media-stage" : ""
+      }`.trim()}
       aria-labelledby="lv2-hero-heading"
     >
-      <div className="landing-v2-hero__gradient" aria-hidden />
-
-      <div
-        ref={videoStageRef}
-        className="landing-v2-hero__video-stage"
-        data-hero-video-stage
-      >
-        <LandingV2EditorialVideo ref={videoRef} enabled={links.enableHeroVideo} />
-        <div className="landing-v2-hero__video-scrim" aria-hidden />
-        {!isPreview ? (
-          <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
-        ) : null}
-      </div>
+      {!isPreview ? (
+        <>
+          <div className="landing-v2-hero__gradient" aria-hidden />
+          <div className="landing-v2-hero__flow-silhouette-wrap">
+            <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
+          </div>
+        </>
+      ) : (
+        <div className="landing-v2-hero__readability-scrim" aria-hidden />
+      )}
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:px-8 md:pb-12 lg:pb-14">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">

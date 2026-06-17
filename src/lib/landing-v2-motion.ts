@@ -160,6 +160,75 @@ export const CREATOR_FLOW_REVEAL = {
   lineDuration: 1.35,
 } as const;
 
+export type MediaStageBlend = {
+  layers: Record<
+    "hero" | "system" | "workflow" | "studio" | "outputs",
+    number
+  >;
+  scrim: number;
+  primaryScale: number;
+  primaryY: number;
+  secondaryScale: number;
+  secondaryY: number;
+};
+
+/** Cinematic media stage — scroll blends (preview only) */
+export const MEDIA_STAGE_SCROLL = {
+  heroScrub: 0.72,
+  heroHook: {
+    heroOpacity: 1,
+    heroFade: 0.55,
+    systemRise: 0.42,
+    scrimStart: 0.38,
+    scrimDelta: 0.22,
+    scaleStart: 1.1,
+    scaleDelta: 0.08,
+    yDelta: 5,
+  },
+  blends: {
+    hero: {
+      layers: { hero: 1, system: 0, workflow: 0, studio: 0, outputs: 0 },
+      scrim: 0.4,
+      primaryScale: 1.1,
+      primaryY: 0,
+      secondaryScale: 1.06,
+      secondaryY: 0,
+    },
+    system: {
+      layers: { hero: 0.35, system: 0.85, workflow: 0.12, studio: 0, outputs: 0 },
+      scrim: 0.58,
+      primaryScale: 1.04,
+      primaryY: 3,
+      secondaryScale: 1.04,
+      secondaryY: 0,
+    },
+    workflow: {
+      layers: { hero: 0.12, system: 0.25, workflow: 0.92, studio: 0.08, outputs: 0 },
+      scrim: 0.62,
+      primaryScale: 1.02,
+      primaryY: 4,
+      secondaryScale: 1.08,
+      secondaryY: 2,
+    },
+    studio: {
+      layers: { hero: 0.08, system: 0.15, workflow: 0.28, studio: 0.88, outputs: 0.1 },
+      scrim: 0.68,
+      primaryScale: 1,
+      primaryY: 5,
+      secondaryScale: 1.05,
+      secondaryY: 3,
+    },
+    outputs: {
+      layers: { hero: 0.05, system: 0.1, workflow: 0.22, studio: 0.35, outputs: 0.9 },
+      scrim: 0.72,
+      primaryScale: 1,
+      primaryY: 6,
+      secondaryScale: 1.06,
+      secondaryY: 4,
+    },
+  } satisfies Record<string, MediaStageBlend>,
+} as const;
+
 /** Lenis / window scroll bridge — nav progress reads this when smooth scroll is active */
 let landingScrollY = 0;
 let landingLenisActive = false;

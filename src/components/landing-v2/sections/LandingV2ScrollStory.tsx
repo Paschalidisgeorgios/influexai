@@ -3,35 +3,21 @@
 import { useRef } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
-import { LandingV2EditorialVideo } from "../ui/LandingV2EditorialVideo";
 import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
-import { useLandingViewport } from "../hooks/useLandingViewport";
-import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
-import { useEditorialVideoScroll } from "../hooks/useEditorialVideoScroll";
 
 const chapterCopy = LANDING_V2_COPY.chapters.workflow;
 
 export function LandingV2ScrollStory() {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoStageRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { isMobile, enableCinematicScroll } = useLandingViewport();
-  const { enablePreviewMotion, enableHeroVideo } = useLandingV2Links();
 
   useSectionDramaturgy(sectionRef);
-  useEditorialVideoScroll({
-    sectionRef,
-    stageRef: videoStageRef,
-    videoRef,
-    enabled: enablePreviewMotion && enableCinematicScroll && !isMobile,
-  });
 
   return (
     <section
       id="story"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--chapter landing-v2-section--workflow landing-v2-scroll-story"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--workflow landing-v2-scroll-story landing-v2-section--media-stage"
       aria-labelledby="lv2-story-heading"
     >
       <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">
@@ -53,12 +39,10 @@ export function LandingV2ScrollStory() {
           <p className="landing-v2-workflow-steps mt-6">{chapterCopy.steps}</p>
         </div>
 
-        <div ref={videoStageRef} className="landing-v2-chapter__video-stage">
-          <LandingV2EditorialVideo ref={videoRef} enabled={enableHeroVideo} />
-          <div className="landing-v2-chapter__video-scrim" aria-hidden />
+        <div className="landing-v2-chapter__flow-panel">
           <LandingV2CreatorProductionFlow
             variant="workflow"
-            className="landing-v2-chapter__flow-overlay"
+            className="landing-v2-chapter__flow-stage"
           />
         </div>
       </div>
