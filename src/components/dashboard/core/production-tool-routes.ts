@@ -176,6 +176,10 @@ export function normalizeToolQueryParam(raw: string): ToolId | null {
   return LAUNCH_TOOL_IDS.has(id) ? id : null;
 }
 
+export function isLaunchToolId(toolId: ToolId): boolean {
+  return LAUNCH_TOOL_IDS.has(toolId);
+}
+
 export function resolveLaunchToolFromPath(pathname: string): ToolId | null {
   for (const [path, toolId] of PATH_TO_LAUNCH_TOOL) {
     if (pathname === path || pathname.startsWith(`${path}/`)) {

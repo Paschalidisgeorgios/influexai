@@ -66,6 +66,11 @@ export function isSetupMvpTool(toolId: ToolId): boolean {
   return SETUP_MVP_TOOL_IDS.has(toolId);
 }
 
+/** Single gate for MVP setup vs inactive launch view in dashboard SPA. */
+export function shouldRenderMvpToolSetup(toolId: ToolId): boolean {
+  return isSetupMvpTool(toolId);
+}
+
 export function getToolHubCardCta(toolId: ToolId): string {
   if (toolId === "gallery") return SETUP_COPY.toolCardCtaGallery;
   if (isSetupMvpTool(toolId)) return SETUP_COPY.toolCardCta;
@@ -128,6 +133,9 @@ export function getToolSetupCategory(toolId: ToolId): string {
 }
 
 export function getToolSetupSubtitle(toolId: ToolId): string {
+  if (!isSetupMvpTool(toolId)) {
+    return NON_MVP_SETUP_COPY.body;
+  }
   return TOOL_SETUP_SUBTITLE[toolId] ?? "Wähle Ziel, Format und Modell.";
 }
 

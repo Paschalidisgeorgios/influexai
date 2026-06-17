@@ -11,7 +11,7 @@ import { DashboardSignOutButton } from "./DashboardSignOutButton";
 import { ProductionToolsOverview } from "./ProductionToolsOverview";
 import { ProductionToolLaunch } from "./ProductionToolLaunch";
 import { ProductionToolSetup } from "./ProductionToolSetup";
-import { SETUP_MVP_TOOL_IDS } from "./production-tool-setup-ui";
+import { shouldRenderMvpToolSetup } from "./production-tool-setup-ui";
 import {
   isToolPushSafeToOpen,
   normalizeToolQueryParam,
@@ -734,14 +734,14 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
         ) : (
           <DashboardStage
             innerClassName={
-              SETUP_MVP_TOOL_IDS.has(activeTool)
+              shouldRenderMvpToolSetup(activeTool)
                 ? "lg:px-8 xl:px-10 2xl:px-12"
                 : undefined
             }
           >
             {activeTool === "tools" ? (
               <ProductionToolsOverview onSelect={handleToolSelect} />
-            ) : SETUP_MVP_TOOL_IDS.has(activeTool) ? (
+            ) : shouldRenderMvpToolSetup(activeTool) ? (
               <ProductionToolSetup toolId={activeTool} />
             ) : (
               <ProductionToolLaunch

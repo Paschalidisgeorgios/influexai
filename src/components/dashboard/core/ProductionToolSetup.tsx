@@ -10,8 +10,10 @@ import {
   getToolSetupCategory,
   getToolSetupSubtitle,
   getToolSetupTitle,
+  shouldRenderMvpToolSetup,
   SETUP_COPY,
 } from "./production-tool-setup-ui";
+import { ProductionToolLaunch } from "./ProductionToolLaunch";
 import {
   StudioCreditNote,
   StudioCreditPill,
@@ -21,6 +23,10 @@ import {
 } from "../studio-ui";
 
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
+  if (!shouldRenderMvpToolSetup(toolId)) {
+    return <ProductionToolLaunch toolId={toolId} />;
+  }
+
   const creditLabel = getSetupCreditLabel(toolId);
 
   return (
