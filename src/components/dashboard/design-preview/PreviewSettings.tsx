@@ -412,15 +412,11 @@ export function PreviewSettings() {
   return (
     <div className="pb-8 pt-4 md:pt-8">
       <p
-        className="mb-5 font-mono text-[10px] tracking-[0.28em] uppercase"
-        style={{ color: "rgba(245,242,234,0.45)" }}
+        className="preview-type-label mb-5"
       >
         {ts.overline}
       </p>
-      <h2
-        className="mb-8 text-3xl font-extrabold text-white md:mb-10 md:text-4xl"
-        style={{ ...HL, letterSpacing: "-0.03em" }}
-      >
+      <h2 className="preview-type-display--compact mb-8 md:mb-10">
         {ts.headline}
       </h2>
 

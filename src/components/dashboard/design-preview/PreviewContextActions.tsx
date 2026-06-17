@@ -114,16 +114,14 @@ export function PreviewContextActions({
 
   return (
     <div className="min-w-0" data-preview-stagger-item>
-      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-        {title}
-      </p>
+      <p className="preview-type-meta mb-3">{title}</p>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => {
           const className =
-            "rounded border px-3 py-2 text-[12px] font-medium transition-colors hover:border-white/20";
+            "preview-type-chip rounded border px-3 py-2 transition-colors hover:border-white/20";
           const style = {
             borderColor: BORDER,
-            color: "rgba(244,240,232,0.85)",
+            color: "rgba(245,240,232,0.85)",
             background: "rgba(255,255,255,0.04)",
           };
 
@@ -156,7 +154,7 @@ export function PreviewContextActions({
           );
         })}
       </div>
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.08em]" style={{ color: ACCENT }}>
+      <p className="preview-type-meta mt-2" style={{ color: ACCENT }}>
         Preview
       </p>
     </div>

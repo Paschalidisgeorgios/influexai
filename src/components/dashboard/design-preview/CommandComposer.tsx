@@ -55,7 +55,7 @@ function RotatingPlaceholder({ prompts, visible }: { prompts: string[]; visible:
   }, [text, phase, index, prompts, visible]);
 
   return (
-    <span className="text-neutral-500" aria-hidden>
+    <span className="preview-command__placeholder" aria-hidden>
       {text || "\u200B"}
     </span>
   );
@@ -122,7 +122,7 @@ export function CommandComposer({
             />
             {!value && !focused && !loading ? (
               <div
-                className="pointer-events-none absolute left-0 top-0 max-w-full pr-2 text-[1rem] leading-[1.65] md:text-[1.0625rem]"
+                className="preview-command__placeholder pointer-events-none absolute left-0 top-0 max-w-full pr-2"
                 aria-hidden
               >
                 <RotatingPlaceholder prompts={rotatingPrompts} visible={!value} />
@@ -172,7 +172,7 @@ export function CommandComposer({
         })}
       </div>
 
-      <p className="mt-2 font-mono text-[11px]" style={{ color: "rgba(245,242,234,0.42)" }}>
+      <p className="preview-command__hint mt-2">
         {loading ? (
           <span style={{ color: PREVIEW_ACCENT }}>{loadingHint}</span>
         ) : (

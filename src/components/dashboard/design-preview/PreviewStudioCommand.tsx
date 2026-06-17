@@ -23,7 +23,6 @@ import {
   animatePreviewPanel,
   animatePreviewWorkflowItems,
 } from "./usePreviewDashboardMotion";
-import { PREVIEW_HL } from "./preview-tokens";
 
 export function PreviewStudioCommand() {
   const { lang, t } = useLang();
@@ -109,18 +108,13 @@ export function PreviewStudioCommand() {
   return (
     <div ref={rootRef} className="mx-auto min-w-0 max-w-[52rem]">
       <header className="mb-6 md:mb-8" data-preview-enter>
-        <p className="mb-2 font-mono text-[11px] tracking-[0.16em] uppercase text-neutral-500">
-          01 — {tc.overline}
+        <p className="preview-type-label mb-2">
+          <span className="preview-type-label__accent">01</span>
+          <span aria-hidden> — </span>
+          {tc.overline}
         </p>
-        <h1
-          className="text-[1.875rem] font-extrabold leading-[1.04] text-white sm:text-[2.125rem] md:text-[2.5rem]"
-          style={{ ...PREVIEW_HL, letterSpacing: "-0.035em" }}
-        >
-          {tc.headline}
-        </h1>
-        <p className="mt-3 max-w-[48ch] text-[15px] leading-[1.65] md:text-base" style={{ color: "rgba(245,242,234,0.72)" }}>
-          {tc.subline}
-        </p>
+        <h1 className="preview-type-display">{tc.headline}</h1>
+        <p className="preview-type-body mt-3 max-w-[48ch]">{tc.subline}</p>
       </header>
 
       <CommandComposer
@@ -172,7 +166,7 @@ export function PreviewStudioCommand() {
             ) : null}
           </>
         ) : (
-          <p className="text-[13px] leading-relaxed text-neutral-500" data-preview-stagger>
+          <p className="preview-type-body preview-type-body--muted" data-preview-stagger>
             {tc.idleHint}
           </p>
         )}
@@ -183,7 +177,7 @@ export function PreviewStudioCommand() {
         style={{ borderColor: "rgba(255,255,255,0.06)" }}
         data-preview-stagger
       >
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-600">
+        <p className="preview-type-meta mb-2">
           {tc.mvpLabel}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -191,7 +185,7 @@ export function PreviewStudioCommand() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.06em] text-neutral-400 transition-colors hover:border-white/15 hover:text-neutral-200"
+              className="preview-type-chip rounded border px-3 py-1.5 text-[var(--studio-text-muted)] transition-colors hover:border-white/15 hover:text-[var(--studio-text-secondary)]"
               style={{ borderColor: "rgba(255,255,255,0.08)" }}
             >
               {link.label}

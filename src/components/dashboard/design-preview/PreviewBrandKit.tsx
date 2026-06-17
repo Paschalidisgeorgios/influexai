@@ -7,11 +7,13 @@ export function PreviewBrandKit() {
 
   return (
     <div className="mx-auto min-w-0 max-w-2xl">
-      <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500">
+      <p className="preview-type-label mb-2">
+        <span className="preview-type-label__accent">03</span>
+        <span aria-hidden> — </span>
         {t.brandKit.overline}
       </p>
-      <h1 className="mb-3 text-2xl font-extrabold text-white md:text-3xl">{t.brandKit.headline}</h1>
-      <p className="max-w-prose text-[15px] leading-relaxed text-neutral-400">{t.brandKit.subline}</p>
+      <h1 className="preview-type-display--compact mb-3">{t.brandKit.headline}</h1>
+      <p className="preview-type-body max-w-prose">{t.brandKit.subline}</p>
     </div>
   );
 }

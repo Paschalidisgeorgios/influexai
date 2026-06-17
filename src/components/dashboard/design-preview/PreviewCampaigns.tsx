@@ -9,14 +9,16 @@ export function PreviewCampaigns() {
 
   return (
     <div className="mx-auto min-w-0 max-w-2xl">
-      <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500">
+      <p className="preview-type-label mb-2">
+        <span className="preview-type-label__accent">02</span>
+        <span aria-hidden> — </span>
         {t.campaigns.overline}
       </p>
-      <h1 className="mb-3 text-2xl font-extrabold text-white md:text-3xl">{t.campaigns.headline}</h1>
-      <p className="mb-8 max-w-prose text-[15px] leading-relaxed text-neutral-400">{t.campaigns.subline}</p>
+      <h1 className="preview-type-display--compact mb-3">{t.campaigns.headline}</h1>
+      <p className="preview-type-body mb-8 max-w-prose">{t.campaigns.subline}</p>
       <Link
         href={PREVIEW_MVP_ROUTES.contentCalendar}
-        className="inline-flex rounded-md px-4 py-3 font-mono text-[12px] font-bold uppercase tracking-[0.1em]"
+        className="preview-type-btn inline-flex rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
         style={{ background: "#b4ff00", color: "#080808" }}
       >
         {t.campaigns.cta}

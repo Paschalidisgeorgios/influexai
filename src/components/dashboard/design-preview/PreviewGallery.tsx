@@ -357,18 +357,9 @@ export function PreviewGallery() {
   return (
     <div>
       {/* Header */}
-      <p className="mb-4 font-mono text-[10px] tracking-[0.28em] uppercase" style={{ color: MUTED }}>
-        {tg.overline}
-      </p>
-      <h2
-        className="mb-3 text-3xl font-extrabold md:text-[2.75rem] md:leading-[1.05]"
-        style={{ ...HL, letterSpacing: "-0.03em", color: INK }}
-      >
-        {tg.headline}
-      </h2>
-      <p className="mb-10 max-w-2xl text-[15px] leading-relaxed md:text-base" style={{ color: MUTED }}>
-        {tg.subline}
-      </p>
+      <p className="preview-type-label mb-4">{tg.overline}</p>
+      <h2 className="preview-type-display--compact mb-3">{tg.headline}</h2>
+      <p className="preview-type-body mb-10 max-w-2xl">{tg.subline}</p>
 
       {/* Filter bar */}
     <div

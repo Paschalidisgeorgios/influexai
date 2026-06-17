@@ -44,10 +44,8 @@ export function AssetPreviewInline({ intent, kind, lang, visible }: AssetPreview
         className="flex items-center justify-between border-b px-4 py-2.5"
         style={{ borderColor: "rgba(255,255,255,0.06)" }}
       >
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">
-          {mockLabel}
-        </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.08em]" style={{ color: ACCENT }}>
+        <span className="preview-type-meta">{mockLabel}</span>
+        <span className="preview-type-meta" style={{ color: ACCENT }}>
           {engineLabelForIntent(intent)}
         </span>
       </div>
@@ -83,7 +81,7 @@ export function AssetPreviewInline({ intent, kind, lang, visible }: AssetPreview
             ].map((hook) => (
               <li
                 key={hook}
-                className="rounded border px-3 py-2.5 text-[13px] leading-relaxed text-neutral-200"
+                className="preview-type-body rounded border px-3 py-2.5 text-[0.8125rem]"
                 style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
               >
                 {hook}
@@ -93,21 +91,21 @@ export function AssetPreviewInline({ intent, kind, lang, visible }: AssetPreview
         )}
         {kind === "campaign" && (
           <div className="space-y-3 text-[14px] text-neutral-200">
-            <p className="font-semibold text-white">
+            <p className="preview-type-workflow-title">
               {lang === "de" ? "Kampagnenplan bereit" : "Campaign plan ready"}
             </p>
-            <ul className="space-y-1.5 text-neutral-300">
+            <ul className="preview-type-body space-y-1.5 text-[0.875rem]">
               <li>· 3 Visuals</li>
               <li>· 2 Motion Assets</li>
               <li>· 5 Hooks</li>
               <li>· 7 Content-Ideen</li>
             </ul>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-neutral-500">
+            <p className="preview-type-meta">
               {lang === "de" ? "Geschätzte Credits: 48" : "Estimated credits: 48"}
             </p>
           </div>
         )}
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.08em] text-neutral-600">
+        <p className="preview-type-meta mt-3">
           {lang === "de" ? "Preview · Mock-Asset" : "Preview · mock asset"}
         </p>
       </div>

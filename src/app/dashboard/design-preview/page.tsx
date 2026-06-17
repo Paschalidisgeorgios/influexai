@@ -3,20 +3,12 @@
  * Mock data only. Use /dashboard for the real Studio cockpit.
  */
 
-import { Plus_Jakarta_Sans } from "next/font/google";
 import { PreviewShell } from "@/components/dashboard/design-preview/PreviewShell";
 import "@/components/dashboard/design-preview/preview-design.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets:  ["latin"],
-  weight:   ["400", "500", "600", "700", "800"],
-  variable: "--font-preview-headline",
-  display:  "swap",
-});
-
 export default function DesignPreviewPage() {
   return (
-    <div className={`${plusJakarta.variable} h-dvh max-h-dvh w-full overflow-hidden`}>
+    <div className="preview-studio-root h-dvh max-h-dvh w-full overflow-hidden">
       <PreviewShell />
     </div>
   );

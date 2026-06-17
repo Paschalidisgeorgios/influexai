@@ -30,9 +30,7 @@ type DynamicWorkflowResultProps = {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.1em]" style={{ color: META }}>
-        {label}
-      </span>
+      <span className="preview-type-meta mb-1.5 block">{label}</span>
       {children}
     </label>
   );
@@ -54,7 +52,7 @@ function ProgressBar({ phase, lang }: { phase: WorkflowPhase; lang: "de" | "en" 
 
   return (
     <div className="space-y-2">
-      <p className="flex items-center gap-2 text-[13px] text-neutral-200">
+      <p className="preview-type-body flex items-center gap-2 text-[0.8125rem]">
         {phase !== "generating" && phase === "optimizing" ? (
           <span style={{ color: ACCENT }}>✓</span>
         ) : null}
@@ -109,13 +107,8 @@ export function DynamicWorkflowResult({
       data-preview-workflow
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.1em]" style={{ color: META }}>
-          Workflow
-        </span>
-        <span
-          className="font-mono text-[10px] uppercase tracking-[0.08em]"
-          style={{ color: "rgba(180,255,0,0.85)" }}
-        >
+        <span className="preview-type-meta">Workflow</span>
+        <span className="preview-type-meta" style={{ color: "rgba(180,255,0,0.85)" }}>
           {engineLabelForIntent(effectiveIntent)}
         </span>
       </div>
@@ -126,8 +119,8 @@ export function DynamicWorkflowResult({
         <div className="grid gap-3">
           <Field label={copy.original}>
             <p
-              className="rounded border px-3 py-2 text-[13px] leading-relaxed text-neutral-400"
-              style={{ borderColor: BORDER }}
+              className="preview-type-body rounded border px-3 py-2 text-[0.8125rem]"
+              style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
             >
               {originalPrompt}
             </p>
@@ -138,10 +131,10 @@ export function DynamicWorkflowResult({
                 value={optimizedPrompt}
                 onChange={(e) => onOptimizedChange(e.target.value)}
                 rows={3}
-                className="w-full resize-none rounded border bg-transparent px-3 py-2 text-[13px] leading-relaxed text-neutral-100 outline-none"
-                style={{ borderColor: BORDER }}
+                className="preview-type-body w-full resize-none rounded border bg-transparent px-3 py-2 text-[0.8125rem] outline-none"
+                style={{ borderColor: BORDER, color: "var(--studio-text-primary)" }}
               />
-              <p className="mt-1.5 text-[11px]" style={{ color: META }}>
+              <p className="preview-type-body preview-type-body--muted mt-1.5 text-[0.6875rem]">
                 {copy.optimizeHint}
               </p>
             </Field>
@@ -151,7 +144,7 @@ export function DynamicWorkflowResult({
 
       {effectiveIntent === "image_to_video" && (
         <div className="grid gap-4">
-          <p className="text-[14px] font-semibold text-white">{de ? "Bild → Video" : "Image → Video"}</p>
+          <p className="preview-type-workflow-title">{de ? "Bild → Video" : "Image → Video"}</p>
           {hasImageContext ? (
             <p className="text-[13px]" style={{ color: ACCENT }}>
               ✓ {de ? "Bild bereits eingefügt" : "Image already attached"}
@@ -164,8 +157,8 @@ export function DynamicWorkflowResult({
                   <button
                     key={opt}
                     type="button"
-                    className="rounded border px-3 py-1.5 text-[12px] text-neutral-200"
-                    style={{ borderColor: BORDER }}
+                    className="preview-type-chip rounded border px-3 py-1.5"
+                    style={{ borderColor: BORDER, color: "var(--studio-text-secondary)" }}
                   >
                     {opt}
                   </button>
@@ -176,8 +169,8 @@ export function DynamicWorkflowResult({
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Field label={de ? "Dauer" : "Duration"}>
               <select
-                className="w-full rounded border bg-transparent px-2 py-2 text-[13px] text-neutral-200"
-                style={{ borderColor: BORDER }}
+                className="preview-type-body w-full rounded border bg-transparent px-2 py-2 text-[0.8125rem] outline-none"
+                style={{ borderColor: BORDER, color: "var(--studio-text-secondary)" }}
                 defaultValue="5s"
               >
                 <option>3s</option>
@@ -187,8 +180,8 @@ export function DynamicWorkflowResult({
             </Field>
             <Field label={de ? "Stil" : "Style"}>
               <select
-                className="w-full rounded border bg-transparent px-2 py-2 text-[13px] text-neutral-200"
-                style={{ borderColor: BORDER }}
+                className="preview-type-body w-full rounded border bg-transparent px-2 py-2 text-[0.8125rem] outline-none"
+                style={{ borderColor: BORDER, color: "var(--studio-text-secondary)" }}
                 defaultValue="Cinematic"
               >
                 <option>Cinematic</option>
@@ -198,8 +191,8 @@ export function DynamicWorkflowResult({
             </Field>
             <Field label="Format">
               <select
-                className="w-full rounded border bg-transparent px-2 py-2 text-[13px] text-neutral-200"
-                style={{ borderColor: BORDER }}
+                className="preview-type-body w-full rounded border bg-transparent px-2 py-2 text-[0.8125rem] outline-none"
+                style={{ borderColor: BORDER, color: "var(--studio-text-secondary)" }}
               >
                 <option>{format ?? "9:16"}</option>
                 <option>4:5</option>
@@ -209,7 +202,7 @@ export function DynamicWorkflowResult({
           </div>
           <a
             href={PREVIEW_MVP_ROUTES.imgToVideo}
-            className="inline-flex w-full items-center justify-center rounded-md px-4 py-3 font-mono text-[12px] font-bold uppercase tracking-[0.1em]"
+            className="preview-type-btn inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
             style={{ background: ACCENT, color: "#080808" }}
           >
             {de ? "Video generieren →" : "Generate video →"}
@@ -219,30 +212,28 @@ export function DynamicWorkflowResult({
 
       {effectiveIntent === "campaign_planning" && phase === "complete" && (
         <div className="space-y-3">
-          <p className="text-[15px] font-semibold text-white">
+          <p className="preview-type-workflow-title">
             {de ? "Kampagnenplan bereit" : "Campaign plan ready"}
           </p>
-          <ul className="space-y-1 text-[14px] text-neutral-300">
+          <ul className="preview-type-body space-y-1 text-[0.875rem]">
             <li>· 3 Visuals</li>
             <li>· 2 Motion Assets</li>
             <li>· 5 Hooks</li>
             <li>· 7 Content-Ideen</li>
           </ul>
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-neutral-500">
-            {de ? "Geschätzte Credits: 48" : "Estimated credits: 48"}
-          </p>
+          <p className="preview-type-meta"> {de ? "Geschätzte Credits: 48" : "Estimated credits: 48"}</p>
           <div className="flex flex-wrap gap-2 pt-1">
             <button
               type="button"
-              className="rounded-md px-4 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em]"
+              className="preview-type-btn rounded-md px-4 py-2.5 text-[0.6875rem] uppercase tracking-[0.08em]"
               style={{ background: ACCENT, color: "#080808" }}
             >
               {de ? "Plan ausführen" : "Execute plan"}
             </button>
             <button
               type="button"
-              className="rounded border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-neutral-300"
-              style={{ borderColor: BORDER }}
+              className="preview-type-chip rounded border px-4 py-2.5 uppercase tracking-[0.06em]"
+              style={{ borderColor: BORDER, color: "var(--studio-text-secondary)" }}
             >
               {de ? "Anpassen" : "Adjust"}
             </button>
@@ -253,7 +244,7 @@ export function DynamicWorkflowResult({
       {effectiveIntent === "image_generation" && phase === "complete" && (
         <a
           href={PREVIEW_MVP_ROUTES.imageGen}
-          className="inline-flex w-full items-center justify-center rounded-md px-4 py-3 font-mono text-[12px] font-bold uppercase tracking-[0.1em]"
+          className="preview-type-btn inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
           style={{ background: ACCENT, color: "#080808" }}
         >
           {de ? "Bild erstellen" : "Create image"}
@@ -265,7 +256,7 @@ export function DynamicWorkflowResult({
           <button
             type="button"
             onClick={() => setAdvancedOpen((v) => !v)}
-            className="font-mono text-[10px] uppercase tracking-[0.12em]"
+            className="preview-type-meta"
             style={{ color: META }}
           >
             {advancedOpen ? "−" : "+"} {copy.advanced}
@@ -275,16 +266,16 @@ export function DynamicWorkflowResult({
               <Field label={de ? "Modell" : "Model"}>
                 <input
                   readOnly
-                  className="w-full rounded border bg-transparent px-2 py-1.5 text-[12px] text-neutral-400"
-                  style={{ borderColor: BORDER }}
+                  className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
+                  style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
                   defaultValue="InfluexAI Standard"
                 />
               </Field>
               <Field label="Provider">
                 <input
                   readOnly
-                  className="w-full rounded border bg-transparent px-2 py-1.5 text-[12px] text-neutral-400"
-                  style={{ borderColor: BORDER }}
+                  className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
+                  style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
                   defaultValue="Internal routing"
                 />
               </Field>

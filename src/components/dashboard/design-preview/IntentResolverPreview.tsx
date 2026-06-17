@@ -5,8 +5,7 @@ import {
   intentLabelFor,
   type PreviewIntent,
 } from "./preview-intent";
-
-const ACCENT = "#b4ff00";
+import { PREVIEW_ACCENT } from "./preview-tokens";
 
 type IntentResolverPreviewProps = {
   intent: PreviewIntent;
@@ -28,21 +27,14 @@ export function IntentResolverPreview({
       data-preview-stagger-item
     >
       <span
-        className="rounded px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em]"
-        style={{ background: "rgba(180,255,0,0.12)", color: ACCENT }}
+        className="preview-type-chip rounded px-2.5 py-1 uppercase tracking-[0.08em]"
+        style={{ background: "rgba(180,255,0,0.12)", color: PREVIEW_ACCENT }}
       >
         {intentLabelFor(intent, lang)}
       </span>
-      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-neutral-500">
-        {engineLabelForIntent(intent)}
-      </span>
+      <span className="preview-type-meta">{engineLabelForIntent(intent)}</span>
       {platformAsk ? (
-        <p
-          className="w-full text-[13px] leading-relaxed"
-          style={{ color: "rgba(244,240,232,0.78)" }}
-        >
-          {platformAsk}
-        </p>
+        <p className="preview-type-body w-full text-[0.8125rem]">{platformAsk}</p>
       ) : null}
     </div>
   );
