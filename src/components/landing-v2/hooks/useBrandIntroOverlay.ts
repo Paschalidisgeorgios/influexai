@@ -4,7 +4,9 @@ import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import {
   BRAND_INTRO_AUTO_DELAY_MS,
-  BRAND_INTRO_HERO_READY_AT_S,
+  BRAND_INTRO_HERO_DISSOLVE_PROGRESS,
+  BRAND_INTRO_MIN_VISIBLE_MS,
+  BRAND_INTRO_PHASES,
 } from "@/lib/landing-v2-motion";
 import { useReducedMotion } from "./useReducedMotion";
 
@@ -21,11 +23,12 @@ type UseBrandIntroOverlayOptions = {
   isMobile: boolean;
   onHeroReady: () => void;
   onDismiss: () => void;
+  onChromeVisible: () => void;
 };
 
 export function useBrandIntroOverlay(
   refs: BrandIntroOverlayRefs,
-  { enabled, isMobile, onHeroReady, onDismiss }: UseBrandIntroOverlayOptions
+  { enabled, isMobile, onHeroReady, onDismiss, onChromeVisible }: UseBrandIntroOverlayOptions
 ) {
   const reduceMotion = useReducedMotion();
 
@@ -38,8 +41,10 @@ export function useBrandIntroOverlay(
     let started = false;
     let finished = false;
     let autoTimer = 0;
+    let playStartTime = 0;
     let ctx: gsap.Context | undefined;
     let timeline: gsap.core.Timeline | null = null;
+    let progressTween: gsap.core.Tween | null = null;
 
     const unlockScroll = () => {
       document.body.style.overflow = "";
@@ -52,6 +57,7 @@ export function useBrandIntroOverlay(
     const finish = () => {
       if (finished) return;
       finished = true;
+      progressTween?.kill();
       unlockScroll();
       onDismiss();
     };
@@ -62,6 +68,15 @@ export function useBrandIntroOverlay(
         if (fired) return;
         fired = true;
         onHeroReady();
+      };
+    })();
+
+    const chromeVisibleOnce = (() => {
+      let fired = false;
+      return () => {
+        if (fired) return;
+        fired = true;
+        onChromeVisible();
       };
     })();
 
@@ -79,7 +94,8 @@ export function useBrandIntroOverlay(
 
     if (reduceMotion) {
       heroReadyOnce();
-      autoTimer = window.setTimeout(finish, BRAND_INTRO_AUTO_DELAY_MS.reduced);
+      chromeVisibleOnce();
+      autoTimer = window.setTimeout(finish, BRAND_INTRO_AUTO_DELAY_MS.reduced + 280);
       return () => {
         window.clearTimeout(autoTimer);
         unlockScroll();
@@ -91,12 +107,20 @@ export function useBrandIntroOverlay(
     const playIntro = () => {
       if (started || finished) return;
       started = true;
+      playStartTime = Date.now();
       window.clearTimeout(autoTimer);
 
-      const dissolveStart = isMobile ? 0.36 : 0.46;
-      const heroAt = isMobile
-        ? BRAND_INTRO_HERO_READY_AT_S.mobile
-        : BRAND_INTRO_HERO_READY_AT_S.desktop;
+      const phases = isMobile ? BRAND_INTRO_PHASES.mobile : BRAND_INTRO_PHASES.desktop;
+
+      const fadeEnd = phases.fadeIn;
+      const holdEnd = fadeEnd + phases.hold;
+      const breathEnd = holdEnd + phases.breath;
+      const signalStart = breathEnd - phases.breath * 0.25;
+      const signalEnd = signalStart + phases.signal;
+      const dissolveStart = signalEnd - phases.signal * 0.35;
+      const dissolveEnd = dissolveStart + phases.dissolve;
+      const overlayStart = dissolveStart + phases.dissolve * 0.35;
+      const heroAt = dissolveStart + phases.dissolve * BRAND_INTRO_HERO_DISSOLVE_PROGRESS;
 
       ctx = gsap.context(() => {
         const logoEl = refs.logo.current;
@@ -110,68 +134,137 @@ export function useBrandIntroOverlay(
         });
 
         if (logoEl) {
-          gsap.set(logoEl, { opacity: 0, scale: 0.98, filter: "blur(0px) brightness(1)" });
-          timeline.to(logoEl, { opacity: 1, scale: 1, duration: 0.38, ease: "power2.out" }, 0);
+          gsap.set(logoEl, { opacity: 0, scale: 0.99, filter: "blur(0px) brightness(1)" });
+          timeline.to(
+            logoEl,
+            { opacity: 1, scale: 1, duration: phases.fadeIn, ease: "power3.out" },
+            0
+          );
+          timeline.to(
+            logoEl,
+            { scale: 1.025, duration: phases.breath, ease: "sine.inOut" },
+            holdEnd
+          );
+          timeline.to(
+            logoEl,
+            {
+              scale: isMobile ? 1.06 : 1.08,
+              duration: phases.dissolve * 0.55,
+              ease: "power2.inOut",
+            },
+            dissolveStart
+          );
           timeline.to(
             logoEl,
             {
               opacity: 0,
-              scale: isMobile ? 1.08 : 1.14,
-              filter: "blur(5px) brightness(1.14)",
-              duration: 0.52,
+              scale: isMobile ? 1.08 : 1.12,
+              filter: "blur(8px) brightness(1.06)",
+              duration: phases.dissolve * 0.45,
+              ease: "power3.inOut",
             },
-            dissolveStart
+            dissolveStart + phases.dissolve * 0.42
           );
         }
 
         timeline.add(heroReadyOnce, heroAt);
+        timeline.add(chromeVisibleOnce, overlayStart);
 
         if (signalLines?.length) {
-          gsap.set(signalLines, { scaleX: 0.05, opacity: 0, transformOrigin: "center center" });
+          const signalOpacity = isMobile ? 0.32 : 0.48;
+          gsap.set(signalLines, { scaleX: 0.04, opacity: 0, transformOrigin: "center center" });
           timeline.to(
             signalLines,
-            { scaleX: 1, opacity: 0.72, duration: 0.26, stagger: 0.04, ease: "power2.out" },
-            dissolveStart
+            {
+              scaleX: 1,
+              opacity: signalOpacity,
+              duration: phases.signal * 0.55,
+              stagger: 0.08,
+              ease: "power2.inOut",
+            },
+            signalStart
           );
-          timeline.to(signalLines, { opacity: 0, duration: 0.2 }, dissolveStart + 0.32);
+          timeline.to(
+            signalLines,
+            { opacity: 0, duration: phases.signal * 0.4, ease: "power2.inOut" },
+            signalStart + phases.signal * 0.5
+          );
+        }
+
+        if (!isMobile && fragmentLines?.length) {
+          gsap.set(fragmentLines, { scaleX: 0, opacity: 0, transformOrigin: "center center" });
+          timeline.to(
+            fragmentLines,
+            {
+              scaleX: 1.08,
+              opacity: 0.38,
+              duration: phases.signal * 0.5,
+              stagger: 0.06,
+              ease: "power2.inOut",
+            },
+            signalStart + 0.12
+          );
+          timeline.to(
+            fragmentLines,
+            { opacity: 0, duration: phases.signal * 0.35, ease: "power2.inOut" },
+            signalStart + phases.signal * 0.55
+          );
         }
 
         if (maskEl) {
           gsap.set(maskEl, {
-            clipPath: "inset(38% 34% 38% 34% round 14px)",
-            opacity: 1,
+            clipPath: "inset(40% 36% 40% 36% round 16px)",
+            opacity: 0.85,
           });
           timeline.to(
             maskEl,
             {
               clipPath: "inset(0% 0% 0% 0% round 0px)",
               opacity: 0,
-              duration: 0.58,
+              duration: phases.overlayFade,
+              ease: "power3.inOut",
             },
-            dissolveStart
+            overlayStart
           );
-        }
-
-        if (fragmentLines?.length) {
-          gsap.set(fragmentLines, { scaleX: 0, opacity: 0, transformOrigin: "center center" });
-          timeline.to(
-            fragmentLines,
-            { scaleX: 1.15, opacity: 0.55, duration: 0.28, stagger: 0.03, ease: "power2.out" },
-            dissolveStart + 0.06
-          );
-          timeline.to(fragmentLines, { opacity: 0, duration: 0.18 }, dissolveStart + 0.38);
         }
 
         timeline.to(
           overlayEl,
-          { autoAlpha: 0, duration: 0.36, ease: "power2.out" },
-          dissolveStart + 0.38
+          { autoAlpha: 0, duration: phases.overlayFade, ease: "power3.inOut" },
+          overlayStart
         );
       }, overlayEl);
     };
 
+    const accelerateIntro = () => {
+      if (!timeline || finished) return;
+
+      const elapsed = Date.now() - playStartTime;
+      if (elapsed < BRAND_INTRO_MIN_VISIBLE_MS) {
+        timeline.timeScale(Math.min(timeline.timeScale() + 0.22, 1.75));
+        return;
+      }
+
+      const current = timeline.progress();
+      if (current >= 0.92) return;
+
+      progressTween?.kill();
+      progressTween = gsap.to(timeline, {
+        progress: Math.min(current + 0.14, 1),
+        duration: 0.55,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (timeline && timeline.progress() >= 0.99) finish();
+        },
+      });
+    };
+
     const onInteract = () => {
-      playIntro();
+      if (!started) {
+        playIntro();
+        return;
+      }
+      accelerateIntro();
     };
 
     const autoDelay = isMobile
@@ -187,10 +280,11 @@ export function useBrandIntroOverlay(
     return () => {
       window.clearTimeout(autoTimer);
       cleanupListeners.forEach((fn) => fn());
+      progressTween?.kill();
       timeline?.kill();
       ctx?.revert();
       unlockScroll();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isMobile, onHeroReady, onDismiss, reduceMotion]);
+  }, [enabled, isMobile, onHeroReady, onDismiss, onChromeVisible, reduceMotion]);
 }

@@ -16,14 +16,16 @@ import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
 
 function LandingPreviewShell() {
-  const { introDismissed } = useBrandIntro();
+  const { introDismissed, chromeVisible } = useBrandIntro();
+
+  const introStateClass = introDismissed
+    ? "landing-v2-root--intro-complete"
+    : chromeVisible
+      ? "landing-v2-root--intro-chrome"
+      : "landing-v2-root--intro-active";
 
   return (
-    <div
-      className={`landing-v2-root min-h-screen overflow-x-clip${
-        introDismissed ? " landing-v2-root--intro-complete" : " landing-v2-root--intro-active"
-      }`}
-    >
+    <div className={`landing-v2-root min-h-screen overflow-x-clip ${introStateClass}`}>
       <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
         Interne Vorschau — nicht die Live-Landingpage unter /
       </div>

@@ -14,7 +14,7 @@ export function LandingV2BrandIntro() {
   const signalsRef = useRef<HTMLDivElement>(null);
   const fragmentsRef = useRef<HTMLDivElement>(null);
   const [logoError, setLogoError] = useState(false);
-  const { introDismissed, markHeroReady, dismissIntro } = useBrandIntro();
+  const { introDismissed, markHeroReady, dismissIntro, markChromeVisible } = useBrandIntro();
   const { isMobile, ready, reduceMotion } = useLandingViewport();
 
   useBrandIntroOverlay(
@@ -30,6 +30,7 @@ export function LandingV2BrandIntro() {
       isMobile,
       onHeroReady: markHeroReady,
       onDismiss: dismissIntro,
+      onChromeVisible: markChromeVisible,
     }
   );
 

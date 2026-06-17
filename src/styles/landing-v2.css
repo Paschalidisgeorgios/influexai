@@ -52,13 +52,20 @@
 .landing-v2-root--intro-active .landing-v2-preview-banner {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+}
+
+.landing-v2-root--intro-chrome .landing-v2-nav,
+.landing-v2-root--intro-chrome .landing-v2-preview-banner {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.85s ease;
 }
 
 .landing-v2-root--intro-complete .landing-v2-nav,
 .landing-v2-root--intro-complete .landing-v2-preview-banner {
   opacity: 1;
   pointer-events: auto;
+  transition: opacity 0.65s ease;
 }
 
 /* Brand intro — fullscreen overlay (preview only) */
@@ -209,18 +216,18 @@
 
 .landing-v2-brand-intro__signal {
   position: absolute;
-  left: 12%;
-  right: 12%;
+  left: 14%;
+  right: 14%;
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(180, 255, 0, 0.08) 18%,
-    rgba(180, 255, 0, 0.55) 50%,
-    rgba(180, 255, 0, 0.08) 82%,
+    rgba(180, 255, 0, 0.05) 22%,
+    rgba(180, 255, 0, 0.38) 50%,
+    rgba(180, 255, 0, 0.05) 78%,
     transparent 100%
   );
-  transform: scaleX(0.08);
+  transform: scaleX(0.04);
   opacity: 0;
 }
 
