@@ -485,6 +485,54 @@
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
 }
 
+/* Preview toolbar — clean bottom lime signal line (no progress perimeter) */
+.landing-v2-nav__signal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: 2px;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.landing-v2-nav__signal-base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.landing-v2-nav__signal-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: #b4ff00;
+  box-shadow: none;
+  transition:
+    left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-v2-nav--preview.landing-v2-nav--scrolled .landing-v2-nav__signal-accent:not(.landing-v2-nav__signal-accent--mobile) {
+  height: 2px;
+}
+
+.landing-v2-nav__signal-accent--mobile {
+  left: 14%;
+  width: 22%;
+}
+
+.landing-v2-nav--preview.landing-v2-nav--scrolled .landing-v2-nav__signal-accent--mobile {
+  left: 12%;
+  width: 28%;
+}
+
 .landing-v2-nav--scrolled:not(.landing-v2-nav--preview) .landing-v2-nav__inner {
   padding: 0.55rem 0.9rem;
   border-color: rgba(255, 255, 255, 0.14);
