@@ -105,8 +105,7 @@ export function DynamicWorkflowResult({
 
   return (
     <div
-      className="min-w-0 space-y-4 rounded-lg border p-4 md:p-5"
-      style={{ borderColor: BORDER, background: "rgba(255,255,255,0.03)" }}
+      className="preview-workflow-panel min-w-0 space-y-4 p-4 md:p-5"
       data-preview-workflow
     >
       <div className="flex flex-wrap items-center justify-between gap-2">

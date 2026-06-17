@@ -18,11 +18,12 @@ import {
   buildOptimizedPrompt,
   needsPlatformAsk,
 } from "./preview-intent";
-import { usePreviewDashboardMotion, animatePreviewPanel } from "./usePreviewDashboardMotion";
-
-const HL: React.CSSProperties = {
-  fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
-};
+import {
+  usePreviewDashboardMotion,
+  animatePreviewPanel,
+  animatePreviewWorkflowItems,
+} from "./usePreviewDashboardMotion";
+import { PREVIEW_HL } from "./preview-tokens";
 
 export function PreviewStudioCommand() {
   const { lang, t } = useLang();
@@ -38,6 +39,7 @@ export function PreviewStudioCommand() {
 
   const tc = t.studioCommand;
   const chips = tc.chips.map((c) => ({ ...c, prompt: c.prompt[lang] }));
+  const loading = phase === "optimizing" || phase === "generating";
 
   usePreviewDashboardMotion(rootRef, true);
 
@@ -54,29 +56,29 @@ export function PreviewStudioCommand() {
 
   useEffect(() => {
     animatePreviewPanel(flowRef, phase !== "idle");
+    if (phase !== "idle") {
+      animatePreviewWorkflowItems(flowRef);
+    }
   }, [phase, intent, forceVideoPanel]);
 
-  const runWorkflow = useCallback(
-    (prompt: string) => {
-      const trimmed = prompt.trim();
-      if (!trimmed) return;
+  const runWorkflow = useCallback((prompt: string) => {
+    const trimmed = prompt.trim();
+    if (!trimmed) return;
 
-      setSubmitted(trimmed);
-      setForceVideoPanel(false);
-      const detected = detectPreviewIntent(trimmed);
-      setOptimized(buildOptimizedPrompt(trimmed, detected));
-      setPhase("optimizing");
+    setSubmitted(trimmed);
+    setForceVideoPanel(false);
+    const detected = detectPreviewIntent(trimmed);
+    setOptimized(buildOptimizedPrompt(trimmed, detected));
+    setPhase("optimizing");
 
+    window.setTimeout(() => {
+      setPhase("generating");
       window.setTimeout(() => {
-        setPhase("generating");
-        window.setTimeout(() => {
-          setPhase("complete");
-          if (detected === "image_generation") setHasImageContext(true);
-        }, 1200);
-      }, 700);
-    },
-    []
-  );
+        setPhase("complete");
+        if (detected === "image_generation") setHasImageContext(true);
+      }, 1200);
+    }, 700);
+  }, []);
 
   const handleSubmit = () => runWorkflow(input);
 
@@ -105,17 +107,20 @@ export function PreviewStudioCommand() {
   };
 
   return (
-    <div ref={rootRef} className="mx-auto min-w-0 max-w-3xl">
+    <div ref={rootRef} className="mx-auto min-w-0 max-w-[52rem]">
       <header className="mb-6 md:mb-8" data-preview-enter>
         <p className="mb-2 font-mono text-[11px] tracking-[0.16em] uppercase text-neutral-500">
           01 — {tc.overline}
         </p>
         <h1
-          className="text-[1.75rem] font-extrabold leading-[1.06] text-white sm:text-[2rem] md:text-[2.35rem]"
-          style={{ ...HL, letterSpacing: "-0.03em" }}
+          className="text-[1.875rem] font-extrabold leading-[1.04] text-white sm:text-[2.125rem] md:text-[2.5rem]"
+          style={{ ...PREVIEW_HL, letterSpacing: "-0.035em" }}
         >
           {tc.headline}
         </h1>
+        <p className="mt-3 max-w-[48ch] text-[15px] leading-[1.65] md:text-base" style={{ color: "rgba(245,242,234,0.72)" }}>
+          {tc.subline}
+        </p>
       </header>
 
       <CommandComposer
@@ -124,8 +129,13 @@ export function PreviewStudioCommand() {
         onSubmit={handleSubmit}
         chips={chips}
         placeholder={tc.placeholder}
+        rotatingPrompts={tc.rotatingPrompts}
         enterHint={tc.enterHint}
-        expanded={phase !== "idle"}
+        loadingHint={tc.loadingHint}
+        formatLabel={tc.formatChip}
+        galleryLabel={tc.galleryChip}
+        assetLabel={tc.assetLabel}
+        loading={loading}
       />
 
       <div ref={flowRef} className="mt-6 min-w-0 space-y-5 md:mt-8">

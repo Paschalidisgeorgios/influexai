@@ -1,0 +1,214 @@
+/* Design preview — command studio OS shell (isolated from production dashboard) */
+
+.preview-main-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.preview-main-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 85% 60% at 50% 18%, black 10%, transparent 72%);
+}
+
+.preview-main-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+.preview-command__surface {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    165deg,
+    rgba(12, 12, 16, 0.96) 0%,
+    rgba(8, 8, 12, 0.98) 100%
+  );
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.preview-command__surface--focused {
+  border-color: rgba(180, 255, 0, 0.28);
+  box-shadow:
+    0 0 0 3px rgba(180, 255, 0, 0.06),
+    0 16px 48px rgba(0, 0, 0, 0.32);
+}
+
+.preview-command__surface--loading {
+  border-color: rgba(180, 255, 0, 0.22);
+}
+
+.preview-command__surface--loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(180, 255, 0, 0.14) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: preview-command-pulse 1.8s ease-in-out infinite;
+  opacity: 0.55;
+}
+
+@keyframes preview-command-pulse {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+.preview-command__signal {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(180, 255, 0, 0.55) 0%,
+    rgba(180, 255, 0, 0.18) 42%,
+    transparent 78%
+  );
+}
+
+.preview-command__textarea {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  max-height: 280px;
+  resize: none;
+  overflow-y: auto;
+  background: transparent;
+  color: #f5f2ea;
+  outline: none;
+  line-height: 1.65;
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .preview-command__textarea {
+    min-height: 128px;
+    font-size: 1.0625rem;
+  }
+}
+
+.preview-command__toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(245, 242, 234, 0.72);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.45rem 0.65rem;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.preview-command__toolbar-btn:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(245, 242, 234, 0.92);
+}
+
+.preview-command__context-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(245, 242, 234, 0.52);
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.65rem;
+}
+
+.preview-command__quick-chip {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(245, 242, 234, 0.72);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.preview-command__quick-chip:hover {
+  border-color: rgba(180, 255, 0, 0.35);
+  color: #b4ff00;
+  background: rgba(180, 255, 0, 0.06);
+}
+
+.preview-command__quick-chip--active {
+  border-color: rgba(180, 255, 0, 0.4);
+  color: #b4ff00;
+  background: rgba(180, 255, 0, 0.08);
+}
+
+.preview-command__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: #b4ff00;
+  color: #080808;
+  transition: opacity 0.15s ease;
+}
+
+.preview-command__send:disabled {
+  opacity: 0.28;
+}
+
+.preview-workflow-panel {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.preview-dark-panel {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+@media (max-width: 767px) {
+  .preview-main-grid::before {
+    opacity: 0.22;
+    background-size: 56px 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-command__surface--loading::after {
+    animation: none;
+    opacity: 0.25;
+  }
+}

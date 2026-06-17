@@ -113,7 +113,7 @@ export function PreviewContextActions({
   const title = lang === "de" ? "Was als Nächstes?" : "What's next?";
 
   return (
-    <div className="min-w-0" data-preview-stagger>
+    <div className="min-w-0" data-preview-stagger-item>
       <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
         {title}
       </p>
@@ -127,7 +127,21 @@ export function PreviewContextActions({
             background: "rgba(255,255,255,0.04)",
           };
 
-          if (item.href && !item.onClick) {
+          if (item.onClick) {
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={className}
+                style={style}
+                onClick={() => item.onClick?.()}
+              >
+                {item.label}
+              </button>
+            );
+          }
+
+          if (item.href) {
             return (
               <Link key={item.id} href={item.href} className={className} style={style}>
                 {item.label}
@@ -136,15 +150,7 @@ export function PreviewContextActions({
           }
 
           return (
-            <button
-              key={item.id}
-              type="button"
-              className={className}
-              style={style}
-              onClick={() => {
-                item.onClick?.();
-              }}
-            >
+            <button key={item.id} type="button" className={className} style={style}>
               {item.label}
             </button>
           );

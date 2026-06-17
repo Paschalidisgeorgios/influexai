@@ -34,11 +34,23 @@ const de = {
   studioCommand: {
     overline:     "Studio",
     headline:     "Was möchtest du erstellen?",
+    subline:
+      "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und bereitet die Produktion vor.",
     placeholder:  "Beschreibe, was du erstellen möchtest…",
     enterHint:    "Enter sendet · Umschalt+Enter für neue Zeile",
+    loadingHint:  "Workflow wird vorbereitet…",
     idleHint:     "Beschreibe dein Ziel — InfluexAI erkennt den Workflow und zeigt das Ergebnis direkt hier.",
     platformAsk:  "Für welche Plattform oder welchen Zweck soll das Asset entstehen?",
+    assetLabel:   "Asset",
+    galleryChip:  "Galerie",
+    formatChip:   "Format automatisch",
     mvpLabel:     "MVP-Workflows · Produktions-Dashboard",
+    rotatingPrompts: [
+      "Erstelle ein Kampagnenbild für Instagram",
+      "Verwandle dieses Bild in ein kurzes Reel",
+      "Plane 7 Content-Ideen für eine Beauty-Marke",
+      "Erstelle Varianten für dieses Asset",
+    ],
     chips: [
       { id: "image", prompt: { de: "Erstelle ein Bild von einem Sunset", en: "Create an image of a sunset" }, label: "Bild" },
       { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },
@@ -225,11 +237,23 @@ const en: typeof de = {
   studioCommand: {
     overline:     "Studio",
     headline:     "What do you want to create?",
+    subline:
+      "Describe your goal. InfluexAI recognizes the right workflow and prepares production.",
     placeholder:  "Describe what you want to create…",
     enterHint:    "Enter to send · Shift+Enter for new line",
+    loadingHint:  "Preparing workflow…",
     idleHint:     "Describe your goal — InfluexAI recognizes the workflow and shows the result right here.",
     platformAsk:  "Which platform or purpose should this asset target?",
+    assetLabel:   "Asset",
+    galleryChip:  "Gallery",
+    formatChip:   "Format auto",
     mvpLabel:     "MVP workflows · production dashboard",
+    rotatingPrompts: [
+      "Create a campaign image for Instagram",
+      "Turn this image into a short reel",
+      "Plan 7 content ideas for a beauty brand",
+      "Create variants for this asset",
+    ],
     chips: [
       { id: "image", prompt: { de: "Erstelle ein Bild von einem Sunset", en: "Create an image of a sunset" }, label: "Image" },
       { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },

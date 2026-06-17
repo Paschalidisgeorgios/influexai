@@ -413,13 +413,13 @@ export function PreviewSettings() {
     <div className="pb-8 pt-4 md:pt-8">
       <p
         className="mb-5 font-mono text-[10px] tracking-[0.28em] uppercase"
-        style={{ color: MUTED_ON_LIGHT }}
+        style={{ color: "rgba(245,242,234,0.45)" }}
       >
         {ts.overline}
       </p>
       <h2
-        className="mb-8 text-3xl font-extrabold md:mb-10 md:text-4xl"
-        style={{ ...HL, letterSpacing: "-0.03em", color: DARK_TEXT }}
+        className="mb-8 text-3xl font-extrabold text-white md:mb-10 md:text-4xl"
+        style={{ ...HL, letterSpacing: "-0.03em" }}
       >
         {ts.headline}
       </h2>
@@ -440,7 +440,7 @@ export function PreviewSettings() {
                 borderLeft:
                   active === id ? "2px solid #b4ff00" : "2px solid transparent",
                 color:
-                  active === id ? DARK_TEXT : "rgba(8,8,8,0.40)",
+                  active === id ? "#f5f2ea" : "rgba(245,242,234,0.42)",
                 whiteSpace: "nowrap",
                 fontWeight: active === id ? 600 : 400,
               }}

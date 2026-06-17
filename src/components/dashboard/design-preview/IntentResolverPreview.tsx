@@ -25,7 +25,7 @@ export function IntentResolverPreview({
     <div
       className="flex flex-wrap items-center gap-2 border-b py-3"
       style={{ borderColor: "rgba(255,255,255,0.06)" }}
-      data-preview-stagger
+      data-preview-stagger-item
     >
       <span
         className="rounded px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em]"

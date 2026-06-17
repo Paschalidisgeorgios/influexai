@@ -222,7 +222,7 @@ function PreviewInner() {
             className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
             style={{ background: SHELL_BG, WebkitOverflowScrolling: "touch" }}
           >
-            <div className="w-full max-w-full px-4 py-4 md:px-8 md:py-8 lg:px-12">
+            <div className="preview-main-grid w-full max-w-full px-4 py-4 md:px-8 md:py-8 lg:px-12">
               <PreviewModeBanner />
               <PreviewViewContent active={active} onNavigate={setActive} />
             </div>

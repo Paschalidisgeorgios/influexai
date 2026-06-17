@@ -38,7 +38,7 @@ export function AssetPreviewInline({ intent, kind, lang, visible }: AssetPreview
         borderColor: "rgba(255,255,255,0.08)",
         background: "rgba(8,8,12,0.92)",
       }}
-      data-preview-stagger
+      data-preview-stagger-item
     >
       <div
         className="flex items-center justify-between border-b px-4 py-2.5"

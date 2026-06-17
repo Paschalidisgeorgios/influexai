@@ -13,10 +13,11 @@ import { useLang } from "./PreviewLang";
 
 const ACCENT = "#b4ff00";
 const DARK   = "#080808";
-const INK    = "#1a1814";
-const MUTED  = "#6b6458";
-const STONE  = "#DDD4C4";
-const STONE2 = "#E8E0D4";
+const INK    = "#f5f2ea";
+const MUTED  = "rgba(245,242,234,0.52)";
+const STONE  = "rgba(255,255,255,0.1)";
+const STONE2 = "rgba(255,255,255,0.04)";
+const BORDER = "rgba(255,255,255,0.08)";
 const HL: React.CSSProperties = {
   fontFamily: "var(--font-preview-headline, var(--font-dm-sans, sans-serif))",
 };
@@ -111,8 +112,8 @@ function SegmentPills<T extends string>({
 }) {
   return (
     <div
-      className="inline-flex gap-0.5 rounded-sm p-0.5"
-      style={{ background: STONE, border: "1px solid rgba(26,24,20,0.08)" }}
+      className="inline-flex gap-0.5 rounded-lg border p-0.5"
+      style={{ background: STONE2, borderColor: BORDER }}
     >
       {options.map((opt) => {
         const active = value === opt;
@@ -308,12 +309,8 @@ function Card({
 function EmptyState({ message }: { message: string }) {
   return (
     <div
-      className="flex min-h-[280px] flex-col items-center justify-center rounded-sm px-8 py-16 text-center"
-      style={{
-        background: STONE2,
-        border:     "1px solid rgba(26,24,20,0.10)",
-        boxShadow:  "inset 0 1px 0 rgba(255,255,255,0.40)",
-      }}
+      className="flex min-h-[280px] flex-col items-center justify-center rounded-lg border px-8 py-16 text-center preview-dark-panel"
+      style={{ borderColor: BORDER }}
     >
       <div className="mb-4 h-px w-12" style={{ background: "rgba(26,24,20,0.15)" }} />
       <p className="max-w-sm text-[15px] font-medium leading-relaxed" style={{ color: INK, ...HL }}>
@@ -374,10 +371,10 @@ export function PreviewGallery() {
       </p>
 
       {/* Filter bar */}
-      <div
-        className="mb-4 rounded-sm p-4 md:p-5"
-        style={{ background: STONE2, border: "1px solid rgba(26,24,20,0.08)" }}
-      >
+    <div
+      className="mb-4 rounded-lg border p-4 md:p-5 preview-dark-panel"
+      style={{ borderColor: BORDER }}
+    >
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="shrink-0 font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: MUTED }}>
             {tg.filterLabel}
@@ -400,9 +397,9 @@ export function PreviewGallery() {
                 onClick={() => setFilter(f)}
                 className="shrink-0 rounded-sm px-3.5 py-2 font-mono text-[10px] tracking-[0.12em] uppercase transition-all"
                 style={{
-                  background: active ? ACCENT : "rgba(255,255,255,0.55)",
+                  background: active ? ACCENT : "rgba(255,255,255,0.04)",
                   color:      active ? DARK   : MUTED,
-                  border:     active ? "none"   : "1px solid rgba(26,24,20,0.06)",
+                  border:     active ? "none"   : `1px solid ${BORDER}`,
                   fontWeight: active ? 600      : 400,
                 }}
               >
@@ -427,8 +424,8 @@ export function PreviewGallery() {
             {tg.sortLabel}
           </p>
           <div
-            className="relative rounded-sm"
-            style={{ background: STONE, border: "1px solid rgba(26,24,20,0.08)" }}
+            className="relative rounded-lg border"
+            style={{ background: STONE2, borderColor: BORDER }}
           >
             <select
               value={sort}
