@@ -5,6 +5,11 @@ import gsap from "gsap";
 import SplitType from "split-type";
 import { useReducedMotion } from "./useReducedMotion";
 
+function clearTextTransforms(targets: Element[]) {
+  if (!targets.length) return;
+  gsap.set(targets, { clearProps: "transform" });
+}
+
 export function useHeroEntrance(
   sectionRef: RefObject<HTMLElement | null>,
   heroReady = true
@@ -33,22 +38,30 @@ export function useHeroEntrance(
       }
 
       const lines = split?.lines ?? [];
+      const textTargets = [eyebrow, subline, ...lines, ...ctas].filter(
+        Boolean
+      ) as Element[];
 
-      gsap.set([eyebrow, subline, ...ctas, panel].filter(Boolean), {
-        opacity: 0,
-        y: 20,
-      });
+      gsap.set(textTargets, { opacity: 0, y: 20 });
       if (lines.length) {
-        gsap.set(lines, { yPercent: 108, opacity: 0 });
+        gsap.set(lines, { y: 28, opacity: 0 });
       }
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        onComplete: () => {
+          clearTextTransforms(textTargets);
+          if (lines.length) {
+            gsap.set(lines, { clearProps: "transform" });
+          }
+        },
+      });
 
       if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.08);
       if (lines.length) {
         tl.to(
           lines,
-          { yPercent: 0, opacity: 1, duration: 0.82, stagger: 0.11, ease: "power3.out" },
+          { y: 0, opacity: 1, duration: 0.82, stagger: 0.11, ease: "power3.out" },
           0.2
         );
       }
@@ -57,7 +70,7 @@ export function useHeroEntrance(
       if (panel) {
         tl.fromTo(
           panel,
-          { opacity: 0, y: 40, scale: 0.96 },
+          { opacity: 0, y: 40, scale: 0.98 },
           { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.out" },
           0.38
         );

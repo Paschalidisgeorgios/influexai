@@ -47,7 +47,7 @@ export function LandingV2ProductionPaths() {
             </span>
           ))}
         </h2>
-        <p className="landing-v2-editorial-lead mt-4 max-w-xl text-white/55" data-lv2-subline>
+        <p className="landing-v2-editorial-lead mt-4 max-w-xl" data-lv2-subline>
           {chapterCopy.body}
         </p>
 

@@ -98,23 +98,23 @@ export const HERO_PARALLAX = {
 
 /** Preview hero — stronger visible parallax */
 export const HERO_PARALLAX_PREVIEW = {
-  scroll: { y: -32, scale: 0.975, z: 32 },
-  mouse: { rotateY: 4, rotateX: 2 },
-  video: { scaleFrom: 1.04, scaleTo: 1, yPercent: 6 },
-  ambient: { yPercent: 8, scale: 1.03 },
+  scroll: { y: -24, scale: 0.99, z: 24 },
+  mouse: { rotateY: 3, rotateX: 1.5 },
+  video: { scaleFrom: 1.06, scaleTo: 1.02, yPercent: 4 },
+  ambient: { yPercent: 6, scale: 1.02 },
 } as const;
 
 /** Section reveal presets */
 export const SECTION_REVEAL = {
   standard: { start: "top 78%", y: 22, opacity: 0 },
-  preview: { start: "top 82%", y: 50, opacity: 0.35 },
+  preview: { start: "top 82%", y: 36, opacity: 0.72 },
 } as const;
 
-/** Workflow stage visual frames — no pin */
+/** Workflow stage visual frames — no pin, no rotate on text-adjacent frames */
 export const WORKFLOW_STAGE_MOTION = {
-  enter: { y: 50, scale: 0.96, rotateY: -3, opacity: 0.4 },
-  peak: { y: 0, scale: 1, rotateY: 0, opacity: 1 },
-  exit: { y: -16, scale: 0.97, opacity: 0.75 },
+  enter: { y: 40, scale: 0.97, opacity: 0.55 },
+  peak: { y: 0, scale: 1, opacity: 1 },
+  exit: { y: -12, scale: 0.98, opacity: 0.88 },
 } as const;
 
 /** Editorial production path blocks */

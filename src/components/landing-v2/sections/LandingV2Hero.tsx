@@ -71,7 +71,7 @@ export function LandingV2Hero() {
             {copy.headlineLines[2]}
           </h1>
           <p
-            className="landing-v2-hero__subline mt-6 max-w-2xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed text-white/62"
+            className="landing-v2-hero__subline mt-6 max-w-2xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed"
             data-hero-subline
           >
             {copy.subline}

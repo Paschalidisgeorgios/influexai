@@ -36,6 +36,13 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
         ...staggerItems,
       ];
 
+      const textTargets = [
+        ...(chapter ? [chapter] : []),
+        ...(eyebrow ? [eyebrow] : []),
+        ...lines,
+        ...(subline ? [subline] : []),
+      ];
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -43,6 +50,11 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
           once: true,
         },
         defaults: { ease: enablePreviewMotion ? "power3.out" : "power2.out" },
+        onComplete: () => {
+          if (textTargets.length) {
+            gsap.set(textTargets, { clearProps: "transform" });
+          }
+        },
       });
 
       if (chapter) {

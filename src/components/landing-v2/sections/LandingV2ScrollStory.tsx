@@ -61,7 +61,7 @@ export function LandingV2ScrollStory() {
               </span>
             ))}
           </h2>
-          <p className="landing-v2-editorial-lead mt-4 max-w-2xl text-white/55" data-lv2-subline>
+          <p className="landing-v2-editorial-lead mt-4 max-w-2xl" data-lv2-subline>
             {chapterCopy.body}
           </p>
           <p className="landing-v2-workflow-steps mt-5" data-lv2-eyebrow>
