@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -26,7 +26,7 @@ const NAV_SECTIONS = [
 export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2NavProps) {
   const links = useLandingV2Links();
   const sectionIds = NAV_SECTIONS.map((item) => item.id);
-  const { scrolled, progress, activeId } = useLandingNavState(sectionIds);
+  const { scrolled, activeId } = useLandingNavState(sectionIds);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -47,11 +47,6 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
     <header
       className={headerClass}
       data-scrolled={scrolled ? "true" : "false"}
-      style={
-        isPreview
-          ? ({ "--toolbar-progress": progress } as CSSProperties)
-          : undefined
-      }
     >
       <div className="landing-v2-nav__shell">
         <div className="landing-v2-nav__inner">
@@ -88,36 +83,7 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
             {copy.cta}
             <ArrowRight className="landing-v2-nav__cta-icon" size={15} aria-hidden />
           </Link>
-
-          {isPreview ? (
-            <svg
-              className="landing-v2-nav__progress-ring"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <rect
-                className="landing-v2-nav__progress-ring-path"
-                x="1.25"
-                y="1.25"
-                width="97.5"
-                height="97.5"
-                rx="48"
-                ry="48"
-                pathLength={1}
-                transform="rotate(-90 50 50)"
-              />
-            </svg>
-          ) : null}
         </div>
-
-        {!isPreview ? (
-          <div
-            className="landing-v2-nav__progress"
-            aria-hidden
-            style={{ transform: `scaleX(${progress})` }}
-          />
-        ) : null}
       </div>
     </header>
   );
