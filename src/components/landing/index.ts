@@ -22,7 +22,7 @@ export {
   LandingAudienceSection,
   LandingPricingCtaSection,
 } from "./LandingAudienceSection";
-export { HeroSection } from "./HeroSection";
+export { default as HeroSection } from "./HeroSection";
 export { AiContentStream } from "./AiContentStream";
 export { CreatorBrandTabsSection } from "./creator-brand-tabs-section";
 export { WorldTransition } from "./world-transition";
