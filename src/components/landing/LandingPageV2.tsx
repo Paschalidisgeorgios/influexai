@@ -3,7 +3,7 @@
 import "@/styles/landing-glass.css";
 import "@/styles/pricing-glass.css";
 
-import { HeroSection } from "@/components/landing/HeroSection";
+import { ConciergeHeroSection } from "@/components/landing/ConciergeHeroSection";
 import { LandingAgentAutopilotSection } from "@/components/landing/LandingAgentAutopilotSection";
 import { LandingCampaignPackSection } from "@/components/landing/LandingCampaignPackSection";
 import { LandingNavV2 } from "@/components/landing/LandingNavV2";
@@ -23,7 +23,7 @@ export function LandingPageV2() {
       <LandingNavV2 />
 
       <main className="relative z-10">
-        <HeroSection />
+        <ConciergeHeroSection />
 
         <SentientInterface2026 />
 

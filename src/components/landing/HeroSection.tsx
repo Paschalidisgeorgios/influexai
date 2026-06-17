@@ -1,239 +1,128 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { IntentLink, useIntentTracking } from "@/hooks/useIntentTracking";
-import { AssetLoadingShader } from "@/components/dashboard/viewer/AssetLoadingShader";
-import {
-  CONCIERGE_TOOL_ROUTES,
-  type ConciergeToolId,
-} from "@/lib/claude-concierge";
-import { LandingHeroBackground } from "./LandingHeroBackground";
-import { HeroKineticHeadline } from "./HeroKineticHeadline";
-import { LANDING_HERO_2026 } from "@/lib/landing-copy-2026";
-import { TURNSTILE_SITE_KEY } from "@/lib/security/turnstile";
-import "@/styles/canvas.css";
+import Link from "next/link";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
-const CONCIERGE_PLACEHOLDER =
-  "Frage unser Studio-Gehirn (z.B. Wie erstelle ich Content für meine Modemarke?)...";
-
-type ConciergeState = {
-  answer: string;
-  tool: ConciergeToolId;
-} | null;
+const HEADLINE_LINES = [
+  ["Create", "campaign-ready"],
+  ["assets", "from", "one", "idea."],
+] as const;
 
 export function HeroSection() {
-  const { setIntent } = useIntentTracking();
-  const [question, setQuestion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [result, setResult] = useState<ConciergeState>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const progressTimer = useRef<number | null>(null);
-  const turnstileRef = useRef<TurnstileInstance>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  const stopProgress = useCallback(() => {
-    if (progressTimer.current) {
-      window.clearInterval(progressTimer.current);
-      progressTimer.current = null;
-    }
-  }, []);
+  useGSAP(
+    () => {
+      const words = gsap.utils.toArray<HTMLElement>("[data-hero-word]");
+      const subline = sectionRef.current?.querySelector("[data-hero-subline]");
+      const ctas = sectionRef.current?.querySelectorAll("[data-hero-cta]");
+      const scrollHint = sectionRef.current?.querySelector("[data-hero-scroll]");
 
-  const startProgress = useCallback(() => {
-    stopProgress();
-    setProgress(6);
-    progressTimer.current = window.setInterval(() => {
-      setProgress((p) => (p >= 90 ? 90 : p + Math.random() * 8 + 4));
-    }, 260);
-  }, [stopProgress]);
+      gsap.set(words, { opacity: 0, y: 60 });
+      if (subline) gsap.set(subline, { opacity: 0 });
+      if (ctas?.length) gsap.set(ctas, { opacity: 0, scale: 0.8 });
+      if (scrollHint) gsap.set(scrollHint, { opacity: 0, y: 8 });
 
-  useEffect(() => () => stopProgress(), [stopProgress]);
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-  useEffect(() => {
-    if (result) {
-      setIntent(CONCIERGE_TOOL_ROUTES[result.tool].intent);
-    }
-  }, [result, setIntent]);
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const cleanQuestion = question.trim();
-    if (!cleanQuestion || loading || !turnstileToken) return;
-
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    startProgress();
-
-    try {
-      const res = await fetch("/api/generate/concierge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: cleanQuestion, turnstileToken }),
+      tl.to(words, {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        stagger: 0.07,
+        onComplete: () => {
+          gsap.set(words, { clearProps: "transform" });
+        },
       });
 
-      const data = (await res.json()) as {
-        success?: boolean;
-        answer?: string;
-        tool?: ConciergeToolId;
-        error?: string;
-      };
-
-      if (!res.ok || !data.success || !data.answer || !data.tool) {
-        setError(data.error ?? "Berater nicht erreichbar. Bitte erneut versuchen.");
-        return;
+      if (subline) {
+        tl.to(subline, { opacity: 1, duration: 0.7 }, "-=0.25");
       }
 
-      setProgress(100);
-      setResult({ answer: data.answer, tool: data.tool });
-    } catch {
-      setError("Verbindung fehlgeschlagen. Bitte erneut versuchen.");
-    } finally {
-      stopProgress();
-      setLoading(false);
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
-    }
-  };
+      if (ctas?.length) {
+        tl.to(
+          ctas,
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.55,
+            stagger: 0.08,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(ctas, { clearProps: "transform" });
+            },
+          },
+          "-=0.35"
+        );
+      }
 
-  const ctaRoute = result ? CONCIERGE_TOOL_ROUTES[result.tool] : null;
-  const conciergeHref = ctaRoute?.href ?? "/signup";
+      if (scrollHint) {
+        tl.to(scrollHint, { opacity: 1, y: 0, duration: 0.5 }, "-=0.15");
+      }
+    },
+    { scope: sectionRef }
+  );
 
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#030304]">
-      <LandingHeroBackground />
+    <section
+      ref={sectionRef}
+      className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center bg-[#09090b] px-5 pt-24 pb-20 text-center"
+      aria-labelledby="terminal-hero-heading"
+    >
+      <p className="mb-8 font-mono text-[11px] tracking-[0.2em] text-white/25 uppercase">
+        INFLUEXAI — AI CREATOR PRODUCTION OS
+      </p>
 
-      <div
-        className="pointer-events-none absolute inset-0 z-[15] overflow-hidden"
-        aria-hidden
+      <h1
+        id="terminal-hero-heading"
+        className="max-w-[14ch] text-[clamp(40px,10vw,64px)] font-extrabold leading-[1.02] tracking-[-0.04em] text-white md:max-w-none md:text-[clamp(52px,7vw,108px)]"
       >
-        <div className="landing-hero-content-glow landing-hero-content-glow--green blur-[120px]" />
-        <div className="landing-hero-content-glow landing-hero-content-glow--cyan-violet blur-[120px]" />
+        {HEADLINE_LINES.map((line, lineIndex) => (
+          <span key={lineIndex} className="block">
+            {line.map((word) => (
+              <span key={word} className="mr-[0.28em] inline-block" data-hero-word>
+                {word}
+              </span>
+            ))}
+          </span>
+        ))}
+      </h1>
+
+      <p
+        data-hero-subline
+        className="mx-auto mt-6 max-w-[520px] text-lg font-light leading-[1.7] text-white/45"
+      >
+        Images, videos, hooks and full campaigns — generated inside one cinematic
+        workspace.
+      </p>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/auth/sign-up"
+          data-hero-cta
+          className="inline-flex items-center rounded-[10px] bg-[#b4ff00] px-8 py-4 text-[15px] font-semibold text-[#09090b] transition-opacity hover:opacity-90"
+        >
+          Kostenlos starten →
+        </Link>
+        <Link
+          href="/demo"
+          data-hero-cta
+          className="inline-flex items-center rounded-[10px] border border-white/15 px-8 py-4 text-[15px] font-medium text-white/60 transition-colors hover:border-white/25 hover:text-white/80"
+        >
+          Demo ansehen
+        </Link>
       </div>
 
-      <div className="relative z-20 w-full px-5 pt-24 pb-16 sm:px-8 md:px-[max(2rem,7vw)] lg:px-[max(3rem,9vw)]">
-        <div className="mx-auto w-full max-w-xl text-center md:mx-0 md:max-w-[min(560px,38vw)] md:text-left">
-          <p className="landing-neon-kicker mb-6 font-mono text-sm tracking-[0.14em] drop-shadow-[0_1px_10px_rgba(0,0,0,0.9)]">
-            {LANDING_HERO_2026.kicker}
-          </p>
-
-          <HeroKineticHeadline />
-
-          <div className="mb-0 flex justify-center md:justify-start">
-            <IntentLink href="/signup" className="landing-glass-btn-cta">
-              {LANDING_HERO_2026.ctaPrimary}
-            </IntentLink>
-          </div>
-
-          <form
-            onSubmit={(e) => void handleSubmit(e)}
-            className="relative z-20 w-full"
-          >
-            <div className="landing-glass-surface mt-8 flex w-full max-w-xl items-center gap-2 rounded-xl border border-[#ccff00]/40 bg-zinc-950/40 p-3 shadow-[0_0_15px_rgba(204,255,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 focus-within:border-[#B4FF00] focus-within:ring-2 focus-within:ring-[#B4FF00] focus-within:shadow-[0_0_25px_rgba(180,255,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-              <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder={CONCIERGE_PLACEHOLDER}
-                disabled={loading}
-                autoComplete="off"
-                maxLength={400}
-                aria-label="Frage an das Studio-Gehirn"
-                className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-white/60 focus:outline-none disabled:opacity-60"
-              />
-              <button
-                type="submit"
-                disabled={loading || !question.trim() || !turnstileToken}
-                aria-label="Frage senden"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ccff00]/50 bg-[#ccff00]/10 text-[#ccff00] transition-all duration-300 hover:scale-105 hover:border-[#ccff00] hover:bg-[#ccff00]/20 hover:shadow-[0_0_20px_rgba(204,255,0,0.45)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 disabled:hover:shadow-none"
-              >
-                <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
-              </button>
-            </div>
-
-            <div className="sr-only" aria-hidden>
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={TURNSTILE_SITE_KEY}
-                onSuccess={setTurnstileToken}
-                onExpire={() => {
-                  setTurnstileToken(null);
-                  turnstileRef.current?.reset();
-                }}
-                options={{ size: "invisible" }}
-              />
-            </div>
-
-            <AnimatePresence mode="wait">
-              {loading ? (
-                <motion.div
-                  key="shader"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="mt-4 overflow-hidden"
-                >
-                  <AssetLoadingShader
-                    progress={progress}
-                    label="Studio-Gehirn"
-                    accent="green"
-                    className="h-[100px] rounded-xl"
-                  />
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence mode="wait">
-              {error ? (
-                <motion.p
-                  key="error"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="mt-4 text-left font-sans text-xs leading-relaxed text-red-400"
-                >
-                  {error}
-                </motion.p>
-              ) : null}
-
-              {result ? (
-                <motion.div
-                  key="answer"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="landing-glass-surface mt-4 rounded-xl border border-zinc-700/60 bg-zinc-950/50 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-300 hover:border-zinc-500"
-                >
-                  <p className="text-left font-sans text-sm leading-relaxed tracking-wide text-white/80">
-                    {result.answer}
-                  </p>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35, duration: 0.35 }}
-                    className="mt-4"
-                  >
-                    <IntentLink
-                      href={conciergeHref}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ccff00] px-4 py-3 text-sm font-bold text-black no-underline transition-all hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(204,255,0,0.35)] sm:w-auto"
-                      onClick={() => {
-                        if (ctaRoute) setIntent(ctaRoute.intent);
-                      }}
-                    >
-                      App Studio öffnen →
-                      <ArrowRight size={15} aria-hidden />
-                    </IntentLink>
-                  </motion.div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </form>
-        </div>
+      <div
+        data-hero-scroll
+        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+      >
+        <span className="font-mono text-[9px] tracking-[0.2em] text-white/30 uppercase">
+          Scroll
+        </span>
+        <span className="terminal-scroll-arrow block h-3 w-3 rotate-45 border-r border-b border-white/35" />
       </div>
     </section>
   );

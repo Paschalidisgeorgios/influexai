@@ -10,13 +10,13 @@ import {
   parseKeywords,
 } from "@/lib/seo";
 import type { Locale } from "@/lib/locale";
-import { LandingV2Page } from "@/components/landing-v2/LandingV2Page";
+import { LandingPage } from "@/components/landing/LandingPage";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
 
 export const dynamic = "force-dynamic";
 
-/** Marketing homepage only — White Label lives at /dashboard/white-label */
+/** Marketing homepage — terminal editorial rebuild */
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await getLocale()) as Locale;
@@ -65,7 +65,7 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <LandingV2Page mode="live" />
+      <LandingPage />
     </>
   );
 }

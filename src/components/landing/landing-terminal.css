@@ -1,0 +1,14 @@
+@keyframes terminal-scroll-bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  50% {
+    transform: translateY(6px) rotate(45deg);
+  }
+}
+
+.terminal-scroll-arrow {
+  animation: terminal-scroll-bounce 1.8s ease-in-out infinite;
+}
