@@ -13,16 +13,22 @@ import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
 
-function renderHeadlineHighlight(line: string, highlight: string) {
-  const index = line.indexOf(highlight);
-  if (index === -1) return line;
-
+function renderMotionLine() {
   return (
-    <>
-      {line.slice(0, index)}
-      <span className="landing-v2-hero-rotate__keyword">{highlight}</span>
-      {line.slice(index + highlight.length)}
-    </>
+    <span className="landing-v2-hero__headline-line" data-hero-headline-line>
+      <span className="landing-v2-hero__headline-word" data-hero-headline-word>
+        wird
+      </span>{" "}
+      <span className="landing-v2-hero__motion-wrap" data-hero-motion-signal>
+        <span className="landing-v2-hero-rotate__keyword" data-hero-motion-word>
+          {copy.primaryHeadlineHighlight}
+        </span>
+        <span className="landing-v2-hero__motion-line" data-hero-motion-line aria-hidden />
+      </span>
+      <span className="landing-v2-hero__headline-word" data-hero-headline-word>
+        .
+      </span>
+    </span>
   );
 }
 
@@ -66,16 +72,16 @@ export function LandingV2Hero() {
               data-hero-headline
             >
               {copy.primaryHeadlineLines.slice(0, 3).map((line) => (
-                <span key={line} className="landing-v2-hero__headline-line" data-hero-headline-line>
+                <span
+                  key={line}
+                  className="landing-v2-hero__headline-line"
+                  data-hero-headline-line
+                  data-hero-headline-split="words"
+                >
                   {line}
                 </span>
               ))}
-              <span className="landing-v2-hero__headline-line" data-hero-headline-line>
-                {renderHeadlineHighlight(
-                  copy.primaryHeadlineLines[3],
-                  copy.primaryHeadlineHighlight
-                )}
-              </span>
+              {renderMotionLine()}
             </h1>
           ) : (
             <h1
@@ -91,7 +97,7 @@ export function LandingV2Hero() {
             </h1>
           )}
           <p
-            className="landing-v2-hero__subline mt-4 max-w-[42ch] md:mt-5"
+            className="landing-v2-hero__subline mt-4 md:mt-5"
             data-hero-subline
           >
             {copy.subline}

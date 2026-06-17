@@ -89,7 +89,7 @@ export const LANDING_V2_COPY = {
       },
     ] as const,
     subline:
-      "Ein klarer Produktionsfluss — von der Idee bis zum fertigen Asset.",
+      "Briefing, Visuals und Motion in einem klaren Produktionsfluss. Von der ersten Idee bis zur gespeicherten Variante — ohne Tool-Chaos.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
   },

@@ -115,6 +115,28 @@ export const EDITORIAL_VIDEO_SCROLL = {
   video: { scaleFrom: 1.06, scaleTo: 1 },
 } as const;
 
+/** Preview hero — entrance timeline (headline words + Motion signal) */
+export const HERO_ENTRANCE = {
+  word: {
+    y: 36,
+    opacity: 0,
+    duration: 0.88,
+    stagger: 0.075,
+    ease: "power3.out" as const,
+    delay: 0.12,
+  },
+  subline: { delay: 0.58, duration: 0.68 },
+  cta: { delay: 0.72, duration: 0.58, stagger: 0.08 },
+  motionSignal: {
+    brightnessPeak: 1.26,
+    brightnessIn: 0.32,
+    brightnessOut: 0.48,
+    lineIn: 0.58,
+    lineFade: 0.35,
+    lineHold: 0.18,
+  },
+} as const;
+
 /** Preview hero — rotating headline copy */
 export const HERO_ROTATE_COPY = {
   intervalMs: 3600,

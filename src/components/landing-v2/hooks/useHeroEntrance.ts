@@ -3,11 +3,12 @@
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import SplitType from "split-type";
+import { HERO_ENTRANCE } from "@/lib/landing-v2-motion";
 import { useReducedMotion } from "./useReducedMotion";
 
 function clearTextTransforms(targets: Element[]) {
   if (!targets.length) return;
-  gsap.set(targets, { clearProps: "transform" });
+  gsap.set(targets, { clearProps: "transform,filter" });
 }
 
 export function useHeroEntrance(
@@ -21,58 +22,157 @@ export function useHeroEntrance(
     if (!section || !heroReady) return;
     if (reduceMotion) return;
 
-    let split: SplitType | null = null;
+    const wordSplits: SplitType[] = [];
+    let legacySplit: SplitType | null = null;
 
     const ctx = gsap.context(() => {
       const eyebrow = section.querySelector("[data-hero-eyebrow]");
       const rotatingHeadline = section.querySelector("[data-hero-headline-rotating]");
       const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
+      const splitLines = section.querySelectorAll<HTMLElement>('[data-hero-headline-split="words"]');
       const headlineLines = section.querySelectorAll<HTMLElement>("[data-hero-headline-line]");
+      const manualWords = section.querySelectorAll<HTMLElement>("[data-hero-headline-word]");
+      const motionWord = section.querySelector<HTMLElement>("[data-hero-motion-word]");
+      const motionLine = section.querySelector<HTMLElement>("[data-hero-motion-line]");
       const subline = section.querySelector("[data-hero-subline]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
       const panel = section.querySelector("[data-hero-video-stage]");
       const flow = section.querySelector("[data-hero-flow]");
 
+      const { word: wordMotion, subline: sublineMotion, cta: ctaMotion, motionSignal } =
+        HERO_ENTRANCE;
+
       if (headline && !rotatingHeadline && headlineLines.length === 0) {
-        split = new SplitType(headline, {
+        legacySplit = new SplitType(headline, {
           types: "lines",
           tagName: "span",
         });
       }
 
-      const lines =
-        headlineLines.length > 0
+      splitLines.forEach((line) => {
+        wordSplits.push(
+          new SplitType(line, {
+            types: "words",
+            tagName: "span",
+          })
+        );
+      });
+
+      const splitWords = wordSplits.flatMap((split) => split.words ?? []);
+      const legacyLines =
+        headlineLines.length > 0 && splitWords.length === 0
           ? (Array.from(headlineLines) as Element[])
-          : (split?.lines ?? []);
-      const textTargets = [eyebrow, subline, ...lines, ...ctas].filter(
+          : (legacySplit?.lines ?? []);
+
+      const headlineTargets =
+        splitWords.length > 0
+          ? [...splitWords, ...Array.from(manualWords)]
+          : legacyLines;
+
+      const textTargets = [eyebrow, subline, ...headlineTargets, ...ctas].filter(
         Boolean
       ) as Element[];
 
-      gsap.set(textTargets, { opacity: 0, y: 20 });
-      if (lines.length) {
-        gsap.set(lines, { y: 28, opacity: 0 });
+      gsap.set(textTargets, { opacity: 0, y: wordMotion.y });
+      if (motionLine) {
+        gsap.set(motionLine, { scaleX: 0, opacity: 0, transformOrigin: "left center" });
       }
 
       const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
+        defaults: { ease: wordMotion.ease },
         onComplete: () => {
           clearTextTransforms(textTargets);
-          if (lines.length) {
-            gsap.set(lines, { clearProps: "transform" });
+          if (motionWord) {
+            gsap.set(motionWord, { clearProps: "transform,filter" });
+          }
+          if (motionLine) {
+            gsap.set(motionLine, { clearProps: "transform,opacity" });
           }
         },
       });
 
-      if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.08);
-      if (lines.length) {
+      if (eyebrow) {
+        tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.08);
+      }
+
+      if (headlineTargets.length) {
         tl.to(
-          lines,
-          { y: 0, opacity: 1, duration: 0.78, stagger: 0.08, ease: "power3.out" },
-          0.18
+          headlineTargets,
+          {
+            y: 0,
+            opacity: 1,
+            duration: wordMotion.duration,
+            stagger: wordMotion.stagger,
+            ease: wordMotion.ease,
+          },
+          wordMotion.delay
         );
       }
-      if (subline) tl.to(subline, { opacity: 1, y: 0, duration: 0.65 }, 0.52);
-      if (ctas.length) tl.to(ctas, { opacity: 1, y: 0, duration: 0.55, stagger: 0.08 }, 0.68);
+
+      if (motionWord) {
+        const signalAt =
+          wordMotion.delay +
+          wordMotion.duration +
+          (headlineTargets.length - 1) * wordMotion.stagger +
+          0.05;
+
+        tl.fromTo(
+          motionWord,
+          { filter: "brightness(1)" },
+          {
+            filter: `brightness(${motionSignal.brightnessPeak})`,
+            duration: motionSignal.brightnessIn,
+            ease: "power2.out",
+          },
+          signalAt
+        ).to(
+          motionWord,
+          {
+            filter: "brightness(1)",
+            duration: motionSignal.brightnessOut,
+            ease: "power2.inOut",
+          },
+          `>-0.05`
+        );
+
+        if (motionLine) {
+          tl.fromTo(
+            motionLine,
+            { scaleX: 0, opacity: 0.55 },
+            {
+              scaleX: 1,
+              opacity: 0.75,
+              duration: motionSignal.lineIn,
+              ease: "power3.out",
+            },
+            signalAt + 0.06
+          ).to(
+            motionLine,
+            {
+              opacity: 0,
+              duration: motionSignal.lineFade,
+              ease: "power2.in",
+            },
+            `>+${motionSignal.lineHold}`
+          );
+        }
+      }
+
+      if (subline) {
+        tl.to(subline, { opacity: 1, y: 0, duration: sublineMotion.duration }, sublineMotion.delay);
+      }
+      if (ctas.length) {
+        tl.to(
+          ctas,
+          {
+            opacity: 1,
+            y: 0,
+            duration: ctaMotion.duration,
+            stagger: ctaMotion.stagger,
+          },
+          ctaMotion.delay
+        );
+      }
       if (panel) {
         tl.fromTo(
           panel,
@@ -94,13 +194,14 @@ export function useHeroEntrance(
               gsap.set(flow, { clearProps: "transform" });
             },
           },
-          0.72
+          0.82
         );
       }
     }, section);
 
     return () => {
-      split?.revert();
+      wordSplits.forEach((split) => split.revert());
+      legacySplit?.revert();
       ctx.revert();
     };
   }, [sectionRef, reduceMotion, heroReady]);
