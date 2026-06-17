@@ -51,7 +51,7 @@ export function PreviewStudioCommand() {
     ? tc.platformAsk
     : undefined;
 
-  const assetKind = resolveAssetKind(intent, phase, forceVideoPanel);
+  const assetKind = resolveAssetKind(intent, phase, forceVideoPanel, submitted);
 
   useEffect(() => {
     animatePreviewPanel(flowRef, phase !== "idle");
@@ -74,7 +74,13 @@ export function PreviewStudioCommand() {
       setPhase("generating");
       window.setTimeout(() => {
         setPhase("complete");
-        if (detected === "image_generation") setHasImageContext(true);
+        if (
+          detected === "image_generation" ||
+          detected === "ai_influencer" ||
+          detected === "product_visual"
+        ) {
+          setHasImageContext(true);
+        }
       }, 1200);
     }, 700);
   }, []);
@@ -135,7 +141,12 @@ export function PreviewStudioCommand() {
       <div ref={flowRef} className="mt-6 min-w-0 space-y-5 md:mt-8">
         {phase !== "idle" ? (
           <>
-            <IntentResolverPreview intent={intent} lang={lang} platformAsk={platformAsk} />
+            <IntentResolverPreview
+              intent={intent}
+              input={submitted}
+              lang={lang}
+              platformAsk={platformAsk}
+            />
 
             <DynamicWorkflowResult
               intent={intent}
@@ -154,6 +165,7 @@ export function PreviewStudioCommand() {
               kind={assetKind}
               lang={lang}
               visible={phase === "complete"}
+              input={submitted}
             />
 
             {phase === "complete" ? (

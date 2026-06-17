@@ -40,6 +40,8 @@ const COPY = {
     quality: "Qualität",
     cta: {
       image_generation: "Bild erstellen",
+      ai_influencer: "AI Influencer Visual",
+      product_visual: "Produktvisual erstellen",
       image_to_video: "Video erstellen",
       hook_generation: "Hooks generieren",
       campaign_planning: "Kampagne planen",
@@ -65,6 +67,8 @@ const COPY = {
     quality: "Quality",
     cta: {
       image_generation: "Create image",
+      ai_influencer: "Create AI influencer visual",
+      product_visual: "Create product visual",
       image_to_video: "Create video",
       hook_generation: "Generate hooks",
       campaign_planning: "Plan campaign",

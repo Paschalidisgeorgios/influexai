@@ -1,7 +1,11 @@
 /** Mock intent routing — design-preview only, no API */
 
+import { detectFluxUltraExplicit } from "./studio-engine-registry";
+
 export type PreviewIntent =
   | "image_generation"
+  | "ai_influencer"
+  | "product_visual"
   | "image_to_video"
   | "hook_generation"
   | "campaign_planning"
@@ -23,7 +27,6 @@ const IMAGE_KEYWORDS = [
   "bild",
   "visual",
   "foto",
-  "produktbild",
   "sunset",
   "ad",
   "post",
@@ -31,7 +34,39 @@ const IMAGE_KEYWORDS = [
   "photo",
   "picture",
   "erstelle ein bild",
+  "mach ein bild",
 ];
+
+const AI_INFLUENCER_KEYWORDS = [
+  "ai influencer",
+  "influencer",
+  "avatar",
+  "creator persona",
+  "virtuelle person",
+  "ki influencer",
+  "person erstellen",
+  "model erstellen",
+  "portrait",
+  "fashion creator",
+  "beauty creator",
+  "creatorin",
+  "virtuell",
+  "virtuelle creator",
+];
+
+const PRODUCT_VISUAL_KEYWORDS = [
+  "produktbild",
+  "produktfoto",
+  "product visual",
+  "produkt",
+  "kampagnenbild",
+  "werbebild",
+  "ad visual",
+  "kampagnenvisual",
+  "packshot",
+  "product shot",
+];
+
 const VIDEO_KEYWORDS = [
   "video",
   "reel",
@@ -42,6 +77,8 @@ const VIDEO_KEYWORDS = [
   "animate",
   "tiktok",
   "zu video",
+  "mach daraus ein video",
+  "daraus ein video",
 ];
 const HOOK_KEYWORDS = ["hook", "hooks", "caption", "text", "headline", "schreib mir"];
 const CAMPAIGN_KEYWORDS = [
@@ -75,12 +112,31 @@ const PLATFORM_RULES: { platform: PreviewPlatform; format: PreviewFormat; keywor
   { platform: "website_hero", format: "wide", keywords: ["website", "hero", "landing"] },
 ];
 
+const INFLUENCER_STYLE_HINTS = [
+  "beauty",
+  "fashion",
+  "fitness",
+  "business",
+  "lifestyle",
+  "cinematic",
+] as const;
+
+function extractInfluencerStyle(input: string): string {
+  const q = input.toLowerCase();
+  for (const style of INFLUENCER_STYLE_HINTS) {
+    if (q.includes(style)) return style;
+  }
+  return "lifestyle";
+}
+
 export function detectPreviewIntent(input: string): PreviewIntent {
   const q = input.toLowerCase().trim();
   if (!q) return "unknown";
 
   const scores: Record<Exclude<PreviewIntent, "unknown">, number> = {
     image_generation: 0,
+    ai_influencer: 0,
+    product_visual: 0,
     image_to_video: 0,
     hook_generation: 0,
     campaign_planning: 0,
@@ -88,15 +144,31 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   };
 
   for (const w of IMAGE_KEYWORDS) if (q.includes(w)) scores.image_generation += 1;
+  for (const w of AI_INFLUENCER_KEYWORDS) if (q.includes(w)) scores.ai_influencer += 1;
+  for (const w of PRODUCT_VISUAL_KEYWORDS) if (q.includes(w)) scores.product_visual += 1;
   for (const w of VIDEO_KEYWORDS) if (q.includes(w)) scores.image_to_video += 1;
   for (const w of HOOK_KEYWORDS) if (q.includes(w)) scores.hook_generation += 1;
   for (const w of CAMPAIGN_KEYWORDS) if (q.includes(w)) scores.campaign_planning += 1;
   for (const w of ASSET_KEYWORDS) if (q.includes(w)) scores.asset_reuse += 1;
 
+  if (q.includes("ai influencer") || q.includes("ki influencer")) scores.ai_influencer += 4;
+  if (q.includes("virtuelle person") || q.includes("creator persona")) scores.ai_influencer += 3;
+  if (q.includes("realistisches portrait") || q.includes("portrait einer")) scores.ai_influencer += 3;
+  if (q.includes("produktbild") || q.includes("produktfoto")) scores.product_visual += 4;
+  if (q.includes("kampagnenbild") || q.includes("werbebild")) scores.product_visual += 3;
+  if (q.includes("product visual")) scores.product_visual += 3;
+
   if (q.includes("verwandel") && q.includes("video")) scores.image_to_video += 2;
+  if (q.includes("mach daraus") && q.includes("video")) scores.image_to_video += 3;
   if (q.includes("variant")) scores.asset_reuse += 2;
   if (q.includes("hooks für")) scores.hook_generation += 3;
   if (q.includes("starte kampagne")) scores.campaign_planning += 3;
+
+  if (detectFluxUltraExplicit(q) && !VIDEO_KEYWORDS.some((w) => q.includes(w))) {
+    if (scores.product_visual === 0 && scores.ai_influencer === 0) {
+      scores.image_generation += 2;
+    }
+  }
 
   const ranked = (Object.entries(scores) as [Exclude<PreviewIntent, "unknown">, number][]).sort(
     (a, b) => b[1] - a[1]
@@ -116,6 +188,12 @@ export function detectPreviewPlatform(input: string): {
       return { platform: rule.platform, format: rule.format };
     }
   }
+  if (q.includes("instagram") && !q.includes("reel")) {
+    return { platform: "instagram_feed", format: "4:5" };
+  }
+  if (q.includes("instagram") && q.includes("reel")) {
+    return { platform: "instagram_reel", format: "9:16" };
+  }
   if (q.includes("youtube") && !q.includes("shorts")) {
     return { platform: "youtube_thumbnail", format: "16:9" };
   }
@@ -127,11 +205,22 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
   if (!trimmed) return "";
 
   const base = trimmed.replace(/\s+/g, " ");
+  const q = base.toLowerCase();
 
   switch (intent) {
+    case "ai_influencer": {
+      const style = extractInfluencerStyle(q);
+      const platform = q.includes("instagram") ? "Instagram" : "social media";
+      return `High-end editorial portrait of a virtual ${style} creator for ${platform}, realistic skin texture, premium studio lighting, fashion campaign aesthetic, clean background, sharp facial details, natural expression, cinematic composition, social-media-ready visual.`;
+    }
+    case "product_visual":
+      return `Premium product photography, ${base}, editorial campaign lighting, sharp macro detail, clean composition, luxury brand visual, studio-grade capture, commercial advertising quality, natural shadows, high-end campaign asset.`;
     case "image_generation":
-      if (base.toLowerCase().includes("sunset")) {
+      if (q.includes("sunset")) {
         return "Golden hour sunset over mountains, cinematic photography, high detail, warm tones, editorial campaign quality";
+      }
+      if (detectFluxUltraExplicit(q) || q.includes("portrait") || q.includes("premium")) {
+        return `Premium campaign visual, ${base}, photorealistic detail, editorial lighting, clean composition, high-end brand photography, social-ready export`;
       }
       return `Premium campaign visual, ${base}, clean composition, brand-safe lighting, high detail, social-ready export`;
     case "image_to_video":
@@ -147,25 +236,27 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
   }
 }
 
-export function engineLabelForIntent(intent: PreviewIntent): string {
-  switch (intent) {
-    case "image_generation":
-      return "InfluexAI Image Engine";
-    case "image_to_video":
-      return "InfluexAI Motion Engine";
-    case "hook_generation":
-    case "campaign_planning":
-      return "InfluexAI Campaign Engine";
-    case "asset_reuse":
-      return "InfluexAI Asset Engine";
-    default:
-      return "InfluexAI Production Engine";
-  }
+export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): string {
+  const de: Partial<Record<PreviewIntent, string>> = {
+    ai_influencer: "AI Influencer Visual",
+    product_visual: "Produktvisual",
+    image_generation: "Bild erstellen",
+    image_to_video: "Bild zu Video",
+  };
+  const en: Partial<Record<PreviewIntent, string>> = {
+    ai_influencer: "AI Influencer Visual",
+    product_visual: "Product visual",
+    image_generation: "Create image",
+    image_to_video: "Image to video",
+  };
+  return (lang === "de" ? de : en)[intent] ?? intentLabelFor(intent, lang);
 }
 
 export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string {
   const de: Record<PreviewIntent, string> = {
     image_generation: "Bild erstellen",
+    ai_influencer: "AI Influencer",
+    product_visual: "Produktvisual",
     image_to_video: "Bild zu Video",
     hook_generation: "Hooks schreiben",
     campaign_planning: "Kampagne planen",
@@ -174,6 +265,8 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
   };
   const en: Record<PreviewIntent, string> = {
     image_generation: "Create image",
+    ai_influencer: "AI Influencer",
+    product_visual: "Product visual",
     image_to_video: "Image to video",
     hook_generation: "Write hooks",
     campaign_planning: "Plan campaign",
@@ -188,9 +281,16 @@ export function needsPlatformAsk(
   intent: PreviewIntent,
   platform: PreviewPlatform
 ): boolean {
-  if (intent === "unknown" || intent === "campaign_planning" || intent === "hook_generation") {
+  if (
+    intent === "unknown" ||
+    intent === "campaign_planning" ||
+    intent === "hook_generation" ||
+    intent === "asset_reuse"
+  ) {
     return false;
   }
   if (input.trim().length < 8) return false;
   return !platform;
 }
+
+export { engineLabelForIntent } from "./studio-engine-registry";

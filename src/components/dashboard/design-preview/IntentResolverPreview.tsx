@@ -1,7 +1,10 @@
 "use client";
 
 import {
-  engineLabelForIntent,
+  detectEngineMismatch,
+  resolveEngineForIntent,
+} from "./studio-engine-registry";
+import {
   intentLabelFor,
   type PreviewIntent,
 } from "./preview-intent";
@@ -9,16 +12,21 @@ import { PREVIEW_ACCENT } from "./preview-tokens";
 
 type IntentResolverPreviewProps = {
   intent: PreviewIntent;
+  input: string;
   lang: "de" | "en";
   platformAsk?: string;
 };
 
 export function IntentResolverPreview({
   intent,
+  input,
   lang,
   platformAsk,
 }: IntentResolverPreviewProps) {
   if (intent === "unknown") return null;
+
+  const engine = resolveEngineForIntent(intent, input);
+  const mismatch = detectEngineMismatch(input, intent, lang);
 
   return (
     <div
@@ -32,9 +40,17 @@ export function IntentResolverPreview({
       >
         {intentLabelFor(intent, lang)}
       </span>
-      <span className="preview-type-meta">{engineLabelForIntent(intent)}</span>
+      <span className="preview-type-meta">{engine.label}</span>
       {platformAsk ? (
         <p className="preview-type-body w-full text-[0.8125rem]">{platformAsk}</p>
+      ) : null}
+      {mismatch ? (
+        <p
+          className="preview-type-body w-full text-[0.8125rem]"
+          style={{ color: "rgba(244,240,232,0.72)" }}
+        >
+          {mismatch}
+        </p>
       ) : null}
     </div>
   );

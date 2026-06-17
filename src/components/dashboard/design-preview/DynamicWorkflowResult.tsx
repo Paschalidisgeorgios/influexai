@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import {
-  buildOptimizedPrompt,
-  engineLabelForIntent,
+  workflowLabelFor,
   type PreviewFormat,
   type PreviewIntent,
 } from "./preview-intent";
 import { PREVIEW_MVP_ROUTES } from "./preview-routes";
+import {
+  isUltraPhotoEngine,
+  resolveEngineForIntent,
+  type StudioEngineDefinition,
+} from "./studio-engine-registry";
+import { UltraPhotoWorkflowPanel } from "./UltraPhotoWorkflowPanel";
 
 const ACCENT = "#b4ff00";
 const META = "rgba(244,240,232,0.45)";
@@ -36,27 +41,45 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function ProgressBar({ phase, lang }: { phase: WorkflowPhase; lang: "de" | "en" }) {
+function ProgressBar({
+  phase,
+  lang,
+  ultra,
+}: {
+  phase: WorkflowPhase;
+  lang: "de" | "en";
+  ultra: boolean;
+}) {
   if (phase === "idle") return null;
 
+  const de = lang === "de";
   const label =
     phase === "optimizing"
-      ? lang === "de"
+      ? de
         ? "Prompt optimiert"
         : "Prompt optimized"
-      : lang === "de"
-        ? "Generiert…"
-        : "Generating…";
+      : phase === "generating"
+        ? ultra
+          ? de
+            ? "Engine wird vorbereitet…"
+            : "Preparing engine…"
+          : de
+            ? "Generiert…"
+            : "Generating…"
+        : ultra
+          ? de
+            ? "Ultra Engine vorbereitet"
+            : "Ultra engine prepared"
+          : de
+            ? "Bereit"
+            : "Ready";
 
   const width = phase === "optimizing" ? "35%" : phase === "generating" ? "72%" : "100%";
 
   return (
     <div className="space-y-2">
       <p className="preview-type-body flex items-center gap-2 text-[0.8125rem]">
-        {phase !== "generating" && phase === "optimizing" ? (
-          <span style={{ color: ACCENT }}>✓</span>
-        ) : null}
-        {phase === "generating" ? null : phase === "complete" ? (
+        {phase === "complete" || phase === "optimizing" ? (
           <span style={{ color: ACCENT }}>✓</span>
         ) : null}
         {label}
@@ -73,6 +96,60 @@ function ProgressBar({ phase, lang }: { phase: WorkflowPhase; lang: "de" | "en" 
   );
 }
 
+function StandardAdvancedSettings({
+  engine,
+  format,
+  lang,
+}: {
+  engine: StudioEngineDefinition;
+  format: PreviewFormat | null;
+  lang: "de" | "en";
+}) {
+  const de = lang === "de";
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="preview-type-meta"
+        style={{ color: META }}
+      >
+        {open ? "−" : "+"} {de ? "Erweiterte Einstellungen" : "Advanced settings"}
+      </button>
+      {open ? (
+        <div className="grid grid-cols-2 gap-3 border-t pt-3" style={{ borderColor: BORDER }}>
+          <Field label={de ? "Modell" : "Model"}>
+            <input
+              readOnly
+              className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
+              style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
+              value={engine.advancedLabel ?? engine.label}
+            />
+          </Field>
+          <Field label="Provider">
+            <input
+              readOnly
+              className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
+              style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
+              value={engine.provider ?? "Internal routing"}
+            />
+          </Field>
+          <Field label={de ? "Seitenverhältnis" : "Aspect ratio"}>
+            <input
+              readOnly
+              className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
+              style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
+              value={format ?? "—"}
+            />
+          </Field>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 export function DynamicWorkflowResult({
   intent,
   originalPrompt,
@@ -84,11 +161,12 @@ export function DynamicWorkflowResult({
   hasImageContext,
   forceVideoPanel,
 }: DynamicWorkflowResultProps) {
-  const [advancedOpen, setAdvancedOpen] = useState(false);
   const de = lang === "de";
-
   const effectiveIntent = forceVideoPanel ? "image_to_video" : intent;
   const showPanel = phase !== "idle" && effectiveIntent !== "unknown";
+
+  const engine = resolveEngineForIntent(effectiveIntent, originalPrompt);
+  const ultra = isUltraPhotoEngine(engine);
 
   if (!showPanel) return null;
 
@@ -98,8 +176,17 @@ export function DynamicWorkflowResult({
     optimizeHint: de
       ? "Prompts werden für die Produktions-Engine optimiert."
       : "Prompts are optimized for the production engine.",
-    advanced: de ? "Erweiterte Einstellungen" : "Advanced settings",
   };
+
+  const isUltraWorkflow =
+    effectiveIntent === "ai_influencer" ||
+    effectiveIntent === "product_visual" ||
+    (effectiveIntent === "image_generation" && ultra);
+
+  const mvpHref =
+    effectiveIntent === "ai_influencer"
+      ? PREVIEW_MVP_ROUTES.kiInfluencer
+      : engine.mvpRoute;
 
   return (
     <div
@@ -107,40 +194,63 @@ export function DynamicWorkflowResult({
       data-preview-workflow
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="preview-type-meta">Workflow</span>
+        <span className="preview-type-meta">
+          {workflowLabelFor(effectiveIntent, lang)}
+        </span>
         <span className="preview-type-meta" style={{ color: "rgba(180,255,0,0.85)" }}>
-          {engineLabelForIntent(effectiveIntent)}
+          {engine.label}
         </span>
       </div>
 
-      <ProgressBar phase={phase} lang={lang} />
+      <ProgressBar phase={phase} lang={lang} ultra={ultra && isUltraWorkflow} />
 
-      {(effectiveIntent === "image_generation" || effectiveIntent === "hook_generation") && (
-        <div className="grid gap-3">
-          <Field label={copy.original}>
-            <p
-              className="preview-type-body rounded border px-3 py-2 text-[0.8125rem]"
-              style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
-            >
-              {originalPrompt}
-            </p>
-          </Field>
-          {phase !== "optimizing" && (
-            <Field label={copy.optimized}>
-              <textarea
-                value={optimizedPrompt}
-                onChange={(e) => onOptimizedChange(e.target.value)}
-                rows={3}
-                className="preview-type-body w-full resize-none rounded border bg-transparent px-3 py-2 text-[0.8125rem] outline-none"
-                style={{ borderColor: BORDER, color: "var(--studio-text-primary)" }}
-              />
-              <p className="preview-type-body preview-type-body--muted mt-1.5 text-[0.6875rem]">
-                {copy.optimizeHint}
+      {isUltraWorkflow ? (
+        <UltraPhotoWorkflowPanel
+          intent={
+            effectiveIntent === "ai_influencer" ||
+            effectiveIntent === "product_visual" ||
+            effectiveIntent === "image_generation"
+              ? effectiveIntent
+              : "image_generation"
+          }
+          originalPrompt={originalPrompt}
+          optimizedPrompt={optimizedPrompt}
+          onOptimizedChange={onOptimizedChange}
+          format={format}
+          lang={lang}
+          engine={engine}
+          phase={phase}
+          mvpHref={mvpHref}
+        />
+      ) : null}
+
+      {!isUltraWorkflow &&
+        (effectiveIntent === "image_generation" || effectiveIntent === "hook_generation") && (
+          <div className="grid gap-3">
+            <Field label={copy.original}>
+              <p
+                className="preview-type-body rounded border px-3 py-2 text-[0.8125rem]"
+                style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
+              >
+                {originalPrompt}
               </p>
             </Field>
-          )}
-        </div>
-      )}
+            {phase !== "optimizing" && (
+              <Field label={copy.optimized}>
+                <textarea
+                  value={optimizedPrompt}
+                  onChange={(e) => onOptimizedChange(e.target.value)}
+                  rows={3}
+                  className="preview-type-body w-full resize-none rounded border bg-transparent px-3 py-2 text-[0.8125rem] outline-none"
+                  style={{ borderColor: BORDER, color: "var(--studio-text-primary)" }}
+                />
+                <p className="preview-type-body preview-type-body--muted mt-1.5 text-[0.6875rem]">
+                  {copy.optimizeHint}
+                </p>
+              </Field>
+            )}
+          </div>
+        )}
 
       {effectiveIntent === "image_to_video" && (
         <div className="grid gap-4">
@@ -205,7 +315,7 @@ export function DynamicWorkflowResult({
             className="preview-type-btn inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
             style={{ background: ACCENT, color: "#080808" }}
           >
-            {de ? "Video generieren →" : "Generate video →"}
+            {de ? "Im Video-Workflow öffnen →" : "Open in video workflow →"}
           </a>
         </div>
       )}
@@ -241,48 +351,23 @@ export function DynamicWorkflowResult({
         </div>
       )}
 
-      {effectiveIntent === "image_generation" && phase === "complete" && (
-        <a
-          href={PREVIEW_MVP_ROUTES.imageGen}
-          className="preview-type-btn inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
-          style={{ background: ACCENT, color: "#080808" }}
-        >
-          {de ? "Bild erstellen" : "Create image"}
-        </a>
-      )}
-
-      {effectiveIntent !== "image_to_video" && effectiveIntent !== "campaign_planning" && (
-        <>
-          <button
-            type="button"
-            onClick={() => setAdvancedOpen((v) => !v)}
-            className="preview-type-meta"
-            style={{ color: META }}
+      {effectiveIntent === "image_generation" &&
+        !ultra &&
+        phase === "complete" && (
+          <a
+            href={PREVIEW_MVP_ROUTES.imageGen}
+            className="preview-type-btn inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-[0.75rem] uppercase tracking-[0.08em]"
+            style={{ background: ACCENT, color: "#080808" }}
           >
-            {advancedOpen ? "−" : "+"} {copy.advanced}
-          </button>
-          {advancedOpen ? (
-            <div className="grid grid-cols-2 gap-3 border-t pt-3" style={{ borderColor: BORDER }}>
-              <Field label={de ? "Modell" : "Model"}>
-                <input
-                  readOnly
-                  className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
-                  style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
-                  defaultValue="InfluexAI Standard"
-                />
-              </Field>
-              <Field label="Provider">
-                <input
-                  readOnly
-                  className="preview-type-body w-full rounded border bg-transparent px-2 py-1.5 text-[0.75rem]"
-                  style={{ borderColor: BORDER, color: "var(--studio-text-muted)" }}
-                  defaultValue="Internal routing"
-                />
-              </Field>
-            </div>
-          ) : null}
-        </>
-      )}
+            {engine.executionHint[lang]}
+          </a>
+        )}
+
+      {!isUltraWorkflow &&
+        effectiveIntent !== "image_to_video" &&
+        effectiveIntent !== "campaign_planning" && (
+          <StandardAdvancedSettings engine={engine} format={format} lang={lang} />
+        )}
     </div>
   );
 }
@@ -290,10 +375,15 @@ export function DynamicWorkflowResult({
 export function resolveAssetKind(
   intent: PreviewIntent,
   phase: WorkflowPhase,
-  forceVideoPanel?: boolean
-): "image" | "video" | "hooks" | "campaign" | "none" {
+  forceVideoPanel?: boolean,
+  input = ""
+): "image" | "video" | "hooks" | "campaign" | "ultra_prepared" | "none" {
   if (phase !== "complete") return "none";
   if (forceVideoPanel || intent === "image_to_video") return "video";
+  if (intent === "ai_influencer" || intent === "product_visual") return "ultra_prepared";
+  if (intent === "image_generation" && isUltraPhotoEngine(resolveEngineForIntent(intent, input))) {
+    return "ultra_prepared";
+  }
   if (intent === "image_generation") return "image";
   if (intent === "hook_generation") return "hooks";
   if (intent === "campaign_planning") return "campaign";

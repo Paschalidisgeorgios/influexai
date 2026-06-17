@@ -29,7 +29,12 @@ function actionsForIntent(
 ): ContextAction[] {
   const de = lang === "de";
 
-  if (intent === "image_generation" || (hasImageContext && intent === "image_to_video")) {
+  if (
+    intent === "image_generation" ||
+    intent === "ai_influencer" ||
+    intent === "product_visual" ||
+    (hasImageContext && intent === "image_to_video")
+  ) {
     return [
       {
         id: "video",
