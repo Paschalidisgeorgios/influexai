@@ -1,10 +1,25 @@
 /** GSAP depth presets — landing preview scroll story */
 
-/** Brand intro scroll distance (desktop) — sticky section, no pin */
-export const BRAND_INTRO_SCROLL_VH = 85;
+/** Fullscreen brand overlay — auto-start delay (ms) */
+export const BRAND_INTRO_AUTO_DELAY_MS = {
+  desktop: 550,
+  mobile: 400,
+  reduced: 120,
+} as const;
 
-/** Hero entrance delay after brand intro crosses reveal threshold */
-export const BRAND_INTRO_HERO_REVEAL_AT = 0.58;
+/** Dissolve timeline length (seconds) */
+export const BRAND_INTRO_DURATION_S = {
+  desktop: 1.45,
+  mobile: 1.05,
+  reduced: 0.28,
+} as const;
+
+/** When hero line-reveal starts within dissolve (seconds from play) */
+export const BRAND_INTRO_HERO_READY_AT_S = {
+  desktop: 0.48,
+  mobile: 0.34,
+  reduced: 0,
+} as const;
 
 /** Asset-only depth — text stays flat */
 export const STORY_ASSET_DEPTH = {

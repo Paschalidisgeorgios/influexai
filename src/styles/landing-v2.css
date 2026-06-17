@@ -48,61 +48,49 @@
   }
 }
 
-.landing-v2-root--intro-active .landing-v2-nav {
-  opacity: 0.55;
-  transition: opacity 0.65s ease;
+.landing-v2-root--intro-active .landing-v2-nav,
+.landing-v2-root--intro-active .landing-v2-preview-banner {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
-.landing-v2-root--intro-complete .landing-v2-nav {
+.landing-v2-root--intro-complete .landing-v2-nav,
+.landing-v2-root--intro-complete .landing-v2-preview-banner {
   opacity: 1;
+  pointer-events: auto;
 }
 
-/* Brand intro — cinematic opening (preview only) */
+/* Brand intro — fullscreen overlay (preview only) */
 .landing-v2-brand-intro {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
   width: 100%;
   max-width: 100%;
-}
-
-.landing-v2-brand-intro--desktop {
-  height: calc(100vh + 85vh);
-  height: calc(100dvh + 85dvh);
-}
-
-.landing-v2-brand-intro--mobile,
-.landing-v2-brand-intro--reduced {
-  height: auto;
-  min-height: 0;
-}
-
-.landing-v2-brand-intro__stage {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 100%;
-  height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  pointer-events: auto;
   background: var(--lv2-shell);
   isolation: isolate;
 }
 
-.landing-v2-brand-intro--mobile .landing-v2-brand-intro__stage {
-  position: relative;
-  height: clamp(240px, 42vh, 360px);
-}
-
-.landing-v2-brand-intro--reduced .landing-v2-brand-intro__stage {
-  position: relative;
-  height: 0;
-  min-height: 0;
-  overflow: hidden;
+.landing-v2-brand-intro--reduced {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
+}
+
+.landing-v2-brand-intro__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--lv2-shell);
 }
 
 .landing-v2-brand-intro__grid {
@@ -157,7 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(92vw, 520px);
+  width: min(92vw, 560px);
   padding: 0 1rem;
   will-change: transform, opacity, filter;
 }
@@ -180,7 +168,7 @@
   position: relative;
   z-index: 1;
   display: block;
-  width: clamp(200px, 42vw, 520px);
+  width: clamp(360px, 44vw, 560px);
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -328,16 +316,11 @@
 
 @media (max-width: 767px) {
   .landing-v2-brand-intro__logo-img {
-    width: clamp(200px, 62vw, 280px);
+    width: clamp(220px, 64vw, 300px);
   }
 
   .landing-v2-brand-intro__logo-wrap {
-    width: min(88vw, 280px);
-  }
-
-  .landing-v2-brand-intro__fragments,
-  .landing-v2-brand-intro__mask {
-    display: none;
+    width: min(88vw, 300px);
   }
 }
 

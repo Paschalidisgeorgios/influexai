@@ -2,42 +2,38 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
 import { useBrandIntro } from "./BrandIntroContext";
 import { useLandingViewport } from "./hooks/useLandingViewport";
-import { useBrandIntroReveal } from "./hooks/useBrandIntroReveal";
-
-const copy = LANDING_V2_COPY.brandIntro;
+import { useBrandIntroOverlay } from "./hooks/useBrandIntroOverlay";
 
 export function LandingV2BrandIntro() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
   const signalsRef = useRef<HTMLDivElement>(null);
   const fragmentsRef = useRef<HTMLDivElement>(null);
-  const hintRef = useRef<HTMLDivElement>(null);
   const [logoError, setLogoError] = useState(false);
-  const { markHeroReady } = useBrandIntro();
+  const { introDismissed, markHeroReady, dismissIntro } = useBrandIntro();
   const { isMobile, ready, reduceMotion } = useLandingViewport();
 
-  useBrandIntroReveal(
+  useBrandIntroOverlay(
     {
-      section: sectionRef,
+      overlay: overlayRef,
       logo: logoRef,
       mask: maskRef,
       signals: signalsRef,
       fragments: fragmentsRef,
-      hint: hintRef,
-      stage: stageRef,
     },
     {
-      enabled: ready,
+      enabled: ready && !introDismissed,
       isMobile,
-      onRevealReady: markHeroReady,
+      onHeroReady: markHeroReady,
+      onDismiss: dismissIntro,
     }
   );
+
+  if (introDismissed) return null;
 
   const modeClass = reduceMotion
     ? "landing-v2-brand-intro--reduced"
@@ -46,12 +42,13 @@ export function LandingV2BrandIntro() {
       : "landing-v2-brand-intro--desktop";
 
   return (
-    <section
-      ref={sectionRef}
+    <div
+      ref={overlayRef}
       className={`landing-v2-brand-intro ${modeClass}`}
+      aria-hidden={introDismissed}
       aria-label="InfluexAI Markeneinstieg"
     >
-      <div ref={stageRef} className="landing-v2-brand-intro__stage">
+      <div className="landing-v2-brand-intro__stage">
         <div className="landing-v2-brand-intro__grid" aria-hidden />
         <div className="landing-v2-brand-intro__noise" aria-hidden />
         <div className="landing-v2-brand-intro__vignette" aria-hidden />
@@ -72,8 +69,8 @@ export function LandingV2BrandIntro() {
             <Image
               src={LANDING_V2_ASSETS.brandLogo}
               alt="InfluexAI"
-              width={520}
-              height={156}
+              width={560}
+              height={168}
               className="landing-v2-brand-intro__logo-img"
               priority
               onError={() => setLogoError(true)}
@@ -91,15 +88,7 @@ export function LandingV2BrandIntro() {
           <span data-brand-fragment className="landing-v2-brand-intro__fragment landing-v2-brand-intro__fragment--offset" />
           <span data-brand-fragment className="landing-v2-brand-intro__fragment landing-v2-brand-intro__fragment--wide" />
         </div>
-
-        {!isMobile && !reduceMotion ? (
-          <div ref={hintRef} className="landing-v2-brand-intro__hint" aria-hidden>
-            <span className="landing-v2-brand-intro__hint-dot" />
-            <span className="landing-v2-brand-intro__hint-line" />
-            <span className="sr-only">{copy.scrollHint}</span>
-          </div>
-        ) : null}
       </div>
-    </section>
+    </div>
   );
 }

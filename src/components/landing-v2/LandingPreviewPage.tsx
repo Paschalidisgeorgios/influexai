@@ -16,12 +16,12 @@ import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
 
 function LandingPreviewShell() {
-  const { heroReady } = useBrandIntro();
+  const { introDismissed } = useBrandIntro();
 
   return (
     <div
       className={`landing-v2-root min-h-screen overflow-x-clip${
-        heroReady ? " landing-v2-root--intro-complete" : " landing-v2-root--intro-active"
+        introDismissed ? " landing-v2-root--intro-complete" : " landing-v2-root--intro-active"
       }`}
     >
       <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
@@ -29,9 +29,9 @@ function LandingPreviewShell() {
       </div>
 
       <LandingV2Nav />
+      <LandingV2BrandIntro />
 
       <main>
-        <LandingV2BrandIntro />
         <LandingV2Hero />
         <LandingV2ScrollStory />
         <LandingV2ProductionPaths />
