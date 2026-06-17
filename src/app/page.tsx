@@ -10,7 +10,7 @@ import {
   parseKeywords,
 } from "@/lib/seo";
 import type { Locale } from "@/lib/locale";
-import { LandingPageV2 } from "@/components/landing/LandingPageV2";
+import { LandingV2Page } from "@/components/landing-v2/LandingV2Page";
 import { ABTracker } from "@/components/ab-tracker";
 import type { AbVariant } from "@/lib/ab-tracking";
 
@@ -65,7 +65,7 @@ export default async function HomePage() {
   return (
     <>
       <ABTracker variant={variant} />
-      <LandingPageV2 />
+      <LandingV2Page mode="live" />
     </>
   );
 }

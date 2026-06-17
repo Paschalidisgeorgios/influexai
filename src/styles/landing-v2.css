@@ -43,7 +43,7 @@
     background: rgba(11, 11, 13, 0.88);
   }
 
-  .landing-v2-nav {
+  .landing-v2-root--preview .landing-v2-nav {
     top: 1.4rem;
   }
 }

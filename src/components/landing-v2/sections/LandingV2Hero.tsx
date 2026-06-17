@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
-import { LANDING_V2_PRICING_PREVIEW_HREF } from "@/lib/landing-v2-pricing-copy";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2HeroProductPanel } from "../ui/LandingV2HeroProductPanel";
 import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
@@ -19,6 +19,7 @@ export function LandingV2Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const backPlateRef = useRef<HTMLDivElement>(null);
+  const links = useLandingV2Links();
   const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
   const { heroReady } = useBrandIntro();
 
@@ -67,7 +68,7 @@ export function LandingV2Hero() {
           </p>
           <div className="relative z-20 mt-8 flex w-full max-w-full flex-wrap items-center gap-3 md:mt-10">
             <Link
-              href="/auth/sign-up"
+              href={links.signup}
               className="landing-v2-btn-primary min-h-[44px] shrink-0"
               data-hero-cta
             >
@@ -75,7 +76,7 @@ export function LandingV2Hero() {
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
-              href={LANDING_V2_PRICING_PREVIEW_HREF}
+              href={links.pricing}
               className="landing-v2-btn-secondary min-h-[44px] shrink-0"
               data-hero-cta
             >
