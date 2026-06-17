@@ -63,7 +63,14 @@ export const SETUP_COPY = {
   hubInactiveTitle: "In Vorbereitung",
   hubInactiveBadge: "In Vorbereitung",
   hubInactiveDescription:
-    "Diese Studios sind noch nicht aktiv — nutze ein verfügbares Tool oder den Agenten.",
+    "Weitere Studios folgen schrittweise — bis dahin nutze die aktiven Tools oder den Agenten.",
+  hubPageTitle: "Wähle deinen Produktionsweg",
+  hubPageSubtitle:
+    "Starte mit Bild, Video oder Kampagne — die passenden Tools bleiben jederzeit direkt erreichbar.",
+  hubPathsTitle: "Empfohlene Wege",
+  hubActiveTitle: "Aktive Studio-Tools",
+  hubActiveCta: "Öffnen",
+  hubPathCta: "Starten",
   modelsLoading: "Modelle werden geladen…",
   videoGenerating: "Video wird erstellt — das kann einige Minuten dauern.",
 } as const;

@@ -1,24 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
 import {
-  getToolHubCardCta,
   INACTIVE_AGENT_HREF,
-  isSetupMvpTool,
   SETUP_COPY,
 } from "./production-tool-setup-ui";
 import {
-  FEATURED_TOOLS,
-  getToolOverviewCategoriesExcludingFeatured,
-  type FeaturedTool,
+  ACTIVE_STUDIO_TOOLS,
+  getHubInactiveTools,
+  PRODUCTION_PATHS,
+  type ProductionPath,
 } from "./production-tool-routes";
 import {
   STUDIO_CARD_BG,
   STUDIO_CARD_BG_FEATURED,
-  STUDIO_CARD_BG_HOVER,
-  STUDIO_CARD_BG_SOFT,
   STUDIO_CARD_BORDER,
   STUDIO_RADIUS,
   STUDIO_SHADOW,
@@ -27,161 +25,138 @@ import {
   StudioSection,
 } from "../studio-ui";
 
-function FeaturedToolCard({
-  tool,
+function ProductionPathCard({
+  path,
   onSelect,
 }: {
-  tool: FeaturedTool;
+  path: ProductionPath;
   onSelect: (id: ToolId) => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(tool.id)}
-      className={`group flex min-h-[196px] flex-col p-6 text-left transition-all duration-300 hover:-translate-y-0.5 md:min-h-[220px] md:p-7 ${STUDIO_RADIUS.panel}`}
+    <div
+      className={`flex min-h-[220px] flex-col p-6 md:min-h-[240px] md:p-7 ${STUDIO_RADIUS.panel}`}
       style={{
         background: STUDIO_CARD_BG_FEATURED,
         border: `1px solid ${STUDIO_CARD_BORDER}`,
         boxShadow: STUDIO_SHADOW.featured,
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = STUDIO_SHADOW.cardHover;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = STUDIO_SHADOW.featured;
-      }}
     >
-      <p
-        className="text-[10px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: DASHBOARD_MUTED }}
-      >
-        {tool.category}
-      </p>
       <h3
-        className="mt-3 text-xl font-bold tracking-tight md:text-[1.35rem]"
+        className="text-xl font-bold tracking-tight md:text-[1.35rem]"
         style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.025em" }}
       >
-        {tool.label}
+        {path.label}
       </h3>
       <p
         className="mt-3 flex-1 text-[14px] leading-relaxed"
         style={{ color: DASHBOARD_MUTED }}
       >
-        {tool.description}
+        {path.description}
       </p>
-      <span
-        className="mt-6 text-[13px] font-semibold tracking-tight transition-opacity group-hover:opacity-80"
-        style={{ color: DASHBOARD_TEXT }}
+
+      {path.options.length > 1 ? (
+        <div className="mt-5 flex flex-wrap gap-2">
+          {path.options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className={`border px-3.5 py-2 text-[12px] font-medium transition-colors hover:border-black/14 hover:bg-black/[0.03] ${STUDIO_RADIUS.button}`}
+              style={{
+                borderColor: "rgba(8,8,8,0.10)",
+                color: DASHBOARD_TEXT,
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={() => onSelect(path.primaryToolId)}
+        className={`mt-5 inline-flex min-h-[44px] w-full items-center justify-center text-sm font-semibold transition-opacity hover:opacity-90 sm:w-auto sm:px-6 ${STUDIO_RADIUS.button}`}
+        style={{ background: "#B4FF00", color: "#08080a" }}
       >
-        {SETUP_COPY.toolCardCta}
-      </span>
-    </button>
+        {SETUP_COPY.hubPathCta}
+      </button>
+    </div>
   );
 }
 
-function StandardToolCard({
-  toolId,
+function ActiveToolRow({
   label,
-  description,
-  onClick,
+  onOpen,
 }: {
-  toolId: ToolId;
   label: string;
-  description: string;
-  onClick: () => void;
+  onOpen: () => void;
 }) {
-  const cta = getToolHubCardCta(toolId);
-
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`group flex min-h-[108px] flex-col p-4 text-left transition-all duration-200 hover:-translate-y-px md:p-5 ${STUDIO_RADIUS.card}`}
+      onClick={onOpen}
+      className={`group flex w-full min-w-0 items-center gap-3 border px-4 py-3.5 text-left transition-colors hover:border-black/12 hover:bg-white/45 ${STUDIO_RADIUS.input}`}
       style={{
-        background: STUDIO_CARD_BG_SOFT,
-        border: `1px solid ${STUDIO_CARD_BORDER}`,
-        boxShadow: STUDIO_SHADOW.card,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = STUDIO_SHADOW.cardHover;
-        e.currentTarget.style.background = STUDIO_CARD_BG_HOVER;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = STUDIO_SHADOW.card;
-        e.currentTarget.style.background = STUDIO_CARD_BG_SOFT;
+        borderColor: STUDIO_CARD_BORDER,
+        background: "rgba(255,252,247,0.55)",
       }}
     >
       <span
-        className="text-[14px] font-semibold tracking-tight"
+        className="min-w-0 flex-1 text-[14px] font-semibold tracking-tight"
         style={{ color: DASHBOARD_TEXT }}
       >
         {label}
       </span>
-      <p
-        className="mt-2 flex-1 text-[12px] leading-relaxed"
+      <span
+        className="inline-flex shrink-0 items-center gap-1 text-[12px] font-medium"
         style={{ color: DASHBOARD_MUTED }}
       >
-        {description}
-      </p>
-      <span
-        className="mt-3 text-[11px] font-medium opacity-70 transition-opacity group-hover:opacity-100"
-        style={{ color: DASHBOARD_TEXT }}
-      >
-        {cta}
+        {SETUP_COPY.hubActiveCta}
+        <ChevronRight
+          size={14}
+          className="transition-transform group-hover:translate-x-0.5"
+        />
       </span>
     </button>
   );
 }
 
-function InactiveToolCard({
+function InactiveToolRow({
   label,
-  description,
-  onOpenTool,
+  onOpen,
 }: {
   label: string;
-  description: string;
-  onOpenTool: () => void;
+  onOpen: () => void;
 }) {
   return (
     <div
-      className={`flex min-h-[108px] flex-col p-4 md:p-5 ${STUDIO_RADIUS.card}`}
-      style={{
-        background: "rgba(255,250,242,0.38)",
-        border: `1px solid ${STUDIO_CARD_BORDER}`,
-      }}
+      className={`flex min-w-0 items-center justify-between gap-3 px-3 py-2.5 ${STUDIO_RADIUS.input}`}
+      style={{ background: "rgba(255,250,242,0.28)" }}
     >
-      <span
-        className={`mb-3 inline-flex w-fit items-center px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${STUDIO_RADIUS.pill}`}
-        style={{
-          background: "rgba(8,8,8,0.04)",
-          color: DASHBOARD_MUTED,
-        }}
-      >
-        {SETUP_COPY.hubInactiveBadge}
-      </span>
-      <button
-        type="button"
-        onClick={onOpenTool}
-        className="flex flex-1 flex-col text-left"
-      >
+      <div className="flex min-w-0 items-center gap-2.5">
         <span
-          className="text-[14px] font-semibold tracking-tight"
+          className={`shrink-0 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] ${STUDIO_RADIUS.pill}`}
+          style={{
+            background: "rgba(8,8,8,0.04)",
+            color: DASHBOARD_MUTED,
+          }}
+        >
+          {SETUP_COPY.hubInactiveBadge}
+        </span>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="truncate text-left text-[13px] font-medium"
           style={{ color: DASHBOARD_TEXT }}
         >
           {label}
-        </span>
-        <p
-          className="mt-2 flex-1 text-[12px] leading-relaxed"
-          style={{ color: DASHBOARD_MUTED }}
-        >
-          {description}
-        </p>
-      </button>
+        </button>
+      </div>
       <Link
         href={INACTIVE_AGENT_HREF}
-        className="mt-3 text-[11px] font-medium no-underline hover:opacity-80"
-        style={{ color: DASHBOARD_TEXT }}
-        onClick={(e) => e.stopPropagation()}
+        className="shrink-0 text-[11px] font-medium no-underline hover:opacity-80"
+        style={{ color: DASHBOARD_MUTED }}
       >
         {SETUP_COPY.toolCardCtaInactiveAgent}
       </Link>
@@ -194,98 +169,67 @@ export function ProductionToolsOverview({
 }: {
   onSelect: (id: ToolId) => void;
 }) {
-  const categories = getToolOverviewCategoriesExcludingFeatured();
-
-  const activeCategories = categories
-    .map((category) => ({
-      ...category,
-      tools: category.tools.filter(
-        (tool) => isSetupMvpTool(tool.id) || tool.id === "gallery"
-      ),
-    }))
-    .filter((category) => category.tools.length > 0);
-
-  const comingSoonTools = categories.flatMap((category) =>
-    category.tools.filter(
-      (tool) => !isSetupMvpTool(tool.id) && tool.id !== "gallery"
-    )
-  );
+  const inactiveTools = getHubInactiveTools();
 
   return (
-    <div className="w-full min-w-0 space-y-14 md:space-y-16">
+    <div className="mx-auto w-full min-w-0 max-w-4xl space-y-10 md:space-y-12">
       <StudioPageHeader
         kicker="Creator Studio"
-        title="Wähle deinen Produktionspfad"
-        subtitle="Bild, Video, Text und Kampagnenassets in einem Studio vorbereiten."
+        title={SETUP_COPY.hubPageTitle}
+        subtitle={SETUP_COPY.hubPageSubtitle}
       />
 
-      <section className="space-y-5">
-        <div className="space-y-1">
-          <h2
-            className="text-base font-semibold tracking-tight md:text-lg"
-            style={{ color: DASHBOARD_TEXT }}
-          >
-            Empfohlene Produktionsschritte
-          </h2>
-          <p className="text-sm" style={{ color: DASHBOARD_MUTED }}>
-            Die häufigsten Wege — direkt einrichten und starten.
-          </p>
-        </div>
+      <section className="space-y-4">
+        <h2
+          className="text-sm font-semibold tracking-tight md:text-base"
+          style={{ color: DASHBOARD_TEXT }}
+        >
+          {SETUP_COPY.hubPathsTitle}
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
-          {FEATURED_TOOLS.map((tool) => (
-            <FeaturedToolCard key={tool.id} tool={tool} onSelect={onSelect} />
+          {PRODUCTION_PATHS.map((path) => (
+            <ProductionPathCard key={path.id} path={path} onSelect={onSelect} />
           ))}
         </div>
       </section>
 
-      <div className="space-y-12 md:space-y-14">
-        {activeCategories.map((category) => (
-          <StudioSection
-            key={category.id}
-            title={category.title}
-            description={category.description}
-          >
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {category.tools.map((tool) => (
-                <StandardToolCard
-                  key={tool.id}
-                  toolId={tool.id}
-                  label={tool.label}
-                  description={tool.description}
-                  onClick={() => onSelect(tool.id)}
-                />
-              ))}
-            </div>
-          </StudioSection>
-        ))}
+      <StudioSection title={SETUP_COPY.hubActiveTitle}>
+        <div className="flex flex-col gap-2">
+          {ACTIVE_STUDIO_TOOLS.map((tool) => (
+            <ActiveToolRow
+              key={tool.id}
+              label={tool.label}
+              onOpen={() => onSelect(tool.id)}
+            />
+          ))}
+        </div>
+      </StudioSection>
 
-        {comingSoonTools.length > 0 ? (
-          <StudioSection
-            title={SETUP_COPY.hubInactiveTitle}
-            description={SETUP_COPY.hubInactiveDescription}
-          >
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {comingSoonTools.map((tool) => (
-                <InactiveToolCard
-                  key={tool.id}
-                  label={tool.label}
-                  description={tool.description}
-                  onOpenTool={() => onSelect(tool.id)}
-                />
-              ))}
-            </div>
-          </StudioSection>
-        ) : null}
-      </div>
+      {inactiveTools.length > 0 ? (
+        <StudioSection
+          title={SETUP_COPY.hubInactiveTitle}
+          description={SETUP_COPY.hubInactiveDescription}
+        >
+          <div className="flex flex-col gap-1.5">
+            {inactiveTools.map((tool) => (
+              <InactiveToolRow
+                key={tool.id}
+                label={tool.label}
+                onOpen={() => onSelect(tool.id)}
+              />
+            ))}
+          </div>
+        </StudioSection>
+      ) : null}
 
       <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
 
-      <div className="flex flex-col gap-4 border-t border-black/[0.05] pt-8 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 border-t border-black/[0.05] pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-md text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           Briefing statt manueller Eingabe? Der Agent schlägt einen Produktionspfad vor.
         </p>
         <Link
-          href="/dashboard/ki-agent"
+          href={INACTIVE_AGENT_HREF}
           className={`inline-flex shrink-0 min-h-[44px] items-center px-5 text-sm font-medium no-underline transition-colors hover:border-black/16 ${STUDIO_RADIUS.button}`}
           style={{
             border: `1px solid ${STUDIO_CARD_BORDER}`,

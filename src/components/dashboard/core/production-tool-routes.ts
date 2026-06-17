@@ -70,6 +70,52 @@ export type FeaturedTool = {
   category: string;
 };
 
+export type ProductionPath = {
+  id: string;
+  label: string;
+  description: string;
+  primaryToolId: ToolId;
+  options: { id: ToolId; label: string }[];
+};
+
+export const PRODUCTION_PATHS: ProductionPath[] = [
+  {
+    id: "image",
+    label: "Bild erstellen",
+    description: "Produktbilder, Kampagnenmotive und Social Visuals erstellen.",
+    primaryToolId: "image-gen",
+    options: [{ id: "image-gen", label: "Bildgenerator" }],
+  },
+  {
+    id: "video",
+    label: "Video erstellen",
+    description: "Motion-Clips aus Bildern oder Szenenbeschreibungen vorbereiten.",
+    primaryToolId: "img-to-video",
+    options: [
+      { id: "img-to-video", label: "Bild zu Video" },
+      { id: "text-to-video", label: "Text zu Video" },
+    ],
+  },
+  {
+    id: "campaign",
+    label: "Kampagne planen",
+    description: "Hooks, Inhalte und Posting-Rhythmus strukturieren.",
+    primaryToolId: "viral-hook",
+    options: [
+      { id: "viral-hook", label: "Viral Hook" },
+      { id: "content-calendar", label: "Content Kalender" },
+    ],
+  },
+];
+
+export const ACTIVE_STUDIO_TOOLS: { id: ToolId; label: string }[] = [
+  { id: "image-gen", label: "Bildgenerator" },
+  { id: "img-to-video", label: "Bild zu Video" },
+  { id: "text-to-video", label: "Text zu Video" },
+  { id: "viral-hook", label: "Viral Hook" },
+  { id: "content-calendar", label: "Content Kalender" },
+];
+
 export const FEATURED_TOOLS: FeaturedTool[] = [
   {
     id: "image-gen",
@@ -146,6 +192,24 @@ const TOOL_DISPLAY_LABELS: Partial<Record<ToolId, string>> = Object.fromEntries(
   ...FEATURED_TOOLS.map((t) => [t.id, t.label] as const),
   ...TOOL_OVERVIEW_CATEGORIES.flatMap((c) => c.tools.map((t) => [t.id, t.label] as const)),
 ]) as Partial<Record<ToolId, string>>;
+
+export function getHubInactiveTools(): { id: ToolId; label: string }[] {
+  const fromCategories = TOOL_OVERVIEW_CATEGORIES.flatMap((category) =>
+    category.tools
+      .filter((tool) => tool.id !== "gallery")
+      .map((tool) => ({ id: tool.id, label: tool.label }))
+  );
+  const extras: { id: ToolId; label: string }[] = [
+    { id: "ugc-video", label: "UGC Video" },
+  ];
+  const seen = new Set<ToolId>();
+  return [...fromCategories, ...extras].filter((tool) => {
+    if (ACTIVE_STUDIO_TOOLS.some((active) => active.id === tool.id)) return false;
+    if (seen.has(tool.id)) return false;
+    seen.add(tool.id);
+    return true;
+  });
+}
 
 export function getToolOverviewCategoriesExcludingFeatured(): ToolOverviewCategory[] {
   return TOOL_OVERVIEW_CATEGORIES.map((category) => ({
