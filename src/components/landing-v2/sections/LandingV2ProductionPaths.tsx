@@ -32,26 +32,28 @@ export function LandingV2ProductionPaths() {
     <section
       id="paths"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--editorial landing-v2-section--after-story"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--paths"
       aria-labelledby="lv2-paths-heading"
     >
-      <div className="mx-auto max-w-[90rem]">
+      <div className="landing-v2-chapter mx-auto w-full max-w-[90rem]">
         <LandingV2ChapterMarker number={chapterCopy.number} label={chapterCopy.label} />
-        <h2
-          id="lv2-paths-heading"
-          className="landing-v2-headline landing-v2-editorial-title mt-5 text-[var(--lv2-text-light)]"
-        >
-          {chapterCopy.headlineLines.map((line) => (
-            <span key={line} className="block" data-lv2-headline-line>
-              {line}
-            </span>
-          ))}
-        </h2>
-        <p className="landing-v2-editorial-lead mt-4 max-w-xl" data-lv2-subline>
-          {chapterCopy.body}
-        </p>
+        <div className="landing-v2-chapter__intro">
+          <h2
+            id="lv2-paths-heading"
+            className="landing-v2-headline landing-v2-editorial-title landing-v2-chapter__headline"
+          >
+            {chapterCopy.headlineLines.map((line) => (
+              <span key={line} className="block" data-lv2-headline-line>
+                {line}
+              </span>
+            ))}
+          </h2>
+          <p className="landing-v2-editorial-lead landing-v2-chapter__lead max-w-xl" data-lv2-subline>
+            {chapterCopy.body}
+          </p>
+        </div>
 
-        <div className="landing-v2-path-tracks mt-12 md:mt-16">
+        <div className="landing-v2-path-tracks landing-v2-chapter__stage">
           {copy.items.map((item) => {
             const toolId = pathRouteById[item.id];
             const href = toolId ? resolveToolRoute(toolId) ?? "/auth/sign-up" : "/auth/sign-up";
@@ -65,8 +67,7 @@ export function LandingV2ProductionPaths() {
                 <span className="landing-v2-path-track__index">{item.index}</span>
                 <div className="landing-v2-path-track__body">
                   <p className="landing-v2-path-track__label">{item.label}</p>
-                  <h3 className="landing-v2-headline landing-v2-path-track__title">{item.title}</h3>
-                  <p className="landing-v2-path-track__desc">{item.description}</p>
+                  <p className="landing-v2-path-track__hint">{item.title}</p>
                 </div>
                 <span className="landing-v2-path-track__cta">
                   {item.cta}

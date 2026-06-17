@@ -19,10 +19,10 @@ export function LandingV2PricingTeaser() {
     <section
       id="pricing"
       ref={sectionRef}
-      className="landing-v2-section landing-v2-section--editorial landing-v2-section--pricing"
+      className="landing-v2-section landing-v2-section--chapter landing-v2-section--pricing"
       aria-labelledby="lv2-pricing-heading"
     >
-      <div className="mx-auto max-w-3xl">
+      <div className="landing-v2-chapter mx-auto max-w-3xl">
         <div className="landing-v2-pricing-chapter">
           <LandingV2ChapterMarker
             number={chapterCopy.number}

@@ -96,6 +96,25 @@ export const HERO_PARALLAX = {
   ambient: { yPercent: 10, scale: 1.05 },
 } as const;
 
+/** Preview hero — video stage parallax */
+export const HERO_VIDEO_STAGE = {
+  opacityStart: 0.52,
+  opacityEnd: 0.38,
+  scrollY: 48,
+  scrollScale: 0.98,
+  videoScaleFrom: 1.08,
+  videoScaleTo: 1.02,
+  videoYPercent: 3,
+} as const;
+
+/** Editorial chapter video — enter / peak / exit on scroll */
+export const EDITORIAL_VIDEO_SCROLL = {
+  enter: { opacity: 0.38, scale: 1.03, y: 32 },
+  peak: { opacity: 0.58, scale: 1, y: 0 },
+  exit: { opacity: 0.28, scale: 0.97, y: -24 },
+  video: { scaleFrom: 1.06, scaleTo: 1 },
+} as const;
+
 /** Preview hero — stronger visible parallax */
 export const HERO_PARALLAX_PREVIEW = {
   scroll: { y: -24, scale: 0.99, z: 24 },

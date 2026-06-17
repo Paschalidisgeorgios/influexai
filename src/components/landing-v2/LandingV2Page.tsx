@@ -12,9 +12,7 @@ import { LandingV2SystemChapter } from "./sections/LandingV2SystemChapter";
 import { LandingV2ScrollStory } from "./sections/LandingV2ScrollStory";
 import { LandingV2ProductionPaths } from "./sections/LandingV2ProductionPaths";
 import { LandingV2StudioPreview } from "./sections/LandingV2StudioPreview";
-import { LandingV2Proof } from "./sections/LandingV2Proof";
 import { LandingV2PricingTeaser } from "./sections/LandingV2PricingTeaser";
-import { LandingV2FinalCta } from "./sections/LandingV2FinalCta";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
 
@@ -64,9 +62,7 @@ function LandingV2Shell() {
             <LandingV2ScrollStory />
             <LandingV2ProductionPaths />
             <LandingV2StudioPreview />
-            <LandingV2Proof />
             <LandingV2PricingTeaser />
-            <LandingV2FinalCta />
           </main>
 
           <LandingV2Footer />
