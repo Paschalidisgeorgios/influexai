@@ -2768,8 +2768,122 @@
 }
 
 .landing-v2-section--system {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   padding-left: 0;
   padding-right: 0;
+}
+
+.landing-v2-section--system .landing-v2-chapter {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— System section backdrop — OS stage —— */
+
+.landing-v2-system-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.landing-v2-system-bg__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 88% 82% at 50% 54%, transparent 40%, rgba(5, 5, 6, 0.68) 100%),
+    linear-gradient(
+      180deg,
+      rgba(5, 5, 6, 0.28) 0%,
+      transparent 26%,
+      transparent 74%,
+      rgba(5, 5, 6, 0.38) 100%
+    );
+}
+
+.landing-v2-system-bg__grid {
+  position: absolute;
+  inset: -6% -3%;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 84% 72% at 50% 58%, black 12%, transparent 76%);
+  will-change: transform, opacity;
+}
+
+.landing-v2-system-bg__radial {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: min(94%, 56rem);
+  height: clamp(260px, 40vh, 400px);
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 76% 68% at 50% 56%,
+    rgba(180, 255, 0, 0.06) 0%,
+    rgba(180, 255, 0, 0.022) 36%,
+    transparent 70%
+  );
+}
+
+.landing-v2-system-bg__signal {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 57%;
+  height: 1px;
+  transform: rotate(-2.5deg);
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(180, 255, 0, 0.07) 16%,
+    rgba(180, 255, 0, 0.12) 46%,
+    rgba(180, 255, 0, 0.08) 74%,
+    transparent 100%
+  );
+  opacity: 0.65;
+  mask-image: linear-gradient(90deg, transparent 0%, black 14%, black 86%, transparent 100%);
+}
+
+@media (max-width: 767px) {
+  .landing-v2-system-bg__grid {
+    opacity: 0.3;
+    background-size: 64px 64px;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    mask-image: radial-gradient(ellipse 96% 62% at 50% 64%, black 6%, transparent 68%);
+  }
+
+  .landing-v2-system-bg__radial {
+    width: 100%;
+    height: 220px;
+    bottom: 2%;
+    background: radial-gradient(
+      ellipse 82% 64% at 50% 58%,
+      rgba(180, 255, 0, 0.035) 0%,
+      transparent 66%
+    );
+  }
+
+  .landing-v2-system-bg__signal {
+    opacity: 0.32;
+    top: 63%;
+    left: 5%;
+    right: 5%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-v2-system-bg__grid {
+    will-change: auto;
+  }
 }
 
 /* —— System chapter — tighter spacing & stronger scale —— */
