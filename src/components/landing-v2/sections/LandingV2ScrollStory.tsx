@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2WorkflowStage } from "../ui/LandingV2WorkflowStage";
+import type { StudioSurfaceVariant } from "../ui/LandingV2StudioSurface";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useScrollStoryActiveChapter } from "../hooks/useScrollStoryActiveChapter";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
@@ -10,14 +11,11 @@ import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 const STATIONS = LANDING_V2_COPY.workflow.stations;
 const sectionCopy = LANDING_V2_COPY.workflow;
 
-const STORY_PLACEHOLDER: Record<
-  string,
-  "studio" | "tools" | "campaign-visual" | "motion-draft" | "gallery"
-> = {
-  briefing: "studio",
-  path: "tools",
-  image: "campaign-visual",
-  motion: "motion-draft",
+const SURFACE_VARIANT: Record<string, StudioSurfaceVariant> = {
+  briefing: "briefing",
+  path: "path",
+  image: "image",
+  motion: "motion",
   gallery: "gallery",
 };
 
@@ -65,7 +63,7 @@ export function LandingV2ScrollStory() {
           </p>
         </div>
 
-        <div className="landing-v2-workflow-body mt-12 md:mt-14">
+        <div className="landing-v2-workflow-body">
           {useChapterTracking ? (
             <aside className="landing-v2-workflow-nav" aria-label="Produktionskapitel">
               <ol className="landing-v2-workflow-nav__list">
@@ -105,9 +103,11 @@ export function LandingV2ScrollStory() {
                 <LandingV2WorkflowStage
                   chapter={station.chapter}
                   label={station.label}
+                  stageLabel={station.stageLabel}
+                  stageStatus={station.stageStatus}
+                  surfaceVariant={SURFACE_VARIANT[station.id] ?? "briefing"}
                   step={index + 1}
                   total={STATIONS.length}
-                  placeholderVariant={STORY_PLACEHOLDER[station.id] ?? "studio"}
                   isActive={index === activeIndex}
                 />
               </article>

@@ -31,7 +31,11 @@ export const LANDING_V2_COPY = {
       },
       queue: {
         title: "Asset Queue",
-        items: ["Campaign Visual", "Motion Draft", "Hook Direction"] as const,
+        items: [
+          { name: "Campaign Visual", status: "Visual draft" },
+          { name: "Motion Draft", status: "Motion draft" },
+          { name: "Hook Direction", status: "Briefing ready" },
+        ] as const,
       },
     },
   },
@@ -46,6 +50,8 @@ export const LANDING_V2_COPY = {
         id: "briefing",
         label: "Briefing",
         chapter: "Briefing",
+        stageLabel: "Campaign Brief",
+        stageStatus: "Briefing ready",
         title: "Starte mit der Kampagnenidee.",
         description:
           "Ziel, Stil, Produkt oder Hook — das Studio macht daraus einen verwertbaren Produktionspfad.",
@@ -54,6 +60,8 @@ export const LANDING_V2_COPY = {
         id: "path",
         label: "Pfad",
         chapter: "Pfad",
+        stageLabel: "Production Path",
+        stageStatus: "Route selected",
         title: "Wähle den richtigen Weg.",
         description:
           "Bild, Video oder Kampagne — strukturiert statt in einer losen Toolliste.",
@@ -62,6 +70,8 @@ export const LANDING_V2_COPY = {
         id: "image",
         label: "Bild",
         chapter: "Bild",
+        stageLabel: "Visual Draft",
+        stageStatus: "In production",
         title: "Erzeuge starke Visuals.",
         description:
           "Motive, Produktbilder und Kampagnenentwürfe passend zum Briefing.",
@@ -70,6 +80,8 @@ export const LANDING_V2_COPY = {
         id: "motion",
         label: "Motion",
         chapter: "Motion",
+        stageLabel: "Motion Draft",
+        stageStatus: "Rendering",
         title: "Bringe Assets in Bewegung.",
         description:
           "Kurze Sequenzen, Motion-Drafts und visuelle Ideen für Social und Kampagnen.",
@@ -78,6 +90,8 @@ export const LANDING_V2_COPY = {
         id: "gallery",
         label: "Galerie",
         chapter: "Galerie",
+        stageLabel: "Asset Library",
+        stageStatus: "Saved asset",
         title: "Behalte Produktionen im Blick.",
         description:
           "Varianten speichern, vergleichen und für die nächste Veröffentlichung wiederverwenden.",

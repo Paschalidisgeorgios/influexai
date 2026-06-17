@@ -17,7 +17,7 @@ export function LandingPreviewPage() {
   return (
     <LandingMotionProvider>
     <div className="landing-v2-root min-h-screen overflow-x-clip">
-      <div className="landing-v2-preview-banner" role="status">
+      <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
         Interne Vorschau — nicht die Live-Landingpage unter /
       </div>
 

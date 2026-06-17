@@ -47,7 +47,7 @@ export function LandingV2Hero() {
           </p>
           <h1
             id="lv2-hero-heading"
-            className="landing-v2-headline landing-v2-hero__headline text-[var(--lv2-text-light)]"
+            className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline text-[var(--lv2-text-light)]"
             data-hero-headline
           >
             {copy.headlineLines[0]}
