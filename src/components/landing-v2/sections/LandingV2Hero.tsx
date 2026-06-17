@@ -42,7 +42,7 @@ export function LandingV2Hero() {
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-hero landing-v2-hero--editorial landing-v2-hero--system relative min-h-[92vh] overflow-x-clip md:min-h-screen"
+      className="landing-v2-hero landing-v2-hero--editorial landing-v2-hero--system relative min-h-screen overflow-x-clip"
       aria-labelledby="lv2-hero-heading"
     >
       <LandingV2HeroAmbient
@@ -53,7 +53,7 @@ export function LandingV2Hero() {
 
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="landing-v2-hero__shell relative z-10 mx-auto w-full max-w-[90rem] px-4 pb-14 pt-[calc(var(--lv2-nav-offset)+1.5rem)] sm:px-5 md:px-8 md:pb-20 lg:pb-24">
+      <div className="landing-v2-hero__shell relative z-[2] mx-auto w-full max-w-[90rem] px-4 pb-10 pt-[var(--lv2-nav-offset)] sm:px-5 md:px-8 md:pb-14 lg:pb-16">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-5xl flex-col justify-center">
           <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />

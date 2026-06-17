@@ -1,6 +1,11 @@
 "use client";
 
+import gsap from "gsap";
 import { useEffect, useState } from "react";
+
+function readScrollY() {
+  return window.scrollY || document.documentElement.scrollTop || 0;
+}
 
 export function useLandingNavState(sectionIds: readonly string[]) {
   const [scrolled, setScrolled] = useState(false);
@@ -8,16 +13,21 @@ export function useLandingNavState(sectionIds: readonly string[]) {
   const [activeId, setActiveId] = useState(sectionIds[0] ?? "");
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 32);
+    const update = () => {
+      const y = readScrollY();
+      setScrolled(y > 40);
       const max = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(max > 0 ? Math.min(1, y / max) : 0);
     };
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    gsap.ticker.add(update);
+
+    return () => {
+      window.removeEventListener("scroll", update);
+      gsap.ticker.remove(update);
+    };
   }, []);
 
   useEffect(() => {

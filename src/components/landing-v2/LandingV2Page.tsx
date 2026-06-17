@@ -24,19 +24,19 @@ function LandingV2Shell() {
 
   const introStateClass = links.enableBrandIntro
     ? introDismissed
-      ? "landing-v2-root--intro-complete"
+      ? "landing-v2-page--intro-complete"
       : chromeVisible
-        ? "landing-v2-root--intro-chrome"
-        : "landing-v2-root--intro-active"
+        ? "landing-v2-page--intro-chrome"
+        : "landing-v2-page--intro-active"
     : "";
 
   const modeClass =
     links.mode === "live" ? "landing-v2-root--live" : "landing-v2-root--preview";
 
+  const pageClass = `landing-v2-page ${modeClass} ${introStateClass}`.trim();
+
   return (
-    <div
-      className={`landing-v2-root min-h-screen overflow-x-clip ${introStateClass} ${modeClass}`.trim()}
-    >
+    <div className={pageClass}>
       {links.landingPreviewBanner ? (
         <div className="landing-v2-preview-banner landing-v2-preview-banner--subtle" role="status">
           {links.landingPreviewBanner}
@@ -44,20 +44,23 @@ function LandingV2Shell() {
       ) : null}
 
       <LandingV2Nav />
-      {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
-      <main>
-        <LandingV2Hero />
-        <LandingV2SystemChapter />
-        <LandingV2ScrollStory />
-        <LandingV2ProductionPaths />
-        <LandingV2StudioPreview />
-        <LandingV2Proof />
-        <LandingV2PricingTeaser />
-        <LandingV2FinalCta />
-      </main>
+      <div className="landing-v2-root min-h-screen">
+        {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
-      <LandingV2Footer />
+        <main className="landing-v2-main overflow-x-clip">
+          <LandingV2Hero />
+          <LandingV2SystemChapter />
+          <LandingV2ScrollStory />
+          <LandingV2ProductionPaths />
+          <LandingV2StudioPreview />
+          <LandingV2Proof />
+          <LandingV2PricingTeaser />
+          <LandingV2FinalCta />
+        </main>
+
+        <LandingV2Footer />
+      </div>
     </div>
   );
 }

@@ -22,8 +22,8 @@ export function useProductionPathsReveal(
     const section = sectionRef.current;
     if (!section || reduceMotion) return;
 
-    const paths = section.querySelectorAll<HTMLElement>(".landing-v2-editorial-path");
-    const grid = section.querySelector(".landing-v2-editorial-paths");
+    const paths = section.querySelectorAll<HTMLElement>(".landing-v2-path-track");
+    const grid = section.querySelector(".landing-v2-path-tracks");
     if (!paths.length || !grid) return;
 
     const ctx = gsap.context(() => {

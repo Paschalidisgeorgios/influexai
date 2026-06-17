@@ -29,52 +29,43 @@ export const LANDING_V2_COPY = {
     paths: {
       number: "03",
       label: "Production Paths",
-      headline: "Drei Wege. Ein Studio.",
-      headlineLines: ["Drei Wege.", "Ein Studio."] as const,
+      headline: "Drei Produktionswege. Ein Studio.",
+      headlineLines: ["Drei Produktionswege.", "Ein Studio."] as const,
       body: "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
     },
     studio: {
       number: "04",
       label: "Studio",
-      headline: "Alle Produktionsflächen in einem System.",
-      headlineLines: ["Alle Produktionsflächen", "in einem System."] as const,
-      body: "Cockpit, Briefing, Tools und Galerie — als zusammenhängende Produktionsbühne.",
+      headline: "Alle Flächen deiner Produktion in einem System.",
+      headlineLines: ["Alle Flächen deiner Produktion", "in einem System."] as const,
+      body: "Cockpit, Briefing, Tools und Galerie — verbunden in einer Produktionskarte.",
     },
     pricing: {
       number: "05",
       label: "Preise",
-      headline: "Wähle den Zugang, der zu deinem Produktionsvolumen passt.",
+      headline: "Zugang nach Produktionsvolumen.",
       body: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
       cta: "Preise ansehen",
     },
   },
   hero: {
-    eyebrow: "AI-Native Creator Operating System",
-    headline: "Das Studio, in dem Kampagnen zu Assets werden.",
-    headlineLines: ["Das Studio,", "in dem Kampagnen", "zu Assets werden."] as const,
+    eyebrow: "AI-NATIVE CREATOR OPERATING SYSTEM",
+    headline: "Das Studio, das Kampagnen in Assets verwandelt.",
+    headlineAlt: "Campaigns become assets here.",
+    headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
     subline:
-      "Briefing, Visuals, Motion und Galerie in einem kontrollierten Produktionsfluss — gebaut für Creator, Brands und Teams, die schneller veröffentlichen wollen, ohne in Tool-Chaos zu arbeiten.",
+      "Briefing, Visuals, Motion und Galerie in einem Produktionssystem — für Creator, Brands und Teams, die schneller veröffentlichen wollen, ohne in Tool-Chaos zu arbeiten.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
-    productPanel: {
-      label: "Studio Cockpit",
-      headline: "Produktionsfluss aktiv",
-      briefing: {
-        title: "Campaign Briefing",
-        text: "Ziel, Hook und Stilrichtung",
-      },
-      paths: {
-        title: "Production Paths",
-        items: ["Bild erstellen", "Video erstellen", "Kampagne planen"] as const,
-      },
-      queue: {
-        title: "Asset Queue",
-        items: [
-          { name: "Campaign Visual", status: "Visual draft" },
-          { name: "Motion Draft", status: "Motion draft" },
-          { name: "Hook Direction", status: "Briefing ready" },
-        ] as const,
-      },
+    systemSurface: {
+      label: "Creator Operating System",
+      signal: "System live",
+      layers: [
+        { id: "system", index: "01", label: "System", hint: "Briefing & Struktur" },
+        { id: "workflow", index: "02", label: "Workflow", hint: "Pfad & Produktion" },
+        { id: "assets", index: "03", label: "Assets", hint: "Visuals & Motion" },
+      ] as const,
+      status: "3 Module aktiv · Asset Queue bereit",
     },
   },
   workflow: {
@@ -139,8 +130,8 @@ export const LANDING_V2_COPY = {
   },
   paths: {
     eyebrow: "Produktionspfade",
-    headline: "Drei Wege. Ein Studio.",
-    headlineLines: ["Drei Wege.", "Ein Studio."] as const,
+    headline: "Drei Produktionswege. Ein Studio.",
+    headlineLines: ["Drei Produktionswege.", "Ein Studio."] as const,
     subline: "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
     items: [
       {
@@ -239,7 +230,7 @@ export const LANDING_V2_COPY = {
   },
   pricing: {
     eyebrow: "Preise",
-    headline: "Wähle den Zugang, der zu deinem Produktionsvolumen passt.",
+    headline: "Zugang nach Produktionsvolumen.",
     subline: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
     cta: "Preise ansehen",
   },
