@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
-import { LANDING_V2_ASSETS } from "@/lib/landing-v2-assets";
+import { LANDING_V2_ASSETS, LANDING_V2_AUDIENCE } from "@/lib/landing-v2-assets";
 import { LandingV2AssetVideo } from "../ui/LandingV2Asset";
 import { useLandingReveal } from "../hooks/useLandingReveal";
 
@@ -47,14 +47,28 @@ export function LandingV2Hero() {
             Plane Hooks, erstelle Bilder und verwandle Ideen in kampagnenfähige Assets — in
             einem Studio statt in zehn einzelnen Tools.
           </p>
+          <ul
+            className="mt-5 flex flex-wrap gap-2"
+            data-lv2-reveal
+            aria-label="Zielgruppen"
+          >
+            {LANDING_V2_AUDIENCE.map((item) => (
+              <li
+                key={item}
+                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/55"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
           <div className="mt-8 flex flex-wrap items-center gap-3" data-lv2-reveal>
             <Link href="/auth/sign-up" className="landing-v2-btn-primary">
               Studio starten
               <ArrowRight size={18} aria-hidden />
             </Link>
-            <a href="#pricing" className="landing-v2-btn-secondary">
+            <Link href="/pricing" className="landing-v2-btn-secondary">
               Preise ansehen
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -63,10 +77,8 @@ export function LandingV2Hero() {
             webm={LANDING_V2_ASSETS.hero.webm}
             mp4={LANDING_V2_ASSETS.hero.mp4}
             poster={LANDING_V2_ASSETS.hero.poster}
-            studioWebm={LANDING_V2_ASSETS.hero.studioWebm}
-            studioMp4={LANDING_V2_ASSETS.hero.studioMp4}
-            studioPoster={LANDING_V2_ASSETS.hero.studioPoster}
-            label="Studio Preview"
+            placeholderLabel={LANDING_V2_ASSETS.hero.placeholderLabel}
+            variant="hero"
           />
         </div>
       </div>

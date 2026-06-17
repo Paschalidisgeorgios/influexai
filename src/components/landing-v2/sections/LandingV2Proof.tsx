@@ -26,33 +26,30 @@ export function LandingV2Proof() {
           className="landing-v2-headline text-[clamp(2rem,4.5vw,3.25rem)] text-[var(--lv2-text-light)]"
           data-lv2-reveal
         >
-          Kampagnenfähige Assets — neutral gezeigt
+          Asset Preview — neutral gezeigt
         </h2>
         <p className="mt-3 max-w-2xl text-white/58" data-lv2-reveal>
-          Beispiel-Outputs aus dem Produktionsworkflow. Keine Testimonials, keine erfundenen
-          Kennzahlen.
+          Beispiel-Outputs aus dem Produktionsworkflow. Keine Testimonials, keine Kennzahlen.
         </p>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           <article className="landing-v2-ivory-stage p-4 md:p-5" data-lv2-reveal>
             <p className="mb-3 text-xs uppercase tracking-[0.1em] text-[var(--lv2-text-muted)]">
-              Beispiel — Visual
+              Campaign Visual
             </p>
             <LandingV2AssetImage slot={LANDING_V2_ASSETS.proofImage} />
           </article>
 
           <article className="landing-v2-ivory-stage p-4 md:p-5" data-lv2-reveal>
             <p className="mb-3 text-xs uppercase tracking-[0.1em] text-[var(--lv2-text-muted)]">
-              Beispiel — Motion
+              Motion Draft
             </p>
             <LandingV2AssetVideo
               webm={LANDING_V2_ASSETS.outputVideo.webm}
               mp4={LANDING_V2_ASSETS.outputVideo.mp4}
               poster={LANDING_V2_ASSETS.outputVideo.poster}
-              studioWebm={LANDING_V2_ASSETS.outputVideo.studioWebm}
-              studioMp4={LANDING_V2_ASSETS.outputVideo.studioMp4}
-              studioPoster={LANDING_V2_ASSETS.outputVideo.studioPoster}
-              label="Motion Output"
+              placeholderLabel={LANDING_V2_ASSETS.outputVideo.placeholderLabel}
+              variant="motion-draft"
             />
           </article>
         </div>

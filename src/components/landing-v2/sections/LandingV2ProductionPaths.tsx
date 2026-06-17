@@ -7,6 +7,7 @@ import {
   PRODUCTION_PATHS,
   resolveToolRoute,
 } from "@/components/dashboard/core/production-tool-routes";
+import { PRODUCTION_PATH_PURPOSE } from "@/lib/landing-v2-assets";
 import { useLandingReveal } from "../hooks/useLandingReveal";
 
 export function LandingV2ProductionPaths() {
@@ -33,12 +34,13 @@ export function LandingV2ProductionPaths() {
           Drei Wege. Ein Studio.
         </h2>
         <p className="mt-3 max-w-2xl text-white/58" data-lv2-reveal>
-          Wähle den Produktionspfad — das Studio führt dich durch Bild, Motion und Kampagne.
+          Keine Tool-Liste — klare Produktionswege für Bild, Motion und Kampagne.
         </p>
 
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {PRODUCTION_PATHS.map((path) => {
-            const href = resolveToolRoute(path.primaryToolId) ?? "/dashboard/tools";
+            const href = resolveToolRoute(path.primaryToolId) ?? "/auth/sign-up";
+            const purpose = PRODUCTION_PATH_PURPOSE[path.id] ?? path.description;
             return (
               <Link
                 key={path.id}
@@ -51,20 +53,20 @@ export function LandingV2ProductionPaths() {
                 </p>
                 <h3 className="landing-v2-headline mt-2 text-2xl">{path.label}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--lv2-text-muted)]">
-                  {path.description}
+                  {purpose}
                 </p>
                 <ul className="mt-4 space-y-1 text-sm text-[var(--lv2-text-dark)]/80">
                   {path.options.map((opt) => (
                     <li key={opt.id} className="flex items-center gap-2">
                       <span
-                        className="h-1 w-1 rounded-full bg-[var(--lv2-lime)]"
+                        className="h-1 w-1 shrink-0 rounded-full bg-[var(--lv2-lime)]"
                         aria-hidden
                       />
                       {opt.label}
                     </li>
                   ))}
                 </ul>
-                <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-[var(--lv2-text-dark)] group-hover:gap-2 transition-all">
+                <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-[var(--lv2-text-dark)] transition-all group-hover:gap-2">
                   Pfad öffnen
                   <ArrowRight size={16} aria-hidden />
                 </span>

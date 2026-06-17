@@ -11,13 +11,12 @@ import { LandingV2Proof } from "./sections/LandingV2Proof";
 import { LandingV2PricingTeaser } from "./sections/LandingV2PricingTeaser";
 import { LandingV2FinalCta } from "./sections/LandingV2FinalCta";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
-import { useLandingLenis } from "./hooks/useLandingLenis";
+import { LandingMotionProvider } from "./LandingMotionProvider";
 
 export function LandingPreviewPage() {
-  useLandingLenis(true);
-
   return (
-    <div className="landing-v2-root min-h-screen">
+    <LandingMotionProvider>
+    <div className="landing-v2-root min-h-screen overflow-x-clip">
       <div className="landing-v2-preview-banner" role="status">
         Interne Vorschau — nicht die Live-Landingpage unter /
       </div>
@@ -36,5 +35,6 @@ export function LandingPreviewPage() {
 
       <LandingV2Footer />
     </div>
+    </LandingMotionProvider>
   );
 }

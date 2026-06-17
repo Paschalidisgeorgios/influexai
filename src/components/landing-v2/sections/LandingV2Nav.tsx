@@ -20,9 +20,9 @@ export function LandingV2Nav() {
           <a href="#studio" className="transition-colors hover:text-white">
             Studio
           </a>
-          <a href="#pricing" className="transition-colors hover:text-white">
+          <Link href="/pricing" className="transition-colors hover:text-white">
             Preise
-          </a>
+          </Link>
         </nav>
         <Link href="/auth/sign-up" className="landing-v2-btn-primary !px-4 !py-2 text-sm">
           Studio starten

@@ -19,8 +19,7 @@ export function LandingV2FinalCta() {
           Starte dein Creator Studio.
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-[var(--lv2-text-muted)]">
-          Briefing, Bild, Video und Galerie in einem Workflow — bereit für deine nächste
-          Kampagne.
+          Produziere schneller, klarer und kontrollierter — ohne Tool-Chaos.
         </p>
         <Link href="/auth/sign-up" className="landing-v2-btn-primary mt-8">
           Studio starten

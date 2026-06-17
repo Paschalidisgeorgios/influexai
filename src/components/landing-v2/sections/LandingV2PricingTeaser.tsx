@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { useLocale } from "next-intl";
 import { ArrowRight } from "lucide-react";
-import { getStarterPriceParams } from "@/lib/pricing";
 import { useLandingReveal } from "../hooks/useLandingReveal";
 
 export function LandingV2PricingTeaser() {
   const sectionRef = useRef<HTMLElement>(null);
-  const locale = useLocale();
-  const { price } = getStarterPriceParams(locale);
   useLandingReveal(sectionRef);
 
   return (
@@ -33,12 +29,11 @@ export function LandingV2PricingTeaser() {
           Pläne für regelmäßige Produktion
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-white/58" data-lv2-reveal>
-          Transparente Abos und Credit-Pakete — Starter ab {price} pro Monat. Alle Pläne und
-          Details auf der Preisseite.
+          Wähle den Plan, der zu deinem Produktionsvolumen passt.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-lv2-reveal>
           <Link href="/pricing" className="landing-v2-btn-primary">
-            Alle Preise ansehen
+            Preise ansehen
             <ArrowRight size={18} aria-hidden />
           </Link>
           <Link href="/auth/sign-up" className="landing-v2-btn-secondary">

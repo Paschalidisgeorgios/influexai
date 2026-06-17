@@ -1,62 +1,68 @@
-/** Asset paths for landing-v2 preview — primary targets + optional studio fallbacks for video only */
+/** Landing-v2 preview — copy, assets, scroll-story config */
 
 export type LandingV2AssetSlot = {
   id: string;
   label: string;
+  placeholderLabel: string;
   kind: "image" | "video";
   primary: string;
-  /** Used only when primary 404s — still a real file, not a fake claim */
-  studioFallback?: string;
   poster?: string;
-  studioPosterFallback?: string;
 };
+
+export const LANDING_V2_AUDIENCE = [
+  "Creator",
+  "Brands",
+  "E-Commerce",
+  "Lokale Unternehmen",
+] as const;
 
 export const LANDING_V2_ASSETS = {
   hero: {
     webm: "/videos/landing/hero-loop.webm",
     mp4: "/videos/landing/hero-loop.mp4",
     poster: "/images/landing/hero-poster.webp",
-    studioWebm: "/videos/studio/studio-loop.webm",
-    studioMp4: "/videos/studio/studio-loop.mp4",
-    studioPoster: "/videos/studio/studio-poster.webp",
+    placeholderLabel: "Studio Preview",
   },
   outputVideo: {
     webm: "/videos/landing/output-video-loop-01.webm",
     mp4: "/videos/landing/output-video-loop-01.mp4",
     poster: "/images/landing/output-video-poster-01.webp",
-    studioWebm: "/videos/studio/studio-loop.webm",
-    studioMp4: "/videos/studio/studio-loop.mp4",
-    studioPoster: "/videos/studio/studio-poster.webp",
+    placeholderLabel: "Motion Draft",
   },
   products: [
     {
       id: "studio",
       label: "Studio Cockpit",
+      placeholderLabel: "Studio Cockpit",
       kind: "image" as const,
       primary: "/images/landing/product-studio.webp",
     },
     {
       id: "tools",
       label: "Tools Hub",
+      placeholderLabel: "Tools Hub",
       kind: "image" as const,
       primary: "/images/landing/product-tools.webp",
     },
     {
       id: "agent",
       label: "Agent Briefing",
+      placeholderLabel: "Agent Briefing",
       kind: "image" as const,
       primary: "/images/landing/product-agent.webp",
     },
     {
       id: "gallery",
       label: "Galerie",
+      placeholderLabel: "Galerie",
       kind: "image" as const,
       primary: "/images/landing/product-gallery.webp",
     },
   ] satisfies LandingV2AssetSlot[],
   proofImage: {
     id: "output-image",
-    label: "Beispiel-Visual",
+    label: "Campaign Visual",
+    placeholderLabel: "Campaign Visual",
     kind: "image" as const,
     primary: "/images/landing/output-image-01.webp",
   } satisfies LandingV2AssetSlot,
@@ -68,7 +74,7 @@ export const SCROLL_STORY_STATIONS = [
     label: "Briefing",
     title: "Hook und Richtung festlegen",
     description:
-      "Starte mit einer klaren Idee — der Agent strukturiert Briefing, Hook und nächsten Produktionsschritt.",
+      "Starte mit einer klaren Idee — Briefing, Hook und nächster Schritt in einer Fläche.",
   },
   {
     id: "path",
@@ -99,3 +105,12 @@ export const SCROLL_STORY_STATIONS = [
       "Alle Outputs an einem Ort — wiederverwendbar für die nächste Kampagne.",
   },
 ] as const;
+
+export const PRODUCTION_PATH_PURPOSE: Record<string, string> = {
+  image:
+    "Für Produktbilder, Kampagnenmotive und Social Visuals — ohne Tool-Wechsel.",
+  video:
+    "Für Motion-Clips aus Bildern oder Szenen — ein klarer Video-Produktionsweg.",
+  campaign:
+    "Für Hooks, Inhalte und Rhythmus — Kampagne strukturieren statt lose planen.",
+};

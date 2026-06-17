@@ -80,31 +80,89 @@
   color: var(--lv2-text-dark);
 }
 
-.landing-v2-asset-fallback {
+/* Abstract product placeholders — no fake metrics or logos */
+.landing-v2-placeholder {
+  position: relative;
   display: flex;
-  min-height: 12rem;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: flex-end;
+  overflow: hidden;
   border-radius: 20px;
-  border: 1px dashed rgba(8, 8, 8, 0.14);
-  background: rgba(255, 255, 255, 0.42);
-  padding: 1.5rem;
-  text-align: center;
+  border: 1px solid rgba(8, 8, 8, 0.08);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(245, 239, 227, 0.55) 55%,
+    rgba(235, 226, 210, 0.45) 100%
+  );
+  padding: 1rem;
+  min-height: 12rem;
 }
 
-.landing-v2-asset-fallback__label {
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
+.landing-v2-placeholder__chrome {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.landing-v2-placeholder__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(8, 8, 8, 0.12);
+}
+
+.landing-v2-placeholder__dot--lime {
+  background: var(--lv2-lime);
+  box-shadow: 0 0 10px var(--lv2-lime-soft);
+}
+
+.landing-v2-placeholder__line {
+  height: 6px;
+  width: 3rem;
+  border-radius: 999px;
+  background: rgba(8, 8, 8, 0.08);
+}
+
+.landing-v2-placeholder__line--wide {
+  width: 5rem;
+}
+
+.landing-v2-placeholder__stage {
+  position: absolute;
+  inset: 2.75rem 1rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 0.38fr;
+  grid-template-rows: 1fr auto;
+  gap: 0.5rem;
+}
+
+.landing-v2-placeholder__block {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(8, 8, 8, 0.06);
+}
+
+.landing-v2-placeholder__block--main {
+  grid-row: span 2;
+}
+
+.landing-v2-placeholder__block--row {
+  grid-column: span 2;
+  height: 2.5rem;
+}
+
+.landing-v2-placeholder__label {
+  position: relative;
+  z-index: 1;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--lv2-text-muted);
-}
-
-.landing-v2-asset-fallback__title {
-  font-family: var(--font-fraunces), Fraunces, serif;
-  font-size: 1rem;
-  color: var(--lv2-text-dark);
 }
 
 .landing-v2-btn-primary {

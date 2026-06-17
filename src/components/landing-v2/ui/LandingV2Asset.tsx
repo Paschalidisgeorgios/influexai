@@ -2,6 +2,24 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { LandingV2AssetSlot } from "@/lib/landing-v2-assets";
+import { LandingV2Placeholder, type LandingV2PlaceholderVariant } from "./LandingV2Placeholder";
+
+const SLOT_VARIANT: Record<string, LandingV2PlaceholderVariant> = {
+  studio: "studio",
+  tools: "tools",
+  agent: "agent",
+  gallery: "gallery",
+  "output-image": "campaign-visual",
+};
+
+async function assetExists(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
 type LandingV2AssetImageProps = {
   slot: LandingV2AssetSlot;
@@ -14,48 +32,64 @@ export function LandingV2AssetImage({
   className = "",
   aspectClassName = "aspect-[16/10]",
 }: LandingV2AssetImageProps) {
-  const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading");
+  const [ready, setReady] = useState(false);
+  const [exists, setExists] = useState<boolean | null>(null);
 
-  const showFallback = useCallback(() => setStatus("fallback"), []);
+  const variant = SLOT_VARIANT[slot.id] ?? "campaign-visual";
 
   useEffect(() => {
-    setStatus("loading");
-    const img = new Image();
-    img.onload = () => setStatus("ready");
-    img.onerror = showFallback;
-    img.src = slot.primary;
+    let cancelled = false;
+    setExists(null);
+    setReady(false);
+    void assetExists(slot.primary).then((ok) => {
+      if (!cancelled) setExists(ok);
+    });
     return () => {
-      img.onload = null;
-      img.onerror = null;
+      cancelled = true;
     };
-  }, [slot.primary, showFallback]);
+  }, [slot.primary]);
 
-  if (status === "fallback") {
+  if (exists === false) {
     return (
-      <div className={`landing-v2-asset-fallback ${aspectClassName} ${className}`}>
-        <span className="landing-v2-asset-fallback__label">Asset folgt</span>
-        <span className="landing-v2-asset-fallback__title">{slot.label}</span>
-        <p className="mt-1 max-w-xs text-sm text-[var(--lv2-text-muted)]">
-          Platzhalter — Produktfläche wird aus dem Studio exportiert.
-        </p>
-      </div>
+      <LandingV2Placeholder
+        variant={variant}
+        label={slot.placeholderLabel}
+        className={className}
+        aspectClassName={aspectClassName}
+      />
+    );
+  }
+
+  if (exists !== true) {
+    return (
+      <LandingV2Placeholder
+        variant={variant}
+        label={slot.placeholderLabel}
+        className={`opacity-70 ${className}`}
+        aspectClassName={aspectClassName}
+      />
     );
   }
 
   return (
     <div className={`relative overflow-hidden ${aspectClassName} ${className}`}>
-      {status === "loading" ? (
-        <div className="absolute inset-0 animate-pulse bg-white/20" aria-hidden />
+      {!ready ? (
+        <LandingV2Placeholder
+          variant={variant}
+          label={slot.placeholderLabel}
+          aspectClassName="absolute inset-0 h-full w-full"
+          className="opacity-70"
+        />
       ) : null}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={slot.primary}
-        alt={slot.label}
+        alt=""
         className={`h-full w-full object-cover transition-opacity duration-300 ${
-          status === "ready" ? "opacity-100" : "opacity-0"
+          ready ? "opacity-100" : "opacity-0"
         }`}
-        onLoad={() => setStatus("ready")}
-        onError={showFallback}
+        onLoad={() => setReady(true)}
+        onError={() => setExists(false)}
       />
     </div>
   );
@@ -65,10 +99,8 @@ type LandingV2AssetVideoProps = {
   webm: string;
   mp4: string;
   poster: string;
-  studioWebm?: string;
-  studioMp4?: string;
-  studioPoster?: string;
-  label: string;
+  placeholderLabel: string;
+  variant?: LandingV2PlaceholderVariant;
   className?: string;
 };
 
@@ -76,48 +108,48 @@ export function LandingV2AssetVideo({
   webm,
   mp4,
   poster,
-  studioWebm,
-  studioMp4,
-  studioPoster,
-  label,
+  placeholderLabel,
+  variant = "hero",
   className = "",
 }: LandingV2AssetVideoProps) {
-  const [mode, setMode] = useState<"primary" | "studio" | "fallback">("primary");
+  const [exists, setExists] = useState<boolean | null>(null);
 
-  const sources =
-    mode === "primary"
-      ? { webm, mp4, poster }
-      : mode === "studio" && studioWebm && studioMp4
-        ? { webm: studioWebm, mp4: studioMp4, poster: studioPoster ?? poster }
-        : null;
+  useEffect(() => {
+    let cancelled = false;
+    setExists(null);
+    void assetExists(mp4).then((ok) => {
+      if (!cancelled) setExists(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mp4]);
 
-  if (!sources) {
+  if (exists !== true) {
     return (
-      <div className={`landing-v2-asset-fallback aspect-[16/9] ${className}`}>
-        <span className="landing-v2-asset-fallback__label">Asset folgt</span>
-        <span className="landing-v2-asset-fallback__title">{label}</span>
-      </div>
+      <LandingV2Placeholder
+        variant={variant}
+        label={placeholderLabel}
+        aspectClassName="aspect-[16/9]"
+        className={className}
+      />
     );
   }
 
   return (
     <div className={`relative overflow-hidden rounded-[20px] ${className}`}>
       <video
-        key={`${mode}-${sources.mp4}`}
         className="aspect-[16/9] w-full object-cover"
         autoPlay
         muted
         loop
         playsInline
         preload="metadata"
-        poster={sources.poster}
-        onError={() => {
-          if (mode === "primary" && studioMp4) setMode("studio");
-          else setMode("fallback");
-        }}
+        poster={poster}
+        onError={() => setExists(false)}
       >
-        <source src={sources.webm} type="video/webm" />
-        <source src={sources.mp4} type="video/mp4" />
+        <source src={webm} type="video/webm" />
+        <source src={mp4} type="video/mp4" />
       </video>
     </div>
   );
