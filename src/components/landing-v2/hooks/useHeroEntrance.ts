@@ -79,8 +79,16 @@ export function useHeroEntrance(
       if (flow) {
         tl.fromTo(
           flow,
-          { opacity: 0, y: 32 },
-          { opacity: 1, y: 0, duration: 0.85, ease: "power2.out" },
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.85,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(flow, { clearProps: "transform" });
+            },
+          },
           0.72
         );
       }

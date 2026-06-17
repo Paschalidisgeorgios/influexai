@@ -51,6 +51,8 @@ function applyBlend(
     gsap.set(primaryVideo, {
       scale: blend.primaryScale,
       yPercent: blend.primaryY,
+      transformOrigin: "center center",
+      force3D: true,
     });
   }
 
@@ -58,6 +60,8 @@ function applyBlend(
     gsap.set(secondaryVideo, {
       scale: blend.secondaryScale,
       yPercent: blend.secondaryY,
+      transformOrigin: "center center",
+      force3D: true,
     });
   }
 }
@@ -119,7 +123,7 @@ export function useMediaStageScroll({
               scrim: hook.scrimStart + p * hook.scrimDelta,
               primaryScale: hook.scaleStart - p * hook.scaleDelta,
               primaryY: p * hook.yDelta,
-              secondaryScale: 1.06,
+              secondaryScale: 1.03,
               secondaryY: 0,
             },
             primaryVideo,

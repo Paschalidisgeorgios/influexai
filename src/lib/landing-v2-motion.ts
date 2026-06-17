@@ -96,15 +96,15 @@ export const HERO_PARALLAX = {
   ambient: { yPercent: 10, scale: 1.05 },
 } as const;
 
-/** Preview hero — video stage parallax */
+/** Preview hero — video stage parallax (subtle — no zoom-out effect) */
 export const HERO_VIDEO_STAGE = {
   opacityStart: 0.52,
   opacityEnd: 0.38,
-  scrollY: 48,
-  scrollScale: 0.98,
-  videoScaleFrom: 1.08,
-  videoScaleTo: 1.02,
-  videoYPercent: 3,
+  scrollY: 24,
+  scrollScale: 1,
+  videoScaleFrom: 1.05,
+  videoScaleTo: 1,
+  videoYPercent: 2,
 } as const;
 
 /** Editorial chapter video — enter / peak / exit on scroll */
@@ -115,12 +115,12 @@ export const EDITORIAL_VIDEO_SCROLL = {
   video: { scaleFrom: 1.06, scaleTo: 1 },
 } as const;
 
-/** Preview hero — stronger visible parallax */
+/** Preview hero — subtle parallax only */
 export const HERO_PARALLAX_PREVIEW = {
-  scroll: { y: -24, scale: 0.99, z: 24 },
-  mouse: { rotateY: 3, rotateX: 1.5 },
-  video: { scaleFrom: 1.06, scaleTo: 1.02, yPercent: 4 },
-  ambient: { yPercent: 6, scale: 1.02 },
+  scroll: { y: -18, scale: 1, z: 0 },
+  mouse: { rotateY: 2, rotateX: 1 },
+  video: { scaleFrom: 1.05, scaleTo: 1, yPercent: 2 },
+  ambient: { yPercent: 4, scale: 1.02 },
 } as const;
 
 /** Section reveal presets */
@@ -179,52 +179,52 @@ export const MEDIA_STAGE_SCROLL = {
     heroOpacity: 1,
     heroFade: 0.55,
     systemRise: 0.42,
-    scrimStart: 0.38,
-    scrimDelta: 0.22,
-    scaleStart: 1.1,
-    scaleDelta: 0.08,
-    yDelta: 5,
+    scrimStart: 0.32,
+    scrimDelta: 0.18,
+    scaleStart: 1.05,
+    scaleDelta: 0.04,
+    yDelta: 3,
   },
   blends: {
     hero: {
       layers: { hero: 1, system: 0, workflow: 0, studio: 0, outputs: 0 },
-      scrim: 0.4,
-      primaryScale: 1.1,
+      scrim: 0.32,
+      primaryScale: 1.05,
       primaryY: 0,
-      secondaryScale: 1.06,
+      secondaryScale: 1.03,
       secondaryY: 0,
     },
     system: {
       layers: { hero: 0.35, system: 0.85, workflow: 0.12, studio: 0, outputs: 0 },
-      scrim: 0.58,
-      primaryScale: 1.04,
-      primaryY: 3,
-      secondaryScale: 1.04,
+      scrim: 0.48,
+      primaryScale: 1.03,
+      primaryY: 2,
+      secondaryScale: 1.03,
       secondaryY: 0,
     },
     workflow: {
       layers: { hero: 0.12, system: 0.25, workflow: 0.92, studio: 0.08, outputs: 0 },
-      scrim: 0.62,
+      scrim: 0.52,
       primaryScale: 1.02,
-      primaryY: 4,
-      secondaryScale: 1.08,
-      secondaryY: 2,
+      primaryY: 3,
+      secondaryScale: 1.04,
+      secondaryY: 1,
     },
     studio: {
       layers: { hero: 0.08, system: 0.15, workflow: 0.28, studio: 0.88, outputs: 0.1 },
-      scrim: 0.68,
+      scrim: 0.58,
       primaryScale: 1,
-      primaryY: 5,
-      secondaryScale: 1.05,
-      secondaryY: 3,
+      primaryY: 4,
+      secondaryScale: 1.03,
+      secondaryY: 2,
     },
     outputs: {
       layers: { hero: 0.05, system: 0.1, workflow: 0.22, studio: 0.35, outputs: 0.9 },
-      scrim: 0.72,
+      scrim: 0.62,
       primaryScale: 1,
-      primaryY: 6,
-      secondaryScale: 1.06,
-      secondaryY: 4,
+      primaryY: 5,
+      secondaryScale: 1.04,
+      secondaryY: 3,
     },
   } satisfies Record<string, MediaStageBlend>,
 } as const;

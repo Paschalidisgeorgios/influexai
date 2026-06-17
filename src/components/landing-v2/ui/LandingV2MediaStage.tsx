@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { LANDING_V2_MEDIA_STAGE } from "@/lib/landing-v2-media-stage";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useReducedMotion } from "../hooks/useReducedMotion";
@@ -9,14 +9,12 @@ import { useMediaStageScroll } from "../hooks/useMediaStageScroll";
 
 const assets = LANDING_V2_MEDIA_STAGE;
 
-/** Fixed cinematic backdrop — one stage, scroll-driven state blends (preview only) */
+/** Fixed cinematic backdrop — background only, no content transforms (preview only) */
 export function LandingV2MediaStage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
   const primaryVideoRef = useRef<HTMLVideoElement>(null);
   const secondaryVideoRef = useRef<HTMLVideoElement>(null);
-  const editorialVideoRef = useRef<HTMLVideoElement>(null);
-  const [editorialFailed, setEditorialFailed] = useState(false);
 
   const { isMobile, enableCinematicScroll } = useLandingViewport();
   const reduceMotion = useReducedMotion();
@@ -36,16 +34,6 @@ export function LandingV2MediaStage() {
     enabled: motionEnabled,
   });
 
-  useEffect(() => {
-    if (!showVideo) return;
-    const editorial = editorialVideoRef.current;
-    if (!editorial) return;
-
-    const onError = () => setEditorialFailed(true);
-    editorial.addEventListener("error", onError);
-    return () => editorial.removeEventListener("error", onError);
-  }, [showVideo]);
-
   if (!isPreview) return null;
 
   if (!showVideo) {
@@ -61,33 +49,15 @@ export function LandingV2MediaStage() {
     );
   }
 
-  const heroUsesEditorial = !editorialFailed;
-
   return (
     <div ref={stageRef} className="landing-v2-media-stage" aria-hidden>
       <div
         className="landing-v2-media-stage__layer landing-v2-media-stage__layer--hero"
         data-media-layer="hero"
       >
-        {heroUsesEditorial ? (
-          <video
-            ref={editorialVideoRef}
-            className="landing-v2-media-stage__video landing-v2-media-stage__video--editorial"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster={assets.editorial.poster}
-          >
-            <source src={assets.editorial.mp4} type="video/mp4" />
-          </video>
-        ) : null}
         <video
           ref={primaryVideoRef}
-          className={`landing-v2-media-stage__video landing-v2-media-stage__video--primary ${
-            heroUsesEditorial ? "landing-v2-media-stage__video--underlay" : ""
-          }`.trim()}
+          className="landing-v2-media-stage__video landing-v2-media-stage__video--primary"
           autoPlay
           muted
           loop
@@ -104,9 +74,7 @@ export function LandingV2MediaStage() {
         className="landing-v2-media-stage__layer landing-v2-media-stage__layer--system"
         data-media-layer="system"
       >
-        <div
-          className="landing-v2-media-stage__gradient landing-v2-media-stage__gradient--system"
-        />
+        <div className="landing-v2-media-stage__gradient landing-v2-media-stage__gradient--system" />
       </div>
 
       <div

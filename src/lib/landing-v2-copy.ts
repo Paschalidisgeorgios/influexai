@@ -50,12 +50,12 @@ export const LANDING_V2_COPY = {
     },
   },
   hero: {
-    eyebrow: "AI-NATIVE CREATOR OPERATING SYSTEM",
+    workflowLine: "Briefing → Visual → Motion → Galerie",
     headline: "Das Studio, das Kampagnen in Assets verwandelt.",
     headlineAlt: "Campaigns become assets here.",
     headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
     subline:
-      "Briefing, Visuals, Motion und Galerie in einem Produktionssystem — für Creator, Brands und Teams, die schneller veröffentlichen wollen, ohne in Tool-Chaos zu arbeiten.",
+      "Briefing, Visuals und Motion in einem klaren Produktionsfluss. Von der ersten Idee bis zur gespeicherten Variante — ohne Tool-Chaos. Für Creator, Marken und Teams, die schneller veröffentlichen wollen.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
   },

@@ -41,11 +41,13 @@ export function LandingV2Hero() {
         <div className="landing-v2-hero__readability-scrim" aria-hidden />
       )}
 
-      <div className="landing-v2-hero__content landing-v2-hero__shell--offset relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:px-8 md:pb-12 lg:pb-14">
+      <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-12 lg:pb-14">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
-          <p className="landing-v2-kicker landing-v2-kicker--editorial mb-4 md:mb-5" data-hero-eyebrow>
-            <span className="landing-v2-kicker__dot" aria-hidden />
-            {copy.eyebrow}
+          <p
+            className="landing-v2-kicker landing-v2-kicker--workflow landing-v2-hero__workflow-line mb-3 md:mb-4"
+            data-hero-eyebrow
+          >
+            {copy.workflowLine}
           </p>
           <h1
             id="lv2-hero-heading"
@@ -59,7 +61,7 @@ export function LandingV2Hero() {
             {copy.headlineLines[2]}
           </h1>
           <p
-            className="landing-v2-hero__subline mt-5 max-w-xl md:mt-6"
+            className="landing-v2-hero__subline mt-4 max-w-[42ch] md:mt-5"
             data-hero-subline
           >
             {copy.subline}

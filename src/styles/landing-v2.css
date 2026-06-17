@@ -3812,12 +3812,12 @@
   overflow: hidden;
   pointer-events: none;
   background: var(--lv2-shell);
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 .landing-v2-media-stage--poster {
   background-size: cover;
-  background-position: center 42%;
+  background-position: 68% 32%;
   background-color: var(--lv2-shell);
 }
 
@@ -3838,10 +3838,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: 68% 32%;
+  transform: scale(1.05);
   transform-origin: center center;
-  filter: saturate(0.9) contrast(1.04);
+  filter: saturate(0.88) contrast(1.02);
   will-change: transform;
+}
+
+.landing-v2-media-stage__video--primary {
+  opacity: 0.52;
 }
 
 .landing-v2-media-stage__video--underlay {
@@ -3850,11 +3855,15 @@
 
 .landing-v2-media-stage__video--editorial {
   z-index: 1;
+  opacity: 0.48;
+  object-position: 72% 28%;
 }
 
 .landing-v2-media-stage__video--secondary,
 .landing-v2-media-stage__video--outputs {
-  opacity: 0.88;
+  opacity: 0.72;
+  object-position: center 38%;
+  transform: scale(1.03);
 }
 
 .landing-v2-media-stage__layer--studio,
@@ -3876,11 +3885,11 @@
   position: absolute;
   inset: 0;
   z-index: 4;
-  opacity: 0.4;
+  opacity: 0.32;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 5, 6, 0.52) 0%, rgba(5, 5, 6, 0.18) 38%, rgba(5, 5, 6, 0.35) 100%),
-    linear-gradient(90deg, rgba(5, 5, 6, 0.78) 0%, rgba(5, 5, 6, 0.28) 48%, rgba(5, 5, 6, 0.42) 100%);
+    linear-gradient(180deg, rgba(5, 5, 6, 0.42) 0%, rgba(5, 5, 6, 0.12) 38%, rgba(5, 5, 6, 0.28) 100%),
+    linear-gradient(90deg, rgba(5, 5, 6, 0.68) 0%, rgba(5, 5, 6, 0.22) 52%, rgba(5, 5, 6, 0.32) 100%);
 }
 
 .landing-v2-media-stage__vignette {
@@ -3889,14 +3898,21 @@
   z-index: 5;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 85% 70% at 50% 45%,
-    transparent 35%,
-    rgba(5, 5, 6, 0.45) 100%
+    ellipse 78% 62% at 62% 38%,
+    transparent 42%,
+    rgba(5, 5, 6, 0.38) 100%
   );
+}
+
+.landing-v2-root--preview .landing-v2-main {
+  position: relative;
+  z-index: 1;
 }
 
 .landing-v2-root--preview .landing-v2-hero--media-stage {
   background: transparent;
+  position: relative;
+  z-index: 2;
 }
 
 .landing-v2-hero__readability-scrim {
@@ -3905,8 +3921,54 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 5, 6, 0.35) 0%, rgba(5, 5, 6, 0.12) 42%, rgba(5, 5, 6, 0.55) 100%),
-    linear-gradient(90deg, rgba(5, 5, 6, 0.72) 0%, rgba(5, 5, 6, 0.22) 55%, rgba(5, 5, 6, 0.38) 100%);
+    linear-gradient(180deg, rgba(5, 5, 6, 0.28) 0%, rgba(5, 5, 6, 0.08) 42%, rgba(5, 5, 6, 0.38) 100%),
+    linear-gradient(90deg, rgba(5, 5, 6, 0.62) 0%, rgba(5, 5, 6, 0.16) 52%, rgba(5, 5, 6, 0.24) 100%);
+}
+
+.landing-v2-hero__content--preview-stage {
+  isolation: isolate;
+  transform: none;
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-hero-display {
+  font-size: clamp(3.4rem, 5.8vw, 5.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  max-width: 13ch;
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-hero__subline {
+  font-size: clamp(1.0625rem, 1.25vw, 1.375rem);
+  line-height: 1.5;
+  max-width: 42ch;
+  color: rgba(245, 242, 234, 0.82);
+}
+
+.landing-v2-kicker--workflow {
+  letter-spacing: 0.12em;
+  color: rgba(180, 255, 0, 0.88);
+  font-size: clamp(0.6875rem, 1.1vw, 0.8125rem);
+  font-weight: 600;
+}
+
+.landing-v2-hero__workflow-line {
+  max-width: 100%;
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-hero__creator-flow {
+  max-width: min(100%, 42rem);
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-creator-flow--hero {
+  margin-top: 0;
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-creator-flow--hero .landing-v2-creator-flow__headline {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+}
+
+.landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-creator-flow--hero .landing-v2-creator-flow__subline {
+  font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
 }
 
 .landing-v2-root--preview .landing-v2-section--media-stage {
@@ -3948,5 +4010,22 @@
 
   .landing-v2-root--preview .landing-v2-section--media-stage {
     background: rgba(5, 5, 6, 0.94);
+  }
+
+  .landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-hero-display {
+    font-size: clamp(2.25rem, 10.5vw, 2.875rem);
+    line-height: 0.96;
+    max-width: 100%;
+  }
+
+  .landing-v2-root--preview .landing-v2-hero--media-stage .landing-v2-hero__subline {
+    font-size: 1rem;
+    line-height: 1.48;
+    max-width: 100%;
+  }
+
+  .landing-v2-hero__content--preview-stage {
+    gap: 1.25rem;
+    padding-bottom: 1.5rem;
   }
 }
