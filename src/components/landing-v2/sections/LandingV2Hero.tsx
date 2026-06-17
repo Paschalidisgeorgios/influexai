@@ -5,7 +5,7 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
-import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
+import { LandingV2HeroUpscaleCompare } from "../ui/LandingV2HeroUpscaleCompare";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
@@ -123,10 +123,7 @@ export function LandingV2Hero() {
 
         {isPreview ? (
           <div data-hero-flow>
-            <LandingV2CreatorProductionFlow
-              variant="hero"
-              className="landing-v2-hero__creator-flow"
-            />
+            <LandingV2HeroUpscaleCompare className="landing-v2-hero__upscale-compare" />
           </div>
         ) : null}
       </div>
