@@ -53,9 +53,13 @@ function HeroStudioAmbient() {
   );
 }
 
-export function LandingV2HeroProductPanel() {
+export function LandingV2HeroProductPanel({ variant = "default" }: { variant?: "default" | "stage" }) {
   return (
-    <div className="landing-v2-hero-product">
+    <div
+      className={`landing-v2-hero-product ${
+        variant === "stage" ? "landing-v2-hero-product--stage" : ""
+      }`}
+    >
       <HeroStudioAmbient />
       <div className="landing-v2-hero-product__scrim" aria-hidden />
       <div className="landing-v2-hero-product__content">

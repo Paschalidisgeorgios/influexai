@@ -1,4 +1,4 @@
-/** Landing-v2 preview — marketing copy (DE) */
+/** Landing-v2 preview — editorial marketing copy (DE) */
 
 export const LANDING_V2_COPY = {
   nav: {
@@ -10,10 +10,11 @@ export const LANDING_V2_COPY = {
   },
   hero: {
     eyebrow: "Creator Production System",
-    headline: "Ein Studio für Kampagnen, Visuals und Motion.",
-    headlineLines: ["Ein Studio für", "Kampagnen, Visuals und Motion."] as const,
+    headline: "Ein Studio. Vom Briefing bis zum Asset.",
+    headlineLines: ["Ein Studio.", "Vom Briefing", "bis zum Asset."] as const,
+    headlineAlt: "Kampagnen, Visuals und Motion — in einem Studio.",
     subline:
-      "Plane Hooks, erstelle Visuals und verwandle Ideen in Bilder, Videos und Kampagnen-Assets — ohne zwischen zehn einzelnen Tools zu springen.",
+      "Plane Hooks, erstelle Visuals und bringe Kampagnen in Bewegung — ohne Tool-Chaos, Modellnamen oder verstreute Workflows.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
     chips: ["Creator", "Brands", "E-Commerce", "Lokale Unternehmen"] as const,
@@ -36,161 +37,156 @@ export const LANDING_V2_COPY = {
   },
   workflow: {
     eyebrow: "Workflow",
-    headline: "Vom Briefing zum fertigen Asset.",
-    headlineLines: ["Vom Briefing zum", "fertigen Asset."] as const,
+    headline: "Vom Briefing zum Asset.",
+    headlineLines: ["Vom Briefing", "zum Asset."] as const,
     subline:
-      "Jede Produktion beginnt mit einer klaren Idee. InfluexAI führt dich vom ersten Kampagnen-Briefing bis zum speicherbaren Visual — strukturiert, nachvollziehbar und bereit für die nächste Veröffentlichung.",
+      "Fünf Stationen — von der ersten Idee bis zur gespeicherten Produktion. Klar geführt, ruhig erzählt.",
     stations: [
       {
         id: "briefing",
         label: "Briefing",
+        chapter: "Briefing",
         title: "Starte mit der Kampagnenidee.",
         description:
-          "Beschreibe Ziel, Stil, Produkt, Zielgruppe oder Hook. Das Studio hilft dir, daraus einen verwertbaren Produktionspfad zu machen.",
+          "Ziel, Stil, Produkt oder Hook — das Studio macht daraus einen verwertbaren Produktionspfad.",
       },
       {
         id: "path",
-        label: "Produktionspfad",
+        label: "Pfad",
+        chapter: "Pfad",
         title: "Wähle den richtigen Weg.",
         description:
-          "Bild erstellen, Video erzeugen oder Kampagne planen — statt in einer losen Toolliste zu suchen.",
+          "Bild, Video oder Kampagne — strukturiert statt in einer losen Toolliste.",
       },
       {
         id: "image",
         label: "Bild",
+        chapter: "Bild",
         title: "Erzeuge starke Visuals.",
         description:
-          "Erstelle Motive, Produktbilder, Creator-Visuals oder Kampagnenentwürfe passend zu deinem Briefing.",
+          "Motive, Produktbilder und Kampagnenentwürfe passend zum Briefing.",
       },
       {
         id: "motion",
         label: "Motion",
+        chapter: "Motion",
         title: "Bringe Assets in Bewegung.",
         description:
-          "Verwandle Bilder in kurze Videoideen, Motion-Drafts oder visuelle Sequenzen für Social Media und Kampagnen.",
+          "Kurze Sequenzen, Motion-Drafts und visuelle Ideen für Social und Kampagnen.",
       },
       {
         id: "gallery",
         label: "Galerie",
-        title: "Behalte deine Produktionen im Blick.",
+        chapter: "Galerie",
+        title: "Behalte Produktionen im Blick.",
         description:
-          "Speichere Ergebnisse, vergleiche Varianten und baue eine wiederverwendbare Asset-Bibliothek auf.",
+          "Varianten speichern, vergleichen und für die nächste Veröffentlichung wiederverwenden.",
       },
     ],
   },
   paths: {
     eyebrow: "Produktionspfade",
-    headline: "Drei Wege statt Tool-Chaos.",
-    headlineLines: ["Drei Wege statt", "Tool-Chaos."] as const,
+    headline: "Drei Wege. Ein Studio.",
+    headlineLines: ["Drei Wege.", "Ein Studio."] as const,
     subline:
-      "InfluexAI ordnet deine Produktion nach dem Ergebnis, das du brauchst — nicht nach technischen Modellnamen.",
+      "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
     items: [
       {
         id: "image",
         label: "Bild erstellen",
-        title: "Für Visuals, Produktmotive und Kampagnenbilder.",
+        title: "Visuals, Produktmotive und Kampagnenbilder.",
         description:
-          "Erstelle hochwertige Bildentwürfe für Social Posts, Ads, Landingpages oder Produktkommunikation.",
+          "Für Social Posts, Ads, Landingpages und Produktkommunikation.",
         cta: "Bild-Workflow öffnen",
       },
       {
         id: "video",
         label: "Video erstellen",
-        title: "Für Motion, Clips und kurze Kampagnen-Sequenzen.",
+        title: "Motion, Clips und kurze Kampagnen-Sequenzen.",
         description:
-          "Verwandle Ideen oder Startbilder in bewegte Assets für Reels, Shorts, Ads und Präsentationen.",
+          "Aus Ideen oder Startbildern werden bewegte Assets für Reels, Shorts und Ads.",
         cta: "Video-Workflow öffnen",
       },
       {
         id: "campaign",
         label: "Kampagne planen",
-        title: "Für Hooks, Content-Struktur und Veröffentlichungslogik.",
+        title: "Hooks, Content-Struktur und Veröffentlichungslogik.",
         description:
-          "Entwickle Hook-Ideen, Content-Winkel und Kampagnenpläne, bevor du einzelne Assets produzierst.",
+          "Kampagnenwinkel klären, bevor einzelne Assets produziert werden.",
         cta: "Kampagne vorbereiten",
       },
     ],
   },
   studio: {
     eyebrow: "Studio",
-    headline: "Gebaut für den gesamten Produktionsfluss.",
-    headlineLines: ["Gebaut für den gesamten", "Produktionsfluss."] as const,
+    headline: "Der gesamte Produktionsfluss.",
+    headlineLines: ["Der gesamte", "Produktionsfluss."] as const,
     subline:
-      "Briefing, Tools, Agent und Galerie greifen ineinander. Du arbeitest nicht in einzelnen Generatoren, sondern in einem Studio, das deine Kampagne zusammenhält.",
+      "Cockpit, Briefing, Tools und Galerie — als zusammenhängende Produktionsbühne.",
     panels: [
       {
         id: "studio",
         label: "Studio Cockpit",
-        title: "Dein Überblick vor der Produktion.",
-        description:
-          "Starte neue Projekte, wähle Produktionswege und behalte aktive Assets im Blick.",
+        title: "Überblick vor der Produktion.",
+        description: "Projekte starten, Wege wählen, aktive Assets im Blick.",
       },
       {
         id: "tools",
         label: "Tools Hub",
-        title: "Die richtigen Werkzeuge zur richtigen Aufgabe.",
-        description:
-          "Nur die aktiven Produktionswege stehen im Vordergrund. Weitere Studios bleiben klar als vorbereitet gekennzeichnet.",
+        title: "Werkzeuge zur richtigen Aufgabe.",
+        description: "Aktive Produktionswege im Vordergrund — klar strukturiert.",
       },
       {
         id: "agent",
         label: "Agent Briefing",
-        title: "Aus Ideen werden verwertbare Prompts.",
-        description:
-          "Der Agent hilft dir, Kampagnenideen zu strukturieren und in konkrete Produktionsschritte zu übersetzen.",
+        title: "Aus Ideen werden Prompts.",
+        description: "Kampagnenideen in konkrete Produktionsschritte übersetzen.",
       },
       {
         id: "gallery",
         label: "Galerie",
-        title: "Alle Ergebnisse an einem Ort.",
-        description:
-          "Sammle Visuals, Varianten und Motion-Entwürfe für spätere Kampagnen, Kunden oder Social-Media-Serien.",
+        title: "Ergebnisse an einem Ort.",
+        description: "Visuals, Varianten und Motion-Entwürfe für spätere Kampagnen.",
       },
     ],
   },
   outputs: {
     eyebrow: "Outputs",
-    headline: "Von der Idee zur verwendbaren Asset-Basis.",
-    subline:
-      "InfluexAI ist auf kontrollierte Produktion ausgelegt: klare Briefings, sichtbare Varianten und Assets, die du weiterverwenden kannst.",
+    headline: "Produktionen, die weiterverwendet werden.",
+    headlineLines: ["Produktionen,", "die weiterverwendet werden."] as const,
+    subline: "Neutrale Output-Flächen — ohne Fake-Metriken oder erfundene Ergebnisse.",
     cards: [
       {
         id: "campaign-visual",
         label: "Campaign Visual",
-        description:
-          "Visual-Entwürfe für Kampagnen, Social Posts und Produktkommunikation.",
+        description: "Visual-Entwürfe für Kampagnen und Social.",
         kind: "image" as const,
       },
       {
         id: "motion-draft",
         label: "Motion Draft",
-        description:
-          "Kurze Bewegungsentwürfe aus Startbildern oder Kampagnenideen.",
+        description: "Bewegungsentwürfe aus Startbildern oder Ideen.",
         kind: "video" as const,
       },
       {
         id: "hook-direction",
         label: "Hook Direction",
-        description:
-          "Content-Winkel und Hook-Ideen als Grundlage für bessere Produktion.",
+        description: "Content-Winkel als Grundlage für Produktion.",
         kind: "text" as const,
       },
       {
         id: "asset-library",
         label: "Asset Library",
-        description:
-          "Gespeicherte Ergebnisse und Varianten für zukünftige Kampagnen.",
+        description: "Gespeicherte Varianten für zukünftige Kampagnen.",
         kind: "text" as const,
       },
     ],
   },
   pricing: {
     eyebrow: "Preise",
-    headline: "Wähle den Zugang, der zu deinem Produktionsvolumen passt.",
-    subline:
-      "Starte klein, teste Workflows und erweitere dein Studio, wenn du regelmäßig Bilder, Videos oder Kampagnen-Assets produzierst.",
+    headline: "Pläne für dein Produktionsvolumen.",
+    subline: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
     cta: "Preise ansehen",
-    ctaSecondary: "Studio starten",
   },
   finalCta: {
     headline: "Starte dein Creator Studio.",

@@ -11,10 +11,10 @@ import { useStudio3DScene } from "../hooks/useStudio3DScene";
 const copy = LANDING_V2_COPY.studio;
 
 const PANEL_CLASS: Record<string, string> = {
-  studio: "landing-v2-studio-panel--studio",
-  tools: "landing-v2-studio-panel--tools",
-  agent: "landing-v2-studio-panel--agent",
-  gallery: "landing-v2-studio-panel--gallery",
+  studio: "landing-v2-studio-layer--cockpit",
+  tools: "landing-v2-studio-layer--tools",
+  agent: "landing-v2-studio-layer--agent",
+  gallery: "landing-v2-studio-layer--gallery",
 };
 
 export function LandingV2StudioPreview() {
@@ -34,17 +34,17 @@ export function LandingV2StudioPreview() {
     <section
       id="studio"
       ref={sectionRef}
-      className="landing-v2-section overflow-hidden"
+      className="landing-v2-section landing-v2-section--editorial overflow-hidden"
       aria-labelledby="lv2-studio-heading"
     >
-      <div className="mx-auto max-w-6xl">
-        <p className="landing-v2-kicker mb-3" data-lv2-eyebrow>
+      <div className="mx-auto max-w-[90rem]">
+        <p className="landing-v2-kicker mb-4" data-lv2-eyebrow>
           <span className="landing-v2-kicker__dot" aria-hidden />
           {copy.eyebrow}
         </p>
         <h2
           id="lv2-studio-heading"
-          className="landing-v2-headline text-[clamp(2rem,4.5vw,3.25rem)] text-[var(--lv2-text-light)]"
+          className="landing-v2-headline landing-v2-editorial-title text-[var(--lv2-text-light)]"
         >
           {copy.headlineLines.map((line) => (
             <span key={line} className="block" data-lv2-headline-line>
@@ -52,64 +52,57 @@ export function LandingV2StudioPreview() {
             </span>
           ))}
         </h2>
-        <p className="mt-3 max-w-2xl text-white/58" data-lv2-subline>
+        <p className="landing-v2-editorial-lead mt-4 max-w-2xl text-white/55" data-lv2-subline>
           {copy.subline}
         </p>
 
         {isMobile || reduceMotion ? (
-          <div className="mt-10 grid gap-5 sm:grid-cols-2">
+          <div className="landing-v2-studio-stack mt-12 space-y-6">
             {panels.map((panel) => (
               <article
                 key={panel.id}
-                className="landing-v2-ivory-stage overflow-hidden p-4 md:p-5"
+                className="landing-v2-studio-stack__item"
                 data-lv2-stagger
               >
                 {panel.asset ? (
-                  <div className="landing-v2-product-tile">
+                  <div className="landing-v2-studio-stack__visual">
                     <LandingV2AssetImage slot={panel.asset} />
                   </div>
                 ) : null}
-                <p className="mt-3 text-xs uppercase tracking-[0.1em] text-[var(--lv2-text-muted)]">
+                <p className="mt-4 text-xs uppercase tracking-[0.12em] text-white/45">
                   {panel.label}
                 </p>
-                <h3 className="landing-v2-headline mt-1 text-lg">{panel.title}</h3>
-                <p className="mt-1 text-sm text-[var(--lv2-text-muted)]">
-                  {panel.description}
-                </p>
+                <h3 className="landing-v2-headline mt-1 text-xl">{panel.title}</h3>
+                <p className="mt-2 text-sm text-white/55">{panel.description}</p>
               </article>
             ))}
           </div>
         ) : (
           <div
             ref={sceneRef}
-            className={`landing-v2-studio-scene ${
+            className={`landing-v2-studio-stage ${
               enableCinematicScroll ? "landing-v2-scene-3d" : ""
             }`}
           >
-            <div className="landing-v2-scene-3d__rig h-full min-h-[inherit]">
+            <div className="landing-v2-scene-3d__rig landing-v2-studio-stage__rig h-full min-h-[inherit]">
               {panels.map((panel) => (
                 <article
                   key={panel.id}
                   data-studio-panel
-                  className={`landing-v2-studio-panel landing-v2-panel-3d ${
+                  className={`landing-v2-studio-layer landing-v2-panel-3d ${
                     PANEL_CLASS[panel.id] ?? ""
                   }`}
                 >
-                  <div className="landing-v2-ivory-stage landing-v2-studio-panel__inner p-3 md:p-4">
-                    {panel.asset ? (
-                      <div className="landing-v2-product-tile">
-                        <LandingV2AssetImage slot={panel.asset} />
-                      </div>
-                    ) : null}
-                    <p className="mt-3 text-[0.65rem] uppercase tracking-[0.1em] text-[var(--lv2-text-muted)]">
-                      {panel.label}
-                    </p>
-                    <h3 className="landing-v2-headline mt-1 text-base leading-snug">
+                  {panel.asset ? (
+                    <div className="landing-v2-studio-layer__visual">
+                      <LandingV2AssetImage slot={panel.asset} />
+                    </div>
+                  ) : null}
+                  <div className="landing-v2-studio-layer__meta">
+                    <p className="landing-v2-studio-layer__label">{panel.label}</p>
+                    <h3 className="landing-v2-headline landing-v2-studio-layer__title">
                       {panel.title}
                     </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-[var(--lv2-text-muted)]">
-                      {panel.description}
-                    </p>
                   </div>
                 </article>
               ))}

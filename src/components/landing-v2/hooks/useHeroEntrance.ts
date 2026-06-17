@@ -2,6 +2,7 @@
 
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
+import SplitType from "split-type";
 import { useReducedMotion } from "./useReducedMotion";
 
 export function useHeroEntrance(sectionRef: RefObject<HTMLElement | null>) {
@@ -11,38 +12,57 @@ export function useHeroEntrance(sectionRef: RefObject<HTMLElement | null>) {
     const section = sectionRef.current;
     if (!section || reduceMotion) return;
 
+    let split: SplitType | null = null;
+
     const ctx = gsap.context(() => {
       const eyebrow = section.querySelector("[data-hero-eyebrow]");
-      const lines = section.querySelectorAll("[data-hero-line]");
+      const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
       const subline = section.querySelector("[data-hero-subline]");
-      const chips = section.querySelectorAll("[data-hero-chip]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
       const panel = section.querySelector("[data-hero-panel]");
 
-      gsap.set([eyebrow, ...lines, subline, ...chips, ...ctas, panel].filter(Boolean), {
+      if (headline) {
+        split = new SplitType(headline, {
+          types: "lines",
+          tagName: "span",
+        });
+      }
+
+      const lines = split?.lines ?? [];
+
+      gsap.set([eyebrow, subline, ...ctas, panel].filter(Boolean), {
         opacity: 0,
-        y: 18,
+        y: 20,
       });
+      if (lines.length) {
+        gsap.set(lines, { yPercent: 108, opacity: 0 });
+      }
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.1);
+      if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.08);
       if (lines.length) {
-        tl.to(lines, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, 0.22);
+        tl.to(
+          lines,
+          { yPercent: 0, opacity: 1, duration: 0.82, stagger: 0.11, ease: "power3.out" },
+          0.2
+        );
       }
-      if (subline) tl.to(subline, { opacity: 1, y: 0, duration: 0.65 }, 0.48);
-      if (chips.length) tl.to(chips, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05 }, 0.62);
-      if (ctas.length) tl.to(ctas, { opacity: 1, y: 0, duration: 0.55, stagger: 0.08 }, 0.78);
+      if (subline) tl.to(subline, { opacity: 1, y: 0, duration: 0.65 }, 0.52);
+      if (ctas.length) tl.to(ctas, { opacity: 1, y: 0, duration: 0.55, stagger: 0.08 }, 0.68);
       if (panel) {
         tl.fromTo(
           panel,
-          { opacity: 0, y: 32, scale: 0.97 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out" },
-          0.35
+          { opacity: 0, y: 40, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.out" },
+          0.38
         );
       }
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      split?.revert();
+      ctx.revert();
+    };
   }, [sectionRef, reduceMotion]);
 }

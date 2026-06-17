@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2HeroProductPanel } from "../ui/LandingV2HeroProductPanel";
+import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useHero3DStage } from "../hooks/useHero3DStage";
@@ -31,55 +32,37 @@ export function LandingV2Hero() {
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-hero landing-v2-section relative overflow-hidden pb-12 pt-28 md:pb-16 md:pt-32"
+      className="landing-v2-hero landing-v2-hero--editorial relative min-h-[90vh] overflow-hidden md:min-h-screen"
       aria-labelledby="lv2-hero-heading"
     >
+      <LandingV2HeroAmbient />
+
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <div
-          className="absolute left-1/2 top-0 h-[min(70vw,520px)] w-[min(90vw,900px)] -translate-x-1/2 rounded-full opacity-35"
-          style={{
-            background:
-              "radial-gradient(ellipse, rgba(180,255,0,0.05) 0%, transparent 68%)",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
-        <div className="min-w-0">
-          <p className="landing-v2-kicker mb-4" data-hero-eyebrow>
+      <div className="relative z-10 mx-auto flex min-h-[inherit] w-full max-w-[90rem] flex-col px-5 pb-8 pt-28 md:px-8 md:pb-12 md:pt-36 lg:relative">
+        <div className="landing-v2-hero__copy flex max-w-4xl flex-col justify-center md:min-h-[52vh] md:pb-8">
+          <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />
             {copy.eyebrow}
           </p>
           <h1
             id="lv2-hero-heading"
-            className="landing-v2-headline text-[clamp(2rem,5.5vw,3.75rem)] text-[var(--lv2-text-light)]"
+            className="landing-v2-headline landing-v2-hero__headline text-[var(--lv2-text-light)]"
+            data-hero-headline
           >
-            {copy.headlineLines.map((line) => (
-              <span key={line} className="block" data-hero-line>
-                {line}
-              </span>
-            ))}
+            {copy.headlineLines[0]}
+            <br />
+            {copy.headlineLines[1]}
+            <br />
+            {copy.headlineLines[2]}
           </h1>
           <p
-            className="mt-4 max-w-xl text-[clamp(0.95rem,2.1vw,1.1rem)] leading-relaxed text-white/62"
+            className="landing-v2-hero__subline mt-6 max-w-xl text-[clamp(1rem,2.2vw,1.15rem)] leading-relaxed text-white/60"
             data-hero-subline
           >
             {copy.subline}
           </p>
-          <ul className="mt-4 flex flex-wrap gap-2" aria-label="Zielgruppen">
-            {copy.chips.map((item) => (
-              <li
-                key={item}
-                data-hero-chip
-                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/55"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-3 md:mt-10">
             <Link
               href="/auth/sign-up"
               className="landing-v2-btn-primary min-h-[44px]"
@@ -100,7 +83,7 @@ export function LandingV2Hero() {
 
         <div
           ref={stageRef}
-          className={`landing-v2-hero-stage w-full min-w-0 ${
+          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial ${
             enableCinematicScroll ? "landing-v2-scene-3d" : ""
           }`}
         >
@@ -121,11 +104,11 @@ export function LandingV2Hero() {
             <div
               ref={panelRef}
               data-hero-panel
-              className={`landing-v2-hero-stage__panel ${
+              className={`landing-v2-hero-stage__panel landing-v2-hero-stage__panel--editorial ${
                 enableCinematicScroll ? "landing-v2-panel-3d" : ""
               }`}
             >
-              <LandingV2HeroProductPanel />
+              <LandingV2HeroProductPanel variant="stage" />
             </div>
           </div>
         </div>

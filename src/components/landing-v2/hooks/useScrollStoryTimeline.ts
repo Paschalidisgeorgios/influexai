@@ -45,6 +45,17 @@ export function useScrollStoryTimeline(
     const ctx = gsap.context(() => {
       panelEls.forEach((panel, index) => {
         setPanelDepth(panel, index === 0 ? "active" : "inactive");
+        const asset = panel.querySelector<HTMLElement>("[data-story-asset]");
+        if (asset) {
+          gsap.set(asset, {
+            z: index === 0 ? 24 : -40,
+            y: index === 0 ? 0 : 24,
+            scale: index === 0 ? 1 : 0.96,
+            opacity: index === 0 ? 1 : 0.5,
+            transformPerspective: 1400,
+            force3D: true,
+          });
+        }
       });
 
       const step = 1 / (panelEls.length - 1);
@@ -116,6 +127,16 @@ export function useScrollStoryTimeline(
           },
           at + 0.06
         );
+
+        const asset = current.querySelector<HTMLElement>("[data-story-asset]");
+        if (asset) {
+          tl.fromTo(
+            asset,
+            { z: -40, y: 24, scale: 0.96, opacity: 0.5 },
+            { z: 24, y: 0, scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" },
+            at + 0.08
+          );
+        }
 
         for (let j = i + 1; j < panelEls.length; j++) {
           tl.set(
