@@ -58,17 +58,45 @@ export const LANDING_V2_COPY = {
       "Briefing, Visuals, Motion und Galerie in einem Produktionssystem — für Creator, Brands und Teams, die schneller veröffentlichen wollen, ohne in Tool-Chaos zu arbeiten.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
-    systemSurface: {
-      label: "Creator Operating System",
-      signal: "System live",
-      layers: [
-        { id: "briefing", index: "01", label: "Briefing", hint: "Kampagnenidee" },
-        { id: "visual", index: "02", label: "Visual", hint: "Motive & Assets" },
-        { id: "motion", index: "03", label: "Motion", hint: "Bewegung" },
-        { id: "gallery", index: "04", label: "Galerie", hint: "Produktionen" },
-      ] as const,
-      status: "Produktionspfad aktiv",
-    },
+  },
+  creatorProductionFlow: {
+    kicker: "CREATOR PRODUCTION FLOW",
+    headline: "Briefing → Visual → Motion → Gallery",
+    subline: "Ein Workflow vom ersten Kampagnenbriefing bis zum gespeicherten Asset.",
+    stations: [
+      {
+        index: "01",
+        label: "Briefing",
+        description: "Kampagnenidee, Zielgruppe und Stilrichtung",
+      },
+      {
+        index: "02",
+        label: "Visual",
+        description: "Bildmotive und Kampagnen-Visuals",
+      },
+      {
+        index: "03",
+        label: "Motion",
+        description: "Bewegung, Clips und kurze Sequenzen",
+      },
+      {
+        index: "04",
+        label: "Gallery",
+        description: "Varianten speichern und weiterverwenden",
+      },
+    ] as const,
+  },
+  /** @deprecated Preview uses creatorProductionFlow */
+  systemSurface: {
+    label: "Creator Production Flow",
+    signal: "",
+    layers: [
+      { id: "briefing", index: "01", label: "Briefing", hint: "Kampagnenidee" },
+      { id: "visual", index: "02", label: "Visual", hint: "Motive & Assets" },
+      { id: "motion", index: "03", label: "Motion", hint: "Bewegung" },
+      { id: "gallery", index: "04", label: "Gallery", hint: "Produktionen" },
+    ] as const,
+    status: "",
   },
   workflow: {
     eyebrow: "Workflow",

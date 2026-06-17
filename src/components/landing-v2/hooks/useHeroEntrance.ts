@@ -29,6 +29,7 @@ export function useHeroEntrance(
       const subline = section.querySelector("[data-hero-subline]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
       const panel = section.querySelector("[data-hero-video-stage]");
+      const flow = section.querySelector("[data-hero-flow]");
 
       if (headline) {
         split = new SplitType(headline, {
@@ -73,6 +74,14 @@ export function useHeroEntrance(
           { opacity: 0, y: 56, scale: 1.02 },
           { opacity: 1, y: 0, scale: 1, duration: 1.05, ease: "power2.out" },
           0.42
+        );
+      }
+      if (flow) {
+        tl.fromTo(
+          flow,
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.85, ease: "power2.out" },
+          0.72
         );
       }
     }, section);

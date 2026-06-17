@@ -151,6 +151,15 @@ export const GALLERY_PARALLAX = [
   { yPercent: 7, scale: 0.985 },
 ] as const;
 
+/** Creator production flow — station reveal on scroll */
+export const CREATOR_FLOW_REVEAL = {
+  start: "top 82%",
+  stationY: 22,
+  stagger: 0.14,
+  duration: 0.75,
+  lineDuration: 1.35,
+} as const;
+
 /** Lenis / window scroll bridge — nav progress reads this when smooth scroll is active */
 let landingScrollY = 0;
 let landingLenisActive = false;

@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2EditorialVideo } from "../ui/LandingV2EditorialVideo";
+import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
@@ -19,6 +20,7 @@ export function LandingV2Hero() {
   const videoStageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const links = useLandingV2Links();
+  const isPreview = links.mode === "preview";
   const { enableCinematicScroll, isMobile } = useLandingViewport();
   const { heroReady: introHeroReady } = useBrandIntro();
   const heroReady = links.enableBrandIntro ? introHeroReady : true;
@@ -47,7 +49,9 @@ export function LandingV2Hero() {
       >
         <LandingV2EditorialVideo ref={videoRef} enabled={links.enableHeroVideo} />
         <div className="landing-v2-hero__video-scrim" aria-hidden />
-        <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
+        {!isPreview ? (
+          <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
+        ) : null}
       </div>
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:px-8 md:pb-12 lg:pb-14">
@@ -91,6 +95,15 @@ export function LandingV2Hero() {
             </Link>
           </div>
         </div>
+
+        {isPreview ? (
+          <div data-hero-flow>
+            <LandingV2CreatorProductionFlow
+              variant="hero"
+              className="landing-v2-hero__creator-flow"
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="landing-v2-hero__fade" aria-hidden />

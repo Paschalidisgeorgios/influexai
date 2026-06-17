@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 import { LandingV2EditorialVideo } from "../ui/LandingV2EditorialVideo";
-import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
+import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
@@ -56,7 +56,10 @@ export function LandingV2ScrollStory() {
         <div ref={videoStageRef} className="landing-v2-chapter__video-stage">
           <LandingV2EditorialVideo ref={videoRef} enabled={enableHeroVideo} />
           <div className="landing-v2-chapter__video-scrim" aria-hidden />
-          <LandingV2FlowStage variant="workflow" className="landing-v2-chapter__flow-overlay" />
+          <LandingV2CreatorProductionFlow
+            variant="workflow"
+            className="landing-v2-chapter__flow-overlay"
+          />
         </div>
       </div>
     </section>

@@ -3,13 +3,16 @@
 import { useRef } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
+import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
+import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 
 const copy = LANDING_V2_COPY.chapters.system;
 
 export function LandingV2SystemChapter() {
   const sectionRef = useRef<HTMLElement>(null);
+  const links = useLandingV2Links();
   useSectionDramaturgy(sectionRef);
 
   return (
@@ -33,9 +36,12 @@ export function LandingV2SystemChapter() {
           <p className="landing-v2-editorial-lead landing-v2-chapter__lead" data-lv2-subline>
             {copy.body}
           </p>
-          <p className="landing-v2-workflow-steps mt-6">{copy.flow}</p>
         </div>
-        <LandingV2FlowStage variant="system" className="landing-v2-chapter__stage" />
+        {links.mode === "preview" ? (
+          <LandingV2CreatorProductionFlow variant="system" className="landing-v2-chapter__stage" />
+        ) : (
+          <LandingV2FlowStage variant="system" className="landing-v2-chapter__stage" />
+        )}
       </div>
     </section>
   );

@@ -1,0 +1,92 @@
+"use client";
+
+import { useRef } from "react";
+import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { useLandingV2Links } from "../LandingV2ModeContext";
+import { useCreatorFlowReveal } from "../hooks/useCreatorFlowReveal";
+
+type LandingV2CreatorProductionFlowProps = {
+  variant?: "hero" | "system" | "workflow";
+  className?: string;
+};
+
+const copy = LANDING_V2_COPY.creatorProductionFlow;
+
+/** Clear creator production map — Briefing to Gallery, no fake dashboard status */
+export function LandingV2CreatorProductionFlow({
+  variant = "system",
+  className = "",
+}: LandingV2CreatorProductionFlowProps) {
+  const flowRef = useRef<HTMLDivElement>(null);
+  const links = useLandingV2Links();
+  const motionEnabled = links.mode === "preview" && links.enablePreviewMotion;
+
+  useCreatorFlowReveal(flowRef, motionEnabled, variant);
+
+  const rootClass = [
+    "landing-v2-creator-flow",
+    `landing-v2-creator-flow--${variant}`,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div
+      ref={flowRef}
+      className={rootClass}
+      data-lv2-stagger
+      aria-label={copy.kicker}
+    >
+      <header className="landing-v2-creator-flow__header">
+        <p className="landing-v2-creator-flow__kicker">{copy.kicker}</p>
+        <p className="landing-v2-creator-flow__headline">{copy.headline}</p>
+        <p className="landing-v2-creator-flow__subline">{copy.subline}</p>
+      </header>
+
+      <div className="landing-v2-creator-flow__map">
+        <svg
+          className="landing-v2-creator-flow__lines landing-v2-creator-flow__lines--desktop"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <path d="M 60 60 H 1140" className="landing-v2-creator-flow__path" />
+          <path
+            d="M 60 60 H 1140"
+            className="landing-v2-creator-flow__path landing-v2-creator-flow__path--active"
+          />
+        </svg>
+        <svg
+          className="landing-v2-creator-flow__lines landing-v2-creator-flow__lines--mobile"
+          viewBox="0 0 40 520"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <path d="M 20 24 V 496" className="landing-v2-creator-flow__path" />
+          <path
+            d="M 20 24 V 496"
+            className="landing-v2-creator-flow__path landing-v2-creator-flow__path--active"
+          />
+        </svg>
+
+        <ol className="landing-v2-creator-flow__stations">
+          {copy.stations.map((station) => (
+            <li
+              key={station.index}
+              className="landing-v2-creator-flow__station"
+              data-creator-flow-station
+            >
+              <span className="landing-v2-creator-flow__station-index">{station.index}</span>
+              <div className="landing-v2-creator-flow__station-copy">
+                <span className="landing-v2-creator-flow__station-label">{station.label}</span>
+                <p className="landing-v2-creator-flow__station-desc">{station.description}</p>
+              </div>
+              <span className="landing-v2-creator-flow__station-dot" aria-hidden />
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
