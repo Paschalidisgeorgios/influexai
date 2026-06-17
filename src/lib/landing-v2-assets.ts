@@ -11,7 +11,7 @@ export type LandingV2AssetSlot = {
   poster?: string;
 };
 
-export const LANDING_V2_AUDIENCE = LANDING_V2_COPY.hero.chips;
+export const LANDING_V2_AUDIENCE = ["Creator", "Brands", "E-Commerce", "Teams"] as const;
 
 export const LANDING_V2_ASSETS = {
   /** Brand mark — live intro reveal (transparent PNG) */

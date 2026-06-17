@@ -1,29 +1,64 @@
-/** Landing-v2 preview — editorial marketing copy (DE) */
+/** Landing-v2 preview — editorial operating-system copy (DE) */
 
 export const LANDING_V2_COPY = {
   brandIntro: {
     scrollHint: "Scroll to enter",
   },
   nav: {
+    system: "System",
     workflow: "Workflow",
-    paths: "Produktionspfade",
     studio: "Studio",
     pricing: "Preise",
     cta: "Studio starten",
   },
+  chapters: {
+    system: {
+      number: "01",
+      label: "System",
+      headline: "Ein Produktionssystem statt einzelner Generatoren.",
+      body: "InfluexAI verbindet Briefing, Bild, Motion und Galerie zu einem Workflow, der Kampagnen zusammenhält.",
+    },
+    workflow: {
+      number: "02",
+      label: "Workflow",
+      headline: "Vom Briefing zum Asset.",
+      headlineLines: ["Vom Briefing", "zum Asset."] as const,
+      body: "Fünf Stationen — von der ersten Idee bis zur gespeicherten Produktion. Klar geführt, ruhig erzählt.",
+      steps: "Briefing → Pfad → Visual → Motion → Galerie",
+    },
+    paths: {
+      number: "03",
+      label: "Production Paths",
+      headline: "Drei Wege. Ein Studio.",
+      headlineLines: ["Drei Wege.", "Ein Studio."] as const,
+      body: "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
+    },
+    studio: {
+      number: "04",
+      label: "Studio",
+      headline: "Alle Produktionsflächen in einem System.",
+      headlineLines: ["Alle Produktionsflächen", "in einem System."] as const,
+      body: "Cockpit, Briefing, Tools und Galerie — als zusammenhängende Produktionsbühne.",
+    },
+    pricing: {
+      number: "05",
+      label: "Preise",
+      headline: "Wähle den Zugang, der zu deinem Produktionsvolumen passt.",
+      body: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
+      cta: "Preise ansehen",
+    },
+  },
   hero: {
-    eyebrow: "Creator Production System",
-    headline: "Ein Studio. Vom Briefing bis zum Asset.",
-    headlineLines: ["Ein Studio.", "Vom Briefing", "bis zum Asset."] as const,
-    headlineAlt: "Kampagnen, Visuals und Motion — in einem Studio.",
+    eyebrow: "AI-Native Creator Operating System",
+    headline: "Das Studio, in dem Kampagnen zu Assets werden.",
+    headlineLines: ["Das Studio,", "in dem Kampagnen", "zu Assets werden."] as const,
     subline:
-      "Plane Hooks, erstelle Visuals und bringe Kampagnen in Bewegung — ohne Tool-Chaos, Modellnamen oder verstreute Workflows.",
+      "Briefing, Visuals, Motion und Galerie in einem kontrollierten Produktionsfluss — gebaut für Creator, Brands und Teams, die schneller veröffentlichen wollen, ohne in Tool-Chaos zu arbeiten.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
-    chips: ["Creator", "Brands", "E-Commerce", "Lokale Unternehmen"] as const,
     productPanel: {
       label: "Studio Cockpit",
-      headline: "Briefing, Produktion und Assets in einem Workflow.",
+      headline: "Produktionsfluss aktiv",
       briefing: {
         title: "Campaign Briefing",
         text: "Ziel, Hook und Stilrichtung",
@@ -48,6 +83,7 @@ export const LANDING_V2_COPY = {
     headlineLines: ["Vom Briefing", "zum Asset."] as const,
     subline:
       "Fünf Stationen — von der ersten Idee bis zur gespeicherten Produktion. Klar geführt, ruhig erzählt.",
+    steps: "Briefing → Pfad → Visual → Motion → Galerie",
     stations: [
       {
         id: "briefing",
@@ -71,8 +107,8 @@ export const LANDING_V2_COPY = {
       },
       {
         id: "image",
-        label: "Bild",
-        chapter: "Bild",
+        label: "Visual",
+        chapter: "Visual",
         stageLabel: "Visual Draft",
         stageStatus: "In production",
         title: "Erzeuge starke Visuals.",
@@ -105,11 +141,11 @@ export const LANDING_V2_COPY = {
     eyebrow: "Produktionspfade",
     headline: "Drei Wege. Ein Studio.",
     headlineLines: ["Drei Wege.", "Ein Studio."] as const,
-    subline:
-      "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
+    subline: "Ordnet nach Ergebnis — nicht nach technischen Modellnamen.",
     items: [
       {
         id: "image",
+        index: "01",
         label: "Bild erstellen",
         title: "Visuals, Produktmotive und Kampagnenbilder.",
         description:
@@ -118,6 +154,7 @@ export const LANDING_V2_COPY = {
       },
       {
         id: "video",
+        index: "02",
         label: "Video erstellen",
         title: "Motion, Clips und kurze Kampagnen-Sequenzen.",
         description:
@@ -126,6 +163,7 @@ export const LANDING_V2_COPY = {
       },
       {
         id: "campaign",
+        index: "03",
         label: "Kampagne planen",
         title: "Hooks, Content-Struktur und Veröffentlichungslogik.",
         description:
@@ -136,8 +174,8 @@ export const LANDING_V2_COPY = {
   },
   studio: {
     eyebrow: "Studio",
-    headline: "Der gesamte Produktionsfluss.",
-    headlineLines: ["Der gesamte", "Produktionsfluss."] as const,
+    headline: "Alle Produktionsflächen in einem System.",
+    headlineLines: ["Alle Produktionsflächen", "in einem System."] as const,
     subline:
       "Cockpit, Briefing, Tools und Galerie — als zusammenhängende Produktionsbühne.",
     panels: [
@@ -148,16 +186,16 @@ export const LANDING_V2_COPY = {
         description: "Projekte starten, Wege wählen, aktive Assets im Blick.",
       },
       {
-        id: "tools",
-        label: "Tools Hub",
-        title: "Werkzeuge zur richtigen Aufgabe.",
-        description: "Aktive Produktionswege im Vordergrund — klar strukturiert.",
-      },
-      {
         id: "agent",
         label: "Agent Briefing",
         title: "Aus Ideen werden Prompts.",
         description: "Kampagnenideen in konkrete Produktionsschritte übersetzen.",
+      },
+      {
+        id: "tools",
+        label: "Tools Hub",
+        title: "Werkzeuge zur richtigen Aufgabe.",
+        description: "Aktive Produktionswege im Vordergrund — klar strukturiert.",
       },
       {
         id: "gallery",
@@ -169,9 +207,9 @@ export const LANDING_V2_COPY = {
   },
   outputs: {
     eyebrow: "Outputs",
-    headline: "Produktionen, die weiterverwendet werden.",
-    headlineLines: ["Produktionen,", "die weiterverwendet werden."] as const,
-    subline: "Neutrale Output-Flächen — ohne Fake-Metriken oder erfundene Ergebnisse.",
+    headline: "Kampagnen-Assets, die weiterverwendet werden.",
+    headlineLines: ["Kampagnen-Assets,", "die weiterverwendet werden."] as const,
+    subline: "Gespeicherte Produktionen — ohne Fake-Metriken oder erfundene Ergebnisse.",
     cards: [
       {
         id: "campaign-visual",
@@ -201,12 +239,12 @@ export const LANDING_V2_COPY = {
   },
   pricing: {
     eyebrow: "Preise",
-    headline: "Pläne für dein Produktionsvolumen.",
+    headline: "Wähle den Zugang, der zu deinem Produktionsvolumen passt.",
     subline: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
     cta: "Preise ansehen",
   },
   finalCta: {
-    headline: "Starte dein Creator Studio.",
+    headline: "Starte dein Creator Operating System.",
     subline: "Produziere schneller, klarer und kontrollierter — ohne Tool-Chaos.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",

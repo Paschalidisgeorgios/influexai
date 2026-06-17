@@ -24,10 +24,12 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
 
     const ctx = gsap.context(() => {
       const eyebrow = section.querySelector("[data-lv2-eyebrow]");
+      const chapter = section.querySelector("[data-lv2-chapter]");
       const lines = section.querySelectorAll("[data-lv2-headline-line]");
       const subline = section.querySelector("[data-lv2-subline]");
       const staggerItems = section.querySelectorAll("[data-lv2-stagger]");
       const animated = [
+        ...(chapter ? [chapter] : []),
         ...(eyebrow ? [eyebrow] : []),
         ...lines,
         ...(subline ? [subline] : []),
@@ -43,11 +45,19 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
         defaults: { ease: enablePreviewMotion ? "power3.out" : "power2.out" },
       });
 
+      if (chapter) {
+        tl.fromTo(
+          chapter,
+          { opacity: isMobile ? 1 : 0, y: isMobile ? 16 : enablePreviewMotion ? 28 : 18 },
+          { opacity: 1, y: 0, duration: 0.55 }
+        );
+      }
       if (eyebrow) {
         tl.fromTo(
           eyebrow,
           { opacity: isMobile ? 1 : 0, y: isMobile ? 18 : enablePreviewMotion ? 24 : 14 },
-          { opacity: 1, y: 0, duration: 0.55 }
+          { opacity: 1, y: 0, duration: 0.55 },
+          chapter ? "-=0.15" : 0
         );
       }
       if (lines.length) {
@@ -63,7 +73,7 @@ export function useSectionDramaturgy(sectionRef: RefObject<HTMLElement | null>) 
             duration: enablePreviewMotion ? 0.78 : 0.65,
             stagger: enablePreviewMotion ? 0.12 : 0.1,
           },
-          eyebrow ? "-=0.2" : 0
+          chapter || eyebrow ? "-=0.2" : 0
         );
       }
       if (subline) {

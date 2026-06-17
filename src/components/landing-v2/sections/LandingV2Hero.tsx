@@ -5,7 +5,7 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
-import { LandingV2HeroProductPanel } from "../ui/LandingV2HeroProductPanel";
+import { LandingV2SystemSurface } from "../ui/LandingV2SystemSurface";
 import { LandingV2HeroAmbient } from "../ui/LandingV2HeroAmbient";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
@@ -42,7 +42,7 @@ export function LandingV2Hero() {
   return (
     <section
       ref={sectionRef}
-      className="landing-v2-hero landing-v2-hero--editorial relative min-h-[90vh] overflow-x-clip md:min-h-screen"
+      className="landing-v2-hero landing-v2-hero--editorial landing-v2-hero--system relative min-h-[92vh] overflow-x-clip md:min-h-screen"
       aria-labelledby="lv2-hero-heading"
     >
       <LandingV2HeroAmbient
@@ -53,8 +53,8 @@ export function LandingV2Hero() {
 
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="relative z-10 mx-auto grid min-h-[inherit] w-full max-w-[90rem] grid-cols-1 items-stretch gap-10 px-4 pb-16 pt-28 sm:px-5 md:px-8 md:pb-20 md:pt-36 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:items-center lg:gap-14 lg:pb-24">
-        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col justify-center">
+      <div className="landing-v2-hero__shell relative z-10 mx-auto w-full max-w-[90rem] px-4 pb-14 pt-[calc(var(--lv2-nav-offset)+1.5rem)] sm:px-5 md:px-8 md:pb-20 lg:pb-24">
+        <div className="landing-v2-hero__copy flex min-w-0 max-w-5xl flex-col justify-center">
           <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />
             {copy.eyebrow}
@@ -71,7 +71,7 @@ export function LandingV2Hero() {
             {copy.headlineLines[2]}
           </h1>
           <p
-            className="landing-v2-hero__subline mt-6 max-w-xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed text-white/62"
+            className="landing-v2-hero__subline mt-6 max-w-2xl text-[clamp(1rem,2.2vw,1.125rem)] leading-relaxed text-white/62"
             data-hero-subline
           >
             {copy.subline}
@@ -97,7 +97,7 @@ export function LandingV2Hero() {
 
         <div
           ref={stageRef}
-          className={`landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 max-w-full ${
+          className={`landing-v2-hero__surface-wrap landing-v2-hero-stage landing-v2-hero-stage--editorial w-full min-w-0 max-w-full ${
             enableCinematicScroll ? "landing-v2-scene-3d" : ""
           }`}
         >
@@ -118,11 +118,11 @@ export function LandingV2Hero() {
             <div
               ref={panelRef}
               data-hero-panel
-              className={`landing-v2-hero-stage__panel landing-v2-hero-stage__panel--editorial ${
+              className={`landing-v2-hero-stage__panel landing-v2-hero-stage__panel--editorial landing-v2-hero-stage__panel--surface ${
                 enableCinematicScroll ? "landing-v2-panel-3d" : ""
               }`}
             >
-              <LandingV2HeroProductPanel variant={isMobile ? "compact" : "stage"} />
+              <LandingV2SystemSurface variant={isMobile ? "compact" : "hero"} />
             </div>
           </div>
         </div>

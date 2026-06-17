@@ -8,6 +8,7 @@ import { LandingV2BrandIntro } from "./LandingV2BrandIntro";
 import { LandingV2ModeProvider, useLandingV2Links } from "./LandingV2ModeContext";
 import { LandingV2Nav } from "./sections/LandingV2Nav";
 import { LandingV2Hero } from "./sections/LandingV2Hero";
+import { LandingV2SystemChapter } from "./sections/LandingV2SystemChapter";
 import { LandingV2ScrollStory } from "./sections/LandingV2ScrollStory";
 import { LandingV2ProductionPaths } from "./sections/LandingV2ProductionPaths";
 import { LandingV2StudioPreview } from "./sections/LandingV2StudioPreview";
@@ -47,6 +48,7 @@ function LandingV2Shell() {
 
       <main>
         <LandingV2Hero />
+        <LandingV2SystemChapter />
         <LandingV2ScrollStory />
         <LandingV2ProductionPaths />
         <LandingV2StudioPreview />

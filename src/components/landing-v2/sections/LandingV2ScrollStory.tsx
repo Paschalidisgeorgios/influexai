@@ -9,9 +9,11 @@ import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useScrollStoryActiveChapter } from "../hooks/useScrollStoryActiveChapter";
 import { useWorkflowStageMotion } from "../hooks/useWorkflowStageMotion";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
+import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 
 const STATIONS = LANDING_V2_COPY.workflow.stations;
 const sectionCopy = LANDING_V2_COPY.workflow;
+const chapterCopy = LANDING_V2_COPY.chapters.workflow;
 
 const SURFACE_VARIANT: Record<string, StudioSurfaceVariant> = {
   briefing: "briefing",
@@ -48,22 +50,22 @@ export function LandingV2ScrollStory() {
     >
       <div className="mx-auto max-w-[90rem]">
         <div ref={introRef} className="landing-v2-workflow-intro">
-          <p className="landing-v2-kicker mb-4" data-lv2-eyebrow>
-            <span className="landing-v2-kicker__dot" aria-hidden />
-            {sectionCopy.eyebrow}
-          </p>
+          <LandingV2ChapterMarker number={chapterCopy.number} label={chapterCopy.label} />
           <h2
             id="lv2-story-heading"
-            className="landing-v2-headline landing-v2-editorial-title text-[var(--lv2-text-light)]"
+            className="landing-v2-headline landing-v2-editorial-title mt-5 text-[var(--lv2-text-light)]"
           >
-            {sectionCopy.headlineLines.map((line) => (
+            {chapterCopy.headlineLines.map((line) => (
               <span key={line} className="block" data-lv2-headline-line>
                 {line}
               </span>
             ))}
           </h2>
           <p className="landing-v2-editorial-lead mt-4 max-w-2xl text-white/55" data-lv2-subline>
-            {sectionCopy.subline}
+            {chapterCopy.body}
+          </p>
+          <p className="landing-v2-workflow-steps mt-5" data-lv2-eyebrow>
+            {sectionCopy.steps}
           </p>
         </div>
 

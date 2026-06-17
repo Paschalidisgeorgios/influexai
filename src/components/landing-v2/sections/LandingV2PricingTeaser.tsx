@@ -6,8 +6,9 @@ import { ArrowRight } from "lucide-react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
+import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 
-const copy = LANDING_V2_COPY.pricing;
+const chapterCopy = LANDING_V2_COPY.chapters.pricing;
 
 export function LandingV2PricingTeaser() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,26 +22,30 @@ export function LandingV2PricingTeaser() {
       className="landing-v2-section landing-v2-section--editorial landing-v2-section--pricing"
       aria-labelledby="lv2-pricing-heading"
     >
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="landing-v2-kicker mb-4 justify-center" data-lv2-eyebrow>
-          <span className="landing-v2-kicker__dot" aria-hidden />
-          {copy.eyebrow}
-        </p>
-        <h2
-          id="lv2-pricing-heading"
-          className="landing-v2-headline text-[clamp(1.75rem,4vw,2.75rem)] text-[var(--lv2-text-light)]"
-          data-lv2-headline-line
-        >
-          {copy.headline}
-        </h2>
-        <p className="mx-auto mt-4 max-w-lg text-white/55" data-lv2-subline>
-          {copy.subline}
-        </p>
-        <div className="mt-8">
-          <Link href={links.pricing} className="landing-v2-btn-primary">
-            {copy.cta}
-            <ArrowRight size={18} aria-hidden />
-          </Link>
+      <div className="mx-auto max-w-3xl">
+        <div className="landing-v2-pricing-chapter">
+          <LandingV2ChapterMarker
+            number={chapterCopy.number}
+            label={chapterCopy.label}
+            className="justify-center"
+          />
+          <h2
+            id="lv2-pricing-heading"
+            className="landing-v2-headline landing-v2-editorial-title mt-5 text-center text-[var(--lv2-text-light)]"
+          >
+            <span className="block" data-lv2-headline-line>
+              {chapterCopy.headline}
+            </span>
+          </h2>
+          <p className="landing-v2-editorial-lead mx-auto mt-4 max-w-lg text-center text-white/55" data-lv2-subline>
+            {chapterCopy.body}
+          </p>
+          <div className="mt-8 flex justify-center">
+            <Link href={links.pricing} className="landing-v2-btn-primary">
+              {chapterCopy.cta}
+              <ArrowRight size={18} aria-hidden />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

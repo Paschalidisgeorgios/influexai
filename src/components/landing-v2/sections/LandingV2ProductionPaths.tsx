@@ -12,8 +12,10 @@ import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useProductionPathsReveal } from "../hooks/useProductionPathsReveal";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
+import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 
 const copy = LANDING_V2_COPY.paths;
+const chapterCopy = LANDING_V2_COPY.chapters.paths;
 
 const pathRouteById = Object.fromEntries(
   PRODUCTION_PATHS.map((path) => [path.id, path.primaryToolId])
@@ -34,22 +36,19 @@ export function LandingV2ProductionPaths() {
       aria-labelledby="lv2-paths-heading"
     >
       <div className="mx-auto max-w-[90rem]">
-        <p className="landing-v2-kicker mb-4" data-lv2-eyebrow>
-          <span className="landing-v2-kicker__dot" aria-hidden />
-          {copy.eyebrow}
-        </p>
+        <LandingV2ChapterMarker number={chapterCopy.number} label={chapterCopy.label} />
         <h2
           id="lv2-paths-heading"
-          className="landing-v2-headline landing-v2-editorial-title text-[var(--lv2-text-light)]"
+          className="landing-v2-headline landing-v2-editorial-title mt-5 text-[var(--lv2-text-light)]"
         >
-          {copy.headlineLines.map((line) => (
+          {chapterCopy.headlineLines.map((line) => (
             <span key={line} className="block" data-lv2-headline-line>
               {line}
             </span>
           ))}
         </h2>
         <p className="landing-v2-editorial-lead mt-4 max-w-xl text-white/55" data-lv2-subline>
-          {copy.subline}
+          {chapterCopy.body}
         </p>
 
         <div className="landing-v2-editorial-paths mt-12 md:mt-16">
@@ -61,8 +60,10 @@ export function LandingV2ProductionPaths() {
                 key={item.id}
                 href={href}
                 className="landing-v2-editorial-path group"
+                data-lv2-stagger
               >
                 <div className="landing-v2-editorial-path__inner">
+                  <span className="landing-v2-editorial-path__index">{item.index}</span>
                   <p className="landing-v2-editorial-path__label">{item.label}</p>
                   <h3 className="landing-v2-headline landing-v2-editorial-path__title">
                     {item.title}
