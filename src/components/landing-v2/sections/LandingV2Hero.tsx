@@ -57,20 +57,25 @@ export function LandingV2Hero() {
         </>
       )}
 
-      <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-end gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-12 lg:pb-14">
+      <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-center gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-10 lg:pb-12">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
           {isPreview ? (
             <h1
               id="lv2-hero-heading"
-              className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline landing-v2-hero__headline--primary"
+              className="landing-v2-headline landing-v2-hero-display landing-v2-hero__headline landing-v2-hero__headline--primary landing-v2-hero__headline--stack"
               data-hero-headline
             >
-              {copy.primaryHeadlineLines[0]}
-              <br />
-              {renderHeadlineHighlight(
-                copy.primaryHeadlineLines[1],
-                copy.primaryHeadlineHighlight
-              )}
+              {copy.primaryHeadlineLines.slice(0, 3).map((line) => (
+                <span key={line} className="landing-v2-hero__headline-line" data-hero-headline-line>
+                  {line}
+                </span>
+              ))}
+              <span className="landing-v2-hero__headline-line" data-hero-headline-line>
+                {renderHeadlineHighlight(
+                  copy.primaryHeadlineLines[3],
+                  copy.primaryHeadlineHighlight
+                )}
+              </span>
             </h1>
           ) : (
             <h1

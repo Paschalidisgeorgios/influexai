@@ -54,7 +54,12 @@ export const LANDING_V2_COPY = {
     headline: "Das Studio, das Kampagnen in Assets verwandelt.",
     headlineAlt: "Campaigns become assets here.",
     headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
-    primaryHeadlineLines: ["Aus Briefings werden Visuals.", "Aus Visuals wird Motion."] as const,
+    primaryHeadlineLines: [
+      "Aus Briefings",
+      "werden Visuals.",
+      "Aus Visuals",
+      "wird Motion.",
+    ] as const,
     primaryHeadlineHighlight: "Motion",
     rotatingHeadlines: [
       {

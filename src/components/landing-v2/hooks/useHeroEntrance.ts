@@ -27,19 +27,23 @@ export function useHeroEntrance(
       const eyebrow = section.querySelector("[data-hero-eyebrow]");
       const rotatingHeadline = section.querySelector("[data-hero-headline-rotating]");
       const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
+      const headlineLines = section.querySelectorAll<HTMLElement>("[data-hero-headline-line]");
       const subline = section.querySelector("[data-hero-subline]");
       const ctas = section.querySelectorAll("[data-hero-cta]");
       const panel = section.querySelector("[data-hero-video-stage]");
       const flow = section.querySelector("[data-hero-flow]");
 
-      if (headline && !rotatingHeadline) {
+      if (headline && !rotatingHeadline && headlineLines.length === 0) {
         split = new SplitType(headline, {
           types: "lines",
           tagName: "span",
         });
       }
 
-      const lines = split?.lines ?? [];
+      const lines =
+        headlineLines.length > 0
+          ? (Array.from(headlineLines) as Element[])
+          : (split?.lines ?? []);
       const textTargets = [eyebrow, subline, ...lines, ...ctas].filter(
         Boolean
       ) as Element[];
@@ -63,8 +67,8 @@ export function useHeroEntrance(
       if (lines.length) {
         tl.to(
           lines,
-          { y: 0, opacity: 1, duration: 0.82, stagger: 0.11, ease: "power3.out" },
-          0.2
+          { y: 0, opacity: 1, duration: 0.78, stagger: 0.08, ease: "power3.out" },
+          0.18
         );
       }
       if (subline) tl.to(subline, { opacity: 1, y: 0, duration: 0.65 }, 0.52);
