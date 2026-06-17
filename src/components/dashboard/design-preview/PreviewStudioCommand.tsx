@@ -16,7 +16,7 @@ import {
   detectPreviewIntent,
   detectPreviewPlatform,
   buildOptimizedPrompt,
-  type PreviewIntent,
+  needsPlatformAsk,
 } from "./preview-intent";
 import { usePreviewDashboardMotion, animatePreviewPanel } from "./usePreviewDashboardMotion";
 
