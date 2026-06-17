@@ -12,7 +12,10 @@ import { LandingV2SystemChapter } from "./sections/LandingV2SystemChapter";
 import { LandingV2ScrollStory } from "./sections/LandingV2ScrollStory";
 import { LandingV2ProductionPaths } from "./sections/LandingV2ProductionPaths";
 import { LandingV2StudioPreview } from "./sections/LandingV2StudioPreview";
+import { LandingV2ProductStory } from "./sections/LandingV2ProductStory";
+import { LandingV2SocialProof } from "./sections/LandingV2SocialProof";
 import { LandingV2PricingTeaser } from "./sections/LandingV2PricingTeaser";
+import { LandingV2FinalCta } from "./sections/LandingV2FinalCta";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
 function LandingV2Shell() {
@@ -57,11 +60,22 @@ function LandingV2Shell() {
 
           <main className="landing-v2-main overflow-x-clip">
             <LandingV2Hero />
-            <LandingV2SystemChapter />
-            <LandingV2ScrollStory />
-            <LandingV2ProductionPaths />
-            <LandingV2StudioPreview />
-            <LandingV2PricingTeaser />
+            {isPreview ? (
+              <>
+                <LandingV2ProductStory />
+                <LandingV2SocialProof />
+                <LandingV2PricingTeaser />
+                <LandingV2FinalCta />
+              </>
+            ) : (
+              <>
+                <LandingV2SystemChapter />
+                <LandingV2ScrollStory />
+                <LandingV2ProductionPaths />
+                <LandingV2StudioPreview />
+                <LandingV2PricingTeaser />
+              </>
+            )}
           </main>
 
           <LandingV2Footer />

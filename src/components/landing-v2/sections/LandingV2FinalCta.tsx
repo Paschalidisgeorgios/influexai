@@ -12,7 +12,39 @@ const copy = LANDING_V2_COPY.finalCta;
 export function LandingV2FinalCta() {
   const sectionRef = useRef<HTMLElement>(null);
   const links = useLandingV2Links();
+  const isPreview = links.mode === "preview";
   useSectionDramaturgy(sectionRef);
+
+  if (isPreview) {
+    return (
+      <section
+        id="final-cta"
+        ref={sectionRef}
+        className="landing-v2-section landing-v2-section--terminal-final"
+        aria-labelledby="lv2-final-cta-heading"
+      >
+        <div className="landing-v2-terminal-final mx-auto w-full max-w-[90rem]">
+          <div className="landing-v2-terminal-final__stage" aria-hidden />
+          <div className="landing-v2-terminal-final__content">
+            <h2
+              id="lv2-final-cta-heading"
+              className="landing-v2-terminal-final__headline"
+              data-lv2-headline-line
+            >
+              {copy.headline}
+            </h2>
+            <p className="landing-v2-terminal-story__body landing-v2-terminal-final__subline" data-lv2-subline>
+              {copy.subline}
+            </p>
+            <Link href={links.signup} className="landing-v2-btn-primary landing-v2-terminal-final__cta" data-lv2-stagger>
+              {copy.ctaPrimary}
+              <ArrowRight size={18} aria-hidden />
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

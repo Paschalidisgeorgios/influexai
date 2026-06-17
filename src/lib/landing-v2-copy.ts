@@ -8,6 +8,8 @@ export const LANDING_V2_COPY = {
     system: "System",
     workflow: "Workflow",
     studio: "Studio",
+    story: "Story",
+    proof: "Proof",
     pricing: "Preise",
     cta: "Studio starten",
   },
@@ -42,12 +44,65 @@ export const LANDING_V2_COPY = {
       body: "Cockpit, Agent, Tools und Galerie arbeiten zusammen — nicht als getrennte Generatoren, sondern als Produktionsumgebung.",
     },
     pricing: {
-      number: "05",
+      number: "04",
       label: "Preise",
-      headline: "Zugang nach Produktionsvolumen.",
+      headline: "Pläne für dein Produktionsvolumen.",
       body: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
       cta: "Preise ansehen",
     },
+  },
+  productStory: {
+    eyebrow: "Product Story",
+    items: [
+      {
+        id: "briefing",
+        number: "01",
+        tool: "Briefing",
+        headline: "Aus einer Idee wird ein Produktionsbriefing.",
+        body: "Der Agent fragt nach, wenn Plattform, Ziel oder Format fehlen.",
+        visual: "briefing" as const,
+      },
+      {
+        id: "visual",
+        number: "02",
+        tool: "Visual",
+        headline: "Aus Briefings werden kampagnenfähige Visuals.",
+        body: "Prompts werden optimiert, übersetzt und für die passende Engine vorbereitet.",
+        visual: "visual" as const,
+      },
+      {
+        id: "motion",
+        number: "03",
+        tool: "Motion",
+        headline: "Aus Bildern wird Bewegung.",
+        body: "Startbild, Motion Prompt und Format werden zu einem klaren Video-Workflow.",
+        visual: "motion" as const,
+      },
+      {
+        id: "gallery",
+        number: "04",
+        tool: "Gallery",
+        headline: "Assets bleiben im System.",
+        body: "Varianten, Entwürfe und Ergebnisse werden gesammelt und weiterverwendbar.",
+        visual: "gallery" as const,
+      },
+    ],
+  },
+  socialProof: {
+    items: [
+      {
+        value: 4,
+        label: "Produktionsphasen von Briefing bis Galerie.",
+      },
+      {
+        value: 5,
+        label: "Aktive Workflows für Bild, Video und Kampagnenplanung.",
+      },
+      {
+        value: 1,
+        label: "Ein Studio statt verstreuter Generatoren.",
+      },
+    ],
   },
   hero: {
     workflowLine: "Briefing → Visual → Motion → Galerie",
@@ -257,13 +312,13 @@ export const LANDING_V2_COPY = {
   },
   pricing: {
     eyebrow: "Preise",
-    headline: "Zugang nach Produktionsvolumen.",
+    headline: "Pläne für dein Produktionsvolumen.",
     subline: "Alle Details und Konditionen findest du auf der Pricing-Seite.",
     cta: "Preise ansehen",
   },
   finalCta: {
-    headline: "Starte dein Creator Operating System.",
-    subline: "Produziere schneller, klarer und kontrollierter — ohne Tool-Chaos.",
+    headline: "Starte dein Creator Studio.",
+    subline: "Produziere Kampagnen, Visuals und Motion in einem System.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
   },

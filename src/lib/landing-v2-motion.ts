@@ -169,6 +169,23 @@ export const CREATOR_FLOW_REVEAL = {
   lineDuration: 1.35,
 } as const;
 
+/** Terminal product story — section dramaturgy (preview) */
+export const TERMINAL_STORY_MOTION = {
+  enterStart: "top 78%",
+  scrub: 0.85,
+  numberReveal: { y: 10, duration: 0.5 },
+  toolNameReveal: { x: -40, duration: 0.72 },
+  visualParallax: { y: 28 },
+  textParallax: { y: 8 },
+} as const;
+
+/** Social proof — neutral counter-up only */
+export const SOCIAL_PROOF_COUNTER = {
+  start: "top 82%",
+  duration: 1.15,
+  ease: "power2.out",
+} as const;
+
 export type MediaStageBlend = {
   layers: Record<
     "hero" | "system" | "workflow" | "studio" | "outputs",
