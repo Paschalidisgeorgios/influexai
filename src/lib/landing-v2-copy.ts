@@ -15,9 +15,9 @@ export const LANDING_V2_COPY = {
     system: {
       number: "01",
       label: "System",
-      headline: "Ein Produktionssystem statt einzelner Generatoren.",
-      body: "InfluexAI verbindet Briefing, Visuals, Motion und Galerie zu einem Workflow, der Kampagnen zusammenhält.",
-      flow: "Briefing → Visual → Motion → Galerie",
+      headline: "Ein Eingabefeld wird zum Produktionssystem.",
+      body: "Der Nutzer beschreibt ein Ziel. InfluexAI erkennt den passenden Workflow, optimiert den Prompt und führt von Briefing zu Visual, Motion oder Galerie.",
+      flow: "Eingabe → Agent → Workflow → Vorschau → Galerie",
     },
     workflow: {
       number: "02",
@@ -110,6 +110,36 @@ export const LANDING_V2_COPY = {
         index: "04",
         label: "Gallery",
         description: "Varianten speichern und weiterverwenden",
+      },
+    ] as const,
+  },
+  systemModel: {
+    kicker: "Command-first Produktion",
+    steps: [
+      {
+        id: "input",
+        label: "Eingabe",
+        hint: "Ziel beschreiben",
+      },
+      {
+        id: "agent",
+        label: "Agent",
+        hint: "Workflow erkennen",
+      },
+      {
+        id: "workflow",
+        label: "Workflow",
+        hint: "Prompt & Format vorbereiten",
+      },
+      {
+        id: "preview",
+        label: "Vorschau",
+        hint: "Ergebnis prüfen",
+      },
+      {
+        id: "gallery",
+        label: "Galerie",
+        hint: "Weiterverwenden",
       },
     ] as const,
   },

@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
-import { LandingV2CreatorProductionFlow } from "../ui/LandingV2CreatorProductionFlow";
+import { LandingV2SystemModelFlow } from "../ui/LandingV2SystemModelFlow";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
@@ -38,7 +38,7 @@ export function LandingV2SystemChapter() {
           </p>
         </div>
         {links.mode === "preview" ? (
-          <LandingV2CreatorProductionFlow variant="system" className="landing-v2-chapter__stage" />
+          <LandingV2SystemModelFlow className="landing-v2-chapter__stage" />
         ) : (
           <LandingV2FlowStage variant="system" className="landing-v2-chapter__stage" />
         )}

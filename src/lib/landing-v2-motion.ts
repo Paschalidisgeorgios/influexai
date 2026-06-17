@@ -182,6 +182,15 @@ export const CREATOR_FLOW_REVEAL = {
   lineDuration: 1.35,
 } as const;
 
+/** System model — command-first dashboard story reveal */
+export const SYSTEM_MODEL_REVEAL = {
+  start: "top 84%",
+  stepY: 18,
+  stagger: 0.1,
+  duration: 0.65,
+  lineDuration: 1.1,
+} as const;
+
 export type MediaStageBlend = {
   layers: Record<
     "hero" | "system" | "workflow" | "studio" | "outputs",
