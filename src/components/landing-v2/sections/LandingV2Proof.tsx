@@ -6,6 +6,8 @@ import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { LandingV2AssetImage, LandingV2AssetVideo } from "../ui/LandingV2Asset";
 import { LandingV2Placeholder } from "../ui/LandingV2Placeholder";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
+import { useGalleryParallax } from "../hooks/useGalleryParallax";
+import { useLandingViewport } from "../hooks/useLandingViewport";
 
 const copy = LANDING_V2_COPY.outputs;
 
@@ -31,8 +33,8 @@ function GalleryItem({
   spanClass: string;
 }) {
   return (
-    <figure className={`landing-v2-gallery__item ${spanClass}`} data-lv2-stagger>
-      <div className="landing-v2-gallery__frame">
+    <figure className={`landing-v2-gallery__item ${spanClass}`} data-gallery-item>
+      <div className="landing-v2-gallery__frame" data-gallery-visual>
         {card.kind === "image" ? (
           <LandingV2AssetImage slot={LANDING_V2_ASSETS.proofImage} />
         ) : card.kind === "video" ? (
@@ -62,7 +64,9 @@ function GalleryItem({
 
 export function LandingV2Proof() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { enableCinematicScroll } = useLandingViewport();
   useSectionDramaturgy(sectionRef);
+  useGalleryParallax(sectionRef, enableCinematicScroll);
 
   return (
     <section

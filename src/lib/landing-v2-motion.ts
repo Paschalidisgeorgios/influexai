@@ -88,3 +88,32 @@ export const STUDIO_PANEL_DEPTH = [
   { z: 18, rotateY: -4, rotateX: 2, y: -8, scale: 0.97 },
   { z: 88, rotateY: 4, rotateX: -3, y: 2, scale: 1 },
 ] as const;
+
+/** Hero product panel — scroll + mouse depth */
+export const HERO_PARALLAX = {
+  scroll: { y: -36, scale: 0.97, z: 28 },
+  mouse: { rotateY: 4, rotateX: 2 },
+  ambient: { yPercent: 10, scale: 1.05 },
+} as const;
+
+/** Workflow stage visual frames — no pin */
+export const WORKFLOW_STAGE_MOTION = {
+  enter: { y: 60, scale: 0.96, rotateY: -3, opacity: 0.45 },
+  peak: { y: 0, scale: 1, rotateY: 0, opacity: 1 },
+  exit: { y: -18, scale: 0.97, opacity: 0.72 },
+} as const;
+
+/** Editorial production path blocks */
+export const PATHS_REVEAL = {
+  y: 60,
+  stagger: 0.15,
+  duration: 0.75,
+} as const;
+
+/** Output gallery — per-item scroll offsets (desktop) */
+export const GALLERY_PARALLAX = [
+  { yPercent: -8, scale: 1.02 },
+  { yPercent: 6, scale: 0.99 },
+  { yPercent: -5, scale: 1.015 },
+  { yPercent: 7, scale: 0.985 },
+] as const;

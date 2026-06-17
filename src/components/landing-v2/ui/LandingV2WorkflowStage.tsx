@@ -34,7 +34,7 @@ export function LandingV2WorkflowStage({
           </p>
         </div>
       </div>
-      <div className="landing-v2-workflow-stage__frame">
+      <div className="landing-v2-workflow-stage__frame" data-workflow-stage-frame>
         <LandingV2StudioSurface
           variant={surfaceVariant}
           label={stageLabel}

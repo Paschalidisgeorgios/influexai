@@ -19,6 +19,7 @@ export function LandingV2Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const backPlateRef = useRef<HTMLDivElement>(null);
+  const ambientRef = useRef<HTMLDivElement>(null);
   const links = useLandingV2Links();
   const { enableCinematicScroll, enableParallax3D, isMobile } = useLandingViewport();
   const { heroReady } = useBrandIntro();
@@ -29,6 +30,7 @@ export function LandingV2Hero() {
     stageRef,
     panelRef,
     backPlateRef,
+    ambientRef,
     enableParallax: enableCinematicScroll,
     enableMouse: enableParallax3D,
   });
@@ -39,7 +41,7 @@ export function LandingV2Hero() {
       className="landing-v2-hero landing-v2-hero--editorial relative min-h-[90vh] overflow-x-clip md:min-h-screen"
       aria-labelledby="lv2-hero-heading"
     >
-      <LandingV2HeroAmbient />
+      <LandingV2HeroAmbient ambientRef={ambientRef} />
 
       <div className="landing-v2-hero__fade" aria-hidden />
 

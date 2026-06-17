@@ -9,6 +9,8 @@ import {
 } from "@/components/dashboard/core/production-tool-routes";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
+import { useProductionPathsReveal } from "../hooks/useProductionPathsReveal";
+import { useLandingViewport } from "../hooks/useLandingViewport";
 
 const copy = LANDING_V2_COPY.paths;
 
@@ -18,7 +20,9 @@ const pathRouteById = Object.fromEntries(
 
 export function LandingV2ProductionPaths() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { enableCinematicScroll } = useLandingViewport();
   useSectionDramaturgy(sectionRef);
+  useProductionPathsReveal(sectionRef, enableCinematicScroll);
 
   return (
     <section
@@ -55,7 +59,6 @@ export function LandingV2ProductionPaths() {
                 key={item.id}
                 href={href}
                 className="landing-v2-editorial-path group"
-                data-lv2-stagger
               >
                 <div className="landing-v2-editorial-path__inner">
                   <p className="landing-v2-editorial-path__label">{item.label}</p>

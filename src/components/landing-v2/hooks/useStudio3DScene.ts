@@ -22,43 +22,33 @@ export function useStudio3DScene(
     const ctx = gsap.context(() => {
       panels.forEach((panel, index) => {
         const cfg = STUDIO_PANEL_DEPTH[index] ?? STUDIO_PANEL_DEPTH[0];
+        const offsetZ = cfg.z - 96;
+        const offsetY = cfg.y + 36;
+
         gsap.set(panel, {
-          z: cfg.z - 88,
-          rotateY: cfg.rotateY * 1.35,
-          rotateX: cfg.rotateX + 8,
-          y: cfg.y + 28,
-          scale: cfg.scale * 0.94,
-          autoAlpha: 0.32,
-          transformPerspective: 1400,
+          z: offsetZ,
+          rotateY: cfg.rotateY * 1.6,
+          rotateX: cfg.rotateX + 10,
+          y: offsetY,
+          scale: cfg.scale * 0.9,
+          transformPerspective: 1500,
           force3D: true,
         });
-      });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: scene,
-          start: "top 76%",
-          end: "top 24%",
-          scrub: 0.85,
-        },
-      });
-
-      panels.forEach((panel, index) => {
-        const cfg = STUDIO_PANEL_DEPTH[index] ?? STUDIO_PANEL_DEPTH[0];
-        tl.to(
-          panel,
-          {
-            z: cfg.z,
-            rotateY: cfg.rotateY,
-            rotateX: cfg.rotateX,
-            y: cfg.y,
-            scale: cfg.scale,
-            autoAlpha: 1,
-            duration: 0.28,
-            ease: "power2.out",
+        gsap.to(panel, {
+          z: cfg.z,
+          rotateY: cfg.rotateY,
+          rotateX: cfg.rotateX,
+          y: cfg.y,
+          scale: cfg.scale,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: panel,
+            start: "top 84%",
+            end: "top 38%",
+            scrub: 0.7,
           },
-          index * 0.08
-        );
+        });
       });
     }, section);
 

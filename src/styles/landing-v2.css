@@ -768,6 +768,9 @@
 .landing-v2-workflow-stage__frame {
   overflow: hidden;
   border-radius: 16px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .landing-v2-workflow-stage__caption {
@@ -944,6 +947,7 @@
 .landing-v2-hero__ambient-gradient {
   position: absolute;
   inset: 0;
+  will-change: transform;
   background:
     radial-gradient(ellipse 70% 50% at 78% 18%, rgba(180, 255, 0, 0.035) 0%, transparent 58%),
     radial-gradient(ellipse 55% 45% at 12% 72%, rgba(250, 246, 238, 0.025) 0%, transparent 52%),
@@ -1384,6 +1388,7 @@
   margin-top: 3rem;
   height: clamp(560px, 62vw, 760px);
   max-width: 100%;
+  perspective-origin: 50% 42%;
 }
 
 .landing-v2-studio-layer {
@@ -1569,6 +1574,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.03);
   min-height: 12rem;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .landing-v2-gallery__frame .landing-v2-product-tile,

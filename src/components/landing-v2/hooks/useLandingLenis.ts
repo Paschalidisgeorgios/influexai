@@ -24,23 +24,54 @@ export function useLandingLenis() {
       wheelMultiplier: 0.92,
     });
 
+    const root = document.documentElement;
+
+    ScrollTrigger.scrollerProxy(root, {
+      scrollTop(value) {
+        if (arguments.length && value !== undefined) {
+          lenis.scrollTo(value, { immediate: true });
+        }
+        return lenis.scroll;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
+      pinType: root.style.transform ? "transform" : "fixed",
+    });
+
     lenis.on("scroll", ScrollTrigger.update);
 
-    const onTick = (time: number) => {
-      lenis.raf(time * 1000);
+    const onTick = () => {
+      lenis.raf(performance.now());
     };
     gsap.ticker.add(onTick);
     gsap.ticker.lagSmoothing(0);
 
-    const refresh = () => ScrollTrigger.refresh();
-    const refreshTimer = window.setTimeout(refresh, 150);
+    const onRefresh = () => {
+      lenis.resize();
+    };
+
+    const refresh = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    };
+
+    const refreshTimer = window.setTimeout(refresh, 220);
     window.addEventListener("resize", refresh);
+    ScrollTrigger.addEventListener("refresh", onRefresh);
 
     return () => {
       window.clearTimeout(refreshTimer);
       window.removeEventListener("resize", refresh);
+      ScrollTrigger.removeEventListener("refresh", onRefresh);
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      ScrollTrigger.scrollerProxy(root, {});
       ScrollTrigger.refresh();
     };
   }, [enableLenis]);

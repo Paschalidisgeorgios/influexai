@@ -6,6 +6,7 @@ import { LandingV2WorkflowStage } from "../ui/LandingV2WorkflowStage";
 import type { StudioSurfaceVariant } from "../ui/LandingV2StudioSurface";
 import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useScrollStoryActiveChapter } from "../hooks/useScrollStoryActiveChapter";
+import { useWorkflowStageMotion } from "../hooks/useWorkflowStageMotion";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 
 const STATIONS = LANDING_V2_COPY.workflow.stations;
@@ -34,6 +35,7 @@ export function LandingV2ScrollStory() {
 
   useSectionDramaturgy(sectionRef);
   useScrollStoryActiveChapter(chaptersRef, useChapterTracking, onActiveChange);
+  useWorkflowStageMotion(chaptersRef, enableCinematicScroll);
 
   return (
     <section
