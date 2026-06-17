@@ -7,6 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLandingViewport } from "./useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 
+import { syncLandingScrollY, resetLandingScrollY } from "@/lib/landing-v2-motion";
+
 import "lenis/dist/lenis.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -47,7 +49,10 @@ export function useLandingLenis() {
       pinType: root.style.transform ? "transform" : "fixed",
     });
 
-    lenis.on("scroll", ScrollTrigger.update);
+    lenis.on("scroll", ({ scroll }) => {
+      syncLandingScrollY(scroll);
+      ScrollTrigger.update();
+    });
 
     const onTick = () => {
       lenis.raf(performance.now());
@@ -74,6 +79,7 @@ export function useLandingLenis() {
       ScrollTrigger.removeEventListener("refresh", onRefresh);
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      resetLandingScrollY();
       ScrollTrigger.scrollerProxy(root, {});
       ScrollTrigger.refresh();
     };

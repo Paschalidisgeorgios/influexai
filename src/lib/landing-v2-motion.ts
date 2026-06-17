@@ -131,3 +131,23 @@ export const GALLERY_PARALLAX = [
   { yPercent: -5, scale: 1.015 },
   { yPercent: 7, scale: 0.985 },
 ] as const;
+
+/** Lenis / window scroll bridge — nav progress reads this when smooth scroll is active */
+let landingScrollY = 0;
+let landingLenisActive = false;
+
+export function syncLandingScrollY(y: number) {
+  landingLenisActive = true;
+  landingScrollY = y;
+}
+
+export function resetLandingScrollY() {
+  landingLenisActive = false;
+  landingScrollY = 0;
+}
+
+export function readLandingScrollY(): number {
+  if (typeof window === "undefined") return 0;
+  if (landingLenisActive) return landingScrollY;
+  return window.scrollY || document.documentElement.scrollTop || 0;
+}

@@ -2,10 +2,7 @@
 
 import gsap from "gsap";
 import { useEffect, useState } from "react";
-
-function readScrollY() {
-  return window.scrollY || document.documentElement.scrollTop || 0;
-}
+import { readLandingScrollY } from "@/lib/landing-v2-motion";
 
 export function useLandingNavState(sectionIds: readonly string[]) {
   const [scrolled, setScrolled] = useState(false);
@@ -14,7 +11,7 @@ export function useLandingNavState(sectionIds: readonly string[]) {
 
   useEffect(() => {
     const update = () => {
-      const y = readScrollY();
+      const y = readLandingScrollY();
       setScrolled(y > 40);
       const max = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(max > 0 ? Math.min(1, y / max) : 0);

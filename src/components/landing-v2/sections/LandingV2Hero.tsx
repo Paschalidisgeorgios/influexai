@@ -53,7 +53,7 @@ export function LandingV2Hero() {
 
       <div className="landing-v2-hero__fade" aria-hidden />
 
-      <div className="landing-v2-hero__shell relative z-[2] mx-auto w-full max-w-[90rem] px-4 pb-10 pt-[var(--lv2-nav-offset)] sm:px-5 md:px-8 md:pb-14 lg:pb-16">
+      <div className="landing-v2-hero__shell landing-v2-hero__shell--offset relative z-[2] mx-auto w-full max-w-[90rem] px-4 pb-10 sm:px-5 md:px-8 md:pb-14 lg:pb-16">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-5xl flex-col justify-center">
           <p className="landing-v2-kicker landing-v2-kicker--editorial mb-5" data-hero-eyebrow>
             <span className="landing-v2-kicker__dot" aria-hidden />

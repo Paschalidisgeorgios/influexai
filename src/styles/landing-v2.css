@@ -18,7 +18,7 @@
   --lv2-text-label: rgba(245, 242, 234, 0.55);
   --lv2-banner-height: 0px;
   --lv2-nav-height: 3.5rem;
-  --lv2-nav-offset: calc(var(--lv2-banner-height) + var(--lv2-nav-height) + 0.75rem);
+  --lv2-nav-offset: calc(var(--lv2-banner-height) + var(--lv2-nav-height) + 1rem);
   min-height: 100vh;
   background: var(--lv2-shell);
   color: var(--lv2-text-light);
@@ -42,7 +42,8 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 95;
+  z-index: 9998;
+  width: 100%;
   padding: 0.4rem 1rem;
   text-align: center;
   font-size: 0.7rem;
@@ -69,21 +70,35 @@
   }
 }
 
-.landing-v2-page--intro-active .landing-v2-nav,
 .landing-v2-page--intro-active .landing-v2-preview-banner {
   opacity: 0;
   pointer-events: none;
 }
 
-.landing-v2-page--intro-chrome .landing-v2-nav,
 .landing-v2-page--intro-chrome .landing-v2-preview-banner {
   opacity: 0.55;
   pointer-events: none;
   transition: opacity 0.85s ease;
 }
 
-.landing-v2-page--intro-complete .landing-v2-nav,
 .landing-v2-page--intro-complete .landing-v2-preview-banner {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.65s ease;
+}
+
+.landing-v2-nav--intro-active {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.landing-v2-nav--intro-chrome {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.85s ease;
+}
+
+.landing-v2-nav--intro-complete {
   opacity: 1;
   pointer-events: auto;
   transition: opacity 0.65s ease;
@@ -360,15 +375,37 @@
 }
 
 .landing-v2-nav {
+  --lv2-text-light: #f7f3ea;
+  --lv2-text-dark: #080808;
+  --lv2-lime: #b4ff00;
+  --lv2-lime-soft: rgba(180, 255, 0, 0.18);
+  --lv2-text-muted: rgba(245, 242, 234, 0.58);
+  --lv2-banner-height: 0px;
+  --lv2-nav-height: 3.5rem;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 90;
+  z-index: 9999;
+  width: 100%;
   padding: calc(var(--lv2-banner-height) + 0.65rem) 1rem 0;
   pointer-events: none;
   transition: padding 0.35s ease;
-  isolation: isolate;
+  font-family: var(--font-dm), "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.landing-v2-nav--preview {
+  --lv2-banner-height: 1.65rem;
+  --lv2-nav-height: 3.5rem;
+}
+
+@media (max-width: 767px) {
+  .landing-v2-nav--preview {
+    --lv2-banner-height: 1.35rem;
+    --lv2-nav-height: 3.15rem;
+  }
 }
 
 .landing-v2-nav--scrolled {
@@ -1233,6 +1270,13 @@
   flex-direction: column;
   gap: 2rem;
   min-height: calc(100vh - var(--lv2-nav-offset));
+  padding-top: max(var(--lv2-nav-offset), 5rem);
+}
+
+@media (min-width: 768px) {
+  .landing-v2-hero__shell--offset {
+    padding-top: max(var(--lv2-nav-offset), 7rem);
+  }
 }
 
 @media (min-width: 1024px) {
