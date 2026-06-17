@@ -145,7 +145,7 @@ function ComingSoonToolCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex min-h-[96px] flex-col p-4 text-left transition-colors md:p-5 ${STUDIO_RADIUS.card}`}
+      className={`group flex min-h-[96px] flex-col p-4 text-left transition-colors hover:border-black/12 md:p-5 ${STUDIO_RADIUS.card}`}
       style={{
         background: "rgba(255,250,242,0.38)",
         border: `1px solid ${STUDIO_CARD_BORDER}`,
@@ -167,7 +167,7 @@ function ComingSoonToolCard({
         className="mt-3 text-[11px] font-medium"
         style={{ color: DASHBOARD_MUTED }}
       >
-        {SETUP_COPY.toolCardCtaComingSoon}
+        {SETUP_COPY.toolCardCtaInactive}
       </span>
     </button>
   );
@@ -245,8 +245,8 @@ export function ProductionToolsOverview({
 
         {comingSoonTools.length > 0 ? (
           <StudioSection
-            title={SETUP_COPY.hubComingSoonTitle}
-            description={SETUP_COPY.hubComingSoonDescription}
+            title={SETUP_COPY.hubInactiveTitle}
+            description={SETUP_COPY.hubInactiveDescription}
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {comingSoonTools.map((tool) => (

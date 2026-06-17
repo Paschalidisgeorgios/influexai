@@ -39,8 +39,8 @@ export const IMG_TO_VIDEO_START_IMAGE_COPY = {
 } as const;
 
 export const NON_MVP_SETUP_COPY = {
-  status: "Dieses Studio-Setup ist noch nicht aktiviert.",
-  body: "Du kannst dein Briefing mit dem Agenten vorbereiten oder ein verfügbares Tool auswählen.",
+  headline: "Dieses Studio-Setup ist noch nicht aktiviert.",
+  body: "Wähle ein verfügbares Studio-Tool oder bereite dein Briefing mit dem Agenten vor.",
   primaryCta: "Verfügbare Tools ansehen",
   secondaryCta: "Mit Agent vorbereiten",
 } as const;
@@ -53,11 +53,11 @@ export const SETUP_COPY = {
   galleryResult: "Ergebnis wird in deiner Galerie gespeichert.",
   resultInline: "Ergebnis erscheint direkt hier.",
   toolCardCta: "Tool einrichten",
-  toolCardCtaComingSoon: "Demnächst",
+  toolCardCtaInactive: "In Vorbereitung",
   toolCardCtaGallery: "Galerie öffnen",
-  hubComingSoonTitle: "Demnächst",
-  hubComingSoonDescription:
-    "Weitere Studios folgen schrittweise — wähle bis dahin ein verfügbares Tool.",
+  hubInactiveTitle: "In Vorbereitung",
+  hubInactiveDescription:
+    "Diese Studios sind noch nicht aktiv — nutze ein verfügbares Tool oder den Agenten.",
   modelsLoading: "Modelle werden geladen…",
   videoGenerating: "Video wird erstellt — das kann einige Minuten dauern.",
 } as const;
@@ -69,7 +69,7 @@ export function isSetupMvpTool(toolId: ToolId): boolean {
 export function getToolHubCardCta(toolId: ToolId): string {
   if (toolId === "gallery") return SETUP_COPY.toolCardCtaGallery;
   if (isSetupMvpTool(toolId)) return SETUP_COPY.toolCardCta;
-  return SETUP_COPY.toolCardCtaComingSoon;
+  return SETUP_COPY.toolCardCtaInactive;
 }
 
 const TOOL_CATEGORY: Partial<Record<ToolId, string>> = {

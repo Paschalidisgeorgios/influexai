@@ -48,6 +48,7 @@ export type ToolId =
   | "face-swap-video"  | "character-swap"    | "char-studio-video" | "avatar-video"
   | "video-translation"| "talking-avatar"    | "talking-photo"    | "ai-video-editor"
   | "ecommerce-ads"
+  | "ugc-video"
   // Image Tools
   | "face-swap-image"  | "image-gen"         | "img-to-img"       | "char-studio-image"
   | "jarvis-moderator"
@@ -202,6 +203,7 @@ const TOOL_LABEL: Record<ToolId, string> = {
   "talking-avatar":      "Talking Avatar",
   "talking-photo":       "Talking Photo",
   "ai-video-editor":     "AI Video Editor",
+  "ugc-video":             "UGC Video",
   "ecommerce-ads":       "E-Commerce Ads",
   // Image
   "face-swap-image":     "Face Swap Image",
@@ -231,6 +233,7 @@ const TOOL_QUERY_IDS = new Set<string>([
   "image-gen", "image-generator", "bild-generator",
   "img-to-img", "img-to-video", "video-generator", "szenen-generator",
   "text-to-video", "ecommerce-ads", "avatar-video", "tts",
+  "ai-video-editor", "video-editor", "avatar-studio", "ugc-video", "voice-agent",
 ]);
 
 // ─── GalleryFilterBar ─────────────────────────────────────────────────────────

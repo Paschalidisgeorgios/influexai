@@ -32,12 +32,16 @@ export const TOOL_QUERY_ALIASES: Record<string, ToolId> = {
   "video-generator": "img-to-video",
   "szenen-generator": "img-to-video",
   "image-to-video": "img-to-video",
+  "video-editor": "ai-video-editor",
+  "avatar-studio": "avatar-video",
+  "voice-agent": "tts",
 };
 
 const LAUNCH_TOOL_IDS = new Set<ToolId>([
   ...(Object.keys(TOOL_DEDICATED_ROUTES) as ToolId[]),
   ...Object.values(TOOL_QUERY_ALIASES),
   "img-to-img",
+  "ugc-video",
 ]);
 
 const PATH_TO_LAUNCH_TOOL = new Map<string, ToolId>();

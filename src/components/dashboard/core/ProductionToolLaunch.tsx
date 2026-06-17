@@ -25,9 +25,8 @@ export function ProductionToolLaunch({
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-8">
       <StudioPageHeader
-        kicker="Tool"
-        title={title}
-        subtitle={NON_MVP_SETUP_COPY.status}
+        kicker={title}
+        title={NON_MVP_SETUP_COPY.headline}
       />
 
       <StudioPanel>
