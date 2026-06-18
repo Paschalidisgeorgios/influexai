@@ -9,7 +9,7 @@ import {
 import {
   consentRequiredResponse,
   KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE,
-  readConsentFromFormData,
+  readIdentityUploadConsentFromFormData,
 } from "@/lib/consent.server";
 
 export const dynamic = "force-dynamic";
@@ -50,9 +50,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (
-    !readConsentFromFormData(formData, { requireRightsConfirmed: true })
-  ) {
+  if (!readIdentityUploadConsentFromFormData(formData)) {
     return consentRequiredResponse(KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE);
   }
 

@@ -43,6 +43,24 @@ export function readConsentFromFormData(
   return true;
 }
 
+/** Identity upload chain: requires consentAccepted AND rightsConfirmed explicitly. */
+export function readIdentityUploadConsentFromFormData(formData: FormData): boolean {
+  return (
+    parseConsentFlag(formData.get("consentAccepted")) &&
+    parseConsentFlag(formData.get("rightsConfirmed"))
+  );
+}
+
+/** Identity upload chain: requires consentAccepted AND rightsConfirmed explicitly. */
+export function readIdentityUploadConsentFromJson(body: unknown): boolean {
+  if (!body || typeof body !== "object") return false;
+  const record = body as Record<string, unknown>;
+  return (
+    parseConsentFlag(record.consentAccepted) &&
+    parseConsentFlag(record.rightsConfirmed)
+  );
+}
+
 export function readConsentFromJson(body: unknown): boolean {
   if (!body || typeof body !== "object") return false;
   const record = body as Record<string, unknown>;

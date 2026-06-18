@@ -352,6 +352,8 @@ function KiInfluencerPageInner() {
           sessionId,
           thumbnailPath,
           imageCount: uploadedCount,
+          consentAccepted: true,
+          rightsConfirmed: true,
         }),
       });
       const createParsed =
@@ -598,6 +600,15 @@ function KiInfluencerPageInner() {
       setError("Bitte bestätige die Einwilligung, bevor es weitergeht.");
       return;
     }
+    if (
+      pathMode === "uploaded" &&
+      (!uploadConsent || !uploadRightsConsent)
+    ) {
+      setError(
+        "Bitte bestätige beide Upload-Checkboxen, bevor das Training startet."
+      );
+      return;
+    }
     setError(null);
     setBusyAction("loraTrain");
     setLoraProgress(0);
@@ -607,7 +618,11 @@ function KiInfluencerPageInner() {
         const finRes = await fetch("/api/ki-influencer/finalize-upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ characterId }),
+          body: JSON.stringify({
+            characterId,
+            consentAccepted: true,
+            rightsConfirmed: true,
+          }),
         });
         const finParsed =
           await parseKiInfluencerJsonResponse<FinalizeUploadResponse>(finRes);

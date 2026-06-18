@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  consentRequiredResponse,
+  KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE,
+  readIdentityUploadConsentFromJson,
+} from "@/lib/consent.server";
+import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
   logKiInfluencerError,
@@ -11,12 +16,26 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 15;
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as {
+  let body: {
     name?: string;
     sessionId?: string;
     thumbnailPath?: string;
     imageCount?: number;
+    consentAccepted?: boolean | string;
+    rightsConfirmed?: boolean | string;
   };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Ungültige JSON-Daten." },
+      { status: 400 }
+    );
+  }
+
+  if (!readIdentityUploadConsentFromJson(body)) {
+    return consentRequiredResponse(KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE);
+  }
 
   const name = body.name?.trim() ?? "";
   const sessionId = body.sessionId?.trim() ?? "";
