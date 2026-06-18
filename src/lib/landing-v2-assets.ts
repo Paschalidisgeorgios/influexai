@@ -1,6 +1,7 @@
 /** Landing-v2 preview — asset paths */
 
 import { LANDING_V2_COPY } from "./landing-v2-copy";
+import { LORA_REFERENCE_IMAGES } from "./landing-v2-studio-demo-scenarios";
 
 export type LandingV2AssetSlot = {
   id: string;
@@ -16,6 +17,8 @@ export const LANDING_V2_AUDIENCE = ["Creator", "Brands", "E-Commerce", "Teams"] 
 export const LANDING_V2_ASSETS = {
   /** Brand mark — live intro reveal (transparent PNG) */
   brandLogo: "/images/brand/influexai-logo-transparent.png",
+  /** LoRA training demo reference thumbnails (preview only) */
+  loraTrainingReferences: LORA_REFERENCE_IMAGES,
   hero: {
     webm: "/videos/landing/hero-loop.webm",
     mp4: "/videos/landing/hero-loop.mp4",

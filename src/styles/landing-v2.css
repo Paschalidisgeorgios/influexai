@@ -3810,6 +3810,39 @@
 }
 
 /* 04 Galerie */
+.landing-v2-studio-scene__thumb-row {
+  display: flex;
+  gap: 0.45rem;
+  max-width: 100%;
+  margin-bottom: 0.65rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.landing-v2-studio-scene__thumb-row::-webkit-scrollbar {
+  display: none;
+}
+
+.landing-v2-studio-scene__thumb {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  object-fit: cover;
+  object-position: center top;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.landing-v2-studio-scene__demo-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  color: rgba(245, 242, 234, 0.45);
+}
+
 .landing-v2-studio-scene__assets {
   display: flex;
   flex-direction: column;

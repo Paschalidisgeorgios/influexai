@@ -164,6 +164,31 @@
   color: var(--studio-text-muted);
 }
 
+.preview-lora-thumb-row {
+  display: flex;
+  gap: 0.45rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.preview-lora-thumb-row::-webkit-scrollbar {
+  display: none;
+}
+
+.preview-lora-thumb {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  object-fit: cover;
+  object-position: center top;
+  background: rgba(255, 255, 255, 0.03);
+}
+
 .preview-type-workflow-title {
   font-family: var(--studio-font-display);
   font-weight: 800;

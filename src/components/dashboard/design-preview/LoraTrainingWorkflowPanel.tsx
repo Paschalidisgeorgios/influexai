@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { WorkflowPhase } from "./DynamicWorkflowResult";
 import type { StudioEngineDefinition } from "./studio-engine-registry";
 import { PREVIEW_MVP_ROUTES } from "./preview-routes";
+import { LORA_REFERENCE_IMAGES } from "@/lib/landing-v2-studio-demo-scenarios";
 
 const ACCENT = "#b4ff00";
 const BORDER = "rgba(255, 255, 255, 0.08)";
@@ -162,6 +163,23 @@ export function LoraTrainingWorkflowPanel({
         >
           <p className="preview-type-body preview-type-body--muted text-[0.75rem]">
             {copy.uploadHint}
+          </p>
+          <div className="preview-lora-thumb-row mt-3" aria-label={de ? "Referenzbilder Demo" : "Reference images demo"}>
+            {LORA_REFERENCE_IMAGES.map((thumb) => (
+              <img
+                key={thumb.src}
+                src={thumb.src}
+                alt={thumb.alt}
+                className="preview-lora-thumb"
+                loading="lazy"
+                decoding="async"
+              />
+            ))}
+          </div>
+          <p className="preview-type-body preview-type-body--muted mt-2 text-[0.6875rem]">
+            {de
+              ? "Demo-Referenzen — kein trainiertes Modell."
+              : "Demo references — no trained model."}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button

@@ -1,12 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
+import { LANDING_V2_STUDIO_DEMO_SCENARIOS } from "@/lib/landing-v2-studio-demo-scenarios";
 import { LandingV2ChapterMarker } from "../ui/LandingV2ChapterMarker";
 import { LandingV2StudioProductScenes } from "../ui/LandingV2StudioProductScenes";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useSectionDramaturgy } from "../hooks/useSectionDramaturgy";
 import { useStudioScenesReveal } from "../hooks/useStudioScenesReveal";
+import { useStudioDemoScenarioRotate } from "../hooks/useStudioDemoScenarioRotate";
 
 const chapterCopy = LANDING_V2_COPY.chapters.studio;
 
@@ -14,9 +16,17 @@ export function LandingV2StudioPreview() {
   const sectionRef = useRef<HTMLElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const { enablePreviewMotion } = useLandingV2Links();
+  const [scenarioIndex, setScenarioIndex] = useState(0);
 
   useSectionDramaturgy(sectionRef);
   useStudioScenesReveal(sceneRef, enablePreviewMotion);
+  useStudioDemoScenarioRotate({
+    setActiveIndex: setScenarioIndex,
+    enabled: enablePreviewMotion,
+  });
+
+  const activeScenario =
+    LANDING_V2_STUDIO_DEMO_SCENARIOS[scenarioIndex] ?? LANDING_V2_STUDIO_DEMO_SCENARIOS[0];
 
   return (
     <section
@@ -44,7 +54,7 @@ export function LandingV2StudioPreview() {
         </div>
 
         <div ref={sceneRef} className="landing-v2-chapter__stage" data-lv2-stagger>
-          <LandingV2StudioProductScenes />
+          <LandingV2StudioProductScenes scenario={activeScenario} />
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@
 
 import { resolveEngineForIntent } from "./studio-engine-registry";
 import type { PreviewIntent } from "./preview-intent";
+import { LORA_REFERENCE_IMAGES } from "@/lib/landing-v2-studio-demo-scenarios";
 
 const ACCENT = "#b4ff00";
 
@@ -85,11 +86,23 @@ export function AssetPreviewInline({
           <div className="space-y-3">
             <p className="preview-type-body text-[0.875rem]" style={{ color: "var(--studio-text-secondary)" }}>
               {de
-                ? "Upload, Consent und Trainingsname werden im LoRA-Workflow vorbereitet — kein Training wird hier simuliert."
-                : "Upload, consent and training name are prepared in the LoRA workflow — no training is simulated here."}
+                ? "Referenz-Set zur Vorschau — Upload, Consent und Trainingsname werden im LoRA-Workflow vorbereitet. Kein Training wird hier simuliert."
+                : "Reference set for preview — upload, consent and training name are prepared in the LoRA workflow. No training is simulated here."}
             </p>
+            <div className="preview-lora-thumb-row" aria-label={de ? "Referenzbilder Demo" : "Reference images demo"}>
+              {LORA_REFERENCE_IMAGES.map((thumb) => (
+                <img
+                  key={thumb.src}
+                  src={thumb.src}
+                  alt={thumb.alt}
+                  className="preview-lora-thumb"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ))}
+            </div>
             <div
-              className="rounded border border-dashed px-4 py-6 text-center"
+              className="rounded border border-dashed px-4 py-4 text-center"
               style={{ borderColor: "rgba(180,255,0,0.18)", background: "rgba(180,255,0,0.04)" }}
             >
               <p className="preview-type-meta" style={{ color: ACCENT }}>
