@@ -9,16 +9,9 @@ import {
   setLastAuthProvider,
 } from "@/lib/auth-last-used";
 
-const googleButtonClass =
-  "relative flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-black transition-all hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50";
-
 function GoogleIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      className="h-4 w-4 shrink-0"
-    >
+    <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 shrink-0">
       <path
         fill="#4285F4"
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
@@ -76,13 +69,11 @@ export function AuthSocialButtons({
       type="button"
       disabled={loading}
       onClick={() => void handleGoogleSignIn()}
-      className={googleButtonClass}
+      className="influex-auth-google-btn"
       aria-busy={loading}
     >
       {showLastUsed ? (
-        <span className="absolute -top-2 right-4 rounded-full bg-blue-600 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white">
-          {t("last_used")}
-        </span>
+        <span className="influex-auth-google-btn__badge">{t("last_used")}</span>
       ) : null}
       <GoogleIcon />
       Google

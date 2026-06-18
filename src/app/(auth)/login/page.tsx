@@ -6,19 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
-import {
-  authInputClass,
-  authLabelClass,
-  authButtonClass,
-  authForgotLinkClass,
-  authFooterClass,
-} from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import {
   agencyWorkspaceAccessFromRows,
   isTenantAccessibleForAgency,
 } from "@/lib/agency-access";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
+import { InfluexButton, InfluexInput } from "@/components/shared/influex";
 
 function LoginPageInner() {
   const t = useTranslations("auth");
@@ -94,69 +88,57 @@ function LoginPageInner() {
 
   return (
     <div className="w-full">
-      <h1 className="mb-2 font-sans text-2xl font-extrabold uppercase tracking-wider text-white antialiased">
-        {t("login_title")}
-      </h1>
+      <h1 className="influex-auth-form__title">{t("login_title")}</h1>
+      <p className="influex-auth-form__subtitle">{t("login_subtitle")}</p>
 
-      <p className="mb-8 font-sans text-xs font-normal tracking-wide text-zinc-400">
-        {t("login_subtitle")}
-      </p>
-
-      {error ? (
-        <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-400">
-          {error}
-        </div>
-      ) : null}
+      {error ? <div className="influex-auth-alert influex-auth-alert--error">{error}</div> : null}
 
       <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
         onError={(message) => setError(message)}
       >
         <form className="space-y-4" onSubmit={handleLogin}>
-          <div>
-            <label className={authLabelClass}>{t("email")}</label>
-            <input
-              type="email"
-              data-testid="auth-email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="deine@email.com"
-              className={authInputClass}
-              autoComplete="email"
-            />
-          </div>
+          <InfluexInput
+            label={t("email")}
+            type="email"
+            data-testid="auth-email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="deine@email.com"
+            autoComplete="email"
+          />
 
           <div>
-            <div className="mb-2 flex items-center justify-between">
-              <label className={`${authLabelClass} mb-0`}>{t("password")}</label>
-              <Link href="/forgot-password" className={authForgotLinkClass}>
+            <div className="influex-auth-form__label-row">
+              <label htmlFor="auth-login-password" className="influex-field__label">
+                {t("password")}
+              </label>
+              <Link href="/forgot-password" className="influex-auth-form__forgot">
                 {t("forgot_password")}
               </Link>
             </div>
             <input
+              id="auth-login-password"
               type="password"
               data-testid="auth-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className={authInputClass}
+              className="influex-input"
               autoComplete="current-password"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
 
-          <button type="submit" disabled={loading} className={authButtonClass}>
-            {loading ? "…" : t("login_button")}
-          </button>
+          <InfluexButton type="submit" loading={loading} className="w-full">
+            {t("login_button")}
+          </InfluexButton>
         </form>
       </AuthCredentialSection>
 
-      <p className={`mt-6 text-center ${authFooterClass}`}>
+      <p className="influex-auth-form__footer">
         {t("no_account")}{" "}
-        <Link
-          href="/auth/sign-up"
-          className="transition-colors hover:text-[#ccff00]"
-        >
+        <Link href="/auth/sign-up" className="influex-auth-form__footer-link">
           {t("signup_link")}
         </Link>
       </p>
@@ -166,7 +148,7 @@ function LoginPageInner() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="w-full text-sm text-white/60">…</div>}>
+    <Suspense fallback={<div className="w-full text-sm text-[var(--influex-text-muted)]">…</div>}>
       <LoginPageInner />
     </Suspense>
   );

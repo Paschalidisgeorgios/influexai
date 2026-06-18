@@ -8,14 +8,6 @@ import Link from "next/link";
 import { validateBetaCode } from "@/app/actions/beta";
 import { trackAbEvent } from "@/lib/ab-tracking";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
-import {
-  authInputClass,
-  authLabelClass,
-  authButtonClass,
-  authLinkAccentClass,
-  authTitleClass,
-  authFooterClass,
-} from "@/components/auth/auth-input-classes";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import {
@@ -27,6 +19,7 @@ import {
   strengthBarColors,
 } from "@/lib/password-strength";
 import { isSignupEmailAlreadyRegistered } from "@/lib/signup-email-exists";
+import { InfluexButton, InfluexInput, InfluexSurface } from "@/components/shared/influex";
 
 const REFERRAL_STORAGE_KEY = "referral_code";
 const BETA_STORAGE_KEY = "beta_code";
@@ -229,22 +222,18 @@ function SignupPageInner() {
   if (success) {
     return (
       <div className="w-full text-center">
-        <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-[#ccff00]/25 bg-[#ccff00]/10">
-          <span className="text-2xl" aria-hidden>
-            ✉
-          </span>
+        <div className="influex-auth-success-icon" aria-hidden>
+          ✉
         </div>
-        <h2 className="mb-3 text-2xl font-semibold text-white">
-          {t("verify_email_title")}
-        </h2>
-        <p className="mb-6 text-sm leading-relaxed text-white/75">
+        <h2 className="influex-auth-form__title">{t("verify_email_title")}</h2>
+        <p className="influex-auth-form__subtitle">
           {t("verify_email_body")}{" "}
-          <strong className="text-white">{email}</strong>
+          <strong className="text-[var(--influex-text)]">{email}</strong>
           {betaCode && (
             <>
               <br />
               <br />
-              <span className="text-[#ccff00]">50% Erstkauf-Rabatt</span> und
+              <span className="text-[var(--influex-lime)]">50% Erstkauf-Rabatt</span> und
               Lifetime-Rabatt werden nach der Bestätigung aktiviert.
             </>
           )}
@@ -252,99 +241,77 @@ function SignupPageInner() {
             <>
               <br />
               <br />
-              <span className="text-[#ccff00]">5 Bonus-Credits</span> nach
+              <span className="text-[var(--influex-lime)]">5 Bonus-Credits</span> nach
               Bestätigung.
             </>
           )}
         </p>
-        <Link href="/auth/sign-in" className={`inline-block ${authButtonClass}`}>
-          {t("login_link")}
-        </Link>
+        <InfluexButton href="/auth/sign-in">{t("login_link")}</InfluexButton>
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <h1 className={authTitleClass}>{t("signup_title")}</h1>
-
-      <p className="mb-8 font-sans text-xs font-normal tracking-wide text-zinc-400">
-        {t("signup_subtitle")}
-      </p>
+      <h1 className="influex-auth-form__title">{t("signup_title")}</h1>
+      <p className="influex-auth-form__subtitle">{t("signup_subtitle")}</p>
 
       <AuthCredentialSection
         redirectPath={searchParams.get("redirect")}
         onError={(message) => setError(message)}
       >
-      {betaCode && (
-        <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
-          <p className="font-semibold text-[#ccff00]">
-            🔥 Beta — 50% Erstkauf + 20% Lifetime
-          </p>
-          <p className="mt-1 text-xs text-white/60">Code: {betaCode}</p>
-        </div>
-      )}
+        {betaCode ? (
+          <InfluexSurface variant="muted" className="mb-4 p-3 text-sm">
+            <p className="font-semibold text-[var(--influex-lime)]">
+              Beta — 50% Erstkauf + 20% Lifetime
+            </p>
+            <p className="mt-1 text-xs text-[var(--influex-text-muted)]">Code: {betaCode}</p>
+          </InfluexSurface>
+        ) : null}
 
-      {referralCode && (
-        <div className="mb-4 rounded-xl border border-[#ccff00]/25 bg-[#ccff00]/10 p-3 text-sm">
-          <p className="font-semibold text-[#ccff00]">
-            🎁 5 Bonus-Credits — Einladung
-          </p>
-          <p className="mt-1 text-xs text-white/60">Code: {referralCode}</p>
-        </div>
-      )}
+        {referralCode ? (
+          <InfluexSurface variant="muted" className="mb-4 p-3 text-sm">
+            <p className="font-semibold text-[var(--influex-lime)]">
+              5 Bonus-Credits — Einladung
+            </p>
+            <p className="mt-1 text-xs text-[var(--influex-text-muted)]">Code: {referralCode}</p>
+          </InfluexSurface>
+        ) : null}
 
-      {emailAlreadyExists && (
-        <div
-          className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/25"
-          role="alert"
-        >
-          <p className="text-[#F0EFE8] font-semibold text-sm mb-1.5">
-            {t("signup.emailAlreadyExists.title")}
-          </p>
-          <p className="text-white/70 text-sm leading-relaxed mb-4">
-            {t("signup.emailAlreadyExists.description")}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Link
-              href="/auth/sign-in"
-              className="flex-1 rounded-lg bg-[#ccff00] py-2.5 text-center text-sm font-bold text-black transition-transform hover:scale-[1.02]"
-            >
-              {t("signup.emailAlreadyExists.login")}
-            </Link>
-            <Link
-              href="/forgot-password"
-              className="flex-1 rounded-lg border border-zinc-800/60 bg-white/[0.03] py-2.5 text-center text-sm font-semibold text-[#F0EFE8] transition-colors hover:border-[#ccff00]/40"
-            >
-              {t("signup.emailAlreadyExists.resetPassword")}
-            </Link>
+        {emailAlreadyExists ? (
+          <div className="influex-auth-alert influex-auth-alert--warning" role="alert">
+            <p className="mb-1.5 font-semibold">{t("signup.emailAlreadyExists.title")}</p>
+            <p className="mb-4 text-sm leading-relaxed opacity-90">
+              {t("signup.emailAlreadyExists.description")}
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <InfluexButton href="/auth/sign-in" className="flex-1">
+                {t("signup.emailAlreadyExists.login")}
+              </InfluexButton>
+              <InfluexButton href="/forgot-password" variant="secondary" className="flex-1">
+                {t("signup.emailAlreadyExists.resetPassword")}
+              </InfluexButton>
+            </div>
           </div>
-        </div>
-      )}
+        ) : null}
 
-      {error && !emailAlreadyExists && (
-        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
+        {error && !emailAlreadyExists ? (
+          <div className="influex-auth-alert influex-auth-alert--error">{error}</div>
+        ) : null}
 
-      <form className="space-y-4" onSubmit={handleSignup}>
-        <div>
-          <label className={authLabelClass}>{t("name")}</label>
-          <input
+        <form className="space-y-4" onSubmit={handleSignup}>
+          <InfluexInput
+            label={t("name")}
             type="text"
             data-testid="auth-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("name")}
-            className={authInputClass}
             autoComplete="name"
           />
-        </div>
 
-        <div>
-          <label className={authLabelClass}>{t("email")}</label>
-          <input
+          <InfluexInput
+            label={t("email")}
             type="email"
             data-testid="auth-email"
             value={email}
@@ -353,60 +320,55 @@ function SignupPageInner() {
               if (emailAlreadyExists) setEmailAlreadyExists(false);
             }}
             placeholder="deine@email.com"
-            className={authInputClass}
             autoComplete="email"
           />
-        </div>
 
-        <div>
-          <label className={authLabelClass}>{t("password")}</label>
-          <input
-            type="password"
-            data-testid="auth-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className={authInputClass}
-            autoComplete="new-password"
-          />
-          <div className="flex gap-1 mt-2">
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`h-1 flex-1 rounded-full transition-all ${
-                  i < strength && strength > 0
-                    ? strengthBarColors[strength - 1]
-                    : "bg-white/10"
-                }`}
-              />
-            ))}
+          <div>
+            <InfluexInput
+              label={t("password")}
+              type="password"
+              data-testid="auth-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="new-password"
+            />
+            <div className="influex-auth-strength">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={`influex-auth-strength__bar ${
+                    i < strength && strength > 0 ? strengthBarColors[strength - 1] : ""
+                  }`}
+                />
+              ))}
+            </div>
+            {password.length > 0 && strength > 0 ? (
+              <p className="influex-auth-strength__hint">
+                {t(strengthLabelKeys[Math.min(strength - 1, 3)])}
+              </p>
+            ) : null}
           </div>
-          {password.length > 0 && strength > 0 && (
-            <p className="text-xs mt-1 text-white/65">
-              {t(strengthLabelKeys[Math.min(strength - 1, 3)])}
-            </p>
-          )}
-        </div>
 
-        <button type="submit" disabled={loading} className={authButtonClass}>
-          {loading ? "…" : t("signup_button")}
-        </button>
-      </form>
+          <InfluexButton type="submit" loading={loading} className="w-full">
+            {t("signup_button")}
+          </InfluexButton>
+        </form>
 
-      <p className="mt-4 text-center text-xs leading-relaxed text-white/45">
-        {t("terms_text")}{" "}
-        <Link
-          href="/agb"
-          className="text-white/55 underline transition-colors hover:text-[#ccff00]"
-        >
-          {t("terms_link")}
-        </Link>
-      </p>
+        <p className="mt-4 text-center text-xs leading-relaxed text-[var(--influex-text-muted)]">
+          {t("terms_text")}{" "}
+          <Link
+            href="/agb"
+            className="text-[var(--influex-text-secondary)] underline transition-colors hover:text-[var(--influex-lime)]"
+          >
+            {t("terms_link")}
+          </Link>
+        </p>
       </AuthCredentialSection>
 
-      <p className={`mt-8 text-center ${authFooterClass}`}>
+      <p className="influex-auth-form__footer">
         {t("has_account")}{" "}
-        <Link href="/auth/sign-in" className="transition-colors hover:text-[#ccff00]">
+        <Link href="/auth/sign-in" className="influex-auth-form__footer-link">
           {t("login_link")}
         </Link>
       </p>
@@ -416,11 +378,7 @@ function SignupPageInner() {
 
 export default function SignupPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="w-full text-white/60 text-sm">…</div>
-      }
-    >
+    <Suspense fallback={<div className="w-full text-sm text-[var(--influex-text-muted)]">…</div>}>
       <SignupPageInner />
     </Suspense>
   );
