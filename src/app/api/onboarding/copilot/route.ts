@@ -15,6 +15,7 @@ import {
   parseOnboardingCopilotResponse,
 } from "@/lib/canvas/onboarding-copilot";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -76,6 +77,9 @@ export async function POST(request: Request) {
   if (configError) {
     return NextResponse.json({ success: false, error: configError }, { status: 503 });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   const history = (body.history ?? [])
     .filter((m) => m.role === "user" || m.role === "assistant")

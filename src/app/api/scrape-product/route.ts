@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { assertGatedFeature } from "@/lib/access.server";
 import { scrapeProductUrl } from "@/lib/scrape-product";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,9 @@ export async function POST(request: NextRequest) {
   if (!url) {
     return NextResponse.json({ error: "URL required" }, { status: 400 });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   const result = await scrapeProductUrl(url);
   if (!result.ok) {

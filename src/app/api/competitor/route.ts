@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { runCompetitorAnalysis } from "@/lib/competitor-run";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,9 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("competitor");
   if (denied) return denied;
 
