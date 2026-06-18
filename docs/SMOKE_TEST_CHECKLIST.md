@@ -4,6 +4,58 @@
 
 **Empfohlen:** Staging zuerst. Production nur mit dedizierten Test-Accounts und kleinen Beträgen.
 
+**Environment-Runbook:** `docs/environment-safety.md`  
+**Env-Validator (keine Secrets):** `node scripts/check-env-safety.mjs --file .env.local`
+
+---
+
+## 0. Safe Dev & Staging (vor allen mutierenden Tests)
+
+**Regel:** Keine Production-mutating Smoke Tests. Production nur read-only (Pages, GET APIs, Webhook-Negative).
+
+### 0.1 Local Safe Dev (read-only)
+
+| Check | Aktion | Erwartung | Status |
+|-------|--------|-----------|--------|
+| **S0.1 — Env Validator** | `node scripts/check-env-safety.mjs --file .env.local` | Exit **0**, keine `production_supabase_ref` / `stripe_live_*` | ☐ |
+| **S0.2 — Templates** | `node scripts/check-env-safety.mjs --example .env.local.example` | Exit **0** | ☐ |
+| **S0.3 — Staging Template** | `node scripts/check-env-safety.mjs --example .env.staging.example` | Exit **0** | ☐ |
+| **S0.4 — Read-only Pages** | `/`, `/pricing`, `/auth/sign-in` | 200, kein 500 | ☐ |
+| **S0.5 — Read-only APIs** | `GET /api/ai-creator/characters` etc. | 401, **kein** `DEV_WRITE_GUARD_BLOCKED` auf read-only | ☐ |
+| **S0.6 — Guard Smoke** | `POST /api/generate` `{}` bei prod-like `.env.local` | 403 `DEV_WRITE_GUARD_BLOCKED` | ☐ |
+
+**Bei prod-like `.env.local`:** Mutierende Tests **stoppen** — erst Staging-Env einrichten (`.env.staging.example`).
+
+### 0.2 Staging (authenticated E2E — mutierend erlaubt)
+
+Voraussetzungen:
+
+- Dediziertes Supabase **Staging**-Projekt (nicht Production)
+- Stripe **Test Mode** (`sk_test_` / `pk_test_` / `price_test_...`)
+- `PROVIDERS_DISABLED=true` bis Provider-QA geplant
+- Test-Accounts nur in Staging-DB
+
+| Check | Aktion | Erwartung | Status |
+|-------|--------|-----------|--------|
+| **S1.1 — Staging Login** | Test-User auf Staging einloggen | Dashboard erreichbar | ☐ |
+| **S1.2 — Stripe Test Checkout** | Credit-Pack oder Abo (Testkarte 4242…) | Credits/Plan in **Staging-DB** | ☐ |
+| **S1.3 — Credit Deduction** | 1× KI-Tool auf Staging | Credits −X, kein Doppelabzug | ☐ |
+| **S1.4 — Webhook Dedup** | Stripe CLI → Staging-Webhook, Replay | Kein doppelter Credit-Zuwachs | ☐ |
+| **S1.5 — AI Creator Draft** | Draft anlegen/löschen auf Staging | POST/DELETE OK, kein Guard-403 | ☐ |
+| **S1.6 — Upload/Training** | — | **Erst nach Consent-Persistenz (Phase 4G.4Q)** | ☐ |
+| **S1.7 — Provider Tools** | Nur wenn `PROVIDERS_DISABLED=false` + Sandbox | Generation in Staging-Galerie | ☐ |
+
+### 0.3 Production (read-only Smoke only)
+
+| Erlaubt | Verboten |
+|---------|----------|
+| Page Smoke (`/`, `/pricing`, Legal) | Mutierende POST/DELETE gegen Prod |
+| GET APIs ohne Side Effects | Echte Uploads/Trainings |
+| Webhook-Negative (400/401 ohne Signatur) | Stripe Checkout ohne Kontrolle |
+| Mobile Layout Smoke | Guard-Smoke auf Prod (Guard ist dort inaktiv) |
+
+---
+
 **Vor Start notieren:**
 
 - Ausgangswerte: `profiles.credits`, `profiles.plan`, `tenants.credits_pool`
