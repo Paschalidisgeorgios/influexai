@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { InfluexBadge, InfluexButton, InfluexSurface } from "@/components/shared/influex";
 import { CREDIT_PACKAGES, type CreditPackageId } from "@/lib/credit-packages";
 
 function formatEur(amount: number): string {
   return amount.toFixed(amount < 1 ? 3 : 2).replace(".", ",");
 }
 
-export function CreditPacksSection() {
+type CreditPacksSectionProps = {
+  variant?: "glass" | "influex";
+};
+
+export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProps) {
   const t = useTranslations("buyCredits");
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const isInfluex = variant === "influex";
 
   const handleCheckout = async (packageId: CreditPackageId) => {
     setLoadingId(packageId);
@@ -33,6 +38,61 @@ export function CreditPacksSection() {
     }
     setLoadingId(null);
   };
+
+  if (isInfluex) {
+    return (
+      <section className="influex-pricing-credit-packs" aria-labelledby="influex-credit-packs-title">
+        <div className="influex-pricing-credit-packs__header">
+          <h2 id="influex-credit-packs-title" className="influex-pricing-credit-packs__title">
+            {t("pricing_title")}
+          </h2>
+          <p className="influex-pricing-credit-packs__subtitle">{t("pricing_subtitle")}</p>
+        </div>
+
+        <div className="influex-pricing-credit-packs__grid">
+          {CREDIT_PACKAGES.map((pkg) => {
+            const isPopular = pkg.popular ?? false;
+            return (
+              <InfluexSurface
+                key={pkg.id}
+                as="article"
+                variant={isPopular ? "elevated" : "default"}
+                className={`influex-pricing-credit-pack ${
+                  isPopular ? "influex-pricing-credit-pack--featured" : ""
+                }`}
+              >
+                {isPopular ? (
+                  <InfluexBadge tone="lime" className="influex-pricing-credit-pack__badge">
+                    {t("popular_badge")}
+                  </InfluexBadge>
+                ) : null}
+
+                <span className="influex-pricing-credit-pack__amount">{pkg.credits}</span>
+                <span className="influex-pricing-credit-pack__label">Credits</span>
+                <span className="influex-pricing-credit-pack__price">€{formatEur(pkg.priceEur)}</span>
+                <span className="influex-pricing-credit-pack__rate">
+                  {t("per_credit", { price: `€${formatEur(pkg.pricePerCredit)}` })}
+                </span>
+
+                <InfluexButton
+                  type="button"
+                  variant={isPopular ? "lime" : "secondary"}
+                  className="influex-pricing-credit-pack__cta"
+                  disabled={loadingId !== null}
+                  loading={loadingId === pkg.id}
+                  onClick={() => void handleCheckout(pkg.id)}
+                >
+                  {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
+                </InfluexButton>
+              </InfluexSurface>
+            );
+          })}
+        </div>
+
+        <p className="influex-pricing-credit-packs__footnote">{t("pricing_footnote")}</p>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-20 border-t border-zinc-800/50 pt-16">
@@ -57,13 +117,12 @@ export function CreditPacksSection() {
         {CREDIT_PACKAGES.map((pkg) => {
           const isPopular = pkg.popular ?? false;
           return (
-            <motion.div
+            <div
               key={pkg.id}
               data-testid="pricing-card"
               className={`pricing-glass-card relative flex flex-col p-6 ${
                 isPopular ? "pricing-glass-card--featured" : ""
               }`}
-              whileHover={{ y: -2 }}
             >
               {isPopular && (
                 <span className="pricing-glass-badge">{t("popular_badge")}</span>
@@ -100,7 +159,7 @@ export function CreditPacksSection() {
               >
                 {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
               </button>
-            </motion.div>
+            </div>
           );
         })}
       </div>

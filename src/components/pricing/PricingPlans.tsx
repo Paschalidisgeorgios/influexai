@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { SpringReveal } from "@/components/ui/SpringReveal";
+import { InfluexBadge, InfluexButton, InfluexSurface } from "@/components/shared/influex";
 import {
   SUBSCRIPTION_PLAN_ORDER,
   SUBSCRIPTION_PLANS,
@@ -27,7 +28,24 @@ const PLAN_MOBILE_ORDER: Record<
   business: "order-4",
 };
 
-function EuroPrice({ amount }: { amount: number }) {
+function EuroPrice({
+  amount,
+  variant,
+}: {
+  amount: number;
+  variant: "glass" | "influex";
+}) {
+  if (variant === "influex") {
+    return (
+      <span className="influex-pricing-plan__price">
+        <span className="influex-pricing-plan__currency" aria-hidden>
+          €
+        </span>
+        {formatPlanPrice(amount)}
+      </span>
+    );
+  }
+
   return (
     <span className="whitespace-nowrap">
       <span
@@ -47,6 +65,7 @@ function EuroPrice({ amount }: { amount: number }) {
 }
 
 type PricingPlansProps = {
+  variant?: "glass" | "influex";
   checkoutMode?: boolean;
   onSubscribe?: (plan: string, interval: BillingInterval) => void;
   subscribeLoading?: string | null;
@@ -55,6 +74,7 @@ type PricingPlansProps = {
 };
 
 export function PricingPlans({
+  variant = "glass",
   checkoutMode = false,
   onSubscribe,
   subscribeLoading = null,
@@ -65,6 +85,7 @@ export function PricingPlans({
   const locale = useLocale();
   const [yearly, setYearly] = useState(false);
   const interval: BillingInterval = yearly ? "yearly" : "monthly";
+  const isInfluex = variant === "influex";
 
   const planContent = (key: (typeof SUBSCRIPTION_PLAN_ORDER)[number]) => {
     const config = SUBSCRIPTION_PLANS[key];
@@ -94,9 +115,23 @@ export function PricingPlans({
     }
   };
 
+  const toggleClass = isInfluex ? "influex-pricing-toggle" : "pricing-glass-toggle";
+  const toggleBtnActive = isInfluex
+    ? "influex-pricing-toggle__btn influex-pricing-toggle__btn--active"
+    : "pricing-glass-toggle__btn pricing-glass-toggle__btn--active";
+  const toggleBtnIdle = isInfluex
+    ? "influex-pricing-toggle__btn"
+    : "pricing-glass-toggle__btn pricing-glass-toggle__btn--idle";
+  const toggleBadge = isInfluex
+    ? "influex-pricing-toggle__badge"
+    : "pricing-glass-toggle__badge";
+  const gridWrapClass = isInfluex ? "influex-pricing-plans" : "pricing-plans-scroll";
+  const gridClass = isInfluex ? "influex-pricing-plans__grid" : "pricing-plans-grid text-left";
+  const footnoteClass = isInfluex ? "influex-pricing-footnote" : "pricing-glass-footnote";
+
   return (
     <div className={className}>
-      <div className="pricing-glass-toggle mx-auto mt-5 mb-9">
+      <div className={`${toggleClass} mx-auto mt-5 mb-9`}>
         {(
           [
             { label: t("monthly"), isY: false },
@@ -109,13 +144,11 @@ export function PricingPlans({
               key={label}
               type="button"
               onClick={() => setYearly(isY)}
-              className={`pricing-glass-toggle__btn ${
-                active ? "pricing-glass-toggle__btn--active" : "pricing-glass-toggle__btn--idle"
-              }`}
+              className={active ? toggleBtnActive : toggleBtnIdle}
             >
               {label}
               {isY && (
-                <span className="pricing-glass-toggle__badge">
+                <span className={toggleBadge}>
                   {t("yearly_discount", { percent: YEARLY_DISCOUNT_PERCENT })}
                 </span>
               )}
@@ -124,8 +157,8 @@ export function PricingPlans({
         })}
       </div>
 
-      <div className="pricing-plans-scroll">
-        <div className="pricing-plans-grid text-left">
+      <div className={gridWrapClass}>
+        <div className={gridClass}>
           {plans.map((plan, planIndex) => {
             const loading = subscribeLoading === `${plan.key}-${interval}`;
             const staggerDelays = [0, 0.15, 0.3, 0.45];
@@ -139,92 +172,168 @@ export function PricingPlans({
               </>
             );
             const yearlyTotal = formatPlanPrice(plan.price * 12, locale);
-            const btnClass = plan.hot
-              ? "pricing-glass-btn-primary mb-5"
-              : "pricing-glass-btn-secondary mb-5";
 
-            return (
-              <SpringReveal
-                key={plan.key}
-                delay={staggerDelays[planIndex] ?? planIndex * 0.15}
-                className={`${PLAN_MOBILE_ORDER[plan.key]} h-full md:order-none`}
-              >
-                <div
-                  className={`pricing-glass-card border border-zinc-700/60 ${
-                    plan.hot ? "pricing-glass-card--featured" : ""
-                  }`}
-                >
-                  {plan.hot && (
+            const cardInner = (
+              <>
+                {plan.hot &&
+                  (isInfluex ? (
+                    <InfluexBadge tone="lime" className="influex-pricing-plan__badge">
+                      {t("most_popular")}
+                    </InfluexBadge>
+                  ) : (
                     <div className="pricing-glass-badge absolute -top-3 left-1/2 -translate-x-1/2">
                       {t("most_popular")}
                     </div>
-                  )}
-                  <div className="pricing-glass-plan-name">{plan.name}</div>
-                  <div className="pricing-glass-price">
-                    <EuroPrice amount={plan.price} />
-                    <span className="pricing-glass-price-unit">{t("per_month")}</span>
-                  </div>
-                  {!yearly ? (
-                    <div className="mt-1.5 font-mono text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[#ccff00]">
-                      {t("cancel_anytime")}
-                    </div>
+                  ))}
+
+                <div className={isInfluex ? "influex-pricing-plan__name" : "pricing-glass-plan-name"}>
+                  {plan.name}
+                </div>
+
+                <div className={isInfluex ? "influex-pricing-plan__price-row" : "pricing-glass-price"}>
+                  <EuroPrice amount={plan.price} variant={variant} />
+                  <span
+                    className={
+                      isInfluex ? "influex-pricing-plan__period" : "pricing-glass-price-unit"
+                    }
+                  >
+                    {t("per_month")}
+                  </span>
+                </div>
+
+                {!yearly ? (
+                  <p className={isInfluex ? "influex-pricing-plan__billing-note" : undefined}>
+                    {isInfluex ? (
+                      t("cancel_anytime")
+                    ) : (
+                      <span className="mt-1.5 block font-mono text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[#ccff00]">
+                        {t("cancel_anytime")}
+                      </span>
+                    )}
+                  </p>
+                ) : (
+                  <p
+                    className={
+                      isInfluex
+                        ? "influex-pricing-plan__billing-note influex-pricing-plan__billing-note--muted"
+                        : "mt-1.5 text-[0.72rem] text-white/55"
+                    }
+                    style={isInfluex ? undefined : { fontFamily: "var(--font-dm), sans-serif" }}
+                  >
+                    {t("billed_yearly", { amount: yearlyTotal })}
+                  </p>
+                )}
+
+                <p className={isInfluex ? "influex-pricing-plan__credits" : undefined}>
+                  {isInfluex ? (
+                    plan.credits
                   ) : (
-                    <div
-                      className="mt-1.5 text-[0.72rem] text-white/55"
+                    <span
+                      className="mt-1.5 mb-1 block text-[0.75rem] text-white/80"
                       style={{ fontFamily: "var(--font-dm), sans-serif" }}
                     >
-                      {t("billed_yearly", { amount: yearlyTotal })}
-                    </div>
+                      {plan.credits}
+                    </span>
                   )}
-                  <div
-                    className="mt-1.5 mb-1 text-[0.75rem] text-white/80"
-                    style={{ fontFamily: "var(--font-dm), sans-serif" }}
-                  >
-                    {plan.credits}
-                  </div>
-                  <div
-                    className="mb-2 text-[0.82rem] leading-[1.55] text-white/75"
-                    style={{ fontFamily: "var(--font-dm), sans-serif" }}
-                  >
-                    {plan.desc}
-                  </div>
-                  <p
-                    className="mb-4 text-[0.75rem] leading-[1.5] text-white/60"
-                    style={{ fontFamily: "var(--font-dm), sans-serif" }}
-                  >
-                    {plan.delta}
-                  </p>
+                </p>
 
-                  {checkoutMode && onSubscribe ? (
+                <p className={isInfluex ? "influex-pricing-plan__desc" : undefined}>
+                  {isInfluex ? (
+                    plan.desc
+                  ) : (
+                    <span
+                      className="mb-2 block text-[0.82rem] leading-[1.55] text-white/75"
+                      style={{ fontFamily: "var(--font-dm), sans-serif" }}
+                    >
+                      {plan.desc}
+                    </span>
+                  )}
+                </p>
+
+                <p className={isInfluex ? "influex-pricing-plan__delta" : undefined}>
+                  {isInfluex ? (
+                    plan.delta
+                  ) : (
+                    <span
+                      className="mb-4 block text-[0.75rem] leading-[1.5] text-white/60"
+                      style={{ fontFamily: "var(--font-dm), sans-serif" }}
+                    >
+                      {plan.delta}
+                    </span>
+                  )}
+                </p>
+
+                {checkoutMode && onSubscribe ? (
+                  isInfluex ? (
+                    <InfluexButton
+                      type="button"
+                      variant={plan.hot ? "lime" : "secondary"}
+                      className="influex-pricing-plan__cta"
+                      disabled={subscribeLoading !== null}
+                      loading={loading}
+                      onClick={() => handleCta(plan.key)}
+                    >
+                      {ctaContent}
+                    </InfluexButton>
+                  ) : (
                     <button
                       type="button"
                       disabled={subscribeLoading !== null}
                       onClick={() => handleCta(plan.key)}
-                      className={btnClass}
+                      className={
+                        plan.hot
+                          ? "pricing-glass-btn-primary mb-5"
+                          : "pricing-glass-btn-secondary mb-5"
+                      }
                     >
                       {ctaContent}
                     </button>
-                  ) : plan.hot ? (
-                    <Link href="/auth/sign-up" className={`${btnClass} no-underline`}>
-                      {plan.cta}
-                    </Link>
-                  ) : (
-                    <Link href="/auth/sign-up" className={`${btnClass} no-underline`}>
-                      {plan.cta}
-                    </Link>
-                  )}
+                  )
+                ) : isInfluex ? (
+                  <InfluexButton
+                    href="/auth/sign-up"
+                    variant={plan.hot ? "lime" : "secondary"}
+                    className="influex-pricing-plan__cta"
+                  >
+                    {plan.cta}
+                  </InfluexButton>
+                ) : (
+                  <Link
+                    href="/auth/sign-up"
+                    className={`${
+                      plan.hot
+                        ? "pricing-glass-btn-primary mb-5"
+                        : "pricing-glass-btn-secondary mb-5"
+                    } no-underline`}
+                  >
+                    {plan.cta}
+                  </Link>
+                )}
 
-                  <ul className="flex list-none flex-col gap-2.5">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li
-                        key={`${plan.key}-${featureIndex}`}
-                        className={`flex items-start gap-2.5 text-[0.84rem] ${
-                          feature.included
-                            ? "text-white/80"
-                            : "text-white/45"
-                        }`}
-                        style={{ fontFamily: "var(--font-dm), sans-serif" }}
-                      >
+                <ul
+                  className={
+                    isInfluex
+                      ? "influex-pricing-plan__features"
+                      : "flex list-none flex-col gap-2.5"
+                  }
+                >
+                  {plan.features.map((feature, featureIndex) => (
+                    <li
+                      key={`${plan.key}-${featureIndex}`}
+                      className={
+                        isInfluex
+                          ? feature.included
+                            ? "influex-pricing-plan__feature"
+                            : "influex-pricing-plan__feature influex-pricing-plan__feature--excluded"
+                          : `flex items-start gap-2.5 text-[0.84rem] ${
+                              feature.included ? "text-white/80" : "text-white/45"
+                            }`
+                      }
+                      style={
+                        isInfluex ? undefined : { fontFamily: "var(--font-dm), sans-serif" }
+                      }
+                    >
+                      {!isInfluex && (
                         <span
                           className={
                             feature.included
@@ -235,20 +344,61 @@ export function PricingPlans({
                         >
                           {feature.included ? "✓" : "✗"}
                         </span>
-                        {feature.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                      )}
+                      {isInfluex && feature.included ? (
+                        <span className="influex-pricing-plan__check" aria-hidden>
+                          ✓
+                        </span>
+                      ) : null}
+                      {feature.text}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            );
+
+            const card = isInfluex ? (
+              <InfluexSurface
+                variant={plan.hot ? "elevated" : "default"}
+                as="article"
+                className={`influex-pricing-plan ${
+                  plan.hot ? "influex-pricing-plan--featured" : ""
+                }`}
+              >
+                {cardInner}
+              </InfluexSurface>
+            ) : (
+              <div
+                className={`pricing-glass-card border border-zinc-700/60 ${
+                  plan.hot ? "pricing-glass-card--featured" : ""
+                }`}
+              >
+                {cardInner}
+              </div>
+            );
+
+            return (
+              <SpringReveal
+                key={plan.key}
+                delay={staggerDelays[planIndex] ?? planIndex * 0.15}
+                className={`${PLAN_MOBILE_ORDER[plan.key]} h-full md:order-none`}
+              >
+                {card}
               </SpringReveal>
             );
           })}
         </div>
       </div>
 
-      <p className="pricing-glass-footnote">
+      <p className={footnoteClass}>
         {t("footnote")}{" "}
-        <Link href="/dashboard/credits">{t("extra_credits")}</Link> {t("extra_credits_suffix")}
+        <Link
+          href="/dashboard/credits"
+          className={isInfluex ? "influex-pricing-footnote__link" : undefined}
+        >
+          {t("extra_credits")}
+        </Link>{" "}
+        {t("extra_credits_suffix")}
       </p>
     </div>
   );
