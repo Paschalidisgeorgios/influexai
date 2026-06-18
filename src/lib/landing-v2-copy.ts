@@ -54,7 +54,7 @@ export const LANDING_V2_COPY = {
     headline: "Das Studio, das Kampagnen in Assets verwandelt.",
     headlineAlt: "Campaigns become assets here.",
     headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
-    primaryHeadlineLead: "Dein Studio für",
+    primaryHeadlineLead: "DEIN STUDIO FÜR",
     rotatingKeywords: [
       "KI-Avatare",
       "AI Influencer",

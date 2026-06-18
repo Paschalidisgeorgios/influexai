@@ -4822,6 +4822,7 @@
   padding-top: calc(var(--lv2-nav-offset) + clamp(1.25rem, 3.5vh, 2.5rem));
   padding-bottom: clamp(2rem, 5vh, 3rem);
   pointer-events: none;
+  transform: none;
 }
 
 .landing-v2-root--preview .landing-v2-hero__content--preview-stage a {
@@ -4829,7 +4830,7 @@
 }
 
 .landing-v2-root--preview .landing-v2-hero__copy {
-  max-width: min(100%, 44rem);
+  max-width: min(100%, 52rem);
 }
 
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
@@ -5102,5 +5103,64 @@
 @media (prefers-reduced-motion: reduce) {
   .landing-v2-hero-video-bg__stage {
     transform: none;
+  }
+}
+
+/* Hero headline scale — overrides globals.css h1 { font-size: 2.25rem !important } */
+h1.landing-v2-hero-headline,
+.landing-v2-hero-headline {
+  font-family: var(--font-fraunces), Fraunces, Georgia, serif !important;
+  font-size: clamp(5.4rem, 8.8vw, 10rem) !important;
+  line-height: 0.86 !important;
+  letter-spacing: -0.07em !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  max-width: 12ch;
+  color: #f5f2ea !important;
+  transform: none !important;
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.landing-v2-hero-headline span,
+.landing-v2-hero-headline .word,
+.landing-v2-hero-headline .line,
+.landing-v2-hero-headline [data-hero-word],
+.landing-v2-hero-headline [data-hero-line],
+.landing-v2-hero-headline .landing-v2-hero__headline-line,
+.landing-v2-hero-headline .landing-v2-hero__headline-word {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+  font-weight: inherit !important;
+  font-family: inherit !important;
+  color: #f5f2ea !important;
+  transform: none !important;
+}
+
+.landing-v2-hero-keyword,
+.landing-v2-hero-headline .landing-v2-hero-keyword {
+  color: #b4ff00 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+  font-weight: inherit !important;
+}
+
+.landing-v2-hero-headline--studio-for {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+@media (max-width: 767px) {
+  h1.landing-v2-hero-headline,
+  .landing-v2-hero-headline {
+    font-size: clamp(3rem, 12vw, 4.4rem) !important;
+    line-height: 0.9 !important;
+    letter-spacing: -0.055em !important;
+    max-width: 12ch;
   }
 }

@@ -36,14 +36,7 @@ export function LandingV2HeroKeywordHeadline({
     setActiveIndex,
   });
 
-  const rootClass = [
-    "landing-v2-hero-headline",
-    "landing-v2-hero-headline--studio-for",
-    "landing-v2-hero__headline",
-    "landing-v2-hero__headline--primary",
-    "landing-v2-hero__headline--stack",
-    className,
-  ]
+  const rootClass = ["landing-v2-hero-headline", "landing-v2-hero-headline--studio-for", className]
     .filter(Boolean)
     .join(" ");
 
@@ -73,7 +66,7 @@ export function LandingV2HeroKeywordHeadline({
           </span>
           <span
             ref={keywordRef}
-            className="landing-v2-hero-rotate__keyword landing-v2-hero-keyword-slot__word"
+            className="landing-v2-hero-keyword landing-v2-hero-keyword-slot__word"
             data-hero-rotating-keyword
           >
             {activeKeyword}
