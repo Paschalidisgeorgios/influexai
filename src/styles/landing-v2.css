@@ -4743,7 +4743,8 @@
   opacity: 0.45;
 }
 
-.landing-v2-hero-video-bg__stage {
+.landing-v2-hero-video-bg__compare {
+  --lv2-hero-split: 50%;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -4751,6 +4752,90 @@
   transform-origin: center center;
   opacity: 0.58;
   will-change: transform, opacity;
+}
+
+.landing-v2-hero-video-bg__compare--dragging .landing-v2-hero-video-bg__layer--after,
+.landing-v2-hero-video-bg__compare--dragging .landing-v2-hero-video-bg__divider,
+.landing-v2-hero-video-bg__compare--dragging .landing-v2-hero-video-bg__handle {
+  transition: none;
+}
+
+.landing-v2-hero-video-bg__layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.landing-v2-hero-video-bg__layer--before {
+  z-index: 1;
+}
+
+.landing-v2-hero-video-bg__layer--after {
+  z-index: 2;
+  clip-path: inset(0 0 0 var(--lv2-hero-split));
+  transition: clip-path 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-v2-hero-video-bg__slider-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(28%, 36vw, 42%);
+  right: 0;
+  z-index: 9;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.landing-v2-hero-video-bg__media--before,
+.landing-v2-hero-video-bg__poster.landing-v2-hero-video-bg__media--before {
+  filter: blur(0.6px) contrast(0.92) saturate(0.9);
+}
+
+.landing-v2-hero-video-bg__media--after,
+.landing-v2-hero-video-bg__poster.landing-v2-hero-video-bg__media--after {
+  filter: contrast(1.08) saturate(1.08) brightness(1.04);
+}
+
+.landing-v2-hero-video-bg__divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--lv2-hero-split);
+  z-index: 7;
+  width: 1px;
+  transform: translateX(-50%);
+  background: rgba(245, 242, 234, 0.5);
+  pointer-events: none;
+  transition: left 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-v2-hero-video-bg__handle {
+  position: absolute;
+  top: 50%;
+  left: var(--lv2-hero-split);
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(180, 255, 0, 0.35);
+  border-radius: 999px;
+  background: rgba(8, 8, 10, 0.72);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: left 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-v2-hero-video-bg__handle-grip {
+  display: block;
+  width: 2px;
+  height: 8px;
+  border-radius: 1px;
+  background: #b4ff00;
+  box-shadow: -2px 0 0 #b4ff00, 2px 0 0 #b4ff00;
 }
 
 .landing-v2-hero-video-bg__poster-wrap {
@@ -5098,10 +5183,26 @@
     padding-top: calc(var(--lv2-nav-offset) + 1rem);
     padding-bottom: 1.75rem;
   }
+
+  .landing-v2-hero-video-bg__slider-zone {
+    left: 0;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .landing-v2-hero-video-bg__handle {
+    width: 20px;
+    height: 20px;
+  }
+
+  .landing-v2-hero-video-bg__handle-grip {
+    height: 7px;
+    box-shadow: -2px 0 0 #b4ff00, 2px 0 0 #b4ff00;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-v2-hero-video-bg__stage {
+  .landing-v2-hero-video-bg__compare {
     transform: none;
   }
 }
