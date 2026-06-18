@@ -12,6 +12,7 @@ import {
   markLoraReady,
 } from "@/lib/lora-training-service";
 import type { LoraModelType } from "@/lib/lora-config";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,9 @@ export async function GET(
       errorMessage: lora.error_message,
     });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   try {
     const endpoint = trainingFalEndpoint(lora.type as LoraModelType);

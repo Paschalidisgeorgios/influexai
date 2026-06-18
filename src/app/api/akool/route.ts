@@ -7,6 +7,7 @@ import {
   MSG_VIDEO_SERVICE_UNAVAILABLE,
   sanitizeUserMessage,
 } from "@/lib/sanitize-user-message";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,9 @@ export async function GET(request: NextRequest) {
   if (!akoolConfigured()) {
     return serviceUnavailableResponse();
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   try {
     const job = await getAkoolVideoResult(jobId);

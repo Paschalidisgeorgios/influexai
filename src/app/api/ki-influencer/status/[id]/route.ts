@@ -9,6 +9,7 @@ import { trainingFalEndpoint } from "@/lib/lora-config";
 import { markLoraFailed, markLoraReady } from "@/lib/lora-training-service";
 import type { LoraModelType } from "@/lib/lora-config";
 import { getOwnedCharacter, updateCharacter } from "@/lib/ki-influencer-db";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,9 @@ export async function GET(
 
   if (lora.status === "ready") {
     if (character.status !== "ready") {
+      const writeGuard = developmentWriteGuardResponse();
+      if (writeGuard) return writeGuard;
+
       await updateCharacter(supabase, characterId, user.id, {
         status: "ready",
         lora_ref: lora.lora_url,
@@ -69,6 +73,9 @@ export async function GET(
   }
 
   if (lora.status === "failed") {
+    const writeGuard = developmentWriteGuardResponse();
+    if (writeGuard) return writeGuard;
+
     await updateCharacter(supabase, characterId, user.id, { status: "failed" });
     return NextResponse.json({
       characterId,
@@ -85,6 +92,9 @@ export async function GET(
       progress: lora.progress ?? 0,
     });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   try {
     const endpoint = trainingFalEndpoint(lora.type as LoraModelType);
