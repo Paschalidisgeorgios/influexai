@@ -3,10 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateUgcHookVariants } from "@/lib/ugc-hook-generator";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

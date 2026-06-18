@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   try {
     const job = await getAkoolVideoResult(jobId);
     const mapped = mapAkoolVideoStatus(job.video_status);

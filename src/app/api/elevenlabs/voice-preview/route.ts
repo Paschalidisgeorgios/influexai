@@ -6,6 +6,7 @@ import {
   resolveElevenLabsVoiceId,
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

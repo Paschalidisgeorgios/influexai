@@ -8,6 +8,7 @@ import {
   updateGenerationResult,
 } from "@/lib/generation-assets";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,9 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const { generationId } = (await request.json()) as { generationId?: string };
 
   if (!generationId) {

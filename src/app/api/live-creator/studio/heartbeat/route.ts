@@ -7,10 +7,14 @@ import {
   LIVE_CREATOR_LOW_CREDITS_WARNING,
 } from "@/lib/live-creator-config";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("live-creator");
   if (denied) return denied;
 
