@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { useLandingViewport } from "./useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 

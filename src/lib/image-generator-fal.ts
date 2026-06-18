@@ -1,5 +1,9 @@
 import { fal } from "@fal-ai/client";
 import {
+  FLUX_ULTRA_MODEL,
+  resolveFluxUltraAspectRatio,
+} from "@/lib/ai/imagePromptEnhancer";
+import {
   buildCategoryNegativePrompt,
   buildCategoryPrompt,
   buildNegativePrompt,
@@ -46,7 +50,7 @@ function extractImageResult(result: unknown): CategoryImageResult | null {
   };
 }
 
-/** flux-2-pro has no negative_prompt API field — omit it (fallback models use it separately). */
+/** flux-pro/v1.1-ultra has no negative_prompt field — legacy fallbacks use it separately. */
 async function subscribeFalImage(
   model: string,
   input: Record<string, unknown>
@@ -57,41 +61,48 @@ async function subscribeFalImage(
   })) as FalImagesOutput;
 }
 
-async function generateWithFlux2Pro(options: {
+/** flux-pro/v1.1-ultra — see https://fal.ai/models/fal-ai/flux-pro/v1.1-ultra/api */
+async function generateWithFluxUltra(options: {
   fullPrompt: string;
   negativePrompt: string;
   imageSize: FalImageSize;
   imageDimensions?: { width: number; height: number };
   seed?: number;
 }): Promise<CategoryImageResult> {
-  const image_size =
+  const dims =
     options.imageDimensions ?? resolveFlux2ProImageSize(options.imageSize);
+  const aspect_ratio = resolveFluxUltraAspectRatio(dims.width, dims.height);
 
-  console.log("[image-gen] fal model:", FAL_IMAGE_MODELS.FLUX_2_PRO);
-  console.log("[image-gen] fal image_size:", image_size);
-  console.log("[image-gen] fal prompt:", options.fullPrompt);
-  console.log(
-    "[image-gen] fal negative_prompt: (omitted for flux-2-pro)",
-    options.negativePrompt ? "[present for fallback]" : "[none]"
-  );
-
+  // fal.ai flux-pro/v1.1-ultra Input: aspect_ratio, num_images, output_format, raw,
+  // safety_tolerance (1–6). No num_inference_steps / guidance_scale / enable_safety_checker
+  // on this endpoint — those belong to flux-pro (non-ultra) schemas.
   const input = {
     prompt: options.fullPrompt,
-    image_size,
-    safety_tolerance: "2" as const,
-    enable_safety_checker: true,
+    aspect_ratio,
+    num_images: 1,
     output_format: "jpeg" as const,
+    raw: false,
+    safety_tolerance: "2" as const,
     ...(options.seed != null ? { seed: options.seed } : {}),
   };
 
-  const result = await subscribeFalImage(FAL_IMAGE_MODELS.FLUX_2_PRO, input);
+  console.log("[image-gen] fal model:", FLUX_ULTRA_MODEL);
+  console.log("[image-gen] fal aspect_ratio:", aspect_ratio);
+  console.log("[image-gen] fal target dimensions:", dims);
+  console.log("[image-gen] fal prompt:", options.fullPrompt);
+  console.log(
+    "[image-gen] fal negative_prompt: (omitted for flux-pro/v1.1-ultra)",
+    options.negativePrompt ? "[present for legacy fallback]" : "[none]"
+  );
+
+  const result = await subscribeFalImage(FLUX_ULTRA_MODEL, input);
   const parsed = extractImageResult(result);
   if (!parsed) throw new Error("Kein Bild in der API-Antwort");
   return {
     ...parsed,
-    model: FAL_IMAGE_MODELS.FLUX_2_PRO,
-    width: parsed.width ?? image_size.width,
-    height: parsed.height ?? image_size.height,
+    model: FLUX_ULTRA_MODEL,
+    width: parsed.width ?? dims.width,
+    height: parsed.height ?? dims.height,
   };
 }
 
@@ -241,8 +252,8 @@ export async function generateCategoryImage(options: {
         seed: options.seed,
       });
     } catch (error) {
-      console.log("[image-fallback] Krea failed, falling back to Flux 2 Pro:", error);
-      return generateWithFlux2Pro({
+      console.log("[image-fallback] Krea failed, falling back to Flux 1.1 Pro Ultra:", error);
+      return generateWithFluxUltra({
         fullPrompt,
         negativePrompt,
         imageSize: options.imageSize,
@@ -253,7 +264,7 @@ export async function generateCategoryImage(options: {
   }
 
   try {
-    return await generateWithFlux2Pro({
+    return await generateWithFluxUltra({
       fullPrompt,
       negativePrompt,
       imageSize: options.imageSize,

@@ -2,7 +2,7 @@
 
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { SECTION_REVEAL } from "@/lib/landing-v2-motion";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { flushMissedScrollReveal } from "./scrollRevealUtils";

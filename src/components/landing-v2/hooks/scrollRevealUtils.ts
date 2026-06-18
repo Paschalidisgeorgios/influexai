@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 /** Ensure once-based reveals complete if the trigger line was already crossed */
 export function flushMissedScrollReveal(

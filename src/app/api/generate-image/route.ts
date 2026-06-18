@@ -25,6 +25,12 @@ import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { generateCategoryImage } from "@/lib/image-generator-fal";
 import { prepareImageGeneratorPrompts } from "@/lib/image-generator-prompt-pipeline";
 import {
+  detectPlatformFromPrompt,
+  detectPlatformSubtype,
+  getPlatformFormat,
+  normalizeSocialPlatform,
+} from "@/lib/ai/imagePromptEnhancer";
+import {
   getPlatformImageDimensions,
   platformToFalImageSize,
   resolveImagePlatformId,
@@ -78,7 +84,8 @@ export async function POST(request: NextRequest) {
     negativePrompt?: string;
     skipPromptEnhancement?: boolean;
     styleId?: ImageStyleId;
-    platform?: ImagePlatformId;
+    /** Social platform (instagram, tiktok, …) or legacy ImagePlatformId. */
+    platform?: string;
   };
 
   const modelId =

@@ -3,15 +3,13 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { useLandingViewport } from "./useLandingViewport";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 
 import { syncLandingScrollY, resetLandingScrollY } from "@/lib/landing-v2-motion";
 
 import "lenis/dist/lenis.css";
-
-gsap.registerPlugin(ScrollTrigger);
 
 /** Lenis smooth scroll — landing preview only */
 export function useLandingLenis() {
@@ -21,6 +19,8 @@ export function useLandingLenis() {
 
   useEffect(() => {
     if (!enableLenis) return;
+
+    gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({
       duration: 1.12,

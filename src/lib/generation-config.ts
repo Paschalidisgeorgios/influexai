@@ -287,8 +287,8 @@ export function uiFormatToImageSize(
 
 export const FAL_IMAGE_MODELS = {
   FLUX_PULID: "fal-ai/flux-pulid",
-  /** Bild Generator — FLUX.2 [pro] (primary / fallback) */
-  FLUX_2_PRO: "fal-ai/flux-2-pro",
+  /** Bild Generator — FLUX1.1 [pro] ultra (primary Flux fallback) */
+  FLUX_2_PRO: "fal-ai/flux-pro/v1.1-ultra",
   /** Bild Generator high-res fallback */
   FLUX_PRO_T2I: "fal-ai/flux-pro",
   /** FLUX Pro v1.1 (product, thumbnail pages). */
@@ -320,8 +320,8 @@ export const KREA_MODEL_OPTIONS = [
   },
   {
     value: FAL_IMAGE_MODELS.FLUX_2_PRO,
-    label: "Flux 2 Pro — Universell",
-    description: "Bewährt für alle Kategorien (Flux-Architektur)",
+    label: "Flux 1.1 Pro Ultra — Universell",
+    description: "FLUX1.1 [pro] ultra — hohe Qualität für alle Kategorien",
   },
 ] as const;
 

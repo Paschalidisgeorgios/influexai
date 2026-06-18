@@ -2,7 +2,7 @@
 
 import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { HERO_VIDEO_STAGE } from "@/lib/landing-v2-motion";
 
 gsap.registerPlugin(ScrollTrigger);

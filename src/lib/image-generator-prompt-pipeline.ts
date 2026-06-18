@@ -5,6 +5,8 @@ import {
 import {
   enhanceImagePrompt,
   type EnhanceImagePromptOptions,
+  type SocialPlatform,
+  type SocialPlatformFormat,
 } from "@/lib/ai/imagePromptEnhancer";
 import {
   resolveImagePlatformId,
@@ -91,6 +93,8 @@ export type PreparedImageGeneratorPrompts = {
   promptEnhanced: boolean;
   styleId: ImageStyleId;
   platform: ImagePlatformId;
+  socialPlatform: SocialPlatform | null;
+  platformFormat: SocialPlatformFormat;
 };
 
 export async function prepareImageGeneratorPrompts(
@@ -102,17 +106,23 @@ export async function prepareImageGeneratorPrompts(
   const category = resolveImageCategory(trimmed, selectedCategory);
   const styleId = resolveImageStyleId(options?.styleId);
   const platform = resolveImagePlatformId(options?.platform);
-  const { prompt: enhancedPrompt, negative_prompt: negativePrompt } =
-    await enhanceImagePrompt(trimmed, { styleId, platform });
+  const enhanced = await enhanceImagePrompt(trimmed, {
+    styleId,
+    platform,
+    socialPlatform: options?.socialPlatform,
+    platformSubtype: options?.platformSubtype,
+  });
 
   return {
     userPrompt: trimmed,
-    enhancedPrompt,
-    negativePrompt,
+    enhancedPrompt: enhanced.prompt,
+    negativePrompt: enhanced.negative_prompt,
     category,
-    promptEnhanced: enhancedPrompt !== trimmed,
+    promptEnhanced: enhanced.prompt !== trimmed,
     styleId,
     platform,
+    socialPlatform: enhanced.socialPlatform,
+    platformFormat: enhanced.platformFormat,
   };
 }
 
