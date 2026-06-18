@@ -1,62 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+  buildBaselineCharacterInsert,
+  type CreateCharacterBody,
+  validateCreateCharacterBody,
+} from "@/lib/ai-creator/characters-create.server";
+import {
   baselineRowToListItem,
   CHARACTERS_BASELINE_SELECT,
   type CharactersBaselineRow,
 } from "@/lib/ai-creator/characters-list.server";
-import { mapStatusToDb } from "@/lib/ai-creator/status";
-import type { CharacterType, TrainingStatus } from "@/lib/ai-creator/types";
 import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
   logKiInfluencerError,
   mapSupabaseWriteError,
 } from "@/lib/ki-influencer-api";
+import { isSupabaseRelationMissingError } from "@/lib/ki-influencer-supabase-errors";
 
 export const dynamic = "force-dynamic";
 
-type CharacterRow = {
-  id: string;
-  name: string;
-  description: string | null;
-  character_type: string | null;
-  source: string;
-  trigger_word: string | null;
-  niche: string | null;
-  style: string | null;
-  tone: string | null;
-  platforms: string[] | null;
-  target_audience: string | null;
-  consent_confirmed: boolean;
-  reference_image_urls: string[] | null;
-  status: string;
-  lora_ref: string | null;
-  preview_image_url: string | null;
-  created_at: string;
-  updated_at: string;
-};
+function mapCharacterInsertError(context: string, error: unknown): NextResponse {
+  logKiInfluencerError(context, error);
 
-function rowToPayload(row: CharacterRow) {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description ?? "",
-    characterType: row.character_type as CharacterType | null,
-    triggerWord: row.trigger_word ?? "",
-    niche: row.niche ?? "",
-    style: row.style ?? "",
-    tone: row.tone ?? "",
-    platforms: row.platforms ?? [],
-    targetAudience: row.target_audience ?? "",
-    consentConfirmed: row.consent_confirmed,
-    referenceImageUrls: row.reference_image_urls ?? [],
-    trainingStatus: row.status as TrainingStatus,
-    loraUrl: row.lora_ref,
-    previewImageUrl: row.preview_image_url,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
+  if (isSupabaseRelationMissingError(error)) {
+    return NextResponse.json(
+      { success: false, error: "Characters-Tabelle ist nicht verfügbar." },
+      { status: 503 }
+    );
+  }
+
+  const record = error as { code?: string; message?: string };
+  const message = record.message ?? "";
+
+  if (record.code === "42703" || /column .* does not exist/i.test(message)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Datenbankschema ist für diesen Vorgang nicht kompatibel. Migration ausstehend.",
+      },
+      { status: 503 }
+    );
+  }
+
+  if (record.code === "23514") {
+    return NextResponse.json(
+      { success: false, error: "Ungültige Character-Daten." },
+      { status: 400 }
+    );
+  }
+
+  return mapSupabaseWriteError(context, error);
 }
 
 /** GET — list user's AI Creator characters (read-only, schema-tolerant baseline). */
@@ -88,85 +83,54 @@ export async function GET() {
   }
 }
 
-type CreateBody = {
-  name?: string;
-  characterType?: CharacterType;
-  triggerWord?: string;
-  niche?: string;
-  style?: string;
-  tone?: string;
-  platforms?: string[];
-  targetAudience?: string;
-  description?: string;
-  consentConfirmed?: boolean;
-  referenceImageUrls?: string[];
-  trainingStatus?: TrainingStatus;
-  previewImageUrl?: string;
-};
-
-/** POST — create or update draft AI Creator character (no training execution) */
+/** POST — create draft AI Creator character (baseline schema only, no training). */
 export async function POST(request: NextRequest) {
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  let body: CreateBody;
+  let body: CreateCharacterBody;
   try {
-    body = (await request.json()) as CreateBody;
+    body = (await request.json()) as CreateCharacterBody;
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON" }, { status: 400 });
   }
 
-  const name = body.name?.trim() ?? "";
-  if (!name) {
+  const validated = validateCreateCharacterBody(body);
+  if (!validated.ok) {
     return NextResponse.json(
-      { success: false, error: "Name ist erforderlich." },
-      { status: 400 }
+      { success: false, error: validated.error },
+      { status: validated.status }
     );
   }
-
-  const characterType = body.characterType ?? null;
-  const source = characterType === "self" ? "uploaded" : "generated";
-  const status = mapStatusToDb(body.trainingStatus ?? "draft");
 
   try {
     const { data, error } = await supabase
       .from("characters")
-      .insert({
-        user_id: userId,
-        name,
-        description: body.description?.trim() || null,
-        source,
-        character_type: characterType,
-        trigger_word: body.triggerWord?.trim() || null,
-        niche: body.niche?.trim() || null,
-        style: body.style?.trim() || null,
-        tone: body.tone?.trim() || null,
-        platforms: body.platforms?.length ? body.platforms : null,
-        target_audience: body.targetAudience?.trim() || null,
-        consent_confirmed: Boolean(body.consentConfirmed),
-        reference_image_urls: body.referenceImageUrls?.length
-          ? body.referenceImageUrls
-          : null,
-        preview_image_url: body.previewImageUrl?.trim() || null,
-        status,
-      })
-      .select(
-        "id, name, description, character_type, source, trigger_word, niche, style, tone, platforms, target_audience, consent_confirmed, reference_image_urls, status, lora_ref, preview_image_url, created_at, updated_at"
-      )
+      .insert(buildBaselineCharacterInsert(userId, validated.data))
+      .select(CHARACTERS_BASELINE_SELECT)
       .single();
 
-    if (error || !data) {
-      if (error) return mapSupabaseWriteError("ai-creator character insert", error);
-      return kiInfluencerErrorResponse("generation_failed", 500);
+    if (error) {
+      return mapCharacterInsertError("ai-creator character insert", error);
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { success: false, error: "Character konnte nicht erstellt werden." },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      character: rowToPayload(data as CharacterRow),
+      character: baselineRowToListItem(data as CharactersBaselineRow),
     });
   } catch (error) {
     logKiInfluencerError("ai-creator character insert", error);
-    return kiInfluencerErrorResponse("generation_failed", 500);
+    return NextResponse.json(
+      { success: false, error: "Character konnte nicht erstellt werden." },
+      { status: 500 }
+    );
   }
 }
