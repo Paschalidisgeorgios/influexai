@@ -23,6 +23,7 @@ export default function CharacterStudioPage() {
   const [mode, setMode] = useState<"animate" | "replace">("animate");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const { generating, elapsedSec, error, startPolling } = useAkoolJobPoll({
     onSuccess: ({ resultUrl: url }) => setResultUrl(url),
@@ -30,11 +31,17 @@ export default function CharacterStudioPage() {
 
   const generate = async () => {
     setErr(null);
+    if (!consentAccepted) {
+      setErr(
+        "Bitte bestätige die Einwilligung, bevor die KI-Verarbeitung startet."
+      );
+      return;
+    }
     try {
       const res = await fetch("/api/akool/character-studio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl, videoUrl, mode }),
+        body: JSON.stringify({ imageUrl, videoUrl, mode, consentAccepted: true }),
       });
       const data = await res.json();
       if (handleApiInsufficientCredits(res.status, data, AKOOL_TOOL_CREDITS.characterStudio)) return;
@@ -89,7 +96,25 @@ export default function CharacterStudioPage() {
           </button>
         ))}
       </div>
-      <button type="button" disabled={generating || !imageUrl || !videoUrl.trim()} onClick={generate} className={akoolButtonClass}>
+      <label className="flex items-start gap-3 text-sm text-zinc-300">
+        <input
+          type="checkbox"
+          checked={consentAccepted}
+          onChange={(e) => setConsentAccepted(e.target.checked)}
+          className="mt-1"
+        />
+        <span>
+          Ich bestätige, dass ich die Rechte und Zustimmung für die verwendeten
+          Personen/Referenzen habe und keine geschützten oder prominenten Personen
+          ohne Erlaubnis nachahme.
+        </span>
+      </label>
+      <button
+        type="button"
+        disabled={generating || !imageUrl || !videoUrl.trim() || !consentAccepted}
+        onClick={generate}
+        className={akoolButtonClass}
+      >
         Generieren
       </button>
       {(err || error) && <p className="text-sm text-[#ff6b7a]">{err || error}</p>}

@@ -6,6 +6,11 @@ import { runAkoolAsyncPost } from "@/lib/akool-async-route";
 import { getFalKey } from "@/lib/fal-image";
 import { resolveImageUrlForSeedance } from "@/lib/seedance-generate";
 import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
+import {
+  CHARACTER_STUDIO_CONSENT_MESSAGE,
+  consentRequiredResponse,
+  readConsentFromJson,
+} from "@/lib/consent.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -24,11 +29,20 @@ export async function POST(request: NextRequest) {
     video_url?: string;
     videoUrl?: string;
     mode?: "animate" | "replace";
+    consentAccepted?: boolean;
+    consentConfirmed?: boolean;
+    rightsConfirmed?: boolean;
+    identityConsent?: boolean;
+    hasConsent?: boolean;
   };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (!readConsentFromJson(body)) {
+    return consentRequiredResponse(CHARACTER_STUDIO_CONSENT_MESSAGE);
   }
 
   const imageUrl = (body.image_url ?? body.imageUrl)?.trim() ?? "";

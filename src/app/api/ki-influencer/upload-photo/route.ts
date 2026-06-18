@@ -6,6 +6,11 @@ import {
   LORA_MAX_FILE_BYTES,
   LORA_STORAGE_BUCKET,
 } from "@/lib/lora-config";
+import {
+  consentRequiredResponse,
+  KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE,
+  readConsentFromFormData,
+} from "@/lib/consent.server";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +48,12 @@ export async function POST(request: NextRequest) {
       { success: false, error: "Ungültige Formulardaten." },
       { status: 400 }
     );
+  }
+
+  if (
+    !readConsentFromFormData(formData, { requireRightsConfirmed: true })
+  ) {
+    return consentRequiredResponse(KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE);
   }
 
   const sessionId = String(formData.get("sessionId") ?? "").trim();

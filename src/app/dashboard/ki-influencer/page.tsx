@@ -324,6 +324,8 @@ function KiInfluencerPageInner() {
         formData.append("sessionId", sessionId);
         formData.append("index", String(i));
         formData.append("image", uploadFiles[i]!);
+        formData.append("consentAccepted", "true");
+        formData.append("rightsConfirmed", "true");
 
         const photoRes = await fetch("/api/ki-influencer/upload-photo", {
           method: "POST",
