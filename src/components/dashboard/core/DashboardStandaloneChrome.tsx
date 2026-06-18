@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { DashboardPrimaryNav } from "./DashboardPrimaryNav";
+import { DashboardSecondaryNav } from "./DashboardSecondaryNav";
 import { DashboardMobileNav } from "./DashboardMobileNav";
 import {
   DASHBOARD_ACCENT,
@@ -51,6 +52,7 @@ export function DashboardStandaloneChrome({
         </Link>
         <div className="flex-1 overflow-y-auto">
           <DashboardPrimaryNav />
+          <DashboardSecondaryNav />
         </div>
       </aside>
 

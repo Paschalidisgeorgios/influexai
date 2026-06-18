@@ -101,17 +101,25 @@ function isDashboardToolView(searchParams: URLSearchParams): boolean {
   return Boolean(tool && tool !== "studio" && tool !== "gallery" && tool !== "settings");
 }
 
+function isStudioAreaActive(pathname: string, searchParams: URLSearchParams): boolean {
+  const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
+  const onAgent = pathname.startsWith("/dashboard/ki-agent");
+  if (onAgent) return true;
+  return onDashboard && !isDashboardToolView(searchParams);
+}
+
 function isActive(
   pathname: string,
   item: (typeof DASHBOARD_PRIMARY_NAV)[number],
   searchParams: URLSearchParams
 ) {
   if (item.id === "studio") {
-    const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
-    return onDashboard && !isDashboardToolView(searchParams);
+    return isStudioAreaActive(pathname, searchParams);
   }
   return item.match(pathname);
 }
+
+export { isStudioAreaActive, isDashboardToolView };
 
 export function DashboardPrimaryNav({ compact }: { compact?: boolean }) {
   const pathname = usePathname() ?? "";

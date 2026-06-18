@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SettingsPanel, type ToolSettings } from "./SettingsPanel";
 import { StudioCockpit }          from "./StudioCockpit";
 import { DashboardPrimaryNav }    from "./DashboardPrimaryNav";
+import { DashboardSecondaryNav }  from "./DashboardSecondaryNav";
 import { DashboardMobileNav }     from "./DashboardMobileNav";
 import { ProductionToolsOverview } from "./ProductionToolsOverview";
 import { ProductionToolLaunch } from "./ProductionToolLaunch";
@@ -136,6 +137,7 @@ function LeftSidebar({
       {/* ── Primary Nav ──────────────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-1" style={{ scrollbarWidth: "none" }}>
         <DashboardPrimaryNav />
+        <DashboardSecondaryNav />
       </nav>
 
       {/* ── Credits + Logout ───────────────────────────────────────────────── */}

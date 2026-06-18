@@ -15,6 +15,9 @@ import {
   Bot,
   ChevronRight,
   Loader2,
+  Images,
+  Megaphone,
+  Wrench,
 } from "lucide-react";
 import type { ToolId } from "./DashboardLayout";
 import type { GalleryItem } from "./GalleryGrid";
@@ -32,6 +35,33 @@ import { getStageCreditStyles } from "../studio-ui/credit-status";
 const STUDIO_VIDEO_WEBM = "/videos/studio/studio-loop.webm";
 const STUDIO_VIDEO_MP4 = "/videos/studio/studio-loop.mp4";
 const STUDIO_VIDEO_POSTER = "/videos/studio/studio-poster.webp";
+
+const WORKFLOW_PATHS = [
+  {
+    label: "Briefing mit Agent vorbereiten",
+    description: "Der Agent erkennt dein Ziel und schlägt den passenden Workflow vor.",
+    href: "/dashboard/ki-agent",
+    icon: <Bot size={16} strokeWidth={1.75} />,
+  },
+  {
+    label: "Workflow manuell wählen",
+    description: "Bild, Video, UGC, Upscale oder Script-Workflows direkt starten.",
+    href: "/dashboard?tool=tools",
+    icon: <Wrench size={16} strokeWidth={1.75} />,
+  },
+  {
+    label: "Galerie öffnen",
+    description: "Assets, Downloads und Next Actions an einem Ort.",
+    href: "/dashboard/gallery",
+    icon: <Images size={16} strokeWidth={1.75} />,
+  },
+  {
+    label: "Kampagne vorbereiten",
+    description: "Hooks, Creatives und Varianten aus deinen Assets bündeln.",
+    href: "/dashboard/campaigns",
+    icon: <Megaphone size={16} strokeWidth={1.75} />,
+  },
+] as const;
 
 interface QuickAction {
   id: ToolId;
@@ -69,7 +99,7 @@ function Muted({ children }: { children: React.ReactNode }) {
   );
 }
 
-function StudioVideoHero({ onSelect }: { onSelect: (id: ToolId) => void }) {
+function StudioVideoHero() {
   const [posterFailed, setPosterFailed] = useState(false);
 
   return (
@@ -131,23 +161,22 @@ function StudioVideoHero({ onSelect }: { onSelect: (id: ToolId) => void }) {
           Ziel eingeben — Agent erkennt Intent — Workflow startet — Asset landet in der Galerie.
         </p>
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
-          <button
-            type="button"
-            onClick={() => onSelect("tools")}
-            className={`inline-flex min-h-[44px] items-center justify-center px-6 text-sm font-semibold transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
-            style={{ background: "#FAF6EE", color: "#080808" }}
-          >
-            Tool auswählen
-          </button>
           <Link
             href="/dashboard/ki-agent"
+            className={`inline-flex min-h-[44px] items-center justify-center px-6 text-sm font-semibold no-underline transition-opacity hover:opacity-90 ${STUDIO_RADIUS.button}`}
+            style={{ background: "#FAF6EE", color: "#080808" }}
+          >
+            Briefing mit Agent vorbereiten
+          </Link>
+          <Link
+            href="/dashboard?tool=tools"
             className={`inline-flex min-h-[44px] items-center justify-center border px-6 text-sm font-medium no-underline transition-colors hover:border-white/35 ${STUDIO_RADIUS.button}`}
             style={{
               borderColor: "rgba(255,255,255,0.22)",
               color: "rgba(255,255,255,0.92)",
             }}
           >
-            Mit Agent vorbereiten
+            Workflow manuell wählen
           </Link>
         </div>
       </div>
@@ -167,7 +196,59 @@ export function StudioCockpit({
 
   return (
     <div className="relative w-full min-w-0 space-y-8 md:space-y-10">
-      <StudioVideoHero onSelect={onSelect} />
+      <StudioVideoHero />
+
+      <section className="space-y-4" aria-labelledby="studio-workflow-paths">
+        <div>
+          <h2
+            id="studio-workflow-paths"
+            className="text-lg font-bold tracking-tight md:text-xl"
+            style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
+          >
+            Schnelle Arbeitswege
+          </h2>
+          <p className="mt-1 text-sm" style={{ color: DASHBOARD_MUTED }}>
+            Agent, manuelle Workflows und Ergebnisse — ohne die Tool-Sammlung zu dominieren.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {WORKFLOW_PATHS.map((path) => (
+            <Link
+              key={path.href}
+              href={path.href}
+              className={`group flex min-h-[88px] flex-col justify-between border p-4 no-underline transition-all hover:-translate-y-px hover:border-black/14 hover:shadow-[0_4px_20px_rgba(8,8,8,0.05)] ${STUDIO_RADIUS.input}`}
+              style={{
+                borderColor: STUDIO_CARD_BORDER,
+                background: STUDIO_CARD_BG,
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "rgba(8,8,8,0.04)", color: "rgba(8,8,8,0.55)" }}
+                >
+                  {path.icon}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="text-[14px] font-semibold tracking-tight"
+                    style={{ color: DASHBOARD_TEXT }}
+                  >
+                    {path.label}
+                  </p>
+                  <p className="mt-1 text-[12px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+                    {path.description}
+                  </p>
+                </div>
+                <ChevronRight
+                  size={14}
+                  className="mt-1 shrink-0 opacity-30 transition-opacity group-hover:opacity-70"
+                />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -248,31 +329,6 @@ export function StudioCockpit({
               </button>
             );
           })}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
-          <Link
-            href="/dashboard?tool=tools"
-            className="text-[13px] font-semibold no-underline hover:opacity-80"
-            style={{ color: DASHBOARD_TEXT }}
-          >
-            Alle Tools
-          </Link>
-          <Link
-            href="/dashboard/gallery"
-            className="text-[13px] no-underline hover:opacity-80"
-            style={{ color: DASHBOARD_MUTED }}
-          >
-            Galerie
-          </Link>
-          <Link
-            href="/dashboard/ki-agent"
-            className="inline-flex items-center gap-1.5 text-[13px] no-underline hover:opacity-80"
-            style={{ color: DASHBOARD_MUTED }}
-          >
-            <Bot size={13} />
-            Briefing mit Agent
-          </Link>
         </div>
       </section>
 

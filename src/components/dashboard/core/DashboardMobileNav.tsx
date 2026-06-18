@@ -11,7 +11,11 @@ import {
   Settings,
   Coins,
 } from "lucide-react";
-import { DASHBOARD_PRIMARY_NAV, type DashboardNavId } from "./DashboardPrimaryNav";
+import {
+  DASHBOARD_PRIMARY_NAV,
+  isStudioAreaActive,
+  type DashboardNavId,
+} from "./DashboardPrimaryNav";
 
 export const DASHBOARD_MOBILE_NAV: {
   id: DashboardNavId;
@@ -28,11 +32,6 @@ export const DASHBOARD_MOBILE_NAV: {
   { id: "credits", label: "Credits", href: "/dashboard/credits", icon: Coins },
 ];
 
-function isDashboardToolView(searchParams: URLSearchParams): boolean {
-  const tool = searchParams.get("tool");
-  return Boolean(tool && tool !== "studio" && tool !== "gallery" && tool !== "settings");
-}
-
 function isMobileNavActive(
   item: (typeof DASHBOARD_MOBILE_NAV)[number],
   pathname: string,
@@ -42,8 +41,7 @@ function isMobileNavActive(
   if (!config) return false;
 
   if (item.id === "studio") {
-    const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
-    return onDashboard && !isDashboardToolView(searchParams);
+    return isStudioAreaActive(pathname, searchParams);
   }
 
   return config.match(pathname);
