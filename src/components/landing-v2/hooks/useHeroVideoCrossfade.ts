@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-const CROSSFADE_SEC = 1.2;
-const LEAD_SEC = 1.25;
+const CROSSFADE_SEC = 1.5;
+const LEAD_SEC = 1.5;
 
 export type HeroVideoSlotOpacity = {
   a: number;
