@@ -7,12 +7,16 @@ import {
   synthesizeElevenLabsSpeech,
 } from "@/lib/elevenlabs-tts";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 const CREDIT_COST = 2;
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("voice-clone");
   if (denied) return denied;
 

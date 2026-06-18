@@ -8,6 +8,7 @@ import {
 import { assertActivePlan } from "@/lib/access.server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,9 @@ function sseLine(event: Record<string, unknown>): string {
 }
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const planDenied = await assertActivePlan();
   if (planDenied) return planDenied;
 

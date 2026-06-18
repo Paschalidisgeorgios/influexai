@@ -21,6 +21,7 @@ import {
 } from "@/lib/anthropic";
 import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -70,6 +71,9 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const configError = getAnthropicConfigError();
   if (configError) {
     return Response.json({ error: configError }, { status: 503 });

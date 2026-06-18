@@ -11,6 +11,7 @@ import {
   VIRAL_HOOK_EXTRACTOR_SYSTEM_PROMPT,
 } from "@/lib/viral-hook-extraktor";
 import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,9 @@ type RequestBody = {
 };
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;
