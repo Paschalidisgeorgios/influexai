@@ -27,6 +27,7 @@ import {
 } from "@/lib/ai-creator/hub-status";
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
+import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
@@ -286,6 +287,12 @@ export function AiCreatorHub() {
   const [characters, setCharacters] = useState<HubCharacter[]>([]);
   const [charactersLoading, setCharactersLoading] = useState(true);
   const [charactersError, setCharactersError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteFeedback, setDeleteFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
@@ -318,6 +325,42 @@ export function AiCreatorHub() {
   useEffect(() => {
     void loadCharacters();
   }, [loadCharacters]);
+
+  const handleDeleteCharacter = useCallback(
+    async (characterId: string) => {
+      setDeletingId(characterId);
+      setDeleteFeedback(null);
+      try {
+        const res = await fetch(`/api/ai-creator/characters/${characterId}`, {
+          method: "DELETE",
+        });
+        const data = (await res.json()) as { success?: boolean; error?: string };
+        if (!res.ok || !data.success) {
+          setDeleteFeedback({
+            type: "error",
+            message:
+              data.error ??
+              "Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut.",
+          });
+          return;
+        }
+        setDeleteConfirmId(null);
+        setDeleteFeedback({
+          type: "success",
+          message: "Entwurf gelöscht.",
+        });
+        await loadCharacters();
+      } catch {
+        setDeleteFeedback({
+          type: "error",
+          message: "Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut.",
+        });
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [loadCharacters]
+  );
 
   const readyCharacters = characters.filter(
     (c) => mapCharacterStatusToHubPhase(c.trainingStatus) === "ready"
@@ -396,6 +439,17 @@ export function AiCreatorHub() {
       </DashboardPanel>
 
       <DashboardSection title="Deine Characters" className="mt-10">
+        {deleteFeedback ? (
+          <p
+            className="mb-3 text-sm"
+            style={{
+              color: deleteFeedback.type === "success" ? "#34d399" : "#f87171",
+            }}
+            role="status"
+          >
+            {deleteFeedback.message}
+          </p>
+        ) : null}
         {charactersLoading ? (
           <DashboardPanel>
             <p className="text-sm" style={{ color: DASHBOARD_MUTED }}>
@@ -450,6 +504,9 @@ export function AiCreatorHub() {
                 const secondaryCta = isSelfCharacter
                   ? { href: "/dashboard/gallery", label: "Galerie öffnen" }
                   : { href: "/dashboard/campaigns", label: "Kampagne vorbereiten" };
+
+                const canDelete = isCharacterDeletableStatus(character.trainingStatus);
+                const isConfirmingDelete = deleteConfirmId === character.id;
 
                 return (
                   <li key={character.id}>
@@ -510,6 +567,55 @@ export function AiCreatorHub() {
                           >
                             {secondaryCta.label}
                           </Link>
+                          {canDelete ? (
+                            isConfirmingDelete ? (
+                              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                <span className="max-w-[220px] text-[11px] leading-snug sm:max-w-none" style={{ color: DASHBOARD_MUTED }}>
+                                  Diesen Character-Entwurf wirklich löschen? Das kann nicht rückgängig gemacht werden.
+                                </span>
+                                <button
+                                  type="button"
+                                  disabled={deletingId === character.id}
+                                  onClick={() => void handleDeleteCharacter(character.id)}
+                                  className="inline-flex min-h-[36px] items-center rounded-full border px-3 text-[11px] font-medium disabled:opacity-50"
+                                  style={{
+                                    borderColor: "rgba(248,113,113,0.35)",
+                                    color: "#f87171",
+                                  }}
+                                >
+                                  {deletingId === character.id ? "Löschen…" : "Ja, löschen"}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={deletingId === character.id}
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="inline-flex min-h-[36px] items-center rounded-full border px-3 text-[11px] font-medium"
+                                  style={{
+                                    borderColor: "rgba(255,255,255,0.12)",
+                                    color: DASHBOARD_TEXT,
+                                  }}
+                                >
+                                  Abbrechen
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirmId(character.id)}
+                                className="inline-flex min-h-[36px] items-center rounded-full border px-3 text-[11px] font-medium"
+                                style={{
+                                  borderColor: "rgba(255,255,255,0.1)",
+                                  color: DASHBOARD_MUTED,
+                                }}
+                              >
+                                Entwurf löschen
+                              </button>
+                            )
+                          ) : phase === "ready" || phase === "training" || phase === "preparing" ? (
+                            <span className="text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+                              Bereite Characters können später verwaltet werden.
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                     </DashboardPanel>
