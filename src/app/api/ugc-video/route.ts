@@ -84,6 +84,9 @@ export async function GET(request: NextRequest) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   try {
     const job = await getAkoolVideoResult(jobId);
     const mapped = mapAkoolVideoStatus(job.video_status);

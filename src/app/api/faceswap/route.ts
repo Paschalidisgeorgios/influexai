@@ -83,6 +83,9 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   try {
     const result = await getFaceswapResults(jobId);
     if (!result) {
