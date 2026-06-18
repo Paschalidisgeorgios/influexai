@@ -7,29 +7,11 @@ import { LANDING_V2_COPY } from "@/lib/landing-v2-copy";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { LandingV2FlowStage } from "../ui/LandingV2FlowStage";
 import { LandingV2HeroVideoBackground } from "../ui/LandingV2HeroVideoBackground";
+import { LandingV2HeroKeywordHeadline } from "../ui/LandingV2HeroKeywordHeadline";
 import { useHeroEntrance } from "../hooks/useHeroEntrance";
 import { useBrandIntro } from "../BrandIntroContext";
 
 const copy = LANDING_V2_COPY.hero;
-
-function renderMotionLine() {
-  return (
-    <span className="landing-v2-hero__headline-line" data-hero-headline-line>
-      <span className="landing-v2-hero__headline-word" data-hero-headline-word>
-        wird
-      </span>{" "}
-      <span className="landing-v2-hero__motion-wrap" data-hero-motion-signal>
-        <span className="landing-v2-hero-rotate__keyword" data-hero-motion-word>
-          {copy.primaryHeadlineHighlight}
-        </span>
-        <span className="landing-v2-hero__motion-line" data-hero-motion-line aria-hidden />
-      </span>
-      <span className="landing-v2-hero__headline-word" data-hero-headline-word>
-        .
-      </span>
-    </span>
-  );
-}
 
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -65,23 +47,7 @@ export function LandingV2Hero() {
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-center gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-10 lg:pb-12">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
           {isPreview ? (
-            <h1
-              id="lv2-hero-heading"
-              className="landing-v2-hero-headline landing-v2-hero__headline landing-v2-hero__headline--primary landing-v2-hero__headline--stack"
-              data-hero-headline
-            >
-              {copy.primaryHeadlineLines.slice(0, 3).map((line) => (
-                <span
-                  key={line}
-                  className="landing-v2-hero__headline-line"
-                  data-hero-headline-line
-                  data-hero-headline-split="words"
-                >
-                  {line}
-                </span>
-              ))}
-              {renderMotionLine()}
-            </h1>
+            <LandingV2HeroKeywordHeadline />
           ) : (
             <h1
               id="lv2-hero-heading"

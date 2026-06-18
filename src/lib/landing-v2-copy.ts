@@ -54,6 +54,15 @@ export const LANDING_V2_COPY = {
     headline: "Das Studio, das Kampagnen in Assets verwandelt.",
     headlineAlt: "Campaigns become assets here.",
     headlineLines: ["Das Studio,", "das Kampagnen", "in Assets verwandelt."] as const,
+    primaryHeadlineLead: "Produziere",
+    primaryHeadlineTail: "in einem Studio.",
+    rotatingKeywords: [
+      "AI Influencer",
+      "UGC Videos",
+      "Produktbilder",
+      "Motion Ads",
+      "Kampagnen",
+    ] as const,
     primaryHeadlineLines: [
       "Aus Briefings",
       "werden Visuals.",
@@ -89,7 +98,7 @@ export const LANDING_V2_COPY = {
       },
     ] as const,
     subline:
-      "Briefing, Visuals und Motion in einem klaren Produktionsfluss. Von der ersten Idee bis zur gespeicherten Variante — ohne Tool-Chaos.",
+      "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und führt dich von der Idee zur fertigen Ausgabe — Bild, Video, Hook oder Kampagne.",
     ctaPrimary: "Studio starten",
     ctaSecondary: "Preise ansehen",
   },

@@ -137,13 +137,24 @@ export const HERO_ENTRANCE = {
   },
 } as const;
 
-/** Preview hero — rotating headline copy */
+/** Preview hero — rotating full headline (legacy) */
 export const HERO_ROTATE_COPY = {
   intervalMs: 3600,
   intervalReducedMs: 8000,
   enter: { y: 18, opacity: 0, duration: 0.68, ease: "power3.out" },
   exit: { y: -12, opacity: 0, duration: 0.55, ease: "power3.in" },
   keyword: { fromOpacity: 0.72, toOpacity: 1, duration: 0.72, ease: "power2.out" },
+} as const;
+
+/** Preview hero — single lime keyword rotation */
+export const HERO_KEYWORD_ROTATE = {
+  intervalMinMs: 3200,
+  intervalMaxMs: 4500,
+  intervalReducedMs: 12000,
+  entranceDelayMs: 2400,
+  exit: { y: -14, opacity: 0, duration: 0.42, ease: "power2.in" as const },
+  enter: { y: 18, opacity: 0, duration: 0.65, ease: "power3.out" as const },
+  pulse: { brightnessPeak: 1.12, durationIn: 0.2, durationOut: 0.32 },
 } as const;
 
 /** Preview hero — scroll-fading backdrop video (single mp4) */

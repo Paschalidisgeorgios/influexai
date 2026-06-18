@@ -28,10 +28,13 @@ export function useHeroEntrance(
     const ctx = gsap.context(() => {
       const eyebrow = section.querySelector("[data-hero-eyebrow]");
       const rotatingHeadline = section.querySelector("[data-hero-headline-rotating]");
+      const keywordHeadline = section.querySelector("[data-hero-keyword-headline]");
       const headline = section.querySelector<HTMLElement>("[data-hero-headline]");
       const splitLines = section.querySelectorAll<HTMLElement>('[data-hero-headline-split="words"]');
       const headlineLines = section.querySelectorAll<HTMLElement>("[data-hero-headline-line]");
       const manualWords = section.querySelectorAll<HTMLElement>("[data-hero-headline-word]");
+      const keywordLine = section.querySelector<HTMLElement>("[data-hero-keyword-line]");
+      const rotatingKeyword = section.querySelector<HTMLElement>("[data-hero-rotating-keyword]");
       const motionWord = section.querySelector<HTMLElement>("[data-hero-motion-word]");
       const motionLine = section.querySelector<HTMLElement>("[data-hero-motion-line]");
       const subline = section.querySelector("[data-hero-subline]");
@@ -42,7 +45,7 @@ export function useHeroEntrance(
       const { word: wordMotion, subline: sublineMotion, cta: ctaMotion, motionSignal } =
         HERO_ENTRANCE;
 
-      if (headline && !rotatingHeadline && headlineLines.length === 0) {
+      if (headline && !rotatingHeadline && !keywordHeadline && headlineLines.length === 0) {
         legacySplit = new SplitType(headline, {
           types: "lines",
           tagName: "span",
@@ -64,16 +67,24 @@ export function useHeroEntrance(
           ? (Array.from(headlineLines) as Element[])
           : (legacySplit?.lines ?? []);
 
-      const headlineTargets =
-        splitWords.length > 0
+      const headlineTargets = keywordHeadline
+        ? [...splitWords]
+        : splitWords.length > 0
           ? [...splitWords, ...Array.from(manualWords)]
           : legacyLines;
 
-      const textTargets = [eyebrow, subline, ...headlineTargets, ...ctas].filter(
+      const entranceTargets = keywordHeadline
+        ? ([...headlineTargets, keywordLine].filter(Boolean) as Element[])
+        : headlineTargets;
+
+      const textTargets = [eyebrow, subline, ...entranceTargets, ...ctas].filter(
         Boolean
       ) as Element[];
 
       gsap.set(textTargets, { opacity: 0, y: wordMotion.y });
+      if (rotatingKeyword) {
+        gsap.set(rotatingKeyword, { opacity: 1, y: 0, clearProps: "transform,filter" });
+      }
       if (motionLine) {
         gsap.set(motionLine, { scaleX: 0, opacity: 0, transformOrigin: "left center" });
       }
@@ -85,6 +96,9 @@ export function useHeroEntrance(
           if (motionWord) {
             gsap.set(motionWord, { clearProps: "transform,filter" });
           }
+          if (rotatingKeyword) {
+            gsap.set(rotatingKeyword, { clearProps: "transform,filter" });
+          }
           if (motionLine) {
             gsap.set(motionLine, { clearProps: "transform,opacity" });
           }
@@ -95,9 +109,9 @@ export function useHeroEntrance(
         tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.55 }, 0.08);
       }
 
-      if (headlineTargets.length) {
+      if (entranceTargets.length) {
         tl.to(
-          headlineTargets,
+          entranceTargets,
           {
             y: 0,
             opacity: 1,
@@ -109,7 +123,7 @@ export function useHeroEntrance(
         );
       }
 
-      if (motionWord) {
+      if (motionWord && !keywordHeadline) {
         const signalAt =
           wordMotion.delay +
           wordMotion.duration +
@@ -156,6 +170,36 @@ export function useHeroEntrance(
             `>+${motionSignal.lineHold}`
           );
         }
+      }
+
+      if (rotatingKeyword && keywordHeadline) {
+        const signalAt =
+          wordMotion.delay +
+          wordMotion.duration +
+          (entranceTargets.length - 1) * wordMotion.stagger +
+          0.04;
+
+        tl.fromTo(
+          rotatingKeyword,
+          { filter: "brightness(1)" },
+          {
+            filter: `brightness(${motionSignal.brightnessPeak})`,
+            duration: motionSignal.brightnessIn,
+            ease: "power2.out",
+          },
+          signalAt
+        ).to(
+          rotatingKeyword,
+          {
+            filter: "brightness(1)",
+            duration: motionSignal.brightnessOut,
+            ease: "power2.inOut",
+            onComplete: () => {
+              gsap.set(rotatingKeyword, { clearProps: "transform,filter" });
+            },
+          },
+          `>-0.05`
+        );
       }
 
       if (subline) {
