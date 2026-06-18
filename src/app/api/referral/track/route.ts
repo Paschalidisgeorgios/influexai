@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { recordReferralIntent } from "@/app/actions/referral";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { REFERRAL_REF_COOKIE } from "@/lib/referral-ref-cookie";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,9 @@ export async function POST(request: Request) {
       message: "Kein Referral-Parameter",
     });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   const result = await recordReferralIntent(user.id, ref);
 

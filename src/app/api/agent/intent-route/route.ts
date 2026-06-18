@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { routeIntent } from "@/lib/agent/intentRouter";
 import { assertActivePlan } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertActivePlan();
   if (denied) return denied;
 

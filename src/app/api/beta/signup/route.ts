@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { joinBeta, joinBetaWaitlist } from "@/app/actions/beta";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const runtime = "nodejs";
 
@@ -26,6 +27,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   try {
     if (body.waitlist) {

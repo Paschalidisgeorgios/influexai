@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 const CODE = "PRODUCTHUNT";
 
@@ -29,6 +30,9 @@ async function stripePost(
 }
 
 export async function POST() {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const admin = await requireAdmin();
   if (!admin.ok) {
     return NextResponse.json(

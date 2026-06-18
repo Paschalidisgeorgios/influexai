@@ -8,6 +8,7 @@ import {
   fetchCanvasAnalytics,
   recordCanvasGeneration,
 } from "@/lib/canvas/analytics-server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

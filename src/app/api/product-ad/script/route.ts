@@ -14,6 +14,7 @@ import {
 } from "@/lib/product-ad-script";
 import { assertGatedFeature } from "@/lib/access.server";
 import { isValidLocale } from "@/lib/locale";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,9 @@ function isValidStyle(s: string): s is ProductAdStyle {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("produkt-ads");
   if (denied) return denied;
 
