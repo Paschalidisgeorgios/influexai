@@ -4,21 +4,36 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
-  Bot,
   Images,
   Settings,
-  Sparkles,
   UserRound,
+  Megaphone,
+  Palette,
+  Coins,
 } from "lucide-react";
-import { isDedicatedToolPath } from "./production-tool-routes";
 
 export type DashboardNavId =
   | "studio"
   | "ai-creator"
-  | "agent"
-  | "tools"
   | "gallery"
-  | "settings";
+  | "campaigns"
+  | "brand-kit"
+  | "settings"
+  | "credits";
+
+const AI_CREATOR_PREFIXES = [
+  "/dashboard/ai-creator",
+  "/dashboard/ki-influencer",
+  "/dashboard/ki-ich",
+  "/dashboard/character-studio",
+  "/dashboard/lora-training",
+] as const;
+
+const CAMPAIGN_PREFIXES = [
+  "/dashboard/campaigns",
+  "/dashboard/campaign-autopilot",
+  "/dashboard/content-kalender",
+] as const;
 
 export const DASHBOARD_PRIMARY_NAV: {
   id: DashboardNavId;
@@ -39,21 +54,7 @@ export const DASHBOARD_PRIMARY_NAV: {
     label: "AI Creator",
     href: "/dashboard/ai-creator",
     icon: <UserRound size={15} strokeWidth={1.75} />,
-    match: (p) => p.startsWith("/dashboard/ai-creator"),
-  },
-  {
-    id: "agent",
-    label: "Agent",
-    href: "/dashboard/ki-agent",
-    icon: <Bot size={15} strokeWidth={1.75} />,
-    match: (p) => p.startsWith("/dashboard/ki-agent"),
-  },
-  {
-    id: "tools",
-    label: "Tools",
-    href: "/dashboard?tool=tools",
-    icon: <Sparkles size={15} strokeWidth={1.75} />,
-    match: (p) => isDedicatedToolPath(p),
+    match: (p) => AI_CREATOR_PREFIXES.some((prefix) => p.startsWith(prefix)),
   },
   {
     id: "gallery",
@@ -63,19 +64,41 @@ export const DASHBOARD_PRIMARY_NAV: {
     match: (p) => p.startsWith("/dashboard/gallery"),
   },
   {
+    id: "campaigns",
+    label: "Kampagnen",
+    href: "/dashboard/campaigns",
+    icon: <Megaphone size={15} strokeWidth={1.75} />,
+    match: (p) => CAMPAIGN_PREFIXES.some((prefix) => p.startsWith(prefix)),
+  },
+  {
+    id: "brand-kit",
+    label: "Brand Kit",
+    href: "/dashboard/brand-kit",
+    icon: <Palette size={15} strokeWidth={1.75} />,
+    match: (p) => p.startsWith("/dashboard/brand-kit"),
+  },
+  {
     id: "settings",
     label: "Einstellungen",
     href: "/dashboard/settings",
     icon: <Settings size={15} strokeWidth={1.75} />,
-    match: (p) => p.startsWith("/dashboard/settings"),
+    match: (p) =>
+      p.startsWith("/dashboard/settings") ||
+      p.startsWith("/dashboard/api") ||
+      p.startsWith("/dashboard/profile"),
+  },
+  {
+    id: "credits",
+    label: "Credits",
+    href: "/dashboard/credits",
+    icon: <Coins size={15} strokeWidth={1.75} />,
+    match: (p) => p.startsWith("/dashboard/credits"),
   },
 ];
 
 function isDashboardToolView(searchParams: URLSearchParams): boolean {
   const tool = searchParams.get("tool");
-  return Boolean(
-    tool && tool !== "studio" && tool !== "gallery" && tool !== "settings"
-  );
+  return Boolean(tool && tool !== "studio" && tool !== "gallery" && tool !== "settings");
 }
 
 function isActive(
@@ -86,10 +109,6 @@ function isActive(
   if (item.id === "studio") {
     const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
     return onDashboard && !isDashboardToolView(searchParams);
-  }
-  if (item.id === "tools") {
-    if (isDashboardToolView(searchParams)) return true;
-    return item.match(pathname);
   }
   return item.match(pathname);
 }
@@ -136,3 +155,8 @@ export function DashboardPrimaryNav({ compact }: { compact?: boolean }) {
     </nav>
   );
 }
+
+export const DASHBOARD_SECONDARY_LINKS = [
+  { label: "Agent", href: "/dashboard/ki-agent" },
+  { label: "Tools", href: "/dashboard?tool=tools" },
+] as const;

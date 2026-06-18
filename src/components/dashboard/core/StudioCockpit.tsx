@@ -125,10 +125,10 @@ function StudioVideoHero({ onSelect }: { onSelect: (id: ToolId) => void }) {
           className="max-w-xl text-[1.65rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-[1.85rem] md:text-[2.15rem]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          Dein Creator Studio für Kampagnen, Bilder und Motion.
+          Dein Creator Operating System für Ziele, Workflows und Assets.
         </h1>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72 md:text-[15px]">
-          Starte mit einem Tool oder bereite dein Briefing mit dem Agenten vor.
+          Ziel eingeben — Agent erkennt Intent — Workflow startet — Asset landet in der Galerie.
         </p>
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
           <button

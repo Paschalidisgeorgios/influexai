@@ -4,25 +4,29 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
-  Bot,
-  Sparkles,
+  UserRound,
   Images,
+  Megaphone,
+  Palette,
   Settings,
+  Coins,
 } from "lucide-react";
-import { isDedicatedToolPath } from "./production-tool-routes";
+import { DASHBOARD_PRIMARY_NAV, type DashboardNavId } from "./DashboardPrimaryNav";
 
-export const DASHBOARD_MOBILE_NAV = [
+export const DASHBOARD_MOBILE_NAV: {
+  id: DashboardNavId;
+  label: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+}[] = [
   { id: "studio", label: "Studio", href: "/dashboard", icon: LayoutDashboard },
-  { id: "agent", label: "Agent", href: "/dashboard/ki-agent", icon: Bot },
-  { id: "tools", label: "Tools", href: "/dashboard?tool=tools", icon: Sparkles },
+  { id: "ai-creator", label: "AI Creator", href: "/dashboard/ai-creator", icon: UserRound },
   { id: "gallery", label: "Galerie", href: "/dashboard/gallery", icon: Images },
-  {
-    id: "settings",
-    label: "Mehr",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
-] as const;
+  { id: "campaigns", label: "Kampagnen", href: "/dashboard/campaigns", icon: Megaphone },
+  { id: "brand-kit", label: "Brand Kit", href: "/dashboard/brand-kit", icon: Palette },
+  { id: "settings", label: "Einstellungen", href: "/dashboard/settings", icon: Settings },
+  { id: "credits", label: "Credits", href: "/dashboard/credits", icon: Coins },
+];
 
 function isDashboardToolView(searchParams: URLSearchParams): boolean {
   const tool = searchParams.get("tool");
@@ -30,31 +34,19 @@ function isDashboardToolView(searchParams: URLSearchParams): boolean {
 }
 
 function isMobileNavActive(
-  itemId: (typeof DASHBOARD_MOBILE_NAV)[number]["id"],
+  item: (typeof DASHBOARD_MOBILE_NAV)[number],
   pathname: string,
-  href: string,
   searchParams: URLSearchParams
 ): boolean {
-  if (itemId === "studio") {
+  const config = DASHBOARD_PRIMARY_NAV.find((entry) => entry.id === item.id);
+  if (!config) return false;
+
+  if (item.id === "studio") {
     const onDashboard = pathname === "/dashboard" || pathname === "/dashboard/";
     return onDashboard && !isDashboardToolView(searchParams);
   }
-  if (itemId === "tools") {
-    if (isDashboardToolView(searchParams)) return true;
-    return isDedicatedToolPath(pathname);
-  }
-  if (itemId === "settings") {
-    return (
-      pathname.startsWith("/dashboard/settings") ||
-      pathname.startsWith("/dashboard/credits") ||
-      pathname.startsWith("/dashboard/api") ||
-      pathname.startsWith("/dashboard/profile")
-    );
-  }
-  if (href === "/dashboard") {
-    return pathname === "/dashboard" || pathname === "/dashboard/";
-  }
-  return pathname.startsWith(href);
+
+  return config.match(pathname);
 }
 
 export function DashboardMobileNav() {
@@ -63,38 +55,43 @@ export function DashboardMobileNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-30 border-t md:hidden"
       style={{
         background: "#050506",
         borderColor: "rgba(255,255,255,0.06)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
-      {DASHBOARD_MOBILE_NAV.map((item) => {
-        const active = isMobileNavActive(item.id, pathname, item.href, searchParams);
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.id}
-            href={item.href}
-            className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 py-2.5 transition-colors active:bg-white/[0.04]"
-            aria-label={item.label}
-            aria-current={active ? "page" : undefined}
-          >
-            <Icon
-              size={17}
-              strokeWidth={1.75}
-              style={{ color: active ? "#b4ff00" : "rgba(255,255,255,0.32)" }}
-            />
-            <span
-              className="max-w-full truncate text-[9px] font-medium leading-tight"
-              style={{ color: active ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.32)" }}
+      <div
+        className="flex items-stretch overflow-x-auto"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+      >
+        {DASHBOARD_MOBILE_NAV.map((item) => {
+          const active = isMobileNavActive(item, pathname, searchParams);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="flex min-w-[4.5rem] shrink-0 flex-col items-center justify-center gap-0.5 px-2 py-2.5 transition-colors active:bg-white/[0.04]"
+              aria-label={item.label}
+              aria-current={active ? "page" : undefined}
             >
-              {item.label}
-            </span>
-          </Link>
-        );
-      })}
+              <Icon
+                size={17}
+                strokeWidth={1.75}
+                style={{ color: active ? "#b4ff00" : "rgba(255,255,255,0.32)" }}
+              />
+              <span
+                className="max-w-[4.25rem] truncate text-[9px] font-medium leading-tight"
+                style={{ color: active ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.32)" }}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
