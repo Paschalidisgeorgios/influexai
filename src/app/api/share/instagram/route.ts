@@ -4,6 +4,7 @@ import {
   publishAssetToSocial,
   validateSharePublishBody,
 } from "@/lib/share/publish-handler";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
   if ("error" in validated) {
     return NextResponse.json({ error: validated.error }, { status: validated.status });
   }
+
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
 
   try {
     const result = await publishAssetToSocial("instagram", validated, user.id, supabase);
