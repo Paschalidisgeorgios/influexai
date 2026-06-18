@@ -10,12 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 /** Hero backdrop — opacity + scale fade on scroll (preview only) */
 export function useHeroVideoParallax(
   sectionRef: RefObject<HTMLElement | null>,
-  videoRef: RefObject<HTMLVideoElement | null>,
+  mediaRef: RefObject<HTMLElement | null>,
   enabled = false
 ) {
   useEffect(() => {
     const section = sectionRef.current;
-    const video = videoRef.current;
+    const video = mediaRef.current;
     if (!section || !video) return;
 
     const preset = HERO_VIDEO_BG;
@@ -80,5 +80,5 @@ export function useHeroVideoParallax(
     }, section);
 
     return () => ctx.revert();
-  }, [sectionRef, videoRef, enabled]);
+  }, [sectionRef, mediaRef, enabled]);
 }
