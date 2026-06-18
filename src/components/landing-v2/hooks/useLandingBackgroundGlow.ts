@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, type RefObject } from "react";
-import { readLandingScrollY } from "@/lib/landing-v2-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { LANDING_BACKGROUND_GLOW } from "@/lib/landing-v2-motion";
 import { useReducedMotion } from "./useReducedMotion";
 
-/** Scroll-linked glow position for the global landing background */
+gsap.registerPlugin(ScrollTrigger);
+
+/** Scroll-scrubbed lime glow for the global landing background */
 export function useLandingBackgroundGlow(
   containerRef: RefObject<HTMLElement | null>
 ) {
@@ -14,50 +18,45 @@ export function useLandingBackgroundGlow(
     const container = containerRef.current;
     if (!container) return;
 
-    const parallax = reduceMotion ? 0 : 0.2;
-    const driftX = reduceMotion ? 0 : 0.012;
+    const preset = LANDING_BACKGROUND_GLOW;
 
-    const apply = (scrollY: number) => {
-      container.style.setProperty("--lv2-bg-glow-y", `${scrollY * parallax}px`);
-      container.style.setProperty(
-        "--lv2-bg-glow-x",
-        `calc(52% + ${scrollY * driftX}px)`
-      );
-    };
-
-    apply(readLandingScrollY());
+    container.style.setProperty("--lv2-bg-glow-y", "0px");
+    container.style.setProperty("--lv2-bg-glow-x", `${preset.xStart}px`);
+    container.style.setProperty("--lv2-bg-glow-opacity", String(preset.opacityMin));
 
     if (reduceMotion) return;
 
-    let frame = 0;
-    let lastScroll = -1;
+    const scrollRoot =
+      document.querySelector<HTMLElement>(".landing-v2-main") ?? document.documentElement;
 
-    const tick = () => {
-      const scrollY = readLandingScrollY();
-      if (scrollY !== lastScroll) {
-        lastScroll = scrollY;
-        apply(scrollY);
-      }
-      frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-
-    const onScroll = () => {
-      const scrollY = readLandingScrollY();
-      if (scrollY !== lastScroll) {
-        lastScroll = scrollY;
-        apply(scrollY);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        container,
+        {
+          "--lv2-bg-glow-y": "0px",
+          "--lv2-bg-glow-x": `${preset.xStart}px`,
+          "--lv2-bg-glow-opacity": preset.opacityMin,
+        },
+        {
+          "--lv2-bg-glow-y": `${preset.yMax}px`,
+          "--lv2-bg-glow-x": `${preset.xEnd}px`,
+          "--lv2-bg-glow-opacity": preset.opacityMax,
+          ease: "none",
+          scrollTrigger: {
+            trigger: scrollRoot,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: preset.scrub,
+          },
+        }
+      );
+    }, container);
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
+      ctx.revert();
       container.style.removeProperty("--lv2-bg-glow-y");
       container.style.removeProperty("--lv2-bg-glow-x");
+      container.style.removeProperty("--lv2-bg-glow-opacity");
     };
   }, [containerRef, reduceMotion]);
 }

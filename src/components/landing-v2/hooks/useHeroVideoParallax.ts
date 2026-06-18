@@ -27,7 +27,7 @@ export function useHeroVideoParallax(
     );
 
     gsap.set(video, {
-      opacity: 1,
+      opacity: preset.opacityStart,
       scale: preset.scaleStart,
       transformOrigin: "center center",
     });

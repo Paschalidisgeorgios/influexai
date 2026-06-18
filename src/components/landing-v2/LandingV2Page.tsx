@@ -15,7 +15,7 @@ import { LandingV2StudioPreview } from "./sections/LandingV2StudioPreview";
 import { LandingV2PricingTeaser } from "./sections/LandingV2PricingTeaser";
 import { LandingV2Footer } from "./sections/LandingV2Footer";
 import { LandingMotionProvider } from "./LandingMotionProvider";
-import { LandingBackgroundSystem } from "./ui/LandingBackgroundSystem";
+import { LandingV2BackgroundSystem } from "./ui/LandingV2BackgroundSystem";
 function LandingV2Shell() {
   const { introDismissed, chromeVisible } = useBrandIntro();
   const links = useLandingV2Links();
@@ -54,7 +54,7 @@ function LandingV2Shell() {
 
       <div className={pageClass}>
         <div className="landing-v2-root min-h-screen">
-          <LandingBackgroundSystem />
+          <LandingV2BackgroundSystem />
           {links.enableBrandIntro ? <LandingV2BrandIntro /> : null}
 
           <main className="landing-v2-main overflow-x-clip">

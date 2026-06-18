@@ -118,22 +118,22 @@ export const EDITORIAL_VIDEO_SCROLL = {
 /** Preview hero — entrance timeline (headline words + Motion signal) */
 export const HERO_ENTRANCE = {
   word: {
-    y: 36,
+    y: 32,
     opacity: 0,
-    duration: 0.88,
-    stagger: 0.075,
+    duration: 0.82,
+    stagger: 0.07,
     ease: "power3.out" as const,
-    delay: 0.12,
+    delay: 0.1,
   },
-  subline: { delay: 0.58, duration: 0.68 },
-  cta: { delay: 0.72, duration: 0.58, stagger: 0.08 },
+  subline: { delay: 0.56, duration: 0.68 },
+  cta: { delay: 0.7, duration: 0.58, stagger: 0.08 },
   motionSignal: {
-    brightnessPeak: 1.26,
-    brightnessIn: 0.32,
-    brightnessOut: 0.48,
-    lineIn: 0.58,
-    lineFade: 0.35,
-    lineHold: 0.18,
+    brightnessPeak: 1.14,
+    brightnessIn: 0.22,
+    brightnessOut: 0.38,
+    lineIn: 0.48,
+    lineFade: 0.32,
+    lineHold: 0.14,
   },
 } as const;
 
@@ -148,15 +148,25 @@ export const HERO_ROTATE_COPY = {
 
 /** Preview hero — scroll-fading backdrop video (single mp4) */
 export const HERO_VIDEO_BG = {
-  opacityStart: 0.42,
-  opacityEnd: 0,
+  opacityStart: 0.58,
+  opacityEnd: 0.22,
   scaleStart: 1.03,
   scaleEnd: 1,
   scrimOpacityStart: 1,
-  scrimOpacityEnd: 1.3,
+  scrimOpacityEnd: 1.18,
   readabilityScrimStart: 1,
-  readabilityScrimEnd: 1.35,
+  readabilityScrimEnd: 1.22,
   scrub: 0.55,
+} as const;
+
+/** Global landing background — scroll-linked lime glow */
+export const LANDING_BACKGROUND_GLOW = {
+  yMax: 180,
+  xStart: -40,
+  xEnd: 60,
+  opacityMin: 0.82,
+  opacityMax: 1,
+  scrub: 0.85,
 } as const;
 
 /** Preview hero — subtle parallax only */

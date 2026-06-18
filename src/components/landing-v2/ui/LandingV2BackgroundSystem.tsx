@@ -3,8 +3,8 @@
 import { useRef } from "react";
 import { useLandingBackgroundGlow } from "../hooks/useLandingBackgroundGlow";
 
-/** Fixed global landing stage — gradient, grid, scrolling glow, vignette */
-export function LandingBackgroundSystem() {
+/** Fixed global landing stage — base, grid, scrolling glow, vignette */
+export function LandingV2BackgroundSystem() {
   const rootRef = useRef<HTMLDivElement>(null);
   useLandingBackgroundGlow(rootRef);
 

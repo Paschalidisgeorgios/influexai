@@ -23,7 +23,7 @@ export function LandingV2SystemChapter() {
       className="landing-v2-section landing-v2-section--chapter landing-v2-section--system"
       aria-labelledby="lv2-system-heading"
     >
-      <div className="landing-v2-chapter landing-v2-chapter--system mx-auto w-full max-w-[80rem]">
+      <div className="landing-v2-chapter landing-v2-chapter--system mx-auto w-full max-w-[90rem]">
         <LandingV2ChapterMarker number={copy.number} label={copy.label} />
         <div className="landing-v2-chapter__intro">
           <h2

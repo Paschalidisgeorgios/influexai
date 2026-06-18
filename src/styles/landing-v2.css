@@ -1,7 +1,7 @@
 /* Landing V2 — Design DNA preview (Dark Shell + Ivory Glass) */
 
 .landing-v2-page {
-  --lv2-shell: #050506;
+  --lv2-shell: #09090b;
   --lv2-obsidian: #0b0b0d;
   --lv2-ivory: #faf6ee;
   --lv2-glass: rgba(250, 246, 238, 0.82);
@@ -30,6 +30,11 @@
 
 .landing-v2-page--preview {
   --lv2-banner-height: 1.65rem;
+  background: transparent;
+}
+
+.landing-v2-root--preview.landing-v2-page {
+  background: transparent;
 }
 
 .landing-v2-root {
@@ -44,11 +49,18 @@
   z-index: 1;
 }
 
+.landing-v2-main > section,
+.landing-v2-main > footer {
+  position: relative;
+  z-index: 1;
+}
+
 /* —— Global landing background system —— */
 
 .landing-v2-bg-system {
   --lv2-bg-glow-y: 0px;
-  --lv2-bg-glow-x: 52%;
+  --lv2-bg-glow-x: -40px;
+  --lv2-bg-glow-opacity: 0.82;
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -59,52 +71,57 @@
 .landing-v2-bg-system__base {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 120% 88% at 50% -8%, rgba(14, 14, 18, 0.55) 0%, transparent 58%),
-    linear-gradient(180deg, #050506 0%, #060608 42%, #050506 100%);
+  background: #09090b;
 }
 
 .landing-v2-bg-system__grid {
   position: absolute;
   inset: 0;
-  opacity: 0.42;
+  opacity: 0.55;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 96% 92% at 50% 48%, black 24%, transparent 92%);
+    linear-gradient(rgba(255, 255, 255, 0.042) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.042) 1px, transparent 1px);
+  background-size: 104px 104px;
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.92) 0%,
+    black 8%,
+    black 92%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
 }
 
 .landing-v2-bg-system__glow {
   position: absolute;
-  left: var(--lv2-bg-glow-x, 52%);
-  top: calc(36% + var(--lv2-bg-glow-y, 0px));
-  width: min(88vw, 52rem);
-  height: min(88vw, 52rem);
+  left: calc(56% + var(--lv2-bg-glow-x, -40px));
+  top: calc(34% + var(--lv2-bg-glow-y, 0px));
+  width: min(92vw, 56rem);
+  height: min(92vw, 56rem);
   transform: translate(-50%, -50%);
   border-radius: 50%;
+  opacity: var(--lv2-bg-glow-opacity, 0.82);
   background: radial-gradient(
     circle,
-    rgba(180, 255, 0, 0.085) 0%,
-    rgba(180, 255, 0, 0.038) 34%,
-    rgba(180, 255, 0, 0.012) 52%,
-    transparent 72%
+    rgba(180, 255, 0, 0.14) 0%,
+    rgba(180, 255, 0, 0.07) 32%,
+    rgba(180, 255, 0, 0.028) 52%,
+    transparent 74%
   );
-  filter: blur(52px);
-  will-change: top, left;
+  filter: blur(56px);
+  will-change: top, left, opacity;
 }
 
 .landing-v2-bg-system__vignette {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 92% 88% at 50% 50%, transparent 42%, rgba(5, 5, 6, 0.72) 100%),
+    radial-gradient(ellipse 94% 90% at 50% 50%, transparent 38%, rgba(9, 9, 11, 0.78) 100%),
     linear-gradient(
       180deg,
-      rgba(5, 5, 6, 0.32) 0%,
-      transparent 22%,
-      transparent 78%,
-      rgba(5, 5, 6, 0.42) 100%
+      rgba(9, 9, 11, 0.38) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(9, 9, 11, 0.48) 100%
     );
 }
 
@@ -118,24 +135,25 @@
 
 @media (max-width: 767px) {
   .landing-v2-bg-system__grid {
-    opacity: 0.28;
-    background-size: 56px 56px;
+    opacity: 0.38;
+    background-size: 88px 88px;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   }
 
   .landing-v2-bg-system__glow {
-    width: min(96vw, 28rem);
-    height: min(96vw, 28rem);
-    top: calc(42% + var(--lv2-bg-glow-y, 0px));
+    width: min(96vw, 26rem);
+    height: min(96vw, 26rem);
+    left: calc(62% + var(--lv2-bg-glow-x, -40px));
+    top: calc(40% + var(--lv2-bg-glow-y, 0px));
     background: radial-gradient(
       circle,
-      rgba(180, 255, 0, 0.06) 0%,
-      rgba(180, 255, 0, 0.028) 36%,
-      transparent 70%
+      rgba(180, 255, 0, 0.09) 0%,
+      rgba(180, 255, 0, 0.04) 38%,
+      transparent 72%
     );
-    filter: blur(40px);
+    filter: blur(44px);
   }
 }
 
@@ -2997,12 +3015,12 @@
 .landing-v2-section--system.landing-v2-section--chapter {
   min-height: auto;
   justify-content: flex-start;
-  padding-top: clamp(6rem, 8vh, 8.75rem);
-  padding-bottom: clamp(6rem, 8vh, 8.75rem);
+  padding-top: clamp(4rem, 5.5vh, 5.5rem);
+  padding-bottom: clamp(4rem, 5.5vh, 5.5rem);
 }
 
 .landing-v2-section--system .landing-v2-chapter {
-  gap: clamp(1.25rem, 2.8vh, 2rem);
+  gap: clamp(1rem, 2.2vh, 1.65rem);
 }
 
 .landing-v2-section--system .landing-v2-chapter-marker {
@@ -3025,15 +3043,15 @@
 }
 
 .landing-v2-section--system .landing-v2-chapter__headline {
-  margin-top: 0.75rem;
-  font-size: clamp(2.4rem, 4.5vw, 4.8rem);
+  margin-top: 0.5rem;
+  font-size: clamp(2.8rem, 4.8vw, 5.4rem);
   line-height: 1.02;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   font-weight: 800;
 }
 
 .landing-v2-section--system .landing-v2-chapter__lead {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   max-width: 48ch;
   font-size: clamp(1rem, 1.25vw, 1.25rem);
   line-height: 1.65;
@@ -3041,9 +3059,13 @@
 }
 
 .landing-v2-section--system .landing-v2-system-model {
-  padding: clamp(1.5rem, 2.8vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem)
-    clamp(1.625rem, 3vw, 2.5rem);
+  padding: clamp(1.25rem, 2.2vw, 1.75rem) clamp(1.25rem, 2.8vw, 2.25rem)
+    clamp(1.375rem, 2.4vw, 1.875rem);
   border-radius: 20px;
+}
+
+.landing-v2-section--system .landing-v2-system-model__connector-line {
+  display: none;
 }
 
 .landing-v2-section--system .landing-v2-system-model__kicker {
@@ -3054,7 +3076,7 @@
 }
 
 .landing-v2-section--system .landing-v2-system-model__steps {
-  gap: clamp(0.75rem, 1.75vw, 1.125rem);
+  gap: clamp(0.625rem, 1.4vw, 1rem);
 }
 
 .landing-v2-section--system .landing-v2-system-model__step {
@@ -3062,30 +3084,30 @@
 }
 
 .landing-v2-section--system .landing-v2-system-model__step-label {
-  font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+  font-size: clamp(0.9375rem, 1.75vw, 1.125rem);
   letter-spacing: 0.04em;
 }
 
 .landing-v2-section--system .landing-v2-system-model__step-hint {
-  font-size: clamp(0.8125rem, 1.25vw, 0.9375rem);
-  line-height: 1.45;
+  font-size: clamp(0.8125rem, 1.35vw, 0.9375rem);
+  line-height: 1.5;
   color: rgba(245, 242, 234, 0.72);
 }
 
 .landing-v2-section--system .landing-v2-system-model__connector {
-  margin-top: 1.25rem;
-  min-height: 8px;
+  margin-top: 1rem;
+  min-height: 10px;
 }
 
 .landing-v2-section--system .landing-v2-system-model__dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 
 @media (max-width: 767px) {
   .landing-v2-section--system.landing-v2-section--chapter {
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 
   .landing-v2-section--system .landing-v2-chapter {
@@ -4695,7 +4717,7 @@
   overflow: hidden;
   transform: scale(1.03);
   transform-origin: center center;
-  opacity: 1;
+  opacity: 0.58;
   will-change: transform, opacity;
 }
 
@@ -4869,8 +4891,8 @@
   pointer-events: none;
   opacity: 1;
   background:
-    linear-gradient(180deg, rgba(5, 5, 6, 0.28) 0%, rgba(5, 5, 6, 0.08) 42%, rgba(5, 5, 6, 0.38) 100%),
-    linear-gradient(90deg, rgba(5, 5, 6, 0.42) 0%, rgba(5, 5, 6, 0.1) 55%, rgba(5, 5, 6, 0.18) 100%);
+    linear-gradient(180deg, rgba(9, 9, 11, 0.26) 0%, rgba(9, 9, 11, 0.06) 42%, rgba(9, 9, 11, 0.34) 100%),
+    linear-gradient(90deg, rgba(9, 9, 11, 0.62) 0%, rgba(9, 9, 11, 0.42) 34%, rgba(9, 9, 11, 0.1) 58%, rgba(9, 9, 11, 0.14) 100%);
   will-change: opacity;
 }
 
@@ -4885,8 +4907,8 @@
   pointer-events: none;
   opacity: 1;
   background:
-    linear-gradient(180deg, rgba(5, 5, 6, 0.22) 0%, rgba(5, 5, 6, 0.06) 42%, rgba(5, 5, 6, 0.32) 100%),
-    linear-gradient(90deg, rgba(5, 5, 6, 0.58) 0%, rgba(5, 5, 6, 0.14) 52%, rgba(5, 5, 6, 0.2) 100%);
+    linear-gradient(180deg, rgba(9, 9, 11, 0.2) 0%, rgba(9, 9, 11, 0.04) 42%, rgba(9, 9, 11, 0.28) 100%),
+    linear-gradient(90deg, rgba(9, 9, 11, 0.72) 0%, rgba(9, 9, 11, 0.48) 36%, rgba(9, 9, 11, 0.12) 56%, rgba(9, 9, 11, 0.16) 100%);
   will-change: opacity;
 }
 
@@ -4912,12 +4934,12 @@
 
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
   font-family: var(--font-fraunces), Fraunces, Georgia, serif;
-  font-size: clamp(4.2rem, 7.2vw, 8rem);
-  line-height: 0.92;
-  letter-spacing: -0.055em;
+  font-size: clamp(4.8rem, 7.8vw, 9rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
   font-weight: 800;
   color: #f5f2ea;
-  max-width: 11ch;
+  max-width: 12ch;
   text-shadow: none;
   transform: none;
   -webkit-font-smoothing: antialiased;
@@ -4934,6 +4956,7 @@
   letter-spacing: inherit;
   font-weight: inherit;
   font-family: inherit;
+  color: #f5f2ea;
 }
 
 .landing-v2-hero-headline .landing-v2-hero-rotate__keyword {
@@ -5124,7 +5147,7 @@
   }
 
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
-    font-size: clamp(2.6rem, 11vw, 4rem);
+    font-size: clamp(2.7rem, 11vw, 4rem);
     line-height: 0.98;
     letter-spacing: -0.045em;
     max-width: 12ch;
