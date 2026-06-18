@@ -143,11 +143,13 @@ export function validateCreateCharacterBody(
   const characterType = normalizeCharacterType(body) ?? "fictional";
   const source = characterType === "self" ? "uploaded" : "generated";
 
-  if (characterType === "self" && !isSafetyAcknowledged(body)) {
+  if (!isSafetyAcknowledged(body)) {
     return {
       ok: false,
       error:
-        "Für eigene Characters ist safetyAcknowledged oder consentAccepted erforderlich.",
+        characterType === "self"
+          ? "Für eigene Characters ist safetyAcknowledged oder consentAccepted erforderlich."
+          : "Safety/Consent muss bestätigt werden.",
       status: 400,
     };
   }

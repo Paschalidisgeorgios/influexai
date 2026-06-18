@@ -59,6 +59,16 @@ export function characterTypeLabel(
   return "Character";
 }
 
+/** Short type label for draft cards in the AI Creator hub */
+export function characterTypeShortLabel(
+  characterType: string | null | undefined,
+  source: string | null | undefined
+): string {
+  if (characterType === "self" || source === "uploaded") return "Eigener Character";
+  if (characterType === "fictional" || source === "generated") return "Fiktive Persona";
+  return "Character";
+}
+
 /** Self/digital-twin entry — avoids /dashboard/ki-influencer (middleware → ki-ich). */
 export const AI_CREATOR_SELF_WORKFLOW_HREF = "/dashboard/ki-ich";
 

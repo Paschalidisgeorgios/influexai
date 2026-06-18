@@ -20,12 +20,13 @@ import {
 import {
   AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
   AI_CREATOR_SELF_WORKFLOW_HREF,
-  characterTypeLabel,
+  characterTypeShortLabel,
   HUB_PHASE_LABELS,
   HUB_PHASE_TONE,
   mapCharacterStatusToHubPhase,
 } from "@/lib/ai-creator/hub-status";
 import type { CharacterType } from "@/lib/ai-creator/types";
+import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
@@ -273,8 +274,8 @@ function WizardSteps({ steps, pathLabel }: { steps: WizardStep[]; pathLabel: str
         ))}
       </ol>
       <p className="mt-5 text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-        Schritte verlinken bestehende Workflows. Speichern und Training laufen dort — nicht
-        zentral im Hub.
+        Schritte verlinken bestehende Workflows. Draft speichern kannst du direkt darunter —
+        Upload und Training laufen in den verlinkten Produktionswegen.
       </p>
     </DashboardPanel>
   );
@@ -357,6 +358,10 @@ export function AiCreatorHub() {
         <WizardSteps steps={FICTIONAL_WIZARD_STEPS} pathLabel="Fiktive Persona" />
       ) : null}
 
+      {wizardPath ? (
+        <AiCreatorDraftForm wizardPath={wizardPath} onSaved={loadCharacters} />
+      ) : null}
+
       <DashboardPanel className="mt-8" title="Consent & Sicherheit">
         <div className="flex gap-3">
           <AlertTriangle
@@ -433,13 +438,18 @@ export function AiCreatorHub() {
                 const isSelfCharacter =
                   character.characterType === "self" ||
                   character.source === "uploaded";
-                const continueHref = isSelfCharacter
-                  ? AI_CREATOR_SELF_WORKFLOW_HREF
-                  : AI_CREATOR_FICTIONAL_WORKFLOW_HREF;
-                const typeLabel = characterTypeLabel(
+                const typeLabel = characterTypeShortLabel(
                   character.characterType,
                   character.source
                 );
+
+                const primaryCta = isSelfCharacter
+                  ? { href: AI_CREATOR_SELF_WORKFLOW_HREF, label: "Weiter mit KI-Ich" }
+                  : { href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF, label: "Weiter mit LoRA" };
+
+                const secondaryCta = isSelfCharacter
+                  ? { href: "/dashboard/gallery", label: "Galerie öffnen" }
+                  : { href: "/dashboard/campaigns", label: "Kampagne vorbereiten" };
 
                 return (
                   <li key={character.id}>
@@ -484,24 +494,22 @@ export function AiCreatorHub() {
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2">
                           <Link
-                            href={continueHref}
+                            href={primaryCta.href}
                             className="inline-flex min-h-[40px] items-center rounded-full px-4 text-xs font-semibold no-underline"
                             style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
                           >
-                            {phase === "ready" ? "Öffnen" : "Weiterarbeiten"}
+                            {phase === "ready" ? "Öffnen" : primaryCta.label}
                           </Link>
-                          {phase === "ready" ? (
-                            <Link
-                              href="/dashboard/gallery"
-                              className="inline-flex min-h-[40px] items-center rounded-full border px-4 text-xs font-medium no-underline"
-                              style={{
-                                borderColor: "rgba(255,255,255,0.12)",
-                                color: DASHBOARD_TEXT,
-                              }}
-                            >
-                              Galerie
-                            </Link>
-                          ) : null}
+                          <Link
+                            href={secondaryCta.href}
+                            className="inline-flex min-h-[40px] items-center rounded-full border px-4 text-xs font-medium no-underline"
+                            style={{
+                              borderColor: "rgba(255,255,255,0.12)",
+                              color: DASHBOARD_TEXT,
+                            }}
+                          >
+                            {secondaryCta.label}
+                          </Link>
                         </div>
                       </div>
                     </DashboardPanel>
@@ -516,8 +524,8 @@ export function AiCreatorHub() {
               Noch kein Character vorbereitet.
             </p>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-              Starte mit einem eigenen Character oder einer fiktiven Persona — der Hub zeigt dir
-              den Weg, Speichern passiert in den verlinkten Workflows.
+              Wähle oben einen Pfad, fülle das Draft-Formular aus und speichere deinen ersten
+              Character — Referenzen und Training folgen in den verlinkten Workflows.
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
