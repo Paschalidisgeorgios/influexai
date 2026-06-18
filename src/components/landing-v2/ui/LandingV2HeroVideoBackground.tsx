@@ -6,6 +6,7 @@ import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useHeroVideoParallax } from "../hooks/useHeroVideoParallax";
+import { useHeroVideoCrossfade } from "../hooks/useHeroVideoCrossfade";
 
 const video = LANDING_V2_ASSETS.heroPreviewVideo;
 const DEFAULT_SPLIT = 50;
@@ -15,13 +16,80 @@ type LandingV2HeroVideoBackgroundProps = {
   sectionRef: RefObject<HTMLElement | null>;
 };
 
+type CrossfadeVideoStackProps = {
+  slotOpacity: { a: number; b: number };
+  filterClass: "before" | "after";
+  videoARef: RefObject<HTMLVideoElement | null>;
+  videoBRef: RefObject<HTMLVideoElement | null>;
+};
+
+function CrossfadeVideoStack({
+  slotOpacity,
+  filterClass,
+  videoARef,
+  videoBRef,
+}: CrossfadeVideoStackProps) {
+  const mediaClass =
+    filterClass === "before"
+      ? "landing-v2-hero-video-bg__media--before"
+      : "landing-v2-hero-video-bg__media--after";
+
+  return (
+    <div className="landing-v2-hero-video-bg__media-stack">
+      <video
+        ref={videoARef}
+        className={`landing-v2-hero-video-bg__media ${mediaClass}`}
+        style={{ opacity: slotOpacity.a }}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        poster={video.poster}
+      >
+        <source src={video.mp4} type="video/mp4" />
+      </video>
+      <video
+        ref={videoBRef}
+        className={`landing-v2-hero-video-bg__media ${mediaClass}`}
+        style={{ opacity: slotOpacity.b }}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        poster={video.poster}
+      >
+        <source src={video.mp4} type="video/mp4" />
+      </video>
+    </div>
+  );
+}
+
+function PosterStack({ filterClass }: { filterClass: "before" | "after" }) {
+  const mediaClass =
+    filterClass === "before"
+      ? "landing-v2-hero-video-bg__media--before"
+      : "landing-v2-hero-video-bg__media--after";
+
+  return (
+    <div className="landing-v2-hero-video-bg__poster-wrap">
+      <div
+        className={`landing-v2-hero-video-bg__poster ${mediaClass}`}
+        style={{ backgroundImage: `url(${video.poster})` }}
+      />
+      <div className="landing-v2-hero-video-bg__poster-gradient" aria-hidden />
+    </div>
+  );
+}
+
 /** Preview hero backdrop — same mp4 with in-video before/after compare */
 export function LandingV2HeroVideoBackground({
   sectionRef,
 }: LandingV2HeroVideoBackgroundProps) {
   const compareRef = useRef<HTMLDivElement>(null);
-  const beforeVideoRef = useRef<HTMLVideoElement>(null);
-  const afterVideoRef = useRef<HTMLVideoElement>(null);
+  const beforeVideoARef = useRef<HTMLVideoElement>(null);
+  const beforeVideoBRef = useRef<HTMLVideoElement>(null);
+  const afterVideoARef = useRef<HTMLVideoElement>(null);
+  const afterVideoBRef = useRef<HTMLVideoElement>(null);
   const [split, setSplit] = useState(DEFAULT_SPLIT);
   const [dragging, setDragging] = useState(false);
 
@@ -34,6 +102,14 @@ export function LandingV2HeroVideoBackground({
   const interactive = showVideo && !reduceMotion;
 
   const displaySplit = interactive ? split : DEFAULT_SPLIT;
+
+  const slotOpacity = useHeroVideoCrossfade({
+    enabled: showVideo,
+    beforeA: beforeVideoARef,
+    beforeB: beforeVideoBRef,
+    afterA: afterVideoARef,
+    afterB: afterVideoBRef,
+  });
 
   useHeroVideoParallax(sectionRef, compareRef, motionEnabled);
 
@@ -50,30 +126,6 @@ export function LandingV2HeroVideoBackground({
     },
     [clampSplit]
   );
-
-  useEffect(() => {
-    if (!showVideo) return;
-    const before = beforeVideoRef.current;
-    const after = afterVideoRef.current;
-    if (!before || !after) return;
-
-    const syncAfter = () => {
-      if (Math.abs(before.currentTime - after.currentTime) > 0.12) {
-        after.currentTime = before.currentTime;
-      }
-    };
-
-    const onLoaded = () => {
-      after.currentTime = before.currentTime;
-    };
-
-    before.addEventListener("timeupdate", syncAfter);
-    before.addEventListener("loadeddata", onLoaded);
-    return () => {
-      before.removeEventListener("timeupdate", syncAfter);
-      before.removeEventListener("loadeddata", onLoaded);
-    };
-  }, [showVideo]);
 
   useEffect(() => {
     if (!dragging) return;
@@ -116,45 +168,27 @@ export function LandingV2HeroVideoBackground({
       >
         <div className="landing-v2-hero-video-bg__layer landing-v2-hero-video-bg__layer--before">
           {showVideo ? (
-            <video
-              ref={beforeVideoRef}
-              className="landing-v2-hero-video-bg__media landing-v2-hero-video-bg__media--before"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={video.poster}
-            >
-              <source src={video.mp4} type="video/mp4" />
-            </video>
-          ) : (
-            <div
-              className="landing-v2-hero-video-bg__poster landing-v2-hero-video-bg__media--before"
-              style={{ backgroundImage: `url(${video.poster})` }}
+            <CrossfadeVideoStack
+              slotOpacity={slotOpacity}
+              filterClass="before"
+              videoARef={beforeVideoARef}
+              videoBRef={beforeVideoBRef}
             />
+          ) : (
+            <PosterStack filterClass="before" />
           )}
         </div>
 
         <div className="landing-v2-hero-video-bg__layer landing-v2-hero-video-bg__layer--after">
           {showVideo ? (
-            <video
-              ref={afterVideoRef}
-              className="landing-v2-hero-video-bg__media landing-v2-hero-video-bg__media--after"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={video.poster}
-            >
-              <source src={video.mp4} type="video/mp4" />
-            </video>
-          ) : (
-            <div
-              className="landing-v2-hero-video-bg__poster landing-v2-hero-video-bg__media--after"
-              style={{ backgroundImage: `url(${video.poster})` }}
+            <CrossfadeVideoStack
+              slotOpacity={slotOpacity}
+              filterClass="after"
+              videoARef={afterVideoARef}
+              videoBRef={afterVideoBRef}
             />
+          ) : (
+            <PosterStack filterClass="after" />
           )}
         </div>
 

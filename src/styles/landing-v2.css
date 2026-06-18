@@ -4719,6 +4719,12 @@
   transition-duration: 0.65s;
 }
 
+.landing-v2-hero-video-bg__media-stack,
+.landing-v2-hero-video-bg__poster-wrap {
+  position: absolute;
+  inset: 0;
+}
+
 .landing-v2-hero-video-bg__media,
 .landing-v2-hero-video-bg__poster {
   position: absolute;
@@ -4728,6 +4734,7 @@
   object-fit: cover;
   object-position: 55% 42%;
   pointer-events: none;
+  transition: opacity 1.2s ease-in-out;
 }
 
 .landing-v2-hero-video-bg__poster {
@@ -4735,6 +4742,15 @@
   background-position: 55% 42%;
   background-repeat: no-repeat;
   background-color: var(--lv2-shell);
+}
+
+.landing-v2-hero-video-bg__poster-gradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 6, 0.18) 0%, rgba(5, 5, 6, 0.06) 42%, rgba(5, 5, 6, 0.28) 100%),
+    linear-gradient(90deg, rgba(5, 5, 6, 0.32) 0%, rgba(5, 5, 6, 0.08) 55%, rgba(5, 5, 6, 0.14) 100%);
 }
 
 .landing-v2-hero-video-bg__media--before,
