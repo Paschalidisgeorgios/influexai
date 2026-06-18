@@ -8,11 +8,13 @@ import {
   Images,
   Settings,
   Sparkles,
+  UserRound,
 } from "lucide-react";
 import { isDedicatedToolPath } from "./production-tool-routes";
 
 export type DashboardNavId =
   | "studio"
+  | "ai-creator"
   | "agent"
   | "tools"
   | "gallery"
@@ -31,6 +33,13 @@ export const DASHBOARD_PRIMARY_NAV: {
     href: "/dashboard",
     icon: <LayoutDashboard size={15} strokeWidth={1.75} />,
     match: (p) => p === "/dashboard" || p === "/dashboard/",
+  },
+  {
+    id: "ai-creator",
+    label: "AI Creator",
+    href: "/dashboard/ai-creator",
+    icon: <UserRound size={15} strokeWidth={1.75} />,
+    match: (p) => p.startsWith("/dashboard/ai-creator"),
   },
   {
     id: "agent",

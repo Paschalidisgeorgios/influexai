@@ -5,20 +5,32 @@
  * Studio · Galerie · Kampagnen · Brand Kit · Einstellungen
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { LangProvider, useLang, type PreviewView, type Lang } from "./PreviewLang";
 import { PreviewViewContent } from "./PreviewViewContent";
 import { PreviewBackgroundSystem } from "./PreviewBackgroundSystem";
 import { PREVIEW_ACCENT } from "./preview-tokens";
+import type { AiCreatorSeed } from "@/lib/ai-creator/types";
 
 const ACTIVE_VIEWS: PreviewView[] = [
   "studio",
+  "ai-creator",
   "gallery",
   "campaigns",
   "brandkit",
   "settings",
 ];
+
+const VIEW_PARAM_MAP: Record<string, PreviewView> = {
+  studio: "studio",
+  "ai-creator": "ai-creator",
+  gallery: "gallery",
+  campaigns: "campaigns",
+  brandkit: "brandkit",
+  settings: "settings",
+};
 
 function PreviewSidebar({
   active,
@@ -166,12 +178,26 @@ function PreviewMobileNav({
 }
 
 function PreviewInner() {
+  const searchParams = useSearchParams();
   const [active, setActive] = useState<PreviewView>("studio");
   const [commandFocused, setCommandFocused] = useState(false);
+  const [aiCreatorSeed, setAiCreatorSeed] = useState<AiCreatorSeed | undefined>();
+
+  useEffect(() => {
+    const view = searchParams.get("view");
+    if (view && VIEW_PARAM_MAP[view]) {
+      setActive(VIEW_PARAM_MAP[view]);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (active !== "studio") setCommandFocused(false);
   }, [active]);
+
+  const handleOpenAiCreator = useCallback((seed: AiCreatorSeed) => {
+    setAiCreatorSeed(seed);
+    setActive("ai-creator");
+  }, []);
 
   const rootClass = [
     "preview-studio-root",
@@ -198,6 +224,8 @@ function PreviewInner() {
                   active={active}
                   onNavigate={setActive}
                   onCommandFocusChange={setCommandFocused}
+                  onOpenAiCreator={handleOpenAiCreator}
+                  aiCreatorSeed={aiCreatorSeed}
                 />
               </div>
             </main>
@@ -213,7 +241,9 @@ function PreviewInner() {
 export function PreviewShell() {
   return (
     <LangProvider>
-      <PreviewInner />
+      <Suspense fallback={null}>
+        <PreviewInner />
+      </Suspense>
     </LangProvider>
   );
 }

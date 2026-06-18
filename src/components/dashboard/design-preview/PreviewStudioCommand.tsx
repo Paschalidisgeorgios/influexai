@@ -17,7 +17,10 @@ import {
   detectPreviewPlatform,
   buildOptimizedPrompt,
   needsPlatformAsk,
+  shouldOpenAiCreatorWorkflow,
+  resolveAiCreatorMode,
 } from "./preview-intent";
+import type { AiCreatorSeed } from "@/lib/ai-creator/types";
 import {
   usePreviewDashboardMotion,
   animatePreviewPanel,
@@ -26,8 +29,10 @@ import {
 
 export function PreviewStudioCommand({
   onCommandFocusChange,
+  onOpenAiCreator,
 }: {
   onCommandFocusChange?: (focused: boolean) => void;
+  onOpenAiCreator?: (seed: AiCreatorSeed) => void;
 }) {
   const { lang, t } = useLang();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -78,15 +83,29 @@ export function PreviewStudioCommand({
     const trimmed = prompt.trim();
     if (!trimmed) return;
 
+    const detected = detectPreviewIntent(trimmed);
+    if (onOpenAiCreator && shouldOpenAiCreatorWorkflow(detected, trimmed)) {
+      onOpenAiCreator({
+        prompt: trimmed,
+        mode: resolveAiCreatorMode(trimmed),
+      });
+      setInput("");
+      return;
+    }
+
     setSubmitted(trimmed);
     setForceVideoPanel(false);
     setForceUpscalePanel(false);
-    const detected = detectPreviewIntent(trimmed);
     setOptimized(buildOptimizedPrompt(trimmed, detected));
     setPhase("optimizing");
 
     window.setTimeout(() => {
-      if (detected === "lora_training" || detected === "image_upscale" || detected === "video_upscale") {
+      if (
+        detected === "ai_creator" ||
+        detected === "lora_training" ||
+        detected === "image_upscale" ||
+        detected === "video_upscale"
+      ) {
         setPhase("complete");
         return;
       }
@@ -105,7 +124,7 @@ export function PreviewStudioCommand({
         }
       }, 1200);
     }, 700);
-  }, []);
+  }, [onOpenAiCreator]);
 
   const handleSubmit = () => runWorkflow(input);
 

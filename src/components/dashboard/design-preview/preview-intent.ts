@@ -3,6 +3,7 @@
 import { detectFluxUltraExplicit } from "./studio-engine-registry";
 
 export type PreviewIntent =
+  | "ai_creator"
   | "lora_training"
   | "image_generation"
   | "ai_influencer"
@@ -14,6 +15,8 @@ export type PreviewIntent =
   | "campaign_planning"
   | "asset_reuse"
   | "unknown";
+
+export type AiCreatorMode = "self" | "fictional";
 
 export type PreviewPlatform =
   | "instagram_reel"
@@ -149,6 +152,22 @@ const LORA_TRAINING_KEYWORDS = [
   "trainings",
 ];
 
+const AI_CREATOR_KEYWORDS = [
+  "ai creator",
+  "ai influencer",
+  "ki influencer",
+  "avatar erstellen",
+  "persona erstellen",
+  "charakter erstellen",
+  "digitaler zwilling",
+  "ugc creator",
+  "creator persona",
+  "brand look",
+  "lora trainieren",
+  "virtuelle creatorin",
+  "virtueller creator",
+];
+
 const PLATFORM_RULES: { platform: PreviewPlatform; format: PreviewFormat; keywords: string[] }[] = [
   { platform: "instagram_reel", format: "9:16", keywords: ["instagram reel", "reel", "tiktok", "9:16"] },
   { platform: "instagram_feed", format: "4:5", keywords: ["instagram feed", "instagram post", "feed", "4:5"] },
@@ -180,6 +199,7 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   if (!q) return "unknown";
 
   const scores: Record<Exclude<PreviewIntent, "unknown">, number> = {
+    ai_creator: 0,
     image_generation: 0,
     ai_influencer: 0,
     product_visual: 0,
@@ -193,6 +213,7 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   };
 
   for (const w of IMAGE_KEYWORDS) if (q.includes(w)) scores.image_generation += 1;
+  for (const w of AI_CREATOR_KEYWORDS) if (q.includes(w)) scores.ai_creator += 1;
   for (const w of AI_INFLUENCER_KEYWORDS) if (q.includes(w)) scores.ai_influencer += 1;
   for (const w of PRODUCT_VISUAL_KEYWORDS) if (q.includes(w)) scores.product_visual += 1;
   for (const w of LORA_TRAINING_KEYWORDS) if (q.includes(w)) scores.lora_training += 1;
@@ -203,15 +224,37 @@ export function detectPreviewIntent(input: string): PreviewIntent {
   for (const w of CAMPAIGN_KEYWORDS) if (q.includes(w)) scores.campaign_planning += 1;
   for (const w of ASSET_KEYWORDS) if (q.includes(w)) scores.asset_reuse += 1;
 
-  if (q.includes("ai influencer") || q.includes("ki influencer")) scores.ai_influencer += 4;
+  if (q.includes("ai influencer") || q.includes("ki influencer")) {
+    scores.ai_creator += 4;
+    scores.ai_influencer += 2;
+  }
+  if (q.includes("ai creator")) scores.ai_creator += 6;
+  if (q.includes("avatar erstellen") || q.includes("persona erstellen")) scores.ai_creator += 5;
+  if (q.includes("charakter erstellen")) scores.ai_creator += 5;
+  if (q.includes("digitaler zwilling")) {
+    scores.ai_creator += 6;
+    scores.lora_training += 4;
+  }
+  if (q.includes("ugc creator") || (q.includes("ugc") && q.includes("influencer"))) {
+    scores.ai_creator += 5;
+  }
+  if (q.includes("fiktiv") || q.includes("fiktive") || q.includes("fictional")) {
+    scores.ai_creator += 4;
+  }
   if (q.includes("virtuelle person") || q.includes("creator persona")) scores.ai_influencer += 3;
   if (q.includes("realistisches portrait") || q.includes("portrait einer")) scores.ai_influencer += 3;
   if (q.includes("produktbild") || q.includes("produktfoto")) scores.product_visual += 4;
   if (q.includes("kampagnenbild") || q.includes("werbebild")) scores.product_visual += 3;
   if (q.includes("product visual")) scores.product_visual += 3;
 
-  if (q.includes("lora")) scores.lora_training += 5;
-  if (q.includes("trainiere") || q.includes("trainieren")) scores.lora_training += 4;
+  if (q.includes("lora")) {
+    scores.lora_training += 5;
+    scores.ai_creator += 2;
+  }
+  if (q.includes("trainiere") || q.includes("trainieren")) {
+    scores.lora_training += 4;
+    scores.ai_creator += 2;
+  }
   if (q.includes("ki influencer trainieren") || q.includes("influencer trainieren")) {
     scores.lora_training += 6;
   }
@@ -312,6 +355,8 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
     }
     case "product_visual":
       return `Premium product photography, ${base}, editorial campaign lighting, sharp macro detail, clean composition, luxury brand visual, studio-grade capture, commercial advertising quality, natural shadows, high-end campaign asset.`;
+    case "ai_creator":
+      return `AI Creator persona brief, ${base}, consistent creator look for images, UGC, campaigns and motion — self or fictional path.`;
     case "lora_training":
       return `LoRA training brief, ${base}, reusable persona or brand style, consistent visual identity, prepared for reference upload and consent review.`;
     case "image_generation":
@@ -341,6 +386,7 @@ export function buildOptimizedPrompt(input: string, intent: PreviewIntent): stri
 
 export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): string {
   const de: Partial<Record<PreviewIntent, string>> = {
+    ai_creator: "AI Creator",
     ai_influencer: "AI Influencer Visual",
     product_visual: "Produktvisual",
     lora_training: "LoRA Training",
@@ -350,6 +396,7 @@ export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): stri
     video_upscale: "Video verbessern",
   };
   const en: Partial<Record<PreviewIntent, string>> = {
+    ai_creator: "AI Creator",
     ai_influencer: "AI Influencer Visual",
     product_visual: "Product visual",
     lora_training: "LoRA Training",
@@ -363,6 +410,7 @@ export function workflowLabelFor(intent: PreviewIntent, lang: "de" | "en"): stri
 
 export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string {
   const de: Record<PreviewIntent, string> = {
+    ai_creator: "AI Creator",
     image_generation: "Bild erstellen",
     ai_influencer: "AI Influencer",
     product_visual: "Produktvisual",
@@ -376,6 +424,7 @@ export function intentLabelFor(intent: PreviewIntent, lang: "de" | "en"): string
     unknown: "Produktion vorbereiten",
   };
   const en: Record<PreviewIntent, string> = {
+    ai_creator: "AI Creator",
     image_generation: "Create image",
     ai_influencer: "AI Influencer",
     product_visual: "Product visual",
@@ -401,6 +450,7 @@ export function needsPlatformAsk(
     intent === "campaign_planning" ||
     intent === "hook_generation" ||
     intent === "asset_reuse" ||
+    intent === "ai_creator" ||
     intent === "lora_training" ||
     intent === "image_upscale" ||
     intent === "video_upscale"
@@ -423,6 +473,7 @@ export function postGenerationAgentHint(
     intent === "image_upscale" ||
     intent === "video_upscale" ||
     intent === "lora_training" ||
+    intent === "ai_creator" ||
     intent === "hook_generation" ||
     intent === "campaign_planning"
   ) {
@@ -446,6 +497,69 @@ export function postGenerationAgentHint(
   }
 
   return null;
+}
+
+/** Open full AI Creator workflow from studio command */
+export function shouldOpenAiCreatorWorkflow(intent: PreviewIntent, input: string): boolean {
+  if (intent === "ai_creator" || intent === "lora_training") return true;
+  const q = input.toLowerCase();
+  if (
+    intent === "ai_influencer" &&
+    (q.includes("ugc") ||
+      q.includes("erstell") ||
+      q.includes("persona") ||
+      q.includes("charakter") ||
+      q.includes("avatar") ||
+      q.includes("trainier"))
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function resolveAiCreatorMode(input: string): AiCreatorMode | null {
+  const q = input.toLowerCase();
+  if (
+    q.includes("digitaler zwilling") ||
+    q.includes("trainiere meinen") ||
+    q.includes("ich bin der") ||
+    q.includes("eigene bilder") ||
+    q.includes("eigene fotos")
+  ) {
+    return "self";
+  }
+  if (
+    q.includes("fiktiv") ||
+    q.includes("fiktive") ||
+    q.includes("fictional") ||
+    q.includes("creatorin") ||
+    q.includes("skincare") ||
+    q.includes("beauty ugc")
+  ) {
+    return "fictional";
+  }
+  return null;
+}
+
+export function aiCreatorAgentHint(input: string, lang: "de" | "en"): string | null {
+  if (!shouldOpenAiCreatorWorkflow(detectPreviewIntent(input), input)) return null;
+  const mode = resolveAiCreatorMode(input);
+  if (lang === "de") {
+    if (mode === "self") {
+      return "Ich öffne den AI Creator — lade Referenzbilder hoch und bestätige Consent für deinen digitalen Zwilling.";
+    }
+    if (mode === "fictional") {
+      return "Ich öffne den AI Creator für eine fiktive Persona — beschreibe Stil und Nische im Profil.";
+    }
+    return "Soll der Charakter auf dir basieren oder fiktiv sein? Ich öffne den AI Creator Workflow.";
+  }
+  if (mode === "self") {
+    return "Opening AI Creator — upload references and confirm consent for your digital twin.";
+  }
+  if (mode === "fictional") {
+    return "Opening AI Creator for a fictional persona — describe style and niche in the profile.";
+  }
+  return "Should the character be based on you or fictional? Opening the AI Creator workflow.";
 }
 
 export { engineLabelForIntent } from "./studio-engine-registry";

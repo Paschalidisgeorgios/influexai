@@ -310,7 +310,9 @@ export function resolveEngineForIntent(
   if (intent === "image_to_video") return STUDIO_ENGINES["motion-engine"];
   if (intent === "image_upscale") return STUDIO_ENGINES["topaz-image-upscale"];
   if (intent === "video_upscale") return STUDIO_ENGINES["topaz-video-upscale"];
-  if (intent === "lora_training") return STUDIO_ENGINES["lora-training"];
+  if (intent === "ai_creator" || intent === "lora_training") {
+    return STUDIO_ENGINES["lora-training"];
+  }
   if (intent === "hook_generation" || intent === "campaign_planning") {
     return STUDIO_ENGINES["campaign-engine"];
   }
@@ -395,6 +397,12 @@ export function getAgentCapabilityHint(
     return de
       ? "Für Video-Upscale brauche ich ein Quellvideo — Upload, Galerie oder ein Motion-Ergebnis."
       : "Video upscale needs a source video — upload, gallery, or a motion result.";
+  }
+
+  if (intent === "ai_creator" || intent === "lora_training") {
+    return de
+      ? "AI Creator & LoRA Training — Persona aufbauen, Referenzen prüfen, Consent bestätigen, Training vorbereiten."
+      : "AI Creator & LoRA training — build persona, review references, confirm consent, prepare training.";
   }
 
   if (

@@ -210,7 +210,8 @@ export function DynamicWorkflowResult({
       : "Prompts are optimized for the production engine.",
   };
 
-  const isLoraWorkflow = effectiveIntent === "lora_training";
+  const isLoraWorkflow =
+    effectiveIntent === "lora_training" || effectiveIntent === "ai_creator";
   const isImageUpscaleWorkflow = effectiveIntent === "image_upscale";
   const isVideoUpscaleWorkflow = effectiveIntent === "video_upscale";
 
@@ -458,7 +459,7 @@ export function resolveAssetKind(
   if (forceUpscalePanel === "image" || intent === "image_upscale") return "upscale_prepared";
   if (forceUpscalePanel === "video" || intent === "video_upscale") return "upscale_prepared";
   if (forceVideoPanel || intent === "image_to_video") return "video";
-  if (intent === "lora_training") return "lora_prepared";
+  if (intent === "lora_training" || intent === "ai_creator") return "lora_prepared";
   if (intent === "ai_influencer" || intent === "product_visual") return "ultra_prepared";
   if (intent === "image_generation" && isUltraPhotoEngine(resolveEngineForIntent(intent, input))) {
     return "ultra_prepared";

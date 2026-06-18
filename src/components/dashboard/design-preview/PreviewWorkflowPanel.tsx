@@ -39,6 +39,7 @@ const COPY = {
     style: "Stil",
     quality: "Qualität",
     cta: {
+      ai_creator: "AI Creator öffnen",
       image_generation: "Bild erstellen",
       ai_influencer: "AI Influencer Visual",
       product_visual: "Produktvisual erstellen",
@@ -69,6 +70,7 @@ const COPY = {
     style: "Style",
     quality: "Quality",
     cta: {
+      ai_creator: "Open AI Creator",
       image_generation: "Create image",
       ai_influencer: "Create AI influencer visual",
       product_visual: "Create product visual",

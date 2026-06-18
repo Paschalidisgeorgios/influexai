@@ -9,7 +9,13 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 // ─── View type (shared across all preview components) ─────────────────────────
 
-export type PreviewView = "studio" | "gallery" | "campaigns" | "brandkit" | "settings";
+export type PreviewView =
+  | "studio"
+  | "ai-creator"
+  | "gallery"
+  | "campaigns"
+  | "brandkit"
+  | "settings";
 
 // ─── Language ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +31,7 @@ const de = {
 
   nav: {
     studio:    "Studio",
+    "ai-creator": "AI Creator",
     gallery:   "Galerie",
     campaigns: "Kampagnen",
     brandkit:  "Brand Kit",
@@ -228,6 +235,7 @@ const en: typeof de = {
 
   nav: {
     studio:    "Studio",
+    "ai-creator": "AI Creator",
     gallery:   "Gallery",
     campaigns: "Campaigns",
     brandkit:  "Brand Kit",
