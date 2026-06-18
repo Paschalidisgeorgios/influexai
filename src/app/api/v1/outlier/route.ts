@@ -1,7 +1,11 @@
 import { apiDetectOutliers } from "@/lib/api-v1/generators";
 import { handleApiPost } from "@/lib/api-v1/handle-route";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   return handleApiPost(request, "/api/v1/outlier", (userId, body) =>
     apiDetectOutliers(userId, {
       niche: String(body.niche ?? ""),
