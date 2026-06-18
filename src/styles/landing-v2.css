@@ -4934,20 +4934,30 @@
 
 .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
   font-family: var(--font-fraunces), Fraunces, Georgia, serif;
-  font-size: clamp(4.8rem, 7.8vw, 8.8rem);
-  line-height: 0.9;
-  letter-spacing: -0.06em;
-  font-weight: 800;
+  font-size: clamp(4.8rem, 8vw, 9rem);
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+  font-weight: 900;
   color: #f5f2ea;
-  max-width: min(100%, 15ch);
+  max-width: min(100%, 13ch);
   text-shadow: none;
   transform: none;
+  text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.landing-v2-hero-headline--studio-for {
+  gap: 0.02em;
+  max-width: min(100%, 14ch);
+}
+
+.landing-v2-hero-headline[data-hero-keyword-headline] .landing-v2-hero__headline-line--lead {
+  max-width: 13ch;
+}
+
 .landing-v2-hero-headline[data-hero-keyword-headline] .landing-v2-hero__headline-line:not(.landing-v2-hero__headline-line--keyword) {
-  max-width: 12ch;
+  max-width: 13ch;
 }
 
 .landing-v2-hero-headline span,
@@ -4974,23 +4984,24 @@
 
 .landing-v2-hero-keyword-slot {
   position: relative;
-  display: inline-block;
-  vertical-align: baseline;
+  display: grid;
+  align-items: start;
   max-width: 100%;
 }
 
+.landing-v2-hero-keyword-slot__measure,
+.landing-v2-hero-keyword-slot__word {
+  grid-area: 1 / 1;
+}
+
 .landing-v2-hero-keyword-slot__measure {
-  display: block;
   visibility: hidden;
-  height: 0;
-  overflow: hidden;
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
 }
 
 .landing-v2-hero-keyword-slot__word {
-  display: block;
   white-space: nowrap;
   color: #b4ff00;
   transform: none;
@@ -5184,10 +5195,10 @@
   }
 
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-headline {
-    font-size: clamp(2.7rem, 11vw, 4rem);
-    line-height: 0.98;
-    letter-spacing: -0.045em;
-    max-width: min(100%, 13ch);
+    font-size: clamp(2.8rem, 12vw, 4.2rem);
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    max-width: min(100%, 12ch);
   }
 
   .landing-v2-root--preview .landing-v2-hero--video-bg .landing-v2-hero-display,

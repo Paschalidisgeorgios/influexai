@@ -148,13 +148,13 @@ export const HERO_ROTATE_COPY = {
 
 /** Preview hero — single lime keyword rotation */
 export const HERO_KEYWORD_ROTATE = {
-  intervalMinMs: 3200,
+  intervalMinMs: 3500,
   intervalMaxMs: 4500,
   intervalReducedMs: 12000,
   entranceDelayMs: 2400,
-  exit: { y: -14, opacity: 0, duration: 0.42, ease: "power2.in" as const },
-  enter: { y: 18, opacity: 0, duration: 0.65, ease: "power3.out" as const },
-  pulse: { brightnessPeak: 1.12, durationIn: 0.2, durationOut: 0.32 },
+  exit: { y: -16, opacity: 0, duration: 0.42, ease: "power2.in" as const },
+  enter: { y: 20, opacity: 0, duration: 0.68, ease: "power3.out" as const },
+  pulse: { brightnessPeak: 1.1, durationIn: 0.18, durationOut: 0.28 },
 } as const;
 
 /** Preview hero — scroll-fading backdrop video (single mp4) */

@@ -20,7 +20,11 @@ export function LandingV2HeroKeywordHeadline({
   const keywordRef = useRef<HTMLSpanElement>(null);
 
   const longestKeyword = useMemo(
-    () => keywords.reduce((longest, keyword) => (keyword.length > longest.length ? keyword : longest), keywords[0]),
+    () =>
+      keywords.reduce(
+        (longest, keyword) => (keyword.length > longest.length ? keyword : longest),
+        keywords[0]
+      ),
     []
   );
 
@@ -34,6 +38,7 @@ export function LandingV2HeroKeywordHeadline({
 
   const rootClass = [
     "landing-v2-hero-headline",
+    "landing-v2-hero-headline--studio-for",
     "landing-v2-hero__headline",
     "landing-v2-hero__headline--primary",
     "landing-v2-hero__headline--stack",
@@ -50,7 +55,7 @@ export function LandingV2HeroKeywordHeadline({
       data-hero-keyword-headline
     >
       <span
-        className="landing-v2-hero__headline-line"
+        className="landing-v2-hero__headline-line landing-v2-hero__headline-line--lead"
         data-hero-headline-line
         data-hero-headline-split="words"
       >
@@ -75,16 +80,8 @@ export function LandingV2HeroKeywordHeadline({
           </span>
         </span>
         <span className="sr-only">
-          {copy.primaryHeadlineLead} {activeKeyword} {copy.primaryHeadlineTail}
+          {copy.primaryHeadlineLead} {activeKeyword}.
         </span>
-      </span>
-
-      <span
-        className="landing-v2-hero__headline-line"
-        data-hero-headline-line
-        data-hero-headline-split="words"
-      >
-        {copy.primaryHeadlineTail}
       </span>
     </h1>
   );
