@@ -4790,7 +4790,7 @@
   object-fit: cover;
   object-position: 55% 42%;
   pointer-events: none;
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity 0.4s ease;
 }
 
 .landing-v2-hero-video-bg__poster {

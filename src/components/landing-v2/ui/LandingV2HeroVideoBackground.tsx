@@ -6,7 +6,7 @@ import { useLandingViewport } from "../hooks/useLandingViewport";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useLandingV2Links } from "../LandingV2ModeContext";
 import { useHeroVideoParallax } from "../hooks/useHeroVideoParallax";
-import { useHeroVideoCrossfade } from "../hooks/useHeroVideoCrossfade";
+import { useHeroVideoCompareSync } from "../hooks/useHeroVideoCompareSync";
 
 const video = LANDING_V2_ASSETS.heroPreviewVideo;
 const DEFAULT_SPLIT = 50;
@@ -17,50 +17,33 @@ type LandingV2HeroVideoBackgroundProps = {
   sectionRef: RefObject<HTMLElement | null>;
 };
 
-type CrossfadeVideoStackProps = {
-  slotOpacity: { a: number; b: number };
+type CompareVideoProps = {
+  videoRef: RefObject<HTMLVideoElement | null>;
   filterClass: "before" | "after";
-  videoARef: RefObject<HTMLVideoElement | null>;
-  videoBRef: RefObject<HTMLVideoElement | null>;
 };
 
-function CrossfadeVideoStack({
-  slotOpacity,
-  filterClass,
-  videoARef,
-  videoBRef,
-}: CrossfadeVideoStackProps) {
+function CompareVideo({ videoRef, filterClass }: CompareVideoProps) {
   const mediaClass =
     filterClass === "before"
       ? "landing-v2-hero-video-bg__media--before"
       : "landing-v2-hero-video-bg__media--after";
 
   return (
-    <div className="landing-v2-hero-video-bg__media-stack">
-      <video
-        ref={videoARef}
-        className={`landing-v2-hero-video-bg__media ${mediaClass}`}
-        style={{ opacity: slotOpacity.a, zIndex: slotOpacity.a >= slotOpacity.b ? 2 : 1 }}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        poster={video.poster}
-      >
-        <source src={video.mp4} type="video/mp4" />
-      </video>
-      <video
-        ref={videoBRef}
-        className={`landing-v2-hero-video-bg__media ${mediaClass}`}
-        style={{ opacity: slotOpacity.b, zIndex: slotOpacity.b > slotOpacity.a ? 2 : 1 }}
-        muted
-        playsInline
-        preload="auto"
-        poster={video.poster}
-      >
-        <source src={video.mp4} type="video/mp4" />
-      </video>
-    </div>
+    <video
+      ref={videoRef}
+      className={`landing-v2-hero-video-bg__media ${mediaClass}`}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={video.poster}
+    >
+      {"webm" in video && video.webm ? (
+        <source src={video.webm} type="video/webm" />
+      ) : null}
+      <source src={video.mp4} type="video/mp4" />
+    </video>
   );
 }
 
@@ -81,16 +64,14 @@ function PosterFallback({ filterClass }: { filterClass: "before" | "after" }) {
   );
 }
 
-/** Preview hero backdrop — looped mp4 with draggable before/after compare */
+/** Preview hero backdrop — ping-pong loop mp4 with draggable before/after compare */
 export function LandingV2HeroVideoBackground({
   sectionRef,
 }: LandingV2HeroVideoBackgroundProps) {
   const compareRef = useRef<HTMLDivElement>(null);
   const sliderZoneRef = useRef<HTMLDivElement>(null);
-  const beforeVideoARef = useRef<HTMLVideoElement>(null);
-  const beforeVideoBRef = useRef<HTMLVideoElement>(null);
-  const afterVideoARef = useRef<HTMLVideoElement>(null);
-  const afterVideoBRef = useRef<HTMLVideoElement>(null);
+  const beforeVideoRef = useRef<HTMLVideoElement>(null);
+  const afterVideoRef = useRef<HTMLVideoElement>(null);
   const [sliderPosition, setSliderPosition] = useState(DEFAULT_SPLIT);
   const [dragging, setDragging] = useState(false);
 
@@ -104,12 +85,10 @@ export function LandingV2HeroVideoBackground({
 
   const displaySplit = interactive ? sliderPosition : DEFAULT_SPLIT;
 
-  const slotOpacity = useHeroVideoCrossfade({
+  useHeroVideoCompareSync({
     enabled: showVideo,
-    beforeA: beforeVideoARef,
-    beforeB: beforeVideoBRef,
-    afterA: afterVideoARef,
-    afterB: afterVideoBRef,
+    beforeRef: beforeVideoRef,
+    afterRef: afterVideoRef,
   });
 
   useHeroVideoParallax(sectionRef, compareRef, motionEnabled);
@@ -165,12 +144,7 @@ export function LandingV2HeroVideoBackground({
       >
         <div className="landing-v2-hero-video-bg__layer landing-v2-hero-video-bg__layer--before">
           {showVideo ? (
-            <CrossfadeVideoStack
-              slotOpacity={slotOpacity}
-              filterClass="before"
-              videoARef={beforeVideoARef}
-              videoBRef={beforeVideoBRef}
-            />
+            <CompareVideo videoRef={beforeVideoRef} filterClass="before" />
           ) : (
             <PosterFallback filterClass="before" />
           )}
@@ -178,12 +152,7 @@ export function LandingV2HeroVideoBackground({
 
         <div className="landing-v2-hero-video-bg__layer landing-v2-hero-video-bg__layer--after">
           {showVideo ? (
-            <CrossfadeVideoStack
-              slotOpacity={slotOpacity}
-              filterClass="after"
-              videoARef={afterVideoARef}
-              videoBRef={afterVideoBRef}
-            />
+            <CompareVideo videoRef={afterVideoRef} filterClass="after" />
           ) : (
             <PosterFallback filterClass="after" />
           )}
