@@ -24,7 +24,11 @@ import {
   animatePreviewWorkflowItems,
 } from "./usePreviewDashboardMotion";
 
-export function PreviewStudioCommand() {
+export function PreviewStudioCommand({
+  onCommandFocusChange,
+}: {
+  onCommandFocusChange?: (focused: boolean) => void;
+}) {
   const { lang, t } = useLang();
   const rootRef = useRef<HTMLDivElement>(null);
   const flowRef = useRef<HTMLDivElement>(null);
@@ -179,13 +183,13 @@ export function PreviewStudioCommand() {
   return (
     <div ref={rootRef} className="mx-auto min-w-0 max-w-[52rem]">
       <header className="mb-6 md:mb-8" data-preview-enter>
-        <p className="preview-type-label mb-2">
+        <p className="preview-type-label mb-2 md:mb-3">
           <span className="preview-type-label__accent">01</span>
           <span aria-hidden> — </span>
           {tc.overline}
         </p>
         <h1 className="preview-type-display">{tc.headline}</h1>
-        <p className="preview-type-body mt-3 max-w-[48ch]">{tc.subline}</p>
+        <p className="preview-type-body mt-3 max-w-[42ch]">{tc.subline}</p>
       </header>
 
       <CommandComposer
@@ -201,41 +205,60 @@ export function PreviewStudioCommand() {
         galleryLabel={tc.galleryChip}
         assetLabel={tc.assetLabel}
         loading={loading}
+        onFocusChange={onCommandFocusChange}
       />
 
-      <div ref={flowRef} className="mt-6 min-w-0 space-y-5 md:mt-8">
+      <div ref={flowRef} className="mt-6 min-w-0 space-y-6 md:mt-8 md:space-y-8">
         {phase !== "idle" ? (
           <>
-            <IntentResolverPreview
-              intent={intent}
-              input={submitted}
-              lang={lang}
-              platformAsk={platformAsk}
-              hasImageContext={hasImageContext}
-              hasVideoContext={hasVideoContext}
-            />
+            <section className="preview-section-stack preview-section-stack--loose">
+              <p className="preview-type-label">
+                <span className="preview-type-label__accent">02</span>
+                <span aria-hidden> — </span>
+                WORKFLOW
+              </p>
+              <div className="preview-surface preview-section-stack p-4 md:p-5" data-preview-workflow>
+                <IntentResolverPreview
+                  intent={intent}
+                  input={submitted}
+                  lang={lang}
+                  platformAsk={platformAsk}
+                  hasImageContext={hasImageContext}
+                  hasVideoContext={hasVideoContext}
+                />
 
-            <DynamicWorkflowResult
-              intent={intent}
-              originalPrompt={submitted}
-              optimizedPrompt={optimized}
-              onOptimizedChange={setOptimized}
-              phase={phase}
-              format={platform.format}
-              lang={lang}
-              hasImageContext={hasImageContext}
-              hasVideoContext={hasVideoContext}
-              forceVideoPanel={forceVideoPanel}
-              forceUpscalePanel={forceUpscalePanel}
-            />
+                <DynamicWorkflowResult
+                  intent={intent}
+                  originalPrompt={submitted}
+                  optimizedPrompt={optimized}
+                  onOptimizedChange={setOptimized}
+                  phase={phase}
+                  format={platform.format}
+                  lang={lang}
+                  hasImageContext={hasImageContext}
+                  hasVideoContext={hasVideoContext}
+                  forceVideoPanel={forceVideoPanel}
+                  forceUpscalePanel={forceUpscalePanel}
+                />
+              </div>
+            </section>
 
-            <AssetPreviewInline
-              intent={intent}
-              kind={assetKind}
-              lang={lang}
-              visible={phase === "complete"}
-              input={submitted}
-            />
+            <section className="preview-section-stack preview-section-stack--loose">
+              <p className="preview-type-label">
+                <span className="preview-type-label__accent">03</span>
+                <span aria-hidden> — </span>
+                ASSETS
+              </p>
+              <div className="preview-surface p-4 md:p-5" data-preview-stagger>
+                <AssetPreviewInline
+                  intent={intent}
+                  kind={assetKind}
+                  lang={lang}
+                  visible={phase === "complete"}
+                  input={submitted}
+                />
+              </div>
+            </section>
 
             {phase === "complete" ? (
               <PreviewContextActions

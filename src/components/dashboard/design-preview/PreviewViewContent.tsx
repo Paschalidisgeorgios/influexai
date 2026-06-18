@@ -10,13 +10,15 @@ import { PreviewSettings } from "./PreviewSettings";
 /** Single render switch — view IDs must match PreviewLang nav keys exactly. */
 export function PreviewViewContent({
   active,
+  onCommandFocusChange,
 }: {
   active: PreviewView;
   onNavigate: (view: PreviewView) => void;
+  onCommandFocusChange?: (focused: boolean) => void;
 }) {
   switch (active) {
     case "studio":
-      return <PreviewStudioCommand />;
+      return <PreviewStudioCommand onCommandFocusChange={onCommandFocusChange} />;
     case "gallery":
       return <PreviewGallery />;
     case "campaigns":

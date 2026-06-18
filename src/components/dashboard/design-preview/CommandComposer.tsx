@@ -19,6 +19,7 @@ type CommandComposerProps = {
   galleryLabel: string;
   assetLabel: string;
   loading?: boolean;
+  onFocusChange?: (focused: boolean) => void;
 };
 
 function RotatingPlaceholder({ prompts, visible }: { prompts: string[]; visible: boolean }) {
@@ -74,6 +75,7 @@ export function CommandComposer({
   galleryLabel,
   assetLabel,
   loading = false,
+  onFocusChange,
 }: CommandComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [focused, setFocused] = useState(false);
@@ -102,7 +104,10 @@ export function CommandComposer({
     .join(" ");
 
   return (
-    <div className="min-w-0" data-preview-enter>
+    <div
+      className={`preview-command-wrap min-w-0${focused ? " preview-command-wrap--focused" : ""}`}
+      data-preview-enter
+    >
       <div className={surfaceClass}>
         <div className="preview-command__signal" aria-hidden />
         <div className="relative px-4 py-4 md:px-5 md:py-5">
@@ -111,8 +116,14 @@ export function CommandComposer({
               ref={textareaRef}
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
+              onFocus={() => {
+                setFocused(true);
+                onFocusChange?.(true);
+              }}
+              onBlur={() => {
+                setFocused(false);
+                onFocusChange?.(false);
+              }}
               onKeyDown={handleKeyDown}
               disabled={loading}
               rows={3}

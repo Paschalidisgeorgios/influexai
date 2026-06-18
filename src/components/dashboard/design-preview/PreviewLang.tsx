@@ -32,10 +32,10 @@ const de = {
   },
 
   studioCommand: {
-    overline:     "Studio",
+    overline:     "STUDIO",
     headline:     "Was möchtest du erstellen?",
     subline:
-      "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und bereitet die Produktion vor.",
+      "Beschreibe dein Ziel. InfluexAI erkennt den passenden Workflow und führt dich von der Eingabe zur fertigen Ausgabe — Bild, Video, Hook, Kampagne oder Upscale.",
     placeholder:  "Beschreibe, was du erstellen möchtest…",
     enterHint:    "Enter sendet · Umschalt+Enter für neue Zeile",
     loadingHint:  "Workflow wird vorbereitet…",
@@ -52,10 +52,10 @@ const de = {
       "Nutze Flux Ultra für ein Portrait",
     ],
     chips: [
-      { id: "lora", prompt: { de: "Trainiere einen KI Influencer", en: "Train an AI influencer" }, label: "LoRA" },
-      { id: "influencer", prompt: { de: "Erstelle einen AI Influencer für Instagram", en: "Create an AI influencer for Instagram" }, label: "AI Influencer" },
-      { id: "product", prompt: { de: "Produktbild für Olivenöl Premium", en: "Premium product visual for olive oil" }, label: "Produktvisual" },
+      { id: "bild", prompt: { de: "Erstelle ein Premium-Produktbild für meine Kampagne", en: "Create a premium product image for my campaign" }, label: "Bild" },
       { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },
+      { id: "hook", prompt: { de: "Schreibe 5 Hooks für eine Beauty-Kampagne", en: "Write 5 hooks for a beauty campaign" }, label: "Hook" },
+      { id: "kampagne", prompt: { de: "Starte eine Kampagne für mein Restaurant", en: "Start a campaign for my restaurant" }, label: "Kampagne" },
     ],
     mvpLinks: [
       { label: "image-gen", href: "/dashboard?tool=image-gen" },
@@ -235,10 +235,10 @@ const en: typeof de = {
   },
 
   studioCommand: {
-    overline:     "Studio",
+    overline:     "STUDIO",
     headline:     "What do you want to create?",
     subline:
-      "Describe your goal. InfluexAI recognizes the right workflow and prepares production.",
+      "Describe your goal. InfluexAI recognizes the right workflow and guides you from input to finished output — image, video, hook, campaign, or upscale.",
     placeholder:  "Describe what you want to create…",
     enterHint:    "Enter to send · Shift+Enter for new line",
     loadingHint:  "Preparing workflow…",
@@ -255,10 +255,10 @@ const en: typeof de = {
       "Use Flux Ultra for a portrait",
     ],
     chips: [
-      { id: "lora", prompt: { de: "Trainiere einen KI Influencer", en: "Train an AI influencer" }, label: "LoRA" },
-      { id: "influencer", prompt: { de: "Erstelle einen AI Influencer für Instagram", en: "Create an AI influencer for Instagram" }, label: "AI Influencer" },
-      { id: "product", prompt: { de: "Produktbild für Olivenöl Premium", en: "Premium product visual for olive oil" }, label: "Product visual" },
+      { id: "bild", prompt: { de: "Erstelle ein Premium-Produktbild für meine Kampagne", en: "Create a premium product image for my campaign" }, label: "Image" },
       { id: "video", prompt: { de: "Verwandle dieses Bild in ein Video", en: "Turn this image into a video" }, label: "Video" },
+      { id: "hook", prompt: { de: "Schreibe 5 Hooks für eine Beauty-Kampagne", en: "Write 5 hooks for a beauty campaign" }, label: "Hook" },
+      { id: "kampagne", prompt: { de: "Starte eine Kampagne für mein Restaurant", en: "Start a campaign for my restaurant" }, label: "Campaign" },
     ],
     mvpLinks: [
       { label: "image-gen", href: "/dashboard?tool=image-gen" },
