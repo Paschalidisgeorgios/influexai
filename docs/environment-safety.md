@@ -21,9 +21,9 @@ Server-only helper: `src/lib/environment-safety.server.ts`
 
 Blocking applies only when **all** of the following are true:
 
-1. Runtime is non-production (`NODE_ENV=development` or `VERCEL_ENV=preview` / `development`)
+1. Runtime is non-production (`VERCEL_ENV=production` is the only exempt runtime; includes `next dev`, Vercel preview, and local `next start` without `VERCEL_ENV`)
 2. At least one production-like signal is detected
-3. No explicit override is set
+3. No explicit override is set (both override env vars required)
 
 ### Production-like signals
 
@@ -43,19 +43,27 @@ Blocking applies only when **all** of the following are true:
 
 ### Override (local/preview only)
 
+Both variables are **required**:
+
 ```env
 ALLOW_PRODUCTION_DEV_WRITES=true
-```
-
-Optional additional acknowledgement:
-
-```env
 I_UNDERSTAND_PRODUCTION_WRITES=true
 ```
+
+Setting only one variable leaves the guard active and logs a partial-override warning.
 
 When override is active, a server log warning is emitted (no secret values).
 
 **Production deployments (`VERCEL_ENV=production`) are never blocked.**
+
+### Webhooks (not dev-write-guarded)
+
+External callbacks must remain reachable. Do **not** apply the dev write guard to:
+
+- `/api/lora/webhook` — validates `FAL_WEBHOOK_SECRET` (header or query)
+- `/api/stripe/webhook` — validates Stripe signature via `STRIPE_WEBHOOK_SECRET`
+
+These use their own secret/signature checks instead of the dev write guard.
 
 ### Usage in API routes
 
@@ -79,7 +87,7 @@ GET/read-only routes are intentionally **not** guarded.
 2. Create a **dedicated Supabase staging project** (not in scope of this repo phase).
 3. Use Stripe **test** keys only (`sk_test_` / `pk_test_`).
 4. Set `PROVIDERS_DISABLED=true` until sandbox/test provider keys exist.
-5. Do **not** set `ALLOW_PRODUCTION_DEV_WRITES` for day-to-day development.
+5. Do **not** set override variables for day-to-day development.
 
 ## UI hint (development only)
 

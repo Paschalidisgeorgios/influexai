@@ -3,12 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: {
     video_url?: string;
     videoUrl?: string;

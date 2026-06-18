@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { getFalKey } from "@/lib/fal-image";
 import { resolveImageUrlForSeedance } from "@/lib/seedance-generate";
 
@@ -16,6 +17,9 @@ const FORMATS: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   if (!getFalKey()) {
     return NextResponse.json(
       { error: "Medien-Upload ist gerade nicht verfügbar." },

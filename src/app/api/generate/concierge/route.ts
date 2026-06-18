@@ -10,6 +10,7 @@ import {
   parseConciergeResponse,
 } from "@/lib/claude-concierge";
 import { verifyTurnstileToken } from "@/lib/security/turnstile";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -47,6 +48,9 @@ function mapSdkError(err: unknown): { status: number; message: string } {
 }
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: ConciergeBody;
   try {
     body = (await request.json()) as ConciergeBody;

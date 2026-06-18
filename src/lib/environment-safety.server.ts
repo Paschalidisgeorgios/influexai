@@ -36,12 +36,18 @@ function maskProjectRef(ref: string | null): string | null {
   return `${ref.slice(0, 4)}***`;
 }
 
-/** Local dev or Vercel preview — never treat deployed production as non-production. */
+/**
+ * Non-production runtimes where mutating writes against production-like env must be blocked.
+ * Only Vercel production (`VERCEL_ENV=production`) is always exempt.
+ */
 export function isNonProductionRuntime(): boolean {
-  const vercelEnv = process.env.VERCEL_ENV;
+  const vercelEnv = process.env.VERCEL_ENV?.trim();
   if (vercelEnv === "production") return false;
   if (vercelEnv === "preview" || vercelEnv === "development") return true;
-  return process.env.NODE_ENV === "development";
+  if (process.env.NODE_ENV === "development") return true;
+  // Local `next start`: NODE_ENV=production without VERCEL_ENV — treat as unsafe local runtime.
+  if (!vercelEnv) return true;
+  return false;
 }
 
 export function isProductionSupabaseRef(ref: string | null | undefined): boolean {
@@ -95,11 +101,25 @@ export function detectProductionLikeSignals(): ProductionLikeSignal[] {
 }
 
 export function isDevelopmentWriteOverrideActive(): boolean {
-  return process.env.ALLOW_PRODUCTION_DEV_WRITES === "true";
+  return (
+    process.env.ALLOW_PRODUCTION_DEV_WRITES === "true" &&
+    process.env.I_UNDERSTAND_PRODUCTION_WRITES === "true"
+  );
+}
+
+function warnPartialOverrideIfNeeded(): void {
+  const allow = process.env.ALLOW_PRODUCTION_DEV_WRITES === "true";
+  const understand = process.env.I_UNDERSTAND_PRODUCTION_WRITES === "true";
+  if ((allow || understand) && !isDevelopmentWriteOverrideActive()) {
+    console.warn(
+      "[dev-write-guard] Partial override ignored — both ALLOW_PRODUCTION_DEV_WRITES=true and I_UNDERSTAND_PRODUCTION_WRITES=true are required."
+    );
+  }
 }
 
 export function assessDevelopmentEnvironment(): DevelopmentEnvironmentAssessment {
   const isNonProduction = isNonProductionRuntime();
+  warnPartialOverrideIfNeeded();
   const overrideActive = isDevelopmentWriteOverrideActive();
   const productionLikeSignals = isNonProduction ? detectProductionLikeSignals() : [];
 

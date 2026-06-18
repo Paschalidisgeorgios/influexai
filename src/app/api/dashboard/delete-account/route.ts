@@ -20,10 +20,14 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function DELETE() {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   // ── 1. Session-Auth: User verifizieren ────────────────────────────────────
   const anonClient = await createServerSupabaseClient();
   const {

@@ -40,6 +40,7 @@ import {
 } from "@/lib/ai/imageStylePresets";
 import { applyVisualQARetry } from "@/lib/agent/visualQuality";
 import { DEFAULT_IMAGE_MODEL_ID, isKreaModel } from "@/lib/generation-config";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,9 @@ function isValidCategory(c: string): c is ImageCategoryKey {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = await request.json();
   const {
     prompt,

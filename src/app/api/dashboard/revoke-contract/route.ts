@@ -12,10 +12,14 @@
 import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
 
   const {

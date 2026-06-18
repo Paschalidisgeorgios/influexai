@@ -20,6 +20,7 @@ import { generateWithLora } from "@/lib/lora-fal";
 import { LORA_GENERATION_CREDIT } from "@/lib/lora-config";
 import { getOwnedCharacter } from "@/lib/ki-influencer-db";
 import { LORA_WEIGHT_DEFAULT } from "@/lib/ki-influencer-config";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
@@ -37,6 +38,9 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("lora-training");
   if (denied) return denied;
 

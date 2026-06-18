@@ -10,6 +10,7 @@ import {
   parseLandingDemoIdea,
 } from "@/lib/claude-landing-demo";
 import { verifyTurnstileToken } from "@/lib/security/turnstile";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -48,6 +49,9 @@ function mapSdkError(err: unknown): { status: number; message: string } {
 }
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: DemoBody;
   try {
     body = (await request.json()) as DemoBody;

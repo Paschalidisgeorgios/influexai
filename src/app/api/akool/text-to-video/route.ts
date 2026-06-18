@@ -8,6 +8,7 @@ import {
 } from "@/lib/akool-models";
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { requireAkoolAccess } from "@/lib/akool-route-handler";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -33,6 +34,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: {
     model?: string;
     modelId?: string;

@@ -13,6 +13,7 @@ import {
   KI_INFLUENCER_TRAINING_SET_SIZE,
   KI_INFLUENCER_TRAINING_VARIATIONS,
 } from "@/lib/ki-influencer-config";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   deductKiInfluencerCredits,
@@ -31,6 +32,9 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = (await request.json()) as {
     characterId?: string;
     start?: boolean;

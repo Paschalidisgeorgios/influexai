@@ -18,6 +18,7 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deductCredits, hasEnoughCredits } from "@/lib/credits";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import type { GalleryItem } from "@/components/dashboard/core/GalleryGrid";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +38,9 @@ type SaveAssetBody = {
 };
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -139,6 +143,9 @@ export async function POST(request: Request) {
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 
 export async function DELETE(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
 
   const {
