@@ -1,20 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { useLandingBackgroundGlow } from "../hooks/useLandingBackgroundGlow";
+import { InfluexBackgroundSystem } from "@/components/shared/influex";
 
-/** Fixed global landing stage — base, grid, scrolling glow, vignette */
+/** Fixed global landing stage — delegates to shared Influex background (landing-v2 compat) */
 export function LandingV2BackgroundSystem() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  useLandingBackgroundGlow(rootRef);
-
   return (
-    <div ref={rootRef} className="landing-v2-bg-system" aria-hidden>
-      <div className="landing-v2-bg-system__base" />
-      <div className="landing-v2-bg-system__grid" />
-      <div className="landing-v2-bg-system__glow" />
-      <div className="landing-v2-bg-system__vignette" />
-      <div className="landing-v2-bg-system__noise" />
-    </div>
+    <InfluexBackgroundSystem
+      variant="marketing"
+      intensity="standard"
+      compatLayer="landing-v2"
+      scrollGlow
+      scrollRootSelector=".landing-v2-main"
+    />
   );
 }

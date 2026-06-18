@@ -1,4 +1,5 @@
 @import "../styles/glass-base.css";
+@import "../styles/influex-foundation.css";
 
 @tailwind base;
 @tailwind components;
