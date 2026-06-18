@@ -361,6 +361,8 @@
   letter-spacing: -0.03em;
   line-height: 1.1;
   color: var(--influex-text);
+  text-transform: none;
+  font-family: var(--font-dm), "DM Sans", system-ui, sans-serif;
 }
 
 .influex-legal-shell__prose {
@@ -369,13 +371,110 @@
   color: var(--influex-text-secondary);
 }
 
-.influex-legal-shell__prose h2,
 .influex-legal-shell__prose h3 {
   margin-top: 2rem;
   margin-bottom: 0.75rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--influex-text);
+}
+
+/* —— Legal content primitives (4G.2B) —— */
+
+.influex-legal-link {
+  color: var(--influex-lime);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.influex-legal-link:hover {
+  text-decoration: underline;
+  opacity: 0.92;
+}
+
+.influex-legal-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--influex-border);
+}
+
+.influex-legal-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.influex-legal-section__title {
+  margin: 0 0 0.875rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--influex-text);
+}
+
+.influex-legal-section__body > :last-child {
+  margin-bottom: 0;
+}
+
+.influex-legal-paragraph {
+  margin: 0 0 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--influex-text-secondary);
+}
+
+.influex-legal-paragraph--muted {
+  color: var(--influex-text-muted);
+}
+
+.influex-legal-list {
+  margin: 0 0 0.875rem;
+  padding-left: 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--influex-text-secondary);
+}
+
+.influex-legal-list li {
+  margin-bottom: 0.5rem;
+}
+
+.influex-legal-list li:last-child {
+  margin-bottom: 0;
+}
+
+.influex-legal-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--influex-border);
+}
+
+.influex-legal-footer-nav__link {
+  font-size: 0.75rem;
+  color: var(--influex-text-label);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.influex-legal-footer-nav__link:hover {
+  color: var(--influex-lime);
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .influex-legal-shell__title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .influex-legal-paragraph,
+  .influex-legal-list {
+    font-size: 0.875rem;
+  }
 }
 
 /* —— Buttons —— */

@@ -1,10 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-
-const linkStyle = {
-  color: "#B4FF00",
-  textDecoration: "none",
-} as const;
+import { LegalShell } from "@/components/shared/influex";
 
 export function LegalLink({
   href,
@@ -14,7 +10,7 @@ export function LegalLink({
   children: ReactNode;
 }) {
   return (
-    <Link href={href} style={linkStyle} className="hover:underline">
+    <Link href={href} className="influex-legal-link">
       {children}
     </Link>
   );
@@ -30,8 +26,7 @@ export function LegalExternalLink({
   return (
     <a
       href={href}
-      style={linkStyle}
-      className="hover:underline"
+      className="influex-legal-link"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -47,51 +42,7 @@ export function LegalPageLayout({
   title: string;
   children: ReactNode;
 }) {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#060608",
-        color: "rgba(255,255,255,0.85)",
-        fontFamily: "var(--font-dm), 'DM Sans', sans-serif",
-      }}
-    >
-      <article
-        style={{
-          maxWidth: 720,
-          margin: "0 auto",
-          padding: "48px 24px",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "inline-block",
-            marginBottom: 32,
-            fontSize: 12,
-            color: "rgba(255,255,255,0.45)",
-            textDecoration: "none",
-          }}
-          className="hover:text-[#B4FF00]"
-        >
-          ← InfluexAI
-        </Link>
-        <h1
-          style={{
-            fontFamily: "var(--font-bebas), 'Bebas Neue', sans-serif",
-            fontSize: "clamp(2rem, 5vw, 2.75rem)",
-            letterSpacing: "0.04em",
-            color: "#B4FF00",
-            marginBottom: 32,
-            lineHeight: 1,
-          }}
-        >
-          {title}
-        </h1>
-        <div style={{ fontSize: 14, lineHeight: 1.7 }}>{children}</div>
-      </article>
-    </div>
-  );
+  return <LegalShell title={title}>{children}</LegalShell>;
 }
 
 export function LegalSection({
@@ -102,25 +53,9 @@ export function LegalSection({
   children: ReactNode;
 }) {
   return (
-    <section style={{ marginTop: 32 }}>
-      <hr
-        style={{
-          border: "none",
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          marginBottom: 24,
-        }}
-      />
-      <h2
-        style={{
-          fontSize: 18,
-          fontWeight: 700,
-          color: "#B4FF00",
-          marginBottom: 12,
-        }}
-      >
-        {title}
-      </h2>
-      <div>{children}</div>
+    <section className="influex-legal-section">
+      <h2 className="influex-legal-section__title">{title}</h2>
+      <div className="influex-legal-section__body">{children}</div>
     </section>
   );
 }
@@ -133,12 +68,7 @@ export function LegalParagraph({
   muted?: boolean;
 }) {
   return (
-    <p
-      style={{
-        marginBottom: 12,
-        ...(muted ? { color: "rgba(255,255,255,0.55)" } : {}),
-      }}
-    >
+    <p className={muted ? "influex-legal-paragraph influex-legal-paragraph--muted" : "influex-legal-paragraph"}>
       {children}
     </p>
   );
@@ -146,11 +76,9 @@ export function LegalParagraph({
 
 export function LegalList({ items }: { items: string[] }) {
   return (
-    <ul style={{ margin: "0 0 12px 1.1rem", padding: 0 }}>
+    <ul className="influex-legal-list">
       {items.map((item) => (
-        <li key={item} style={{ marginBottom: 6 }}>
-          {item}
-        </li>
+        <li key={item}>{item}</li>
       ))}
     </ul>
   );
@@ -167,28 +95,9 @@ export const LEGAL_FOOTER_LINKS = [
 
 export function LegalFooterLinks({ className = "" }: { className?: string }) {
   return (
-    <nav
-      className={className}
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: 16,
-        padding: "16px 24px 24px",
-      }}
-      aria-label="Rechtliches"
-    >
+    <nav className={`influex-legal-footer-nav ${className}`.trim()} aria-label="Rechtliches">
       {LEGAL_FOOTER_LINKS.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          style={{
-            fontSize: 12,
-            color: "rgba(255,255,255,0.45)",
-            textDecoration: "none",
-          }}
-          className="hover:text-[#B4FF00] hover:underline"
-        >
+        <Link key={link.href} href={link.href} className="influex-legal-footer-nav__link">
           {link.label}
         </Link>
       ))}
