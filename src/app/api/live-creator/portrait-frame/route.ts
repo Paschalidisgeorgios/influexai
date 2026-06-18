@@ -14,6 +14,7 @@ import {
 } from "@/lib/generation-assets";
 import { fal } from "@fal-ai/client";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,9 @@ function protectedAssetUrl(generationId: string, kind: "image" | "video") {
 
 /** Fallback: poll live-portrait with webcam clip (2–5 fps). */
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("live-creator");
   if (denied) return denied;
 

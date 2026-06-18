@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { generateCharacterImage } from "@/lib/character-image-fal";
@@ -29,6 +30,9 @@ function protectedImageUrl(generationId: string, variant = "preview") {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = await request.json();
   const {
     referenceImageIds: referenceImageIdsRaw,

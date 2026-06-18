@@ -1,8 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   console.warn(
     "[api/ki-agent] Legacy POST endpoint — transparent rewrite to /api/agent"
   );

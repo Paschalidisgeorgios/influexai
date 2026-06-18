@@ -12,6 +12,7 @@ import {
   type FalImageMode,
 } from "@/lib/fal-image";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import {
   createGenerationRecord,
   ingestFinalImageFromUrl,
@@ -32,6 +33,9 @@ function protectedImageUrl(generationId: string, variant: "preview" | "final") {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("ki-ich");
   if (denied) return denied;
 

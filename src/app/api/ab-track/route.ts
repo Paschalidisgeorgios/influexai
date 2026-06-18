@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,9 @@ const VALID_VARIANTS = new Set(["a", "b"]);
 const VALID_EVENTS = new Set(["view", "signup_click", "signup_complete"]);
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: { variant?: string; event?: string };
   try {
     body = await request.json();

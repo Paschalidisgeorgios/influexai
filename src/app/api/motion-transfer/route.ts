@@ -6,6 +6,7 @@ import { runMotionTransferGeneration } from "@/lib/motion-transfer-generate";
 import { MOTION_TRANSFER_CREDIT_COST } from "@/lib/motion-transfer-config";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { firstUnsafeExternalUrlMessage } from "@/lib/security/url-validation";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,9 @@ type MotionTransferBody = {
 };
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: MotionTransferBody;
   try {
     body = (await request.json()) as MotionTransferBody;

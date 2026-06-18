@@ -33,6 +33,7 @@ import {
   AgentSafetyError,
   checkAgentInputSafety,
 } from "@/lib/agent/guards";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,9 @@ function completeCampaignExecution(
 }
 
 export async function POST(request: Request) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   let body: RequestBody;
   try {
     body = (await request.json()) as RequestBody;

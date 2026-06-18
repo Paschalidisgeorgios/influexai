@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { runImageUpscaleRequest } from "@/lib/upscale-image-api";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,9 @@ export const maxDuration = 120;
  * POST { imageDataUrl } — uploaded image (base64 data URL)
  */
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = (await request.json()) as {
     generationId?: string;
     imageDataUrl?: string;

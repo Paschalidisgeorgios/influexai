@@ -13,6 +13,7 @@ import {
 import { resolvePreferredLiveAvatarId } from "@/lib/preferred-live-avatar";
 import { assertGatedFeature } from "@/lib/access.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,9 @@ export async function GET() {
 
 /** POST — create Akool live session + return Agora credentials */
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("live-creator");
   if (denied) return denied;
 
@@ -193,6 +197,9 @@ export async function POST(request: NextRequest) {
 
 /** DELETE — close Akool session */
 export async function DELETE(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
