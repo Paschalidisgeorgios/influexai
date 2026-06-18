@@ -1,9 +1,10 @@
 import { AlertTriangle } from "lucide-react";
-import { shouldShowSharedDbDevWarning } from "@/lib/ai-creator/environment-safety.server";
+import { getDevelopmentEnvironmentWarningLabels } from "@/lib/ai-creator/environment-safety.server";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
 
 export function AiCreatorEnvironmentHint() {
-  if (!shouldShowSharedDbDevWarning()) return null;
+  const warnings = getDevelopmentEnvironmentWarningLabels();
+  if (warnings.length === 0) return null;
 
   return (
     <div
@@ -21,13 +22,16 @@ export function AiCreatorEnvironmentHint() {
         style={{ color: "#fbbf24" }}
         aria-hidden
       />
-      <p>
-        <span className="font-medium" style={{ color: DASHBOARD_TEXT }}>
+      <div>
+        <p className="font-medium" style={{ color: DASHBOARD_TEXT }}>
           Dev-Hinweis:
-        </span>{" "}
-        Diese lokale Umgebung kann mit einer geteilten Supabase-Instanz verbunden sein.
-        Testdaten vorsichtig verwenden.
-      </p>
+        </p>
+        <ul className="mt-1 list-inside list-disc space-y-0.5">
+          {warnings.map((label) => (
+            <li key={label}>{label}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

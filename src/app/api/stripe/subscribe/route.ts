@@ -8,6 +8,7 @@ import {
   type SubscriptionPlanId,
 } from "@/lib/subscription-plans";
 import { getStripe } from "@/lib/stripe";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,9 @@ function trimPriceId(value: unknown): string | undefined {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = await request.json();
   const plan = body.plan as Exclude<SubscriptionPlanId, "free"> | undefined;
   const interval = (body.interval ?? "monthly") as BillingInterval;

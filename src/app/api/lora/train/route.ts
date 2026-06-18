@@ -12,6 +12,7 @@ import {
 } from "@/lib/lora-config";
 import { submitLoraTraining } from "@/lib/lora-fal";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,9 @@ function isValidType(t: string): t is LoraModelType {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("lora-training");
   if (denied) return denied;
 

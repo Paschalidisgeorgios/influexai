@@ -12,6 +12,7 @@ import {
   logMissingAgencyStripePriceId,
 } from "@/lib/stripe/prices";
 import { getStripe } from "@/lib/stripe";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = await request.json();
   const priceIdFromBody = body.priceId as string | undefined;
   const planId = body.plan as AgencyPlanId | undefined;

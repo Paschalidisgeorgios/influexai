@@ -4,6 +4,7 @@ import {
   assertCharacterDeletable,
 } from "@/lib/ai-creator/characters-delete.server";
 import { CHARACTERS_BASELINE_SELECT, type CharactersBaselineRow } from "@/lib/ai-creator/characters-list.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   logKiInfluencerError,
@@ -16,6 +17,9 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 /** DELETE — remove own draft/failed AI Creator character (no storage/lora cleanup). */
 export async function DELETE(_request: Request, context: RouteContext) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;

@@ -10,6 +10,7 @@ import {
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import { assertPlatformPlanForCreditCheckout } from "@/lib/credit-checkout-guard.server";
 import { getStripe } from "@/lib/stripe";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,9 @@ function resolvePackage(
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const body = await request.json().catch(() => ({}));
   const resolved = resolvePackage(body);
   if ("error" in resolved) {

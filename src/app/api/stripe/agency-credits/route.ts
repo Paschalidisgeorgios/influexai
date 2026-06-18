@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { AGENCY_CREDITS_PACKAGES } from "@/lib/agency-plans";
 import { getStripe } from "@/lib/stripe";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const { packageId } = await request.json();
   const pkg = AGENCY_CREDITS_PACKAGES.find((p) => p.id === packageId);
   if (!pkg) {

@@ -11,11 +11,15 @@ import {
   consentRequiredResponse,
   readConsentFromJson,
 } from "@/lib/consent.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   if (!getFalKey()) {
     return NextResponse.json(
       { error: "Medien-Upload ist gerade nicht verfügbar." },

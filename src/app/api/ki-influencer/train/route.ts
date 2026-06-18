@@ -12,6 +12,7 @@ import {
 } from "@/lib/ki-influencer-db";
 import { buildLoraZipFromGenerationIds } from "@/lib/ki-influencer-lora-upload";
 import { submitLoraTraining } from "@/lib/lora-fal";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   deductKiInfluencerCredits,
@@ -25,6 +26,9 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("lora-training");
   if (denied) return denied;
 

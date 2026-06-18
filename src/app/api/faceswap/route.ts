@@ -16,6 +16,7 @@ import { uploadFaceswapMedia } from "@/lib/upload-faceswap-media";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import {
   createGenerationRecord,
@@ -147,6 +148,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("face-swap");
   if (denied) return denied;
 

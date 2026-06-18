@@ -16,6 +16,7 @@ import {
   logKiInfluencerError,
   mapSupabaseWriteError,
 } from "@/lib/ki-influencer-api";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { isSupabaseRelationMissingError } from "@/lib/ki-influencer-supabase-errors";
 
 export const dynamic = "force-dynamic";
@@ -85,6 +86,9 @@ export async function GET() {
 
 /** POST — create draft AI Creator character (baseline schema only, no training). */
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;

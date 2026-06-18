@@ -15,6 +15,7 @@ import {
   mapAkoolVideoStatus,
 } from "@/lib/akool";
 import { assertGatedFeature } from "@/lib/access.server";
+import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -188,6 +189,9 @@ export async function GET(request: NextRequest) {
 
 /** POST — upload media, start Akool job, return jobId immediately (no blocking wait) */
 export async function POST(request: NextRequest) {
+  const writeGuard = developmentWriteGuardResponse();
+  if (writeGuard) return writeGuard;
+
   const denied = await assertGatedFeature("live-creator");
   if (denied) return denied;
 
