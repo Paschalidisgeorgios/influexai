@@ -48,11 +48,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/dashboard/ki-ich",
-        destination: "/dashboard/ki-influencer",
-        permanent: true,
-      },
-      {
         source: "/dashboard/video-generator",
         destination: "/dashboard/seedance",
         permanent: true,

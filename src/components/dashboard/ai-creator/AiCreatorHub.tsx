@@ -18,6 +18,8 @@ import {
   Wand2,
 } from "lucide-react";
 import {
+  AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
+  AI_CREATOR_SELF_WORKFLOW_HREF,
   characterTypeLabel,
   HUB_PHASE_LABELS,
   HUB_PHASE_TONE,
@@ -39,7 +41,7 @@ type WizardPath = "self" | "fictional";
 type HubCharacter = {
   id: string;
   name: string;
-  characterType: CharacterType | null;
+  characterType: CharacterType | "unknown" | null;
   trainingStatus: string;
   previewImageUrl: string | null;
   source?: string;
@@ -68,7 +70,7 @@ const SELF_WIZARD_STEPS: WizardStep[] = [
   {
     title: "Referenzbilder vorbereiten",
     description: "Sammle klare Fotos von dir — verschiedene Winkel, gutes Licht, ohne Filter.",
-    href: "/dashboard/ki-ich",
+    href: AI_CREATOR_SELF_WORKFLOW_HREF,
     hrefLabel: "KI-Ich öffnen",
   },
   {
@@ -78,19 +80,19 @@ const SELF_WIZARD_STEPS: WizardStep[] = [
   {
     title: "Persona-Profil ergänzen",
     description: "Name, Stil und Einsatzzweck festlegen — für konsistente spätere Visuals.",
-    href: "/dashboard/ki-influencer",
-    hrefLabel: "Character vorbereiten",
+    href: AI_CREATOR_SELF_WORKFLOW_HREF,
+    hrefLabel: "KI-Ich öffnen",
   },
   {
     title: "Character vorbereiten",
-    description: "Referenzen hochladen und Character-Datensatz im bestehenden Upload-Flow anlegen.",
-    href: "/dashboard/ki-influencer",
-    hrefLabel: "Upload-Flow starten",
+    description: "Referenzen hochladen und Trainingsset im bestehenden LoRA-Workflow vorbereiten.",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
+    hrefLabel: "LoRA-Workflow öffnen",
   },
   {
     title: "Training vorbereiten",
     description: "Trainingsset finalisieren — echtes Training startet erst im Workflow mit Consent.",
-    href: "/dashboard/lora-training",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
     hrefLabel: "LoRA-Workflow öffnen",
   },
   {
@@ -104,20 +106,22 @@ const SELF_WIZARD_STEPS: WizardStep[] = [
 const FICTIONAL_WIZARD_STEPS: WizardStep[] = [
   {
     title: "Persona beschreiben",
-    description: "Zielgruppe, Nische und Rolle der Persona für Marken oder Kampagnen definieren.",
-    href: "/dashboard/ki-influencer",
-    hrefLabel: "KI Influencer öffnen",
+    description:
+      "Zielgruppe, Nische und Rolle der Persona für Marken oder Kampagnen im LoRA-Workflow definieren.",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
+    hrefLabel: "LoRA-Workflow öffnen",
   },
   {
     title: "Look & Stil definieren",
-    description: "Casting, Stilrichtung und visuelle Leitlinien im bestehenden Character-Flow festlegen.",
-    href: "/dashboard/ki-influencer",
-    hrefLabel: "Casting starten",
+    description:
+      "Stilrichtung und visuelle Leitlinien im bestehenden Character-/LoRA-Workflow festlegen.",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
+    hrefLabel: "Character vorbereiten",
   },
   {
     title: "Referenzset vorbereiten",
     description: "Generierte oder hochgeladene Referenzen für konsistente Visuals sammeln.",
-    href: "/dashboard/ki-influencer",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
     hrefLabel: "Referenzen vorbereiten",
   },
   {
@@ -126,9 +130,10 @@ const FICTIONAL_WIZARD_STEPS: WizardStep[] = [
   },
   {
     title: "Character vorbereiten",
-    description: "Character-Datensatz und Trainingsset im bestehenden Flow vorbereiten — nicht im Hub gespeichert.",
-    href: "/dashboard/ki-influencer",
-    hrefLabel: "Character-Flow öffnen",
+    description:
+      "Trainingsset und Persona im LoRA-Workflow vorbereiten — nicht zentral im Hub gespeichert.",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
+    hrefLabel: "LoRA-Workflow öffnen",
   },
   {
     title: "In Workflows verwenden",
@@ -140,22 +145,17 @@ const FICTIONAL_WIZARD_STEPS: WizardStep[] = [
 
 const PRODUCTION_PATHS = [
   {
-    label: "KI Influencer",
-    description: "Persona, Casting, Referenzen und Character-Vorbereitung für AI Influencer.",
-    href: "/dashboard/ki-influencer",
+    label: "LoRA Training",
+    description:
+      "Persona, Referenzen und LoRA-Vorbereitung für fiktive Characters — bestehender Produktionsweg.",
+    href: AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
     icon: Sparkles,
   },
   {
     label: "KI-Ich",
     description: "Eigener Character mit Referenzbildern und Digital-Twin-Vorbereitung.",
-    href: "/dashboard/ki-ich",
+    href: AI_CREATOR_SELF_WORKFLOW_HREF,
     icon: UserRound,
-  },
-  {
-    label: "LoRA Training",
-    description: "Training-Workflow — nur wenn Plan und Consent im jeweiligen Schritt aktiv sind.",
-    href: "/dashboard/lora-training",
-    icon: Wand2,
   },
   {
     label: "Character Studio",
@@ -430,10 +430,12 @@ export function AiCreatorHub() {
             <ul className="space-y-3">
               {characters.map((character) => {
                 const phase = mapCharacterStatusToHubPhase(character.trainingStatus);
-                const continueHref =
-                  character.characterType === "self"
-                    ? `/dashboard/ki-ich`
-                    : `/dashboard/ki-influencer?id=${character.id}`;
+                const isSelfCharacter =
+                  character.characterType === "self" ||
+                  character.source === "uploaded";
+                const continueHref = isSelfCharacter
+                  ? AI_CREATOR_SELF_WORKFLOW_HREF
+                  : AI_CREATOR_FICTIONAL_WORKFLOW_HREF;
                 const typeLabel = characterTypeLabel(
                   character.characterType,
                   character.source

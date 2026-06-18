@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+  baselineRowToListItem,
+  CHARACTERS_BASELINE_SELECT,
+  type CharactersBaselineRow,
+} from "@/lib/ai-creator/characters-list.server";
+import { mapStatusToDb } from "@/lib/ai-creator/status";
+import type { CharacterType, TrainingStatus } from "@/lib/ai-creator/types";
+import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
   logKiInfluencerError,
   mapSupabaseWriteError,
 } from "@/lib/ki-influencer-api";
-import { mapStatusToDb } from "@/lib/ai-creator/status";
-import type { CharacterType, TrainingStatus } from "@/lib/ai-creator/types";
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +59,7 @@ function rowToPayload(row: CharacterRow) {
   };
 }
 
-/** GET — list user's AI Creator characters (all statuses) */
+/** GET — list user's AI Creator characters (read-only, schema-tolerant baseline). */
 export async function GET() {
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
@@ -63,9 +68,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("characters")
-      .select(
-        "id, name, description, character_type, source, trigger_word, niche, style, tone, platforms, target_audience, consent_confirmed, reference_image_urls, status, lora_ref, preview_image_url, created_at, updated_at"
-      )
+      .select(CHARACTERS_BASELINE_SELECT)
       .eq("user_id", userId)
       .order("updated_at", { ascending: false });
 
@@ -75,7 +78,9 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      characters: (data ?? []).map((row) => rowToPayload(row as CharacterRow)),
+      characters: (data ?? []).map((row) =>
+        baselineRowToListItem(row as CharactersBaselineRow)
+      ),
     });
   } catch (error) {
     logKiInfluencerError("ai-creator characters list", error);

@@ -51,9 +51,16 @@ export function characterTypeLabel(
   characterType: string | null | undefined,
   source: string | null | undefined
 ): string {
-  if (characterType === "self") return "Eigener Character";
-  if (characterType === "fictional") return "Fiktive Persona";
-  if (source === "uploaded") return "Upload-basiert";
-  if (source === "generated") return "Generiert";
+  if (characterType === "self") return "Eigener Character · Upload";
+  if (characterType === "fictional") return "Fiktive Persona · Generiert";
+  if (characterType === "unknown") return "Character · Quelle unbekannt";
+  if (source === "uploaded") return "Eigener Character · Upload";
+  if (source === "generated") return "Fiktive Persona · Generiert";
   return "Character";
 }
+
+/** Self/digital-twin entry — avoids /dashboard/ki-influencer (middleware → ki-ich). */
+export const AI_CREATOR_SELF_WORKFLOW_HREF = "/dashboard/ki-ich";
+
+/** Fictional persona / LoRA prep — stable route (ki-influencer redirects via middleware). */
+export const AI_CREATOR_FICTIONAL_WORKFLOW_HREF = "/dashboard/lora-training";
