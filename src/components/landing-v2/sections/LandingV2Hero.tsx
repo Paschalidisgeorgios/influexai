@@ -45,7 +45,7 @@ export function LandingV2Hero() {
       )}
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-center gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-10 lg:pb-12">
-        <div className="landing-v2-hero__copy flex min-w-0 max-w-4xl flex-col">
+        <div className="landing-v2-hero__copy flex min-w-0 max-w-[48rem] flex-col">
           {isPreview ? (
             <LandingV2HeroKeywordHeadline />
           ) : (

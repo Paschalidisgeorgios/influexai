@@ -12,6 +12,8 @@ type LandingV2HeroKeywordHeadlineProps = {
 const copy = LANDING_V2_COPY.hero;
 const keywords = copy.rotatingKeywords;
 
+const LONG_KEYWORD_LENGTH = 14;
+
 export function LandingV2HeroKeywordHeadline({
   id = "lv2-hero-heading",
   className = "",
@@ -29,6 +31,7 @@ export function LandingV2HeroKeywordHeadline({
   );
 
   const activeKeyword = keywords[activeIndex] ?? keywords[0];
+  const isLongKeyword = activeKeyword.length >= LONG_KEYWORD_LENGTH;
 
   useHeroKeywordRotate({
     keywordRef,
@@ -50,13 +53,14 @@ export function LandingV2HeroKeywordHeadline({
       <span
         className="landing-v2-hero__headline-line landing-v2-hero__headline-line--lead"
         data-hero-headline-line
-        data-hero-headline-split="words"
       >
         {copy.primaryHeadlineLead}
       </span>
 
       <span
-        className="landing-v2-hero__headline-line landing-v2-hero__headline-line--keyword"
+        className={`landing-v2-hero__headline-line landing-v2-hero__headline-line--keyword${
+          isLongKeyword ? " landing-v2-hero__headline-line--keyword-long" : ""
+        }`}
         data-hero-headline-line
         data-hero-keyword-line
       >
@@ -66,7 +70,9 @@ export function LandingV2HeroKeywordHeadline({
           </span>
           <span
             ref={keywordRef}
-            className="landing-v2-hero-keyword landing-v2-hero-keyword-slot__word"
+            className={`landing-v2-hero-keyword landing-v2-hero-keyword-slot__word${
+              isLongKeyword ? " is-long" : ""
+            }`}
             data-hero-rotating-keyword
           >
             {activeKeyword}

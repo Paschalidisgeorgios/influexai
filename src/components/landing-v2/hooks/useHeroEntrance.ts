@@ -33,6 +33,9 @@ export function useHeroEntrance(
       const splitLines = section.querySelectorAll<HTMLElement>('[data-hero-headline-split="words"]');
       const headlineLines = section.querySelectorAll<HTMLElement>("[data-hero-headline-line]");
       const manualWords = section.querySelectorAll<HTMLElement>("[data-hero-headline-word]");
+      const leadLine = section.querySelector<HTMLElement>(
+        ".landing-v2-hero__headline-line--lead"
+      );
       const keywordLine = section.querySelector<HTMLElement>("[data-hero-keyword-line]");
       const rotatingKeyword = section.querySelector<HTMLElement>("[data-hero-rotating-keyword]");
       const motionWord = section.querySelector<HTMLElement>("[data-hero-motion-word]");
@@ -74,7 +77,7 @@ export function useHeroEntrance(
           : legacyLines;
 
       const entranceTargets = keywordHeadline
-        ? ([...headlineTargets, keywordLine].filter(Boolean) as Element[])
+        ? ([leadLine, keywordLine].filter(Boolean) as Element[])
         : headlineTargets;
 
       const textTargets = [eyebrow, subline, ...entranceTargets, ...ctas].filter(
@@ -173,33 +176,7 @@ export function useHeroEntrance(
       }
 
       if (rotatingKeyword && keywordHeadline) {
-        const signalAt =
-          wordMotion.delay +
-          wordMotion.duration +
-          (entranceTargets.length - 1) * wordMotion.stagger +
-          0.04;
-
-        tl.fromTo(
-          rotatingKeyword,
-          { filter: "brightness(1)" },
-          {
-            filter: `brightness(${motionSignal.brightnessPeak})`,
-            duration: motionSignal.brightnessIn,
-            ease: "power2.out",
-          },
-          signalAt
-        ).to(
-          rotatingKeyword,
-          {
-            filter: "brightness(1)",
-            duration: motionSignal.brightnessOut,
-            ease: "power2.inOut",
-            onComplete: () => {
-              gsap.set(rotatingKeyword, { clearProps: "transform,filter" });
-            },
-          },
-          `>-0.05`
-        );
+        gsap.set(rotatingKeyword, { clearProps: "transform,filter" });
       }
 
       if (subline) {

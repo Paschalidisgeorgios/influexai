@@ -53,24 +53,6 @@ export function useHeroKeywordRotate({
       return clearTimer;
     }
 
-    const pulseKeyword = (el: HTMLElement) => {
-      const { pulse } = HERO_KEYWORD_ROTATE;
-      gsap.fromTo(
-        el,
-        { filter: "brightness(1)" },
-        {
-          filter: `brightness(${pulse.brightnessPeak})`,
-          duration: pulse.durationIn,
-          ease: "power2.out",
-          yoyo: true,
-          repeat: 1,
-          onComplete: () => {
-            gsap.set(el, { clearProps: "filter" });
-          },
-        }
-      );
-    };
-
     const runCycle = () => {
       clearTimer();
       timerRef.current = setTimeout(() => {
@@ -113,7 +95,6 @@ export function useHeroKeywordRotate({
             },
           });
 
-          pulseKeyword(el);
           isAnimatingRef.current = false;
           runCycle();
         })();
