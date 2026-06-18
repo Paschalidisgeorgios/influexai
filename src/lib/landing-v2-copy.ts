@@ -9,6 +9,7 @@ export const LANDING_V2_COPY = {
     workflow: "Workflow",
     studio: "Studio",
     pricing: "Preise",
+    signIn: "Anmelden",
     cta: "Studio starten",
   },
   chapters: {

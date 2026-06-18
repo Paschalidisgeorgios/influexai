@@ -16,7 +16,7 @@ const copy = LANDING_V2_COPY.hero;
 export function LandingV2Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const links = useLandingV2Links();
-  const isPreview = links.mode === "preview";
+  const useVideoStage = links.enableHeroVideo;
   const { heroReady: introHeroReady } = useBrandIntro();
   const heroReady = links.enableBrandIntro ? introHeroReady : true;
 
@@ -26,27 +26,27 @@ export function LandingV2Hero() {
     <section
       ref={sectionRef}
       className={`landing-v2-hero landing-v2-hero--terminal relative min-h-[100svh] ${
-        isPreview ? "landing-v2-hero--video-bg overflow-hidden" : "overflow-x-clip"
+        useVideoStage ? "landing-v2-hero--video-bg overflow-hidden" : "overflow-x-clip"
       }`.trim()}
       aria-labelledby="lv2-hero-heading"
     >
-      {!isPreview ? (
+      {useVideoStage ? (
+        <>
+          <LandingV2HeroVideoBackground sectionRef={sectionRef} />
+          <div className="landing-v2-hero__readability-scrim" aria-hidden />
+        </>
+      ) : (
         <>
           <div className="landing-v2-hero__gradient" aria-hidden />
           <div className="landing-v2-hero__flow-silhouette-wrap">
             <LandingV2FlowStage variant="hero" className="landing-v2-hero__flow-silhouette" />
           </div>
         </>
-      ) : (
-        <>
-          <LandingV2HeroVideoBackground sectionRef={sectionRef} />
-          <div className="landing-v2-hero__readability-scrim" aria-hidden />
-        </>
       )}
 
       <div className="landing-v2-hero__content landing-v2-hero__shell--offset landing-v2-hero__content--preview-stage relative z-[3] mx-auto flex min-h-[100svh] w-full max-w-[90rem] flex-col justify-center gap-6 px-4 pb-8 pt-[var(--lv2-nav-offset)] sm:px-5 md:gap-8 md:px-8 md:pb-10 lg:pb-12">
         <div className="landing-v2-hero__copy flex min-w-0 max-w-[48rem] flex-col">
-          {isPreview ? (
+          {useVideoStage ? (
             <LandingV2HeroKeywordHeadline />
           ) : (
             <h1

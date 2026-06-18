@@ -183,4 +183,70 @@ export const LANDING_V2_STUDIO_DEMO_SCENARIOS: readonly StudioDemoScenario[] = [
       actions: ["Visual erstellen", "UGC Script", "Kampagne"],
     },
   },
+  {
+    id: "ugc-beauty-hooks",
+    label: "UGC Hooks Beauty",
+    cockpit: {
+      command: "Schreibe 5 UGC-Hooks für eine Beauty-Marke — natürlich, nahbar, TikTok-tauglich.",
+      signals: [
+        { label: "Intent", value: "Hooks" },
+        { label: "Branche", value: "Beauty" },
+        { label: "Plattform", value: "TikTok" },
+        { label: "Engine", value: "Script" },
+      ],
+    },
+    agent: {
+      original: "Ich brauche Hooks für meine Skincare-Marke.",
+      optimized:
+        "Five UGC hook variants for a beauty brand: conversational tone, problem-solution openers, social-native pacing, platform-ready for TikTok and Reels.",
+      chips: ["Zielgruppe erkannt", "Ton angepasst", "Hook-Set bereit"],
+    },
+    workflow: {
+      title: "Hook Generator",
+      rows: [
+        { label: "Format", value: "Hook Set" },
+        { label: "Stil", value: "UGC / Beauty" },
+        { label: "Anzahl", value: "5 Varianten" },
+        { label: "Status", value: "Vorbereitung" },
+      ],
+      actions: ["Visual erstellen", "Reel vorbereiten", "In Kampagne"],
+    },
+    gallery: {
+      assets: ["Hook Set", "Script Draft", "Visual Idee", "Varianten"],
+      actions: ["Als Video", "Wiederverwenden", "Export vorbereiten"],
+    },
+  },
+  {
+    id: "ugc-skincare-campaign",
+    label: "UGC Hautpflege",
+    cockpit: {
+      command: "Erstelle UGC-Kampagnenassets für ein neues Hautpflegeprodukt — Hook, Visual und Reel-Idee.",
+      signals: [
+        { label: "Intent", value: "Kampagne" },
+        { label: "Produkt", value: "Hautpflege" },
+        { label: "Format", value: "9:16" },
+        { label: "Engine", value: "Mixed" },
+      ],
+    },
+    agent: {
+      original: "Wir launchen eine neue Serum-Linie und brauchen UGC-Content.",
+      optimized:
+        "UGC campaign prep for skincare launch: hook variants, product visual direction, short-form reel structure, brand-safe tone for social ads.",
+      chips: ["Produkt erkannt", "Kampagnenpfad", "Assets geplant"],
+    },
+    workflow: {
+      title: "Kampagnenvorbereitung",
+      rows: [
+        { label: "Format", value: "9:16 + 4:5" },
+        { label: "Stil", value: "UGC / Skincare" },
+        { label: "Deliverables", value: "Hook + Visual + Reel" },
+        { label: "Status", value: "Vorbereitung" },
+      ],
+      actions: ["Visual erstellen", "Hook schreiben", "In Galerie"],
+    },
+    gallery: {
+      assets: ["Campaign Brief", "Hook Set", "Product Visual", "Reel Draft"],
+      actions: ["Wiederverwenden", "Als Video", "Varianten"],
+    },
+  },
 ] as const;

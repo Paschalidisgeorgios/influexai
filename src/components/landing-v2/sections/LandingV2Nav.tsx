@@ -79,6 +79,12 @@ export function LandingV2Nav({ introClass = "", isPreview = false }: LandingV2Na
             })}
           </nav>
 
+          {!isPreview ? (
+            <Link href="/auth/sign-in" className="landing-v2-nav__signin">
+              {copy.signIn}
+            </Link>
+          ) : null}
+
           <Link href={links.signup} className="landing-v2-nav__cta">
             {copy.cta}
             <ArrowRight className="landing-v2-nav__cta-icon" size={15} aria-hidden />

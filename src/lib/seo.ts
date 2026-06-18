@@ -15,20 +15,20 @@ export type SeoPageMeta = {
 export const seoConfig: Record<Locale, Record<SeoPageKey, SeoPageMeta>> = {
   de: {
     home: {
-      title: "InfluexAI – KI Creator Studio für Virale Shorts",
+      title: "InfluexAI Creator Studio — AI-native Creator Operating System",
       description:
-        "Erstelle virale YouTube Shorts mit KI in 60 Sekunden. Script Generator, Niche Analyzer, Outlier Detector & mehr. Starter-Plan ab €9,99.",
+        "InfluexAI ist dein AI-native Creator Operating System für Visuals, UGC und Kampagnen-Workflows. Ziel eingeben, Agent erkennt den Workflow, Assets entstehen in der Galerie.",
       keywords:
-        "KI Creator Studio, YouTube Shorts KI, Script Generator, Niche Analyzer, virale Shorts erstellen",
+        "Creator Operating System, KI Creator Studio, UGC Workflows, AI Influencer, Kampagnen Visuals, Content Produktion",
     },
   },
   en: {
     home: {
-      title: "InfluexAI – AI Creator Studio for Viral Shorts",
+      title: "InfluexAI Creator Studio — AI-native Creator Operating System",
       description:
-        "Create viral YouTube Shorts with AI in 60 seconds. Script Generator, Niche Analyzer, Outlier Detector & more. Starter plan from €9.99.",
+        "InfluexAI is your AI-native creator operating system for visuals, UGC, and campaign workflows. Describe your goal, the agent routes the workflow, assets land in your gallery.",
       keywords:
-        "AI creator studio, YouTube Shorts AI, script generator, niche analyzer, viral shorts creator",
+        "creator operating system, AI creator studio, UGC workflows, AI influencer, campaign visuals, content production",
     },
   },
   el: {

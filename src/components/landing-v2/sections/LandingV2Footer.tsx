@@ -32,6 +32,15 @@ export function LandingV2Footer() {
           <Link href="/datenschutz" className="landing-v2-footer__link">
             Datenschutz
           </Link>
+          <Link href="/agb" className="landing-v2-footer__link">
+            AGB
+          </Link>
+          <Link href="/cookies" className="landing-v2-footer__link">
+            Cookies
+          </Link>
+          <Link href="/widerruf" className="landing-v2-footer__link">
+            Widerruf
+          </Link>
         </nav>
       </div>
     </footer>

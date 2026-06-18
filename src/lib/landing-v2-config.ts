@@ -31,9 +31,9 @@ export function getLandingV2Links(mode: LandingV2Mode): LandingV2Links {
     return {
       mode,
       enableBrandIntro: true,
-      enableHeroVideo: false,
+      enableHeroVideo: true,
       enableLenis: false,
-      enablePreviewMotion: false,
+      enablePreviewMotion: true,
       home: "/",
       pricing: "/pricing",
       signup: "/auth/sign-up",
