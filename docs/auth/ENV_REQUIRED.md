@@ -32,11 +32,16 @@ Do **not** commit secret values. Set in `.env.local` (dev) and Vercel **Producti
 
 | Variable | Description |
 |----------|-------------|
-| `STRIPE_SECRET_KEY` | Secret API key (`sk_live_` or `sk_test_`) |
+| `STRIPE_MODE` | Declared mode: `test` (Safe-Dev/Staging) or `live` (Production only). Runtime-enforced — see `src/lib/stripe-runtime-mode.server.ts`. |
+| `STRIPE_SECRET_KEY` | Secret API key — **`sk_test_` in Safe-Dev/Staging**, `sk_live_` in Production only |
 | `STRIPE_WEBHOOK_SECRET` | Webhook signing secret (`whsec_…`) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Publishable key (client checkout UI if needed) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Publishable key (`pk_test_` / `pk_live_`) |
 
-**Mode:** Live key + live Price IDs, or test + test — never mix.
+**Safe-Dev/Staging:** `STRIPE_MODE=test`, `VERCEL_ENV=development` (or local), `sk_test_` / `pk_test_` only. Live keys and live webhook events are blocked at runtime.
+
+**Production:** `STRIPE_MODE=live`, live keys, test webhook events blocked.
+
+Never mix declared mode and key prefix (e.g. `STRIPE_MODE=test` + `sk_live_`).
 
 ## Stripe — platform subscriptions (client + server fallback)
 
@@ -55,10 +60,11 @@ Do **not** commit secret values. Set in `.env.local` (dev) and Vercel **Producti
 
 | Variable | Description |
 |----------|-------------|
-| `STRIPE_CREDITS_50` | Small pack (50 credits) one-time Price ID |
-| `STRIPE_CREDITS_150` | Medium pack (150 credits) |
-| `STRIPE_CREDITS_350` | Large pack (350 credits) |
-| `STRIPE_CREDITS_800` | XL pack (800 credits) |
+| `STRIPE_CREDITS_25` | **Preferred** — Small pack (25 credits @ €5) one-time Price ID |
+| `STRIPE_CREDITS_50` | **Deprecated legacy alias** for Small pack — fallback only if `STRIPE_CREDITS_25` unset |
+| `STRIPE_CREDITS_150` | Medium pack (70 credits incl. bonus) |
+| `STRIPE_CREDITS_350` | Large pack (160 credits incl. bonus) |
+| `STRIPE_CREDITS_800` | XL pack (320 credits incl. bonus) |
 
 ## Stripe — Agency / White Label (server only)
 

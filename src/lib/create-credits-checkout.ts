@@ -4,6 +4,7 @@ import {
   getStripePriceIdForPackage,
   type CreditPackage,
 } from "@/lib/credit-packages";
+import { assertStripeCheckoutRuntimeAllowed } from "@/lib/stripe-runtime-mode.server";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://influexaicreator.com";
@@ -14,6 +15,7 @@ export async function createCreditsCheckoutSession(
   userId: string,
   pkg: CreditPackage
 ): Promise<Stripe.Checkout.Session> {
+  assertStripeCheckoutRuntimeAllowed("credit_pack_checkout");
   const priceId = getStripePriceIdForPackage(pkg);
   if (!priceId) {
     throw new Error("Stripe Price ID nicht konfiguriert");

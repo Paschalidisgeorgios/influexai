@@ -148,10 +148,25 @@ function analyzeEnv(vars, { strictExample = false } = {}) {
   const stripeMode = vars.STRIPE_MODE?.trim().toLowerCase();
   if (stripeMode) signalCategories.push(`stripe_mode_${stripeMode}`);
 
+  if (stripeMode === "test" && stripeSecret.startsWith("sk_live_")) {
+    signalCategories.push("stripe_mode_key_mismatch");
+    warnings.push("STRIPE_MODE=test conflicts with sk_live_ secret key");
+  }
+  if (stripeMode === "live" && stripeSecret.startsWith("sk_test_")) {
+    signalCategories.push("stripe_mode_key_mismatch");
+    warnings.push("STRIPE_MODE=live conflicts with sk_test_ secret key");
+  }
+  if (strictExample && stripeMode === "live") {
+    signalCategories.push("stripe_mode_live_in_example");
+    warnings.push("Example template must not declare STRIPE_MODE=live");
+  }
+
   const guardTriggerSignals = [
     "production_supabase_ref",
     "stripe_live_secret",
     "stripe_live_publishable",
+    "stripe_mode_key_mismatch",
+    "stripe_mode_live_in_example",
     "provider_keys_active",
     "service_role_present",
   ];

@@ -10,6 +10,12 @@ import {
 } from "@/lib/subscription-plans";
 import { creditsForStripePriceId } from "@/lib/stripe-credit-prices";
 import { getStripe } from "@/lib/stripe";
+import {
+  assertStripeWebhookRuntimeAllowed,
+  isStripeEventModeAllowed,
+  stripeEventModeBlockedResponse,
+  stripeRuntimeConfigErrorResponse,
+} from "@/lib/stripe-runtime-mode.server";
 
 type ClaimCheckoutSessionData = {
   checkout_type: string;
@@ -574,6 +580,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Keine Signatur" }, { status: 400 });
   }
 
+  try {
+    assertStripeWebhookRuntimeAllowed();
+  } catch (error) {
+    const guarded = stripeRuntimeConfigErrorResponse(error);
+    if (guarded) return guarded;
+    throw error;
+  }
+
   let event: Stripe.Event;
 
   try {
@@ -584,6 +598,16 @@ export async function POST(request: NextRequest) {
     );
   } catch {
     return NextResponse.json({ error: "Ungültige Signatur" }, { status: 400 });
+  }
+
+  const eventModeCheck = isStripeEventModeAllowed(event.livemode);
+  if (!eventModeCheck.allowed) {
+    console.warn("[webhook] blocked event livemode mismatch:", {
+      eventId: event.id,
+      eventType: event.type,
+      livemode: event.livemode,
+    });
+    return stripeEventModeBlockedResponse(eventModeCheck);
   }
 
   const supabaseAdmin = createClient(

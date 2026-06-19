@@ -1,9 +1,16 @@
 import Stripe from "stripe";
+import {
+  assertStripeCheckoutRuntimeAllowed,
+  StripeRuntimeConfigError,
+} from "@/lib/stripe-runtime-mode.server";
 
 export function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
+  assertStripeCheckoutRuntimeAllowed("stripe_client");
+  const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) {
-    throw new Error("STRIPE_SECRET_KEY nicht gesetzt");
+    throw new StripeRuntimeConfigError(
+      "Stripe ist nicht konfiguriert (STRIPE_SECRET_KEY fehlt)."
+    );
   }
   return new Stripe(key);
 }

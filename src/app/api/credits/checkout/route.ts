@@ -9,6 +9,10 @@ import {
 } from "@/lib/credit-packages";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import { assertPlatformPlanForCreditCheckout } from "@/lib/credit-checkout-guard.server";
+import {
+  assertStripeCheckoutRuntimeAllowed,
+  stripeRuntimeConfigErrorResponse,
+} from "@/lib/stripe-runtime-mode.server";
 import { getStripe } from "@/lib/stripe";
 import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
 
@@ -71,6 +75,7 @@ export async function POST(request: NextRequest) {
   if (planDenied) return planDenied;
 
   try {
+    assertStripeCheckoutRuntimeAllowed("credit_pack_checkout");
     const session = await createCreditsCheckoutSession(
       getStripe(),
       supabase,
@@ -79,6 +84,8 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ url: session.url });
   } catch (e) {
+    const guarded = stripeRuntimeConfigErrorResponse(e);
+    if (guarded) return guarded;
     const msg = e instanceof Error ? e.message : "Checkout fehlgeschlagen";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
