@@ -12,10 +12,10 @@ import {
   AGENT_TOOLS,
   type AgentToolKey,
 } from "@/lib/tools/agent-tool-registry";
-import { AgentRunMessages } from "./AgentRunMessages";
+import { AgentToolRecommendations } from "./AgentToolRecommendations";
 import { capsuleShow } from "./SmartCapsule";
 import { LoadingButton } from "@/components/ui/LoadingButton";
-import { useAgentAutopilotChat } from "@/hooks/useAgentAutopilotChat";
+import { useAgentToolRecommendations } from "@/hooks/useAgentToolRecommendations";
 import { useCreatorProfile } from "@/hooks/useCreatorProfile";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -153,14 +153,14 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { profile, loading: profileLoading } = useCreatorProfile();
-  const { messages, running, error, sendMessage, retryLast } =
-    useAgentAutopilotChat(initialPrompt);
+  const { plan, loading, error, suggestWorkflow, clearPlan } =
+    useAgentToolRecommendations(initialPrompt);
   const greeting = useAgentGreeting();
 
   const T = AGENT_TOOLS[activeTool];
   const placeholderExamples =
     activeTool === "campaign" ? CAMPAIGN_PLACEHOLDER_EXAMPLES : AGENT_PLACEHOLDER_EXAMPLES;
-  const showRotatingPlaceholder = !prompt.trim() && !running;
+  const showRotatingPlaceholder = !prompt.trim() && !loading;
   const { text: rotatingPlaceholder, visible: placeholderVisible } =
     useRotatingPlaceholder(placeholderExamples, showRotatingPlaceholder);
 
@@ -171,25 +171,23 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
     ta.style.height = `${Math.min(ta.scrollHeight, 240)}px`;
   }, []);
 
-  const handleGenerate = useCallback(async () => {
+  const handleSuggestWorkflow = useCallback(async () => {
     if (!prompt.trim()) {
-      capsuleShow("Bitte zuerst ein Briefing eingeben.", 4000);
+      capsuleShow("Bitte zuerst ein Creator-Ziel eingeben.", 4000);
       textareaRef.current?.focus();
       return;
     }
-    capsuleShow("Agent bereitet einen Vorschlag vor…", 3000);
-    const ok = await sendMessage(prompt.trim());
+    clearPlan();
+    const ok = await suggestWorkflow(prompt.trim());
     if (ok) {
-      setPrompt("");
-      setSelectedChip(null);
-      requestAnimationFrame(handleInput);
+      capsuleShow("Workflow-Vorschlag ist bereit — ohne Ausführung.", 3500);
     }
-  }, [prompt, sendMessage, handleInput]);
+  }, [prompt, suggestWorkflow, clearPlan]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void handleGenerate();
+      void handleSuggestWorkflow();
     }
   };
 
@@ -249,7 +247,9 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             className="max-w-xl text-base leading-relaxed md:text-[17px]"
             style={{ color: DASHBOARD_MUTED }}
           >
-            {activeTool === "campaign" ? T.sub : greeting.sub}
+            {activeTool === "campaign"
+              ? "Kampagnen-Ziel eingeben — der Agent schlägt Tools und nächste Schritte vor."
+              : "Creator-Ziel eingeben — ich bereite den passenden Workflow vor, ohne Ausführung."}
           </p>
         </div>
 
@@ -302,7 +302,7 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
             onChange={(e) => handlePromptChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={showRotatingPlaceholder ? "" : T.placeholder}
-            disabled={running}
+            disabled={loading}
             rows={4}
             aria-label="Briefing eingeben"
             className={`relative z-[1] max-h-[280px] min-h-[148px] w-full resize-none border-0 border-b bg-transparent px-0 py-1 font-sans text-lg leading-relaxed outline-none transition-[border-color] duration-200 focus:border-[#B4FF00]/35 disabled:cursor-not-allowed disabled:opacity-50 md:min-h-[172px] md:text-xl md:leading-relaxed`}
@@ -320,17 +320,17 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         <div className="space-y-2.5">
           <LoadingButton
             mode="agent"
-            isLoading={running}
-            onClick={() => void handleGenerate()}
+            isLoading={loading}
+            onClick={() => void handleSuggestWorkflow()}
             disabled={!prompt.trim()}
             className={`h-12 w-full text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 sm:h-[3.25rem] sm:max-w-xs ${STUDIO_RADIUS.button}`}
             style={{ background: "#B4FF00", color: "#08080a" }}
           >
-            {running ? "Vorschlag wird erstellt…" : "Vorschlag erstellen"}
+            {loading ? "Workflow wird vorbereitet…" : "Workflow vorschlagen"}
           </LoadingButton>
           <p className="text-[11px]" style={{ color: DASHBOARD_MUTED }}>
-            {T.creditsCost} Credit{T.creditsCost === 1 ? "" : "s"} · Ergebnis als Vorschlag, nicht
-            als Generierung
+            Ausführung ist in dieser Umgebung deaktiviert. Es wird nichts generiert, trainiert
+            oder hochgeladen.
           </p>
         </div>
 
@@ -352,12 +352,20 @@ export function AgentAutopilotV2({ initialPrompt = "" }: { initialPrompt?: strin
         </div>
       </section>
 
-      <AgentRunMessages
-        messages={messages}
-        running={running}
-        error={error}
-        onRetry={retryLast}
-      />
+      {error ? (
+        <p
+          className="rounded-lg border px-3 py-2 text-xs leading-relaxed"
+          style={{
+            borderColor: "rgba(220,38,38,0.25)",
+            color: DASHBOARD_TEXT,
+          }}
+          role="alert"
+        >
+          {error}
+        </p>
+      ) : null}
+
+      {plan ? <AgentToolRecommendations plan={plan} /> : null}
 
       <section className="pt-2 md:pt-4">
         <div className="mb-3 flex items-center gap-3">
