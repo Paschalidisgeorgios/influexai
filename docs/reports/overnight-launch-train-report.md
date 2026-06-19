@@ -4,7 +4,7 @@
 **Mode:** Controlled overnight safe completion  
 **Branch:** `launch-train/overnight-safe-completion`  
 **Base:** `master` @ `6d1c9b9`  
-**Final HEAD:** `73b1df3` (after Block 7 docs commit)
+**Final HEAD:** `0ad66b6`
 
 ---
 
@@ -34,7 +34,7 @@ git checkout -b launch-train/overnight-safe-completion  # from master 6d1c9b9
 e7f229e chore: refine tool workspace ux states
 f90c522 style: polish pricing and credits surfaces
 73b1df3 style: align dashboard workspace surfaces
-<docs>  docs: add production readiness audit
+0ad66b6 docs: add production readiness audit
 ```
 
 ---
