@@ -34,6 +34,7 @@ export function ToolExecutionDisabledNotice({
         color: DASHBOARD_TEXT,
       }}
       role="status"
+      data-testid="tool-execution-disabled-notice"
     >
       {text}
     </p>
