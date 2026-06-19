@@ -1230,39 +1230,33 @@ export const AgentBox = memo(function AgentBox({
   onNavigate,
 }: AgentBoxProps) {
 
-  // ── Copilot-Modus ──────────────────────────────────────────────────────────
-  if (COPILOT_TRIGGER_TOOLS.has(activeTool)) {
-    return (
-      <motion.div
-        key="copilot"
-        initial={{ opacity: 0, y: -10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0,   scale: 1   }}
-        exit={{ opacity: 0, y: -10,    scale: 0.97 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed left-1/2 top-16 z-50 w-full max-w-xl -translate-x-1/2 rounded-xl border border-white/[0.05] p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
-        style={{ background: "rgba(11,11,13,0.90)" }}
-      >
-        {/* ── Copilot Header ─────────────────────────────────────────────── */}
-        <div className="mb-3 flex items-center gap-2">
-          <Bot size={12} style={{ color: "rgba(255,255,255,0.22)" }} />
-          <p className="flex-1 font-mono text-[10px] uppercase tracking-widest text-neutral-600">
-            InfluexAI Copilot
-          </p>
-          <motion.span
-            className="h-[4px] w-[4px] shrink-0 rounded-full"
-            style={{ background: "#b4ff00" }}
-            animate={{ opacity: [0.3, 0.9, 0.3] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
+  const isCopilotMode = COPILOT_TRIGGER_TOOLS.has(activeTool);
 
-        {/* ── Chat ───────────────────────────────────────────────────────── */}
-        <CopilotChat onNavigate={onNavigate} />
-      </motion.div>
-    );
-  }
-  const meta       = TOOL_META[activeTool] ?? FALLBACK_META;
-  const isMedia    = MEDIA_TOOLS.has(activeTool);
+  // Form State — hooks must run before any conditional return
+  const [formValues, setFormValues] = useState<FormValues>(
+    () => structuredClone(DEFAULTS[activeTool] ?? {}) as FormValues
+  );
+
+  // Streaming State
+  const [loading, setLoading] = useState(false);
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // Optimizer result — shown in Prompt-Vorschau
+  const [optimized, setOptimized] = useState<OptimizedPromptResult | null>(null);
+
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Reset bei Tool-Wechsel
+  useEffect(() => {
+    setFormValues(structuredClone(DEFAULTS[activeTool] ?? {}) as FormValues);
+    setOutput("");
+    setError(null);
+    setOptimized(null);
+  }, [activeTool]);
+
+  const meta = TOOL_META[activeTool] ?? FALLBACK_META;
+  const isMedia = MEDIA_TOOLS.has(activeTool);
   const isTextTool = !isMedia && activeTool in TOOL_META;
 
   // Credit display — canonical SSOT (Phase 1C)
@@ -1295,30 +1289,6 @@ export const AgentBox = memo(function AgentBox({
   }
   // ─────────────────────────────────────────────────────────────────────────
 
-  // Form State
-  const [formValues, setFormValues] = useState<FormValues>(
-    () => structuredClone(DEFAULTS[activeTool] ?? {}) as FormValues
-  );
-
-  // Streaming State
-  const [loading, setLoading]   = useState(false);
-  const [output, setOutput]     = useState("");
-  const [error, setError]       = useState<string | null>(null);
-
-  // Optimizer result — shown in Prompt-Vorschau
-  const [optimized, setOptimized] = useState<OptimizedPromptResult | null>(null);
-
-  // Reset bei Tool-Wechsel (ref-Trick für stabile useState-Sequenz)
-  const prevToolRef = useRef(activeTool);
-  if (prevToolRef.current !== activeTool) {
-    prevToolRef.current = activeTool;
-    setFormValues(structuredClone(DEFAULTS[activeTool] ?? {}) as FormValues);
-    setOutput("");
-    setError(null);
-  }
-
-  const abortRef = useRef<AbortController | null>(null);
-
   const patchValues = useCallback((patch: Partial<FormValues>) => {
     setFormValues((prev) => ({ ...prev, ...patch } as FormValues));
   }, []);
@@ -1327,10 +1297,6 @@ export const AgentBox = memo(function AgentBox({
     () => buildPrompt(activeTool, formValues),
     [activeTool, formValues]
   );
-
-  // ---------------------------------------------------------------------------
-  // handleSubmit — Streaming via /api/agent
-  // ---------------------------------------------------------------------------
 
   const handleSubmit = useCallback(async () => {
     if (loading) return;
@@ -1408,6 +1374,35 @@ export const AgentBox = memo(function AgentBox({
 
   // Cleanup
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  if (isCopilotMode) {
+    return (
+      <motion.div
+        key="copilot"
+        initial={{ opacity: 0, y: -10, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.97 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed left-1/2 top-16 z-50 w-full max-w-xl -translate-x-1/2 rounded-xl border border-white/[0.05] p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+        style={{ background: "rgba(11,11,13,0.90)" }}
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <Bot size={12} style={{ color: "rgba(255,255,255,0.22)" }} />
+          <p className="flex-1 font-mono text-[10px] uppercase tracking-widest text-neutral-600">
+            InfluexAI Copilot
+          </p>
+          <motion.span
+            className="h-[4px] w-[4px] shrink-0 rounded-full"
+            style={{ background: "#b4ff00" }}
+            animate={{ opacity: [0.3, 0.9, 0.3] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+
+        <CopilotChat onNavigate={onNavigate} />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

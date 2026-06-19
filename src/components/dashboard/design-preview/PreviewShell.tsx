@@ -113,7 +113,7 @@ function PreviewTopbar({ active }: { active: PreviewView }) {
         </span>
         <span className="preview-type-meta truncate md:hidden">· {t.nav[active]}</span>
         <span className="preview-type-meta hidden truncate md:block">{t.systemLine}</span>
-        <span className="preview-type-meta hidden md:block">//</span>
+        <span className="preview-type-meta hidden md:block">{"//"}</span>
         <span className="preview-type-label hidden md:block" style={{ color: "rgba(245,242,234,0.72)" }}>
           {t.nav[active]}
         </span>
