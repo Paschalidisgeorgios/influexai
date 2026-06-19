@@ -114,8 +114,8 @@ export function DashboardSection({
     <section className={joinClasses("space-y-3", className)}>
       {title ? (
         <h2
-          className="text-lg font-bold tracking-tight md:text-xl"
-          style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em" }}
+          className="text-base font-semibold tracking-tight md:text-lg"
+          style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.02em", lineHeight: 1.25 }}
         >
           {title}
         </h2>
