@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import {
   CHARACTER_DESCRIPTION_MAX,
@@ -19,6 +19,14 @@ type WizardPath = "self" | "fictional";
 
 type SaveState = "idle" | "saving" | "success" | "error";
 
+export type AiCreatorDraftEditTarget = {
+  id: string;
+  name: string;
+  description?: string;
+  triggerWord?: string;
+  consentConfirmed?: boolean;
+};
+
 const SAFETY_LABELS: Record<WizardPath, string> = {
   self: "Ich bestätige, dass ich die Rechte und Zustimmung für alle später verwendeten Referenzen habe.",
   fictional:
@@ -35,9 +43,17 @@ const inputStyle = {
 type AiCreatorDraftFormProps = {
   wizardPath: WizardPath;
   onSaved: () => void | Promise<void>;
+  editingCharacter?: AiCreatorDraftEditTarget | null;
+  onCancelEdit?: () => void;
 };
 
-export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormProps) {
+export function AiCreatorDraftForm({
+  wizardPath,
+  onSaved,
+  editingCharacter = null,
+  onCancelEdit,
+}: AiCreatorDraftFormProps) {
+  const isEditMode = Boolean(editingCharacter?.id);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [triggerWord, setTriggerWord] = useState("");
@@ -46,10 +62,31 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (editingCharacter) {
+      setName(editingCharacter.name);
+      setDescription(editingCharacter.description ?? "");
+      setTriggerWord(editingCharacter.triggerWord ?? "");
+      setPersonaNotes("");
+      setSafetyChecked(false);
+      setSaveState("idle");
+      setErrorMessage(null);
+      return;
+    }
+
+    setName("");
+    setDescription("");
+    setTriggerWord("");
+    setPersonaNotes("");
+    setSafetyChecked(false);
+    setSaveState("idle");
+    setErrorMessage(null);
+  }, [editingCharacter]);
+
   const canSave =
     name.trim().length > 0 &&
     name.trim().length <= CHARACTER_NAME_MAX &&
-    safetyChecked &&
+    (isEditMode || safetyChecked) &&
     saveState !== "saving";
 
   async function handleSubmit(event: React.FormEvent) {
@@ -59,25 +96,63 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
     setSaveState("saving");
     setErrorMessage(null);
 
-    const payload: Record<string, unknown> = {
-      type: wizardPath,
-      name: name.trim(),
-      description: description.trim() || undefined,
-      triggerWord: triggerWord.trim() || undefined,
-      safetyAcknowledged: true,
-      consentConfirmed: true,
-    };
-
-    if (wizardPath === "self") {
-      payload.consentAccepted = true;
-    }
-
     const notes = personaNotes.trim();
-    if (notes) {
-      payload.style = notes;
-    }
 
     try {
+      if (isEditMode && editingCharacter) {
+        const payload: Record<string, unknown> = {
+          type: wizardPath,
+          name: name.trim(),
+          description: description.trim() || undefined,
+          triggerWord: triggerWord.trim() || undefined,
+        };
+        if (notes) {
+          payload.style = notes;
+        }
+
+        const res = await fetch(`/api/ai-creator/characters/${editingCharacter.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+          character?: AiCreatorCharacterListItem;
+        };
+
+        if (!res.ok || !data.success) {
+          setSaveState("error");
+          setErrorMessage(
+            data.error ??
+              "Draft konnte nicht gespeichert werden. Bitte versuche es erneut."
+          );
+          return;
+        }
+
+        setSaveState("success");
+        await onSaved();
+        return;
+      }
+
+      const payload: Record<string, unknown> = {
+        type: wizardPath,
+        name: name.trim(),
+        description: description.trim() || undefined,
+        triggerWord: triggerWord.trim() || undefined,
+        safetyAcknowledged: true,
+        consentConfirmed: true,
+      };
+
+      if (wizardPath === "self") {
+        payload.consentAccepted = true;
+      }
+
+      if (notes) {
+        payload.style = notes;
+      }
+
       const res = await fetch("/api/ai-creator/characters", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,10 +192,14 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
   const pathLabel = wizardPath === "self" ? "Eigener Character" : "Fiktive Persona";
 
   return (
-    <DashboardPanel title="Character als Draft vorbereiten" className="mt-6">
+    <DashboardPanel
+      title={isEditMode ? "Character-Entwurf bearbeiten" : "Character als Draft vorbereiten"}
+      className="mt-6"
+    >
       <p className="mb-5 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-        Speichere Name und Persona-Briefing als Entwurf — ohne Upload oder Training. Referenzen
-        und Workflows folgen in den verlinkten Produktionswegen.
+        {isEditMode
+          ? "Passe Name und Persona-Briefing an — ohne Upload oder Training. Consent bleibt unverändert gespeichert."
+          : "Speichere Name und Persona-Briefing als Entwurf — ohne Upload oder Training. Referenzen und Workflows folgen in den verlinkten Produktionswegen."}
       </p>
 
       <form onSubmit={(event) => void handleSubmit(event)} className="space-y-4">
@@ -211,20 +290,37 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
           </p>
         </div>
 
-        <label className="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border p-4" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
-          <input
-            type="checkbox"
-            checked={safetyChecked}
-            onChange={(event) => {
-              setSafetyChecked(event.target.checked);
-              if (saveState === "success") setSaveState("idle");
-            }}
-            className="mt-0.5 h-4 w-4 shrink-0 accent-lime-400"
-          />
-          <span className="text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-            {SAFETY_LABELS[wizardPath]}
-          </span>
-        </label>
+        {isEditMode ? (
+          editingCharacter?.consentConfirmed ? (
+            <p
+              className="rounded-xl border px-4 py-3 text-xs leading-relaxed"
+              style={{
+                borderColor: "rgba(52,211,153,0.25)",
+                color: "#34d399",
+              }}
+            >
+              Consent ist gespeichert und wird beim Bearbeiten nicht verändert.
+            </p>
+          ) : null
+        ) : (
+          <label
+            className="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border p-4"
+            style={{ borderColor: "rgba(255,255,255,0.1)" }}
+          >
+            <input
+              type="checkbox"
+              checked={safetyChecked}
+              onChange={(event) => {
+                setSafetyChecked(event.target.checked);
+                if (saveState === "success") setSaveState("idle");
+              }}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-lime-400"
+            />
+            <span className="text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+              {SAFETY_LABELS[wizardPath]}
+            </span>
+          </label>
+        )}
 
         {saveState === "success" ? (
           <div
@@ -238,8 +334,9 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
           >
             <CheckCircle2 size={18} className="mt-0.5 shrink-0" aria-hidden />
             <span>
-              Draft gespeichert — Consent wurde sicher hinterlegt. Character ist als Entwurf
-              vorbereitet; Referenzen und Workflows folgen in den verlinkten Produktionswegen.
+              {isEditMode
+                ? "Draft gespeichert."
+                : "Draft gespeichert — Consent wurde sicher hinterlegt. Character ist als Entwurf vorbereitet; Referenzen und Workflows folgen in den verlinkten Produktionswegen."}
             </span>
           </div>
         ) : null}
@@ -250,21 +347,37 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={!canSave}
-          className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-          style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
-        >
-          {saveState === "saving" ? (
-            <>
-              <Loader2 size={16} className="animate-spin" aria-hidden />
-              Speichern…
-            </>
-          ) : (
-            "Draft speichern"
-          )}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="submit"
+            disabled={!canSave}
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
+          >
+            {saveState === "saving" ? (
+              <>
+                <Loader2 size={16} className="animate-spin" aria-hidden />
+                Speichern…
+              </>
+            ) : (
+              "Draft speichern"
+            )}
+          </button>
+          {isEditMode && onCancelEdit ? (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              disabled={saveState === "saving"}
+              className="inline-flex min-h-[44px] items-center rounded-full border px-6 text-sm font-medium disabled:opacity-50"
+              style={{
+                borderColor: "rgba(255,255,255,0.12)",
+                color: DASHBOARD_TEXT,
+              }}
+            >
+              Abbrechen
+            </button>
+          ) : null}
+        </div>
 
         <p className="text-[11px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
           {pathLabel} · Entwurf · Kein Upload · Kein Training · Keine Credits in dieser Phase

@@ -28,6 +28,7 @@ import {
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
+import { isCharacterEditableStatus } from "@/lib/ai-creator/characters-update-policy";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
@@ -43,6 +44,8 @@ type WizardPath = "self" | "fictional";
 type HubCharacter = {
   id: string;
   name: string;
+  description?: string;
+  triggerWord?: string;
   characterType: CharacterType | "unknown" | null;
   trainingStatus: string;
   previewImageUrl: string | null;
@@ -289,6 +292,7 @@ export function AiCreatorHub() {
   const [charactersLoading, setCharactersLoading] = useState(true);
   const [charactersError, setCharactersError] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteFeedback, setDeleteFeedback] = useState<{
     type: "success" | "error";
@@ -367,6 +371,28 @@ export function AiCreatorHub() {
     (c) => mapCharacterStatusToHubPhase(c.trainingStatus) === "ready"
   );
   const hasCharacters = characters.length > 0;
+  const editingCharacter =
+    editingCharacterId != null
+      ? characters.find((character) => character.id === editingCharacterId) ?? null
+      : null;
+
+  const handleStartEdit = useCallback((character: HubCharacter) => {
+    const path: WizardPath =
+      character.characterType === "self" ? "self" : "fictional";
+    setWizardPath(path);
+    setEditingCharacterId(character.id);
+    setDeleteConfirmId(null);
+    setDeleteFeedback(null);
+  }, []);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingCharacterId(null);
+  }, []);
+
+  const handleDraftSaved = useCallback(async () => {
+    setEditingCharacterId(null);
+    await loadCharacters();
+  }, [loadCharacters]);
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-4xl">
@@ -403,7 +429,12 @@ export function AiCreatorHub() {
       ) : null}
 
       {wizardPath ? (
-        <AiCreatorDraftForm wizardPath={wizardPath} onSaved={loadCharacters} />
+        <AiCreatorDraftForm
+          wizardPath={wizardPath}
+          onSaved={handleDraftSaved}
+          editingCharacter={editingCharacter}
+          onCancelEdit={handleCancelEdit}
+        />
       ) : null}
 
       <DashboardPanel className="mt-8" title="Consent & Sicherheit">
@@ -426,8 +457,8 @@ export function AiCreatorHub() {
           </ul>
         </div>
         <p className="mt-4 text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Hinweise ersetzen keine Rechtsberatung. Consent wird pro Workflow geprüft — eine
-          dauerhafte Speicherung in der Datenbank ist in dieser Version noch nicht Teil des Hubs.
+          Hinweise ersetzen keine Rechtsberatung. Consent wird beim Draft-Erstellen persistent
+          gespeichert und beim Bearbeiten nicht zurückgesetzt.
         </p>
         <Link
           href="/dashboard/settings"
@@ -507,6 +538,7 @@ export function AiCreatorHub() {
                   : { href: "/dashboard/campaigns", label: "Kampagne vorbereiten" };
 
                 const canDelete = isCharacterDeletableStatus(character.trainingStatus);
+                const canEdit = isCharacterEditableStatus(character.trainingStatus);
                 const isConfirmingDelete = deleteConfirmId === character.id;
 
                 return (
@@ -573,6 +605,19 @@ export function AiCreatorHub() {
                           >
                             {secondaryCta.label}
                           </Link>
+                          {canEdit ? (
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(character)}
+                              className="inline-flex min-h-[36px] items-center rounded-full border px-3 text-[11px] font-medium"
+                              style={{
+                                borderColor: "rgba(255,255,255,0.12)",
+                                color: DASHBOARD_TEXT,
+                              }}
+                            >
+                              Bearbeiten
+                            </button>
+                          ) : null}
                           {canDelete ? (
                             isConfirmingDelete ? (
                               <div className="flex min-w-0 flex-wrap items-center gap-2">
