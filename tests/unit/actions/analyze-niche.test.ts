@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { analyzeNiche } from "@/app/actions/analyze-niche";
-import { createMockSupabase } from "../helpers/supabase-mock";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { mockRequireKiToolAccessForAction } from "../helpers/ki-tool-access-mock";
 
-const mockUser = { id: "user-123" };
-
-vi.mock("@/lib/supabase/server", () => ({
-  createServerSupabaseClient: vi.fn(),
+vi.mock("@/lib/access.server", () => ({
+  requireKiToolAccessForAction: vi.fn(),
 }));
 
 vi.mock("@/lib/e2e-mock-generations", () => ({
@@ -23,18 +22,12 @@ vi.mock("@/lib/e2e-mock-generations", () => ({
 }));
 
 describe("analyzeNiche action", () => {
-  beforeEach(async () => {
-    const { createServerSupabaseClient } =
-      await import("@/lib/supabase/server");
-    const { client } = createMockSupabase({ credits: 20 });
-    vi.mocked(createServerSupabaseClient).mockResolvedValue({
-      ...client,
-      auth: {
-        getUser: vi
-          .fn()
-          .mockResolvedValue({ data: { user: mockUser }, error: null }),
-      },
-    } as never);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockRequireKiToolAccessForAction(
+      vi.mocked(requireKiToolAccessForAction),
+      20
+    );
   });
 
   it("returns 5 niches on valid topic", async () => {

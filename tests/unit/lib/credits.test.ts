@@ -37,6 +37,12 @@ describe("deductCredits", () => {
 
   it("returns error when profile not found", async () => {
     const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: "missing", email: "missing@test.com" } },
+          error: null,
+        }),
+      },
       from: () => ({
         select: () => ({
           eq: () => ({
@@ -47,6 +53,7 @@ describe("deductCredits", () => {
           }),
         }),
       }),
+      rpc: vi.fn(),
     } as never;
 
     const result = await deductCredits(

@@ -1,24 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { generateScript } from "@/app/actions/generate-script";
-import { createMockSupabase } from "../helpers/supabase-mock";
+import { requireKiToolAccessForAction } from "@/lib/access.server";
+import { mockRequireKiToolAccessForAction } from "../helpers/ki-tool-access-mock";
 
-const mockUser = { id: "user-123", email: "test@test.com" };
-
-function mockAuthClient(credits: number) {
-  const { client } = createMockSupabase({ credits });
-  const authClient = {
-    ...client,
-    auth: {
-      getUser: vi
-        .fn()
-        .mockResolvedValue({ data: { user: mockUser }, error: null }),
-    },
-  };
-  return authClient;
-}
-
-vi.mock("@/lib/supabase/server", () => ({
-  createServerSupabaseClient: vi.fn(),
+vi.mock("@/lib/access.server", () => ({
+  requireKiToolAccessForAction: vi.fn(),
 }));
 
 vi.mock("next-intl/server", () => ({
@@ -37,12 +23,11 @@ vi.mock("@/lib/e2e-mock-generations", () => ({
 }));
 
 describe("generateScript action", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    const { createServerSupabaseClient } =
-      await import("@/lib/supabase/server");
-    vi.mocked(createServerSupabaseClient).mockResolvedValue(
-      mockAuthClient(50) as never
+    mockRequireKiToolAccessForAction(
+      vi.mocked(requireKiToolAccessForAction),
+      50
     );
   });
 
@@ -65,17 +50,10 @@ describe("generateScript action", () => {
   });
 
   it("deducts 2 credits on success", async () => {
-    const { createServerSupabaseClient } =
-      await import("@/lib/supabase/server");
-    const { client, state } = createMockSupabase({ credits: 50 });
-    vi.mocked(createServerSupabaseClient).mockResolvedValue({
-      ...client,
-      auth: {
-        getUser: vi
-          .fn()
-          .mockResolvedValue({ data: { user: mockUser }, error: null }),
-      },
-    } as never);
+    const { state } = mockRequireKiToolAccessForAction(
+      vi.mocked(requireKiToolAccessForAction),
+      50
+    );
 
     const result = await generateScript({
       topic: "Test",
@@ -110,17 +88,10 @@ describe("generateScript action", () => {
   });
 
   it("returns error when not logged in", async () => {
-    const { createServerSupabaseClient } =
-      await import("@/lib/supabase/server");
-    const { client } = createMockSupabase({ credits: 50 });
-    vi.mocked(createServerSupabaseClient).mockResolvedValue({
-      ...client,
-      auth: {
-        getUser: vi
-          .fn()
-          .mockResolvedValue({ data: { user: null }, error: null }),
-      },
-    } as never);
+    vi.mocked(requireKiToolAccessForAction).mockResolvedValue({
+      ok: false,
+      error: "Nicht eingeloggt.",
+    });
 
     const result = await generateScript({
       topic: "Test",
