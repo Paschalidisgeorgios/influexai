@@ -10,6 +10,11 @@ import {
   type FeaturedTool,
 } from "./production-tool-routes";
 import {
+  getStudioToolByDashboardId,
+  STUDIO_STATUS_LABELS,
+  type StudioToolStatus,
+} from "@/lib/tools/studio-tool-registry";
+import {
   STUDIO_CARD_BG,
   STUDIO_CARD_BG_FEATURED,
   STUDIO_CARD_BG_HOVER,
@@ -22,6 +27,26 @@ import {
   StudioSection,
 } from "../studio-ui";
 
+const STATUS_COLORS: Record<StudioToolStatus, { bg: string; text: string }> = {
+  available: { bg: "rgba(52,211,153,0.12)", text: "#34d399" },
+  shell: { bg: "rgba(180,255,0,0.12)", text: DASHBOARD_TEXT },
+  disabled: { bg: "rgba(255,255,255,0.06)", text: DASHBOARD_MUTED },
+  coming_soon: { bg: "rgba(255,255,255,0.06)", text: DASHBOARD_MUTED },
+};
+
+function ToolStatusPill({ status }: { status: StudioToolStatus }) {
+  const colors = STATUS_COLORS[status];
+
+  return (
+    <span
+      className="inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+      style={{ background: colors.bg, color: colors.text }}
+    >
+      {STUDIO_STATUS_LABELS[status]}
+    </span>
+  );
+}
+
 function FeaturedToolCard({
   tool,
   onSelect,
@@ -29,29 +54,39 @@ function FeaturedToolCard({
   tool: FeaturedTool;
   onSelect: (id: ToolId) => void;
 }) {
+  const meta = getStudioToolByDashboardId(tool.id);
+  const status = meta?.status ?? "available";
+  const creditLabel = meta?.creditLabel;
+  const disabled = status === "disabled" || status === "coming_soon";
+
   return (
     <button
       type="button"
-      onClick={() => onSelect(tool.id)}
-      className={`group flex min-h-[196px] flex-col p-6 text-left transition-all duration-300 hover:-translate-y-0.5 md:min-h-[220px] md:p-7 ${STUDIO_RADIUS.panel}`}
+      onClick={() => !disabled && onSelect(tool.id)}
+      disabled={disabled}
+      className={`group flex min-h-[196px] flex-col p-6 text-left transition-all duration-300 hover:-translate-y-0.5 md:min-h-[220px] md:p-7 ${STUDIO_RADIUS.panel} disabled:cursor-not-allowed disabled:opacity-50`}
       style={{
         background: STUDIO_CARD_BG_FEATURED,
         border: `1px solid ${STUDIO_CARD_BORDER}`,
         boxShadow: STUDIO_SHADOW.featured,
       }}
       onMouseEnter={(e) => {
+        if (disabled) return;
         e.currentTarget.style.boxShadow = STUDIO_SHADOW.cardHover;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = STUDIO_SHADOW.featured;
       }}
     >
-      <p
-        className="text-[10px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: DASHBOARD_MUTED }}
-      >
-        {tool.category}
-      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <p
+          className="text-[10px] font-semibold uppercase tracking-[0.18em]"
+          style={{ color: DASHBOARD_MUTED }}
+        >
+          {tool.category}
+        </p>
+        <ToolStatusPill status={status} />
+      </div>
       <h3
         className="mt-3 text-xl font-bold tracking-tight md:text-[1.35rem]"
         style={{ color: DASHBOARD_TEXT, letterSpacing: "-0.025em" }}
@@ -64,36 +99,50 @@ function FeaturedToolCard({
       >
         {tool.description}
       </p>
+      {creditLabel ? (
+        <p className="mt-2 text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+          {creditLabel}
+        </p>
+      ) : null}
       <span
-        className="mt-6 text-[13px] font-semibold tracking-tight transition-opacity group-hover:opacity-80"
+        className="mt-4 text-[13px] font-semibold tracking-tight transition-opacity group-hover:opacity-80"
         style={{ color: DASHBOARD_TEXT }}
       >
-        {SETUP_COPY.toolCardCta}
+        {disabled ? STUDIO_STATUS_LABELS[status] : SETUP_COPY.toolCardCta}
       </span>
     </button>
   );
 }
 
 function StandardToolCard({
+  toolId,
   label,
   description,
   onClick,
 }: {
+  toolId: ToolId;
   label: string;
   description: string;
   onClick: () => void;
 }) {
+  const meta = getStudioToolByDashboardId(toolId);
+  const status = meta?.status ?? "shell";
+  const creditLabel = meta?.creditLabel;
+  const disabled = status === "disabled" || status === "coming_soon";
+
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`group flex min-h-[108px] flex-col p-4 text-left transition-all duration-200 hover:-translate-y-px md:p-5 ${STUDIO_RADIUS.card}`}
+      onClick={() => !disabled && onClick()}
+      disabled={disabled}
+      className={`group flex min-h-[108px] flex-col p-4 text-left transition-all duration-200 hover:-translate-y-px md:p-5 ${STUDIO_RADIUS.card} disabled:cursor-not-allowed disabled:opacity-50`}
       style={{
         background: STUDIO_CARD_BG_SOFT,
         border: `1px solid ${STUDIO_CARD_BORDER}`,
         boxShadow: STUDIO_SHADOW.card,
       }}
       onMouseEnter={(e) => {
+        if (disabled) return;
         e.currentTarget.style.boxShadow = STUDIO_SHADOW.cardHover;
         e.currentTarget.style.background = STUDIO_CARD_BG_HOVER;
       }}
@@ -102,23 +151,31 @@ function StandardToolCard({
         e.currentTarget.style.background = STUDIO_CARD_BG_SOFT;
       }}
     >
-      <span
-        className="text-[14px] font-semibold tracking-tight"
-        style={{ color: DASHBOARD_TEXT }}
-      >
-        {label}
-      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className="text-[14px] font-semibold tracking-tight"
+          style={{ color: DASHBOARD_TEXT }}
+        >
+          {label}
+        </span>
+        <ToolStatusPill status={status} />
+      </div>
       <p
         className="mt-2 flex-1 text-[12px] leading-relaxed"
         style={{ color: DASHBOARD_MUTED }}
       >
         {description}
       </p>
+      {creditLabel ? (
+        <p className="mt-1 text-[10px]" style={{ color: DASHBOARD_MUTED }}>
+          {creditLabel}
+        </p>
+      ) : null}
       <span
         className="mt-3 text-[11px] font-medium opacity-70 transition-opacity group-hover:opacity-100"
         style={{ color: DASHBOARD_TEXT }}
       >
-        {SETUP_COPY.toolCardCta}
+        {disabled ? STUDIO_STATUS_LABELS[status] : SETUP_COPY.toolCardCta}
       </span>
     </button>
   );
@@ -169,6 +226,7 @@ export function ProductionToolsOverview({
               {category.tools.map((tool) => (
                 <StandardToolCard
                   key={tool.id}
+                  toolId={tool.id}
                   label={tool.label}
                   description={tool.description}
                   onClick={() => onSelect(tool.id)}
@@ -183,7 +241,8 @@ export function ProductionToolsOverview({
 
       <div className="flex flex-col gap-4 border-t border-black/[0.05] pt-8 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-md text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          Briefing statt manueller Eingabe? Der Agent schlägt einen Produktionspfad vor.
+          Briefing statt manueller Eingabe? Der Agent schlägt einen Produktionspfad vor — optional,
+          nicht als Ersatz für Tool-Oberflächen.
         </p>
         <Link
           href="/dashboard/ki-agent"

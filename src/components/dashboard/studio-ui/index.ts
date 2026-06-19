@@ -29,3 +29,4 @@ export {
   ToolSetupSurface,
 } from "./ToolSetupLayout";
 export { StudioPageHeader } from "./StudioPageHeader";
+export { StudioModelSelectShell } from "./StudioModelSelectShell";

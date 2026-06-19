@@ -1,4 +1,5 @@
 import type { ToolId } from "./DashboardLayout";
+import { isStudioToolDedicatedOpenSafe } from "@/lib/tools/studio-tool-registry";
 
 /** Dedicated dashboard pages — exist but locked from nav until redesign (Phase 2B.4). */
 export const TOOL_DEDICATED_ROUTES: Partial<Record<ToolId, string>> = {
@@ -151,9 +152,9 @@ export function resolveToolRoute(toolId: ToolId): string | null {
   return TOOL_DEDICATED_ROUTES[toolId] ?? null;
 }
 
-/** Phase 2B.4: dedicated pages stay locked until visual redesign */
-export function isToolPushSafeToOpen(_toolId: ToolId): boolean {
-  return false;
+/** Dedicated pages open when registry marks tool available + dedicated route. */
+export function isToolPushSafeToOpen(toolId: ToolId): boolean {
+  return isStudioToolDedicatedOpenSafe(toolId);
 }
 
 export function resolveDashboardToolFromQuery(

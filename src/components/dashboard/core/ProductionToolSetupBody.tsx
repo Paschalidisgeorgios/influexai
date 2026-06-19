@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { extractViralHook } from "@/app/actions/extract-viral-hook";
 import { generateContentCalendar } from "@/app/actions/generate-content-calendar";
 import type { ToolId } from "./DashboardLayout";
-import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
+import { DASHBOARD_MUTED } from "./DashboardSurface";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
 import { useOptimisticGeneration } from "@/hooks/use-optimistic-generation";
 import { useUserCredits } from "@/hooks/use-user-credits";
@@ -42,11 +42,19 @@ import {
   StudioFieldHelper,
   StudioFieldLabel,
   StudioInput,
+  StudioModelSelectShell,
   StudioOptionPills,
   StudioSegmentedControl,
   StudioSelect,
   StudioTextarea,
 } from "../studio-ui";
+import {
+  getDefaultModelForTool,
+  getModelsForTool,
+  getStudioToolByDashboardId,
+  isStudioProviderExecutionDisabled,
+  STUDIO_PROVIDER_DISABLED_HINT,
+} from "@/lib/tools/studio-tool-registry";
 
 const IMAGE_SETUP_FORMATS = PLATFORM_FORMATS.filter((f) =>
   ["1:1", "9:16", "16:9"].includes(f.aspectLabel)
@@ -424,10 +432,17 @@ function ContentCalendarSetup() {
 }
 
 function ImageGenSetup() {
+  const toolId = "image-gen" as const;
+  const studioTool = getStudioToolByDashboardId(toolId);
+  const registryModels = getModelsForTool(toolId);
+  const providerShell = isStudioProviderExecutionDisabled(toolId);
+  const defaultModel =
+    getDefaultModelForTool(toolId)?.id ?? registryModels[0]?.id ?? "flux-standard";
+
   const [prompt, setPrompt] = useState("");
   const [platform, setPlatform] = useState(IMAGE_SETUP_FORMATS[0]?.id ?? PLATFORM_FORMATS[0].id);
-  const [quality, setQuality] = useState<"standard" | "high">("standard");
-  const highRes = quality === "high";
+  const [selectedModelId, setSelectedModelId] = useState(defaultModel);
+  const highRes = selectedModelId === "flux-high";
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -438,6 +453,10 @@ function ImageGenSetup() {
   }));
 
   const run = async () => {
+    if (providerShell) {
+      setError(STUDIO_PROVIDER_DISABLED_HINT);
+      return;
+    }
     setError(null);
     setImageUrl(null);
     setLoading(true);
@@ -495,6 +514,13 @@ function ImageGenSetup() {
 
   return (
     <div className={SETUP_FORM_CLASS}>
+      <StudioModelSelectShell
+        tool={studioTool}
+        models={registryModels}
+        selectedModelId={selectedModelId}
+        onModelChange={setSelectedModelId}
+      />
+
       <div>
         <StudioFieldLabel>Bildbeschreibung</StudioFieldLabel>
         <StudioTextarea
@@ -513,18 +539,6 @@ function ImageGenSetup() {
         />
       </div>
 
-      <div className="min-w-0">
-        <StudioFieldLabel>Qualität</StudioFieldLabel>
-        <StudioOptionPills
-          value={quality}
-          options={[
-            { value: "standard" as const, label: "Standard" },
-            { value: "high" as const, label: "High Resolution" },
-          ]}
-          onChange={setQuality}
-        />
-      </div>
-
       <StudioFieldHelper>
         Für bessere Ergebnisse: Motiv, Stil, Licht, Hintergrund und gewünschtes Format beschreiben.
       </StudioFieldHelper>
@@ -538,7 +552,7 @@ function ImageGenSetup() {
         primaryLoadingLabel="Bild wird generiert…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}
-        primaryDisabled={!prompt.trim()}
+        primaryDisabled={!prompt.trim() || providerShell}
         loading={loading}
       />
 
@@ -557,10 +571,18 @@ function ImageGenSetup() {
 }
 
 function TextToVideoSetup() {
+  const toolId = "text-to-video" as const;
+  const studioTool = getStudioToolByDashboardId(toolId);
+  const registryModels = getModelsForTool(toolId);
+  const providerShell = isStudioProviderExecutionDisabled(toolId);
+  const defaultModel =
+    getDefaultModelForTool(toolId)?.id ?? registryModels[0]?.id ?? "";
+
   const [models, setModels] = useState<AkoolImageToVideoModel[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsLoading, setModelsLoading] = useState(!providerShell);
   const [modelsError, setModelsError] = useState<string | null>(null);
-  const [modelId, setModelId] = useState("");
+  const [modelId, setModelId] = useState(defaultModel);
+  const [shellModelId, setShellModelId] = useState(defaultModel);
   const [prompt, setPrompt] = useState("");
   const [duration, setDuration] = useState(5);
   const [resolution, setResolution] = useState("720p");
@@ -579,6 +601,10 @@ function TextToVideoSetup() {
   const displayError = err ?? pollError;
 
   useEffect(() => {
+    if (providerShell) {
+      setModelsLoading(false);
+      return;
+    }
     setModelsLoading(true);
     setModelsError(null);
     fetch("/api/akool/text-to-video")
@@ -598,15 +624,19 @@ function TextToVideoSetup() {
       })
       .catch(() => setModelsError(SETUP_COPY.errorGeneric))
       .finally(() => setModelsLoading(false));
-  }, []);
+  }, [providerShell]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (providerShell || !selected) return;
     setDuration(selected.durationList[0] ?? 5);
     setResolution(selected.resolutionList[0]?.value ?? "720p");
-  }, [selected]);
+  }, [providerShell, selected]);
 
   const run = async () => {
+    if (providerShell) {
+      setErr(STUDIO_PROVIDER_DISABLED_HINT);
+      return;
+    }
     setErr(null);
     setVideoUrl(null);
     try {
@@ -632,6 +662,15 @@ function TextToVideoSetup() {
 
   return (
     <div className={SETUP_FORM_CLASS}>
+      {providerShell ? (
+        <StudioModelSelectShell
+          tool={studioTool}
+          models={registryModels}
+          selectedModelId={shellModelId}
+          onModelChange={setShellModelId}
+        />
+      ) : null}
+
       <div>
         <StudioFieldLabel>Videobeschreibung</StudioFieldLabel>
         <StudioTextarea
@@ -644,13 +683,15 @@ function TextToVideoSetup() {
       </div>
 
       {displayError ? <SetupErrorBanner message={displayError} /> : null}
-      {modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
-      {modelsLoading ? <SetupLoadingBanner label={SETUP_COPY.modelsLoading} /> : null}
+      {!providerShell && modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
+      {!providerShell && modelsLoading ? (
+        <SetupLoadingBanner label={SETUP_COPY.modelsLoading} />
+      ) : null}
       {generating && !videoUrl ? (
         <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
       ) : null}
 
-      {!modelsLoading && models.length > 0 ? (
+      {!providerShell && !modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
@@ -699,8 +740,12 @@ function TextToVideoSetup() {
         primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
-        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
+        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId: shellModelId || modelId })}
+        primaryDisabled={
+          !prompt.trim() ||
+          providerShell ||
+          (!providerShell && (!modelId || generating || modelsLoading))
+        }
         loading={generating}
       />
 
@@ -708,8 +753,12 @@ function TextToVideoSetup() {
         primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId })}
-        primaryDisabled={!prompt.trim() || !modelId || generating || modelsLoading}
+        agentHref={buildAgentPrepareHref("text-to-video", { prompt, modelId: shellModelId || modelId })}
+        primaryDisabled={
+          !prompt.trim() ||
+          providerShell ||
+          (!providerShell && (!modelId || generating || modelsLoading))
+        }
         loading={generating}
       />
 
@@ -723,10 +772,18 @@ function TextToVideoSetup() {
 }
 
 function ImgToVideoSetup() {
+  const toolId = "img-to-video" as const;
+  const studioTool = getStudioToolByDashboardId(toolId);
+  const registryModels = getModelsForTool(toolId);
+  const providerShell = isStudioProviderExecutionDisabled(toolId);
+  const defaultModel =
+    getDefaultModelForTool(toolId)?.id ?? registryModels[0]?.id ?? "";
+
   const [models, setModels] = useState<SzenenGeneratorModel[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsLoading, setModelsLoading] = useState(!providerShell);
   const [modelsError, setModelsError] = useState<string | null>(null);
-  const [modelId, setModelId] = useState("");
+  const [modelId, setModelId] = useState(defaultModel);
+  const [shellModelId, setShellModelId] = useState(defaultModel);
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [duration, setDuration] = useState(5);
@@ -746,6 +803,10 @@ function ImgToVideoSetup() {
   const displayError = err ?? pollError;
 
   useEffect(() => {
+    if (providerShell) {
+      setModelsLoading(false);
+      return;
+    }
     setModelsLoading(true);
     setModelsError(null);
     fetch("/api/seedance/models")
@@ -766,17 +827,23 @@ function ImgToVideoSetup() {
       })
       .catch(() => setModelsError(SETUP_COPY.errorGeneric))
       .finally(() => setModelsLoading(false));
-  }, []);
+  }, [providerShell]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (providerShell || !selected) return;
     setDuration(selected.durations[0] ?? 5);
     setResolution(selected.resolutions[0] ?? "720p");
-  }, [selected]);
+  }, [providerShell, selected]);
 
-  const canGenerate = Boolean(prompt.trim() && imageUrl.trim() && modelId);
+  const canGenerate = Boolean(
+    prompt.trim() && imageUrl.trim() && (providerShell ? shellModelId : modelId)
+  );
 
   const run = async () => {
+    if (providerShell) {
+      setErr(STUDIO_PROVIDER_DISABLED_HINT);
+      return;
+    }
     setErr(null);
     setVideoUrl(null);
     try {
@@ -810,6 +877,15 @@ function ImgToVideoSetup() {
 
   return (
     <div className={SETUP_FORM_CLASS}>
+      {providerShell ? (
+        <StudioModelSelectShell
+          tool={studioTool}
+          models={registryModels}
+          selectedModelId={shellModelId}
+          onModelChange={setShellModelId}
+        />
+      ) : null}
+
       <div>
         <StudioFieldLabel>Startbild</StudioFieldLabel>
         <StudioInput
@@ -835,13 +911,15 @@ function ImgToVideoSetup() {
       </div>
 
       {displayError ? <SetupErrorBanner message={displayError} /> : null}
-      {modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
-      {modelsLoading ? <SetupLoadingBanner label={SETUP_COPY.modelsLoading} /> : null}
+      {!providerShell && modelsError ? <SetupModelsEmpty message={modelsError} /> : null}
+      {!providerShell && modelsLoading ? (
+        <SetupLoadingBanner label={SETUP_COPY.modelsLoading} />
+      ) : null}
       {generating && !videoUrl ? (
         <SetupLoadingBanner label={SETUP_COPY.videoGenerating} />
       ) : null}
 
-      {!modelsLoading && models.length > 0 ? (
+      {!providerShell && !modelsLoading && models.length > 0 ? (
         <div className="grid min-w-0 gap-4 sm:grid-cols-3">
           <div className="min-w-0 sm:col-span-3">
             <StudioFieldLabel>Modell</StudioFieldLabel>
@@ -890,8 +968,12 @@ function ImgToVideoSetup() {
         primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
-        primaryDisabled={!canGenerate || generating || modelsLoading}
+        agentHref={buildAgentPrepareHref("img-to-video", {
+          prompt,
+          imageUrl,
+          modelId: shellModelId || modelId,
+        })}
+        primaryDisabled={!canGenerate || providerShell || generating || modelsLoading}
         loading={generating}
       />
 
@@ -903,8 +985,12 @@ function ImgToVideoSetup() {
         primaryLabel="Video generieren"
         primaryLoadingLabel="Erstellung gestartet…"
         onPrimary={() => void run()}
-        agentHref={buildAgentPrepareHref("img-to-video", { prompt, imageUrl, modelId })}
-        primaryDisabled={!canGenerate || generating || modelsLoading}
+        agentHref={buildAgentPrepareHref("img-to-video", {
+          prompt,
+          imageUrl,
+          modelId: shellModelId || modelId,
+        })}
+        primaryDisabled={!canGenerate || providerShell || generating || modelsLoading}
         loading={generating}
       />
 

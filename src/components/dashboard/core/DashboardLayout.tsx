@@ -18,6 +18,10 @@ import {
   resolveToolRoute,
 } from "./production-tool-routes";
 import {
+  getStudioToolByDashboardId,
+  resolveStudioToolRoute,
+} from "@/lib/tools/studio-tool-registry";
+import {
   DASHBOARD_ACCENT,
   DASHBOARD_SHELL_BG,
   DashboardStage,
@@ -527,13 +531,15 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
       router.push("/dashboard/settings");
       return;
     }
-    if (id === "content-calendar") {
-      router.push("/dashboard/ki-agent");
+
+    const studioTool = getStudioToolByDashboardId(id);
+    if (studioTool?.openMode === "external_route") {
+      router.push(studioTool.route);
       return;
     }
 
     if (isToolPushSafeToOpen(id)) {
-      const dedicated = resolveToolRoute(id);
+      const dedicated = resolveStudioToolRoute(id) ?? resolveToolRoute(id);
       if (dedicated) {
         router.push(dedicated);
         return;
@@ -542,13 +548,6 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
 
     router.push(`/dashboard?tool=${encodeURIComponent(id)}`);
     setActiveTool(id);
-  }, [router]);
-
-  const handleOpenDedicatedTool = useCallback((id: ToolId) => {
-    const dedicated = resolveToolRoute(id);
-    if (dedicated && isToolPushSafeToOpen(id)) {
-      router.push(dedicated);
-    }
   }, [router]);
 
   // ── AgentBox Callback ─────────────────────────────────────────────────────
@@ -749,10 +748,7 @@ export function DashboardLayout({ bootstrapTool }: { bootstrapTool?: ToolId } = 
             ) : SETUP_MVP_TOOL_IDS.has(activeTool) ? (
               <ProductionToolSetup toolId={activeTool} />
             ) : (
-              <ProductionToolLaunch
-                toolId={activeTool}
-                onOpenDedicated={handleOpenDedicatedTool}
-              />
+              <ProductionToolLaunch toolId={activeTool} />
             )}
           </DashboardStage>
         )}
