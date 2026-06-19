@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -38,6 +38,10 @@ import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import { AgentHandoffPanel } from "@/components/dashboard/studio-ui";
 import { useAgentPreparedInputs } from "@/hooks/useAgentPreparedInputs";
+import {
+  buildAiCreatorLocalState,
+  buildToolActionReadiness,
+} from "@/lib/tools/tool-action-readiness";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
 import { isCharacterEditableStatus } from "@/lib/ai-creator/characters-update-policy";
 import {
@@ -323,6 +327,16 @@ export function AiCreatorHub() {
 
   const prepared = useAgentPreparedInputs("ai-creator");
 
+  const aiCreatorLocalState = useMemo(
+    () => buildAiCreatorLocalState({ characters }),
+    [characters]
+  );
+
+  const readiness = useMemo(
+    () => (prepared ? buildToolActionReadiness(prepared, aiCreatorLocalState) : null),
+    [prepared, aiCreatorLocalState]
+  );
+
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
     setCharactersError(null);
@@ -513,7 +527,7 @@ export function AiCreatorHub() {
 
       {prepared ? (
         <div className="mb-6">
-          <AgentHandoffPanel prepared={prepared} />
+          <AgentHandoffPanel prepared={prepared} readiness={readiness} />
         </div>
       ) : null}
 

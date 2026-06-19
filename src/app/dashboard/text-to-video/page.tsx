@@ -18,6 +18,10 @@ import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
 import { AgentHandoffPanel } from "@/components/dashboard/studio-ui";
 import { useAgentPreparedInputs } from "@/hooks/useAgentPreparedInputs";
 import { applyPreparedInputsToWorkspaceState } from "@/lib/tools/agent-prepared-inputs";
+import {
+  buildTextToVideoLocalState,
+  buildToolActionReadiness,
+} from "@/lib/tools/tool-action-readiness";
 
 export default function TextToVideoPage() {
   const prepared = useAgentPreparedInputs("text-to-video");
@@ -61,6 +65,15 @@ export default function TextToVideoPage() {
     }
   }, [prepared]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const readiness = useMemo(() => {
+    if (!prepared) return null;
+    const local = buildTextToVideoLocalState({
+      prompt,
+      aspectRatio: prepared.recommendedAspectRatio,
+    });
+    return buildToolActionReadiness(prepared, local);
+  }, [prepared, prompt]);
+
   const generate = async () => {
     setErr(null);
     try {
@@ -80,7 +93,7 @@ export default function TextToVideoPage() {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-4">
-      {prepared ? <AgentHandoffPanel prepared={prepared} /> : null}
+      {prepared ? <AgentHandoffPanel prepared={prepared} readiness={readiness} /> : null}
     <AkoolToolShell
       icon={Clapperboard}
       title="TEXT ZU VIDEO"

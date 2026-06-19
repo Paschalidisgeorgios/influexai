@@ -7,14 +7,45 @@ import {
   buildAgentPreparedInputsOrNull,
   type AgentPreparedInputs,
 } from "@/lib/tools/agent-prepared-inputs";
+import type { ToolActionReadiness } from "@/lib/tools/tool-action-readiness";
 import { STUDIO_CARD_BORDER, STUDIO_RADIUS } from "./tokens";
 
 type AgentHandoffPanelProps = {
   handoff?: AgentToolHandoff | null;
   prepared?: AgentPreparedInputs | null;
+  readiness?: ToolActionReadiness | null;
 };
 
-export function AgentHandoffPanel({ handoff, prepared: preparedProp }: AgentHandoffPanelProps) {
+function ReadinessStatusBadge({ readiness }: { readiness: ToolActionReadiness }) {
+  const tone =
+    readiness.status === "ready_preview"
+      ? "rgba(180,255,0,0.22)"
+      : readiness.status === "missing_inputs" || readiness.status === "not_started"
+        ? "rgba(255,255,255,0.12)"
+        : "rgba(251,191,36,0.18)";
+
+  return (
+    <p className="mt-3 flex flex-wrap items-center gap-2">
+      <span
+        className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+        style={{ background: tone, color: DASHBOARD_TEXT }}
+      >
+        {readiness.statusLabel}
+      </span>
+      {readiness.providerDisabled ? (
+        <span className="text-[11px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+          Ausführung deaktiviert — nur Vorbereitung
+        </span>
+      ) : null}
+    </p>
+  );
+}
+
+export function AgentHandoffPanel({
+  handoff,
+  prepared: preparedProp,
+  readiness,
+}: AgentHandoffPanelProps) {
   const prepared = useMemo(() => {
     if (preparedProp) return preparedProp;
     return buildAgentPreparedInputsOrNull(handoff);
@@ -41,6 +72,8 @@ export function AgentHandoffPanel({ handoff, prepared: preparedProp }: AgentHand
         {prepared.originalGoal}
       </p>
 
+      {readiness ? <ReadinessStatusBadge readiness={readiness} /> : null}
+
       {prepared.recommendedAspectRatio ? (
         <p className="mt-3">
           <span
@@ -61,9 +94,61 @@ export function AgentHandoffPanel({ handoff, prepared: preparedProp }: AgentHand
             Nächster sicherer Schritt
           </dt>
           <dd className="mt-1 leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
-            {prepared.safeNextStep}
+            {readiness?.recommendedNextStep ?? prepared.safeNextStep}
           </dd>
         </div>
+
+        {readiness && readiness.missingRequiredInputs.length > 0 ? (
+          <div className="sm:col-span-2">
+            <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
+              Fehlt noch
+            </dt>
+            <dd className="mt-2">
+              <ul className="space-y-1.5" style={{ color: DASHBOARD_TEXT }}>
+                {readiness.missingRequiredInputs.map((label) => (
+                  <li key={label} className="flex items-start gap-2 leading-relaxed">
+                    <span
+                      aria-hidden
+                      className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px]"
+                      style={{ borderColor: STUDIO_CARD_BORDER, color: DASHBOARD_MUTED }}
+                    >
+                      ○
+                    </span>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ) : null}
+
+        {readiness && readiness.completedInputs.length > 0 ? (
+          <div className="sm:col-span-2">
+            <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
+              {readiness.status === "ready_preview" ? "Bereit zur Vorschau" : "Erledigt"}
+            </dt>
+            <dd className="mt-2">
+              <ul className="space-y-1.5" style={{ color: DASHBOARD_TEXT }}>
+                {readiness.completedInputs.map((label) => (
+                  <li key={label} className="flex items-start gap-2 leading-relaxed">
+                    <span
+                      aria-hidden
+                      className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px]"
+                      style={{
+                        borderColor: "rgba(180,255,0,0.35)",
+                        color: DASHBOARD_TEXT,
+                        background: "rgba(180,255,0,0.12)",
+                      }}
+                    >
+                      ✓
+                    </span>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ) : null}
 
         <div className="sm:col-span-2">
           <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
@@ -86,46 +171,48 @@ export function AgentHandoffPanel({ handoff, prepared: preparedProp }: AgentHand
           </dd>
         </div>
 
-        <div className="sm:col-span-2">
-          <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
-            Eingaben prüfen
-          </dt>
-          <dd className="mt-2">
-            <ul className="space-y-1.5" style={{ color: DASHBOARD_TEXT }}>
-              {prepared.inputChecklist.map((input) => (
-                <li key={input.id} className="flex items-start gap-2 leading-relaxed">
-                  <span
-                    aria-hidden
-                    className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px]"
-                    style={{ borderColor: STUDIO_CARD_BORDER, color: DASHBOARD_MUTED }}
-                  >
-                    ○
-                  </span>
-                  <span>
-                    {input.label}
-                    {input.required ? (
-                      <span className="ml-1 text-[10px] uppercase" style={{ color: DASHBOARD_MUTED }}>
-                        Pflicht
-                      </span>
-                    ) : null}
-                    {input.description ? (
-                      <span className="block text-[11px]" style={{ color: DASHBOARD_MUTED }}>
-                        {input.description}
-                      </span>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </dd>
-        </div>
+        {!readiness ? (
+          <div className="sm:col-span-2">
+            <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
+              Eingaben prüfen
+            </dt>
+            <dd className="mt-2">
+              <ul className="space-y-1.5" style={{ color: DASHBOARD_TEXT }}>
+                {prepared.inputChecklist.map((input) => (
+                  <li key={input.id} className="flex items-start gap-2 leading-relaxed">
+                    <span
+                      aria-hidden
+                      className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px]"
+                      style={{ borderColor: STUDIO_CARD_BORDER, color: DASHBOARD_MUTED }}
+                    >
+                      ○
+                    </span>
+                    <span>
+                      {input.label}
+                      {input.required ? (
+                        <span className="ml-1 text-[10px] uppercase" style={{ color: DASHBOARD_MUTED }}>
+                          Pflicht
+                        </span>
+                      ) : null}
+                      {input.description ? (
+                        <span className="block text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+                          {input.description}
+                        </span>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ) : null}
 
         <div>
           <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
             Mögliche Ausgabe
           </dt>
           <dd className="mt-1 leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
-            {prepared.outputExpectation}
+            {readiness?.outputExpectation ?? prepared.outputExpectation}
           </dd>
         </div>
         <div>
@@ -145,11 +232,12 @@ export function AgentHandoffPanel({ handoff, prepared: preparedProp }: AgentHand
           color: DASHBOARD_TEXT,
         }}
       >
-        {prepared.disabledExecutionMessage}
+        {readiness?.executionDisabledMessage ?? prepared.disabledExecutionMessage}
       </p>
 
       <p className="mt-3 text-[11px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-        {prepared.safeCtaLabel} — Vorbereitung fortsetzen ohne Generierung, Upload oder Training.
+        {readiness?.safeCtaLabel ?? prepared.safeCtaLabel} — Vorbereitung fortsetzen ohne Generierung,
+        Upload oder Training.
       </p>
     </aside>
   );

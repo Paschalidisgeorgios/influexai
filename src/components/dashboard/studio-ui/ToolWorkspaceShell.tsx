@@ -7,6 +7,10 @@ import type { AgentToolCapability } from "@/lib/tools/agent-tool-capability-map"
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
 import type { AgentToolHandoff } from "@/lib/tools/agent-tool-handoff";
 import { buildAgentPreparedInputsOrNull } from "@/lib/tools/agent-prepared-inputs";
+import {
+  buildToolActionReadiness,
+  type ToolLocalInputState,
+} from "@/lib/tools/tool-action-readiness";
 import { AgentHandoffPanel } from "./AgentHandoffPanel";
 import { StudioCreditNote, StudioCreditPill } from "./StudioCreditPill";
 import { StudioPageHeader } from "./StudioPageHeader";
@@ -21,6 +25,7 @@ type ToolWorkspaceShellProps = {
   creditNote?: string;
   capability?: AgentToolCapability;
   agentHandoff?: AgentToolHandoff | null;
+  readinessLocalState?: ToolLocalInputState;
   executionNotice?: ReactNode;
   modelSelector?: ReactNode;
   options?: ReactNode;
@@ -69,6 +74,7 @@ export function ToolWorkspaceShell({
   creditNote,
   capability,
   agentHandoff,
+  readinessLocalState,
   executionNotice,
   modelSelector,
   options,
@@ -76,6 +82,9 @@ export function ToolWorkspaceShell({
   footer,
 }: ToolWorkspaceShellProps) {
   const prepared = agentHandoff ? buildAgentPreparedInputsOrNull(agentHandoff) : null;
+  const readiness = prepared
+    ? buildToolActionReadiness(prepared, readinessLocalState ?? {})
+    : null;
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-8">
@@ -103,7 +112,7 @@ export function ToolWorkspaceShell({
 
       <StudioPanel>
         {creditNote ? <StudioCreditNote className="mb-6">{creditNote}</StudioCreditNote> : null}
-        {prepared ? <AgentHandoffPanel prepared={prepared} /> : null}
+        {prepared ? <AgentHandoffPanel prepared={prepared} readiness={readiness} /> : null}
         {modelSelector}
         {executionNotice}
         {capability && !prepared ? (

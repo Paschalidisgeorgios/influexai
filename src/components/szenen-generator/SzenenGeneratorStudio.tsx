@@ -56,6 +56,11 @@ import {
   applyPreparedInputsToWorkspaceState,
   type AgentPreparedInputs,
 } from "@/lib/tools/agent-prepared-inputs";
+import { AgentHandoffPanel } from "@/components/dashboard/studio-ui/AgentHandoffPanel";
+import {
+  buildImgToVideoLocalState,
+  buildToolActionReadiness,
+} from "@/lib/tools/tool-action-readiness";
 
 const BUTTON_LOADING_MESSAGES = [
   "Generiere…",
@@ -162,6 +167,12 @@ export function SzenenGeneratorStudio({
       : "Oder beschreibe eine neue Szene...";
 
   const msgs = useMemo(() => loadingMessages(userName), [userName]);
+
+  const handoffReadiness = useMemo(() => {
+    if (!preparedInputs) return null;
+    const local = buildImgToVideoLocalState({ imageUrl, prompt, aspectRatio });
+    return buildToolActionReadiness(preparedInputs, local);
+  }, [preparedInputs, imageUrl, prompt, aspectRatio]);
 
   const { generating, elapsedSec, error, setError, startPolling } = useAkoolJobPoll({
     onSuccess: ({ resultUrl: url, generationId: gid }) => {
@@ -598,6 +609,12 @@ export function SzenenGeneratorStudio({
   );
 
   return (
+    <>
+      {preparedInputs && handoffReadiness ? (
+        <div className="mx-auto mb-4 w-full min-w-0 max-w-5xl px-4 pt-2">
+          <AgentHandoffPanel prepared={preparedInputs} readiness={handoffReadiness} />
+        </div>
+      ) : null}
     <div
       className="-mx-4 -mt-4 flex min-h-[calc(100dvh-120px)] flex-col font-sans transition-all duration-700 ease-in-out sm:-mx-6 md:-mx-10 md:-mt-8"
       style={themeCssVars(theme)}
@@ -904,6 +921,7 @@ export function SzenenGeneratorStudio({
         </div>
       </div>
     </div>
+    </>
   );
 }
 

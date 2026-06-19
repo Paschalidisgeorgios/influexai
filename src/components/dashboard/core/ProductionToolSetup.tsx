@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED } from "./DashboardSurface";
 import { useAgentPreparedInputs } from "@/hooks/useAgentPreparedInputs";
+import { buildToolActionReadiness } from "@/lib/tools/tool-action-readiness";
 import { ProductionToolSetupBody } from "./ProductionToolSetupBody";
 import {
   GALLERY_PERSISTED_TOOL_IDS,
@@ -25,10 +27,14 @@ import {
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
   const creditLabel = getSetupCreditLabel(toolId);
   const prepared = useAgentPreparedInputs(String(toolId));
+  const readiness = useMemo(
+    () => (prepared ? buildToolActionReadiness(prepared, {}) : null),
+    [prepared]
+  );
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-full space-y-8">
-      {prepared ? <AgentHandoffPanel prepared={prepared} /> : null}
+      {prepared ? <AgentHandoffPanel prepared={prepared} readiness={readiness} /> : null}
       <ToolSetupLayout
         context={
           <ToolSetupContext
