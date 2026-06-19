@@ -13,6 +13,11 @@ import {
   stripeRuntimeConfigErrorResponse,
 } from "@/lib/stripe-runtime-mode.server";
 import { checkoutWriteGuardResponse } from "@/lib/environment-safety.server";
+import {
+  CHECKOUT_ERROR_CODES,
+  CHECKOUT_USER_MESSAGES,
+} from "@/lib/checkout-messages";
+import { resolveStripeCheckoutRouteError } from "@/lib/stripe-checkout-error.server";
 
 export const dynamic = "force-dynamic";
 
@@ -70,8 +75,8 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(
       {
-        error:
-          "Dieser Plan ist aktuell nicht verfügbar. Bitte kontaktiere den Support.",
+        error: CHECKOUT_USER_MESSAGES.missingConfig,
+        code: CHECKOUT_ERROR_CODES.missingPriceId,
       },
       { status: 503 }
     );
@@ -114,6 +119,9 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     const guarded = stripeRuntimeConfigErrorResponse(e);
     if (guarded) return guarded;
-    throw e;
+    const missingPrice = resolveStripeCheckoutRouteError(e);
+    if (missingPrice) return missingPrice;
+    const msg = e instanceof Error ? e.message : "Checkout fehlgeschlagen";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

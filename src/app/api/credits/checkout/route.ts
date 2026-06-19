@@ -16,6 +16,7 @@ import {
 } from "@/lib/stripe-runtime-mode.server";
 import { getStripe } from "@/lib/stripe";
 import { checkoutWriteGuardResponse } from "@/lib/environment-safety.server";
+import { resolveStripeCheckoutRouteError } from "@/lib/stripe-checkout-error.server";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,8 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     const guarded = stripeRuntimeConfigErrorResponse(e);
     if (guarded) return guarded;
+    const missingPrice = resolveStripeCheckoutRouteError(e);
+    if (missingPrice) return missingPrice;
     const msg = e instanceof Error ? e.message : "Checkout fehlgeschlagen";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
