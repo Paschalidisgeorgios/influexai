@@ -9,7 +9,10 @@ import {
   buildRecommendationCards,
   type AgentRecommendationCardModel,
 } from "@/lib/tools/agent-recommendation-ui";
-import { prepareHandoffNavigation } from "@/lib/tools/agent-tool-handoff";
+import {
+  buildHandoffNavigation,
+  persistAgentToolHandoff,
+} from "@/lib/tools/agent-tool-handoff";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
 import { STUDIO_CARD_BORDER, STUDIO_RADIUS } from "@/components/dashboard/studio-ui/tokens";
 
@@ -21,9 +24,15 @@ function RecommendationCard({
   plan: CreatorGoalPlan;
 }) {
   const navigation = useMemo(
-    () => (card.ctaDisabled ? null : prepareHandoffNavigation(plan, card)),
+    () => (card.ctaDisabled ? null : buildHandoffNavigation(plan, card)),
     [card, plan]
   );
+
+  const handleNavigate = () => {
+    if (navigation) {
+      persistAgentToolHandoff(navigation.handoff);
+    }
+  };
 
   return (
     <article
@@ -118,6 +127,7 @@ function RecommendationCard({
       ) : navigation ? (
         <Link
           href={navigation.href}
+          onClick={handleNavigate}
           className={`mt-4 inline-flex min-h-[40px] w-full items-center justify-center px-4 text-xs font-semibold no-underline transition-opacity hover:opacity-85 sm:w-auto ${STUDIO_RADIUS.button}`}
           style={{ background: "#B4FF00", color: "#08080a" }}
         >

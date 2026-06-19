@@ -1,9 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
   appendHandoffQueryParams,
+  AGENT_HANDOFF_MAX_AGE_MS,
   buildAgentToolHandoff,
   buildHandoffNavigationHref,
+  isHandoffFresh,
   isHandoffPayloadSafe,
+  isStoredHandoffValid,
   parseHandoffSearchParams,
   reconstructHandoffForTool,
   resolveAgentToolHandoff,
@@ -92,5 +95,41 @@ describe("agent tool handoff", () => {
     const card = buildRecommendationCards(plan)[0];
     const href = buildHandoffNavigationHref(plan, card, "h_nav");
     expect(href.startsWith(card.safeRoutingTarget.split("?")[0])).toBe(true);
+  });
+
+  it("ignores stale stored handoff and falls back to goal reconstruction", () => {
+    const plan = recommendToolsForCreatorGoal(GOAL);
+    const card = buildRecommendationCards(plan).find((c) => c.toolId === "ai-creator")!;
+    const stale = buildAgentToolHandoff(plan, card, "h_stale");
+    stale.createdAt = new Date(Date.now() - AGENT_HANDOFF_MAX_AGE_MS - 1_000).toISOString();
+
+    expect(isHandoffFresh(stale)).toBe(false);
+    expect(
+      isStoredHandoffValid(stale, "h_stale", "ai-creator", Date.now())
+    ).toBe(false);
+
+    const resolved = resolveAgentToolHandoff("h_stale", GOAL, "ai-creator", stale);
+    expect(resolved?.selectedToolId).toBe("ai-creator");
+    expect(resolved?.recommendedAspectRatio).toBe("9:16");
+  });
+
+  it("rejects stored handoff when selectedToolId does not match workspace", () => {
+    const plan = recommendToolsForCreatorGoal(GOAL);
+    const card = buildRecommendationCards(plan).find((c) => c.toolId === "ai-creator")!;
+    const stored = buildAgentToolHandoff(plan, card, "h1");
+
+    expect(
+      isStoredHandoffValid(stored, "h1", "img-to-video", Date.now())
+    ).toBe(false);
+
+    const resolved = resolveAgentToolHandoff("h1", GOAL, "img-to-video", stored);
+    expect(resolved?.selectedToolId).toBe("img-to-video");
+    expect(resolved?.requiredInputs).not.toEqual(stored.requiredInputs);
+  });
+
+  it("returns null without fromAgent context via parseHandoffSearchParams", () => {
+    const parsed = parseHandoffSearchParams(new URLSearchParams(""));
+    expect(parsed.fromAgent).toBe(false);
+    expect(parsed.handoffId).toBeNull();
   });
 });

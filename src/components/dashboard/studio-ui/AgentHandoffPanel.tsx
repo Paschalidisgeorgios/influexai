@@ -9,14 +9,9 @@ type AgentHandoffPanelProps = {
 };
 
 export function AgentHandoffPanel({ handoff }: AgentHandoffPanelProps) {
-  const aspectRatios =
-    handoff.recommendedAspectRatio != null
-      ? [handoff.recommendedAspectRatio]
-      : [];
-
   return (
     <aside
-      className={`mb-6 border p-4 ${STUDIO_RADIUS.card}`}
+      className={`mb-6 min-w-0 border p-4 ${STUDIO_RADIUS.card}`}
       style={{
         borderColor: "rgba(180,255,0,0.22)",
         background: "rgba(180,255,0,0.06)",
@@ -29,27 +24,63 @@ export function AgentHandoffPanel({ handoff }: AgentHandoffPanelProps) {
       >
         Vom Agenten vorbereitet
       </p>
-      <p className="mt-2 text-sm font-medium" style={{ color: DASHBOARD_TEXT }}>
+      <p className="mt-2 break-words text-sm font-medium" style={{ color: DASHBOARD_TEXT }}>
         {handoff.originalGoal}
       </p>
 
-      <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
+      {handoff.recommendedAspectRatio ? (
+        <p className="mt-3">
+          <span
+            className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+            style={{
+              background: "rgba(180,255,0,0.18)",
+              color: DASHBOARD_TEXT,
+            }}
+          >
+            Empfohlenes Format: {handoff.recommendedAspectRatio}
+          </span>
+        </p>
+      ) : null}
+
+      <dl className="mt-4 grid min-w-0 gap-3 text-xs sm:grid-cols-2">
         <div className="sm:col-span-2">
           <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
-            Empfohlener nächster Schritt
+            Nächster sicherer Schritt
           </dt>
           <dd className="mt-1 leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
             {handoff.nextStepSummary}
           </dd>
         </div>
-        <div>
+        <div className="sm:col-span-2">
           <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
-            Benötigte Eingaben
+            Eingaben prüfen
           </dt>
-          <dd className="mt-1 leading-relaxed" style={{ color: DASHBOARD_TEXT }}>
-            {handoff.requiredInputs.length
-              ? handoff.requiredInputs.map((i) => i.label).join(", ")
-              : "Keine Pflichtfelder"}
+          <dd className="mt-2">
+            {handoff.requiredInputs.length ? (
+              <ul className="space-y-1.5" style={{ color: DASHBOARD_TEXT }}>
+                {handoff.requiredInputs.map((input) => (
+                  <li key={input.id} className="flex items-start gap-2 leading-relaxed">
+                    <span
+                      aria-hidden
+                      className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px]"
+                      style={{ borderColor: STUDIO_CARD_BORDER, color: DASHBOARD_MUTED }}
+                    >
+                      ○
+                    </span>
+                    <span>
+                      {input.label}
+                      {input.description ? (
+                        <span className="block text-[11px]" style={{ color: DASHBOARD_MUTED }}>
+                          {input.description}
+                        </span>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <span style={{ color: DASHBOARD_TEXT }}>Keine Pflichtfelder</span>
+            )}
           </dd>
         </div>
         <div>
@@ -60,16 +91,6 @@ export function AgentHandoffPanel({ handoff }: AgentHandoffPanelProps) {
             {handoff.outputs.join(", ")}
           </dd>
         </div>
-        {aspectRatios.length > 0 ? (
-          <div>
-            <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
-              Empfohlenes Format
-            </dt>
-            <dd className="mt-1" style={{ color: DASHBOARD_TEXT }}>
-              {aspectRatios.join(", ")}
-            </dd>
-          </div>
-        ) : null}
         <div>
           <dt className="font-semibold uppercase tracking-[0.12em]" style={{ color: DASHBOARD_MUTED }}>
             Workflow
@@ -90,8 +111,8 @@ export function AgentHandoffPanel({ handoff }: AgentHandoffPanelProps) {
         {handoff.providerDisabledMessage}
       </p>
 
-      <p className="mt-3 text-[11px]" style={{ color: DASHBOARD_MUTED }}>
-        Eingaben prüfen und Vorbereitung fortsetzen — ohne Generierung, Upload oder Training.
+      <p className="mt-3 text-[11px] leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+        Vorbereitung fortsetzen und Tool öffnen — ohne Generierung, Upload oder Training.
       </p>
     </aside>
   );

@@ -37,6 +37,9 @@ export type AgentToolHandoff = {
 
 export const AGENT_HANDOFF_STORAGE_PREFIX = "influex:agent-handoff:";
 export const AGENT_HANDOFF_MAX_GOAL_URL_LENGTH = 120;
+/** Handoffs older than this are ignored and pruned from sessionStorage. */
+export const AGENT_HANDOFF_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+export const AGENT_HANDOFF_MAX_STORED = 12;
 
 const FORBIDDEN_HANDOFF_PATTERNS = [
   /api[_-]?key/i,
@@ -120,6 +123,30 @@ export function isHandoffPayloadSafe(handoff: AgentToolHandoff): boolean {
   if (walkHandoffValues(handoff)) return false;
   if (JSON.stringify(handoff).length > 16_000) return false;
   return true;
+}
+
+export function isHandoffFresh(
+  handoff: AgentToolHandoff,
+  nowMs = Date.now()
+): boolean {
+  const created = Date.parse(handoff.createdAt);
+  if (Number.isNaN(created)) return false;
+  return nowMs - created <= AGENT_HANDOFF_MAX_AGE_MS;
+}
+
+export function isStoredHandoffValid(
+  handoff: AgentToolHandoff,
+  handoffId: string,
+  expectedToolId: string,
+  nowMs = Date.now()
+): boolean {
+  return (
+    handoff.handoffId === handoffId &&
+    handoff.selectedToolId === expectedToolId &&
+    handoff.source === "agent-recommendation" &&
+    isHandoffPayloadSafe(handoff) &&
+    isHandoffFresh(handoff, nowMs)
+  );
 }
 
 export function buildAgentToolHandoff(
@@ -220,20 +247,22 @@ export function resolveAgentToolHandoff(
   handoffId: string | null,
   goalFallback: string | null,
   expectedToolId: string,
-  stored: AgentToolHandoff | null
+  stored: AgentToolHandoff | null,
+  nowMs = Date.now()
 ): AgentToolHandoff | null {
   if (
     stored &&
-    stored.handoffId === handoffId &&
-    stored.selectedToolId === expectedToolId &&
-    isHandoffPayloadSafe(stored)
+    handoffId &&
+    isStoredHandoffValid(stored, handoffId, expectedToolId, nowMs)
   ) {
     return stored;
   }
 
   if (goalFallback) {
     const reconstructed = reconstructHandoffForTool(goalFallback, expectedToolId);
-    if (reconstructed) return reconstructed;
+    if (reconstructed && isHandoffFresh(reconstructed, nowMs)) {
+      return reconstructed;
+    }
   }
 
   return null;
@@ -245,12 +274,13 @@ export function getAgentHandoffStorageKey(handoffId: string): string {
 
 export function persistAgentToolHandoff(handoff: AgentToolHandoff): void {
   if (typeof window === "undefined") return;
-  if (!isHandoffPayloadSafe(handoff)) return;
+  if (!isHandoffPayloadSafe(handoff) || !isHandoffFresh(handoff)) return;
   try {
     sessionStorage.setItem(
       getAgentHandoffStorageKey(handoff.handoffId),
       JSON.stringify(handoff)
     );
+    pruneStaleAgentHandoffs();
   } catch {
     // Quota or privacy mode — URL goal fallback still available
   }
@@ -264,20 +294,68 @@ export function loadAgentToolHandoff(handoffId: string): AgentToolHandoff | null
     const parsed = JSON.parse(raw) as AgentToolHandoff;
     if (!parsed?.handoffId || parsed.handoffId !== handoffId) return null;
     if (!isHandoffPayloadSafe(parsed)) return null;
+    if (!isHandoffFresh(parsed)) {
+      sessionStorage.removeItem(getAgentHandoffStorageKey(handoffId));
+      return null;
+    }
     return parsed;
   } catch {
     return null;
   }
 }
 
-export function prepareHandoffNavigation(
+export function pruneStaleAgentHandoffs(nowMs = Date.now()): void {
+  if (typeof window === "undefined") return;
+  try {
+    const entries: { key: string; created: number }[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (!key?.startsWith(AGENT_HANDOFF_STORAGE_PREFIX)) continue;
+      const raw = sessionStorage.getItem(key);
+      if (!raw) continue;
+      try {
+        const parsed = JSON.parse(raw) as AgentToolHandoff;
+        const created = Date.parse(parsed.createdAt);
+        if (
+          !parsed.handoffId ||
+          !isHandoffPayloadSafe(parsed) ||
+          Number.isNaN(created) ||
+          nowMs - created > AGENT_HANDOFF_MAX_AGE_MS
+        ) {
+          sessionStorage.removeItem(key);
+          continue;
+        }
+        entries.push({ key, created });
+      } catch {
+        sessionStorage.removeItem(key);
+      }
+    }
+    entries.sort((a, b) => b.created - a.created);
+    for (const stale of entries.slice(AGENT_HANDOFF_MAX_STORED)) {
+      sessionStorage.removeItem(stale.key);
+    }
+  } catch {
+    // Best-effort cleanup only
+  }
+}
+
+export function buildHandoffNavigation(
   plan: CreatorGoalPlan,
-  card: AgentRecommendationCardModel
+  card: AgentRecommendationCardModel,
+  handoffId = generateHandoffId()
 ): { href: string; handoff: AgentToolHandoff } {
-  const handoff = buildAgentToolHandoff(plan, card);
-  persistAgentToolHandoff(handoff);
+  const handoff = buildAgentToolHandoff(plan, card, handoffId);
   return {
     handoff,
     href: buildHandoffNavigationHref(plan, card, handoff.handoffId),
   };
+}
+
+export function prepareHandoffNavigation(
+  plan: CreatorGoalPlan,
+  card: AgentRecommendationCardModel
+): { href: string; handoff: AgentToolHandoff } {
+  const navigation = buildHandoffNavigation(plan, card);
+  persistAgentToolHandoff(navigation.handoff);
+  return navigation;
 }
