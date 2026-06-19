@@ -40,6 +40,33 @@ const PLANS = [
   },
 ];
 
+const CREDIT_PACKS = [
+  {
+    id: "small",
+    name: "InfluexAI Credits Small (25)",
+    eur: 5,
+    env: "STRIPE_CREDITS_25",
+  },
+  {
+    id: "medium",
+    name: "InfluexAI Credits Medium (70)",
+    eur: 12,
+    env: "STRIPE_CREDITS_150",
+  },
+  {
+    id: "large",
+    name: "InfluexAI Credits Large (160)",
+    eur: 25,
+    env: "STRIPE_CREDITS_350",
+  },
+  {
+    id: "xl",
+    name: "InfluexAI Credits XL (320)",
+    eur: 45,
+    env: "STRIPE_CREDITS_800",
+  },
+];
+
 const EXTRA_CREDITS = {
   name: "InfluexAI Extra Credits (100)",
   eur: 12,
@@ -106,6 +133,16 @@ async function createPrice(productId, unitAmount, interval) {
 }
 
 async function main() {
+  const key = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
+  if (!key.startsWith("sk_test_")) {
+    throw new Error(
+      "STRIPE_SECRET_KEY must be sk_test_ (test mode only). Live keys are blocked."
+    );
+  }
+  if (process.env.STRIPE_MODE?.trim().toLowerCase() === "live") {
+    throw new Error("STRIPE_MODE=live is not allowed for this script.");
+  }
+
   const envLines = [];
 
   for (const plan of PLANS) {
@@ -123,6 +160,13 @@ async function main() {
     envLines.push(`${plan.monthlyEnv}=${monthlyId}`);
     envLines.push(`${plan.yearlyEnv}=${yearlyId}`);
     console.log(`✓ ${plan.name}: monthly ${monthlyId}, yearly ${yearlyId}`);
+  }
+
+  for (const pack of CREDIT_PACKS) {
+    const productId = await ensureProduct(pack.name);
+    const priceId = await createPrice(productId, eurToCents(pack.eur), null);
+    envLines.push(`${pack.env}=${priceId}`);
+    console.log(`✓ ${pack.name}: ${priceId}`);
   }
 
   const extraProductId = await ensureProduct(EXTRA_CREDITS.name);

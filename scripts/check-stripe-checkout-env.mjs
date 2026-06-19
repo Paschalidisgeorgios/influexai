@@ -5,6 +5,10 @@
  */
 import fs from "fs";
 import path from "path";
+import {
+  hasInvalidCheckoutPriceIds,
+  priceIdEnvStatus,
+} from "./lib/stripe-price-id-env.mjs";
 
 const STAGING_REF = "jvjmqtxlqfqaoyjklpxh";
 const PRODUCTION_REF =
@@ -35,13 +39,6 @@ function keyKind(value, prefix) {
   if (value.startsWith(`${prefix}test_`)) return `${prefix}test_`;
   if (value.startsWith(`${prefix}live_`)) return `${prefix}live_`;
   return "other";
-}
-
-function priceIdStatus(value) {
-  if (!value) return "missing";
-  if (value.startsWith("price_test_")) return "price_test";
-  if (/^price_[0-9A-Za-z]{14,}$/.test(value)) return "price_live_style";
-  return "set_other";
 }
 
 const fileArg = process.argv.includes("--file")
@@ -78,31 +75,55 @@ const creditKeys = [
   "STRIPE_CREDITS_800",
 ];
 
-console.log(
-  JSON.stringify(
-    {
-      file: path.basename(targetPath),
-      supabaseRef,
-      isStagingRef: supabaseRef === STAGING_REF,
-      isProductionRef: supabaseRef === PRODUCTION_REF,
-      vercelEnv: vars.VERCEL_ENV ?? "(unset)",
-      stripeMode: vars.STRIPE_MODE ?? "(unset)",
-      providersDisabled: vars.PROVIDERS_DISABLED ?? "(unset)",
-      stripeSecretKind: keyKind(vars.STRIPE_SECRET_KEY, "sk_"),
-      stripePublishableKind: keyKind(
-        vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-        "pk_"
-      ),
-      safeCheckoutOverride: vars.ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT === "true",
-      creditPack25: priceIdStatus(vars.STRIPE_CREDITS_25 ?? vars.STRIPE_CREDITS_50),
-      subscriptionPriceIds: Object.fromEntries(
-        subscriptionKeys.map((key) => [key, priceIdStatus(vars[key])])
-      ),
-      creditPackPriceIds: Object.fromEntries(
-        creditKeys.map((key) => [key, priceIdStatus(vars[key])])
-      ),
-    },
-    null,
-    2
-  )
+const creditPack25 = priceIdEnvStatus(vars.STRIPE_CREDITS_25 ?? vars.STRIPE_CREDITS_50);
+const subscriptionPriceIds = Object.fromEntries(
+  subscriptionKeys.map((key) => [key, priceIdEnvStatus(vars[key])])
 );
+const creditPackPriceIds = Object.fromEntries(
+  creditKeys.map((key) => [key, priceIdEnvStatus(vars[key])])
+);
+
+const report = {
+  file: path.basename(targetPath),
+  supabaseRef,
+  isStagingRef: supabaseRef === STAGING_REF,
+  isProductionRef: supabaseRef === PRODUCTION_REF,
+  vercelEnv: vars.VERCEL_ENV ?? "(unset)",
+  stripeMode: vars.STRIPE_MODE ?? "(unset)",
+  providersDisabled: vars.PROVIDERS_DISABLED ?? "(unset)",
+  stripeSecretKind: keyKind(vars.STRIPE_SECRET_KEY, "sk_"),
+  stripePublishableKind: keyKind(vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, "pk_"),
+  safeCheckoutOverride: vars.ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT === "true",
+  creditPack25Source: vars.STRIPE_CREDITS_25
+    ? "STRIPE_CREDITS_25"
+    : vars.STRIPE_CREDITS_50
+      ? "STRIPE_CREDITS_50_legacy"
+      : "none",
+  creditPack25,
+  subscriptionPriceIds,
+  creditPackPriceIds,
+  checkoutPriceIdsReady: !hasInvalidCheckoutPriceIds({
+    creditPack25,
+    subscriptionPriceIds,
+    creditPackPriceIds,
+  }),
+};
+
+console.log(JSON.stringify(report, null, 2));
+
+if (
+  report.stripeSecretKind === "sk_live_" ||
+  report.stripePublishableKind === "pk_live_" ||
+  report.isProductionRef
+) {
+  process.exit(1);
+}
+
+if (!report.checkoutPriceIdsReady) {
+  console.error(
+    "\n[check-stripe-checkout-env] FAIL — missing or placeholder Stripe price IDs."
+  );
+  process.exit(1);
+}
+
+console.log("\n[check-stripe-checkout-env] OK — checkout price IDs look configured.");
