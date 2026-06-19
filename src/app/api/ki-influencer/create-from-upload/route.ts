@@ -4,7 +4,7 @@ import {
   KI_INFLUENCER_UPLOAD_CONSENT_MESSAGE,
   readIdentityUploadConsentFromJson,
 } from "@/lib/consent.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 15;
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: {

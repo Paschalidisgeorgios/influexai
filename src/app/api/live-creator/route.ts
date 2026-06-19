@@ -15,7 +15,7 @@ import {
   mapAkoolVideoStatus,
 } from "@/lib/akool";
 import { assertGatedFeature } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
   }
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   try {
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
 
 /** POST — upload media, start Akool job, return jobId immediately (no blocking wait) */
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("live-creator");

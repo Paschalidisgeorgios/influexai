@@ -12,7 +12,7 @@ import {
 } from "@/lib/generation-assets";
 import { configureFalClient, getFalKey, logFalAiError } from "@/lib/fal-image";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   kiInfluencerErrorResponse,
@@ -36,7 +36,7 @@ function protectedImageUrl(generationId: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("lora-training");

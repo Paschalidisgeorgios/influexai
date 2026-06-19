@@ -6,7 +6,7 @@ import {
 } from "@/lib/akool-models";
 import { createAkoolJob } from "@/lib/akool-status";
 import { runAkoolAsyncPost } from "@/lib/akool-async-route";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { getFalKey } from "@/lib/fal-image";
 import {
   clampSelectionToCapabilities,
@@ -57,7 +57,7 @@ type ImageToVideoBody = {
 };
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   if (!getFalKey()) {

@@ -291,13 +291,17 @@ function resolveSafeCtaLabel(status: ToolActionReadinessStatus): string {
 function resolveRecommendedNextStep(
   status: ToolActionReadinessStatus,
   missing: string[],
-  prepared: AgentPreparedInputs | null
+  prepared: AgentPreparedInputs | null,
+  providerDisabled: boolean
 ): string {
   if (status === "blocked_safety") {
     return "Consent bestätigen, bevor Upload oder Training vorbereitet werden.";
   }
   if (missing.length > 0) {
     return `Fehlt noch: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? " …" : ""}.`;
+  }
+  if (status === "ready_preview" && providerDisabled) {
+    return "Briefing ist vollständig — Provider-Ausführung ist deaktiviert. Keine Generierung, keine Credit-Abbuchung.";
   }
   if (status === "ready_preview") {
     return "Briefing ist vollständig — Vorschau prüfen, ohne Generierung oder Upload.";
@@ -358,7 +362,12 @@ export function buildToolActionReadiness(
     status,
     missingRequiredInputs: missing,
     completedInputs: completed,
-    recommendedNextStep: resolveRecommendedNextStep(status, missing, prepared),
+    recommendedNextStep: resolveRecommendedNextStep(
+      status,
+      missing,
+      prepared,
+      providerDisabled
+    ),
     safeCtaLabel,
     blockedReason: providerDisabled ? READINESS_EXECUTION_DISABLED_MESSAGE : null,
     providerDisabled,

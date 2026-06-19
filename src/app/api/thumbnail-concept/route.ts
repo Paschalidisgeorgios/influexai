@@ -5,7 +5,7 @@ import {
   resolveThumbnailColorEnergy,
   resolveThumbnailStyle,
 } from "@/lib/canvas/tool-param-validation";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const maxDuration = 90;
 
@@ -22,7 +22,7 @@ function httpStatusForFailure(result: {
 
 /** POST /api/thumbnail-concept — Body: { topic, style?, colorEnergy? } */
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: Record<string, unknown>;

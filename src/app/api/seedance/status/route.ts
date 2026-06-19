@@ -4,7 +4,7 @@ import { assertKiToolAccess } from "@/lib/access.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { pollSeedanceJob } from "@/lib/seedance-generate";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   try {

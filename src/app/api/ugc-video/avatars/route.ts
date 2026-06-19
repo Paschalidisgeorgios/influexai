@@ -3,11 +3,15 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { listUgcAvatars } from "@/lib/akool-ugc";
 import { isAkoolConfigured } from "@/lib/akool-env";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "UGC-Video ist gerade nicht verfügbar." },

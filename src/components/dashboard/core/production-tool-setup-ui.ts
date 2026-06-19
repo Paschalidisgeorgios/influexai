@@ -22,7 +22,8 @@ export const SETUP_COPY = {
   agentPrimary: "Im Agent vorbereiten",
   errorGeneric:
     "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
-  galleryResult: "Ergebnis wird in deiner Galerie gespeichert.",
+  galleryResult:
+    "Medien-Ergebnisse landen nach erfolgreicher Generierung in der Galerie (/dashboard/gallery).",
   resultInline: "Ergebnis erscheint direkt hier.",
   toolCardCta: "Tool einrichten",
   modelsLoading: "Modelle werden geladen…",

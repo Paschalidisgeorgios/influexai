@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { addCredits, deductCredits, isCreditExemptUser } from "@/lib/credits";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { uploadDataUrlImageToFal } from "@/lib/upload-media-fal";
@@ -32,7 +32,7 @@ async function uploadDataUrlVideoToFal(dataUrl: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   if (!getFalKey()) {

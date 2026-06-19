@@ -4,7 +4,7 @@ import { pollAkoolGeneration } from "@/lib/akool-async-route";
 import { requireAkoolAccess, akoolRouteError } from "@/lib/akool-route-handler";
 import type { AkoolJobPollType } from "@/lib/akool-route-handler";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         ? "video"
         : "video";
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   try {

@@ -15,7 +15,7 @@ import {
   parseOnboardingCopilotResponse,
 } from "@/lib/canvas/onboarding-copilot";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: configError }, { status: 503 });
   }
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const history = (body.history ?? [])

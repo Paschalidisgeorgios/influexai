@@ -12,6 +12,11 @@ const DEFAULT_PRODUCTION_SUPABASE_REF =
 
 export const DEV_WRITE_GUARD_CODE = "DEV_WRITE_GUARD_BLOCKED";
 
+export const PROVIDER_EXECUTION_GUARD_CODE = "PROVIDERS_DISABLED";
+
+export const PROVIDER_EXECUTION_GUARD_MESSAGE =
+  "Provider-Ausführung ist in dieser Umgebung deaktiviert (PROVIDERS_DISABLED). Es werden keine externen KI-Provider aufgerufen.";
+
 export const SAFE_DEV_STRIPE_TEST_CHECKOUT_ENV =
   "ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT";
 
@@ -254,6 +259,27 @@ export function developmentWriteGuardResponse(): NextResponse | null {
     },
     { status: 403 }
   );
+}
+
+/** Blocks external provider calls when PROVIDERS_DISABLED is set. */
+export function providerExecutionGuardResponse(): NextResponse | null {
+  if (!areProvidersExplicitlyDisabled()) {
+    return null;
+  }
+
+  return NextResponse.json(
+    {
+      success: false,
+      code: PROVIDER_EXECUTION_GUARD_CODE,
+      error: PROVIDER_EXECUTION_GUARD_MESSAGE,
+    },
+    { status: 503 }
+  );
+}
+
+/** Dev write guard + provider kill switch for mutating provider routes. */
+export function providerRouteGuardResponse(): NextResponse | null {
+  return providerExecutionGuardResponse() ?? developmentWriteGuardResponse();
 }
 
 /** Human-readable dev warnings for UI (no secrets). Development runtime only. */

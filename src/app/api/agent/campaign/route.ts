@@ -27,7 +27,7 @@ import {
   AgentSafetyError,
   checkAgentInputSafety,
 } from "@/lib/agent/guards";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -144,7 +144,7 @@ async function runJobAsync(
 }
 
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: RequestBody;

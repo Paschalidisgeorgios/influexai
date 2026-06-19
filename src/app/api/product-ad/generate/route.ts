@@ -27,7 +27,7 @@ import {
   uploadDataUrlToFal,
 } from "@/lib/fal-image";
 import { assertGatedFeature } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import {
   createGenerationRecord,
   ingestFinalAssetFromUrl,
@@ -217,7 +217,7 @@ async function runSingleGeneration(
 }
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("produkt-ads");

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { assertKiToolAccess } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { isAkoolConfigured } from "@/lib/akool-env";
 import { withCreditDeduction } from "@/lib/credits-with-refund";
 import { notifyGenerationCompletePush } from "@/lib/push-notifications";
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
   if (access instanceof NextResponse) return access;
   const { userId, supabase } = access;
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   try {
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
 
 /** POST — start UGC talking avatar video (deduct-first) */
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const body = (await request.json()) as {

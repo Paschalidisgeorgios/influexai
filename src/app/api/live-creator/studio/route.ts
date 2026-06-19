@@ -11,7 +11,7 @@ import {
 import { resolveUserKiIchCharacter } from "@/lib/live-creator-ki-ich";
 import { getFalKey } from "@/lib/fal-image";
 import { assertGatedFeature } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +59,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("live-creator");

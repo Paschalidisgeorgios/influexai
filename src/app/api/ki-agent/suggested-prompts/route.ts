@@ -6,6 +6,7 @@ import {
   SCRIPT_GENERATOR_MODEL,
 } from "@/lib/anthropic";
 import { assertKiToolAccess } from "@/lib/access.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import {
   formatCreatorProfileForPrompt,
   getCreatorProfile,
@@ -76,6 +77,9 @@ Regeln:
 );
 
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   const access = await assertKiToolAccess(0);
   if (access instanceof NextResponse) {
     if (access.status === 402) {
