@@ -1,4 +1,5 @@
 import type { CharacterType } from "@/lib/ai-creator/types";
+import { buildPersistedConsentFields } from "@/lib/ai-creator/characters-consent.server";
 
 export const CHARACTER_NAME_MAX = 120;
 export const CHARACTER_DESCRIPTION_MAX = 4000;
@@ -18,7 +19,7 @@ export type CreateCharacterBody = {
   tone?: string;
   platforms?: string[];
   targetAudience?: string;
-  /** Checked for self-type drafts; not persisted in baseline schema */
+  /** Checked for self-type drafts; persisted when schema supports it */
   consentConfirmed?: boolean;
   consentAccepted?: boolean;
   safetyAcknowledged?: boolean;
@@ -100,7 +101,7 @@ function parseCastingImageUrl(raw: string | undefined): string | null {
   return trimmed;
 }
 
-/** Validates POST payload and maps to baseline insert fields (no extended columns). */
+/** Validates POST payload and maps to insert fields (consent persisted when schema supports it). */
 export function validateCreateCharacterBody(
   body: CreateCharacterBody
 ): CreateValidationResult {
@@ -184,5 +185,25 @@ export function buildBaselineCharacterInsert(
     trigger_word: parsed.triggerWord,
     lora_ref: null,
     casting_image_url: parsed.castingImageUrl,
+  };
+}
+
+export type AiCreatorCharacterInsert = BaselineCharacterInsert & {
+  character_type: CharacterType;
+  consent_confirmed: true;
+  consent_confirmed_at: string;
+  consent_source: string;
+  consent_version: string;
+};
+
+export function buildAiCreatorCharacterInsert(
+  userId: string,
+  parsed: ParsedCreateCharacter
+): AiCreatorCharacterInsert {
+  const consent = buildPersistedConsentFields();
+  return {
+    ...buildBaselineCharacterInsert(userId, parsed),
+    character_type: parsed.characterType,
+    ...consent,
   };
 }

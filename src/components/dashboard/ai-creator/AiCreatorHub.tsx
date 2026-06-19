@@ -47,6 +47,7 @@ type HubCharacter = {
   trainingStatus: string;
   previewImageUrl: string | null;
   source?: string;
+  consentConfirmed?: boolean;
 };
 
 function friendlyCharacterLoadError(error?: string): string {
@@ -546,6 +547,11 @@ export function AiCreatorHub() {
                             </div>
                             <p className="mt-0.5 text-xs" style={{ color: DASHBOARD_MUTED }}>
                               {typeLabel}
+                              {character.consentConfirmed ? (
+                                <span className="ml-2" style={{ color: "#34d399" }}>
+                                  · Consent gespeichert
+                                </span>
+                              ) : null}
                             </p>
                           </div>
                         </div>

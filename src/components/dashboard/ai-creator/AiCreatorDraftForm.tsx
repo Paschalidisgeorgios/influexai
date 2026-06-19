@@ -65,6 +65,7 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
       description: description.trim() || undefined,
       triggerWord: triggerWord.trim() || undefined,
       safetyAcknowledged: true,
+      consentConfirmed: true,
     };
 
     if (wizardPath === "self") {
@@ -237,8 +238,8 @@ export function AiCreatorDraftForm({ wizardPath, onSaved }: AiCreatorDraftFormPr
           >
             <CheckCircle2 size={18} className="mt-0.5 shrink-0" aria-hidden />
             <span>
-              Draft gespeichert. Du kannst später Referenzen ergänzen und mit einem Workflow
-              weiterarbeiten.
+              Draft gespeichert — Consent wurde sicher hinterlegt. Character ist als Entwurf
+              vorbereitet; Referenzen und Workflows folgen in den verlinkten Produktionswegen.
             </span>
           </div>
         ) : null}

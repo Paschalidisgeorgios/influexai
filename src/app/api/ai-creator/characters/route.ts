@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  buildBaselineCharacterInsert,
+  buildAiCreatorCharacterInsert,
   type CreateCharacterBody,
   validateCreateCharacterBody,
 } from "@/lib/ai-creator/characters-create.server";
 import {
-  baselineRowToListItem,
-  CHARACTERS_BASELINE_SELECT,
-  type CharactersBaselineRow,
+  aiCreatorRowToListItem,
+  CHARACTERS_AI_CREATOR_SELECT,
+  type CharactersAiCreatorRow,
 } from "@/lib/ai-creator/characters-list.server";
 import {
   assertKiInfluencerAccess,
@@ -55,7 +55,7 @@ function mapCharacterInsertError(context: string, error: unknown): NextResponse 
   return mapSupabaseWriteError(context, error);
 }
 
-/** GET — list user's AI Creator characters (read-only, schema-tolerant baseline). */
+/** GET — list user's AI Creator characters (includes persisted consent status). */
 export async function GET() {
   const access = await assertKiInfluencerAccess(0);
   if (access instanceof NextResponse) return access;
@@ -64,7 +64,7 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("characters")
-      .select(CHARACTERS_BASELINE_SELECT)
+      .select(CHARACTERS_AI_CREATOR_SELECT)
       .eq("user_id", userId)
       .order("updated_at", { ascending: false });
 
@@ -75,7 +75,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       characters: (data ?? []).map((row) =>
-        baselineRowToListItem(row as CharactersBaselineRow)
+        aiCreatorRowToListItem(row as CharactersAiCreatorRow)
       ),
     });
   } catch (error) {
@@ -84,7 +84,7 @@ export async function GET() {
   }
 }
 
-/** POST — create draft AI Creator character (baseline schema only, no training). */
+/** POST — create draft AI Creator character with persisted consent (no training). */
 export async function POST(request: NextRequest) {
   const writeGuard = developmentWriteGuardResponse();
   if (writeGuard) return writeGuard;
@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
   try {
     const { data, error } = await supabase
       .from("characters")
-      .insert(buildBaselineCharacterInsert(userId, validated.data))
-      .select(CHARACTERS_BASELINE_SELECT)
+      .insert(buildAiCreatorCharacterInsert(userId, validated.data))
+      .select(CHARACTERS_AI_CREATOR_SELECT)
       .single();
 
     if (error) {
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      character: baselineRowToListItem(data as CharactersBaselineRow),
+      character: aiCreatorRowToListItem(data as CharactersAiCreatorRow),
     });
   } catch (error) {
     logKiInfluencerError("ai-creator character insert", error);
