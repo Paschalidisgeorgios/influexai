@@ -66,5 +66,5 @@ for (const key of keys) {
   }
 }
 
-fs.writeFileSync(ENV_PATH, out.join("\n").replace(/\n?$/, "\n"), "utf8");
+fs.writeFileSync(ENV_PATH, out.join("\n").replace(/\n?$/, "\n"), { encoding: "utf8" });
 console.log(`Updated ${keys.length} Stripe env keys in .env.local (values not printed).`);
