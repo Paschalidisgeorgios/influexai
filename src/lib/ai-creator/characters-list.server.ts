@@ -7,6 +7,9 @@ export const CHARACTERS_BASELINE_SELECT =
 /** Baseline + AI Creator consent/type fields (063 + 066). */
 export const CHARACTERS_AI_CREATOR_SELECT = `${CHARACTERS_BASELINE_SELECT}, character_type, consent_confirmed, consent_confirmed_at, consent_source, consent_version`;
 
+/** Extended select for handoff validation (063 persona + training job id). */
+export const CHARACTERS_HANDOFF_SELECT = `${CHARACTERS_AI_CREATOR_SELECT}, training_job_id, niche, style, tone, target_audience`;
+
 export type CharactersBaselineRow = {
   id: string;
   name: string;
@@ -26,6 +29,14 @@ export type CharactersAiCreatorRow = CharactersBaselineRow & {
   consent_confirmed_at: string | null;
   consent_source: string | null;
   consent_version: string | null;
+};
+
+export type CharactersHandoffRow = CharactersAiCreatorRow & {
+  training_job_id: string | null;
+  niche: string | null;
+  style: string | null;
+  tone: string | null;
+  target_audience: string | null;
 };
 
 export type AiCreatorCharacterListItem = {

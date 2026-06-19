@@ -41,6 +41,7 @@ export function mapCharacterStatusToHubPhase(raw: string | null | undefined): Hu
     case "training_set_ready":
     case "ready_to_train":
     case "references_ready":
+    case "handoff_ready":
       return "preparing";
     default:
       return "draft";
@@ -74,3 +75,8 @@ export const AI_CREATOR_SELF_WORKFLOW_HREF = "/dashboard/ki-ich";
 
 /** Fictional persona / LoRA prep — stable route (ki-influencer redirects via middleware). */
 export const AI_CREATOR_FICTIONAL_WORKFLOW_HREF = "/dashboard/lora-training";
+
+export function hubStatusLabel(raw: string | null | undefined): string {
+  if (raw === "handoff_ready") return "Bereit für Upload";
+  return HUB_PHASE_LABELS[mapCharacterStatusToHubPhase(raw)];
+}

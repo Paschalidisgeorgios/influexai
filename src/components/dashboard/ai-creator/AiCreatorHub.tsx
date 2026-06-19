@@ -21,10 +21,15 @@ import {
   AI_CREATOR_FICTIONAL_WORKFLOW_HREF,
   AI_CREATOR_SELF_WORKFLOW_HREF,
   characterTypeShortLabel,
-  HUB_PHASE_LABELS,
   HUB_PHASE_TONE,
   mapCharacterStatusToHubPhase,
+  hubStatusLabel,
 } from "@/lib/ai-creator/hub-status";
+import { evaluateHandoffReadiness } from "@/lib/ai-creator/characters-handoff.server";
+import {
+  isCharacterHandoffEligibleStatus,
+  isCharacterHandoffReadyStatus,
+} from "@/lib/ai-creator/characters-handoff-policy";
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
@@ -51,6 +56,7 @@ type HubCharacter = {
   previewImageUrl: string | null;
   source?: string;
   consentConfirmed?: boolean;
+  consentConfirmedAt?: string | null;
 };
 
 function friendlyCharacterLoadError(error?: string): string {
@@ -198,7 +204,7 @@ function StatusPill({ status }: { status: string }) {
       className="inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium"
       style={{ background: colors.bg, color: colors.text }}
     >
-      {HUB_PHASE_LABELS[phase]}
+      {hubStatusLabel(status)}
     </span>
   );
 }
@@ -298,6 +304,11 @@ export function AiCreatorHub() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [handoffLoadingId, setHandoffLoadingId] = useState<string | null>(null);
+  const [handoffFeedback, setHandoffFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
@@ -394,6 +405,48 @@ export function AiCreatorHub() {
     await loadCharacters();
   }, [loadCharacters]);
 
+  const handleHandoffCharacter = useCallback(
+    async (characterId: string) => {
+      setHandoffLoadingId(characterId);
+      setHandoffFeedback(null);
+      try {
+        const res = await fetch(`/api/ai-creator/characters/${characterId}/handoff`, {
+          method: "POST",
+        });
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+          message?: string;
+          issues?: string[];
+        };
+        if (!res.ok || !data.success) {
+          setHandoffFeedback({
+            type: "error",
+            message:
+              data.error ??
+              "Upload-Vorbereitung konnte nicht gestartet werden. Bitte versuche es erneut.",
+          });
+          return;
+        }
+        setHandoffFeedback({
+          type: "success",
+          message:
+            data.message ?? "Draft ist bereit für die Upload-Vorbereitung.",
+        });
+        await loadCharacters();
+      } catch {
+        setHandoffFeedback({
+          type: "error",
+          message:
+            "Upload-Vorbereitung konnte nicht gestartet werden. Bitte versuche es erneut.",
+        });
+      } finally {
+        setHandoffLoadingId(null);
+      }
+    },
+    [loadCharacters]
+  );
+
   return (
     <div className="mx-auto w-full min-w-0 max-w-4xl">
       <DashboardPageHeader
@@ -471,6 +524,17 @@ export function AiCreatorHub() {
       </DashboardPanel>
 
       <DashboardSection title="Deine Characters" className="mt-10">
+        {handoffFeedback ? (
+          <p
+            className="mb-3 text-sm"
+            style={{
+              color: handoffFeedback.type === "success" ? "#34d399" : "#f87171",
+            }}
+            role="status"
+          >
+            {handoffFeedback.message}
+          </p>
+        ) : null}
         {deleteFeedback ? (
           <p
             className="mb-3 text-sm"
@@ -539,6 +603,18 @@ export function AiCreatorHub() {
 
                 const canDelete = isCharacterDeletableStatus(character.trainingStatus);
                 const canEdit = isCharacterEditableStatus(character.trainingStatus);
+                const isHandoffReady = isCharacterHandoffReadyStatus(character.trainingStatus);
+                const canHandoff = isCharacterHandoffEligibleStatus(character.trainingStatus);
+                const handoffReadiness = evaluateHandoffReadiness({
+                  name: character.name,
+                  description: character.description,
+                  triggerWord: character.triggerWord,
+                  characterType: character.characterType,
+                  source: character.source,
+                  trainingStatus: character.trainingStatus,
+                  consentConfirmed: character.consentConfirmed,
+                  consentConfirmedAt: character.consentConfirmedAt,
+                });
                 const isConfirmingDelete = deleteConfirmId === character.id;
 
                 return (
@@ -585,26 +661,61 @@ export function AiCreatorHub() {
                                 </span>
                               ) : null}
                             </p>
+                            {canHandoff && !handoffReadiness.ready ? (
+                              <p className="mt-1 text-[11px] leading-snug" style={{ color: DASHBOARD_MUTED }}>
+                                Für Upload vorbereiten: {handoffReadiness.messages.join(" · ")}
+                              </p>
+                            ) : null}
+                            {isHandoffReady ? (
+                              <p className="mt-1 text-[11px]" style={{ color: "#34d399" }}>
+                                Upload-Vorbereitung abgeschlossen — echter Upload folgt in einem
+                                späteren Schritt.
+                              </p>
+                            ) : null}
                           </div>
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2">
-                          <Link
-                            href={primaryCta.href}
-                            className="inline-flex min-h-[40px] items-center rounded-full px-4 text-xs font-semibold no-underline"
-                            style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
-                          >
-                            {phase === "ready" ? "Öffnen" : primaryCta.label}
-                          </Link>
-                          <Link
-                            href={secondaryCta.href}
-                            className="inline-flex min-h-[40px] items-center rounded-full border px-4 text-xs font-medium no-underline"
-                            style={{
-                              borderColor: "rgba(255,255,255,0.12)",
-                              color: DASHBOARD_TEXT,
-                            }}
-                          >
-                            {secondaryCta.label}
-                          </Link>
+                          {canHandoff ? (
+                            <button
+                              type="button"
+                              disabled={
+                                !handoffReadiness.ready || handoffLoadingId === character.id
+                              }
+                              onClick={() => void handleHandoffCharacter(character.id)}
+                              className="inline-flex min-h-[40px] items-center rounded-full px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+                              style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
+                              title={
+                                handoffReadiness.ready
+                                  ? undefined
+                                  : handoffReadiness.messages.join(", ")
+                              }
+                            >
+                              {handoffLoadingId === character.id
+                                ? "Vorbereiten…"
+                                : "Für Upload vorbereiten"}
+                            </button>
+                          ) : null}
+                          {!canHandoff && !isHandoffReady ? (
+                            <>
+                              <Link
+                                href={primaryCta.href}
+                                className="inline-flex min-h-[40px] items-center rounded-full px-4 text-xs font-semibold no-underline"
+                                style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
+                              >
+                                {phase === "ready" ? "Öffnen" : primaryCta.label}
+                              </Link>
+                              <Link
+                                href={secondaryCta.href}
+                                className="inline-flex min-h-[40px] items-center rounded-full border px-4 text-xs font-medium no-underline"
+                                style={{
+                                  borderColor: "rgba(255,255,255,0.12)",
+                                  color: DASHBOARD_TEXT,
+                                }}
+                              >
+                                {secondaryCta.label}
+                              </Link>
+                            </>
+                          ) : null}
                           {canEdit ? (
                             <button
                               type="button"
