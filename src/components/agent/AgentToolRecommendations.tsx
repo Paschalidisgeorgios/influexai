@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import type { CreatorGoalPlan } from "@/lib/tools/agent-tool-capability-planner";
 import {
   AGENT_EXECUTION_DISABLED_COPY,
@@ -8,10 +9,22 @@ import {
   buildRecommendationCards,
   type AgentRecommendationCardModel,
 } from "@/lib/tools/agent-recommendation-ui";
+import { prepareHandoffNavigation } from "@/lib/tools/agent-tool-handoff";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
 import { STUDIO_CARD_BORDER, STUDIO_RADIUS } from "@/components/dashboard/studio-ui/tokens";
 
-function RecommendationCard({ card }: { card: AgentRecommendationCardModel }) {
+function RecommendationCard({
+  card,
+  plan,
+}: {
+  card: AgentRecommendationCardModel;
+  plan: CreatorGoalPlan;
+}) {
+  const navigation = useMemo(
+    () => (card.ctaDisabled ? null : prepareHandoffNavigation(plan, card)),
+    [card, plan]
+  );
+
   return (
     <article
       className={`border p-4 ${STUDIO_RADIUS.card}`}
@@ -102,15 +115,15 @@ function RecommendationCard({ card }: { card: AgentRecommendationCardModel }) {
         >
           {card.ctaLabel}
         </span>
-      ) : (
+      ) : navigation ? (
         <Link
-          href={card.safeRoutingTarget}
+          href={navigation.href}
           className={`mt-4 inline-flex min-h-[40px] w-full items-center justify-center px-4 text-xs font-semibold no-underline transition-opacity hover:opacity-85 sm:w-auto ${STUDIO_RADIUS.button}`}
           style={{ background: "#B4FF00", color: "#08080a" }}
         >
           {card.ctaLabel}
         </Link>
-      )}
+      ) : null}
     </article>
   );
 }
@@ -175,7 +188,7 @@ export function AgentToolRecommendations({ plan }: AgentToolRecommendationsProps
           Empfohlene Tools
         </h2>
         {primary.map((card) => (
-          <RecommendationCard key={card.toolId} card={card} />
+          <RecommendationCard key={card.toolId} plan={plan} card={card} />
         ))}
       </div>
 
@@ -188,7 +201,7 @@ export function AgentToolRecommendations({ plan }: AgentToolRecommendationsProps
             Optional
           </h2>
           {optional.map((card) => (
-            <RecommendationCard key={`opt-${card.toolId}`} card={card} />
+            <RecommendationCard key={`opt-${card.toolId}`} plan={plan} card={card} />
           ))}
         </div>
       ) : null}

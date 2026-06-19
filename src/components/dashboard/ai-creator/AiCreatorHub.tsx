@@ -36,6 +36,8 @@ import {
 } from "@/lib/ai-creator/characters-upload-shell-policy";
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
+import { AgentHandoffPanel } from "@/components/dashboard/studio-ui";
+import { useAgentToolHandoff } from "@/hooks/useAgentToolHandoff";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
 import { isCharacterEditableStatus } from "@/lib/ai-creator/characters-update-policy";
 import {
@@ -319,6 +321,8 @@ export function AiCreatorHub() {
     message: string;
   } | null>(null);
 
+  const agentHandoff = useAgentToolHandoff("ai-creator");
+
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
     setCharactersError(null);
@@ -506,6 +510,12 @@ export function AiCreatorHub() {
         title="Bereite einen wiederverwendbaren Character für deine Workflows vor"
         subtitle="Characters, Personas und Digital Twins sind der Kern für konsistente Bilder, UGC, Video und Kampagnen — nicht isolierte Einzeltools."
       />
+
+      {agentHandoff ? (
+        <div className="mb-6">
+          <AgentHandoffPanel handoff={agentHandoff} />
+        </div>
+      ) : null}
 
       <DashboardSection title="Wer ist dein Charakter?">
         <div className="grid min-w-0 gap-4 sm:grid-cols-2">

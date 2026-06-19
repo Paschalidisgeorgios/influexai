@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED } from "./DashboardSurface";
+import { useAgentToolHandoff } from "@/hooks/useAgentToolHandoff";
 import { ProductionToolSetupBody } from "./ProductionToolSetupBody";
 import {
   GALLERY_PERSISTED_TOOL_IDS,
@@ -18,13 +19,16 @@ import {
   ToolSetupContext,
   ToolSetupLayout,
   ToolSetupSurface,
+  AgentHandoffPanel,
 } from "../studio-ui";
 
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
   const creditLabel = getSetupCreditLabel(toolId);
+  const agentHandoff = useAgentToolHandoff(String(toolId));
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-full space-y-8">
+      {agentHandoff ? <AgentHandoffPanel handoff={agentHandoff} /> : null}
       <ToolSetupLayout
         context={
           <ToolSetupContext

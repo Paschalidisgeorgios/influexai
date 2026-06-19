@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ToolId } from "./DashboardLayout";
 import { DASHBOARD_MUTED } from "./DashboardSurface";
+import { useAgentToolHandoff } from "@/hooks/useAgentToolHandoff";
 import {
   buildAgentPrepareHref,
   getSetupCreditLabel,
@@ -30,6 +31,7 @@ export function ProductionToolLaunch({
 }: {
   toolId: ToolId;
 }) {
+  const agentHandoff = useAgentToolHandoff(String(toolId));
   const studioTool = getStudioToolByDashboardId(toolId);
   const capability = getToolCapabilityForDashboardId(toolId);
   const primaryAction = getStudioToolPrimaryAction(toolId);
@@ -63,6 +65,7 @@ export function ProductionToolLaunch({
       creditLabel={creditLabel}
       creditNote={SETUP_COPY.creditsBeforeStart}
       capability={capability}
+      agentHandoff={agentHandoff}
       modelSelector={
         studioTool?.supportsModelSelection ? (
           <StudioModelSelectShell

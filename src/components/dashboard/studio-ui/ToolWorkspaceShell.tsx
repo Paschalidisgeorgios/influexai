@@ -5,6 +5,8 @@ import type { StudioToolStatus } from "@/lib/tools/studio-tool-registry";
 import { STUDIO_STATUS_LABELS } from "@/lib/tools/studio-tool-registry";
 import type { AgentToolCapability } from "@/lib/tools/agent-tool-capability-map";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
+import type { AgentToolHandoff } from "@/lib/tools/agent-tool-handoff";
+import { AgentHandoffPanel } from "./AgentHandoffPanel";
 import { StudioCreditNote, StudioCreditPill } from "./StudioCreditPill";
 import { StudioPageHeader } from "./StudioPageHeader";
 import { StudioPanel } from "./StudioPanel";
@@ -17,6 +19,7 @@ type ToolWorkspaceShellProps = {
   creditLabel?: string;
   creditNote?: string;
   capability?: AgentToolCapability;
+  agentHandoff?: AgentToolHandoff | null;
   executionNotice?: ReactNode;
   modelSelector?: ReactNode;
   options?: ReactNode;
@@ -64,6 +67,7 @@ export function ToolWorkspaceShell({
   creditLabel,
   creditNote,
   capability,
+  agentHandoff,
   executionNotice,
   modelSelector,
   options,
@@ -96,6 +100,7 @@ export function ToolWorkspaceShell({
 
       <StudioPanel>
         {creditNote ? <StudioCreditNote className="mb-6">{creditNote}</StudioCreditNote> : null}
+        {agentHandoff ? <AgentHandoffPanel handoff={agentHandoff} /> : null}
         {modelSelector}
         {executionNotice}
         {capability ? (

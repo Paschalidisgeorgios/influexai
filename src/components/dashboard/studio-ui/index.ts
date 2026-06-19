@@ -32,3 +32,4 @@ export { StudioPageHeader } from "./StudioPageHeader";
 export { StudioModelSelectShell, ToolModelSelector } from "./StudioModelSelectShell";
 export { ToolExecutionDisabledNotice } from "./ToolExecutionDisabledNotice";
 export { ToolWorkspaceShell } from "./ToolWorkspaceShell";
+export { AgentHandoffPanel } from "./AgentHandoffPanel";
