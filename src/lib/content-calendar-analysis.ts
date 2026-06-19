@@ -2,7 +2,8 @@ import { parseClaudeJson, CLAUDE_JSON_SYSTEM_RULE } from "@/lib/anthropic";
 
 export const CONTENT_CALENDAR_SYSTEM_PROMPT = `Du bist ein Social-Media Content Strategist für Creator. Erstelle datenbasierte Content-Kalender mit viralen Hooks. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
-export const CONTENT_CALENDAR_CREDIT_COST = 5;
+/** Aligned with /api/content-kalender and credit-display SSOT. */
+export { CONTENT_KALENDER_TOOL_CREDIT_COST as CONTENT_CALENDAR_CREDIT_COST } from "@/lib/content-kalender-tool";
 
 export type GenerateContentCalendarInput = {
   niche: string;

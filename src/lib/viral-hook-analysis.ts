@@ -2,7 +2,8 @@ import { parseClaudeJson, CLAUDE_JSON_SYSTEM_RULE } from "@/lib/anthropic";
 
 export const VIRAL_HOOK_SYSTEM_PROMPT = `Du bist ein viraler Short-Form Content Strategist. Analysiere YouTube-Videos und extrahiere Hook, Storytelling-Struktur und psychologische Trigger. ${CLAUDE_JSON_SYSTEM_RULE}`;
 
-export const VIRAL_HOOK_CREDIT_COST = 3;
+/** Aligned with /api/viral-hook and credit-display SSOT. */
+export { VIRAL_HOOK_EXTRACTOR_CREDIT_COST as VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-extraktor";
 
 export type ExtractViralHookInput = {
   mode: "url" | "manual";

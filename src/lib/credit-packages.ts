@@ -37,6 +37,20 @@ function buildCreditPackage(
   };
 }
 
+/** Preferred Stripe price env for the 25-credit Small pack. */
+export const STRIPE_CREDITS_25_ENV = "STRIPE_CREDITS_25";
+
+/**
+ * @deprecated Legacy env name — still supported as fallback for Small pack.
+ * The Small pack grants 25 credits, not 50.
+ */
+export const STRIPE_CREDITS_50_LEGACY_ENV = "STRIPE_CREDITS_50";
+
+const SMALL_PACK_STRIPE_ENV_KEYS = [
+  STRIPE_CREDITS_25_ENV,
+  STRIPE_CREDITS_50_LEGACY_ENV,
+] as const;
+
 /** One-time credit top-ups for users with an active plan */
 export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
@@ -46,7 +60,7 @@ export const CREDIT_PACKS: CreditPackage[] = [
     bonusCredits: 0,
     price: "5,00 €",
     priceNumeric: 5.0,
-    envKey: "STRIPE_CREDITS_50",
+    envKey: STRIPE_CREDITS_25_ENV,
     description: "Für den Einstieg",
     popular: false,
   }),
@@ -95,11 +109,22 @@ export function getPackageById(id: string): CreditPackage | undefined {
   return CREDIT_PACKAGES.find((p) => p.id === id);
 }
 
+/** Stripe price env keys to try, in order (preferred first). */
+export function getStripePriceEnvKeysForPackage(
+  pkg: CreditPackage
+): readonly string[] {
+  if (pkg.id === "small") return SMALL_PACK_STRIPE_ENV_KEYS;
+  return [pkg.envKey];
+}
+
 export function getStripePriceIdForPackage(
   pkg: CreditPackage
 ): string | undefined {
-  const value = process.env[pkg.envKey]?.trim();
-  return value || undefined;
+  for (const key of getStripePriceEnvKeysForPackage(pkg)) {
+    const value = process.env[key]?.trim();
+    if (value) return value;
+  }
+  return undefined;
 }
 
 export function formatBonusLabel(bonusCredits: number): string | null {

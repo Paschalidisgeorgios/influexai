@@ -213,12 +213,11 @@ function metaFromCanonical(
   }
 
   if (toolId === "content-calendar") {
-    const agentCost = CONTENT_KALENDER_TOOL_CREDIT_COST;
-    const actionCost = 5;
-    return meta(`${agentCost} Credits (AgentBox) · ${actionCost} (Dashboard)`, {
-      affordance: Math.max(agentCost, actionCost),
-      minimum: agentCost,
-      starting: actionCost,
+    const cost = CONTENT_KALENDER_TOOL_CREDIT_COST;
+    return meta(formatCreditsAmount(cost), {
+      affordance: cost,
+      minimum: cost,
+      starting: cost,
     });
   }
 

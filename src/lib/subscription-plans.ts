@@ -199,5 +199,5 @@ export function formatPlanPrice(amount: number, locale?: string | null): string 
 export const EXTRA_CREDIT_UNIT_EUR = 12;
 export const EXTRA_CREDIT_UNIT_CENTS = 1200;
 export const EXTRA_CREDITS_PER_UNIT = 100;
-/** @deprecated Use STRIPE_CREDITS_* env vars in credit-packages.ts */
-export const STRIPE_EXTRA_CREDITS_ENV = "STRIPE_CREDITS_50";
+/** @deprecated Use STRIPE_CREDITS_25 in credit-packages.ts (STRIPE_CREDITS_50 kept as legacy fallback). */
+export const STRIPE_EXTRA_CREDITS_ENV = "STRIPE_CREDITS_25";

@@ -10,10 +10,7 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   type CreditPackageId,
 } from "@/lib/credit-packages";
-import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
-import { CONTENT_CALENDAR_CREDIT_COST } from "@/lib/content-calendar-analysis";
-import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
-import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
+import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_MUTED,
@@ -25,31 +22,12 @@ import { STUDIO_MUTED, STUDIO_RADIUS, STUDIO_TEXT } from "../studio-ui/tokens";
 type PageStats = Awaited<ReturnType<typeof getCreditsPageStats>>;
 
 const CREDIT_EXAMPLES = [
-  {
-    label: "Viral Hooks",
-    credits: String(VIRAL_HOOK_CREDIT_COST),
-    note: "pro Generierung",
-  },
-  {
-    label: "Content Kalender",
-    credits: String(CONTENT_CALENDAR_CREDIT_COST),
-    note: "pro Plan",
-  },
-  {
-    label: "Bild-Generierung",
-    credits: `${IMAGE_GEN_CREDITS.standard}–${IMAGE_GEN_CREDITS.highRes}`,
-    note: "je Qualität",
-  },
-  {
-    label: "Image → Video",
-    credits: "variabel",
-    note: "abhängig von Modell und Dauer",
-  },
-  {
-    label: "Text → Video",
-    credits: `ab ${AKOOL_TOOL_CREDITS.textToVideo}`,
-    note: "Modell & Dauer",
-  },
+  { label: "Viral Hooks", toolId: "viral-hook" as const, note: "pro Generierung" },
+  { label: "Content Kalender", toolId: "content-calendar" as const, note: "pro Plan" },
+  { label: "Trend Script", toolId: "trend-script" as const, note: "pro Script" },
+  { label: "Bild-Generierung", toolId: "image-gen" as const, note: "je Qualität" },
+  { label: "Image → Video", toolId: "img-to-video" as const, note: "abhängig von Modell und Dauer" },
+  { label: "Text → Video", toolId: "text-to-video" as const, note: "Modell & Dauer" },
 ] as const;
 
 const primaryBtnClass = `inline-flex min-h-[44px] items-center justify-center px-6 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 ${STUDIO_RADIUS.button}`;
@@ -229,7 +207,7 @@ export function StudioCreditsSection({
               </span>
               <span className="shrink-0 text-right text-sm" style={{ color: STUDIO_MUTED }}>
                 <span className="font-mono font-semibold" style={{ color: STUDIO_TEXT }}>
-                  {row.credits}
+                  {getCreditDisplayLabel(row.toolId)}
                 </span>{" "}
                 {row.note}
               </span>

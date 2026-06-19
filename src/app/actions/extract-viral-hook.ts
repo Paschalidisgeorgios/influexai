@@ -14,14 +14,13 @@ import { fetchYouTubeVideoSnippet } from "@/lib/youtube-metadata";
 import {
   buildViralHookUserPrompt,
   parseViralHookResult,
+  VIRAL_HOOK_CREDIT_COST,
   VIRAL_HOOK_SYSTEM_PROMPT,
   type ViralHookResult,
   type ExtractViralHookInput,
 } from "@/lib/viral-hook-analysis";
 import type { Locale } from "@/lib/locale";
 import { localeToPromptLanguage } from "@/lib/locale";
-
-const VIRAL_HOOK_CREDIT_COST = 3;
 
 type Success = {
   success: true;

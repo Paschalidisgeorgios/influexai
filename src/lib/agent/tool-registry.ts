@@ -193,7 +193,7 @@ export const AGENT_TOOL_REGISTRY: readonly AgentToolRegistryItem[] = [
       type: "fixed",
       min: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
       max: VIRAL_HOOK_EXTRACTOR_CREDIT_COST,
-      note: "Dashboard viral-hook page may use VIRAL_HOOK_CREDIT_COST (3) separately.",
+      note: "Aligned with API and dashboard via credit-display SSOT.",
     },
     requiresConsent: false,
     requiresUpload: false,

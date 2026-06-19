@@ -154,13 +154,13 @@ export function sumCampaignPlanCredits(plan: CampaignPlanStep[]): number {
         total += AGENT_TOOL_CREDITS.generate_image;
         break;
       case "trend-script":
-        total += 4;
+        total += TREND_SCRIPT_TOOL_CREDIT_COST;
         break;
       case "viral-hook":
-        total += 3;
+        total += VIRAL_HOOK_EXTRACTOR_CREDIT_COST;
         break;
       case "content-kalender":
-        total += 5;
+        total += CONTENT_KALENDER_TOOL_CREDIT_COST;
         break;
       case "product-ad":
         total += 3;

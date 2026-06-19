@@ -12,13 +12,12 @@ import {
 import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildContentCalendarUserPrompt,
+  CONTENT_CALENDAR_CREDIT_COST,
   CONTENT_CALENDAR_SYSTEM_PROMPT,
   parseContentCalendarResult,
   type ContentCalendarResult,
   type GenerateContentCalendarInput,
 } from "@/lib/content-calendar-analysis";
-
-const CONTENT_CALENDAR_CREDIT_COST = 5;
 
 type Success = {
   success: true;

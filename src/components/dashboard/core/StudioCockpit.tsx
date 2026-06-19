@@ -22,7 +22,6 @@ import {
 import type { ToolId } from "./DashboardLayout";
 import type { GalleryItem } from "./GalleryGrid";
 import { getCreditAffordanceAmount } from "@/lib/tools/credit-display";
-import { VIRAL_HOOK_CREDIT_COST } from "@/lib/viral-hook-analysis";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "./DashboardSurface";
 import { STUDIO_RADIUS, STUDIO_SHADOW } from "../studio-ui";
 import {
@@ -77,9 +76,8 @@ const QUICK_ACTIONS: QuickAction[] = [
   { id: "avatar-video", label: "Avatar Studio", icon: <UserRound size={16} strokeWidth={1.75} /> },
 ];
 
-function formatQuickActionCredits(toolId: ToolId, affordance: number): string | null {
-  if (toolId === "viral-hook") return `${VIRAL_HOOK_CREDIT_COST} Credits`;
-  if (affordance > 0) return `ab ${affordance}`;
+function formatQuickActionCredits(_toolId: ToolId, affordance: number): string | null {
+  if (affordance > 0) return `${affordance} Credits`;
   return null;
 }
 

@@ -12,12 +12,11 @@ import { AgentSafetyError, checkAgentInputSafety } from "@/lib/agent/guards";
 import {
   buildTrendScriptUserPrompt,
   parseTrendScriptResult,
+  TREND_SCRIPT_CREDIT_COST,
   TREND_SCRIPT_SYSTEM_PROMPT,
   type TrendScriptResult,
   type GenerateTrendScriptInput,
 } from "@/lib/trend-script-analysis";
-
-const TREND_SCRIPT_CREDIT_COST = 4;
 
 type Success = {
   success: true;
