@@ -11,22 +11,66 @@ create table if not exists public.creator_profiles (
 
 alter table public.creator_profiles enable row level security;
 
-create policy "creator_profiles_owner_select"
-  on public.creator_profiles for select to authenticated
-  using (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'creator_profiles'
+      and policyname = 'creator_profiles_owner_select'
+  ) then
+    create policy "creator_profiles_owner_select"
+      on public.creator_profiles for select to authenticated
+      using (user_id = auth.uid());
+  end if;
+end $$;
 
-create policy "creator_profiles_owner_insert"
-  on public.creator_profiles for insert to authenticated
-  with check (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'creator_profiles'
+      and policyname = 'creator_profiles_owner_insert'
+  ) then
+    create policy "creator_profiles_owner_insert"
+      on public.creator_profiles for insert to authenticated
+      with check (user_id = auth.uid());
+  end if;
+end $$;
 
-create policy "creator_profiles_owner_update"
-  on public.creator_profiles for update to authenticated
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'creator_profiles'
+      and policyname = 'creator_profiles_owner_update'
+  ) then
+    create policy "creator_profiles_owner_update"
+      on public.creator_profiles for update to authenticated
+      using (user_id = auth.uid())
+      with check (user_id = auth.uid());
+  end if;
+end $$;
 
-create policy "creator_profiles_owner_delete"
-  on public.creator_profiles for delete to authenticated
-  using (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'creator_profiles'
+      and policyname = 'creator_profiles_owner_delete'
+  ) then
+    create policy "creator_profiles_owner_delete"
+      on public.creator_profiles for delete to authenticated
+      using (user_id = auth.uid());
+  end if;
+end $$;
 
 comment on table public.creator_profiles is
   'Persistent creator memory for KI Agent (nische, zielgruppe, plattformen, produkte).';

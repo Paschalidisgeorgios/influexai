@@ -29,8 +29,19 @@ create index if not exists avatar_jobs_status_idx
 alter table public.avatar_render_jobs
   enable row level security;
 
-create policy "avatar_jobs_owner"
-  on public.avatar_render_jobs
-  for all to authenticated
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'avatar_render_jobs'
+      and policyname = 'avatar_jobs_owner'
+  ) then
+    create policy "avatar_jobs_owner"
+      on public.avatar_render_jobs
+      for all to authenticated
+      using (user_id = auth.uid())
+      with check (user_id = auth.uid());
+  end if;
+end $$;

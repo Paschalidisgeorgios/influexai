@@ -103,12 +103,22 @@ create index if not exists characters_upload_session_idx
 
 alter table public.characters enable row level security;
 
-drop policy if exists "Users manage own characters" on public.characters;
-create policy "Users manage own characters"
-  on public.characters for all
-  to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'characters'
+      and policyname = 'Users manage own characters'
+  ) then
+    create policy "Users manage own characters"
+      on public.characters for all
+      to authenticated
+      using (auth.uid() = user_id)
+      with check (auth.uid() = user_id);
+  end if;
+end $$;
 
 comment on table public.characters is
   'KI-Influencer virtual characters. lora_id = lora_models row id (text); lora_ref = fal LoRA URL.';

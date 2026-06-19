@@ -58,48 +58,158 @@ alter table public.community_follows enable row level security;
 alter table public.community_creation_reports enable row level security;
 
 -- Public generations for community (owner has public profile)
-create policy "generations_select_public_community"
-  on public.generations for select
-  using (
-    is_public = true
-    and exists (
-      select 1
-      from public.profiles p
-      where p.id = generations.user_id
-        and p.is_public = true
-        and p.username is not null
-    )
-  );
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'generations'
+      and policyname = 'generations_select_public_community'
+  ) then
+    create policy "generations_select_public_community"
+      on public.generations for select
+      using (
+        is_public = true
+        and exists (
+          select 1
+          from public.profiles p
+          where p.id = generations.user_id
+            and p.is_public = true
+            and p.username is not null
+        )
+      );
+  end if;
+end $$;
 
-create policy "community_likes_select_public"
-  on public.community_likes for select using (true);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_likes'
+      and policyname = 'community_likes_select_public'
+  ) then
+    create policy "community_likes_select_public"
+      on public.community_likes for select using (true);
+  end if;
+end $$;
 
-create policy "community_likes_insert_own"
-  on public.community_likes for insert
-  with check (auth.uid() = user_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_likes'
+      and policyname = 'community_likes_insert_own'
+  ) then
+    create policy "community_likes_insert_own"
+      on public.community_likes for insert
+      with check (auth.uid() = user_id);
+  end if;
+end $$;
 
-create policy "community_likes_delete_own"
-  on public.community_likes for delete
-  using (auth.uid() = user_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_likes'
+      and policyname = 'community_likes_delete_own'
+  ) then
+    create policy "community_likes_delete_own"
+      on public.community_likes for delete
+      using (auth.uid() = user_id);
+  end if;
+end $$;
 
-create policy "community_comments_select_public"
-  on public.community_comments for select using (is_deleted = false);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_comments'
+      and policyname = 'community_comments_select_public'
+  ) then
+    create policy "community_comments_select_public"
+      on public.community_comments for select using (is_deleted = false);
+  end if;
+end $$;
 
-create policy "community_comments_insert_own"
-  on public.community_comments for insert
-  with check (auth.uid() = user_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_comments'
+      and policyname = 'community_comments_insert_own'
+  ) then
+    create policy "community_comments_insert_own"
+      on public.community_comments for insert
+      with check (auth.uid() = user_id);
+  end if;
+end $$;
 
-create policy "community_follows_select_public"
-  on public.community_follows for select using (true);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_follows'
+      and policyname = 'community_follows_select_public'
+  ) then
+    create policy "community_follows_select_public"
+      on public.community_follows for select using (true);
+  end if;
+end $$;
 
-create policy "community_follows_insert_own"
-  on public.community_follows for insert
-  with check (auth.uid() = follower_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_follows'
+      and policyname = 'community_follows_insert_own'
+  ) then
+    create policy "community_follows_insert_own"
+      on public.community_follows for insert
+      with check (auth.uid() = follower_id);
+  end if;
+end $$;
 
-create policy "community_follows_delete_own"
-  on public.community_follows for delete
-  using (auth.uid() = follower_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_follows'
+      and policyname = 'community_follows_delete_own'
+  ) then
+    create policy "community_follows_delete_own"
+      on public.community_follows for delete
+      using (auth.uid() = follower_id);
+  end if;
+end $$;
 
-create policy "community_creation_reports_insert_own"
-  on public.community_creation_reports for insert
-  with check (auth.uid() = reporter_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'community_creation_reports'
+      and policyname = 'community_creation_reports_insert_own'
+  ) then
+    create policy "community_creation_reports_insert_own"
+      on public.community_creation_reports for insert
+      with check (auth.uid() = reporter_id);
+  end if;
+end $$;

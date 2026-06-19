@@ -13,7 +13,18 @@ create table if not exists public.agent_feedback (
 create index if not exists agent_feedback_user_id_idx
   on public.agent_feedback (user_id);
 alter table public.agent_feedback enable row level security;
-create policy "agent_feedback_owner"
-  on public.agent_feedback for all to authenticated
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'agent_feedback'
+      and policyname = 'agent_feedback_owner'
+  ) then
+    create policy "agent_feedback_owner"
+      on public.agent_feedback for all to authenticated
+      using (user_id = auth.uid())
+      with check (user_id = auth.uid());
+  end if;
+end $$;
