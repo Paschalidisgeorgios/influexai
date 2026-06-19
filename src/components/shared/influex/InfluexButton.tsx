@@ -60,7 +60,14 @@ function buttonClasses({
 }
 
 export function InfluexButton(props: InfluexButtonProps) {
-  const { variant, size, loading, className, children } = props;
+  const {
+    variant,
+    size,
+    loading,
+    className,
+    children,
+    ...domProps
+  } = props;
 
   const classes = buttonClasses({ variant, size, loading, className });
 
@@ -82,7 +89,7 @@ export function InfluexButton(props: InfluexButtonProps) {
     );
   }
 
-  const { disabled, type = "button", ...rest } = props;
+  const { disabled, type = "button" } = domProps as ButtonProps;
 
   return (
     <button
@@ -90,7 +97,6 @@ export function InfluexButton(props: InfluexButtonProps) {
       className={classes}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      {...rest}
     >
       {loading ? <span className="influex-btn__spinner" aria-hidden /> : null}
       {children}
