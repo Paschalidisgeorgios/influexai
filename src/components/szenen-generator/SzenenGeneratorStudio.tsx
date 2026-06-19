@@ -52,6 +52,10 @@ import {
   type SzenenThemeKey,
 } from "@/lib/szenen-generator-theme";
 import { createClient } from "@/lib/supabase/client";
+import {
+  applyPreparedInputsToWorkspaceState,
+  type AgentPreparedInputs,
+} from "@/lib/tools/agent-prepared-inputs";
 
 const BUTTON_LOADING_MESSAGES = [
   "Generiere…",
@@ -82,7 +86,11 @@ function filterModels(models: SzenenGeneratorModel[], query: string) {
   );
 }
 
-export function SzenenGeneratorStudio() {
+export function SzenenGeneratorStudio({
+  preparedInputs = null,
+}: {
+  preparedInputs?: AgentPreparedInputs | null;
+} = {}) {
   const modelListRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const modelCardRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -163,6 +171,20 @@ export function SzenenGeneratorStudio() {
       showMessage(`Fertig, ${userName}! Deine Szene wartet. ✨`, 5000, 8);
     },
   });
+
+  useEffect(() => {
+    if (!preparedInputs) return;
+    const hints = applyPreparedInputsToWorkspaceState(preparedInputs, {
+      prompt,
+      aspectRatio,
+    });
+    if (hints.aspectRatio === "9:16") {
+      setAspectRatio("9:16");
+    }
+    if (hints.prompt && !prompt.trim()) {
+      setPrompt(hints.prompt);
+    }
+  }, [preparedInputs]); // eslint-disable-line react-hooks/exhaustive-deps -- apply once when handoff arrives
 
   useEffect(() => {
     const supabase = createClient();

@@ -6,6 +6,7 @@ import { STUDIO_STATUS_LABELS } from "@/lib/tools/studio-tool-registry";
 import type { AgentToolCapability } from "@/lib/tools/agent-tool-capability-map";
 import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
 import type { AgentToolHandoff } from "@/lib/tools/agent-tool-handoff";
+import { buildAgentPreparedInputsOrNull } from "@/lib/tools/agent-prepared-inputs";
 import { AgentHandoffPanel } from "./AgentHandoffPanel";
 import { StudioCreditNote, StudioCreditPill } from "./StudioCreditPill";
 import { StudioPageHeader } from "./StudioPageHeader";
@@ -74,6 +75,8 @@ export function ToolWorkspaceShell({
   actions,
   footer,
 }: ToolWorkspaceShellProps) {
+  const prepared = agentHandoff ? buildAgentPreparedInputsOrNull(agentHandoff) : null;
+
   return (
     <div className="mx-auto w-full min-w-0 max-w-3xl space-y-8">
       <StudioPageHeader
@@ -100,10 +103,10 @@ export function ToolWorkspaceShell({
 
       <StudioPanel>
         {creditNote ? <StudioCreditNote className="mb-6">{creditNote}</StudioCreditNote> : null}
-        {agentHandoff ? <AgentHandoffPanel handoff={agentHandoff} /> : null}
+        {prepared ? <AgentHandoffPanel prepared={prepared} /> : null}
         {modelSelector}
         {executionNotice}
-        {capability ? (
+        {capability && !prepared ? (
           <div className="mb-6 grid gap-4 sm:grid-cols-2">
             <CapabilityList title="Benötigt" items={capability.requiredInputs} />
             <CapabilityList title="Ergebnis" items={capability.outputs} />

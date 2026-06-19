@@ -15,8 +15,12 @@ import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
 import { useAkoolJobPoll } from "@/hooks/use-akool-job-poll";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 import { AiOutputDisclaimer } from "@/components/ui/AiOutputDisclaimer";
+import { AgentHandoffPanel } from "@/components/dashboard/studio-ui";
+import { useAgentPreparedInputs } from "@/hooks/useAgentPreparedInputs";
+import { applyPreparedInputsToWorkspaceState } from "@/lib/tools/agent-prepared-inputs";
 
 export default function TextToVideoPage() {
+  const prepared = useAgentPreparedInputs("text-to-video");
   const [models, setModels] = useState<AkoolImageToVideoModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [modelId, setModelId] = useState("");
@@ -49,6 +53,14 @@ export default function TextToVideoPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!prepared) return;
+    const hints = applyPreparedInputsToWorkspaceState(prepared, { prompt });
+    if (hints.prompt && !prompt.trim()) {
+      setPrompt(hints.prompt);
+    }
+  }, [prepared]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const generate = async () => {
     setErr(null);
     try {
@@ -67,6 +79,8 @@ export default function TextToVideoPage() {
   };
 
   return (
+    <div className="mx-auto w-full min-w-0 max-w-3xl space-y-4">
+      {prepared ? <AgentHandoffPanel prepared={prepared} /> : null}
     <AkoolToolShell
       icon={Clapperboard}
       title="TEXT ZU VIDEO"
@@ -88,7 +102,13 @@ export default function TextToVideoPage() {
       )}
       <label className="flex flex-col gap-2">
         <span className={akoolLabelClass}>Prompt</span>
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={5} className={akoolInputClass} placeholder="Beschreibe dein Video…" />
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={5}
+          className={akoolInputClass}
+          placeholder={prepared?.suggestedPromptPlaceholder ?? "Beschreibe dein Video…"}
+        />
       </label>
       {selected && (
         <>
@@ -105,5 +125,6 @@ export default function TextToVideoPage() {
       </button>
       {(err || error) && <p className="text-sm text-[#ff6b7a]">{err || error}</p>}
     </AkoolToolShell>
+    </div>
   );
 }

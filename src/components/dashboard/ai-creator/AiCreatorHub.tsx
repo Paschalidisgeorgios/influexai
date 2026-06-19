@@ -37,7 +37,7 @@ import {
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import { AgentHandoffPanel } from "@/components/dashboard/studio-ui";
-import { useAgentToolHandoff } from "@/hooks/useAgentToolHandoff";
+import { useAgentPreparedInputs } from "@/hooks/useAgentPreparedInputs";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
 import { isCharacterEditableStatus } from "@/lib/ai-creator/characters-update-policy";
 import {
@@ -321,7 +321,7 @@ export function AiCreatorHub() {
     message: string;
   } | null>(null);
 
-  const agentHandoff = useAgentToolHandoff("ai-creator");
+  const prepared = useAgentPreparedInputs("ai-creator");
 
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
@@ -511,9 +511,9 @@ export function AiCreatorHub() {
         subtitle="Characters, Personas und Digital Twins sind der Kern für konsistente Bilder, UGC, Video und Kampagnen — nicht isolierte Einzeltools."
       />
 
-      {agentHandoff ? (
+      {prepared ? (
         <div className="mb-6">
-          <AgentHandoffPanel handoff={agentHandoff} />
+          <AgentHandoffPanel prepared={prepared} />
         </div>
       ) : null}
 
