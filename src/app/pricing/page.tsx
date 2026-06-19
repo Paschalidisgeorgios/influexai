@@ -8,6 +8,7 @@ import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { CreditPacksSection } from "@/components/pricing/CreditPacksSection";
 import { MarketingShell } from "@/components/shared/influex";
 import { useSubscriptionCheckout } from "@/hooks/useSubscriptionCheckout";
+import { StripeTestModeNotice } from "@/components/pricing/StripeTestModeNotice";
 
 const INTENT_COPY: Record<
   string,
@@ -79,7 +80,7 @@ function PricingPrimaryCtaText({ fallback }: { fallback: string }) {
 
 export default function PricingPage() {
   const t = useTranslations("landingPage.pricing");
-  const { loading, handleSubscribe } = useSubscriptionCheckout("/pricing");
+  const { loading, error, handleSubscribe, clearError } = useSubscriptionCheckout("/pricing");
   const headlineFallback = t("headline");
   const sublineFallback = t("page_subtitle");
   const ctaFallback = t("starter_cta");
@@ -107,7 +108,22 @@ export default function PricingPage() {
           <span className="influex-pricing-credits-info__label">{t("credit_outcome_title")}</span>
           <p className="influex-pricing-credits-info__body">{t("credit_outcome_body")}</p>
         </div>
+
+        <StripeTestModeNotice variant="pricing" className="mt-6 max-w-2xl" />
       </header>
+
+      {error ? (
+        <p
+          className="mx-auto mb-6 max-w-2xl rounded-[14px] border border-red-500/20 bg-red-500/8 px-4 py-3 text-sm text-red-950"
+          data-testid="subscription-checkout-error"
+          role="alert"
+        >
+          {error}{" "}
+          <button type="button" className="underline" onClick={clearError}>
+            Schließen
+          </button>
+        </p>
+      ) : null}
 
       <PricingPlans
         variant="influex"

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { InfluexBadge, InfluexButton, InfluexSurface } from "@/components/shared/influex";
+import { CHECKOUT_USER_MESSAGES } from "@/lib/checkout-messages";
 import { CREDIT_PACKAGES, type CreditPackageId } from "@/lib/credit-packages";
+import { useCreditPackCheckout } from "@/hooks/useCreditPackCheckout";
+import { StripeTestModeNotice } from "@/components/pricing/StripeTestModeNotice";
 
 function formatEur(amount: number): string {
   return amount.toFixed(amount < 1 ? 3 : 2).replace(".", ",");
@@ -15,39 +17,49 @@ type CreditPacksSectionProps = {
 
 export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProps) {
   const t = useTranslations("buyCredits");
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const { loadingId, error, checkout, clearError } = useCreditPackCheckout({
+    redirectPath: "/pricing",
+  });
   const isInfluex = variant === "influex";
 
-  const handleCheckout = async (packageId: CreditPackageId) => {
-    setLoadingId(packageId);
-    try {
-      const res = await fetch("/api/credits/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else if (res.status === 401) {
-        window.location.href = `/auth/sign-in?redirect=${encodeURIComponent("/pricing")}`;
-      } else {
-        alert(data.error ?? t("checkout_error"));
-      }
-    } catch {
-      alert(t("checkout_error"));
-    }
-    setLoadingId(null);
+  const handleCheckout = (packageId: CreditPackageId) => {
+    void checkout(packageId);
   };
+
+  const topUpFootnote = (
+    <>
+      {t("pricing_footnote")}{" "}
+      <span className="opacity-90">{CHECKOUT_USER_MESSAGES.planRequired}</span>
+    </>
+  );
 
   if (isInfluex) {
     return (
       <section className="influex-pricing-credit-packs" aria-labelledby="influex-credit-packs-title">
+        <StripeTestModeNotice variant="pricing" className="mb-6" />
+
         <div className="influex-pricing-credit-packs__header">
           <h2 id="influex-credit-packs-title" className="influex-pricing-credit-packs__title">
             {t("pricing_title")}
           </h2>
           <p className="influex-pricing-credit-packs__subtitle">{t("pricing_subtitle")}</p>
+          <p className="influex-pricing-credit-packs__subtitle mt-2 text-sm opacity-80">
+            Zusatz-Credits on top deines monatlichen Plan-Guthabens — kein neues Abo.
+          </p>
         </div>
+
+        {error ? (
+          <p
+            className="mb-4 rounded-[14px] border border-red-500/20 bg-red-500/8 px-4 py-3 text-sm text-red-950"
+            data-testid="credit-checkout-error"
+            role="alert"
+          >
+            {error}{" "}
+            <button type="button" className="underline" onClick={clearError}>
+              Schließen
+            </button>
+          </p>
+        ) : null}
 
         <div className="influex-pricing-credit-packs__grid">
           {CREDIT_PACKAGES.map((pkg) => {
@@ -60,6 +72,7 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
                 className={`influex-pricing-credit-pack ${
                   isPopular ? "influex-pricing-credit-pack--featured" : ""
                 }`}
+                data-testid="pricing-card"
               >
                 {isPopular ? (
                   <InfluexBadge tone="lime" className="influex-pricing-credit-pack__badge">
@@ -80,22 +93,29 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
                   className="influex-pricing-credit-pack__cta"
                   disabled={loadingId !== null}
                   loading={loadingId === pkg.id}
-                  onClick={() => void handleCheckout(pkg.id)}
+                  onClick={() => handleCheckout(pkg.id)}
                 >
-                  {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
+                  {loadingId === pkg.id
+                    ? CHECKOUT_USER_MESSAGES.loading
+                    : CHECKOUT_USER_MESSAGES.buyCreditsCta}
                 </InfluexButton>
               </InfluexSurface>
             );
           })}
         </div>
 
-        <p className="influex-pricing-credit-packs__footnote">{t("pricing_footnote")}</p>
+        <p className="influex-pricing-credit-packs__footnote">{topUpFootnote}</p>
       </section>
     );
   }
 
   return (
     <section className="mt-20 border-t border-zinc-800/50 pt-16">
+      <StripeTestModeNotice
+        variant="dashboard"
+        className="mx-auto mb-8 max-w-2xl text-amber-100/90"
+      />
+
       <div className="mb-10 text-center">
         <h2 className="pricing-glass-title mb-3 text-[clamp(1.75rem,3vw,2.5rem)] text-white">
           {t("pricing_title")}
@@ -107,6 +127,12 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
           {t("pricing_subtitle")}
         </p>
       </div>
+
+      {error ? (
+        <p className="mx-auto mb-4 max-w-lg text-center text-sm text-red-300" role="alert">
+          {error}
+        </p>
+      ) : null}
 
       <div
         className="mx-auto grid max-w-5xl gap-4 px-0 sm:px-0"
@@ -150,14 +176,14 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
               <button
                 type="button"
                 disabled={loadingId !== null}
-                onClick={() => void handleCheckout(pkg.id)}
+                onClick={() => handleCheckout(pkg.id)}
                 className={`mt-auto w-full min-h-[44px] rounded-xl text-sm font-bold transition-all disabled:opacity-60 ${
                   isPopular
                     ? "pricing-glass-btn-primary"
                     : "pricing-glass-btn-secondary"
                 }`}
               >
-                {loadingId === pkg.id ? "…" : t("top_up_button", { count: pkg.credits })}
+                {loadingId === pkg.id ? "…" : CHECKOUT_USER_MESSAGES.buyCreditsCta}
               </button>
             </div>
           );
@@ -165,7 +191,7 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
       </div>
 
       <p className="mt-8 text-center text-xs text-white/55 max-w-2xl mx-auto leading-relaxed">
-        {t("pricing_footnote")}
+        {topUpFootnote}
       </p>
     </section>
   );

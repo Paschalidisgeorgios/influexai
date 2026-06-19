@@ -2,7 +2,7 @@
 
 import { hasActivePlan } from "@/lib/access";
 import { getCachedCredits } from "@/lib/cache";
-import { getPlanMonthlyCredits } from "@/lib/subscription-plans";
+import { getPlanMonthlyCredits, getPlanDisplayName } from "@/lib/subscription-plans";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function getCreditsPageStats() {
@@ -86,6 +86,9 @@ export async function getCreditsPageStats() {
   return {
     credits,
     plan: profile?.plan ?? "free",
+    hasActivePlan: planActive,
+    planMonthlyCredits: planCapacity,
+    planDisplayName: getPlanDisplayName(profile?.plan),
     usedThisMonth,
     totalPurchased,
     hasPurchased,

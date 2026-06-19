@@ -10,10 +10,13 @@ import {
   DEFAULT_CHECKOUT_PACKAGE,
   type CreditPackageId,
 } from "@/lib/credit-packages";
+import { CHECKOUT_USER_MESSAGES } from "@/lib/checkout-messages";
+import { formatMonthlyCreditsLabel } from "@/lib/pricing-surface";
 import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
+import { useCreditPackCheckout } from "@/hooks/useCreditPackCheckout";
+import { StripeTestModeNotice } from "@/components/pricing/StripeTestModeNotice";
 import {
   DASHBOARD_ACCENT,
-  DASHBOARD_MUTED,
   DASHBOARD_TEXT,
 } from "./DashboardSurface";
 import { StudioCreditNote, StudioPanel } from "../studio-ui";
@@ -47,7 +50,11 @@ export function StudioCreditsSection({
   const preselect = searchParams.get("package") as CreditPackageId | null;
 
   const [stats, setStats] = useState<PageStats>(null);
-  const [loading, setLoading] = useState<string | null>(null);
+  const hasActivePlan = stats?.hasActivePlan ?? false;
+  const { loadingId, error, checkout, clearError } = useCreditPackCheckout({
+    redirectPath: "/dashboard/credits",
+    hasActivePlan: stats === null ? undefined : hasActivePlan,
+  });
 
   const refresh = useCallback(() => {
     getCreditsPageStats().then(setStats);
@@ -57,21 +64,8 @@ export function StudioCreditsSection({
     refresh();
   }, [refresh]);
 
-  const handleCheckout = async (packageId: string) => {
-    setLoading(packageId);
-    try {
-      const res = await fetch("/api/credits/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else alert(data.error ?? "Checkout fehlgeschlagen.");
-    } catch {
-      alert("Fehler beim Checkout. Bitte versuche es erneut.");
-    }
-    setLoading(null);
+  const handleCheckout = (packageId: CreditPackageId) => {
+    void checkout(packageId);
   };
 
   const credits = stats?.credits ?? 0;
@@ -82,6 +76,8 @@ export function StudioCreditsSection({
 
   return (
     <div className="w-full min-w-0 max-w-full space-y-8">
+      <StripeTestModeNotice variant="dashboard" />
+
       {showLowBalance ? (
         <StudioCreditNote>
           Guthaben niedrig — Top-up jederzeit unter Credit-Pakete möglich.
@@ -117,6 +113,15 @@ export function StudioCreditsSection({
             </span>
           </p>
 
+          {stats && stats.planMonthlyCredits > 0 ? (
+            <p className="text-sm leading-relaxed" style={{ color: STUDIO_MUTED }}>
+              Monatliches Plan-Kontingent ({stats.planDisplayName}):{" "}
+              <span className="font-medium" style={{ color: STUDIO_TEXT }}>
+                {formatMonthlyCreditsLabel(stats.planMonthlyCredits)}
+              </span>
+            </p>
+          ) : null}
+
           <div>
             <div className="mb-2 flex justify-between text-xs" style={{ color: STUDIO_MUTED }}>
               <span>Verbleibend</span>
@@ -142,21 +147,27 @@ export function StudioCreditsSection({
 
       <StudioPanel title="Credits & Plan">
         <p className="mb-5 max-w-xl text-sm leading-relaxed" style={{ color: STUDIO_MUTED }}>
-          Abo und Pläne auf der Pricing-Seite. Einmalige Credit-Pakete hier — Checkout über Stripe.
+          Abo und Pläne auf der Pricing-Seite. Einmalige Top-up-Pakete zusätzlich zu deinem
+          monatlichen Plan-Guthaben — Checkout über Stripe.
         </p>
+        {!hasActivePlan && stats !== null ? (
+          <StudioCreditNote className="mb-4">
+            {CHECKOUT_USER_MESSAGES.planRequired}
+          </StudioCreditNote>
+        ) : null}
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/pricing"
             className={primaryBtnClass}
             style={{ background: DASHBOARD_ACCENT, color: "#060608" }}
           >
-            Pläne & Abo ansehen
+            {CHECKOUT_USER_MESSAGES.subscribeCta}
           </Link>
           {showPackages ? (
             <button
               type="button"
               onClick={() => handleCheckout(DEFAULT_CHECKOUT_PACKAGE)}
-              disabled={!!loading}
+              disabled={loadingId !== null || !hasActivePlan}
               className={secondaryBtnClass}
               style={{
                 borderColor: "rgba(8,8,8,0.10)",
@@ -164,9 +175,9 @@ export function StudioCreditsSection({
                 color: STUDIO_TEXT,
               }}
             >
-              {loading === DEFAULT_CHECKOUT_PACKAGE
-                ? "Wird geladen…"
-                : "Credit-Paket kaufen"}
+              {loadingId === DEFAULT_CHECKOUT_PACKAGE
+                ? CHECKOUT_USER_MESSAGES.loading
+                : CHECKOUT_USER_MESSAGES.buyCreditsCta}
             </button>
           ) : (
             <Link
@@ -259,9 +270,22 @@ export function StudioCreditsSection({
               {tBuy("pricing_title")}
             </h3>
             <p className="mt-1 max-w-xl text-sm leading-relaxed" style={{ color: STUDIO_MUTED }}>
-              {tBuy("pricing_subtitle")}
+              {tBuy("pricing_subtitle")} {CHECKOUT_USER_MESSAGES.planRequired}
             </p>
           </div>
+
+          {error ? (
+            <p
+              className="rounded-[14px] border border-red-500/20 bg-red-500/8 px-4 py-3 text-sm text-red-950"
+              data-testid="credit-checkout-error"
+              role="alert"
+            >
+              {error}{" "}
+              <button type="button" className="underline" onClick={clearError}>
+                Schließen
+              </button>
+            </p>
+          ) : null}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {CREDIT_PACKAGES.map((pkg) => {
@@ -320,16 +344,18 @@ export function StudioCreditsSection({
                   <button
                     type="button"
                     onClick={() => handleCheckout(pkg.id)}
-                    disabled={loading === pkg.id}
+                    disabled={loadingId === pkg.id || loadingId !== null || !hasActivePlan}
                     className={`${primaryBtnClass} w-full`}
                   style={{
                     background: highlighted ? DASHBOARD_ACCENT : "rgba(8,8,8,0.05)",
                     color: highlighted ? "#060608" : STUDIO_TEXT,
                   }}
                   >
-                    {loading === pkg.id
-                      ? "Wird geladen…"
-                      : tBuy("top_up_button", { count: pkg.credits })}
+                    {loadingId === pkg.id
+                      ? CHECKOUT_USER_MESSAGES.loading
+                      : hasActivePlan
+                        ? tBuy("top_up_button", { count: pkg.credits })
+                        : CHECKOUT_USER_MESSAGES.planRequired}
                   </button>
                 </div>
               );
@@ -373,7 +399,7 @@ export function StudioCreditsSection({
                   key={pkg.id}
                   type="button"
                   onClick={() => handleCheckout(pkg.id)}
-                  disabled={!!loading}
+                  disabled={loadingId !== null || !hasActivePlan}
                   className={`${primaryBtnClass} w-full`}
                   style={{
                     background: pkg.popular ? DASHBOARD_ACCENT : "rgba(8,8,8,0.06)",
@@ -393,7 +419,7 @@ export function StudioCreditsSection({
                   color: STUDIO_TEXT,
                 }}
               >
-                Pläne ansehen
+                {CHECKOUT_USER_MESSAGES.subscribeCta}
               </Link>
             </div>
           </div>
