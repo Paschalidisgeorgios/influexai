@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  STUDIO_PROVIDER_DISABLED_HINT,
   type StudioModelDefinition,
   type StudioToolDefinition,
 } from "@/lib/tools/studio-tool-registry";
-import { DASHBOARD_MUTED, DASHBOARD_TEXT } from "@/components/dashboard/core/DashboardSurface";
+import { DASHBOARD_MUTED } from "@/components/dashboard/core/DashboardSurface";
 import { StudioFieldLabel, StudioSelect } from "./StudioField";
+import { ToolExecutionDisabledNotice } from "./ToolExecutionDisabledNotice";
 
 type StudioModelSelectShellProps = {
   tool: StudioToolDefinition | undefined;
@@ -29,7 +29,7 @@ export function StudioModelSelectShell({
 
   return (
     <div
-      className="space-y-3 rounded-xl border p-4"
+      className="mb-6 space-y-3 rounded-xl border p-4"
       style={{ borderColor: "rgba(255,255,255,0.1)" }}
     >
       <div>
@@ -48,25 +48,23 @@ export function StudioModelSelectShell({
 
       {selected ? (
         <p className="text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-          {selected.providerLabel} · {selected.capability}
+          {selected.notes ?? selected.label}
           {selected.supports.length ? ` · ${selected.supports.join(", ")}` : ""}
-          {selected.notes ? ` — ${selected.notes}` : ""}
         </p>
       ) : null}
 
       {showProviderHint &&
       (tool.providerExecution === "disabled" ||
         tool.providerExecution === "shell_only") ? (
-        <p
-          className="rounded-lg border px-3 py-2 text-xs leading-relaxed"
-          style={{
-            borderColor: "rgba(180,255,0,0.2)",
-            color: DASHBOARD_TEXT,
-          }}
-        >
-          {STUDIO_PROVIDER_DISABLED_HINT}
-        </p>
+        <ToolExecutionDisabledNotice
+          variant={
+            tool.status === "shell" ? "shell_only" : "provider_disabled"
+          }
+        />
       ) : null}
     </div>
   );
 }
+
+/** Alias for spec naming — same component */
+export const ToolModelSelector = StudioModelSelectShell;

@@ -29,4 +29,6 @@ export {
   ToolSetupSurface,
 } from "./ToolSetupLayout";
 export { StudioPageHeader } from "./StudioPageHeader";
-export { StudioModelSelectShell } from "./StudioModelSelectShell";
+export { StudioModelSelectShell, ToolModelSelector } from "./StudioModelSelectShell";
+export { ToolExecutionDisabledNotice } from "./ToolExecutionDisabledNotice";
+export { ToolWorkspaceShell } from "./ToolWorkspaceShell";

@@ -5,6 +5,11 @@
 
 import type { ToolId } from "@/components/dashboard/core/DashboardLayout";
 import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
+import {
+  getModelById,
+  getModelsForToolIds,
+  type ModelCatalogEntry,
+} from "@/lib/tools/model-catalog";
 
 export type StudioToolStatus = "available" | "shell" | "disabled" | "coming_soon";
 
@@ -44,10 +49,21 @@ export type StudioToolDefinition = {
   requiresConsent: boolean;
   requiresUpload: boolean;
   providerExecution: StudioProviderExecution;
+  supportsModelSelection: boolean;
+  supportsUpload: boolean;
+  supportsPrompt: boolean;
+  supportsReferenceImage: boolean;
+  supportsAspectRatio: boolean;
+  supportsDuration: boolean;
+  supportsVoice: boolean;
+  supportsCharacter: boolean;
 };
 
 export const STUDIO_PROVIDER_DISABLED_HINT =
-  "Model selection is prepared. Provider execution is disabled in this environment.";
+  "Provider-Ausführung ist in dieser Umgebung deaktiviert.";
+
+export const STUDIO_SHELL_ONLY_HINT =
+  "Dieses Tool ist vorbereitet, aber noch nicht aktiviert.";
 
 export const STUDIO_STATUS_LABELS: Record<StudioToolStatus, string> = {
   available: "Verfügbar",
@@ -56,85 +72,34 @@ export const STUDIO_STATUS_LABELS: Record<StudioToolStatus, string> = {
   coming_soon: "Demnächst",
 };
 
-const IMAGE_MODELS: StudioModelDefinition[] = [
-  {
-    id: "flux-standard",
-    label: "Standard",
-    providerLabel: "fal.ai",
-    capability: "image",
-    creditEstimate: "5 Credits",
-    supports: ["1:1", "9:16", "16:9"],
-    status: "shell",
-    notes: "Schnelle Kampagnenmotive",
-  },
-  {
-    id: "flux-high",
-    label: "High Resolution",
-    providerLabel: "fal.ai",
-    capability: "image",
-    creditEstimate: "8 Credits",
-    supports: ["1:1", "9:16", "16:9", "4K"],
-    status: "shell",
-  },
-];
+const IMAGE_MODEL_IDS = ["flux-standard", "flux-high"];
+const VIDEO_MODEL_IDS = ["kling-v2-turbo", "kling-v2-master"];
+const TEXT_VIDEO_MODEL_IDS = ["akool-text-video-standard"];
+const LIPSYNC_MODEL_IDS = ["akool-lipsync-standard"];
+const AI_CREATOR_MODEL_IDS = ["character-draft-shell"];
 
-const VIDEO_MODELS: StudioModelDefinition[] = [
-  {
-    id: "kling-v2-turbo",
-    label: "Kling v2 Turbo",
-    providerLabel: "Seedance / fal",
-    capability: "image-to-video",
-    creditEstimate: "Dynamisch",
-    supports: ["5s", "10s", "720p"],
-    status: "shell",
-  },
-  {
-    id: "kling-v2-master",
-    label: "Kling v2 Master",
-    providerLabel: "Seedance / fal",
-    capability: "image-to-video",
-    creditEstimate: "Dynamisch",
-    supports: ["5s", "10s", "1080p"],
-    status: "shell",
-  },
-];
+function catalogToStudioModel(entry: ModelCatalogEntry): StudioModelDefinition {
+  return {
+    id: entry.modelId,
+    label: entry.label,
+    providerLabel: entry.providerLabel,
+    capability: entry.category,
+    creditEstimate: entry.estimatedCredits,
+    supports: entry.supports,
+    status: entry.status === "shell_only" ? "shell" : entry.status === "available" ? "available" : "disabled",
+    notes: entry.notes,
+  };
+}
 
-const TEXT_VIDEO_MODELS: StudioModelDefinition[] = [
-  {
-    id: "akool-text-video-standard",
-    label: "Standard Clip",
-    providerLabel: "Akool",
-    capability: "text-to-video",
-    creditEstimate: "Ab 50 Credits",
-    supports: ["5s", "720p"],
-    status: "shell",
-  },
-];
+function modelsFromIds(ids: string[]): StudioModelDefinition[] {
+  return getModelsForToolIds(ids).map(catalogToStudioModel);
+}
 
-const LIPSYNC_MODELS: StudioModelDefinition[] = [
-  {
-    id: "akool-lipsync-standard",
-    label: "Lip Sync Standard",
-    providerLabel: "Akool",
-    capability: "lipsync",
-    creditEstimate: "40 Credits",
-    supports: ["video + audio"],
-    status: "shell",
-  },
-];
-
-const AI_CREATOR_MODELS: StudioModelDefinition[] = [
-  {
-    id: "character-draft-shell",
-    label: "Character Draft",
-    providerLabel: "InfluexAI",
-    capability: "character",
-    creditEstimate: "0 Credits",
-    supports: ["draft", "consent", "handoff"],
-    status: "shell",
-    notes: "Upload/Training folgt in späteren Phasen",
-  },
-];
+const IMAGE_MODELS = modelsFromIds(IMAGE_MODEL_IDS);
+const VIDEO_MODELS = modelsFromIds(VIDEO_MODEL_IDS);
+const TEXT_VIDEO_MODELS = modelsFromIds(TEXT_VIDEO_MODEL_IDS);
+const LIPSYNC_MODELS = modelsFromIds(LIPSYNC_MODEL_IDS);
+const AI_CREATOR_MODELS = modelsFromIds(AI_CREATOR_MODEL_IDS);
 
 function creditLabelFor(id: string): string {
   return getCreditDisplayLabel(id);
@@ -156,6 +121,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: false,
     providerExecution: "disabled",
+    supportsModelSelection: true,
+    supportsUpload: false,
+    supportsPrompt: true,
+    supportsReferenceImage: false,
+    supportsAspectRatio: true,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "img-to-video",
@@ -172,6 +145,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: true,
     providerExecution: "disabled",
+    supportsModelSelection: true,
+    supportsUpload: true,
+    supportsPrompt: true,
+    supportsReferenceImage: true,
+    supportsAspectRatio: false,
+    supportsDuration: true,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "text-to-video",
@@ -188,6 +169,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: false,
     providerExecution: "disabled",
+    supportsModelSelection: true,
+    supportsUpload: false,
+    supportsPrompt: true,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: true,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "talking-avatar",
@@ -204,6 +193,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: true,
     requiresUpload: true,
     providerExecution: "disabled",
+    supportsModelSelection: true,
+    supportsUpload: true,
+    supportsPrompt: false,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: true,
+    supportsCharacter: false,
   },
   {
     id: "face-swap-video",
@@ -220,6 +217,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: true,
     requiresUpload: true,
     providerExecution: "disabled",
+    supportsModelSelection: false,
+    supportsUpload: true,
+    supportsPrompt: false,
+    supportsReferenceImage: true,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "live-creator",
@@ -236,6 +241,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: true,
     requiresUpload: false,
     providerExecution: "disabled",
+    supportsModelSelection: false,
+    supportsUpload: false,
+    supportsPrompt: false,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: true,
   },
   {
     id: "ai-creator",
@@ -252,6 +265,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: true,
     requiresUpload: false,
     providerExecution: "disabled",
+    supportsModelSelection: true,
+    supportsUpload: false,
+    supportsPrompt: false,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: true,
   },
   {
     id: "viral-hook",
@@ -268,6 +289,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: false,
     providerExecution: "shell_only",
+    supportsModelSelection: false,
+    supportsUpload: false,
+    supportsPrompt: true,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "content-calendar",
@@ -284,6 +313,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: false,
     providerExecution: "shell_only",
+    supportsModelSelection: false,
+    supportsUpload: false,
+    supportsPrompt: true,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
   {
     id: "trend-script",
@@ -300,6 +337,14 @@ export const STUDIO_TOOL_REGISTRY: StudioToolDefinition[] = [
     requiresConsent: false,
     requiresUpload: false,
     providerExecution: "disabled",
+    supportsModelSelection: false,
+    supportsUpload: false,
+    supportsPrompt: true,
+    supportsReferenceImage: false,
+    supportsAspectRatio: false,
+    supportsDuration: false,
+    supportsVoice: false,
+    supportsCharacter: false,
   },
 ];
 
@@ -322,6 +367,8 @@ export function getModelsForTool(id: string): StudioModelDefinition[] {
 export function getDefaultModelForTool(id: string): StudioModelDefinition | null {
   const tool = getStudioToolById(id);
   if (!tool?.defaultModelId) return null;
+  const fromCatalog = getModelById(tool.defaultModelId);
+  if (fromCatalog) return catalogToStudioModel(fromCatalog);
   return tool.models.find((m) => m.id === tool.defaultModelId) ?? tool.models[0] ?? null;
 }
 
