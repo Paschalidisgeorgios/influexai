@@ -104,7 +104,7 @@ describe("pricing surface", () => {
       },
       503
     );
-    expect(message).toBe(CHECKOUT_USER_MESSAGES.runtimeBlocked);
+    expect(message).toBe(CHECKOUT_USER_MESSAGES.stripeRuntimeBlocked);
     expect(message).not.toMatch(/sk_(live|test)_/);
   });
 

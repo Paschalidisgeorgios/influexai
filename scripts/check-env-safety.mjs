@@ -190,6 +190,17 @@ function analyzeEnv(vars, { strictExample = false } = {}) {
     if (productionLike && !overrideActive) fail = true;
   }
 
+  const safeCheckoutOverrideActive =
+    vars.ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT?.trim().toLowerCase() === "true";
+
+  const safeCheckoutEligible =
+    safeCheckoutOverrideActive &&
+    (vars.STRIPE_MODE?.trim().toLowerCase() ?? "") === "test" &&
+    stripeSecret.startsWith("sk_test_") &&
+    !stripeSecret.startsWith("sk_live_") &&
+    supabaseRef !== DEFAULT_PRODUCTION_REF &&
+    ["true", "1", "yes"].includes((vars.PROVIDERS_DISABLED ?? "").trim().toLowerCase());
+
   return {
     signalCategories,
     activeGuardSignals,
@@ -199,6 +210,8 @@ function analyzeEnv(vars, { strictExample = false } = {}) {
     stripeMode: stripeMode ?? "(unset)",
     providersDisabledFlag: vars.PROVIDERS_DISABLED ?? "(unset)",
     overrideActive,
+    safeCheckoutOverrideActive,
+    safeCheckoutEligible,
     productionLike,
     fail,
   };
@@ -232,6 +245,8 @@ function main() {
         stripeMode: result.stripeMode,
         providersDisabled: result.providersDisabledFlag,
         overrideActive: result.overrideActive,
+        safeCheckoutOverrideActive: result.safeCheckoutOverrideActive,
+        safeCheckoutEligible: result.safeCheckoutEligible,
         warnings: result.warnings,
         productionLike: result.productionLike,
         devWriteGuardWouldBlock:

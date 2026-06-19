@@ -1,6 +1,6 @@
 "use server";
 
-import { hasActivePlan } from "@/lib/access";
+import { hasPaidBillingPlan } from "@/lib/access";
 import { getCachedCredits } from "@/lib/cache";
 import { getPlanMonthlyCredits, getPlanDisplayName } from "@/lib/subscription-plans";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -70,11 +70,8 @@ export async function getCreditsPageStats() {
   }
 
   const credits = cachedCredits ?? profile?.credits ?? 0;
-  const planActive = hasActivePlan({
+  const planActive = hasPaidBillingPlan({
     plan: profile?.plan,
-    role: profile?.role,
-    is_admin: profile?.is_admin,
-    email: user.email,
   });
   const planCapacity = getPlanMonthlyCredits(profile?.plan);
   const capacity = !planActive

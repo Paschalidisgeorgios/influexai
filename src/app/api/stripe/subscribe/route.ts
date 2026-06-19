@@ -12,7 +12,7 @@ import {
   assertStripeCheckoutRuntimeAllowed,
   stripeRuntimeConfigErrorResponse,
 } from "@/lib/stripe-runtime-mode.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { checkoutWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ function trimPriceId(value: unknown): string | undefined {
 }
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = checkoutWriteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const body = await request.json();

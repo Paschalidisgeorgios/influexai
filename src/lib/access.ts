@@ -59,10 +59,15 @@ export function isCreditExemptEmail(email?: string | null): boolean {
   return isAdminEmail(email);
 }
 
-/** Stufe 2: irgendein bezahlter Plan (nicht free). */
+/** Paid platform plan from profiles.plan — no admin bypass (billing / top-ups). */
+export function hasPaidBillingPlan(user: AccessUser): boolean {
+  return normalizePlan(user.plan) !== "free";
+}
+
+/** Stufe 2: Tool-Zugang — Admin-Bypass oder bezahlter Plan. */
 export function hasActivePlan(user: AccessUser): boolean {
   if (isPrivilegedAccessUser(user)) return true;
-  return normalizePlan(user.plan) !== "free";
+  return hasPaidBillingPlan(user);
 }
 
 /** Platform plan or active agency tenant membership (member/owner). */

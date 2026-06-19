@@ -5,6 +5,7 @@ import { InfluexBadge, InfluexButton, InfluexSurface } from "@/components/shared
 import { CHECKOUT_USER_MESSAGES } from "@/lib/checkout-messages";
 import { CREDIT_PACKAGES, type CreditPackageId } from "@/lib/credit-packages";
 import { useCreditPackCheckout } from "@/hooks/useCreditPackCheckout";
+import { useBillingPlanEligibility } from "@/hooks/useBillingPlanEligibility";
 import { StripeTestModeNotice } from "@/components/pricing/StripeTestModeNotice";
 
 function formatEur(amount: number): string {
@@ -17,8 +18,11 @@ type CreditPacksSectionProps = {
 
 export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProps) {
   const t = useTranslations("buyCredits");
+  const { loaded, loggedIn, hasBillingPlan } = useBillingPlanEligibility();
+  const planGateActive = loaded && loggedIn && !hasBillingPlan;
   const { loadingId, error, checkout, clearError } = useCreditPackCheckout({
     redirectPath: "/pricing",
+    hasActivePlan: loaded && loggedIn ? hasBillingPlan : undefined,
   });
   const isInfluex = variant === "influex";
 
@@ -26,12 +30,28 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
     void checkout(packageId);
   };
 
+  const creditPackDisabled = () => loadingId !== null || planGateActive;
+
   const topUpFootnote = (
     <>
       {t("pricing_footnote")}{" "}
       <span className="opacity-90">{CHECKOUT_USER_MESSAGES.planRequired}</span>
     </>
   );
+
+  const planGateNotice = planGateActive ? (
+    <p
+      className={
+        isInfluex
+          ? "mb-4 rounded-[14px] border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-950"
+          : "mx-auto mb-4 max-w-lg rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-100"
+      }
+      data-testid="credit-pack-plan-gate"
+      role="status"
+    >
+      {CHECKOUT_USER_MESSAGES.planRequiredTopUp}
+    </p>
+  ) : null;
 
   if (isInfluex) {
     return (
@@ -47,6 +67,8 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
             Zusatz-Credits on top deines monatlichen Plan-Guthabens — kein neues Abo.
           </p>
         </div>
+
+        {planGateNotice}
 
         {error ? (
           <p
@@ -64,6 +86,7 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
         <div className="influex-pricing-credit-packs__grid">
           {CREDIT_PACKAGES.map((pkg) => {
             const isPopular = pkg.popular ?? false;
+            const disabled = creditPackDisabled();
             return (
               <InfluexSurface
                 key={pkg.id}
@@ -91,9 +114,12 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
                   type="button"
                   variant={isPopular ? "lime" : "secondary"}
                   className="influex-pricing-credit-pack__cta"
-                  disabled={loadingId !== null}
+                  disabled={disabled}
                   loading={loadingId === pkg.id}
                   onClick={() => handleCheckout(pkg.id)}
+                  title={
+                    planGateActive ? CHECKOUT_USER_MESSAGES.planRequiredTopUp : undefined
+                  }
                 >
                   {loadingId === pkg.id
                     ? CHECKOUT_USER_MESSAGES.loading
@@ -128,6 +154,8 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
         </p>
       </div>
 
+      {planGateNotice}
+
       {error ? (
         <p className="mx-auto mb-4 max-w-lg text-center text-sm text-red-300" role="alert">
           {error}
@@ -142,6 +170,7 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
       >
         {CREDIT_PACKAGES.map((pkg) => {
           const isPopular = pkg.popular ?? false;
+          const disabled = creditPackDisabled();
           return (
             <div
               key={pkg.id}
@@ -175,15 +204,20 @@ export function CreditPacksSection({ variant = "glass" }: CreditPacksSectionProp
 
               <button
                 type="button"
-                disabled={loadingId !== null}
+                disabled={disabled}
                 onClick={() => handleCheckout(pkg.id)}
+                title={
+                  planGateActive ? CHECKOUT_USER_MESSAGES.planRequiredTopUp : undefined
+                }
                 className={`mt-auto w-full min-h-[44px] rounded-xl text-sm font-bold transition-all disabled:opacity-60 ${
                   isPopular
                     ? "pricing-glass-btn-primary"
                     : "pricing-glass-btn-secondary"
                 }`}
               >
-                {loadingId === pkg.id ? "…" : CHECKOUT_USER_MESSAGES.buyCreditsCta}
+                {loadingId === pkg.id
+                  ? "…"
+                  : CHECKOUT_USER_MESSAGES.buyCreditsCta}
               </button>
             </div>
           );

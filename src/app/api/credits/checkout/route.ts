@@ -7,6 +7,7 @@ import {
   getStripePriceIdForPackage,
   type CreditPackage,
 } from "@/lib/credit-packages";
+import { CHECKOUT_ERROR_CODES } from "@/lib/checkout-messages";
 import { createCreditsCheckoutSession } from "@/lib/create-credits-checkout";
 import { assertPlatformPlanForCreditCheckout } from "@/lib/credit-checkout-guard.server";
 import {
@@ -14,14 +15,14 @@ import {
   stripeRuntimeConfigErrorResponse,
 } from "@/lib/stripe-runtime-mode.server";
 import { getStripe } from "@/lib/stripe";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { checkoutWriteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 
 function resolvePackage(
   body: Record<string, unknown>
-): { pkg: CreditPackage } | { error: string } {
+): { pkg: CreditPackage } | { error: string; code?: string } {
   if (typeof body.priceId === "string" && typeof body.credits === "number") {
     const pkg = CREDIT_PACKAGES.find(
       (p) =>
@@ -40,20 +41,26 @@ function resolvePackage(
   if (!pkg) return { error: "Ungültiges Paket" };
 
   if (!getStripePriceIdForPackage(pkg)) {
-    return { error: "Stripe Price ID nicht konfiguriert" };
+    return { error: "Stripe Price ID nicht konfiguriert", code: CHECKOUT_ERROR_CODES.missingPriceId };
   }
 
   return { pkg };
 }
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = checkoutWriteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const body = await request.json().catch(() => ({}));
   const resolved = resolvePackage(body);
   if ("error" in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: resolved.error,
+        ...(resolved.code ? { code: resolved.code } : {}),
+      },
+      { status: 400 }
+    );
   }
 
   const supabase = await createServerSupabaseClient();

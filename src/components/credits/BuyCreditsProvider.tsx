@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { hasActivePlan } from "@/lib/access";
+import { hasPaidBillingPlan } from "@/lib/access";
 import {
   NoCreditsModal,
   type NoCreditsModalPlanInfo,
@@ -146,10 +146,8 @@ export function BuyCreditsProvider({ children }: { children: React.ReactNode }) 
       setIsOptimistic(false);
       optimisticBaselineRef.current = null;
 
-      const active = hasActivePlan({
+      const active = hasPaidBillingPlan({
         plan: data.plan,
-        role: data.role,
-        is_admin: data.is_admin,
       });
       setHasPlan(active);
       setPlanName(getPlanDisplayName(data.plan));

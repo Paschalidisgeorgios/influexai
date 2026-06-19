@@ -2,11 +2,18 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 
+/** Documented staging Supabase project ref for safe local Stripe test checkout. */
+const DEFAULT_STAGING_SUPABASE_REF =
+  process.env.STAGING_SUPABASE_PROJECT_REF?.trim() || "jvjmqtxlqfqaoyjklpxh";
+
 /** Documented production Supabase project ref (repo docs / SETUP). Override via env if needed. */
 const DEFAULT_PRODUCTION_SUPABASE_REF =
   process.env.PRODUCTION_SUPABASE_PROJECT_REF?.trim() || "hszjafdelcydnppyolkm";
 
 export const DEV_WRITE_GUARD_CODE = "DEV_WRITE_GUARD_BLOCKED";
+
+export const SAFE_DEV_STRIPE_TEST_CHECKOUT_ENV =
+  "ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT";
 
 export const DEV_WRITE_GUARD_MESSAGE =
   "Diese mutierende Aktion ist in dieser lokalen/Preview-Umgebung blockiert, weil Production-ähnliche Ressourcen erkannt wurden.";
@@ -156,6 +163,81 @@ export function assessDevelopmentEnvironment(): DevelopmentEnvironmentAssessment
 /** Returns true when mutating writes must be blocked in this runtime. */
 export function shouldBlockDevelopmentMutatingWrites(): boolean {
   return assessDevelopmentEnvironment().shouldBlockMutatingWrites;
+}
+
+export function isSafeDevStripeTestCheckoutOverrideActive(): boolean {
+  return (
+    process.env[SAFE_DEV_STRIPE_TEST_CHECKOUT_ENV]?.trim().toLowerCase() ===
+    "true"
+  );
+}
+
+export type SafeDevStripeTestCheckoutAssessment = {
+  allowed: boolean;
+  blockReasons: string[];
+};
+
+/**
+ * Narrow override: allows Stripe test checkout only when every safety condition holds.
+ * Does not enable providers, uploads, training, or other mutating writes.
+ */
+export function assessSafeDevStripeTestCheckout(): SafeDevStripeTestCheckoutAssessment {
+  const blockReasons: string[] = [];
+
+  if (!isSafeDevStripeTestCheckoutOverrideActive()) {
+    blockReasons.push("override_not_active");
+    return { allowed: false, blockReasons };
+  }
+
+  if (!isNonProductionRuntime()) {
+    blockReasons.push("production_runtime");
+  }
+
+  if (process.env.VERCEL_ENV?.trim() === "production") {
+    blockReasons.push("vercel_production");
+  }
+
+  if (process.env.STRIPE_MODE?.trim().toLowerCase() !== "test") {
+    blockReasons.push("stripe_mode_not_test");
+  }
+
+  const stripeSecret = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
+  if (!stripeSecret.startsWith("sk_test_")) {
+    blockReasons.push("stripe_secret_not_test");
+  }
+
+  if (stripeSecret.startsWith("sk_live_")) {
+    blockReasons.push("stripe_live_secret");
+  }
+
+  const stripePublishable =
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+  if (stripePublishable.startsWith("pk_live_")) {
+    blockReasons.push("stripe_live_publishable");
+  }
+
+  if (!areProvidersExplicitlyDisabled()) {
+    blockReasons.push("providers_not_disabled");
+  }
+
+  const supabaseRef = extractSupabaseProjectRef(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
+  );
+  if (isProductionSupabaseRef(supabaseRef)) {
+    blockReasons.push("supabase_production_ref");
+  } else if (supabaseRef !== DEFAULT_STAGING_SUPABASE_REF) {
+    blockReasons.push("supabase_not_staging_ref");
+  }
+
+  return { allowed: blockReasons.length === 0, blockReasons };
+}
+
+/** Checkout-only write guard — may allow safe Stripe test checkout override. */
+export function checkoutWriteGuardResponse(): NextResponse | null {
+  if (assessSafeDevStripeTestCheckout().allowed) {
+    return null;
+  }
+  return developmentWriteGuardResponse();
 }
 
 /** Use at the start of mutating API handlers. Returns 403 response or null if allowed. */

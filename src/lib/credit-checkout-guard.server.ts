@@ -1,11 +1,11 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import { hasActivePlan, type AccessUser } from "@/lib/access";
-import { isPlatformAdminServer } from "@/lib/platform-admin.server";
+import { hasPaidBillingPlan, type AccessUser } from "@/lib/access";
+import { CHECKOUT_USER_MESSAGES } from "@/lib/checkout-messages";
 
 export const PLAN_REQUIRED_FOR_CREDITS_MESSAGE =
-  "Bitte wähle zuerst ein Paket, bevor du Credits kaufst.";
+  CHECKOUT_USER_MESSAGES.planRequired;
 
 export function denyPlatformCreditCheckoutResponse(): NextResponse {
   return NextResponse.json(
@@ -33,7 +33,7 @@ export function assertPlatformPlanForCreditCheckout(
     is_admin: profile?.is_admin,
   };
 
-  if (isPlatformAdminServer(accessUser) || hasActivePlan(accessUser)) {
+  if (hasPaidBillingPlan(accessUser)) {
     return null;
   }
 
