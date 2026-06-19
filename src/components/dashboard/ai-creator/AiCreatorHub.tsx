@@ -30,6 +30,10 @@ import {
   isCharacterHandoffEligibleStatus,
   isCharacterHandoffReadyStatus,
 } from "@/lib/ai-creator/characters-handoff-policy";
+import {
+  isCharacterUploadShellEligibleStatus,
+  isCharacterUploadShellPendingStatus,
+} from "@/lib/ai-creator/characters-upload-shell-policy";
 import type { CharacterType } from "@/lib/ai-creator/types";
 import { AiCreatorDraftForm } from "@/components/dashboard/ai-creator/AiCreatorDraftForm";
 import { isCharacterDeletableStatus } from "@/lib/ai-creator/characters-delete-policy";
@@ -309,6 +313,11 @@ export function AiCreatorHub() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [uploadShellLoadingId, setUploadShellLoadingId] = useState<string | null>(null);
+  const [uploadShellFeedback, setUploadShellFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const loadCharacters = useCallback(async () => {
     setCharactersLoading(true);
@@ -373,6 +382,49 @@ export function AiCreatorHub() {
         });
       } finally {
         setDeletingId(null);
+      }
+    },
+    [loadCharacters]
+  );
+
+  const handleUploadShellCharacter = useCallback(
+    async (characterId: string) => {
+      setUploadShellLoadingId(characterId);
+      setUploadShellFeedback(null);
+      try {
+        const res = await fetch(
+          `/api/ai-creator/characters/${characterId}/upload-shell`,
+          { method: "POST" }
+        );
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+          message?: string;
+        };
+        if (!res.ok || !data.success) {
+          setUploadShellFeedback({
+            type: "error",
+            message:
+              data.error ??
+              "Upload-/Training-Vorbereitung konnte nicht gestartet werden.",
+          });
+          return;
+        }
+        setUploadShellFeedback({
+          type: "success",
+          message:
+            data.message ??
+            "Upload-/Training-Vorbereitung ist bereit. Provider sind in dieser Umgebung deaktiviert.",
+        });
+        await loadCharacters();
+      } catch {
+        setUploadShellFeedback({
+          type: "error",
+          message:
+            "Upload-/Training-Vorbereitung konnte nicht gestartet werden.",
+        });
+      } finally {
+        setUploadShellLoadingId(null);
       }
     },
     [loadCharacters]
@@ -524,6 +576,17 @@ export function AiCreatorHub() {
       </DashboardPanel>
 
       <DashboardSection title="Deine Characters" className="mt-10">
+        {uploadShellFeedback ? (
+          <p
+            className="mb-3 text-sm"
+            style={{
+              color: uploadShellFeedback.type === "success" ? "#34d399" : "#f87171",
+            }}
+            role="status"
+          >
+            {uploadShellFeedback.message}
+          </p>
+        ) : null}
         {handoffFeedback ? (
           <p
             className="mb-3 text-sm"
@@ -605,6 +668,12 @@ export function AiCreatorHub() {
                 const canEdit = isCharacterEditableStatus(character.trainingStatus);
                 const isHandoffReady = isCharacterHandoffReadyStatus(character.trainingStatus);
                 const canHandoff = isCharacterHandoffEligibleStatus(character.trainingStatus);
+                const isUploadShellPending = isCharacterUploadShellPendingStatus(
+                  character.trainingStatus
+                );
+                const canUploadShell = isCharacterUploadShellEligibleStatus(
+                  character.trainingStatus
+                );
                 const handoffReadiness = evaluateHandoffReadiness({
                   name: character.name,
                   description: character.description,
@@ -668,13 +737,40 @@ export function AiCreatorHub() {
                             ) : null}
                             {isHandoffReady ? (
                               <p className="mt-1 text-[11px]" style={{ color: "#34d399" }}>
-                                Upload-Vorbereitung abgeschlossen — echter Upload folgt in einem
-                                späteren Schritt.
+                                Handoff abgeschlossen — als Nächstes Upload-Shell aktivieren
+                                (kein echter Upload in dieser Phase).
+                              </p>
+                            ) : null}
+                            {isUploadShellPending ? (
+                              <p className="mt-1 text-[11px]" style={{ color: "#34d399" }}>
+                                Vorbereitung aktiv — Provider deaktiviert, kein Training gestartet,
+                                keine Kosten.
                               </p>
                             ) : null}
                           </div>
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2">
+                          {canUploadShell ? (
+                            <button
+                              type="button"
+                              disabled={
+                                !character.consentConfirmed ||
+                                uploadShellLoadingId === character.id
+                              }
+                              onClick={() => void handleUploadShellCharacter(character.id)}
+                              className="inline-flex min-h-[40px] items-center rounded-full px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+                              style={{ background: DASHBOARD_ACCENT, color: "#080808" }}
+                              title={
+                                character.consentConfirmed
+                                  ? undefined
+                                  : "Consent fehlt"
+                              }
+                            >
+                              {uploadShellLoadingId === character.id
+                                ? "Vorbereiten…"
+                                : "Upload vorbereiten"}
+                            </button>
+                          ) : null}
                           {canHandoff ? (
                             <button
                               type="button"
@@ -695,7 +791,7 @@ export function AiCreatorHub() {
                                 : "Für Upload vorbereiten"}
                             </button>
                           ) : null}
-                          {!canHandoff && !isHandoffReady ? (
+                          {!canHandoff && !isHandoffReady && !isUploadShellPending ? (
                             <>
                               <Link
                                 href={primaryCta.href}

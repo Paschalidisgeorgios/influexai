@@ -60,6 +60,11 @@ function providersExplicitlyDisabled(): boolean {
   return flag === "true" || flag === "1" || flag === "yes";
 }
 
+/** True when external AI providers must not be invoked (staging/safe-dev). */
+export function areProvidersExplicitlyDisabled(): boolean {
+  return providersExplicitlyDisabled();
+}
+
 function hasActiveProviderKeys(): boolean {
   if (providersExplicitlyDisabled()) return false;
   const fal = process.env.FAL_API_KEY?.trim() || process.env.FAL_KEY?.trim();

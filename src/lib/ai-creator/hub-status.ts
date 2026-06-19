@@ -42,6 +42,7 @@ export function mapCharacterStatusToHubPhase(raw: string | null | undefined): Hu
     case "ready_to_train":
     case "references_ready":
     case "handoff_ready":
+    case "upload_pending":
       return "preparing";
     default:
       return "draft";
@@ -78,5 +79,6 @@ export const AI_CREATOR_FICTIONAL_WORKFLOW_HREF = "/dashboard/lora-training";
 
 export function hubStatusLabel(raw: string | null | undefined): string {
   if (raw === "handoff_ready") return "Bereit für Upload";
+  if (raw === "upload_pending") return "Upload vorbereitet";
   return HUB_PHASE_LABELS[mapCharacterStatusToHubPhase(raw)];
 }
