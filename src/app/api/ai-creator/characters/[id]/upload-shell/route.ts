@@ -13,7 +13,7 @@ import {
   CHARACTERS_HANDOFF_SELECT,
   type CharactersHandoffRow,
 } from "@/lib/ai-creator/characters-list.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import {
   assertKiInfluencerAccess,
   logKiInfluencerError,
@@ -99,7 +99,7 @@ async function loadOwnCharacterForUploadShell(
 
 /** POST — staging shell: mark handoff_ready character as upload_pending (no files/providers). */
 export async function POST(request: Request, context: RouteContext) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const contentType = request.headers.get("content-type") ?? "";

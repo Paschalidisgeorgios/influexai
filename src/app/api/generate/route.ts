@@ -15,7 +15,7 @@ import {
   PREMIUM_GENERATE_CREDIT_COST,
   type PremiumGenerateRequest,
 } from "@/lib/claude-premium-generate";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 90;
@@ -59,7 +59,7 @@ async function refundPremiumCredits(
 }
 
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: RequestBody;

@@ -1,9 +1,9 @@
 import { apiGenerateImage } from "@/lib/api-v1/generators";
 import { handleApiPost } from "@/lib/api-v1/handle-route";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   return handleApiPost(request, "/api/v1/image", (userId, body) =>

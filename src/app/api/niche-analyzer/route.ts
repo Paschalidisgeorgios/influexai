@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { analyzeNiche } from "@/app/actions/analyze-niche";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const maxDuration = 60;
 
@@ -37,7 +37,7 @@ function httpStatusForFailure(result: {
 
 /** POST /api/niche-analyzer — Body: { topic, audience?, format? } */
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: Record<string, unknown>;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { runImageUpscale } from "@/lib/upscale-image-api";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export const maxDuration = 120;
 
 /** @deprecated Prefer POST /api/upscale */
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const { generationId } = (await request.json()) as { generationId?: string };

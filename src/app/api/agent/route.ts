@@ -9,7 +9,7 @@ import {
 import { runMasterAgentStream } from "@/lib/agent/run-agent";
 import type { AgentChatMessage, AgentStreamEvent } from "@/lib/agent/types";
 import { addCredits, deductCredits } from "@/lib/credits";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("master-agent");

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { remixVideo } from "@/app/actions/remix-video";
 import { assertGatedFeature } from "@/lib/access.server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const maxDuration = 60;
 
@@ -13,7 +13,7 @@ export const maxDuration = 60;
  * Note: Video Remix uses Claude for concepts — not fal.ai video rendering.
  */
 export async function POST(request: Request) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const denied = await assertGatedFeature("video-remix");

@@ -3,11 +3,15 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { listAkoolVoices } from "@/lib/akool-ugc";
 import { isAkoolConfigured } from "@/lib/akool-env";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Stimmen sind gerade nicht verfügbar." },

@@ -7,10 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { chargeAvatarCredits, refundCredits } from "@/lib/avatar/credits";
 import { configureFalClient, getFalKey } from "@/lib/fal-image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export async function POST(req: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   const supabase = await createServerSupabaseClient();

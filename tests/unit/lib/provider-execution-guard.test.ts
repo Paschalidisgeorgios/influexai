@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("provider execution guard", () => {
@@ -40,5 +42,18 @@ describe("provider execution guard", () => {
     expect(res?.status).toBe(503);
     const body = await res!.json();
     expect(body.code).toBe(PROVIDER_EXECUTION_GUARD_CODE);
+  });
+
+  it("critical provider API routes use providerRouteGuardResponse", () => {
+    const routes = [
+      "src/app/api/generate-image/route.ts",
+      "src/app/api/seedance/route.ts",
+      "src/app/api/lora/train/route.ts",
+      "src/app/api/agent/copilot/route.ts",
+    ];
+    for (const route of routes) {
+      const src = readFileSync(join(process.cwd(), route), "utf8");
+      expect(src).toContain("providerRouteGuardResponse");
+    }
   });
 });

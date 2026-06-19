@@ -10,7 +10,7 @@ import { getFalKey } from "@/lib/fal-image";
 import { mapAkoolErrorMessage } from "@/lib/akool-errors";
 import { startSeedanceJob } from "@/lib/seedance-generate";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ type SeedanceBody = {
 };
 
 export async function POST(request: NextRequest) {
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   let body: SeedanceBody;

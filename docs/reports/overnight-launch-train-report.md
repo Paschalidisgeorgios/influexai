@@ -4,7 +4,34 @@
 **Mode:** Controlled overnight safe completion  
 **Branch:** `launch-train/overnight-safe-completion`  
 **Base:** `master` @ `6d1c9b9`  
-**Final HEAD:** `0ad66b6`
+**Final HEAD:** see Phase 4G.8-B commit (after merge readiness pass)
+
+---
+
+## Phase 4G.8-B — Launch Branch Merge Readiness (2026-06-16)
+
+### Migration 067
+- **Created:** `supabase/migrations/067_stripe_webhook_service_role_grants.sql`
+- **Removed duplicate:** `060_stripe_webhook_service_role_grants.sql` (conflicted with remote `060_characters`)
+- **Grants:** `stripe_events`, `processed_checkout_sessions`, `processed_stripe_invoices`, `stripe_payments`, `profiles`, `tenants` → `service_role`
+- **Staging:** applied via `supabase db push --linked` ✅
+- **Remote history:** 001–066 + 067
+
+### Provider Guard Sweep
+- **85 API routes** now use `providerRouteGuardResponse()` (includes dev-write guard fallback)
+- **Excluded (dev guard only):** Stripe checkout, billing, push, share, admin, account delete, canvas analytics, scrape-product (non-AI), DB-only ai-creator character CRUD
+- **Added guards on GET provider list routes:** seedance/models, ugc-video/avatars|voices, akool/voices, ki-agent/suggested-prompts, test-elevenlabs
+- **Unit tests:** 197 passed (+1 route coverage test)
+
+### Gallery Persistence
+- **Active source:** `generations` table + `/dashboard/gallery` (`get-gallery.ts`)
+- **Legacy source:** `gallery_assets` — used by `/api/dashboard/init` (Studio sidebar); **table missing on staging** (no migration in repo)
+- **Persist routes:** `generation-assets.ts`, tool APIs writing to `generations`
+- **Before provider smoke:** outputs appear in `/dashboard/gallery` only if tool writes to `generations`; legacy sidebar may stay empty until SSOT consolidation
+
+### Merge recommendation
+- **Merge to master:** ✅ recommended for hardening (migration 067, provider guards, docs)
+- **Production launch:** ❌ still NO-GO (providers disabled, legal, gallery SSOT, human provider smoke)
 
 ---
 

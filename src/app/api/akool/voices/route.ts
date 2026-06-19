@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { akoolGet } from "@/lib/akool";
 import { requireAkoolAccess } from "@/lib/akool-route-handler";
 import { isAkoolConfigured } from "@/lib/akool-env";
-import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   if (!isAkoolConfigured()) {
     return NextResponse.json({ error: "Sprachdienst nicht konfiguriert" }, { status: 503 });
   }

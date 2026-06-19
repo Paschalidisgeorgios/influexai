@@ -7,7 +7,7 @@ import {
   MSG_VIDEO_SERVICE_UNAVAILABLE,
   sanitizeUserMessage,
 } from "@/lib/sanitize-user-message";
-import { developmentWriteGuardResponse } from "@/lib/environment-safety.server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     return serviceUnavailableResponse();
   }
 
-  const writeGuard = developmentWriteGuardResponse();
+  const writeGuard = providerRouteGuardResponse();
   if (writeGuard) return writeGuard;
 
   try {

@@ -3,7 +3,8 @@
  *
  * Lädt beim Dashboard-Start:
  *  1. Aktuelle Credits des Users aus `profiles`
- *  2. Letzte 20 Gallery-Assets aus `gallery_assets`
+ *  2. Letzte 20 Gallery-Assets aus legacy `gallery_assets` (Studio-Sidebar; kann leer sein)
+ *     — primäre Galerie: `/dashboard/gallery` liest aus `generations` via get-gallery.
  *
  * Kein Auth-Gating per Feature-Flag — nur reguläre Session-Auth.
  */

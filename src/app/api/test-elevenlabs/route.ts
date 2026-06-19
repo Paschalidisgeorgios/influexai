@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   if (process.env.NODE_ENV === "production") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

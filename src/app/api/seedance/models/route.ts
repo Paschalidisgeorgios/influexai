@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { assertKiToolAccess } from "@/lib/access.server";
 import { getAkoolImageToVideoModels } from "@/lib/akool-models";
 import { isAkoolConfigured } from "@/lib/akool-env";
+import { providerRouteGuardResponse } from "@/lib/environment-safety.server";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,9 @@ export const maxDuration = 60;
 
 /** GET — available Akool image-to-video models (cached 1h server-side) */
 export async function GET() {
+  const guard = providerRouteGuardResponse();
+  if (guard) return guard;
+
   if (!isAkoolConfigured()) {
     return NextResponse.json(
       { error: "Video-Engine ist nicht konfiguriert." },

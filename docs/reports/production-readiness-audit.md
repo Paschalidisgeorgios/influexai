@@ -19,7 +19,7 @@
 | Legal pages | ⚠️ placeholder-level | ❌ | Final legal review |
 | Monitoring | ⚠️ basic | ❌ | No dedicated prod observability stack documented |
 
-**Go/No-Go for production launch:** **NO-GO** — providers, legal finalization, Stripe live configuration, and gallery/storage consolidation require human decisions first.
+**Go/No-Go for production launch:** **NO-GO** — providers, legal finalization, gallery SSOT, and human-supervised provider smoke still required. **Merge to master for hardening:** **GO** (after human PR review).
 
 ---
 
@@ -57,7 +57,7 @@
 | Production Supabase | Staging ref hardcoded as safe default; prod ref `hszjafdelcydnppyolkm` detected in docs only | Verify prod env vars on Vercel; never use prod locally |
 | Gallery dual schema | `generations` table + `/dashboard/gallery` vs legacy `gallery_assets` / Studio paths | Consolidation decision |
 | `gallery_assets` migration | No migration file in repo for legacy table | Confirm if table exists only in prod/staging manually |
-| Service role GRANTs for webhooks | Staging fix applied via direct SQL query; **not committed as migration** | Add migration 067 or document as applied-only on staging |
+| Service role GRANTs for webhooks | ✅ migration 067 in repo + staging applied | Prod deploy must run 067 | Duplicate 060_stripe file removed |
 | Legal final claims | Impressum populated; AGB/Datenschutz need legal review for launch claims | External legal review |
 | Real uploads / LoRA / training | Explicitly out of scope for safe-dev | Separate launch phase |
 
@@ -65,8 +65,8 @@
 
 ## What Is Risky?
 
-1. **Incomplete provider guard coverage:** Only `generate-image` and `viral-hook` use `providerRouteGuardResponse()`. Dozens of other provider routes still callable if keys are present and dev-write guard passes.
-2. **Webhook GRANTs not in repo:** Staging was unblocked with manual GRANTs; fresh staging clone or prod deploy could hit `permission denied for table stripe_events` again.
+1. **Incomplete provider guard coverage:** ~~Only 2 routes~~ **Resolved in 4G.8-B** — 85 API routes guarded; scrape-product and DB-only routes intentionally excluded.
+2. ~~**Webhook GRANTs not in repo**~~ **Resolved** — migration 067 committed and applied to staging.
 3. **Credit double-booking:** Idempotency tested manually once; no automated integration test against live Stripe CLI replay in CI.
 4. **Production-like local runtime:** `next start` locally treated as non-production with write guards — good — but misconfigured `.env.local` could still point at prod Supabase if override flags set.
 5. **Intent-based pricing copy:** Marketing intent URLs on `/pricing` promise capabilities (Avatar Studio, Autopilot) not fully provider-enabled.
@@ -78,7 +78,7 @@
 
 1. **First provider to enable in staging:** Recommended `POST /api/generate-image` (FAL, 5 credits, gallery persist) — approve env: `PROVIDERS_DISABLED=false`, sandbox FAL key, staging Supabase only.
 2. **Gallery consolidation:** Single source of truth — `generations` + storage bucket `generated_assets` vs legacy Studio gallery.
-3. **Migration 067:** Commit service_role GRANTs for Stripe webhook tables to make staging/prod deploys reproducible.
+3. ~~**Migration 067:** Commit service_role GRANTs~~ ✅ Done — apply on production at deploy time.
 4. **Stripe Live go-live checklist:** Products, prices, webhook signing secret, Customer Portal, tax settings.
 5. **Legal sign-off:** AGB, Datenschutz, AI output disclaimers, refund policy alignment with Stripe.
 6. **Production env on Vercel:** Confirm all vars; ensure `PROVIDERS_DISABLED` strategy for preview vs production.
@@ -87,8 +87,8 @@
 
 ## Recommended Next Steps (Concrete)
 
-1. Add `supabase/migrations/067_stripe_webhook_service_role_grants.sql` with GRANTs applied manually on staging.
-2. Extend `providerRouteGuardResponse()` to all FAL/Akool/Anthropic mutating routes (or central middleware).
+1. ~~Add `supabase/migrations/067_stripe_webhook_service_role_grants.sql`~~ ✅ Done + applied to staging
+2. ~~Extend `providerRouteGuardResponse()` to all FAL/Akool/Anthropic mutating routes~~ ✅ 85 routes guarded
 3. Run documented staging provider smoke (human-supervised): generate-image → −5 credits → gallery entry → refund on forced failure.
 4. Run Stripe live **test-mode parity check** on Vercel preview with staging Supabase before switching keys.
 5. Legal review pass on `/agb` and `/datenschutz`.
@@ -104,7 +104,7 @@
 | No Stripe live keys in repo | ✅ |
 | Staging Supabase only in safe-dev | ✅ verified via env script |
 | `public/images/lora-training/` untracked | ✅ |
-| Provider calls blocked when disabled | ⚠️ partial (2 routes guarded) |
+| Provider calls blocked when disabled | ✅ 85 API routes guarded |
 | Webhook signature verification | ✅ implemented in stripe webhook route |
 
 ---
