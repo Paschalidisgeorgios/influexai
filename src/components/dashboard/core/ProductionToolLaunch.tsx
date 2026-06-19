@@ -15,8 +15,9 @@ import {
   getModelsForTool,
   getStudioToolByDashboardId,
   getStudioToolPrimaryAction,
-  STUDIO_SHELL_ONLY_HINT,
+  isStudioProviderExecutionDisabled,
 } from "@/lib/tools/studio-tool-registry";
+import { getToolCapabilityForDashboardId } from "@/lib/tools/agent-tool-capability-map";
 import {
   StudioActionBar,
   StudioModelSelectShell,
@@ -30,9 +31,16 @@ export function ProductionToolLaunch({
   toolId: ToolId;
 }) {
   const studioTool = getStudioToolByDashboardId(toolId);
+  const capability = getToolCapabilityForDashboardId(toolId);
   const primaryAction = getStudioToolPrimaryAction(toolId);
-  const creditLabel = studioTool?.creditLabel ?? getSetupCreditLabel(toolId);
-  const label = studioTool?.label ?? getToolDisplayLabel(toolId);
+  const safeHref =
+    capability?.safeRoutingTarget ??
+    (primaryAction.disabled ? undefined : primaryAction.href);
+  const creditLabel =
+    capability?.creditEstimate ??
+    studioTool?.creditLabel ??
+    getSetupCreditLabel(toolId);
+  const label = capability?.label ?? studioTool?.label ?? getToolDisplayLabel(toolId);
   const subtitle = getToolSetupSubtitle(toolId);
   const dedicatedRoute = resolveToolRoute(toolId);
   const agentHref = buildAgentPrepareHref(toolId, {});
@@ -40,6 +48,12 @@ export function ProductionToolLaunch({
   const defaultModelId =
     studioTool?.defaultModelId ?? models[0]?.id ?? "";
   const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
+  const providerDisabled = isStudioProviderExecutionDisabled(toolId);
+  const showDisabledNotice =
+    providerDisabled ||
+    capability?.executionStatus === "provider_disabled" ||
+    capability?.executionStatus === "shell_only" ||
+    studioTool?.status === "shell";
 
   return (
     <ToolWorkspaceShell
@@ -48,6 +62,7 @@ export function ProductionToolLaunch({
       status={studioTool?.status}
       creditLabel={creditLabel}
       creditNote={SETUP_COPY.creditsBeforeStart}
+      capability={capability}
       modelSelector={
         studioTool?.supportsModelSelection ? (
           <StudioModelSelectShell
@@ -55,33 +70,35 @@ export function ProductionToolLaunch({
             models={models}
             selectedModelId={selectedModelId}
             onModelChange={setSelectedModelId}
+            toolId={String(toolId)}
           />
         ) : null
       }
       executionNotice={
-        studioTool?.status === "shell" ? (
-          <ToolExecutionDisabledNotice variant="shell_only" />
-        ) : null
-      }
-      options={
-        studioTool?.status === "shell" ? (
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
-            {STUDIO_SHELL_ONLY_HINT}
-          </p>
+        showDisabledNotice ? (
+          <ToolExecutionDisabledNotice
+            toolId={String(toolId)}
+            variant={studioTool?.status === "shell" ? "shell_only" : "provider_disabled"}
+          />
         ) : null
       }
       actions={
         <>
           <StudioActionBar
             primaryLabel={primaryAction.label}
-            primaryHref={primaryAction.disabled ? undefined : primaryAction.href}
-            primaryDisabled={primaryAction.disabled}
+            primaryHref={primaryAction.disabled ? undefined : safeHref}
+            primaryDisabled={primaryAction.disabled || providerDisabled}
             secondaryLabel="Mit Agent planen"
             secondaryHref={agentHref}
           />
           {primaryAction.disabled && primaryAction.disabledReason ? (
             <p className="mt-4 text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
               {primaryAction.disabledReason}
+            </p>
+          ) : null}
+          {capability?.agentInstructions ? (
+            <p className="mt-4 text-xs leading-relaxed" style={{ color: DASHBOARD_MUTED }}>
+              {capability.agentInstructions}
             </p>
           ) : null}
         </>

@@ -14,6 +14,7 @@ type StudioModelSelectShellProps = {
   selectedModelId: string;
   onModelChange: (modelId: string) => void;
   showProviderHint?: boolean;
+  toolId?: string;
 };
 
 export function StudioModelSelectShell({
@@ -22,8 +23,8 @@ export function StudioModelSelectShell({
   selectedModelId,
   onModelChange,
   showProviderHint = true,
-}: StudioModelSelectShellProps) {
-  if (!tool || models.length === 0) return null;
+  toolId,
+}: StudioModelSelectShellProps) {  if (!tool || models.length === 0) return null;
 
   const selected = models.find((m) => m.id === selectedModelId) ?? models[0];
 
@@ -57,11 +58,11 @@ export function StudioModelSelectShell({
       (tool.providerExecution === "disabled" ||
         tool.providerExecution === "shell_only") ? (
         <ToolExecutionDisabledNotice
+          toolId={toolId ?? String(tool.id)}
           variant={
             tool.status === "shell" ? "shell_only" : "provider_disabled"
           }
-        />
-      ) : null}
+        />      ) : null}
     </div>
   );
 }
