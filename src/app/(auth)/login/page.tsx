@@ -11,6 +11,11 @@ import {
   agencyWorkspaceAccessFromRows,
   isTenantAccessibleForAgency,
 } from "@/lib/agency-access";
+import {
+  DEFAULT_ADMIN_EMAIL_ALLOWLIST,
+  isEmailInAdminAllowlist,
+  parseAdminEmailAllowlist,
+} from "@/lib/admin-allowlist";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import { InfluexButton, InfluexInput } from "@/components/shared/influex";
 
@@ -67,6 +72,10 @@ function LoginPageInner() {
         tenant && isTenantAccessibleForAgency(tenant) ? tenant : null
       );
 
+      const postAuthAllowlist = parseAdminEmailAllowlist(
+        process.env.NEXT_PUBLIC_ADMIN_EMAIL_ALLOWLIST
+      );
+
       target = resolvePostAuthRedirect(
         {
           email: user.email,
@@ -76,7 +85,9 @@ function LoginPageInner() {
           id: user.id,
         },
         searchParams.get("redirect"),
-        undefined,
+        (candidateEmail) =>
+          isEmailInAdminAllowlist(candidateEmail, postAuthAllowlist) ||
+          isEmailInAdminAllowlist(candidateEmail, DEFAULT_ADMIN_EMAIL_ALLOWLIST),
         agencyAccess
       );
     }
