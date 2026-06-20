@@ -224,6 +224,98 @@ async function guardProbe(page) {
   );
 }
 
+async function verifyDbGrants() {
+  const admin = getAdmin();
+  const anon = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false } }
+  );
+  const { error: signErr } = await anon.auth.signInWithPassword({
+    email: EMAIL,
+    password: PASSWORD,
+  });
+  if (signErr) {
+    return { ok: false, error: "sign_in_failed", message: signErr.message };
+  }
+
+  const tables = ["profiles", "generations", "credit_transactions"];
+  const access = {};
+
+  for (const table of tables) {
+    const { error: srErr } = await admin.from(table).select("id").limit(1);
+    const { error: userErr } = await anon.from(table).select("id").limit(1);
+    access[table] = {
+      service_role: srErr ? { code: srErr.code, message: srErr.message } : "ok",
+      authenticated: userErr ? { code: userErr.code, message: userErr.message } : "ok",
+    };
+  }
+
+  const blockers = [];
+  if (access.generations?.service_role?.code === "42501") {
+    blockers.push("generations_missing_grant_service_role");
+  }
+  if (access.generations?.authenticated?.code === "42501") {
+    blockers.push("generations_missing_grant_authenticated");
+  }
+  if (access.credit_transactions?.service_role?.code === "42501") {
+    blockers.push("credit_transactions_missing_grant");
+  }
+
+  return {
+    ok: blockers.length === 0,
+    staging_ref: maskRef(process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""),
+    table_access: access,
+    blockers,
+    fix:
+      blockers.length > 0
+        ? "Apply supabase/migrations/068_generations_authenticated_grants.sql on staging (supabase db push --linked or SQL Editor)"
+        : undefined,
+  };
+}
+
+async function runSafe() {
+  const audit = envAudit();
+  const db = await verifyDbGrants();
+
+  console.log(JSON.stringify({ phase: "run-safe-preflight", audit, db }, null, 2));
+
+  if (!db.ok) {
+    console.error("\nSTOP: Staging DB grants missing — apply migration 068 before provider smoke.");
+    process.exit(2);
+  }
+
+  if (!audit.safe_to_proceed) {
+    console.error("\nSTOP: Env audit failed — fix blockers before provider smoke.");
+    process.exit(2);
+  }
+
+  if (audit.providers_disabled) {
+    console.error(
+      "\nSTOP: PROVIDERS_DISABLED=true — open smoke window first:\n" +
+        "  1. Set PROVIDERS_DISABLED=false and ALLOW_SAFE_DEV_PROVIDER_SMOKE=true in .env.local\n" +
+        "  2. Restart npm run dev\n" +
+        "  3. Re-run: npm run smoke:generate-image:run-safe"
+    );
+    process.exit(2);
+  }
+
+  if (!audit.allow_safe_dev_provider_smoke) {
+    console.error(
+      "\nSTOP: ALLOW_SAFE_DEV_PROVIDER_SMOKE is not true — required during smoke window only."
+    );
+    process.exit(2);
+  }
+
+  await runSmoke();
+
+  console.log("\n=== CLOSE SMOKE WINDOW (required) ===");
+  console.log("1. Set PROVIDERS_DISABLED=true in .env.local");
+  console.log("2. Remove or set ALLOW_SAFE_DEV_PROVIDER_SMOKE=false");
+  console.log("3. Restart: npm run dev");
+  console.log("4. Verify guard: npm run smoke:generate-image:guard-probe");
+}
+
 async function runSmoke() {
   const audit = envAudit();
   if (!audit.safe_to_proceed) {
@@ -353,6 +445,8 @@ if (cmd === "audit") {
   console.log(JSON.stringify(envAudit(), null, 2));
 } else if (cmd === "baseline") {
   console.log(JSON.stringify(await baseline(), null, 2));
+} else if (cmd === "verify-db") {
+  console.log(JSON.stringify(await verifyDbGrants(), null, 2));
 } else if (cmd === "guard-probe") {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
@@ -360,9 +454,17 @@ if (cmd === "audit") {
   const res = await guardProbe(page);
   console.log(JSON.stringify({ guard_probe: res }, null, 2));
   await browser.close();
+} else if (cmd === "run-safe") {
+  await runSafe();
 } else if (cmd === "run") {
+  console.warn(
+    "WARN: prefer npm run smoke:generate-image:run-safe (includes audit + DB verify)"
+  );
   await runSmoke();
 } else {
   console.error("Unknown command:", cmd);
+  console.error(
+    "Commands: audit | baseline | verify-db | guard-probe | run-safe | run"
+  );
   process.exit(1);
 }

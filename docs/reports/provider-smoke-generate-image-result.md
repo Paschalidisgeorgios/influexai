@@ -113,12 +113,25 @@ Production responses remain generic (no `saveHint`).
 
 ## Next step — G.10-G
 
-1. Apply migration **068** on staging (`jvjmqtxlqfqaoyjklpxh`)
-2. Verify: `select` on `generations` as test user succeeds
-3. Supervised smoke **one** run with G.10-D env window
-4. Expect: HTTP 200, −5 credits, `generations` row, gallery entry
+1. Apply migration **068** on staging — see `docs/reports/generate-image-save-failure-diagnosis.md`
+2. Verify: `npm run smoke:generate-image:verify-db` → `ok: true`
+3. Open smoke window in `.env.local` (never commit)
+4. **Single run:** `npm run smoke:generate-image:run-safe`
+5. Close window + `npm run smoke:generate-image:guard-probe`
 
 **Do not re-run provider smoke until 068 is applied.**
+
+---
+
+## npm scripts (G.10-F)
+
+| Command | Purpose |
+|---------|---------|
+| `npm run smoke:generate-image:audit` | Env safety check |
+| `npm run smoke:generate-image:verify-db` | Staging GRANT check (no provider) |
+| `npm run smoke:generate-image:baseline` | Test user credits/generations |
+| `npm run smoke:generate-image:guard-probe` | 503 when providers disabled |
+| `npm run smoke:generate-image:run-safe` | Audit + verify-db + one call (window must be open) |
 
 ---
 

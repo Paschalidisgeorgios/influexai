@@ -26,7 +26,12 @@
     "test:unit:run": "vitest run",
     "test:unit:coverage": "vitest run --coverage",
     "test:unit:ui": "vitest --ui",
-    "test": "vitest run && playwright test"
+    "test": "vitest run && playwright test",
+    "smoke:generate-image:audit": "node scripts/supervised-generate-image-smoke.mjs audit",
+    "smoke:generate-image:verify-db": "node scripts/supervised-generate-image-smoke.mjs verify-db",
+    "smoke:generate-image:baseline": "node scripts/supervised-generate-image-smoke.mjs baseline",
+    "smoke:generate-image:guard-probe": "node scripts/supervised-generate-image-smoke.mjs guard-probe",
+    "smoke:generate-image:run-safe": "node scripts/supervised-generate-image-smoke.mjs run-safe"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
