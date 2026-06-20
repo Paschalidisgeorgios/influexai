@@ -1,8 +1,29 @@
 # Generate-Image Credit Deduction Diagnosis (G.10-H)
 
 **Date:** 2026-06-20  
-**Branch:** `master`  
+**Branch:** `master` @ `1cabf38`  
 **Staging ref:** `jvjmqtxlqfqaoyjklpxh`
+
+---
+
+## Summary
+
+First real generate-image provider smoke **succeeded technically** (HTTP 200, generation row, image fetch). **Billing proof failed:** profile credits stayed **75 → 75** because smoke user `test@influexai.test` is **credit-exempt** via `ADMIN_EMAIL_ALLOWLIST`. No `deduct_credits` RPC, no `credit_transactions`. Smoke is valid for **provider/generation MVP**, not for **revenue/credit deduction MVP**.
+
+---
+
+## Safety status (G.10-H close)
+
+| Check | Status |
+|-------|--------|
+| Provider call in G.10-H | **No** |
+| `PROVIDERS_DISABLED` | **`true`** |
+| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` | **`false`** |
+| Supabase | Staging `jvjmqtxlqfqaoyjklpxh` only |
+| Stripe | `STRIPE_MODE=test`, no live keys |
+| Migration applied in G.10-H | **No** |
+| `.env.local` committed | **No** |
+| `scripts/supervised-smoke-result.json` committed | **No** (gitignored) |
 
 ---
 
@@ -149,6 +170,40 @@ Alternative user: `billing-smoke@influexai.test` via `npm run staging:ensure-bil
 6. Expect: `billing_pass: true`, credits **75 → 70**, transaction row present
 
 **Do not run another provider call until G.10-I window is explicitly opened.**
+
+---
+
+## Stop rules (always)
+
+- Never set `PROVIDERS_DISABLED=false` without human-supervised smoke window.
+- Never set `ALLOW_SAFE_DEV_PROVIDER_SMOKE=true` outside that window.
+- Never use production Supabase or Stripe live keys.
+- After any provider smoke: close window → restart dev → `npm run smoke:generate-image:guard-probe` → expect **503**.
+
+---
+
+## Open risks
+
+| Risk | Mitigation |
+|------|------------|
+| QA user in allowlist masks billing | Use `billingtest@influexai.test` for G.10-I |
+| Staging `profiles` direct upsert may 42501 | Ensure script falls back to `add_credits` RPC + linked db query |
+| `creditsUsed` on old smoke artifact shows 5 | Pre-G.10-H API behavior; new smokes return `creditExempt` + `creditsUsed: 0` when exempt |
+
+---
+
+## Go / No-Go — next provider smoke (G.10-I)
+
+| Gate | Status |
+|------|--------|
+| Root cause understood | **Go** |
+| Migration 068 on staging | **Go** (applied) |
+| DB verify grants | **Go** (profiles/generations/credit_transactions ok) |
+| Billing user ready (`billingtest@influexai.test`) | **Go** — `billing_smoke_ready: true`, credits 75, not exempt |
+| Provider window closed now | **Go** (correct safe state) |
+| **Execute G.10-I in this phase** | **No-Go** — human must open window first |
+
+**Provider smoke now freigegeben:** **No** — prepare only; execute in G.10-I after explicit env window.
 
 ---
 
