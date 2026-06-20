@@ -3,19 +3,21 @@
  */
 import { execSync } from "child_process";
 
-const PREVIEW_HOST_RE =
+const PREVIEW_URL_RE =
   /https:\/\/influexai-[a-z0-9]+-paschalidisgeorgios-projects\.vercel\.app/;
 
 export function resolveLatestPreviewUrl(fallback) {
   try {
-    const out = execSync("npx vercel ls", {
+    const out = execSync("npx vercel ls 2>&1", {
       encoding: "utf8",
       stdio: ["pipe", "pipe", "pipe"],
+      shell: process.platform === "win32",
     });
-    const lines = out.split(/\r?\n/);
-    for (const line of lines) {
-      if (!line.includes("Preview") || !line.includes("Ready")) continue;
-      const match = line.match(PREVIEW_HOST_RE);
+    const tableSection = out.split("> To display")[0] ?? out;
+    for (const line of tableSection.split(/\r?\n/)) {
+      if (!/\bPreview\b/.test(line) || !/\bReady\b/.test(line)) continue;
+      if (/\bProduction\b/.test(line)) continue;
+      const match = line.match(PREVIEW_URL_RE);
       if (match) return match[0];
     }
   } catch {

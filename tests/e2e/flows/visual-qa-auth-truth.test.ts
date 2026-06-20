@@ -90,7 +90,10 @@ test.describe("Visual QA auth truth (G.10-P)", () => {
     });
     await signIn.click();
 
-    await page.waitForTimeout(5000);
+    await page
+      .waitForURL(/\/(dashboard|pricing|onboarding|auth)/, { timeout: 30000 })
+      .catch(() => {});
+    await page.waitForTimeout(2000);
     probe.final_url = page.url();
 
     const alert = page.locator(".influex-auth-alert--error");
@@ -113,14 +116,22 @@ test.describe("Visual QA auth truth (G.10-P)", () => {
 
     probe.ui_login_ok =
       !probe.error_text &&
-      (probe.final_url?.includes("/dashboard") ||
-        probe.session_cookie_set ||
-        probe.local_storage_session);
+      probe.auth_request_status === 200 &&
+      (probe.session_cookie_set || probe.local_storage_session);
 
     if (probe.ui_login_ok) {
-      await page.goto("/dashboard");
+      await page.goto("/dashboard", { waitUntil: "domcontentloaded" });
+      await page
+        .waitForURL(/\/dashboard/, { timeout: 20000 })
+        .catch(() => {});
       probe.dashboard_reachable = page.url().includes("/dashboard");
-      await page.goto("/dashboard/image-generator");
+
+      await page.goto("/dashboard/image-generator", { waitUntil: "domcontentloaded" });
+      await page
+        .waitForURL(/\/dashboard(\/image-generator|\?tool=image-gen)/, {
+          timeout: 20000,
+        })
+        .catch(() => {});
       probe.image_generator_reachable =
         /\/dashboard(\/image-generator|\?tool=image-gen)/.test(page.url()) ||
         page.url().includes("/dashboard/image-generator");
@@ -138,7 +149,10 @@ test.describe("Visual QA auth truth (G.10-P)", () => {
         .isVisible({ timeout: 8000 })
         .catch(() => false);
 
-      await page.goto("/dashboard/gallery");
+      await page.goto("/dashboard/gallery", { waitUntil: "domcontentloaded" });
+      await page
+        .waitForURL(/\/dashboard\/gallery/, { timeout: 20000 })
+        .catch(() => {});
       probe.gallery_reachable = page.url().includes("/dashboard/gallery");
     }
 
@@ -154,5 +168,8 @@ test.describe("Visual QA auth truth (G.10-P)", () => {
       "expected Supabase auth/v1/token request"
     ).toContain("supabase.co");
     expect(probe.ui_login_ok, probe.error_text ?? "login failed").toBe(true);
+    expect(probe.dashboard_reachable, "dashboard should load after login").toBe(
+      true
+    );
   });
 });

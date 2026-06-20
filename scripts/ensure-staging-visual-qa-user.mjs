@@ -103,6 +103,21 @@ console.log(`Email: ${EMAIL}`);
 console.log(`Supabase ref: ${STAGING_REF}`);
 console.log(`In ADMIN_EMAIL_ALLOWLIST: no\n`);
 
+async function findUserIdViaProfile(targetEmail) {
+  const normalized = targetEmail.toLowerCase();
+  const { data, error } = await admin
+    .from("profiles")
+    .select("id, email")
+    .ilike("email", normalized)
+    .maybeSingle();
+  if (error || !data?.id) return null;
+  const { data: userData, error: userErr } = await admin.auth.admin.getUserById(
+    data.id
+  );
+  if (userErr || !userData?.user) return null;
+  return userData.user;
+}
+
 async function findUserByEmail(targetEmail) {
   const normalized = targetEmail.toLowerCase();
   let page = 1;
@@ -163,7 +178,9 @@ async function resolveAuthUser() {
         `⚠️  listUsers lookup failed: ${String(err.message ?? err).slice(0, 120)}`
       );
       return null;
-    })) ?? (await probeSignIn(EMAIL));
+    })) ??
+    (await findUserIdViaProfile(EMAIL)) ??
+    (await probeSignIn(EMAIL));
 
   if (user) {
     console.log("✅ Auth user exists:", user.id);
@@ -188,6 +205,7 @@ async function resolveAuthUser() {
     if (isDuplicateUserError(error)) {
       user =
         (await findUserByEmail(EMAIL).catch(() => null)) ??
+        (await findUserIdViaProfile(EMAIL)) ??
         (await probeSignIn(EMAIL));
       if (!user) {
         fail(
@@ -255,6 +273,45 @@ async function ensureCredits(userId, currentCredits) {
   return data ?? TARGET_CREDITS;
 }
 
+async function ensureProfileFields(userId) {
+  let profile = await readProfile(userId);
+  const needsPlanFix =
+    profile?.plan !== TARGET_PLAN ||
+    profile?.role !== "user" ||
+    profile?.is_admin === true;
+
+  if (!needsPlanFix) return profile;
+
+  const { error } = await admin
+    .from("profiles")
+    .update({
+      plan: TARGET_PLAN,
+      onboarding_completed: true,
+      role: "user",
+      is_admin: false,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    console.warn(`⚠️  profiles update failed: ${error.message}`);
+    try {
+      await syncProfileViaDbQuery(userId);
+    } catch (err) {
+      console.warn(
+        `   db query fallback skipped: ${String(err.message ?? err).slice(0, 200)}`
+      );
+    }
+  } else {
+    console.log(`✅ Profile plan enforced: ${TARGET_PLAN}`);
+  }
+
+  profile = await readProfile(userId);
+  if (profile?.plan !== TARGET_PLAN) {
+    fail(`Profile plan must be ${TARGET_PLAN} (current: ${profile?.plan ?? "null"})`);
+  }
+  return profile;
+}
+
 async function main() {
   const { user, authCreated } = await resolveAuthUser();
 
@@ -289,7 +346,7 @@ async function main() {
   }
 
   await ensureCredits(user.id, (await readProfile(user.id))?.credits);
-  const profile = await readProfile(user.id);
+  const profile = await ensureProfileFields(user.id);
 
   await verifyAnonSignIn("final");
 

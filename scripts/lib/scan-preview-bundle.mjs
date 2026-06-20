@@ -15,7 +15,7 @@ export async function scanPreviewBundle(previewBase) {
   const base = previewBase.replace(/\/$/, "");
   const htmlTmp = join(tmpdir(), `launch-bundle-${Date.now()}.html`);
   try {
-    execSync(`npx vercel curl "${base}/auth/sign-in" -s -o "${htmlTmp}"`, {
+    execSync(`npx vercel curl "${base}/auth/sign-in" -s -o "${htmlTmp}" 2>&1`, {
       stdio: "pipe",
       env: cleanVercelEnv(process.env),
     });
@@ -40,7 +40,7 @@ export async function scanPreviewBundle(previewBase) {
       const chunkTmp = join(tmpdir(), `launch-chunk-${scanned}.js`);
       try {
         execSync(
-          `npx vercel curl "${base}${jsPath}" -s -o "${chunkTmp}"`,
+          `npx vercel curl "${base}${jsPath}" -s -o "${chunkTmp}" 2>&1`,
           { stdio: "pipe", env: cleanVercelEnv(process.env) }
         );
         scanText(readFileSync(chunkTmp, "utf8"));

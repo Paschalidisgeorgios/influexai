@@ -1,95 +1,61 @@
 # Launch Operator — G.10-Q
 
-Generated: 2026-06-20T20:35:00Z  
-Branch: `master`  
-HEAD (pre-commit): `955fc5a`
+Generated: 2026-06-20T21:09:42.303Z
 
-## Operator Status
-
-**Full operator run: BLOCKED** — `VISUAL_QA_PASSWORD` not set in shell or `.env.local`.
-
-```powershell
-$env:VISUAL_QA_PASSWORD = 'DEIN_NEUES_TEMPORÄRES_PASSWORT'
-npm run launch:operator
-```
-
-The operator script (`scripts/launch-operator.mjs`) is ready and will:
-
-1. Validate local safety (staging Supabase, test Stripe, providers disabled)
-2. Sync Preview-scoped Vercel env from `.env.local` (never logs values)
-3. Deploy Preview via `npx vercel --yes` (never `--prod`)
-4. Scan client bundle for Supabase ref alignment
-5. Ensure `visualqa@influexai.test` on staging
-6. Direct `signInWithPassword` probe
-7. Playwright UI login + dashboard read-only checks
-8. Provider guard probe (`PROVIDERS_DISABLED`)
-9. Write this report with Go/No-Go gates
-
----
-
-## Launch Gate (not executed)
+## Launch Gate
 
 | Gate | Result |
 |------|--------|
-| Preview Gate | **pending** |
-| Auth Gate | **pending** |
-| UI Gate | **pending** |
-| Provider Guard | **pending** |
-| G.10-O Provider-UI-Smoke ready | **no** |
+| Direct Supabase Auth | PASS |
+| Preview Bundle (staging refs) | PASS |
+| UI Login | PASS |
+| Provider Guard | PASS |
 
----
+## Direct Supabase Auth
 
-## Safety Preflight (local)
+- User: `visualqa@influexai.test`
+- Result: PASS
+- user_id: 61a57079-e212-4d2c-834c-ce799660a480
+- error: none / none
+- password logged: **false**
+- password auto-generated this run: no
 
-| Check | Result |
-|-------|--------|
-| `.env.local` present | yes |
-| `.env.local` staged | no |
-| `public/images/lora-training/` staged | no |
-| `PROVIDERS_DISABLED` | `true` |
-| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` | `false` |
-| `STRIPE_MODE` | `test` |
-| Local Supabase ref | `jvjmqtxlqfqaoyjklpxh` |
-| Local anon JWT ref | `jvjmqtxlqfqaoyjklpxh` (match) |
-| Production Supabase locally | blocked |
-| Stripe Live | no |
-| `VISUAL_QA_PASSWORD` | **missing** |
-| Provider call | none |
-| Production deploy | none |
+## Preview Bundle
 
-### Tests
+- URL: https://influexai-mpoqnjoes-paschalidisgeorgios-projects.vercel.app
+- Supabase URL ref(s): jvjmqtxlqfqaoyjklpxh
+- Anon JWT ref(s): jvjmqtxlqfqaoyjklpxh
+- Expected ref: `jvjmqtxlqfqaoyjklpxh`
+- Production ref in bundle: no
+- `url_anon_mismatch`: false
+- Preview env fix attempted: no
 
-| Command | Result |
-|---------|--------|
-| `npm run lint` | PASS |
-| `npm run test:unit -- --run` | PASS (231/231) |
-| `npm run typecheck` | PASS |
-| `npm run build` | PASS |
+## UI Login & Dashboard
 
----
+- UI Login: PASS
+- Final URL: https://influexai-mpoqnjoes-paschalidisgeorgios-projects.vercel.app/dashboard
+- Error text: none
+- Session set: yes
+- Dashboard: yes
+- Image Generator: yes
+- Credits visible: n/a
+- Provider-disabled banner: yes
+- Gallery: yes
 
-## Known Blocker (from G.10-P)
+## Provider Guard
 
-Last bundle scan on Ready Preview showed **URL staging + anon JWT production** mismatch. The operator re-syncs Preview env from local `.env.local` and redeploys automatically to fix this.
+- Status: PASS
+- code: PROVIDERS_DISABLED
+- generationId: no
+- imageUrl: no
 
----
+## Blockers
 
-## Production Dry-Run
-
-**Not enabled** in this run. Requires:
-
-```
-LAUNCH_SCOPE=production-dry-run
-LAUNCH_CONFIRM=I_UNDERSTAND_DRY_RUN_NO_LIVE
-```
-
-Even when confirmed, the operator does **not** run `vercel --prod` automatically.
-
----
+- none
 
 ## Diagnosis
 
-- **operator_blocked_missing_password**
-- Next: set `VISUAL_QA_PASSWORD` → `npm run launch:operator`
+**launch_gates_pass**
 
+---
 No secrets in this report.

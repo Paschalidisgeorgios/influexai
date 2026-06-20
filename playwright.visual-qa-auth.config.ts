@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import dotenv from "dotenv";
+import { resolveVercelProtectionBypass } from "./scripts/lib/resolve-vercel-protection-bypass.mjs";
 
 dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
@@ -8,6 +9,8 @@ const previewBase =
   process.env.PREVIEW_URL ??
   process.env.PLAYWRIGHT_BASE_URL ??
   "https://influexai-iad04g5x8-paschalidisgeorgios-projects.vercel.app";
+
+const bypassSecret = resolveVercelProtectionBypass(process.env);
 
 /** Preview visual QA auth probe — no local webServer (G.10-O0F). */
 export default defineConfig({
@@ -21,6 +24,13 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "off",
     video: "off",
+    ...(bypassSecret
+      ? {
+          extraHTTPHeaders: {
+            "x-vercel-protection-bypass": bypassSecret,
+          },
+        }
+      : {}),
   },
   projects: [
     {
