@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthCredentialSection } from "@/components/auth/AuthCredentialSection";
 import { setLastAuthProvider } from "@/lib/auth-last-used";
@@ -26,7 +26,6 @@ function LoginPageInner() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
   const supabase = createClient();
 
   const handleLogin = async (e?: React.FormEvent) => {
@@ -92,9 +91,8 @@ function LoginPageInner() {
       );
     }
 
-    router.replace(target);
-    router.refresh();
-    setLoading(false);
+    window.location.assign(target);
+    return;
   };
 
   return (

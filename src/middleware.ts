@@ -23,9 +23,13 @@ import { hasActivePlan } from "@/lib/access";
 import { getRouteGate, isRouteAllowed } from "@/lib/plan-gating";
 import { isPlatformAdminServer } from "@/lib/platform-admin.server";
 import {
+  isEmailInAdminAllowlist,
+  parseAdminEmailAllowlist,
+} from "@/lib/admin-allowlist";
+import {
   logAuthRedirect,
   resolvePostAuthRedirect,
-} from "@/lib/auth-redirect.server";
+} from "@/lib/auth-redirect";
 
 export async function middleware(request: NextRequest) {
   const langParam = request.nextUrl.searchParams.get("lang");
@@ -251,7 +255,8 @@ export async function middleware(request: NextRequest) {
       .single();
 
     const redirectParam = request.nextUrl.searchParams.get("redirect");
-    const target = await resolvePostAuthRedirect(
+    const allowlist = parseAdminEmailAllowlist(process.env.ADMIN_EMAIL_ALLOWLIST);
+    const target = resolvePostAuthRedirect(
       {
         email: user.email,
         is_admin: profile?.is_admin,
@@ -259,7 +264,9 @@ export async function middleware(request: NextRequest) {
         plan: profile?.plan,
         id: user.id,
       },
-      redirectParam
+      redirectParam,
+      (email) => isEmailInAdminAllowlist(email, allowlist),
+      null
     );
 
     logAuthRedirect({
