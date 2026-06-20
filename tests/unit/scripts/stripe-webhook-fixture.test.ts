@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCheckoutSessionCompletedEvent,
+  buildInvoicePaidEvent,
   signStripeWebhookPayload,
 } from "../../../scripts/lib/stripe-webhook-fixture.mjs";
 
@@ -38,5 +39,17 @@ describe("stripe webhook fixtures", () => {
     const payload = JSON.stringify({ id: "evt_test" });
     const sig = signStripeWebhookPayload(payload, "whsec_test_secret");
     expect(sig).toMatch(/t=\d+,v1=/);
+  });
+
+  it("builds invoice.paid renewal event", () => {
+    const event = buildInvoicePaidEvent({
+      eventId: "evt_inv_1",
+      invoiceId: "in_test_1",
+      subscriptionId: "sub_test_1",
+    });
+    expect(event.type).toBe("invoice.paid");
+    expect(event.data.object.billing_reason).toBe("subscription_cycle");
+    expect(event.data.object.subscription).toBe("sub_test_1");
+    expect(event.livemode).toBe(false);
   });
 });

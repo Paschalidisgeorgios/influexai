@@ -2,8 +2,7 @@
 
 **Date:** 2026-06-16  
 **Branch:** `master`  
-**Staging Supabase ref:** `jvjmqtxlqfqaoyjklpxh`  
-**Scope:** Stripe Test Mode only — no provider calls, no live Stripe, no production Supabase.
+**Follow-up:** G.10-L subscription E2E proven — see [`stripe-subscription-e2e-g10l.md`](./stripe-subscription-e2e-g10l.md)
 
 ---
 
@@ -166,26 +165,26 @@ Result file (gitignored): `scripts/stripe-billing-smoke-result.json`
 
 ### Manual / next phase ⏳
 
-- Full E2E subscription checkout with Stripe Test card (4242…)
+- Browser E2E subscription checkout with Stripe Test card (4242…) — optional
 - Stripe CLI `stripe listen` against deployed staging URL
-- Subscription renewal (`invoice.paid`) idempotency smoke
 - Customer portal cancel flow UI verification
 
 ---
 
 ## 7. Umsatz-MVP Billing Assessment
 
-**Partially proven — sufficient for MVP launch gate with caveats:**
+**Proven for MVP launch gate (G.10-K + G.10-L):**
 
 | Flow | Status |
 |------|--------|
 | Credit pack purchase (webhook) | ✅ Proven |
 | Credit deduction on generation (G.10-I) | ✅ Proven |
-| Subscription checkout E2E | ⏳ Manual Stripe test card |
-| Subscription renewal | ⏳ Fixture/manual |
+| Subscription checkout webhook (G.10-L) | ✅ Proven |
+| Subscription renewal (G.10-L) | ✅ Proven |
+| Browser checkout E2E | ⏳ Manual optional |
 | Cancel = no grant | ✅ By design (code + no webhook) |
 
-Core revenue loop (buy credits → spend on generation) is proven end-to-end across G.10-I + G.10-K.
+Core revenue loop (subscribe/buy credits → spend on generation) is proven across G.10-I + G.10-K + G.10-L.
 
 ---
 

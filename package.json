@@ -36,10 +36,14 @@
     "staging:ensure-billing-user": "node scripts/ensure-staging-billing-user.mjs",
     "staging:ensure-provider-billing-user": "node scripts/ensure-provider-billing-smoke-user.mjs",
     "staging:ensure-stripe-billing-user": "node scripts/ensure-staging-stripe-billing-user.mjs",
+    "staging:ensure-subscription-smoke-user": "node scripts/ensure-staging-subscription-smoke-user.mjs",
     "smoke:stripe:audit": "node scripts/stripe-billing-smoke.mjs audit",
     "smoke:stripe:verify-prices": "node scripts/stripe-billing-smoke.mjs verify-prices",
     "smoke:stripe:baseline": "node scripts/stripe-billing-smoke.mjs baseline",
-    "smoke:stripe:webhook": "node scripts/stripe-billing-smoke.mjs webhook-smoke"
+    "smoke:stripe:webhook": "node scripts/stripe-billing-smoke.mjs webhook-smoke",
+    "smoke:stripe:subscription-audit": "node scripts/stripe-subscription-smoke.mjs audit",
+    "smoke:stripe:subscription-baseline": "node scripts/stripe-subscription-smoke.mjs baseline",
+    "smoke:stripe:subscription-webhook": "node scripts/stripe-subscription-smoke.mjs webhook-smoke"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

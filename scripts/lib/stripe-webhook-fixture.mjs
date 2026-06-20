@@ -13,6 +13,8 @@ export function buildCheckoutSessionCompletedEvent(options) {
     checkoutType = "credit_pack",
     plan = "starter",
     livemode = false,
+    customerId = "cus_test_g10k",
+    subscriptionId = "sub_test_g10k",
   } = options;
 
   const metadata =
@@ -39,9 +41,9 @@ export function buildCheckoutSessionCompletedEvent(options) {
     metadata,
     amount_total: 500,
     currency: "eur",
-    customer: "cus_test_g10k",
+    customer: customerId,
     subscription:
-      checkoutType === "platform_subscription" ? "sub_test_g10k" : null,
+      checkoutType === "platform_subscription" ? subscriptionId : null,
   };
 
   return {
@@ -54,6 +56,38 @@ export function buildCheckoutSessionCompletedEvent(options) {
     request: { id: null, idempotency_key: null },
     type: "checkout.session.completed",
     data: { object: session },
+  };
+}
+
+export function buildInvoicePaidEvent(options) {
+  const {
+    eventId,
+    invoiceId,
+    subscriptionId,
+    livemode = false,
+    billingReason = "subscription_cycle",
+  } = options;
+
+  const invoice = {
+    id: invoiceId,
+    object: "invoice",
+    billing_reason: billingReason,
+    subscription: subscriptionId,
+    amount_paid: 999,
+    currency: "eur",
+    status: "paid",
+  };
+
+  return {
+    id: eventId,
+    object: "event",
+    api_version: "2024-06-20",
+    created: Math.floor(Date.now() / 1000),
+    livemode,
+    pending_webhooks: 1,
+    request: { id: null, idempotency_key: null },
+    type: "invoice.paid",
+    data: { object: invoice },
   };
 }
 
