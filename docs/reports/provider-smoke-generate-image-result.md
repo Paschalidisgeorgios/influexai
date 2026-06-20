@@ -1,60 +1,64 @@
-# Provider Smoke Result — generate-image (PHASE G.10-A / G.10-B)
+# Provider Smoke Result — generate-image (PHASE G.10-A / B / C)
 
-**Last updated:** 2026-06-16  
+**Last updated:** 2026-06-20  
 **Branch:** `master`  
-**HEAD at G.10-B:** `8a68338`  
-**Status:** **BLOCKED** — provider smoke not executed (missing FAL key)
+**HEAD at G.10-C:** `f45f3ea`  
+**Status:** **FAIL** — dev write guard blocked provider call (no FAL invocation)
 
 ---
 
-## Executive Summary (G.10-B)
+## Executive Summary (G.10-C)
 
 | Item | Result |
 |------|--------|
-| Provider smoke | **BLOCKED** — `FAL_KEY` / `FAL_API_KEY` still not in `.env.local` |
-| Credits verified | N/A (no provider call) |
-| Gallery / generations verified | N/A |
-| `PROVIDERS_DISABLED` after | ✅ Still **`true`** (never toggled) |
-| Guard probe (G.10-B) | ⚠️ Dev server not running — guard unchanged from G.10-A (503 when server up) |
+| Provider smoke | **FAIL** — HTTP 403 `DEV_WRITE_GUARD_BLOCKED` |
+| FAL key configured | ✅ `FAL_API_KEY` present (not logged) |
+| Audit `safe_to_proceed` | ✅ `true` (pre-run) |
+| Provider outbound call | **No** — blocked before handler |
+| Credits | **75 → 75** (unchanged) |
+| Generations | **0 → 0** (unchanged) |
+| Refund | N/A |
+| `PROVIDERS_DISABLED` after | ✅ **`true`** (restored) |
+| Guard probe after test | ✅ HTTP 503 `PROVIDERS_DISABLED` |
 | Unit/lint/build | ✅ Green |
 
 ---
 
-## G.10-B — Supervised Smoke Attempt
+## G.10-C — Supervised Smoke With FAL Key
 
-### Aufgabe 1 — Start Audit
+### Aufgabe 1 — FAL Key
+
+| Env name (code) | Status |
+|-----------------|--------|
+| `FAL_API_KEY` | ✅ Set in `.env.local` (via `getFalKey()` in `fal-image.ts`) |
+| `FAL_KEY` | unset |
+
+Key not printed, not committed.
+
+### Aufgabe 2 — Start Audit ✅
 
 | Check | Result |
 |-------|--------|
-| Branch | `master` ✅ |
-| `public/images/lora-training/` | Untracked only ✅ |
-| `.env.local` staged | No ✅ |
-| Secrets staged | No ✅ |
-| Lint | 0 errors, 65 warnings ✅ |
-| Unit tests | 197/197 ✅ |
-| Typecheck | ✅ |
-| Build | ✅ |
+| Branch | `master` |
+| `.env.local` staged | No |
+| `public/images/lora-training/` | Untracked only |
+| Lint | 0 errors, 65 warnings |
+| Unit tests | 197/197 |
+| Typecheck / Build | ✅ |
 
-### Aufgabe 2 — Smoke Audit
+### Aufgabe 3 — Smoke Audit ✅
 
-```bash
+```
 node scripts/supervised-generate-image-smoke.mjs audit
+→ safe_to_proceed: true
+→ supabase_ref: jvjmqtxlqfqaoyjklpxh
+→ providers_disabled: true (before test window)
+→ stripe_mode: test
+→ fal_key_present: true
+→ no live/production signals
 ```
 
-| Check | Result |
-|-------|--------|
-| Supabase ref | `jvjmqtxlqfqaoyjklpxh` ✅ |
-| `PROVIDERS_DISABLED` | **`true`** ✅ |
-| `STRIPE_MODE` | `test` ✅ |
-| Stripe live | ❌ Not detected |
-| Production Supabase ref | ❌ Not detected |
-| `FAL_KEY` | **unset** ❌ |
-| `FAL_API_KEY` | **unset** ❌ |
-| `safe_to_proceed` | **`false`** ❌ |
-
-**Decision:** Do not open test window. Do not set `PROVIDERS_DISABLED=false`. Do not run provider smoke.
-
-### Aufgabe 3 — Baseline (documented)
+### Aufgabe 4 — Baseline
 
 | Field | Value |
 |-------|-------|
@@ -62,64 +66,77 @@ node scripts/supervised-generate-image-smoke.mjs audit
 | User ID | `13346d5c-f673-41ba-853d-4635b0fccb8b` |
 | Plan | `starter` |
 | Credits (before) | **75** |
-| Generations count (before) | **0** |
-| `PROVIDERS_DISABLED` (before) | **`true`** |
+| Generations (before) | **0** |
 | Expected credit delta | **−5** on success |
-| Expected gallery SSOT | `generations` + `generated-assets` |
+| `PROVIDERS_DISABLED` (before window) | **`true`** |
 
-### Aufgaben 4–7 — Test Window / Run / Result / Refund
+### Aufgabe 5 — Test Window
 
-| Step | Result |
-|------|--------|
-| Test window opened | **No** — blocked by audit |
-| `node … run` executed | **No** |
-| Provider calls | **0** |
-| Refund | N/A |
+1. Set `PROVIDERS_DISABLED=false` in `.env.local` (duplicate lines normalized to `false`)
+2. Dev server restarted (`npm run dev`)
+3. Pre-run audit: `providers_disabled: false`, staging ref unchanged, FAL key present
 
-### Aufgabe 8 — Test Window Close
+**Note:** Initial run hit 503 `PROVIDERS_DISABLED` because `.env.local` contained duplicate keys (`false` then `true`); dotenv last-wins left `true`. Fixed before second run.
 
-| Item | Result |
-|------|--------|
-| `PROVIDERS_DISABLED` in `.env.local` | **`true`** (unchanged) |
-| Dev server restart | Not required (window never opened) |
-| Guard probe post-test | N/A — server down; G.10-A confirmed 503 when server was up |
+### Aufgabe 6 — Single Smoke Run
+
+```bash
+node scripts/supervised-generate-image-smoke.mjs run
+```
+
+| Field | Value |
+|-------|-------|
+| HTTP status | **403** |
+| Code | `DEV_WRITE_GUARD_BLOCKED` |
+| Duration | ~398 ms |
+| Provider called | **No** |
+| Prompt | Abstract lime-green glass cube (harmless product-style test) |
+
+### Aufgabe 7 — Result Verification
+
+| Check | Expected | Actual |
+|-------|----------|--------|
+| HTTP success | 200 | **403** |
+| Credit delta | −5 | **0** |
+| Output URL | present | **null** |
+| `generations` row | present | **null** |
+| Gallery | visible | **n/a** |
+| Secrets in logs | none | ✅ |
+
+**Root cause:** Local dev write guard (`developmentWriteGuardResponse`) blocks mutating routes when production-like signals are detected with `PROVIDERS_DISABLED=false` — notably `provider_keys_active` + `service_role_present` on staging Supabase in `next dev`.
+
+### Aufgabe 8 — Test Window Closed ✅
+
+1. `PROVIDERS_DISABLED=true` restored (both lines)
+2. Dev server restarted
+3. Guard probe:
+
+```
+POST /api/generate-image → HTTP 503, code: PROVIDERS_DISABLED
+```
+
+### Aufgabe 9 — Sign-off
+
+| Question | Answer |
+|----------|--------|
+| Provider-Smoke | **FAIL** |
+| Credits korrekt | **n/a** (unchanged) |
+| generations korrekt | **n/a** (unchanged) |
+| Gallery sichtbar | **no** |
+| Refund korrekt | **n/a** |
+| `PROVIDERS_DISABLED` wieder true | **yes** |
+| Guard-Probe bestanden | **yes** (503 after restore) |
+| Tests grün | **yes** |
 
 ---
 
-## G.10-A — Prior Attempt (reference)
+## Prior Attempts (reference)
 
-**Date:** 2026-06-16  
-**HEAD:** `29e9666`  
-**Status:** **BLOCKED** — same root cause (missing FAL key)
-
-| Item | Result |
-|------|--------|
-| Provider smoke | **BLOCKED** |
-| Guard probe (disabled) | ✅ HTTP 503 `PROVIDERS_DISABLED` |
-| `PROVIDERS_DISABLED` | Never toggled ✅ |
-
----
-
-## Smoke Plan (from reports)
-
-| Item | Value |
-|------|-------|
-| Provider candidate | `POST /api/generate-image` (FAL Flux Dev) |
-| Expected credits | **−5** standard |
-| Gallery SSOT | `generations` → `/dashboard/gallery` |
-| Harmless prompt | Abstract lime-green glass cube, ivory background, no text/logo |
-
----
-
-## Env-Safety (no secrets printed)
-
-| Variable | G.10-B status |
-|----------|---------------|
-| Staging Supabase | ✅ `jvjmqtxlqfqaoyjklpxh` |
-| `PROVIDERS_DISABLED` | ✅ `true` |
-| `STRIPE_MODE` | ✅ `test` |
-| Stripe live keys | ❌ None |
-| FAL key | ❌ **Missing — blocker** |
+| Phase | Status | Reason |
+|-------|--------|--------|
+| G.10-A | BLOCKED | Missing FAL key |
+| G.10-B | BLOCKED | Missing FAL key |
+| G.10-C | **FAIL** | Dev write guard with providers enabled locally |
 
 ---
 
@@ -127,22 +144,21 @@ node scripts/supervised-generate-image-smoke.mjs audit
 
 | Risk | Notes |
 |------|-------|
-| Missing FAL key | Blocks all supervised image smokes until set locally only |
-| Dev server offline | Guard re-probe deferred until next run with server |
-| `gallery_assets` legacy | Studio sidebar may stay empty; SSOT is `generations` |
+| Local smoke catch-22 | `PROVIDERS_DISABLED=true` → provider guard 503; `false` → dev write guard 403 with active FAL + service role |
+| Duplicate env keys | `.env.local` had two `PROVIDERS_DISABLED` lines — ensure single source of truth |
+| Audit script gap | `safe_to_proceed` does not evaluate dev write guard when providers enabled |
 
 ---
 
-## Recommendation — Next Step (G.10-C)
+## Recommendation — Next Step (G.10-D)
 
-1. **Human:** Add `FAL_KEY=` or `FAL_API_KEY=` to `.env.local` only (fal.ai sandbox key) — **never commit**.
-2. Verify: `node scripts/supervised-generate-image-smoke.mjs audit` → `safe_to_proceed: true`
-3. Baseline: `node scripts/supervised-generate-image-smoke.mjs baseline` (credits ≥ 10)
-4. Set `PROVIDERS_DISABLED=false` in `.env.local`, restart `npm run dev`
-5. **Single run:** `node scripts/supervised-generate-image-smoke.mjs run`
-6. Verify −5 credits, `generations` row, image URL
-7. Set `PROVIDERS_DISABLED=true`, restart dev, guard probe → 503
-8. Update this report → **PASS** / **FAIL** / **PARTIAL**
+Choose **one** supervised path (human approval required):
+
+1. **Vercel Preview smoke** — deploy branch with staging env, `PROVIDERS_DISABLED=false`, no local dev guard; single `run` against preview URL.
+2. **Local override window** — temporarily set `ALLOW_PRODUCTION_DEV_WRITES=true` + `I_UNDERSTAND_PRODUCTION_WRITES=true` with staging ref + test Stripe only; document in smoke plan; revert immediately after.
+3. **Fix audit script** — extend `safe_to_proceed` to fail when dev write guard would block with providers enabled locally.
+
+Do **not** retry provider call until path is agreed.
 
 ---
 
@@ -150,18 +166,5 @@ node scripts/supervised-generate-image-smoke.mjs audit
 
 | File | Purpose |
 |------|---------|
-| `scripts/supervised-generate-image-smoke.mjs` | Audit / baseline / single-shot smoke |
-
----
-
-## Sign-off (G.10-B)
-
-| Question | Answer |
-|----------|--------|
-| Provider-Smoke | **BLOCKED** |
-| Credits korrekt | **n/a** |
-| Gallery/generations korrekt | **n/a** |
-| Refund korrekt | **n/a** |
-| `PROVIDERS_DISABLED` wieder true | **ja** (never disabled) |
-| Guard-Probe nach Test | **n/a** (no test window; server down) |
-| Tests grün | **ja** |
+| `scripts/supervised-generate-image-smoke.mjs` | Audit / baseline / run |
+| `scripts/supervised-smoke-result.json` | Last run output (G.10-C) |
