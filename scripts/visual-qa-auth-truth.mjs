@@ -1,10 +1,10 @@
 /**
- * Visual QA auth truth test — staging direct sign-in + preview bundle audit.
+ * Launch auth truth gate — G.10-P
  *
- * Requires VISUAL_QA_PASSWORD in .env.local (never logged).
- * Optional: PREVIEW_URL, SKIP_ENSURE=1, SKIP_PLAYWRIGHT=1
+ * Requires VISUAL_QA_PASSWORD in shell or .env.local (never logged).
+ * Optional: PREVIEW_URL, SKIP_ENSURE=1, SKIP_PLAYWRIGHT=1, SKIP_DEPLOY=1
  *
- * Run: node scripts/visual-qa-auth-truth.mjs
+ * Run: npm run launch:auth-truth
  */
 import { config } from "dotenv";
 import { resolve } from "path";
@@ -20,65 +20,109 @@ import {
   supabaseJwtRef,
   extractSupabaseRefsFromText,
 } from "./lib/supabase-env-audit.mjs";
+import { resolveLatestPreviewUrl } from "./lib/resolve-latest-preview.mjs";
+import { probePreviewProviderGuard } from "./lib/preview-provider-guard.mjs";
 
 const EMAIL = "visualqa@influexai.test";
-const DEFAULT_PREVIEW =
+const FALLBACK_PREVIEW =
   "https://influexai-iad04g5x8-paschalidisgeorgios-projects.vercel.app";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
 const password = process.env.VISUAL_QA_PASSWORD?.trim();
-const previewUrl = (process.env.PREVIEW_URL ?? DEFAULT_PREVIEW).replace(/\/$/, "");
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-function fail(message) {
+function fail(message, code = 1) {
   console.error(`❌ ${message}`);
+  process.exit(code);
+}
+
+function missingPasswordExit() {
+  console.error("❌ Missing VISUAL_QA_PASSWORD (not logged).");
+  console.error("");
+  console.error("PowerShell:");
+  console.error("  $env:VISUAL_QA_PASSWORD = 'DEIN_NEUES_TEMPORÄRES_PASSWORT'");
+  console.error("  npm run launch:auth-truth");
+  console.error("");
+  console.error("Or add VISUAL_QA_PASSWORD to .env.local (never commit).");
   process.exit(1);
 }
 
-if (!password) {
-  console.error("❌ Missing VISUAL_QA_PASSWORD (not logged).");
-  console.error("Add to .env.local, then: node scripts/visual-qa-auth-truth.mjs");
-  process.exit(1);
-}
+if (!password) missingPasswordExit();
 
 const localRef = maskRef(url);
 const localAnonJwtRef = supabaseJwtRef(anonKey);
 
+if (localRef === PROD_REF) fail("Local Supabase points to production — blocked.");
+if (!url || !anonKey) fail("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+
 const report = {
-  phase: "visual-qa-auth-truth",
+  phase: "launch-auth-truth-g10p",
   email: EMAIL,
-  preview_url: previewUrl,
   local_supabase_ref: localRef,
   local_anon_jwt_ref: localAnonJwtRef,
   local_url_and_anon_match:
     Boolean(localRef && localAnonJwtRef && localRef === localAnonJwtRef),
-  staging_ref_ok: localRef === STAGING_REF,
+  preview_url: null,
+  preview_ready: false,
+  preview_deploy_triggered: false,
   ensure_user: null,
   direct_supabase_sign_in_ok: false,
   direct_supabase_user_id: null,
   direct_supabase_error_code: null,
   direct_supabase_error_message: null,
   preview_bundle: null,
-  preview_bundle_staging_ok: false,
-  preview_anon_jwt_ref: null,
+  preview_bundle_gate_pass: false,
   preview_url_anon_mismatch: false,
+  provider_guard: null,
   playwright: null,
+  launch_gate: {
+    auth_gate_pass: false,
+    preview_gate_pass: false,
+    ui_smoke_ready: false,
+  },
   diagnosis: null,
+  blockers: [],
   secrets_logged: false,
 };
 
-console.log("=== Visual QA Auth Truth ===\n");
-
-if (localRef === PROD_REF) fail("Local Supabase points to production — blocked.");
-if (!url || !anonKey) fail("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+console.log("=== Launch Auth Truth (G.10-P) ===\n");
 
 if (localRef !== localAnonJwtRef) {
   console.warn(
-    `⚠️  Local URL ref (${localRef}) != anon JWT ref (${localAnonJwtRef}) — misconfigured .env.local`
+    `⚠️  Local URL ref (${localRef}) != anon JWT ref (${localAnonJwtRef})`
   );
 }
+
+let previewUrl = (process.env.PREVIEW_URL ?? resolveLatestPreviewUrl(FALLBACK_PREVIEW) ?? FALLBACK_PREVIEW).replace(
+  /\/$/,
+  ""
+);
+report.preview_url = previewUrl;
+
+if (process.env.LAUNCH_TRIGGER_PREVIEW === "1" && process.env.SKIP_DEPLOY !== "1") {
+  console.log("Checking for newer preview deploy (no --prod)…");
+  const deploy = spawnSync("npx", ["vercel", "--yes"], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    env: process.env,
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+  if (deploy.status === 0) {
+    report.preview_deploy_triggered = true;
+    const detected = resolveLatestPreviewUrl(null);
+    if (detected) {
+      previewUrl = detected.replace(/\/$/, "");
+      report.preview_url = previewUrl;
+    }
+    console.log(`✅ Preview deploy triggered → ${previewUrl}`);
+  } else {
+    console.warn("⚠️  Preview deploy skipped or failed — using latest known Ready URL");
+  }
+}
+
+console.log(`Preview URL: ${previewUrl}\n`);
 
 if (process.env.SKIP_ENSURE !== "1") {
   console.log("Step 1: Ensure staging visual QA user…");
@@ -87,18 +131,12 @@ if (process.env.SKIP_ENSURE !== "1") {
     encoding: "utf8",
     env: { ...process.env, VISUAL_QA_PASSWORD: password },
   });
-  report.ensure_user = {
-    exit_code: ensure.status ?? 1,
-    stdout_tail: ensure.stdout?.slice(-400) ?? "",
-    stderr_tail: ensure.stderr?.slice(-400) ?? "",
-  };
+  report.ensure_user = { exit_code: ensure.status ?? 1 };
   if (ensure.status !== 0) {
     console.error(ensure.stderr || ensure.stdout);
     fail("ensure-staging-visual-qa-user failed");
   }
   console.log("✅ User ensure completed\n");
-} else {
-  report.ensure_user = { skipped: true };
 }
 
 console.log("Step 2: Direct Supabase anon signInWithPassword…");
@@ -119,81 +157,53 @@ console.log(
     : `❌ Direct sign-in FAIL (${report.direct_supabase_error_code}: ${report.direct_supabase_error_message})`
 );
 
-console.log("\nStep 3: Preview bundle Supabase ref scan…");
-const htmlTmp = join(tmpdir(), `vq-auth-${Date.now()}.html`);
-try {
-  execSync(
-    `npx vercel curl "${previewUrl}/auth/sign-in" -s -o "${htmlTmp}"`,
-    { stdio: "pipe" }
-  );
-  const html = readFileSync(htmlTmp, "utf8");
-  unlinkSync(htmlTmp);
-
-  const jsPaths = new Set();
-  for (const m of html.matchAll(/\/_next\/static\/[^\s"'<>]+\.js[^\s"'<>]*/g)) {
-    jsPaths.add(m[0].split("?")[0]);
-  }
-
-  const merged = { url_refs: new Set(), anon_jwt_refs: new Set() };
-  const scanText = (text) => {
-    const { url_refs, anon_jwt_refs } = extractSupabaseRefsFromText(text);
-    url_refs.forEach((r) => merged.url_refs.add(r));
-    anon_jwt_refs.forEach((r) => merged.anon_jwt_refs.add(r));
-  };
-  scanText(html);
-
-  let scanned = 0;
-  for (const jsPath of jsPaths) {
-    const chunkTmp = join(tmpdir(), `vq-chunk-${scanned}.js`);
-    try {
-      execSync(
-        `npx vercel curl "${previewUrl}${jsPath}" -s -o "${chunkTmp}"`,
-        { stdio: "pipe" }
-      );
-      scanText(readFileSync(chunkTmp, "utf8"));
-      scanned += 1;
-    } catch {
-      /* skip */
-    } finally {
-      try {
-        unlinkSync(chunkTmp);
-      } catch {
-        /* ignore */
-      }
-    }
-  }
-
-  const urlRefs = [...merged.url_refs];
-  const anonRefs = [...merged.anon_jwt_refs];
-  report.preview_bundle = {
-    js_chunks_scanned: scanned,
-    url_refs: urlRefs,
-    anon_jwt_refs: anonRefs,
-    production_url_ref: urlRefs.includes(PROD_REF),
-    staging_url_ref: urlRefs.includes(STAGING_REF),
-  };
-  report.preview_bundle_staging_ok =
-    urlRefs.includes(STAGING_REF) && !urlRefs.includes(PROD_REF);
-  report.preview_anon_jwt_ref = anonRefs[0] ?? null;
-  report.preview_url_anon_mismatch =
-    urlRefs.length === 1 &&
-    anonRefs.length === 1 &&
-    urlRefs[0] !== anonRefs[0];
-
-  console.log(`   URL refs in bundle: ${urlRefs.join(", ") || "(none)"}`);
-  console.log(`   Anon JWT refs in bundle: ${anonRefs.join(", ") || "(none)"}`);
-  if (report.preview_url_anon_mismatch) {
-    console.warn(
-      `⚠️  Preview URL ref (${urlRefs[0]}) != anon JWT ref (${anonRefs[0]}) — UI login will fail`
-    );
-  }
-} catch (err) {
-  report.preview_bundle = { error: String(err.message ?? err).slice(0, 200) };
-  console.warn(`⚠️  Preview bundle scan failed: ${report.preview_bundle.error}`);
+if (!report.direct_supabase_sign_in_ok) {
+  report.diagnosis = "fall_a_direct_supabase_sign_in_failed";
+  report.blockers.push("direct_supabase_sign_in_failed");
+  report.launch_gate.auth_gate_pass = false;
+  writeReports(report);
+  fail("Direct Supabase sign-in failed — fix user/password sync first", 2);
 }
 
-if (process.env.SKIP_PLAYWRIGHT !== "1") {
-  console.log("\nStep 4: Playwright UI login probe…");
+report.launch_gate.auth_gate_pass = true;
+
+console.log("\nStep 3: Preview bundle Supabase ref scan…");
+const bundle = await scanPreviewBundle(previewUrl);
+report.preview_bundle = bundle;
+report.preview_url_anon_mismatch = bundle.url_anon_mismatch;
+report.preview_bundle_gate_pass =
+  bundle.staging_url_ref &&
+  !bundle.production_url_ref &&
+  !bundle.url_anon_mismatch &&
+  bundle.anon_jwt_refs?.includes(STAGING_REF);
+
+console.log(`   URL refs: ${bundle.url_refs.join(", ") || "(none)"}`);
+console.log(`   Anon JWT refs: ${bundle.anon_jwt_refs.join(", ") || "(none)"}`);
+
+if (!report.preview_bundle_gate_pass) {
+  report.diagnosis = "fall_b_preview_bundle_or_env_mismatch";
+  report.blockers.push("preview_bundle_env_mismatch");
+  if (bundle.url_anon_mismatch) {
+    report.blockers.push("preview_anon_key_production_url_staging");
+  }
+  console.warn("\n⚠️  Preview bundle gate FAIL — skipping UI login probe");
+  console.warn(
+    "Fix Vercel Preview NEXT_PUBLIC_SUPABASE_ANON_KEY to staging (ref jvjmqtxlqfqaoyjklpxh), then redeploy."
+  );
+} else {
+  report.preview_ready = true;
+}
+
+console.log("\nStep 4: Provider guard probe…");
+report.provider_guard = probePreviewProviderGuard(previewUrl);
+console.log(
+  report.provider_guard.pass
+    ? "✅ Provider guard PASS (PROVIDERS_DISABLED)"
+    : `❌ Provider guard FAIL (code=${report.provider_guard.code ?? "unknown"})`
+);
+
+if (report.preview_bundle_gate_pass && process.env.SKIP_PLAYWRIGHT !== "1") {
+  console.log("\nStep 5: Playwright UI login probe…");
   const pw = spawnSync(
     "npx",
     [
@@ -213,85 +223,157 @@ if (process.env.SKIP_PLAYWRIGHT !== "1") {
       },
     }
   );
-  report.playwright = {
-    exit_code: pw.status ?? 1,
-    stdout_tail: pw.stdout?.slice(-800) ?? "",
-    stderr_tail: pw.stderr?.slice(-400) ?? "",
-  };
+  report.playwright = { exit_code: pw.status ?? 1 };
   try {
-    const resultPath = resolve(process.cwd(), "scripts/visual-qa-auth-truth-ui.json");
-    const ui = JSON.parse(readFileSync(resultPath, "utf8"));
-    report.playwright.ui = ui;
+    report.playwright.ui = JSON.parse(
+      readFileSync(resolve(process.cwd(), "scripts/visual-qa-auth-truth-ui.json"), "utf8")
+    );
   } catch {
     report.playwright.ui = null;
   }
-} else {
-  report.playwright = { skipped: true };
+
+  if (report.playwright.ui?.ui_login_ok) {
+    report.diagnosis = "fall_d_ui_login_pass";
+    report.launch_gate.ui_smoke_ready = true;
+  } else if (report.preview_bundle_gate_pass) {
+    report.diagnosis = "fall_c_ui_login_fail";
+    report.blockers.push("ui_login_failed");
+  }
+} else if (!report.preview_bundle_gate_pass) {
+  report.playwright = { skipped: true, reason: "preview_bundle_gate_fail" };
 }
 
-if (!report.direct_supabase_sign_in_ok) {
-  report.diagnosis =
-    "direct_supabase_sign_in_failed — fix ensure-staging-visual-qa-user or VISUAL_QA_PASSWORD / staging user";
-} else if (report.preview_url_anon_mismatch) {
-  report.diagnosis =
-    "preview_url_anon_key_mismatch — set Vercel Preview NEXT_PUBLIC_SUPABASE_ANON_KEY to staging anon key matching jvjmqtxlqfqaoyjklpxh, redeploy preview";
-} else if (report.playwright?.ui?.ui_login_ok === false) {
-  report.diagnosis =
-    "direct_ok_ui_fail — login UI/client issue (trim email, error mapping, or stale preview deploy)";
-} else if (report.playwright?.ui?.ui_login_ok === true) {
-  report.diagnosis = "auth_flow_ok";
-} else {
-  report.diagnosis = "inconclusive — review playwright output";
+report.launch_gate.preview_gate_pass =
+  report.preview_bundle_gate_pass && report.provider_guard?.pass === true;
+
+if (report.launch_gate.auth_gate_pass && report.launch_gate.preview_gate_pass && report.launch_gate.ui_smoke_ready) {
+  report.diagnosis = "launch_gates_pass";
 }
 
-mkdirSync(resolve(process.cwd(), "docs/reports"), { recursive: true });
-const reportPath = resolve(process.cwd(), "docs/reports/visual-qa-auth-truth-g10o0f.md");
-const md = `# Visual QA Auth Truth — G.10-O0F
+writeReports(report);
+
+console.log("\n=== Launch Auth Truth Result ===");
+console.log(JSON.stringify(report, null, 2));
+
+const exitOk =
+  report.launch_gate.auth_gate_pass &&
+  report.launch_gate.preview_gate_pass &&
+  report.launch_gate.ui_smoke_ready;
+
+process.exit(exitOk ? 0 : 1);
+
+async function scanPreviewBundle(previewBase) {
+  const htmlTmp = join(tmpdir(), `vq-auth-${Date.now()}.html`);
+  try {
+    execSync(
+      `npx vercel curl "${previewBase}/auth/sign-in" -s -o "${htmlTmp}"`,
+      { stdio: "pipe" }
+    );
+    const html = readFileSync(htmlTmp, "utf8");
+    unlinkSync(htmlTmp);
+
+    const jsPaths = new Set();
+    for (const m of html.matchAll(/\/_next\/static\/[^\s"'<>]+\.js[^\s"'<>]*/g)) {
+      jsPaths.add(m[0].split("?")[0]);
+    }
+
+    const merged = { url_refs: new Set(), anon_jwt_refs: new Set() };
+    const scanText = (text) => {
+      const { url_refs, anon_jwt_refs } = extractSupabaseRefsFromText(text);
+      url_refs.forEach((r) => merged.url_refs.add(r));
+      anon_jwt_refs.forEach((r) => merged.anon_jwt_refs.add(r));
+    };
+    scanText(html);
+
+    let scanned = 0;
+    for (const jsPath of jsPaths) {
+      const chunkTmp = join(tmpdir(), `vq-chunk-${scanned}.js`);
+      try {
+        execSync(
+          `npx vercel curl "${previewBase}${jsPath}" -s -o "${chunkTmp}"`,
+          { stdio: "pipe" }
+        );
+        scanText(readFileSync(chunkTmp, "utf8"));
+        scanned += 1;
+      } catch {
+        /* skip */
+      } finally {
+        try {
+          unlinkSync(chunkTmp);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+
+    const urlRefs = [...merged.url_refs];
+    const anonRefs = [...merged.anon_jwt_refs];
+    return {
+      js_chunks_scanned: scanned,
+      url_refs: urlRefs,
+      anon_jwt_refs: anonRefs,
+      staging_url_ref: urlRefs.includes(STAGING_REF),
+      production_url_ref: urlRefs.includes(PROD_REF),
+      production_anon_ref: anonRefs.includes(PROD_REF),
+      staging_anon_ref: anonRefs.includes(STAGING_REF),
+      url_anon_mismatch:
+        urlRefs.length >= 1 &&
+        anonRefs.length >= 1 &&
+        !anonRefs.some((r) => urlRefs.includes(r)),
+    };
+  } catch (err) {
+    return { error: String(err.message ?? err).slice(0, 200) };
+  }
+}
+
+function writeReports(report) {
+  mkdirSync(resolve(process.cwd(), "docs/reports"), { recursive: true });
+  const mdPath = resolve(process.cwd(), "docs/reports/launch-auth-truth-g10p.md");
+  const md = `# Launch Auth Truth — G.10-P
 
 Generated: ${new Date().toISOString()}
 
-## Summary
+## Launch Gate
 
-| Check | Result |
-|-------|--------|
-| Direct Supabase sign-in | ${report.direct_supabase_sign_in_ok ? "PASS" : "FAIL"} |
-| Local Supabase ref | ${localRef} |
-| Local anon JWT ref | ${localAnonJwtRef ?? "(unknown)"} |
-| Preview URL | ${previewUrl} |
-| Preview bundle URL refs | ${report.preview_bundle?.url_refs?.join(", ") ?? "n/a"} |
-| Preview bundle anon JWT refs | ${report.preview_bundle?.anon_jwt_refs?.join(", ") ?? "n/a"} |
-| Preview URL/anon mismatch | ${report.preview_url_anon_mismatch ? "YES" : "no"} |
-| UI login (Playwright) | ${report.playwright?.ui?.ui_login_ok ?? "not run"} |
-| Diagnosis | ${report.diagnosis} |
+| Gate | Result |
+|------|--------|
+| Auth Gate (direct Supabase sign-in) | ${report.launch_gate.auth_gate_pass ? "PASS" : "FAIL"} |
+| Preview Gate (bundle + provider guard) | ${report.launch_gate.preview_gate_pass ? "PASS" : "FAIL"} |
+| UI Smoke Ready | ${report.launch_gate.ui_smoke_ready ? "PASS" : "FAIL"} |
 
-## Direct sign-in
+## Direct Supabase Auth
 
+- User: \`${EMAIL}\`
 - \`direct_supabase_sign_in_ok\`: ${report.direct_supabase_sign_in_ok}
-- \`user_id\`: ${report.direct_supabase_user_id ?? "null"}
-- \`error_code\`: ${report.direct_supabase_error_code ?? "null"}
-- \`error_message\`: ${report.direct_supabase_error_message ?? "null"}
+- Supabase ref: ${report.local_supabase_ref}
+- user_id: ${report.direct_supabase_user_id ?? "null"}
+- error: ${report.direct_supabase_error_code ?? "null"} / ${report.direct_supabase_error_message ?? "null"}
 
-## Playwright UI
+## Preview
 
-${report.playwright?.ui ? "```json\n" + JSON.stringify(report.playwright.ui, null, 2) + "\n```" : "Not available"}
+- URL: ${report.preview_url}
+- Bundle URL refs: ${report.preview_bundle?.url_refs?.join(", ") ?? "n/a"}
+- Bundle anon JWT refs: ${report.preview_bundle?.anon_jwt_refs?.join(", ") ?? "n/a"}
+- URL/anon mismatch: ${report.preview_url_anon_mismatch ? "YES" : "no"}
+- Provider guard: ${report.provider_guard?.pass ? "PASS" : "FAIL"} (${report.provider_guard?.code ?? "n/a"})
 
-## Machine-readable
+## UI Login
 
-\`\`\`json
-${JSON.stringify(report, null, 2)}
-\`\`\`
+${report.playwright?.ui ? JSON.stringify(report.playwright.ui, null, 2) : "Skipped or not run"}
+
+## Diagnosis
+
+- **${report.diagnosis}**
+- Blockers: ${report.blockers.length ? report.blockers.join(", ") : "none"}
+
+## Vercel fix (if URL/anon mismatch)
+
+Set Preview env \`NEXT_PUBLIC_SUPABASE_ANON_KEY\` to staging anon key (JWT ref \`${STAGING_REF}\`), redeploy with \`npx vercel --yes\` (no \`--prod\`).
+
+## G.10-O readiness
+
+Provider UI smoke requires: Auth Gate PASS + Preview Gate PASS + UI login PASS + explicit provider window (not this sprint).
 `;
-writeFileSync(reportPath, md);
-
-console.log("\n=== Auth Truth Result ===");
-console.log(JSON.stringify(report, null, 2));
-console.log(`\nReport: ${reportPath}`);
-
-process.exit(
-  report.direct_supabase_sign_in_ok &&
-    report.preview_bundle_staging_ok &&
-    !report.preview_url_anon_mismatch &&
-    report.playwright?.ui?.ui_login_ok !== false
-    ? 0
-    : 1
-);
+  writeFileSync(mdPath, md);
+  console.log(`\nReport: ${mdPath}`);
+}

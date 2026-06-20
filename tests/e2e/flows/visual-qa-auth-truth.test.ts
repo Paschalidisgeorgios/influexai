@@ -23,10 +23,11 @@ type UiProbe = {
   image_generator_reachable: boolean;
   credits_visible: string | null;
   provider_disabled_banner: boolean;
+  gallery_reachable: boolean;
   secrets_logged: false;
 };
 
-test.describe("Visual QA auth truth (G.10-O0F)", () => {
+test.describe("Visual QA auth truth (G.10-P)", () => {
   test("preview login probe read-only", async ({ page, context }) => {
     test.skip(!PASSWORD, "VISUAL_QA_PASSWORD required");
 
@@ -43,6 +44,7 @@ test.describe("Visual QA auth truth (G.10-O0F)", () => {
       image_generator_reachable: false,
       credits_visible: null,
       provider_disabled_banner: false,
+      gallery_reachable: false,
       secrets_logged: false,
     };
 
@@ -135,6 +137,9 @@ test.describe("Visual QA auth truth (G.10-O0F)", () => {
         .first()
         .isVisible({ timeout: 8000 })
         .catch(() => false);
+
+      await page.goto("/dashboard/gallery");
+      probe.gallery_reachable = page.url().includes("/dashboard/gallery");
     }
 
     writeFileSync(RESULT_PATH, JSON.stringify(probe, null, 2));

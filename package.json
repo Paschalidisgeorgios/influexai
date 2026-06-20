@@ -48,6 +48,7 @@
     "staging:ensure-visual-qa-user": "node scripts/ensure-staging-visual-qa-user.mjs",
     "auth:ensure-visual-qa-user": "node scripts/ensure-staging-visual-qa-user.mjs",
     "staging:visual-qa-auth-truth": "node scripts/visual-qa-auth-truth.mjs",
+    "launch:auth-truth": "node scripts/visual-qa-auth-truth.mjs",
     "smoke:stripe:subscription-double-credit": "node scripts/stripe-subscription-double-credit-smoke.mjs"
   },
   "dependencies": {

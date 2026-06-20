@@ -18,6 +18,18 @@ import {
 } from "@/lib/admin-allowlist";
 import { resolvePostAuthRedirect } from "@/lib/auth-redirect";
 import { InfluexButton, InfluexInput } from "@/components/shared/influex";
+import {
+  supabaseAnonKeyRef,
+  supabaseUrlRef,
+} from "@/lib/supabase/env-guard";
+
+function supabaseEnvMismatch(): boolean {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  const urlRef = supabaseUrlRef(supabaseUrl);
+  const keyRef = supabaseAnonKeyRef(anonKey);
+  return Boolean(urlRef && keyRef && urlRef !== keyRef);
+}
 
 function LoginPageInner() {
   const t = useTranslations("auth");
@@ -36,13 +48,24 @@ function LoginPageInner() {
     }
     setLoading(true);
     setError("");
+    if (supabaseEnvMismatch()) {
+      setError(
+        "Anmeldedienst falsch konfiguriert (Supabase URL/Key mismatch). Preview-Env prüfen und redeployen."
+      );
+      setLoading(false);
+      return;
+    }
     const normalizedEmail = email.trim();
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
       password,
     });
     if (signInError) {
-      setError(t("bad_credentials"));
+      setError(
+        supabaseEnvMismatch()
+          ? "Anmeldedienst falsch konfiguriert (Supabase URL/Key mismatch)."
+          : t("bad_credentials")
+      );
       setLoading(false);
       return;
     }
