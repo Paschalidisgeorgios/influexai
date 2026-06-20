@@ -7,13 +7,16 @@ export function StudioCreditPill({
   label,
   className,
   accentDot = true,
+  "data-testid": dataTestId,
 }: {
   label: string;
   className?: string;
   accentDot?: boolean;
+  "data-testid"?: string;
 }) {
   return (
     <span
+      data-testid={dataTestId}
       className={cn(
         "inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-medium",
         STUDIO_RADIUS.pill,

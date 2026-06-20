@@ -516,6 +516,7 @@ function ImageGenSetup() {
     <div className={SETUP_FORM_CLASS}>
       <StudioModelSelectShell
         tool={studioTool}
+        toolId="image-gen"
         models={registryModels}
         selectedModelId={selectedModelId}
         onModelChange={setSelectedModelId}
@@ -524,6 +525,7 @@ function ImageGenSetup() {
       <div>
         <StudioFieldLabel>Bildbeschreibung</StudioFieldLabel>
         <StudioTextarea
+          data-testid="image-gen-prompt"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="z. B. Premium Produktfoto einer schwarzen Parfumflasche auf hellem Stein, cinematic lighting"

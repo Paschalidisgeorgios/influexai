@@ -127,6 +127,32 @@ export default function ImageGeneratorPage() {
     if (styleParam) setStyleId(resolveImageStyleId(styleParam));
   }, [searchParams]);
 
+  useEffect(() => {
+    if (providerBlocked || isProvidersDisabledForGenerateImageClient()) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        });
+        const data = (await res.json().catch(() => ({}))) as {
+          code?: string;
+          error?: string;
+        };
+        if (!cancelled && isProviderDisabledApiResponse(res.status, data)) {
+          setProviderBlocked(true);
+        }
+      } catch {
+        /* ignore probe errors */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [providerBlocked]);
+
   const [compare, setCompare] = useState<{
     originalUrl: string;
     upscaledUrl: string;
@@ -569,7 +595,10 @@ export default function ImageGeneratorPage() {
         <p className="mt-2 text-sm text-[rgba(255,255,255,0.55)]">
           {GENERATE_IMAGE_MODEL_HINT}
         </p>
-        <p className="mt-1 text-sm font-medium text-[#B4FF00]/90">
+        <p
+          className="mt-1 text-sm font-medium text-[#B4FF00]/90"
+          data-testid="image-gen-credit-hint"
+        >
           {IMAGE_GEN_CREDITS.standard} Credits pro Bild (Standard) ·{" "}
           <Link href="/dashboard/credits" className="underline underline-offset-2">
             Credits aufladen
@@ -579,6 +608,7 @@ export default function ImageGeneratorPage() {
           <div
             className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100"
             role="status"
+            data-testid="image-gen-provider-disabled-banner"
           >
             {GENERATE_IMAGE_PROVIDER_DISABLED_MESSAGE}
           </div>
@@ -701,6 +731,7 @@ export default function ImageGeneratorPage() {
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
+              data-testid="image-gen-prompt"
               placeholder={
                 generatorMode === "character"
                   ? "z.B. dieselbe Frau im Café, lächelt in die Kamera…"
@@ -750,6 +781,7 @@ export default function ImageGeneratorPage() {
               isLoading={loading}
               loadingText={standardGenerateLoadingText}
               onClick={() => void runGenerate(false)}
+              data-testid="image-gen-generate-standard"
               className="w-full rounded-xl bg-[#B4FF00] py-3.5 text-lg tracking-wide text-[#060608] sm:flex-1 sm:text-xl"
               style={{ minWidth: 0 }}
             >

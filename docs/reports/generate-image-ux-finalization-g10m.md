@@ -117,6 +117,8 @@ Shown on 5xx errors (not on provider-disabled or credit errors).
 
 ## 7. Next Phase
 
+**G.10-N visual QA (2026-06-16):** SPA shell at `/dashboard/image-generator` confirmed as runtime UX (`LegacyToolRedirect` → `ProductionToolSetup`). Dedicated `page.tsx` UX is prepared but not mounted on this route. See `docs/reports/generate-image-visual-qa-g10n.md`.
+
 **Launch gate / staging deploy verification** — enable provider window only for controlled billing+generation proof, then re-disable.
 
 ---
