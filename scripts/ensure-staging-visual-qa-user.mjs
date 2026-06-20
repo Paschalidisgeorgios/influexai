@@ -27,6 +27,7 @@ config({ path: resolve(process.cwd(), ".env.local") });
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const password = process.env.VISUAL_QA_PASSWORD?.trim();
 
 function maskRef(supabaseUrl) {
@@ -103,11 +104,94 @@ console.log(`Supabase ref: ${STAGING_REF}`);
 console.log(`In ADMIN_EMAIL_ALLOWLIST: no\n`);
 
 async function findUserByEmail(targetEmail) {
-  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  if (error) throw error;
-  return data.users.find(
-    (u) => u.email?.toLowerCase() === targetEmail.toLowerCase()
+  const normalized = targetEmail.toLowerCase();
+  let page = 1;
+  const perPage = 1000;
+
+  while (true) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+    const found = data.users.find(
+      (u) => u.email?.toLowerCase() === normalized
+    );
+    if (found) return found;
+    if (data.users.length < perPage) break;
+    page += 1;
+  }
+  return null;
+}
+
+function isDuplicateUserError(error) {
+  const msg = (error?.message ?? "").toLowerCase();
+  return (
+    msg.includes("already been registered") ||
+    msg.includes("already exists") ||
+    msg.includes("duplicate")
   );
+}
+
+async function probeSignIn(targetEmail) {
+  if (!anonKey) return null;
+  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  const { data, error } = await anon.auth.signInWithPassword({
+    email: targetEmail,
+    password,
+  });
+  if (error || !data.user) return null;
+  return data.user;
+}
+
+async function resolveAuthUser() {
+  let user =
+    (await findUserByEmail(EMAIL).catch((err) => {
+      console.warn(
+        `⚠️  listUsers lookup failed: ${String(err.message ?? err).slice(0, 120)}`
+      );
+      return null;
+    })) ?? (await probeSignIn(EMAIL));
+
+  if (user) {
+    console.log("✅ Auth user exists:", user.id);
+    const { error } = await admin.auth.admin.updateUserById(user.id, {
+      password,
+      email_confirm: true,
+    });
+    if (error) fail(`updateUserById: ${error.message}`);
+    console.log("✅ Password synced, email_confirm=true");
+    return { user, authCreated: false };
+  }
+
+  const { data, error } = await admin.auth.admin.createUser({
+    email: EMAIL,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: "Staging Visual QA User" },
+  });
+
+  if (error) {
+    if (isDuplicateUserError(error)) {
+      user =
+        (await findUserByEmail(EMAIL).catch(() => null)) ??
+        (await probeSignIn(EMAIL));
+      if (!user) {
+        fail(
+          `User ${EMAIL} exists but could not be resolved after createUser duplicate`
+        );
+      }
+      console.log("✅ Auth user exists (recovered after duplicate):", user.id);
+      const { error: updateErr } = await admin.auth.admin.updateUserById(
+        user.id,
+        { password, email_confirm: true }
+      );
+      if (updateErr) fail(`updateUserById: ${updateErr.message}`);
+      console.log("✅ Password synced, email_confirm=true");
+      return { user, authCreated: false };
+    }
+    fail(`createUser: ${error.message}`);
+  }
+
+  console.log("✅ Created auth user:", data.user.id);
+  return { user: data.user, authCreated: true };
 }
 
 async function readProfile(userId) {
@@ -153,99 +237,85 @@ async function ensureCredits(userId, currentCredits) {
   return data ?? TARGET_CREDITS;
 }
 
-let authCreated = false;
-let user = await findUserByEmail(EMAIL).catch(() => null);
+async function main() {
+  const { user, authCreated } = await resolveAuthUser();
 
-if (!user) {
-  const { data, error } = await admin.auth.admin.createUser({
-    email: EMAIL,
-    password,
-    email_confirm: true,
-    user_metadata: { full_name: "Staging Visual QA User" },
-  });
-  if (error) fail(`createUser: ${error.message}`);
-  user = data.user;
-  authCreated = true;
-  console.log("✅ Created auth user:", user.id);
-} else {
-  console.log("✅ Auth user exists:", user.id);
-  const { error } = await admin.auth.admin.updateUserById(user.id, {
-    password,
-    email_confirm: true,
-  });
-  if (error) fail(`updateUserById: ${error.message}`);
-  console.log("✅ Password synced, email_confirm=true");
-}
-
-const { error: profileErr } = await admin.from("profiles").upsert(
-  {
-    id: user.id,
-    plan: TARGET_PLAN,
-    credits: TARGET_CREDITS,
-    onboarding_completed: true,
-    role: "user",
-    is_admin: false,
-  },
-  { onConflict: "id" }
-);
-
-if (profileErr) {
-  console.warn(`⚠️  profiles upsert via client failed: ${profileErr.message}`);
-  console.warn("   Trying linked supabase db query for plan/role…");
-  try {
-    const row = await syncProfileViaDbQuery(user.id);
-    if (row?.plan) {
-      console.log("✅ Profile plan set via db query:", row.plan);
-    } else {
-      console.warn("   db query did not return plan — profile may rely on auth trigger");
-    }
-  } catch (err) {
-    console.warn(`   db query fallback skipped: ${String(err.message ?? err).slice(0, 200)}`);
-  }
-} else {
-  console.log(`✅ Profile upsert: plan=${TARGET_PLAN}, credits=${TARGET_CREDITS}`);
-}
-
-await ensureCredits(user.id, (await readProfile(user.id))?.credits);
-const profile = await readProfile(user.id);
-
-const creditExempt = isCreditExemptProfile(
-  EMAIL,
-  profile,
-  process.env.ADMIN_EMAIL_ALLOWLIST
-);
-if (creditExempt.exempt) {
-  fail(
-    `User is credit-exempt (${creditExempt.reason}) — visual QA must bill credits normally.`
+  const { error: profileErr } = await admin.from("profiles").upsert(
+    {
+      id: user.id,
+      email: EMAIL,
+      plan: TARGET_PLAN,
+      credits: TARGET_CREDITS,
+      onboarding_completed: true,
+      role: "user",
+      is_admin: false,
+    },
+    { onConflict: "id" }
   );
+
+  if (profileErr) {
+    console.warn(`⚠️  profiles upsert via client failed: ${profileErr.message}`);
+    console.warn("   Trying linked supabase db query for plan/role…");
+    try {
+      const row = await syncProfileViaDbQuery(user.id);
+      if (row?.plan) {
+        console.log("✅ Profile plan set via db query:", row.plan);
+      } else {
+        console.warn("   db query did not return plan — profile may rely on auth trigger");
+      }
+    } catch (err) {
+      console.warn(`   db query fallback skipped: ${String(err.message ?? err).slice(0, 200)}`);
+    }
+  } else {
+    console.log(`✅ Profile upsert: plan=${TARGET_PLAN}, credits=${TARGET_CREDITS}`);
+  }
+
+  await ensureCredits(user.id, (await readProfile(user.id))?.credits);
+  const profile = await readProfile(user.id);
+
+  const creditExempt = isCreditExemptProfile(
+    EMAIL,
+    profile,
+    process.env.ADMIN_EMAIL_ALLOWLIST
+  );
+  if (creditExempt.exempt) {
+    fail(
+      `User is credit-exempt (${creditExempt.reason}) — visual QA must bill credits normally.`
+    );
+  }
+
+  const result = {
+    phase: "ensure-staging-visual-qa-user",
+    success: true,
+    user: {
+      email: EMAIL,
+      id: user.id,
+      auth_created: authCreated,
+      auth_updated: !authCreated,
+      email_confirm: true,
+      profile_present: Boolean(profile),
+      plan: profile?.plan ?? TARGET_PLAN,
+      credits: profile?.credits ?? TARGET_CREDITS,
+      is_admin: profile?.is_admin ?? false,
+      role: profile?.role ?? "user",
+      credit_exempt: creditExempt.exempt,
+      credit_exempt_reason: creditExempt.reason,
+      in_admin_allowlist: isEmailInAdminAllowlist(EMAIL, allowlist),
+    },
+    safety,
+    secrets_logged: false,
+    login_route: "/auth/sign-in",
+    other_smoke_users_modified: false,
+  };
+
+  console.log("\n✅ Ready for Preview UI smoke:");
+  console.log(`   plan=${result.user.plan}, credits=${result.user.credits}`);
+  console.log(`   is_admin=${result.user.is_admin}, role=${result.user.role}`);
+  console.log(`   credit_exempt=${result.user.credit_exempt}`);
+  console.log("\nMachine-readable result:");
+  console.log(JSON.stringify(result, null, 2));
 }
 
-const result = {
-  phase: "ensure-staging-visual-qa-user",
-  success: true,
-  user: {
-    email: EMAIL,
-    id: user.id,
-    auth_created: authCreated,
-    email_confirm: true,
-    profile_present: Boolean(profile),
-    plan: profile?.plan ?? TARGET_PLAN,
-    credits: profile?.credits ?? TARGET_CREDITS,
-    is_admin: profile?.is_admin ?? false,
-    role: profile?.role ?? "user",
-    credit_exempt: creditExempt.exempt,
-    credit_exempt_reason: creditExempt.reason,
-    in_admin_allowlist: isEmailInAdminAllowlist(EMAIL, allowlist),
-  },
-  safety,
-  secrets_logged: false,
-  login_route: "/auth/sign-in",
-  other_smoke_users_modified: false,
-};
-
-console.log("\n✅ Ready for Preview UI smoke:");
-console.log(`   plan=${result.user.plan}, credits=${result.user.credits}`);
-console.log(`   is_admin=${result.user.is_admin}, role=${result.user.role}`);
-console.log(`   credit_exempt=${result.user.credit_exempt}`);
-console.log("\nMachine-readable result:");
-console.log(JSON.stringify(result, null, 2));
+main().catch((err) => {
+  fail(err?.message ?? String(err));
+});
