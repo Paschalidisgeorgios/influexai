@@ -16,6 +16,7 @@
 /test-results/
 /tests/e2e/.auth/
 /scripts/supervised-smoke-result.json
+/scripts/visual-qa-auth-truth-ui.json
 /scripts/stripe-billing-smoke-result.json
 /scripts/stripe-subscription-smoke-result.json
 /scripts/stripe-subscription-double-credit-smoke-result.json

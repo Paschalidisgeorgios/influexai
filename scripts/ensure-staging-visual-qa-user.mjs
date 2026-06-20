@@ -141,6 +141,21 @@ async function probeSignIn(targetEmail) {
   return data.user;
 }
 
+async function verifyAnonSignIn(contextLabel) {
+  if (!anonKey) fail(`Missing NEXT_PUBLIC_SUPABASE_ANON_KEY for verification (${contextLabel})`);
+  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  const { data, error } = await anon.auth.signInWithPassword({
+    email: EMAIL,
+    password,
+  });
+  if (error || !data.user) {
+    fail(
+      `Anon sign-in verification failed (${contextLabel}): ${error?.code ?? error?.message ?? "unknown"}`
+    );
+  }
+  console.log(`✅ Anon sign-in verified (${contextLabel})`);
+}
+
 async function resolveAuthUser() {
   let user =
     (await findUserByEmail(EMAIL).catch((err) => {
@@ -158,6 +173,7 @@ async function resolveAuthUser() {
     });
     if (error) fail(`updateUserById: ${error.message}`);
     console.log("✅ Password synced, email_confirm=true");
+    await verifyAnonSignIn("after updateUserById");
     return { user, authCreated: false };
   }
 
@@ -185,12 +201,14 @@ async function resolveAuthUser() {
       );
       if (updateErr) fail(`updateUserById: ${updateErr.message}`);
       console.log("✅ Password synced, email_confirm=true");
+      await verifyAnonSignIn("after duplicate recovery");
       return { user, authCreated: false };
     }
     fail(`createUser: ${error.message}`);
   }
 
   console.log("✅ Created auth user:", data.user.id);
+  await verifyAnonSignIn("after createUser");
   return { user: data.user, authCreated: true };
 }
 
@@ -272,6 +290,8 @@ async function main() {
 
   await ensureCredits(user.id, (await readProfile(user.id))?.credits);
   const profile = await readProfile(user.id);
+
+  await verifyAnonSignIn("final");
 
   const creditExempt = isCreditExemptProfile(
     EMAIL,

@@ -36,8 +36,9 @@ function LoginPageInner() {
     }
     setLoading(true);
     setError("");
+    const normalizedEmail = email.trim();
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizedEmail,
       password,
     });
     if (signInError) {
