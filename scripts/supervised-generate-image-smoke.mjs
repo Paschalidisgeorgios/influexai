@@ -355,10 +355,17 @@ async function creditCheck() {
         }
       : null,
     generation_row: generationRow,
-    billing_smoke_ready: !creditExempt.exempt,
+    billing_smoke_ready:
+      !creditExempt.exempt &&
+      (profile?.credits ?? 0) >= 10 &&
+      Boolean(profile?.plan),
     recommendation: creditExempt.exempt
-      ? "Use billing-smoke@influexai.test (node scripts/ensure-staging-billing-user.mjs) — not in ADMIN_EMAIL_ALLOWLIST — for next provider smoke."
-      : "User can validate real credit deduction on next provider smoke (expect -5).",
+      ? "Use billingtest@influexai.test or billing-smoke@influexai.test (npm run staging:ensure-billing-user) — not in ADMIN_EMAIL_ALLOWLIST — for next provider smoke."
+      : (profile?.credits ?? 0) < 10
+        ? "User is not credit-exempt but credits < 10 — run staging:ensure-billing-user or add_credits on staging before provider smoke."
+        : !profile?.plan
+          ? "User is not credit-exempt but plan is missing — run staging:ensure-billing-user before provider smoke."
+          : "User can validate real credit deduction on next provider smoke (expect -5).",
   };
 }
 

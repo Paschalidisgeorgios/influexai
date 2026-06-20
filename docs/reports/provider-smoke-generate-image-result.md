@@ -26,11 +26,13 @@ Full report: [`generate-image-credit-deduction-diagnosis.md`](./generate-image-c
 
 ### Next step — G.10-I (billing smoke)
 
-1. `npm run staging:ensure-billing-user`
-2. Set `TEST_USER_EMAIL=billing-smoke@influexai.test` in `.env.local`
-3. `npm run smoke:generate-image:credit-check` → `billing_smoke_ready: true`
+1. Verify: `TEST_USER_EMAIL=billingtest@influexai.test npm run smoke:generate-image:credit-check` → `billing_smoke_ready: true`
+2. Set `TEST_USER_EMAIL=billingtest@influexai.test` in `.env.local`
+3. `npm run smoke:generate-image:verify-db` → `ok: true`
 4. Open smoke window → single `npm run smoke:generate-image:run-safe`
 5. Expect credits **75 → 70** + `credit_transactions` row
+
+See [`generate-image-credit-deduction-diagnosis.md`](./generate-image-credit-deduction-diagnosis.md) for full G.10-I checklist.
 
 ---
 

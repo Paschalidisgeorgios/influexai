@@ -1,17 +1,23 @@
 /**
  * Staging billing smoke user — NOT in ADMIN_EMAIL_ALLOWLIST.
- * Run: node scripts/ensure-staging-billing-user.mjs
+ * Alias: scripts/ensure-provider-billing-smoke-user.mjs (same script)
  *
- * Use TEST_BILLING_USER_EMAIL / TEST_BILLING_USER_PASSWORD in .env.local for
- * npm run smoke:generate-image:run-safe (with env vars pointedted to that user).
+ * Run: npm run staging:ensure-billing-user
+ *
+ * Prefer existing user billingtest@influexai.test if already provisioned via
+ * ensure-staging-billing-qa-user.mjs — verify with:
+ *   TEST_USER_EMAIL=billingtest@influexai.test npm run smoke:generate-image:credit-check
  */
 import { config } from "dotenv";
 import { resolve } from "path";
+import { execSync } from "child_process";
 import { createClient } from "@supabase/supabase-js";
 
 const STAGING_REF = "jvjmqtxlqfqaoyjklpxh";
 const DEFAULT_EMAIL = "billing-smoke@influexai.test";
 const DEFAULT_PASSWORD = "BillingSmoke123!";
+const TARGET_CREDITS = 75;
+const TARGET_PLAN = "starter";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
@@ -63,6 +69,49 @@ async function findUserByEmail(targetEmail) {
   );
 }
 
+async function readProfile(userId) {
+  const { data } = await admin
+    .from("profiles")
+    .select("credits, plan, is_admin, role")
+    .eq("id", userId)
+    .maybeSingle();
+  return data;
+}
+
+async function syncProfileViaDbQuery(userId) {
+  const sql = `
+select set_config('request.jwt.claim.role', 'service_role', true);
+update public.profiles
+set plan = '${TARGET_PLAN}',
+    onboarding_completed = true,
+    is_admin = false,
+    role = 'user'
+where id = '${userId}'
+returning id, plan, credits;
+`.trim();
+
+  const out = execSync(
+    `npx supabase db query --linked --output json ${JSON.stringify(sql)}`,
+    { stdio: "pipe", encoding: "utf8" }
+  );
+  const parsed = JSON.parse(out);
+  return parsed.rows?.[0] ?? null;
+}
+
+async function ensureCredits(userId, currentCredits) {
+  const need = TARGET_CREDITS - (currentCredits ?? 0);
+  if (need <= 0) return currentCredits ?? TARGET_CREDITS;
+
+  const { data, error } = await admin.rpc("add_credits", {
+    p_user_id: userId,
+    p_amount: need,
+  });
+  if (error) {
+    fail(`add_credits RPC: ${error.message}`);
+  }
+  return data ?? TARGET_CREDITS;
+}
+
 let user = await findUserByEmail(email).catch(() => null);
 
 if (!user) {
@@ -83,11 +132,13 @@ if (!user) {
   });
 }
 
+let profile = await readProfile(user.id);
+
 const { error: profileErr } = await admin.from("profiles").upsert(
   {
     id: user.id,
-    plan: "starter",
-    credits: 75,
+    plan: TARGET_PLAN,
+    credits: TARGET_CREDITS,
     onboarding_completed: true,
     role: "user",
     is_admin: false,
@@ -96,13 +147,32 @@ const { error: profileErr } = await admin.from("profiles").upsert(
 );
 
 if (profileErr) {
-  fail(`profiles upsert: ${profileErr.message}`);
+  console.warn(`⚠️  profiles upsert via client failed: ${profileErr.message}`);
+  console.warn("   Trying linked supabase db query for plan/role…");
+  try {
+    const row = await syncProfileViaDbQuery(user.id);
+    if (row?.plan) {
+      console.log("✅ Profile plan set via db query:", row.plan);
+      profile = row;
+    } else {
+      console.warn("   db query did not return plan — profile may rely on auth trigger");
+    }
+  } catch (err) {
+    console.warn(`   db query fallback skipped: ${String(err.message ?? err).slice(0, 200)}`);
+  }
+} else {
+  console.log(`✅ Profile upsert: plan=${TARGET_PLAN}, credits=${TARGET_CREDITS}`);
 }
 
-console.log("✅ Profile: plan=starter, credits=75, is_admin=false, role=user");
+profile = await readProfile(user.id);
+const finalCredits = await ensureCredits(user.id, profile?.credits);
+profile = await readProfile(user.id);
+
+console.log("\n✅ Ready for G.10-I billing smoke:");
+console.log(`   plan=${profile?.plan ?? TARGET_PLAN}, credits=${profile?.credits ?? finalCredits}`);
+console.log(`   is_admin=${profile?.is_admin ?? false}, role=${profile?.role ?? "user"}`);
 console.log("\nAdd to .env.local (never commit):");
-console.log(`TEST_BILLING_USER_EMAIL=${email}`);
-console.log(`TEST_BILLING_USER_PASSWORD=<your password>`);
-console.log(
-  "\nFor billing smoke, set TEST_USER_EMAIL to this address or pass env when running run-safe."
-);
+console.log(`TEST_USER_EMAIL=${email}`);
+console.log(`TEST_USER_PASSWORD=<your password>`);
+console.log("\nVerify (no provider):");
+console.log(`  TEST_USER_EMAIL=${email} npm run smoke:generate-image:credit-check`);

@@ -110,29 +110,24 @@ npm run smoke:generate-image:credit-check
 
 ## Next provider smoke (G.10-I) — billing proof
 
-### Test user
+### Recommended test user (staging, ready as of G.10-H)
 
 | Field | Value |
 |-------|-------|
-| Email | `billing-smoke@influexai.test` (or `TEST_BILLING_USER_EMAIL`) |
-| Not in | `ADMIN_EMAIL_ALLOWLIST` |
+| Email | **`billingtest@influexai.test`** |
+| Not in `ADMIN_EMAIL_ALLOWLIST` | ✅ |
+| `credit_exempt` | **false** |
 | Plan | `starter` |
-| Credits | `75` |
+| Credits | **75** (topped up via `add_credits` RPC during G.10-H prep) |
 | Expected after 1× image gen | **70** |
-| Expected `credit_transactions` | `amount: -5` |
 
-Create user (staging only):
+Verify (no provider):
 
 ```bash
-npm run staging:ensure-billing-user
+TEST_USER_EMAIL=billingtest@influexai.test npm run smoke:generate-image:credit-check
 ```
 
-Point smoke at billing user in `.env.local` (never commit):
-
-```
-TEST_USER_EMAIL=billing-smoke@influexai.test
-TEST_USER_PASSWORD=<from ensure script>
-```
+Alternative user: `billing-smoke@influexai.test` via `npm run staging:ensure-billing-user`.
 
 ### Env during supervised window only
 

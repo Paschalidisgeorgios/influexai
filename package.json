@@ -33,7 +33,8 @@
     "smoke:generate-image:guard-probe": "node scripts/supervised-generate-image-smoke.mjs guard-probe",
     "smoke:generate-image:credit-check": "node scripts/supervised-generate-image-smoke.mjs credit-check",
     "smoke:generate-image:run-safe": "node scripts/supervised-generate-image-smoke.mjs run-safe",
-    "staging:ensure-billing-user": "node scripts/ensure-staging-billing-user.mjs"
+    "staging:ensure-billing-user": "node scripts/ensure-staging-billing-user.mjs",
+    "staging:ensure-provider-billing-user": "node scripts/ensure-provider-billing-smoke-user.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
