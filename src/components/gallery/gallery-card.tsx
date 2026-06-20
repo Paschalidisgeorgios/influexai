@@ -9,6 +9,10 @@ import { ImageResultActions } from "@/components/image/ImageResultActions";
 import { VideoResultActions } from "@/components/image/VideoResultActions";
 import type { GalleryItem } from "@/lib/gallery-types";
 import { countWords } from "@/lib/script-format";
+import {
+  galleryImageBadgeLabel,
+  galleryImageRegenerateHref,
+} from "@/lib/gallery-generation-label";
 
 type GalleryCardProps = {
   item: GalleryItem;
@@ -680,11 +684,23 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
   }
 
   if (item._type === "image") {
+    const badgeLabel = galleryImageBadgeLabel(item.generationType, item.category);
+    const regenerateHref = galleryImageRegenerateHref(
+      item.generationType,
+      item.category
+    );
+    const metaParts = [
+      item.model?.split("/").pop(),
+      item.creditsUsed != null && item.creditsUsed > 0
+        ? `${item.creditsUsed} Credits`
+        : null,
+    ].filter(Boolean);
+
     return (
       <article style={cardStyle}>
         <CardHeader
           item={item}
-          badge={{ emoji: "🎭", label: "KI-Ich" }}
+          badge={{ emoji: "🖼️", label: badgeLabel }}
           onDelete={handleDelete}
           canDelete={canDelete}
         />
@@ -728,12 +744,24 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
                 fontSize: "0.78rem",
                 color: "rgba(255,255,255,0.65)",
                 marginTop: 8,
+                lineHeight: 1.45,
               }}
             >
-              {item.generationType?.includes("preview")
-                ? "Hochauflösend generieren →"
-                : item.title}
+              {item.prompt && item.prompt.length > 100
+                ? `${item.prompt.slice(0, 100)}…`
+                : item.prompt || item.title}
             </p>
+            {metaParts.length > 0 && (
+              <p
+                style={{
+                  fontSize: "0.72rem",
+                  color: "rgba(255,255,255,0.5)",
+                  marginTop: 6,
+                }}
+              >
+                {metaParts.join(" · ")}
+              </p>
+            )}
           </div>
           <ActionRow>
             <ImageResultActions
@@ -745,7 +773,7 @@ export function GalleryCard({ item, onDelete, onOpenMedia }: GalleryCardProps) {
             {item.imageUrl && onOpenMedia && (
               <ActionBtn label="Vorschau" onClick={openMedia} primary />
             )}
-            <ActionBtn label="Neu generieren" href="/dashboard/ki-influencer" />
+            <ActionBtn label="Neu generieren" href={regenerateHref} />
           </ActionRow>
       </article>
     );

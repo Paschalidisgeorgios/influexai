@@ -305,7 +305,7 @@ async function creditCheck() {
 
   const { data: recentTx, count: txCount } = await admin
     .from("credit_transactions")
-    .select("id, amount, action, created_at", { count: "exact" })
+    .select("id, amount, description, created_at", { count: "exact" })
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(5);

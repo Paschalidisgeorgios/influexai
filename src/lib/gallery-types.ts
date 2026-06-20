@@ -41,6 +41,10 @@ export type GalleryItem = {
   originalUrl?: string | null;
   generationType?: string;
   prompt?: string;
+  model?: string | null;
+  provider?: string | null;
+  category?: string | null;
+  creditsUsed?: number;
   imageUrl?: string | null;
   videoUrl?: string | null;
   audioUrl?: string | null;

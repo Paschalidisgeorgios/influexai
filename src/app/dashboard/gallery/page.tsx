@@ -275,7 +275,7 @@ export default function GalleryPage() {
         </div>
       ) : (
         <>
-          <div className="gallery-grid">
+          <div className="gallery-grid grid min-w-0 w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <GalleryCard
                 key={`${item._type}-${item.id}`}
@@ -323,18 +323,6 @@ export default function GalleryPage() {
         </>
       )}
 
-      <style jsx>{`
-        @media (max-width: 900px) {
-          .gallery-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        @media (max-width: 560px) {
-          .gallery-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

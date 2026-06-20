@@ -17,6 +17,11 @@ import {
   isVideoGenerationType,
   resolveGenerationMediaUrls,
 } from "@/lib/gallery-media";
+import { parseGenerationAssetResult } from "@/lib/generation-asset-types";
+import {
+  galleryImageBadgeLabel,
+  inferGenerationProvider,
+} from "@/lib/gallery-generation-label";
 
 /** Max rows fetched per table — avoids loading entire tables (504 on Vercel). */
 const GALLERY_DB_FETCH_LIMIT = 50;
@@ -121,12 +126,14 @@ function normalizeGeneration(
     type: string;
     prompt: string;
     created_at: string;
+    credits_used?: number | null;
     result: unknown;
   },
   getPublicUrl: (bucket: string, path: string) => string
 ): GalleryItem | null {
   const type = row.type;
   const prompt = row.prompt?.trim() || type;
+  const asset = parseGenerationAssetResult(row.result);
   const media = resolveGenerationMediaUrls({
     type,
     prompt,
@@ -134,10 +141,13 @@ function normalizeGeneration(
     result: row.result,
     getPublicUrl,
   });
+  const badgeTitle = galleryImageBadgeLabel(type, asset?.category);
   const displayTitle =
     media.imageUrl || media.videoUrl || media.audioUrl
-      ? type.replace(/-/g, " ")
+      ? badgeTitle
       : prompt.slice(0, 80);
+  const model = asset?.model ?? null;
+  const creditsUsed = row.credits_used ?? 0;
 
   if (isImageGenerationType(type)) {
     return {
@@ -145,9 +155,13 @@ function normalizeGeneration(
       _type: "image",
       created_at: row.created_at,
       title: displayTitle,
-      searchText: `${type} ${prompt}`.toLowerCase(),
+      searchText: `${type} ${prompt} ${model ?? ""} ${asset?.category ?? ""}`.toLowerCase(),
       generationType: type,
       prompt,
+      model,
+      provider: inferGenerationProvider(model),
+      category: asset?.category ?? null,
+      creditsUsed,
       imageUrl: media.imageUrl,
     };
   }
@@ -323,7 +337,7 @@ export async function getGallery(
       fetchTableRows(
         supabase
           .from("generations")
-          .select("id, type, prompt, created_at, result")
+          .select("id, type, prompt, created_at, credits_used, result")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(GALLERY_DB_FETCH_LIMIT)

@@ -1,7 +1,42 @@
 # Provider Smoke Result — generate-image
 
-**Last updated:** 2026-06-20 (G.10-H credit deduction diagnosis)  
+**Last updated:** 2026-06-20 (G.10-J gallery SSOT + G.10-I billing smoke)  
 **Branch:** `master`
+
+---
+
+## G.10-I — Billing smoke PASS (non-exempt user)
+
+### Outcome
+
+| Field | Value |
+|-------|-------|
+| User | **`billingtest@influexai.test`** |
+| Plan | `starter` |
+| `credit_exempt` | **false** |
+| HTTP | **200**, `success: true` |
+| `generationId` | `d65ae809-2e33-484b-8afb-9705868a1757` |
+| `imageUrl` | `/api/generated-image/d65ae809-…?variant=preview` |
+| `image_fetch` | **200** `image/jpeg` |
+| Credits | **75 → 70** (delta **−5**) |
+| `generation_pass` | **true** |
+| `billing_pass` | **true** |
+| `pass` | **true** |
+| Model | `krea/v2/large/text-to-image` |
+| Guard after window closed | **503** `PROVIDERS_DISABLED` ✅ |
+
+### Staging DB (read-only, G.10-J)
+
+| Check | Result |
+|-------|--------|
+| `generations` row | ✅ `type=image`, `credits_used=5`, `previewPath` set |
+| `credit_transactions` | ✅ `amount: -5`, description `Bild Generator — Standard (Krea AI)` |
+| Refund | ❌ none |
+| Profile credits | **70** |
+
+### Conclusion
+
+**Revenue MVP core proven:** paid non-admin staging user → generate image → deduct 5 credits → save generation → serve preview → close provider window.
 
 ---
 

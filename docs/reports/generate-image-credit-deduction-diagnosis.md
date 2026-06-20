@@ -211,8 +211,27 @@ Alternative user: `billing-smoke@influexai.test` via `npm run staging:ensure-bil
 
 | Item | Status |
 |------|--------|
-| Cause identified | ✅ Credit-exempt allowlist user |
-| Provider re-run in G.10-H | ❌ None |
-| Further provider smoke needed | ✅ Yes — billing user |
-| `PROVIDERS_DISABLED` after G.10-H | ✅ `true` |
-| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` after G.10-H | ✅ `false` |
+| Cause identified (G.10-H) | ✅ Credit-exempt allowlist user |
+| Billing smoke (G.10-I) | ✅ **PASS** — `billingtest@influexai.test`, 75→70 |
+| Provider re-run in G.10-H/J | ❌ None (G.10-I was prior supervised window) |
+| Gallery SSOT (G.10-J) | ✅ `/dashboard/gallery` → `generations`; legacy `gallery_assets` fallback only |
+| `PROVIDERS_DISABLED` after close | ✅ `true` |
+| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` after close | ✅ `false` |
+
+---
+
+## G.10-I result (billing proof)
+
+| Field | Value |
+|-------|-------|
+| User | `billingtest@influexai.test` |
+| Credits | **75 → 70** |
+| `generationId` | `d65ae809-2e33-484b-8afb-9705868a1757` |
+| `credit_transactions` | `amount: -5` |
+| Smoke | `generation_pass` + `billing_pass` + `pass` = **true** |
+
+**Umsatz-MVP-Kern bewiesen:** generate → deduct → save → preview → guard closed.
+
+---
+
+## Prior sign-off (G.10-H)
