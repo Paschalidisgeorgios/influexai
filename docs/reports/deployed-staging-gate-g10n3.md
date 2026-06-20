@@ -185,6 +185,10 @@ Auth-before-guard is acceptable for authenticated flows; the issue is guard abse
 
 ---
 
+## 11. Follow-up G.10-N4 (2026-06-16)
+
+Manual Vercel env action required before Preview re-gate. See **`docs/reports/vercel-env-hardening-g10n4.md`** for exact key checklist (Preview Supabase + kill-switch). Preview redeploy **not** executed in G.10-N4.
+
 ## 11. Env (no secrets)
 
 **Local now:** `PROVIDERS_DISABLED=true`, `ALLOW_SAFE_DEV_PROVIDER_SMOKE=false`, `STRIPE_MODE=test`, staging Supabase ref.
