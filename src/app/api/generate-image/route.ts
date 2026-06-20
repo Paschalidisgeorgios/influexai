@@ -40,7 +40,11 @@ import {
 } from "@/lib/ai/imageStylePresets";
 import { applyVisualQARetry } from "@/lib/agent/visualQuality";
 import { DEFAULT_IMAGE_MODEL_ID, isKreaModel } from "@/lib/generation-config";
-import { generateImageProviderGuardResponse } from "@/lib/environment-safety.server";
+import {
+  generateImageProviderGuardResponse,
+  isNonProductionRuntime,
+} from "@/lib/environment-safety.server";
+import { toGenerationSaveError } from "@/lib/generation-save-errors";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +54,23 @@ configureFalClient();
 
 function protectedImageUrl(generationId: string, variant = "preview") {
   return `/api/generated-image/${generationId}?variant=${variant}`;
+}
+
+function generationFailureResponse(error: unknown) {
+  logFalAiError(error);
+  const saveErr = toGenerationSaveError(error);
+  const err = error as { message?: string };
+  return NextResponse.json(
+    {
+      success: false,
+      error:
+        saveErr.details.userMessage ?? err?.message ?? "Unbekannter Fehler",
+      ...(isNonProductionRuntime()
+        ? { code: saveErr.details.code, saveHint: saveErr.details.hint }
+        : {}),
+    },
+    { status: 500 }
+  );
 }
 
 function isValidCategory(c: string): c is ImageCategoryKey {
@@ -335,14 +356,6 @@ export async function POST(request: NextRequest) {
         `${creditAction} — Refund`
       );
     }
-    logFalAiError(error);
-    const err = error as { message?: string };
-    return NextResponse.json(
-      {
-        success: false,
-        error: err?.message ?? "Unbekannter Fehler",
-      },
-      { status: 500 }
-    );
+    return generationFailureResponse(error);
   }
 }

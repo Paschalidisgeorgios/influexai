@@ -15,6 +15,7 @@
 /playwright-report/
 /test-results/
 /tests/e2e/.auth/
+/scripts/supervised-smoke-result.json
 
 # next.js
 /.next/

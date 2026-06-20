@@ -1,6 +1,7 @@
 -- Generations + credit_transactions — paste into Supabase SQL Editor
--- Project: hszjafdelcydnppyolkm
+-- Project: jvjmqtxlqfqaoyjklpxh (staging) — NOT production
 -- Fixes createGenerationRecord / "Generierung konnte nicht gespeichert werden."
+-- Root cause (G.10-F): 42501 permission denied — missing GRANTs (see 068 migration).
 -- Idempotent — safe to run multiple times.
 
 -- (same as supabase/migrations/045_ensure_generations.sql)
@@ -63,6 +64,10 @@ create policy "generations_update_own"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+-- Table-level GRANTs (required — RLS alone is insufficient on staging)
+grant select, insert, update, delete on table public.generations to authenticated;
+grant select, insert, update, delete on table public.generations to service_role;
+
 create table if not exists public.credit_transactions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
@@ -85,3 +90,6 @@ drop policy if exists "credit_transactions_insert_own" on public.credit_transact
 create policy "credit_transactions_insert_own"
   on public.credit_transactions for insert
   with check (auth.uid() = user_id);
+
+grant select, insert on table public.credit_transactions to authenticated;
+grant select, insert on table public.credit_transactions to service_role;

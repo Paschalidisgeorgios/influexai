@@ -11,6 +11,7 @@ import {
 } from "@/lib/generated-image-process";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 import { parseAudioDataUrl } from "@/lib/upload-audio-fal";
+import { GenerationSaveError } from "@/lib/generation-save-errors";
 
 export const GENERATED_ASSETS_BUCKET = "generated-assets";
 
@@ -72,8 +73,9 @@ export async function createGenerationRecord(
       table: "generations",
       userId,
       type,
+      saveErrorCode: error ? new GenerationSaveError(error).details.code : undefined,
     });
-    throw new Error("Generierung konnte nicht gespeichert werden.");
+    throw new GenerationSaveError(error);
   }
   return data.id as string;
 }
