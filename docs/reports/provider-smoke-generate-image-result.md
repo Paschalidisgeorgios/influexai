@@ -1,7 +1,26 @@
 # Provider Smoke Result — generate-image
 
-**Last updated:** 2026-06-20 (G.10-J gallery SSOT + G.10-I billing smoke)  
+**Last updated:** 2026-06-16 (G.10-K Stripe billing webhook + G.10-J gallery SSOT + G.10-I billing smoke)  
 **Branch:** `master`
+
+---
+
+## G.10-K — Stripe test billing webhook PASS
+
+Dedicated Stripe test user (separate from G.10-I provider proof):
+
+| Field | Value |
+|-------|-------|
+| User | **`stripebillingtest@influexai.test`** |
+| Webhook smoke | Credit pack +25 credits (10 → 35) |
+| Idempotency | Duplicate event → no double grant |
+| Bad signature | 400 rejected |
+| Live mode event | 403 blocked |
+| `billingtest@influexai.test` | **unchanged** (G.10-I state preserved) |
+
+Full report: [`stripe-test-billing-webhook-g10k.md`](./stripe-test-billing-webhook-g10k.md)
+
+Automated smokes: `npm run smoke:stripe:audit`, `smoke:stripe:verify-prices`, `smoke:stripe:baseline`, `smoke:stripe:webhook`
 
 ---
 

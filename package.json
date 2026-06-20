@@ -34,7 +34,12 @@
     "smoke:generate-image:credit-check": "node scripts/supervised-generate-image-smoke.mjs credit-check",
     "smoke:generate-image:run-safe": "node scripts/supervised-generate-image-smoke.mjs run-safe",
     "staging:ensure-billing-user": "node scripts/ensure-staging-billing-user.mjs",
-    "staging:ensure-provider-billing-user": "node scripts/ensure-provider-billing-smoke-user.mjs"
+    "staging:ensure-provider-billing-user": "node scripts/ensure-provider-billing-smoke-user.mjs",
+    "staging:ensure-stripe-billing-user": "node scripts/ensure-staging-stripe-billing-user.mjs",
+    "smoke:stripe:audit": "node scripts/stripe-billing-smoke.mjs audit",
+    "smoke:stripe:verify-prices": "node scripts/stripe-billing-smoke.mjs verify-prices",
+    "smoke:stripe:baseline": "node scripts/stripe-billing-smoke.mjs baseline",
+    "smoke:stripe:webhook": "node scripts/stripe-billing-smoke.mjs webhook-smoke"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

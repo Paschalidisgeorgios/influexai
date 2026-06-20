@@ -16,6 +16,7 @@
 /test-results/
 /tests/e2e/.auth/
 /scripts/supervised-smoke-result.json
+/scripts/stripe-billing-smoke-result.json
 
 # next.js
 /.next/
