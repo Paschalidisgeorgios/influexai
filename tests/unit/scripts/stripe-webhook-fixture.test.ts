@@ -52,4 +52,14 @@ describe("stripe webhook fixtures", () => {
     expect(event.data.object.subscription).toBe("sub_test_1");
     expect(event.livemode).toBe(false);
   });
+
+  it("builds invoice.paid subscription_create (initial) event", () => {
+    const event = buildInvoicePaidEvent({
+      eventId: "evt_inv_create",
+      invoiceId: "in_test_create",
+      subscriptionId: "sub_test_1",
+      billingReason: "subscription_create",
+    });
+    expect(event.data.object.billing_reason).toBe("subscription_create");
+  });
 });

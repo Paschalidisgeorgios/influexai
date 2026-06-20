@@ -16,6 +16,7 @@ import {
   stripeEventModeBlockedResponse,
   stripeRuntimeConfigErrorResponse,
 } from "@/lib/stripe-runtime-mode.server";
+import { shouldGrantSubscriptionRenewalCredits } from "@/lib/stripe-subscription-invoice.server";
 
 type ClaimCheckoutSessionData = {
   checkout_type: string;
@@ -314,7 +315,7 @@ async function handleSubscriptionRenewal(
   supabaseAdmin: SupabaseClient,
   invoice: Stripe.Invoice
 ) {
-  if (invoice.billing_reason !== "subscription_cycle") return;
+  if (!shouldGrantSubscriptionRenewalCredits(invoice.billing_reason)) return;
 
   const subscriptionId =
     typeof (invoice as Stripe.Invoice & { subscription?: string | null })

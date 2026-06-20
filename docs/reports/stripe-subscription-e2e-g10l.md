@@ -2,8 +2,7 @@
 
 **Date:** 2026-06-16  
 **Branch:** `master`  
-**Staging Supabase ref:** `jvjmqtxlqfqaoyjklpxh`  
-**Scope:** Stripe Test Mode subscription billing — no provider calls, no live Stripe.
+**Follow-up:** G.10-L2 initial-invoice double-credit guard — see [`stripe-subscription-double-credit-guard-g10l2.md`](./stripe-subscription-double-credit-guard-g10l2.md)
 
 ---
 
@@ -82,6 +81,7 @@ Webhook `handlePlatformSubscription` reads `metadata.user_id` and `metadata.plan
 1. `stripe_events` — event.id dedup (returns `{ duplicate: true }`)
 2. `processed_checkout_sessions` — session dedup for initial subscription grant
 3. `processed_stripe_invoices` — invoice dedup for renewal grants
+4. **`billing_reason` guard** — `invoice.paid` with `subscription_create` does **not** grant credits (only `subscription_cycle` renewals). Prevents double credit with checkout.session.completed (G.10-L2).
 
 ### Cancel Handling
 

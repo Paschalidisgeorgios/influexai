@@ -43,7 +43,9 @@
     "smoke:stripe:webhook": "node scripts/stripe-billing-smoke.mjs webhook-smoke",
     "smoke:stripe:subscription-audit": "node scripts/stripe-subscription-smoke.mjs audit",
     "smoke:stripe:subscription-baseline": "node scripts/stripe-subscription-smoke.mjs baseline",
-    "smoke:stripe:subscription-webhook": "node scripts/stripe-subscription-smoke.mjs webhook-smoke"
+    "smoke:stripe:subscription-webhook": "node scripts/stripe-subscription-smoke.mjs webhook-smoke",
+    "staging:ensure-subscription-double-check-user": "node scripts/ensure-staging-subscription-double-check-user.mjs",
+    "smoke:stripe:subscription-double-credit": "node scripts/stripe-subscription-double-credit-smoke.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

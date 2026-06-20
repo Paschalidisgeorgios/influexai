@@ -18,6 +18,7 @@
 /scripts/supervised-smoke-result.json
 /scripts/stripe-billing-smoke-result.json
 /scripts/stripe-subscription-smoke-result.json
+/scripts/stripe-subscription-double-credit-smoke-result.json
 
 # next.js
 /.next/
