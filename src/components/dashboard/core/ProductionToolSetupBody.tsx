@@ -76,6 +76,7 @@ type SetupActionsProps = {
   agentHref: string;
   primaryDisabled?: boolean;
   loading?: boolean;
+  primaryTestId?: string;
 };
 
 function SetupActions({
@@ -85,6 +86,7 @@ function SetupActions({
   agentHref,
   primaryDisabled,
   loading,
+  primaryTestId,
 }: SetupActionsProps) {
   return (
     <StudioActionBar
@@ -95,6 +97,7 @@ function SetupActions({
       secondaryLabel={SETUP_COPY.agentSecondary}
       primaryDisabled={primaryDisabled}
       primaryLoading={loading}
+      primaryTestId={primaryTestId}
     />
   );
 }
@@ -557,6 +560,7 @@ function ImageGenSetup() {
         agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}
         primaryDisabled={!prompt.trim() || providerShell}
         loading={loading}
+        primaryTestId="image-gen-generate-standard"
       />
 
       {imageUrl ? (

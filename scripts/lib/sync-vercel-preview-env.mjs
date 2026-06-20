@@ -152,3 +152,24 @@ export function buildPreviewEnvMap(localEnv) {
 
   return required;
 }
+
+/** Preview env map for a single controlled provider smoke window (Preview scope only). */
+export function buildPreviewProviderSmokeOpenMap(localEnv) {
+  const base = buildPreviewEnvMap(localEnv);
+  base.PROVIDERS_DISABLED = "false";
+  base.NEXT_PUBLIC_PROVIDERS_DISABLED = "false";
+  base.ALLOW_SAFE_DEV_PROVIDER_SMOKE = "true";
+
+  const fal = localEnv.FAL_KEY?.trim() || localEnv.FAL_API_KEY?.trim();
+  if (fal) {
+    base.FAL_KEY = fal;
+    base.FAL_API_KEY = fal;
+  }
+
+  return base;
+}
+
+/** Restore Preview provider kill-switch after smoke window. */
+export function buildPreviewProviderSmokeClosedMap(localEnv) {
+  return buildPreviewEnvMap(localEnv);
+}

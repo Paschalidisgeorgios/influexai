@@ -5,6 +5,7 @@
 
 import type { ToolId } from "@/components/dashboard/core/DashboardLayout";
 import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
+import { isProvidersDisabledForGenerateImageClient } from "@/lib/generate-image-ux";
 import {
   getModelById,
   getModelsForToolIds,
@@ -378,6 +379,15 @@ export function isToolAvailable(id: string): boolean {
 }
 
 export function isStudioProviderExecutionDisabled(toolId?: string): boolean {
+  if (isProvidersDisabledForGenerateImageClient()) {
+    return true;
+  }
+
+  // SPA Bildgenerator uses POST /api/generate-image — honor provider kill-switch only.
+  if (toolId === "image-gen") {
+    return false;
+  }
+
   if (toolId) {
     const tool = getStudioToolById(toolId);
     if (tool) {

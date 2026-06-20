@@ -144,6 +144,20 @@ describe("assessSafeDevProviderSmoke", () => {
     expect(result.blockReasons).toContain("akool_keys_present");
   });
 
+  it("allows Akool keys on Vercel preview during supervised smoke window", async () => {
+    process.env.VERCEL_ENV = "preview";
+    process.env.AKOOL_CLIENT_ID = "akool-id";
+    process.env.AKOOL_CLIENT_SECRET = "akool-secret";
+    process.env.ELEVENLABS_API_KEY = "elevenlabs-test-key-long";
+    const { assessSafeDevProviderSmoke } = await import(
+      "@/lib/environment-safety.server"
+    );
+    const result = assessSafeDevProviderSmoke();
+    expect(result.allowed).toBe(true);
+    expect(result.blockReasons).not.toContain("akool_keys_present");
+    expect(result.blockReasons).not.toContain("elevenlabs_key_present");
+  });
+
   it("generateImageProviderGuardResponse bypasses dev guard when safe override is active", async () => {
     const {
       generateImageProviderGuardResponse,

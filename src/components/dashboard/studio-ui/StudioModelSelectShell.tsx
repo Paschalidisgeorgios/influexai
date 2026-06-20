@@ -3,6 +3,7 @@
 import {
   type StudioModelDefinition,
   type StudioToolDefinition,
+  isStudioProviderExecutionDisabled,
 } from "@/lib/tools/studio-tool-registry";
 import { DASHBOARD_MUTED } from "@/components/dashboard/core/DashboardSurface";
 import { StudioFieldLabel, StudioSelect } from "./StudioField";
@@ -55,14 +56,14 @@ export function StudioModelSelectShell({
       ) : null}
 
       {showProviderHint &&
-      (tool.providerExecution === "disabled" ||
-        tool.providerExecution === "shell_only") ? (
+      isStudioProviderExecutionDisabled(toolId ?? String(tool.id)) ? (
         <ToolExecutionDisabledNotice
           toolId={toolId ?? String(tool.id)}
           variant={
             tool.status === "shell" ? "shell_only" : "provider_disabled"
           }
-        />      ) : null}
+        />
+      ) : null}
     </div>
   );
 }

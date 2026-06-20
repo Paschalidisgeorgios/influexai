@@ -17,6 +17,7 @@ type ActionProps = {
   primaryDisabled?: boolean;
   primaryLoading?: boolean;
   primaryLoadingLabel?: string;
+  primaryTestId?: string;
   secondaryLabel?: string;
   secondaryHref?: string;
   hint?: string;
@@ -41,6 +42,7 @@ export function StudioActionBar({
   primaryDisabled,
   primaryLoading,
   primaryLoadingLabel = "Wird gestartet…",
+  primaryTestId,
   secondaryLabel = "Mit Agent vorbereiten",
   secondaryHref,
   hint,
@@ -81,6 +83,7 @@ export function StudioActionBar({
             disabled={primaryDisabled || primaryLoading}
             className={primaryClass}
             style={primaryStyle}
+            {...(primaryTestId ? { "data-testid": primaryTestId } : {})}
           >
             {loadingLabel}
           </button>

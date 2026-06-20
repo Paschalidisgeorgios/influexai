@@ -312,12 +312,15 @@ export function assessSafeDevProviderSmoke(): SafeDevProviderSmokeAssessment {
     process.env.AKOOL_API_KEY?.trim() ||
     (process.env.AKOOL_CLIENT_ID?.trim() &&
       process.env.AKOOL_CLIENT_SECRET?.trim());
-  if (akool) {
+  const previewSmokeWindow =
+    process.env[SAFE_DEV_PROVIDER_SMOKE_ENV]?.trim().toLowerCase() === "true" &&
+    process.env.VERCEL_ENV?.trim() === "preview";
+  if (akool && !previewSmokeWindow) {
     blockReasons.push("akool_keys_present");
   }
 
   const eleven = process.env.ELEVENLABS_API_KEY?.trim() ?? "";
-  if (eleven.length > 10) {
+  if (eleven.length > 10 && !previewSmokeWindow) {
     blockReasons.push("elevenlabs_key_present");
   }
 

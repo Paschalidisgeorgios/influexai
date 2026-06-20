@@ -79,3 +79,60 @@ export function probePreviewProviderGuard(previewBaseUrl) {
     secrets_logged: false,
   };
 }
+
+/** POST {} — expect 400 validation, not PROVIDERS_DISABLED (guard open probe). */
+export function probePreviewGenerateApiOpen(previewBaseUrl) {
+  const base = previewBaseUrl.replace(/\/$/, "");
+  const outFile = join(tmpdir(), `open-guard-${Date.now()}.json`);
+
+  const result = spawnSync(
+    "npx",
+    [
+      "vercel",
+      "curl",
+      `${base}/api/generate-image`,
+      "--",
+      "-X",
+      "POST",
+      "-H",
+      "Content-Type: application/json",
+      "--data-raw",
+      "{}",
+      "-s",
+      "-o",
+      outFile,
+    ],
+    { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" }
+  );
+
+  let raw = "";
+  try {
+    raw = readFileSync(outFile, "utf8");
+  } catch {
+    raw = (result.stdout ?? "").trim();
+  } finally {
+    try {
+      unlinkSync(outFile);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  let parsed = null;
+  try {
+    const jsonStart = raw.indexOf("{");
+    parsed = JSON.parse(jsonStart >= 0 ? raw.slice(jsonStart) : raw);
+  } catch {
+    parsed = null;
+  }
+
+  const code = parsed?.code ?? null;
+  const open = code !== "PROVIDERS_DISABLED";
+
+  return {
+    open,
+    code,
+    status_hint: parsed?.error ? "validation_or_auth" : null,
+    secrets_logged: false,
+  };
+}
