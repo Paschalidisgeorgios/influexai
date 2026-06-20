@@ -53,9 +53,7 @@ function envAudit() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) blockers.push("missing_service_role");
   if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()) blockers.push("missing_anon_key");
 
-  const safe =
-    blockers.length === 0 ||
-    (blockers.length === 1 && blockers[0] === "providers_disabled_for_run");
+  const safeProviderSmoke = assessSafeProviderSmokeLocal();
 
   return {
     env_local_exists: existsSync(ENV_PATH),
@@ -68,9 +66,60 @@ function envAudit() {
     stripe_live: stripeSecret.startsWith("sk_live_") || stripePub.startsWith("pk_live_"),
     fal_key_present: Boolean(falKey),
     fal_key_length: falKey.length,
+    allow_safe_dev_provider_smoke:
+      process.env.ALLOW_SAFE_DEV_PROVIDER_SMOKE?.trim().toLowerCase() === "true",
+    safe_provider_smoke: safeProviderSmoke,
     blockers,
-    safe_to_proceed: blockers.filter((b) => b !== "providers_disabled_for_run").length === 0,
+    safe_to_proceed:
+      blockers.length === 0 && safeProviderSmoke.allowed,
+    recommended_path: safeProviderSmoke.allowed
+      ? "vercel_preview_or_local_with_override"
+      : safeProviderSmoke.blockReasons.includes("override_not_active")
+        ? "set_ALLOW_SAFE_DEV_PROVIDER_SMOKE_for_smoke_window_only"
+        : "fix_blockers_before_smoke",
   };
+}
+
+function assessSafeProviderSmokeLocal() {
+  const blockReasons = [];
+  const STAGING = "jvjmqtxlqfqaoyjklpxh";
+
+  if (process.env.ALLOW_SAFE_DEV_PROVIDER_SMOKE?.trim().toLowerCase() !== "true") {
+    blockReasons.push("override_not_active");
+    return { allowed: false, blockReasons };
+  }
+
+  const stripeSecret = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
+  if (process.env.STRIPE_MODE?.trim().toLowerCase() !== "test") {
+    blockReasons.push("stripe_mode_not_test");
+  }
+  if (!stripeSecret.startsWith("sk_test_")) blockReasons.push("stripe_secret_not_test");
+  if (stripeSecret.startsWith("sk_live_")) blockReasons.push("stripe_live_secret");
+
+  const stripePub = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+  if (stripePub.startsWith("pk_live_")) blockReasons.push("stripe_live_publishable");
+
+  const providersDisabled = (process.env.PROVIDERS_DISABLED ?? "").trim().toLowerCase();
+  if (["true", "1", "yes"].includes(providersDisabled)) {
+    blockReasons.push("providers_disabled");
+  }
+
+  const ref = maskRef(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "");
+  if (ref === PROD_REF) blockReasons.push("supabase_production_ref");
+  else if (ref !== STAGING) blockReasons.push("supabase_not_staging_ref");
+
+  const akool =
+    process.env.AKOOL_API_KEY?.trim() ||
+    (process.env.AKOOL_CLIENT_ID?.trim() && process.env.AKOOL_CLIENT_SECRET?.trim());
+  if (akool) blockReasons.push("akool_keys_present");
+
+  const eleven = process.env.ELEVENLABS_API_KEY?.trim() ?? "";
+  if (eleven.length > 10) blockReasons.push("elevenlabs_key_present");
+
+  const fal = process.env.FAL_KEY?.trim() || process.env.FAL_API_KEY?.trim();
+  if (!fal) blockReasons.push("missing_fal_key");
+
+  return { allowed: blockReasons.length === 0, blockReasons };
 }
 
 function getAdmin() {

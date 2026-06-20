@@ -116,14 +116,23 @@ Blocking applies when **all** of the following are true:
 
 ### Override (local/preview only)
 
-Both variables are **required**:
+Both variables are **required** for the **legacy broad** override (discouraged for provider smoke):
 
 ```env
 ALLOW_PRODUCTION_DEV_WRITES=true
 I_UNDERSTAND_PRODUCTION_WRITES=true
 ```
 
-**Production deployments (`VERCEL_ENV=production`) are never blocked.**
+**Preferred for supervised generate-image smoke (G.10-D):** narrow flag only on `POST /api/generate-image`:
+
+```env
+ALLOW_SAFE_DEV_PROVIDER_SMOKE=true
+PROVIDERS_DISABLED=false
+```
+
+Requires staging Supabase ref, test Stripe, FAL key only, no Akool/ElevenLabs. See `docs/reports/provider-smoke-safe-path-g10d.md`.
+
+**Production deployments (`VERCEL_ENV=production`) are never bypassed.**
 
 ### Webhooks (not dev-write-guarded)
 

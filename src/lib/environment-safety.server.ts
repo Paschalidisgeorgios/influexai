@@ -20,6 +20,9 @@ export const PROVIDER_EXECUTION_GUARD_MESSAGE =
 export const SAFE_DEV_STRIPE_TEST_CHECKOUT_ENV =
   "ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT";
 
+/** Narrow override: supervised generate-image provider smoke only (G.10-D). */
+export const SAFE_DEV_PROVIDER_SMOKE_ENV = "ALLOW_SAFE_DEV_PROVIDER_SMOKE";
+
 export const DEV_WRITE_GUARD_MESSAGE =
   "Diese mutierende Aktion ist in dieser lokalen/Preview-Umgebung blockiert, weil Production-ähnliche Ressourcen erkannt wurden.";
 
@@ -243,6 +246,98 @@ export function checkoutWriteGuardResponse(): NextResponse | null {
     return null;
   }
   return developmentWriteGuardResponse();
+}
+
+export type SafeDevProviderSmokeAssessment = {
+  allowed: boolean;
+  blockReasons: string[];
+};
+
+/**
+ * Narrow override for a single supervised POST /api/generate-image smoke.
+ * Does not enable other provider routes, uploads, training, Akool, or ElevenLabs.
+ * Requires explicit ALLOW_SAFE_DEV_PROVIDER_SMOKE=true plus staging-safe signals.
+ */
+export function assessSafeDevProviderSmoke(): SafeDevProviderSmokeAssessment {
+  const blockReasons: string[] = [];
+
+  if (
+    process.env[SAFE_DEV_PROVIDER_SMOKE_ENV]?.trim().toLowerCase() !== "true"
+  ) {
+    blockReasons.push("override_not_active");
+    return { allowed: false, blockReasons };
+  }
+
+  if (!isNonProductionRuntime()) {
+    blockReasons.push("production_runtime");
+  }
+
+  if (process.env.VERCEL_ENV?.trim() === "production") {
+    blockReasons.push("vercel_production");
+  }
+
+  if (process.env.STRIPE_MODE?.trim().toLowerCase() !== "test") {
+    blockReasons.push("stripe_mode_not_test");
+  }
+
+  const stripeSecret = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
+  if (!stripeSecret.startsWith("sk_test_")) {
+    blockReasons.push("stripe_secret_not_test");
+  }
+
+  if (stripeSecret.startsWith("sk_live_")) {
+    blockReasons.push("stripe_live_secret");
+  }
+
+  const stripePublishable =
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? "";
+  if (stripePublishable.startsWith("pk_live_")) {
+    blockReasons.push("stripe_live_publishable");
+  }
+
+  if (areProvidersExplicitlyDisabled()) {
+    blockReasons.push("providers_disabled");
+  }
+
+  const supabaseRef = extractSupabaseProjectRef(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
+  );
+  if (isProductionSupabaseRef(supabaseRef)) {
+    blockReasons.push("supabase_production_ref");
+  } else if (supabaseRef !== DEFAULT_STAGING_SUPABASE_REF) {
+    blockReasons.push("supabase_not_staging_ref");
+  }
+
+  const akool =
+    process.env.AKOOL_API_KEY?.trim() ||
+    (process.env.AKOOL_CLIENT_ID?.trim() &&
+      process.env.AKOOL_CLIENT_SECRET?.trim());
+  if (akool) {
+    blockReasons.push("akool_keys_present");
+  }
+
+  const eleven = process.env.ELEVENLABS_API_KEY?.trim() ?? "";
+  if (eleven.length > 10) {
+    blockReasons.push("elevenlabs_key_present");
+  }
+
+  const fal = process.env.FAL_API_KEY?.trim() || process.env.FAL_KEY?.trim();
+  if (!fal) {
+    blockReasons.push("missing_fal_key");
+  }
+
+  return { allowed: blockReasons.length === 0, blockReasons };
+}
+
+/**
+ * Guard for POST /api/generate-image only — may bypass dev-write + provider kill
+ * switch when assessSafeDevProviderSmoke() passes. All other routes unchanged.
+ */
+export function generateImageProviderGuardResponse(): NextResponse | null {
+  if (assessSafeDevProviderSmoke().allowed) {
+    return null;
+  }
+  return providerRouteGuardResponse();
 }
 
 /** Use at the start of mutating API handlers. Returns 403 response or null if allowed. */

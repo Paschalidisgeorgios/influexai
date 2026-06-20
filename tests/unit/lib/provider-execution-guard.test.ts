@@ -46,7 +46,6 @@ describe("provider execution guard", () => {
 
   it("critical provider API routes use providerRouteGuardResponse", () => {
     const routes = [
-      "src/app/api/generate-image/route.ts",
       "src/app/api/seedance/route.ts",
       "src/app/api/lora/train/route.ts",
       "src/app/api/agent/copilot/route.ts",
@@ -55,5 +54,14 @@ describe("provider execution guard", () => {
       const src = readFileSync(join(process.cwd(), route), "utf8");
       expect(src).toContain("providerRouteGuardResponse");
     }
+  });
+
+  it("generate-image uses narrow generateImageProviderGuardResponse", () => {
+    const src = readFileSync(
+      join(process.cwd(), "src/app/api/generate-image/route.ts"),
+      "utf8"
+    );
+    expect(src).toContain("generateImageProviderGuardResponse");
+    expect(src).not.toContain("providerRouteGuardResponse");
   });
 });
