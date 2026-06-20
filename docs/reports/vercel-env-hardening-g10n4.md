@@ -2,8 +2,9 @@
 
 **Date:** 2026-06-16  
 **Branch:** `master`  
-**Repo HEAD:** `a96f2b7`  
-**Outcome:** **Env manual action required** — Preview redeploy **not executed**
+**Repo HEAD (N4):** `a96f2b7` → **N4B finalized after manual env + Preview redeploy**  
+**Outcome (N4):** Env manual action required — Preview redeploy deferred  
+**Outcome (N4B):** **Preview Gate PASS** — Provider guard confirmed; Production domain remains Pre-Live blocker
 
 ---
 
@@ -185,7 +186,9 @@ Expect **503** — never 200 / `imageUrl` / `generationId`.
 
 ---
 
-## 5. Preview deploy (this phase)
+## 5. Preview deploy
+
+### G.10-N4 (initial audit)
 
 | Item | Result |
 |------|--------|
@@ -193,9 +196,24 @@ Expect **503** — never 200 / `imageUrl` / `generationId`.
 | Previous Preview URL (G.10-N3) | https://influexai-e8j8cvtws-paschalidisgeorgios-projects.vercel.app |
 | Middleware crash fixed | **not verified** — blocked on env |
 
+### G.10-N4B (after manual Vercel env + Preview redeploy)
+
+| Item | Result |
+|------|--------|
+| Manual Vercel env applied | **yes** (Dashboard — no secrets in repo) |
+| Preview redeploy executed | **yes** (`npx vercel --yes`, no `--prod`) |
+| Preview status | **Ready** |
+| Preview URL | https://influexai-9aamkaafv-paschalidisgeorgios-projects.vercel.app |
+| Deployment Protection | **active** — public curl returns 401; `vercel curl` required |
+| Middleware crash | **resolved** on Preview (Supabase + kill-switch env present) |
+| Landing `/` | loads ✅ |
+| `/auth/sign-in` | loads ✅ |
+
 ---
 
-## 6. Route checks & provider guard (this phase)
+## 6. Route checks & provider guard
+
+### G.10-N4 (initial audit)
 
 | Check | Result |
 |-------|--------|
@@ -203,25 +221,63 @@ Expect **503** — never 200 / `imageUrl` / `generationId`.
 | Provider guard valid prompt probe | **skipped** — `PROVIDERS_DISABLED` not confirmed on Vercel |
 | G.10-N3 known state | Production alias returned 400 (guard open) |
 
+### G.10-N4B (Preview verification)
+
+| Check | Method | Result |
+|-------|--------|--------|
+| `/` | `vercel curl` (bypass) | loads ✅ |
+| `/auth/sign-in` | `vercel curl` | loads ✅ |
+| `POST /api/generate-image` | `vercel curl` | **PASS** |
+| Response shape | JSON | `success=false`, `code=PROVIDERS_DISABLED` |
+| Provider call | — | **no** |
+| `generationId` | — | **no** |
+| `imageUrl` | — | **no** |
+| Credits changed | — | **no** |
+| Valid prompt probe with generation | — | **not executed** (guard JSON sufficient) |
+
+**Preview Provider Guard: PASS**
+
 ---
 
-## 7. G.10-O freigabe?
+## 7. Production domain — Pre-Live blocker (not Preview blocker)
 
-**Not yet.** Complete manual checklist §4 A+B, redeploy Preview, confirm 503 guard, then run G.10-O supervised provider smoke.
+| Item | Result |
+|------|--------|
+| Domain | `www.influexaicreator.com` |
+| Vercel logs (observed) | **500** on requests |
+| Error class | Supabase URL/Key missing in **Production** runtime |
+| Preview impact | **none** — Preview gate independent |
+| `vercel --prod` now | **forbidden** until Production Readiness Gate |
+| Production Supabase / Stripe Live | deferred to **Production Readiness Gate** |
+
+Do **not** redeploy Production until Production env is complete and verified separately.
 
 ---
 
-## 8. Env summary (no secrets)
+## 8. G.10-O freigabe?
 
-**Local now:** `PROVIDERS_DISABLED=true`, `ALLOW_SAFE_DEV_PROVIDER_SMOKE=false`, `STRIPE_MODE=test`, staging Supabase.
+**Freigabefähig nach sauberem N4B-Report:** supervised **G.10-O** Provider-UI-Smoke may proceed **on Preview URL only**, in explicit window:
 
-**Vercel now:** Preview missing Supabase + kill-switch; Production missing kill-switch; encrypted values not audited.
+1. Credits baseline `billingtest@` documented
+2. `PROVIDERS_DISABLED=false` + `ALLOW_SAFE_DEV_PROVIDER_SMOKE=true` **only on Preview**, supervised
+3. `npm run smoke:generate-image:run-safe` — **not** on production domain
+4. Re-enable kill-switch immediately after smoke
 
-**Outside / after manual fix:** Preview staging-only; Production kill-switch `true`; no `PROVIDERS_DISABLED=false` without supervised window.
+**Not freigabefähig:** production domain fix, live Stripe, production Supabase — separate Pre-Live gate.
 
 ---
 
-## 9. Stop rules (unchanged)
+## 9. Env summary (no secrets)
+
+**Local:** `PROVIDERS_DISABLED=true`, `ALLOW_SAFE_DEV_PROVIDER_SMOKE=false`, `STRIPE_MODE=test`, staging Supabase.
+
+**Vercel Preview (N4B):** env manually completed; guard returns `PROVIDERS_DISABLED`; app boots.
+
+**Vercel Production:** kill-switch + Supabase runtime issues on live domain remain **Pre-Live** work; do not `--prod` redeploy in this train step.
+
+---
+
+## 10. Stop rules (unchanged)
 
 - No `vercel --prod`
 - No `npm run smoke:generate-image:run-safe` until Preview 503 confirmed

@@ -169,9 +169,21 @@ Auth-before-guard is acceptable for authenticated flows; the issue is guard abse
 
 ---
 
+## 8. Gate verdict (updated G.10-N4B)
+
+| Gate | N4 | N4B |
+|------|----|-----|
+| **Preview Staging Gate (providers disabled)** | FAIL | **PASS** |
+| **Production domain readiness** | FAIL | **FAIL** (500 — Supabase env) |
+| Repo/build deployable | PASS | PASS |
+
+---
+
 ## 9. Final provider-UI-smoke freigabe?
 
-**Not yet.** Fix Vercel env + Preview boot first. Do **not** open provider window on production alias until guards verified.
+**G.10-O on Preview:** freigabefähig nach N4B (supervised window, Preview URL only).
+
+**Production alias / www.influexaicreator.com:** **not** until Production Readiness Gate.
 
 ---
 
@@ -185,11 +197,18 @@ Auth-before-guard is acceptable for authenticated flows; the issue is guard abse
 
 ---
 
-## 11. Follow-up G.10-N4 (2026-06-16)
+## 11. Follow-up G.10-N4 / N4B (2026-06-16)
 
-Manual Vercel env action required before Preview re-gate. See **`docs/reports/vercel-env-hardening-g10n4.md`** for exact key checklist (Preview Supabase + kill-switch). Preview redeploy **not** executed in G.10-N4.
+- **G.10-N4:** Manual Vercel env checklist — see `docs/reports/vercel-env-hardening-g10n4.md` §4.
+- **G.10-N4B:** Preview Gate **PASS**
+  - URL: https://influexai-9aamkaafv-paschalidisgeorgios-projects.vercel.app
+  - `POST /api/generate-image` → `success=false`, `code=PROVIDERS_DISABLED` (via `vercel curl`)
+  - No provider call, no generation, no credits changed
+- **Production Pre-Live:** `www.influexaicreator.com` logs **500** (Supabase URL/Key missing in Production runtime) — **no `vercel --prod`**
 
-## 11. Env (no secrets)
+---
+
+## 12. Env (no secrets)
 
 **Local now:** `PROVIDERS_DISABLED=true`, `ALLOW_SAFE_DEV_PROVIDER_SMOKE=false`, `STRIPE_MODE=test`, staging Supabase ref.
 
