@@ -45,6 +45,8 @@
     "smoke:stripe:subscription-baseline": "node scripts/stripe-subscription-smoke.mjs baseline",
     "smoke:stripe:subscription-webhook": "node scripts/stripe-subscription-smoke.mjs webhook-smoke",
     "staging:ensure-subscription-double-check-user": "node scripts/ensure-staging-subscription-double-check-user.mjs",
+    "staging:ensure-visual-qa-user": "node scripts/ensure-staging-visual-qa-user.mjs",
+    "auth:ensure-visual-qa-user": "node scripts/ensure-staging-visual-qa-user.mjs",
     "smoke:stripe:subscription-double-credit": "node scripts/stripe-subscription-double-credit-smoke.mjs"
   },
   "dependencies": {
