@@ -204,6 +204,8 @@ export async function POST(request: NextRequest) {
       ? `Bild Generator — High-Res (${modelLabel})`
       : `Bild Generator — Standard (${modelLabel})`;
 
+  const creditExempt = await isCreditExemptUser(supabase, userId);
+
   const deduction = await deductCredits(
     supabase,
     userId,
@@ -279,7 +281,7 @@ export async function POST(request: NextRequest) {
       );
 
       await updateGenerationResult(supabase, generationId, userId, {
-        credits_used: creditCost,
+        credits_used: creditExempt ? 0 : creditCost,
       });
 
       return {
@@ -314,7 +316,8 @@ export async function POST(request: NextRequest) {
       imageUrl: final.imageUrl,
       locked: true,
       downloadPaid: false,
-      creditsUsed: creditCost,
+      creditsUsed: creditExempt ? 0 : creditCost,
+      creditExempt,
       creditsLeft: deduction.remainingCredits,
       category: prepared.category,
       categoryLabel: CATEGORY_PROMPTS[prepared.category].label,

@@ -1,7 +1,36 @@
 # Provider Smoke Result — generate-image
 
-**Last updated:** 2026-06-20 (G.10-F diagnosis)  
+**Last updated:** 2026-06-20 (G.10-H credit deduction diagnosis)  
 **Branch:** `master`
+
+---
+
+## G.10-H — First successful smoke, credits unchanged (75 → 75)
+
+### Outcome
+
+| Field | Value |
+|-------|-------|
+| HTTP | **200**, `success: true` |
+| Generation | Row + image preview ✅ |
+| Credits profile | **75 → 75** (delta 0) |
+| API `creditsUsed` (pre-fix) | **5** (nominal tool cost) |
+| Smoke `pass` | **false** — billing leg failed |
+| Guard after window closed | **503** `PROVIDERS_DISABLED` ✅ |
+
+### Root cause
+
+**`test@influexai.test` is credit-exempt** (`ADMIN_EMAIL_ALLOWLIST`). No `deduct_credits` RPC, no `credit_transactions`. Generation succeeded; billing validation requires a **non-exempt** staging user.
+
+Full report: [`generate-image-credit-deduction-diagnosis.md`](./generate-image-credit-deduction-diagnosis.md)
+
+### Next step — G.10-I (billing smoke)
+
+1. `npm run staging:ensure-billing-user`
+2. Set `TEST_USER_EMAIL=billing-smoke@influexai.test` in `.env.local`
+3. `npm run smoke:generate-image:credit-check` → `billing_smoke_ready: true`
+4. Open smoke window → single `npm run smoke:generate-image:run-safe`
+5. Expect credits **75 → 70** + `credit_transactions` row
 
 ---
 
@@ -131,6 +160,8 @@ Production responses remain generic (no `saveHint`).
 | `npm run smoke:generate-image:verify-db` | Staging GRANT check (no provider) |
 | `npm run smoke:generate-image:baseline` | Test user credits/generations |
 | `npm run smoke:generate-image:guard-probe` | 503 when providers disabled |
+| `npm run smoke:generate-image:credit-check` | Credit-exempt + transactions (no provider) |
+| `npm run staging:ensure-billing-user` | Create non-exempt billing smoke user on staging |
 | `npm run smoke:generate-image:run-safe` | Audit + verify-db + one call (window must be open) |
 
 ---

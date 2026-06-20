@@ -31,7 +31,9 @@
     "smoke:generate-image:verify-db": "node scripts/supervised-generate-image-smoke.mjs verify-db",
     "smoke:generate-image:baseline": "node scripts/supervised-generate-image-smoke.mjs baseline",
     "smoke:generate-image:guard-probe": "node scripts/supervised-generate-image-smoke.mjs guard-probe",
-    "smoke:generate-image:run-safe": "node scripts/supervised-generate-image-smoke.mjs run-safe"
+    "smoke:generate-image:credit-check": "node scripts/supervised-generate-image-smoke.mjs credit-check",
+    "smoke:generate-image:run-safe": "node scripts/supervised-generate-image-smoke.mjs run-safe",
+    "staging:ensure-billing-user": "node scripts/ensure-staging-billing-user.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

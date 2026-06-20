@@ -1,0 +1,168 @@
+# Generate-Image Credit Deduction Diagnosis (G.10-H)
+
+**Date:** 2026-06-20  
+**Branch:** `master`  
+**Staging ref:** `jvjmqtxlqfqaoyjklpxh`
+
+---
+
+## Symptom (first successful provider smoke)
+
+| Field | Value |
+|-------|-------|
+| HTTP | **200**, `success: true` |
+| `generationId` | `4251258f-37d2-45a9-b427-a3a927eb9dce` |
+| `imageUrl` | present, fetch **200** `image/jpeg` |
+| `generation_row` | present, `credits_used: 5`, model `krea/v2/large/text-to-image` |
+| API `creditsUsed` | **5** (before G.10-H fix: nominal tool cost even when exempt) |
+| API `creditsLeft` | **75** |
+| Profile credits before/after | **75 → 75** (delta **0**) |
+| Expected delta (non-exempt) | **−5** |
+| Smoke `pass` | **false** (billing leg failed) |
+
+---
+
+## Root cause
+
+**`test@influexai.test` is credit-exempt via `ADMIN_EMAIL_ALLOWLIST`.**
+
+| Check | Result |
+|-------|--------|
+| `profiles.is_admin` | `false` |
+| `profiles.role` | `user` |
+| Email in `ADMIN_EMAIL_ALLOWLIST` | **yes** |
+| `deduct_credits` RPC called | **no** |
+| `credit_transactions` rows | **0** (recent sample empty) |
+| Refund after success | **no** (exempt path skips deduct entirely) |
+
+### Code path
+
+```
+POST /api/generate-image
+  → isCreditExemptUser() → isPlatformAdminServer(email in ADMIN_EMAIL_ALLOWLIST)
+  → deductCredits(): skip RPC + skip logCreditTransaction
+  → FAL + save generation ✅
+  → response creditsUsed: creditCost (5)  ← misleading before fix
+  → profiles.credits unchanged (75)
+  → generation.credits_used: 5            ← nominal metadata, not billing proof
+```
+
+Relevant code:
+
+- `src/lib/credits.ts` — `isCreditExemptUser`, exempt branch in `deductCredits`
+- `src/lib/platform-admin.server.ts` / `src/lib/admin-allowlist.server.ts` — allowlist
+- `src/app/api/generate-image/route.ts` — always returned `creditsUsed: creditCost` pre-fix
+
+**Not the cause:** refund loop, wrong balance read in smoke script, save failure, wrong user id.
+
+---
+
+## DB findings (staging, no secrets)
+
+User: `test@influexai.test` (`13346d5c-f673-41ba-853d-4635b0fccb8b`)
+
+| Table / field | Value |
+|---------------|-------|
+| `profiles.plan` | `starter` |
+| `profiles.credits` | `75` |
+| `profiles.is_admin` | `false` |
+| `profiles.role` | `user` |
+| `credit_transactions` | none for this smoke |
+| `generations` (smoke id) | row exists, `credits_used: 5` |
+
+Verify locally (no provider):
+
+```bash
+npm run smoke:generate-image:credit-check
+```
+
+---
+
+## Fixes applied (G.10-H)
+
+| Change | Purpose |
+|--------|---------|
+| API: `creditExempt`, `creditsUsed: 0` when exempt | Response matches actual billing |
+| API: `generations.credits_used: 0` when exempt | DB aligns with no deduct |
+| Smoke: `generation_pass` vs `billing_pass` | Generation can pass while billing is N/A for exempt user |
+| Smoke: `credit-check` command | Diagnose exempt + transactions without provider |
+| `scripts/ensure-staging-billing-user.mjs` | Staging user **not** in allowlist |
+| `tests/unit/lib/credit-exempt-diagnosis.test.ts` | Unit coverage for exempt rules |
+
+**Intentionally unchanged:** global admin credit bypass (product behavior).
+
+---
+
+## Answers to core questions
+
+| # | Question | Answer |
+|---|----------|--------|
+| 1 | Is `test@influexai.test` credit-exempt? | **Yes** — email allowlist |
+| 2 | Admin/QA bypass skipped deduct? | **Yes** |
+| 3 | API returned `creditsUsed=5` without real charge? | **Yes** (fixed to `0` + `creditExempt: true`) |
+| 4 | `deduct_credits` RPC called? | **No** |
+| 5 | `credit_transactions` row? | **No** |
+| 6 | Refunded after success? | **No** |
+| 7 | Smoke script wrong balance read? | **No** — balance truly unchanged |
+| 8 | Need non-admin paid user for billing smoke? | **Yes** |
+
+---
+
+## Next provider smoke (G.10-I) — billing proof
+
+### Test user
+
+| Field | Value |
+|-------|-------|
+| Email | `billing-smoke@influexai.test` (or `TEST_BILLING_USER_EMAIL`) |
+| Not in | `ADMIN_EMAIL_ALLOWLIST` |
+| Plan | `starter` |
+| Credits | `75` |
+| Expected after 1× image gen | **70** |
+| Expected `credit_transactions` | `amount: -5` |
+
+Create user (staging only):
+
+```bash
+npm run staging:ensure-billing-user
+```
+
+Point smoke at billing user in `.env.local` (never commit):
+
+```
+TEST_USER_EMAIL=billing-smoke@influexai.test
+TEST_USER_PASSWORD=<from ensure script>
+```
+
+### Env during supervised window only
+
+| Variable | Smoke window | After smoke |
+|----------|--------------|-------------|
+| `PROVIDERS_DISABLED` | `false` | **`true`** |
+| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` | `true` | **`false`** |
+| `FAL_API_KEY` / `FAL_KEY` | required locally | keep local only |
+| Stripe | test mode only | unchanged |
+| Supabase | staging ref only | unchanged |
+
+### Run sequence (human-supervised)
+
+1. `npm run smoke:generate-image:verify-db` → `ok: true`
+2. `npm run smoke:generate-image:credit-check` → `billing_smoke_ready: true`
+3. Open smoke window in `.env.local`, restart dev server
+4. **Single run:** `npm run smoke:generate-image:run-safe`
+5. Close window, restart, `npm run smoke:generate-image:guard-probe` → 503
+6. Expect: `billing_pass: true`, credits **75 → 70**, transaction row present
+
+**Do not run another provider call until G.10-I window is explicitly opened.**
+
+---
+
+## Sign-off
+
+| Item | Status |
+|------|--------|
+| Cause identified | ✅ Credit-exempt allowlist user |
+| Provider re-run in G.10-H | ❌ None |
+| Further provider smoke needed | ✅ Yes — billing user |
+| `PROVIDERS_DISABLED` after G.10-H | ✅ `true` |
+| `ALLOW_SAFE_DEV_PROVIDER_SMOKE` after G.10-H | ✅ `false` |

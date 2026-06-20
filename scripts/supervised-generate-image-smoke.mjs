@@ -6,13 +6,15 @@
  *   node scripts/supervised-generate-image-smoke.mjs audit
  *   node scripts/supervised-generate-image-smoke.mjs baseline
  *   node scripts/supervised-generate-image-smoke.mjs guard-probe
+ *   node scripts/supervised-generate-image-smoke.mjs credit-check
  *   node scripts/supervised-generate-image-smoke.mjs run
  */
 import { config } from "dotenv";
-import { resolve, join } from "path";
+import { resolve } from "path";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { createClient } from "@supabase/supabase-js";
 import { chromium } from "playwright";
+import { isCreditExemptProfile } from "./lib/credit-exempt.mjs";
 
 const ROOT = process.cwd();
 const ENV_PATH = resolve(ROOT, ".env.local");
@@ -160,9 +162,14 @@ async function baseline() {
   }
   const { data: profile } = await admin
     .from("profiles")
-    .select("credits, plan, onboarding_completed")
+    .select("credits, plan, onboarding_completed, is_admin, role")
     .eq("id", user.id)
     .maybeSingle();
+  const creditExempt = isCreditExemptProfile(
+    user.email,
+    profile,
+    process.env.ADMIN_EMAIL_ALLOWLIST
+  );
   const { count: genCount } = await admin
     .from("generations")
     .select("id", { count: "exact", head: true })
@@ -173,6 +180,9 @@ async function baseline() {
     user_id: user.id,
     plan: profile?.plan ?? null,
     credits: profile?.credits ?? null,
+    is_admin: profile?.is_admin ?? null,
+    role: profile?.role ?? null,
+    credit_exempt: creditExempt,
     onboarding_completed: profile?.onboarding_completed ?? null,
     generations_count: genCount ?? 0,
     providers_disabled: envAudit().providers_disabled,
@@ -271,6 +281,84 @@ async function verifyDbGrants() {
       blockers.length > 0
         ? "Apply supabase/migrations/068_generations_authenticated_grants.sql on staging (supabase db push --linked or SQL Editor)"
         : undefined,
+  };
+}
+
+async function creditCheck() {
+  const admin = getAdmin();
+  const user = await findUser(admin);
+  if (!user) {
+    return { ok: false, error: "test_user_not_found", email: EMAIL };
+  }
+
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("credits, plan, is_admin, role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const creditExempt = isCreditExemptProfile(
+    user.email,
+    profile,
+    process.env.ADMIN_EMAIL_ALLOWLIST
+  );
+
+  const { data: recentTx, count: txCount } = await admin
+    .from("credit_transactions")
+    .select("id, amount, action, created_at", { count: "exact" })
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  let lastSmoke = null;
+  if (existsSync(RESULT_PATH)) {
+    try {
+      lastSmoke = JSON.parse(readFileSync(RESULT_PATH, "utf8"));
+    } catch {
+      lastSmoke = { parse_error: true };
+    }
+  }
+
+  let generationRow = null;
+  const generationId =
+    lastSmoke?.response?.generationId ?? lastSmoke?.generation_row?.id ?? null;
+  if (generationId) {
+    const { data } = await admin
+      .from("generations")
+      .select("id, credits_used, type, created_at")
+      .eq("id", generationId)
+      .maybeSingle();
+    generationRow = data;
+  }
+
+  return {
+    ok: true,
+    email: EMAIL,
+    user_id: user.id,
+    profile: {
+      plan: profile?.plan ?? null,
+      credits: profile?.credits ?? null,
+      is_admin: profile?.is_admin ?? null,
+      role: profile?.role ?? null,
+    },
+    credit_exempt: creditExempt,
+    credit_transactions_count: txCount ?? 0,
+    credit_transactions_recent: recentTx ?? [],
+    last_smoke: lastSmoke
+      ? {
+          generationId,
+          credits_before: lastSmoke.credits_before ?? null,
+          credits_after: lastSmoke.credits_after ?? null,
+          credit_delta: lastSmoke.credit_delta ?? null,
+          response_creditsUsed: lastSmoke.response?.creditsUsed ?? null,
+          pass: lastSmoke.pass ?? null,
+        }
+      : null,
+    generation_row: generationRow,
+    billing_smoke_ready: !creditExempt.exempt,
+    recommendation: creditExempt.exempt
+      ? "Use billing-smoke@influexai.test (node scripts/ensure-staging-billing-user.mjs) — not in ADMIN_EMAIL_ALLOWLIST — for next provider smoke."
+      : "User can validate real credit deduction on next provider smoke (expect -5).",
   };
 }
 
@@ -387,10 +475,31 @@ async function runSmoke() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", before.user_id);
 
+  const creditExempt = before.credit_exempt ?? {
+    exempt: false,
+    reason: null,
+  };
+
+  const generationPass =
+    res.status === 200 &&
+    parsed?.success === true &&
+    Boolean(parsed?.generationId) &&
+    generation?.type === "image";
+
+  const billingPass = creditExempt.exempt
+    ? afterCredits === before.credits &&
+      (parsed?.creditExempt === true || parsed?.creditsUsed === 0)
+    : afterCredits === before.credits - 5;
+
   const result = {
     phase: "run",
     audit,
-    test_user: { email: EMAIL, user_id: before.user_id, plan: before.plan },
+    test_user: {
+      email: EMAIL,
+      user_id: before.user_id,
+      plan: before.plan,
+      credit_exempt: creditExempt,
+    },
     providers_disabled_before: before.providers_disabled,
     credits_before: before.credits,
     credits_after: afterCredits,
@@ -426,12 +535,9 @@ async function runSmoke() {
         }
       : null,
     image_fetch: imageFetch,
-    pass:
-      res.status === 200 &&
-      parsed?.success === true &&
-      parsed?.generationId &&
-      afterCredits === before.credits - 5 &&
-      generation?.type === "image",
+    generation_pass: generationPass,
+    billing_pass: billingPass,
+    pass: generationPass && billingPass,
   };
 
   writeFileSync(RESULT_PATH, JSON.stringify(result, null, 2));
@@ -447,6 +553,8 @@ if (cmd === "audit") {
   console.log(JSON.stringify(await baseline(), null, 2));
 } else if (cmd === "verify-db") {
   console.log(JSON.stringify(await verifyDbGrants(), null, 2));
+} else if (cmd === "credit-check") {
+  console.log(JSON.stringify(await creditCheck(), null, 2));
 } else if (cmd === "guard-probe") {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
@@ -464,7 +572,7 @@ if (cmd === "audit") {
 } else {
   console.error("Unknown command:", cmd);
   console.error(
-    "Commands: audit | baseline | verify-db | guard-probe | run-safe | run"
+    "Commands: audit | baseline | verify-db | credit-check | guard-probe | run-safe | run"
   );
   process.exit(1);
 }
