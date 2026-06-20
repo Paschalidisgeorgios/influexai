@@ -10,6 +10,7 @@
 import { AKOOL_TOOL_CREDITS } from "@/lib/akool-credits";
 import { CONTENT_KALENDER_TOOL_CREDIT_COST } from "@/lib/content-kalender-tool";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+import { formatGenerateImageCreditsPerImage } from "@/lib/generate-image-ux";
 import { LIVE_CREATOR_PORTRAIT_CREDIT_COST } from "@/lib/live-creator-config";
 import { TREND_SCRIPT_TOOL_CREDIT_COST } from "@/lib/trend-script-tool";
 import { VIRAL_HOOK_EXTRACTOR_CREDIT_COST } from "@/lib/viral-hook-extraktor";
@@ -25,7 +26,7 @@ import { getCanonicalToolByAlias } from "./canonical-tool-registry";
 const ORCHESTRATOR_BASE_COST = 1;
 
 export interface CreditDisplayMeta {
-  /** User-facing label, e.g. "40 Credits", "5–8 Credits", "Dynamisch nach Dauer" */
+  /** User-facing label, e.g. "40 Credits", "5 Credits pro Bild", "Dynamisch nach Dauer" */
   label: string;
   /**
    * Minimum credits for affordance checks.
@@ -177,7 +178,7 @@ function imageGenDisplayLabel(
     });
   }
 
-  return meta(highRes ? formatCreditsAmount(amount) : "5–8 Credits", {
+  return meta(formatGenerateImageCreditsPerImage(amount), {
     affordance: amount,
     minimum: IMAGE_GEN_CREDITS.standard,
     starting: IMAGE_GEN_CREDITS.standard,

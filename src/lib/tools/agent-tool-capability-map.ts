@@ -200,7 +200,7 @@ export const AGENT_TOOL_CAPABILITY_MAP: AgentToolCapability[] = [
     executionStatus: executionStatusFor("image-gen"),
     providerDisabledMessage: disabledMessageFor("image-gen"),
     recommendedAspectRatios: ["1:1", "9:16", "16:9"],
-    creditEstimate: creditFor("image-gen", "5–8 Credits"),
+    creditEstimate: creditFor("image-gen", "5 Credits pro Bild"),
     safeRoutingTarget: routeFor("image-gen", "/dashboard?tool=image-gen"),
     matchKeywords: ["bild", "image", "foto", "motiv", "thumbnail", "startbild"],
   },

@@ -30,6 +30,7 @@ import { onGenerationActionResult } from "@/lib/handle-generation-result";
 import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
 import { mergeSzenenGeneratorModels, type SzenenGeneratorModel } from "@/lib/szenen-generator-models";
 import { sanitizeUserMessage } from "@/lib/sanitize-user-message";
+import { getGenerateImageCtaLabel } from "@/lib/generate-image-ux";
 import { buildAgentPrepareHref, SETUP_COPY } from "./production-tool-setup-ui";
 import {
   SetupErrorBanner,
@@ -550,7 +551,7 @@ function ImageGenSetup() {
       {loading ? <SetupLoadingBanner label="Bild wird generiert…" /> : null}
 
       <ResponsiveSetupActions
-        primaryLabel="Bild generieren"
+        primaryLabel={getGenerateImageCtaLabel(highRes)}
         primaryLoadingLabel="Bild wird generiert…"
         onPrimary={() => void run()}
         agentHref={buildAgentPrepareHref("image-gen", { prompt, platform })}

@@ -55,7 +55,7 @@ The dedicated page `src/app/dashboard/image-generator/page.tsx` (G.10-M revenue 
 | Prompt field („Bildbeschreibung“) | ✅ visible, editable |
 | CTA „Bild generieren“ | ✅ visible, disabled when prompt empty |
 | CTA with prompt + provider disabled | ✅ stays disabled |
-| Credit hint | ✅ pill **5–8 Credits** + model options show per-model estimates |
+| Credit hint | ✅ pill **5 Credits pro Bild** + „Standardqualität · kampagnenbereit“; CTA **Bild generieren — 5 Credits** |
 | Model / quality context | ✅ model select + helper copy |
 | Provider-disabled banner | ✅ `tool-execution-disabled-notice` — „Provider-Ausführung ist in dieser Umgebung deaktiviert.“ |
 | Gallery hint | ✅ copy references `/dashboard/gallery` |
@@ -115,7 +115,7 @@ The dedicated page `src/app/dashboard/image-generator/page.tsx` (G.10-M revenue 
 
 1. **Test/UI layer mismatch (G.10-M):** Playwright initially targeted dedicated-page `data-testid`s that are not mounted at `/dashboard/image-generator` because of `LegacyToolRedirect`.
 2. **Cookie banner blocked login** in E2E until „Akzeptieren“ was clicked before submit.
-3. **Credit copy delta:** SPA pill shows **5–8 Credits** (range); dedicated page G.10-M shows **5 Credits pro Bild (Standard)** — both accurate, SPA is range-first.
+3. **Credit copy delta:** ~~SPA pill shows **5–8 Credits** (range)~~ → **resolved in G.10-N2:** pill **5 Credits pro Bild**, CTA shows selected cost.
 
 ---
 
@@ -137,7 +137,7 @@ The dedicated page `src/app/dashboard/image-generator/page.tsx` (G.10-M revenue 
 | Priority | Item |
 |----------|------|
 | Nice-to-have | Unify dedicated `page.tsx` G.10-M UX with SPA shell OR open dedicated route when `openMode: "dedicated"` |
-| Nice-to-have | Align credit pill copy to „5 Credits pro Bild“ in SPA for parity with dedicated page |
+| ~~Nice-to-have~~ | ~~Align credit pill copy to „5 Credits pro Bild“ in SPA~~ → **done G.10-N2** |
 | Next gate | Controlled provider-enabled smoke (G.10-I window) with billing proof |
 | Manual | Full browser pass on staging deploy URL (this QA used local dev) |
 

@@ -71,7 +71,9 @@ test.describe("Generate Image visual QA (read-only, G.10-N)", () => {
     await expect(prompt).toBeVisible();
     await expect(page.getByText(/Bild & Produktvisuals/i)).toBeVisible();
 
-    const generateBtn = page.getByRole("button", { name: /^Bild generieren$/i });
+    const generateBtn = page.getByRole("button", {
+      name: /Bild generieren — 5 Credits/i,
+    });
     await expect(generateBtn).toBeVisible();
     await expect(generateBtn).toBeDisabled();
 
@@ -83,7 +85,7 @@ test.describe("Generate Image visual QA (read-only, G.10-N)", () => {
     await expect(banner).toContainText(/deaktiviert/i);
 
     await expect(page.getByTestId("image-gen-credit-hint")).toContainText(
-      /5.*Credits/i
+      /5 Credits pro Bild/i
     );
     await expect(page.getByText(/Galerie/i).first()).toBeVisible();
 
@@ -95,7 +97,9 @@ test.describe("Generate Image visual QA (read-only, G.10-N)", () => {
     await loginForVisualQa(page);
 
     await expect(page.getByTestId("image-gen-prompt")).toBeVisible();
-    await expect(page.getByTestId("image-gen-credit-hint")).toBeVisible();
+    await expect(page.getByTestId("image-gen-credit-hint")).toContainText(
+      /5 Credits pro Bild/i
+    );
 
     const banner = page.getByTestId("tool-execution-disabled-notice");
     await expect(banner).toBeVisible({ timeout: 10000 });

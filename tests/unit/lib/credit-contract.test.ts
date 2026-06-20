@@ -135,6 +135,14 @@ describe("credit contract", () => {
       expect(getCreditAffordanceAmount("ecommerce-ads")).toBe(15);
     });
 
+    it("Generate Image standard shows 5 Credits pro Bild (not ambiguous range)", () => {
+      expect(getCreditDisplayLabel("image-gen")).toBe("5 Credits pro Bild");
+      expect(getCreditDisplayLabel("image-gen", { highRes: true })).toBe(
+        "8 Credits pro Bild"
+      );
+      expect(getCreditAffordanceAmount("image-gen")).toBe(5);
+    });
+
     it("dynamic video tools are not shown as a single misleading fixed number", () => {
       const imgToVideo = getCreditDisplayMeta("img-to-video");
       expect(imgToVideo.isDynamic).toBe(true);

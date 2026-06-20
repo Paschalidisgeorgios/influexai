@@ -1,39 +1,35 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
-  GENERATE_IMAGE_PROVIDER_DISABLED_MESSAGE,
-  isProviderDisabledApiResponse,
-  isProvidersDisabledForGenerateImageClient,
-  mapGenerateImageApiError,
-  formatCreditsUsedLabel,
+  GENERATE_IMAGE_CREDIT_PILL_LABEL,
+  formatGenerateImageCreditsPerImage,
+  getGenerateImageCreditCost,
+  getGenerateImageCreditPillLabel,
+  getGenerateImageCtaLabel,
 } from "@/lib/generate-image-ux";
+import { getCreditDisplayLabel } from "@/lib/tools/credit-display";
 
-describe("generate-image-ux", () => {
-  it("detects client providers disabled flag", () => {
-    vi.stubEnv("NEXT_PUBLIC_PROVIDERS_DISABLED", "true");
-    expect(isProvidersDisabledForGenerateImageClient()).toBe(true);
-    vi.unstubAllEnvs();
+describe("generate-image-ux credit copy", () => {
+  it("uses 5 Credits pro Bild as default pill label", () => {
+    expect(GENERATE_IMAGE_CREDIT_PILL_LABEL).toBe("5 Credits pro Bild");
+    expect(getGenerateImageCreditPillLabel(false)).toBe("5 Credits pro Bild");
   });
 
-  it("maps 503 PROVIDERS_DISABLED response", () => {
-    expect(
-      isProviderDisabledApiResponse(503, { code: "PROVIDERS_DISABLED" })
-    ).toBe(true);
-    const mapped = mapGenerateImageApiError(503, {
-      code: "PROVIDERS_DISABLED",
-      error: "Provider deaktiviert",
-    });
-    expect(mapped.isProviderDisabled).toBe(true);
-    expect(mapped.message).toBe(GENERATE_IMAGE_PROVIDER_DISABLED_MESSAGE);
-    expect(mapped.showRefundHint).toBe(false);
+  it("shows explicit per-image cost for high-res selection", () => {
+    expect(getGenerateImageCreditCost(false)).toBe(5);
+    expect(getGenerateImageCreditCost(true)).toBe(8);
+    expect(getGenerateImageCreditPillLabel(true)).toBe("8 Credits pro Bild");
+    expect(formatGenerateImageCreditsPerImage(8)).toBe("8 Credits pro Bild");
   });
 
-  it("shows refund hint on server errors", () => {
-    const mapped = mapGenerateImageApiError(500, { error: "Interner Fehler" });
-    expect(mapped.showRefundHint).toBe(true);
+  it("builds CTA label from selected quality", () => {
+    expect(getGenerateImageCtaLabel(false)).toBe("Bild generieren — 5 Credits");
+    expect(getGenerateImageCtaLabel(true)).toBe("Bild generieren — 8 Credits");
   });
 
-  it("hides credit used label for exempt users", () => {
-    expect(formatCreditsUsedLabel(5, true)).toBeNull();
-    expect(formatCreditsUsedLabel(5, false)).toBe("5 Credits verwendet");
+  it("aligns credit-display SSOT with runtime pill", () => {
+    expect(getCreditDisplayLabel("image-gen")).toBe("5 Credits pro Bild");
+    expect(getCreditDisplayLabel("image-gen", { highRes: true })).toBe(
+      "8 Credits pro Bild"
+    );
   });
 });

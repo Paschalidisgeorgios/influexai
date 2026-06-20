@@ -16,6 +16,10 @@ import {
   SETUP_COPY,
 } from "./production-tool-setup-ui";
 import {
+  GENERATE_IMAGE_CREDIT_PILL_LABEL,
+  GENERATE_IMAGE_QUALITY_HINT,
+} from "@/lib/generate-image-ux";
+import {
   StudioCreditNote,
   StudioCreditPill,
   ToolSetupContext,
@@ -25,7 +29,10 @@ import {
 } from "../studio-ui";
 
 export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
-  const creditLabel = getSetupCreditLabel(toolId);
+  const creditLabel =
+    toolId === "image-gen"
+      ? GENERATE_IMAGE_CREDIT_PILL_LABEL
+      : getSetupCreditLabel(toolId);
   const prepared = useAgentPreparedInputs(String(toolId));
   const readiness = useMemo(
     () => (prepared ? buildToolActionReadiness(prepared, {}) : null),
@@ -52,6 +59,9 @@ export function ProductionToolSetup({ toolId }: { toolId: ToolId }) {
           >
             <div className="space-y-3">
               <StudioCreditNote>{SETUP_COPY.creditsBeforeStart}</StudioCreditNote>
+              {toolId === "image-gen" ? (
+                <StudioCreditNote>{GENERATE_IMAGE_QUALITY_HINT}</StudioCreditNote>
+              ) : null}
               {GALLERY_PERSISTED_TOOL_IDS.has(toolId) ? (
                 <StudioCreditNote>{SETUP_COPY.galleryResult}</StudioCreditNote>
               ) : (

@@ -1,4 +1,11 @@
+import { IMAGE_GEN_CREDITS } from "@/lib/image-generator-credits";
+
 export const GENERATE_IMAGE_STANDARD_CREDITS = 5;
+
+export const GENERATE_IMAGE_CREDIT_PILL_LABEL = "5 Credits pro Bild";
+
+export const GENERATE_IMAGE_QUALITY_HINT =
+  "Standardqualität · kampagnenbereit";
 
 export const GENERATE_IMAGE_PROVIDER_DISABLED_CODE = "PROVIDERS_DISABLED";
 
@@ -12,6 +19,25 @@ export const GENERATE_IMAGE_CREDIT_REFUND_HINT =
   "Wenn die Generierung nicht erfolgreich abgeschlossen wird, werden Credits nicht endgültig belastet bzw. automatisch korrigiert.";
 
 export const GENERATE_IMAGE_CANONICAL_ROUTE = "/dashboard/image-generator";
+
+export function getGenerateImageCreditCost(highRes = false): number {
+  return highRes ? IMAGE_GEN_CREDITS.highRes : IMAGE_GEN_CREDITS.standard;
+}
+
+export function formatGenerateImageCreditsPerImage(credits: number): string {
+  return `${credits} Credits pro Bild`;
+}
+
+export function getGenerateImageCreditPillLabel(highRes = false): string {
+  return highRes
+    ? formatGenerateImageCreditsPerImage(IMAGE_GEN_CREDITS.highRes)
+    : GENERATE_IMAGE_CREDIT_PILL_LABEL;
+}
+
+export function getGenerateImageCtaLabel(highRes = false): string {
+  const credits = getGenerateImageCreditCost(highRes);
+  return `Bild generieren — ${credits} Credits`;
+}
 
 export function isProvidersDisabledForGenerateImageClient(): boolean {
   const flag = process.env.NEXT_PUBLIC_PROVIDERS_DISABLED?.trim().toLowerCase();
