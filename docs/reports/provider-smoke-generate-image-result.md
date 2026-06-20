@@ -1,7 +1,14 @@
 # Provider Smoke Result — generate-image
 
-**Last updated:** 2026-06-16 (G.10-K Stripe billing webhook + G.10-J gallery SSOT + G.10-I billing smoke)  
+**Last updated:** 2026-06-16 (G.10-M generate image UX + G.10-K/L billing)  
 **Branch:** `master`
+
+---
+
+## G.10-M — Generate Image Revenue UX
+
+Canonical route: `/dashboard/image-generator` (alias `/dashboard/image-gen` redirects).  
+UX report: [`generate-image-ux-finalization-g10m.md`](./generate-image-ux-finalization-g10m.md)
 
 ---
 

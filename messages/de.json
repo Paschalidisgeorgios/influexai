@@ -1986,7 +1986,7 @@
   },
   "imageGenerator": {
     "title": "Bild Generator",
-    "subtitle": "Acid Noir Text-to-Image — Standard- und High-Res-Modus. Wasserzeichen bis Download freigeschaltet.",
+    "subtitle": "Erstelle Kampagnen- und Social-Motive per Text — Standard 5 Credits, High-Res 8 Credits.",
     "prompt_label": "Beschreibe dein Bild…",
     "prompt_placeholder": "z.B. Female content creator am dunklen Desk, grünes Neonlicht, MacBook…",
     "category_label": "Kategorie",

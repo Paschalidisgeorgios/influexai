@@ -35,8 +35,16 @@ const nextConfig: NextConfig = {
     ],
   },
   compress: true,
+  env: {
+    NEXT_PUBLIC_PROVIDERS_DISABLED: process.env.PROVIDERS_DISABLED ?? "",
+  },
   async redirects() {
     return [
+      {
+        source: "/dashboard/image-gen",
+        destination: "/dashboard/image-generator",
+        permanent: true,
+      },
       {
         source: "/dashboard/produkt-werbung",
         destination: "/dashboard/produkt",

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { ImageCompareSlider } from "@/components/image-generator/ImageCompareSlider";
@@ -26,7 +27,17 @@ import {
   type ImageStyleId,
 } from "@/lib/ai/imageStylePresets";
 import { getSafeSearchParam } from "@/lib/safe-url-param";
-import { handleApiInsufficientCredits } from "@/lib/client-credits-ui";
+import { handleApiInsufficientCredits, notifyGenerationComplete } from "@/lib/client-credits-ui";
+import {
+  GENERATE_IMAGE_CREDIT_REFUND_HINT,
+  GENERATE_IMAGE_MODEL_HINT,
+  GENERATE_IMAGE_PROVIDER_DISABLED_MESSAGE,
+  formatCreditsLeftLabel,
+  formatCreditsUsedLabel,
+  isProviderDisabledApiResponse,
+  isProvidersDisabledForGenerateImageClient,
+  mapGenerateImageApiError,
+} from "@/lib/generate-image-ux";
 import {
   IMAGE_GEN_CREDITS,
 } from "@/lib/image-generator-credits";
@@ -97,6 +108,15 @@ export default function ImageGeneratorPage() {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [variationLoading, setVariationLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRefundHint, setShowRefundHint] = useState(false);
+  const [providerBlocked, setProviderBlocked] = useState(
+    () => isProvidersDisabledForGenerateImageClient()
+  );
+  const [successCredits, setSuccessCredits] = useState<{
+    used?: number;
+    left?: number;
+    exempt?: boolean;
+  } | null>(null);
   const [result, setResult] = useState<GenerationMeta | null>(null);
   const [variation, setVariation] = useState<GenerationMeta | null>(null);
 
@@ -214,6 +234,9 @@ export default function ImageGeneratorPage() {
         }),
       });
       const data = await res.json();
+      if (isProviderDisabledApiResponse(res.status, data)) {
+        setProviderBlocked(true);
+      }
       if (
         handleApiInsufficientCredits(
           res.status,
@@ -224,8 +247,16 @@ export default function ImageGeneratorPage() {
         return;
       }
       if (!res.ok || !data.imageUrl) {
-        throw new Error(data.error || t("error_generic"));
+        const mapped = mapGenerateImageApiError(res.status, data);
+        setShowRefundHint(mapped.showRefundHint);
+        throw new Error(mapped.message);
       }
+      setShowRefundHint(false);
+      setSuccessCredits({
+        used: data.creditsUsed,
+        left: data.creditsLeft,
+        exempt: data.creditExempt,
+      });
       setResult({
         generationId: data.generationId,
         imageUrl: data.imageUrl,
@@ -235,6 +266,9 @@ export default function ImageGeneratorPage() {
         generationTimeMs: data.generationTimeMs,
         downloadPaid: false,
       });
+      notifyGenerationComplete(
+        typeof data.creditsLeft === "number" ? data.creditsLeft : 0
+      );
       window.dispatchEvent(new Event("credits-updated"));
       await loadHistory();
       await loadGalleryImages();
@@ -283,6 +317,9 @@ export default function ImageGeneratorPage() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
+      if (isProviderDisabledApiResponse(res.status, data)) {
+        setProviderBlocked(true);
+      }
       const creditCost = highRes
         ? IMAGE_GEN_CREDITS.highRes
         : IMAGE_GEN_CREDITS.standard;
@@ -296,8 +333,16 @@ export default function ImageGeneratorPage() {
         return;
       }
       if (!res.ok || !data.imageUrl) {
-        throw new Error(data.error || t("error_generic"));
+        const mapped = mapGenerateImageApiError(res.status, data);
+        setShowRefundHint(mapped.showRefundHint);
+        throw new Error(mapped.message);
       }
+      setShowRefundHint(false);
+      setSuccessCredits({
+        used: data.creditsUsed,
+        left: data.creditsLeft,
+        exempt: data.creditExempt,
+      });
       setResult({
         generationId: data.generationId,
         imageUrl: data.imageUrl,
@@ -307,6 +352,9 @@ export default function ImageGeneratorPage() {
         generationTimeMs: data.generationTimeMs,
         downloadPaid: false,
       });
+      notifyGenerationComplete(
+        typeof data.creditsLeft === "number" ? data.creditsLeft : 0
+      );
       window.dispatchEvent(new Event("credits-updated"));
       await loadHistory();
     } catch (err: unknown) {
@@ -469,6 +517,9 @@ export default function ImageGeneratorPage() {
     downloadLoading ||
     variationLoading;
 
+  const promptReady = prompt.trim().length > 0;
+  const generateDisabled = isBusy || !promptReady || providerBlocked;
+
   const standardGenerateLoadingText = loraId
     ? "Generiere mit deinem Charakter..."
     : t("loading_standard");
@@ -504,17 +555,34 @@ export default function ImageGeneratorPage() {
   );
   return (
     <DynamicDashboardEngine toolId="bild-generator" hideModelPanel payloadOverride={payloadPreview}>
-    <div className="mx-auto max-w-[1280px]">
+    <div className="mx-auto max-w-[1280px] overflow-x-hidden px-1 sm:px-0">
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
           <TablerPhoto size={32} color="#B4FF00" strokeWidth={2.2} />
-          <h1 className="font-bold text-[clamp(2rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
+          <h1 className="font-bold text-[clamp(1.75rem,4vw,3rem)] tracking-wide text-[#F0EFE8]">
             {t("title")}
           </h1>
         </div>
         <p className="text-[0.95rem] leading-relaxed text-[rgba(255,255,255,0.65)]">
           {t("subtitle")}
         </p>
+        <p className="mt-2 text-sm text-[rgba(255,255,255,0.55)]">
+          {GENERATE_IMAGE_MODEL_HINT}
+        </p>
+        <p className="mt-1 text-sm font-medium text-[#B4FF00]/90">
+          {IMAGE_GEN_CREDITS.standard} Credits pro Bild (Standard) ·{" "}
+          <Link href="/dashboard/credits" className="underline underline-offset-2">
+            Credits aufladen
+          </Link>
+        </p>
+        {providerBlocked && (
+          <div
+            className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100"
+            role="status"
+          >
+            {GENERATE_IMAGE_PROVIDER_DISABLED_MESSAGE}
+          </div>
+        )}
       </div>
 
       <div className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[2fr_3fr] lg:gap-10">
@@ -676,43 +744,55 @@ export default function ImageGeneratorPage() {
           )}
 
           {generatorMode === "new" ? (
-          <div className="flex flex-col gap-2 sm:flex-row" style={{ width: "100%" }}>
+          <div className="flex w-full flex-col gap-2 sm:flex-row">
             <LoadingButton
-              disabled={isBusy}
+              disabled={generateDisabled}
               isLoading={loading}
               loadingText={standardGenerateLoadingText}
               onClick={() => void runGenerate(false)}
-              className="rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608]"
-              style={{ flex: 1, minWidth: 0 }}
+              className="w-full rounded-xl bg-[#B4FF00] py-3.5 text-lg tracking-wide text-[#060608] sm:flex-1 sm:text-xl"
+              style={{ minWidth: 0 }}
             >
               {t("generate_standard")}
             </LoadingButton>
             <LoadingButton
-              disabled={isBusy}
+              disabled={generateDisabled}
               isLoading={loadingHighRes}
               loadingText={t("loading_highres")}
               onClick={() => void runGenerate(true)}
-              className="rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 text-xl tracking-wide text-[#B4FF00]"
-              style={{ flex: 1, minWidth: 0 }}
+              className="w-full rounded-xl border border-[#B4FF00]/50 bg-[#B4FF00]/10 py-3.5 text-lg tracking-wide text-[#B4FF00] sm:flex-1 sm:text-xl"
+              style={{ minWidth: 0 }}
             >
               {t("generate_highres")}
             </LoadingButton>
           </div>
           ) : (
           <LoadingButton
-            disabled={isBusy}
+            disabled={isBusy || providerBlocked || !promptReady || selectedReferenceIds.length === 0}
             isLoading={characterLoading}
             loadingText="Generiere mit deinem Charakter..."
             onClick={() => void runCharacterGenerate()}
-            className="rounded-xl bg-[#B4FF00] py-3.5 text-xl tracking-wide text-[#060608]"
-            style={{ width: "100%" }}
+            className="w-full rounded-xl bg-[#B4FF00] py-3.5 text-lg tracking-wide text-[#060608] sm:text-xl"
           >
             {`Charakter generieren — ${IMAGE_GEN_CREDITS.standard} Credits`}
           </LoadingButton>
           )}
 
           {error && (
-            <p className="text-sm text-[#ff6b7a]">{error}</p>
+            <div className="rounded-xl border border-[#ff6b7a]/30 bg-[#ff6b7a]/10 px-4 py-3">
+              <p className="text-sm text-[#ff6b7a]">{error}</p>
+              {showRefundHint && (
+                <p className="mt-2 text-xs leading-relaxed text-[rgba(255,255,255,0.65)]">
+                  {GENERATE_IMAGE_CREDIT_REFUND_HINT}
+                </p>
+              )}
+            </div>
+          )}
+
+          {!promptReady && !error && (
+            <p className="text-xs text-[rgba(255,255,255,0.45)]">
+              {t("error_missing_prompt")}
+            </p>
           )}
 
           {history.length > 0 && (
@@ -820,6 +900,28 @@ export default function ImageGeneratorPage() {
                     · {t("info_time", { sec: (result.generationTimeMs / 1000).toFixed(1) })}
                   </span>
                 )}
+                {successCredits && !successCredits.exempt && (
+                  <>
+                    {formatCreditsUsedLabel(successCredits.used) && (
+                      <span>· {formatCreditsUsedLabel(successCredits.used)}</span>
+                    )}
+                    {formatCreditsLeftLabel(successCredits.left) && (
+                      <span>· {formatCreditsLeftLabel(successCredits.left)}</span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/dashboard/gallery"
+                  className="rounded-lg border border-[#B4FF00]/40 bg-[#B4FF00]/10 px-3 py-2 text-sm font-semibold text-[#B4FF00]"
+                >
+                  In Galerie öffnen
+                </Link>
+                <span className="text-xs text-[rgba(255,255,255,0.45)]">
+                  Alle gespeicherten Bilder ansehen
+                </span>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -860,6 +962,7 @@ export default function ImageGeneratorPage() {
                     setResult(null);
                     setVariation(null);
                     setCompare(null);
+                    setSuccessCredits(null);
                   }}
                   className="rounded-lg border border-white/12 px-3 py-2 text-sm text-[rgba(255,255,255,0.65)]"
                 >
