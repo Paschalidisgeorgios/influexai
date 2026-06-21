@@ -13,6 +13,7 @@ import { priceIdEnvStatus } from "./stripe-price-id-env.mjs";
 import {
   REQUIRED_SUBSCRIPTION_PRICE_KEYS,
   REQUIRED_CREDIT_PRICE_KEYS,
+  REQUIRED_AGENCY_PRICE_KEYS,
   LEGACY_INACTIVE_CREDIT_PRICE_KEYS,
 } from "./production-live-env.mjs";
 
@@ -131,7 +132,9 @@ const PFlicht_AUDIT_KEYS = [
   "STRIPE_SECRET_KEY",
   "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
   "STRIPE_WEBHOOK_SECRET",
+  ...REQUIRED_SUBSCRIPTION_PRICE_KEYS,
   ...REQUIRED_CREDIT_PRICE_KEYS,
+  ...REQUIRED_AGENCY_PRICE_KEYS,
 ];
 
 function parseJsonFromVercelStdout(stdout) {
@@ -295,6 +298,7 @@ export function buildProductionEnvAudit(env, keyNames) {
       key_present: keyNames.length === 0 || keyNames.includes(key),
       ...classifyPriceId(env[key], stripeLive),
       pflicht: true,
+      pricing_domain: "payg_credit_pack",
     };
   }
 
@@ -315,7 +319,17 @@ export function buildProductionEnvAudit(env, keyNames) {
     audit[key] = {
       key_present: keyNames.length === 0 || keyNames.includes(key),
       ...classifyPriceId(env[key], stripeLive),
-      pflicht: false,
+      pflicht: true,
+      pricing_domain: "platform_subscription",
+    };
+  }
+
+  for (const key of REQUIRED_AGENCY_PRICE_KEYS) {
+    audit[key] = {
+      key_present: keyNames.length === 0 || keyNames.includes(key),
+      ...classifyPriceId(env[key], stripeLive),
+      pflicht: true,
+      pricing_domain: "agency_white_label",
     };
   }
 
@@ -373,7 +387,9 @@ export function auditVercelProductionEnvSafe(baseEnv = process.env) {
     audit.STRIPE_SECRET_KEY.pass,
     audit.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.pass,
     audit.STRIPE_WEBHOOK_SECRET.pass,
+    ...REQUIRED_SUBSCRIPTION_PRICE_KEYS.map((k) => audit[k].pass),
     ...REQUIRED_CREDIT_PRICE_KEYS.map((k) => audit[k].pass),
+    ...REQUIRED_AGENCY_PRICE_KEYS.map((k) => audit[k].pass),
   ];
 
   return {

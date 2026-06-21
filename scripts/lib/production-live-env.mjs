@@ -66,6 +66,22 @@ export const REQUIRED_CREDIT_PRICE_KEYS = [
   "STRIPE_CREDITS_800",
 ];
 
+export const REQUIRED_AGENCY_PRICE_KEYS = [
+  "STRIPE_AGENCY_STARTER_MONTHLY",
+  "STRIPE_AGENCY_STARTER_YEARLY",
+  "STRIPE_AGENCY_PRO_MONTHLY",
+  "STRIPE_AGENCY_PRO_YEARLY",
+  "STRIPE_AGENCY_ENTERPRISE_MONTHLY",
+  "STRIPE_AGENCY_ENTERPRISE_YEARLY",
+];
+
+/** All live-required Stripe Price ID env keys (subscriptions + credit packs + agency). */
+export const ALL_REQUIRED_STRIPE_PRICE_KEYS = [
+  ...REQUIRED_SUBSCRIPTION_PRICE_KEYS,
+  ...REQUIRED_CREDIT_PRICE_KEYS,
+  ...REQUIRED_AGENCY_PRICE_KEYS,
+];
+
 /** Wrong LIVE-2H keys — must not be required or used in checkout. */
 export const LEGACY_INACTIVE_CREDIT_PRICE_KEYS = [
   "STRIPE_CREDITS_70",
@@ -146,6 +162,11 @@ export function auditRequiredLiveEnv(env) {
     else if (status !== "price_id_set") blockers.push(`${key}_invalid`);
   }
   for (const key of REQUIRED_CREDIT_PRICE_KEYS) {
+    const status = priceIdEnvStatus(env[key]);
+    if (status === "missing") missing.push(key);
+    else if (status !== "price_id_set") blockers.push(`${key}_invalid`);
+  }
+  for (const key of REQUIRED_AGENCY_PRICE_KEYS) {
     const status = priceIdEnvStatus(env[key]);
     if (status === "missing") missing.push(key);
     else if (status !== "price_id_set") blockers.push(`${key}_invalid`);

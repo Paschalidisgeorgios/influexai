@@ -81,9 +81,7 @@ function auditEnv() {
     blockers.push("provider_smoke_window_open");
   }
 
-  const creditPack25 = priceIdEnvStatus(
-    process.env.STRIPE_CREDITS_25 ?? process.env.STRIPE_CREDITS_50
-  );
+  const creditPack25 = priceIdEnvStatus(process.env.STRIPE_CREDITS_25);
   const subscriptionKeys = [
     "NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY",
     "NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_MONTHLY",
@@ -191,7 +189,7 @@ async function verifyPrices() {
   auditEnv();
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const priceIds = [
-    process.env.STRIPE_CREDITS_25 ?? process.env.STRIPE_CREDITS_50,
+    process.env.STRIPE_CREDITS_25,
     process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY,
     process.env.NEXT_PUBLIC_STRIPE_INFLUEXAI_CREATOR_MONTHLY,
   ].filter(Boolean);
@@ -270,10 +268,7 @@ async function webhookSmoke() {
   const before = await readBillingState(admin, user.id);
   const creditsBefore = before.profile?.credits ?? 0;
 
-  const priceId =
-    process.env.STRIPE_CREDITS_25?.trim() ||
-    process.env.STRIPE_CREDITS_50?.trim() ||
-    "price_test_g10k";
+  const priceId = process.env.STRIPE_CREDITS_25?.trim() || "price_test_g10k";
   const creditGrant = 25;
   const sessionId = `cs_test_g10k_${Date.now()}`;
   const eventId = `evt_test_g10k_${Date.now()}`;

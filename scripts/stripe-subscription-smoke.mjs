@@ -114,11 +114,16 @@ function auditEnv() {
     webhook_secret_present: webhookSecret.startsWith("whsec_"),
     starter_monthly_price_status: starterPrice,
     checkout_price_ids_ready: !hasInvalidCheckoutPriceIds({
-      creditPack25: "price_id_set",
       subscriptionPriceIds: {
         NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY: starterPrice,
       },
-      creditPackPriceIds: {},
+      creditPackPriceIds: {
+        STRIPE_CREDITS_25: "price_id_set",
+        STRIPE_CREDITS_50: "price_id_set",
+        STRIPE_CREDITS_150: "price_id_set",
+        STRIPE_CREDITS_350: "price_id_set",
+        STRIPE_CREDITS_800: "price_id_set",
+      },
     }),
     blockers,
     safe_to_proceed: blockers.length === 0,

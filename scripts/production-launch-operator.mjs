@@ -553,7 +553,7 @@ if (!report.required_env.pass) {
     "Populate .env.production.local (never commit) with:",
     "- Production Supabase (ref hszjafdelcydnppyolkm): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY",
     "- Stripe Live: STRIPE_MODE=live, NEXT_PUBLIC_STRIPE_MODE=live, STRIPE_SECRET_KEY (sk_live_), NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (pk_live_), STRIPE_WEBHOOK_SECRET",
-    "- Live price IDs: all NEXT_PUBLIC_STRIPE_INFLUEXAI_* + STRIPE_CREDITS_25/50/150/350/800",
+    "- Live price IDs: all NEXT_PUBLIC_STRIPE_INFLUEXAI_* + STRIPE_CREDITS_25/50/150/350/800 + STRIPE_AGENCY_*",
     "- Provider start closed: PROVIDERS_DISABLED=true, NEXT_PUBLIC_PROVIDERS_DISABLED=true, ALLOW_SAFE_DEV_PROVIDER_SMOKE=false",
     "- FAL_API_KEY or FAL_KEY",
     "- Optional migration check: DATABASE_URL or SUPABASE_DB_PASSWORD",
