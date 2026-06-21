@@ -81,3 +81,16 @@ export function probeProductionProviderGuard(baseUrl) {
     secrets_logged: false,
   };
 }
+
+/** Expect providers open — guard must NOT return PROVIDERS_DISABLED. */
+export function probeProductionProviderGuardOpen(baseUrl) {
+  const closed = probeProductionProviderGuard(baseUrl);
+  const open = closed.code !== "PROVIDERS_DISABLED";
+  return {
+    pass: open,
+    providers_disabled: closed.code === "PROVIDERS_DISABLED",
+    http_status: closed.http_status,
+    code: closed.code,
+    secrets_logged: false,
+  };
+}

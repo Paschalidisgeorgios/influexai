@@ -14,6 +14,8 @@ export const LIVE_CONFIRM_VALUE = "I_UNDERSTAND_THIS_GOES_LIVE";
 export const LIVE_ENV_SYNC_CONFIRM_VALUE =
   "I_UNDERSTAND_THIS_UPDATES_VERCEL_PRODUCTION_ENV";
 export const LIVE_DEPLOY_CONFIRM_VALUE = "I_UNDERSTAND_THIS_DEPLOYS_TO_PRODUCTION";
+export const LIVE_PROVIDER_OPEN_CONFIRM_VALUE =
+  "I_UNDERSTAND_THIS_ENABLES_REAL_PROVIDER_CALLS";
 
 export function isLaunchCheckOnly(env) {
   return ["true", "1", "yes"].includes(
@@ -44,6 +46,28 @@ export function auditDeployGate(env) {
     blockers,
     required_command: `$env:LIVE_DEPLOY_CONFIRM='${LIVE_DEPLOY_CONFIRM_VALUE}'`,
     secrets_logged: false,
+  };
+}
+
+export function auditProviderOpenGate(env) {
+  const blockers = [];
+  if (env.LIVE_PROVIDER_OPEN_CONFIRM?.trim() !== LIVE_PROVIDER_OPEN_CONFIRM_VALUE) {
+    blockers.push("live_provider_open_confirm_missing");
+  }
+  return {
+    pass: blockers.length === 0,
+    blockers,
+    required_command: `$env:LIVE_PROVIDER_OPEN_CONFIRM='${LIVE_PROVIDER_OPEN_CONFIRM_VALUE}'`,
+    secrets_logged: false,
+  };
+}
+
+/** Only toggles provider flags — no other Production env keys. */
+export function buildProductionProviderFlagsMap(disabled) {
+  const value = disabled ? "true" : "false";
+  return {
+    PROVIDERS_DISABLED: value,
+    NEXT_PUBLIC_PROVIDERS_DISABLED: value,
   };
 }
 

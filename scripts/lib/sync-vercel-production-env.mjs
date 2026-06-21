@@ -118,3 +118,15 @@ export function syncProductionEnvFromMap(envMap, baseEnv) {
     secrets_logged: false,
   };
 }
+
+/** Sync only PROVIDERS_DISABLED + NEXT_PUBLIC_PROVIDERS_DISABLED on Production. */
+export function syncProductionProviderFlags({ disabled }, baseEnv) {
+  const value = disabled ? "true" : "false";
+  return syncProductionEnvFromMap(
+    {
+      PROVIDERS_DISABLED: value,
+      NEXT_PUBLIC_PROVIDERS_DISABLED: value,
+    },
+    baseEnv
+  );
+}

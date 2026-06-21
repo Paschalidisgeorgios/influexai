@@ -17,6 +17,9 @@
  * Step 4 deploy additionally requires:
  *   LIVE_DEPLOY_CONFIRM=I_UNDERSTAND_THIS_DEPLOYS_TO_PRODUCTION
  *
+ * Step 7 provider open additionally requires (never runs automatically without this):
+ *   LIVE_PROVIDER_OPEN_CONFIRM=I_UNDERSTAND_THIS_ENABLES_REAL_PROVIDER_CALLS
+ *
  * Run: npm run launch:production
  */
 import { parse } from "dotenv";
@@ -30,6 +33,7 @@ import {
   auditRequiredLiveEnv,
   auditEnvSyncGate,
   auditDeployGate,
+  auditProviderOpenGate,
   isLaunchCheckOnly,
   buildProductionLiveClosedMap,
   buildProductionLiveOpenMap,
@@ -37,6 +41,7 @@ import {
   LIVE_CONFIRM_VALUE,
   LIVE_ENV_SYNC_CONFIRM_VALUE,
   LIVE_DEPLOY_CONFIRM_VALUE,
+  LIVE_PROVIDER_OPEN_CONFIRM_VALUE,
 } from "./lib/production-live-env.mjs";
 import { checkProductionSupabaseReadiness } from "./lib/production-supabase-readiness.mjs";
 import { syncProductionEnvFromMap } from "./lib/sync-vercel-production-env.mjs";
@@ -93,6 +98,7 @@ function loadEnvFiles() {
     "LIVE_LAUNCH_CONFIRM",
     "LIVE_ENV_SYNC_CONFIRM",
     "LIVE_DEPLOY_CONFIRM",
+    "LIVE_PROVIDER_OPEN_CONFIRM",
     "LAUNCH_CHECK_ONLY",
     "LAUNCH_QA_PASSWORD",
     "DATABASE_URL",
@@ -700,6 +706,31 @@ if (!report.legal.pass) {
   fail("Legal surface check failed — providers not opened");
 }
 console.log("✅ Legal surface OK");
+
+console.log("\nStep 7 gate: Provider open confirmation…");
+report.provider_open_gate = auditProviderOpenGate({
+  ...liveEnv,
+  LIVE_PROVIDER_OPEN_CONFIRM: process.env.LIVE_PROVIDER_OPEN_CONFIRM,
+});
+if (!report.provider_open_gate.pass) {
+  console.error("❌ Provider open blocked — explicit confirmation required.");
+  console.error(
+    `Required: $env:LIVE_PROVIDER_OPEN_CONFIRM='${LIVE_PROVIDER_OPEN_CONFIRM_VALUE}'`
+  );
+  console.error(
+    "Step 7 never runs without LIVE_PROVIDER_OPEN_CONFIRM. Providers remain disabled."
+  );
+  report.blockers.push(...report.provider_open_gate.blockers);
+  report.diagnosis = "provider_open_gate_blocked";
+  report.next_action = [
+    "Steps 0–6 complete. Providers NOT opened.",
+    report.provider_open_gate.required_command,
+    "Then re-run: npm run launch:production",
+  ].join("\n");
+  writeReport();
+  process.exit(1);
+}
+console.log("✅ Provider open confirmation OK");
 
 console.log("\nStep 7: Open providers on Production…");
 const openMap = buildProductionLiveOpenMap(liveEnv);
