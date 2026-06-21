@@ -57,10 +57,15 @@ export function upsertProductionEnvVar(name, value, existingKeys, env) {
   const action = existingKeys.has(name) ? "update" : "add";
   const args =
     action === "update"
-      ? [action, name, "production", "--yes"]
-      : [action, name, "production", "--yes", "--force"];
+      ? [action, name, "production", "--yes", "--value", String(value)]
+      : [action, name, "production", "--yes", "--force", "--value", String(value)];
 
-  const result = runVercelEnv(args, value, env);
+  const result = spawnSync("npx", ["vercel", "env", ...args], {
+    encoding: "utf8",
+    env: cleanVercelEnv(env),
+    stdio: ["pipe", "pipe", "pipe"],
+    shell: process.platform === "win32",
+  });
   const combined = `${result.stderr ?? ""}${result.stdout ?? ""}`.toLowerCase();
   const ok =
     result.status === 0 ||
