@@ -23,7 +23,6 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
     { text: "Flux.1 Bild-Generator (Standard)", included: true },
     { text: "Alle Video-Tools (Seedance, Kling, Hailuo)", included: true },
     { text: "Agent Autopilot (Content-Planung)", included: true },
-    { text: "Eigenes LoRA-Modell Training", included: true },
   ],
   creator: [
     {
@@ -32,7 +31,6 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
     },
     { text: "Alle Video-Tools inklusive (Standard-Modus)", included: true },
     { text: "Agent Autopilot (Content-Planung)", included: true },
-    { text: "Eigenes LoRA-Modell Training", included: true },
     { text: "Thumbnail Konzept & Viral Score Predictor", included: true },
     { text: "Bild-zu-Video & Video Remix", included: true },
   ],
@@ -43,7 +41,7 @@ export const SUBSCRIPTION_PLAN_FEATURES: Record<PaidPlanId, PlanFeatureItem[]> =
     },
     { text: "Priorisierte Server-Warteschlange (Keine Wartezeit)", included: true },
     { text: "High-Res & Ultra HQ Video-Rendering (Kling Omni)", included: true },
-    { text: "Mein KI-Ich & Avatar Studio (Face Swap)", included: true },
+    { text: "Mein KI-Ich & Avatar Studio (Roll-out demnächst)", included: true },
     { text: "Voice Clone, Musik & Ultra-HQ Video-Pipeline", included: true },
   ],
   business: [
@@ -66,7 +64,7 @@ export function getPlanCreditsLabel(plan: PaidPlanId): string {
 export function getPlanDeltaLabel(plan: PaidPlanId): string {
   const credits = SUBSCRIPTION_PLANS[plan].monthlyCredits;
   const deltas: Record<PaidPlanId, string> = {
-    starter: `${formatMonthlyCreditsLabel(credits).replace(" / Monat", "")} · Video, Agent & LoRA inklusive`,
+    starter: `${formatMonthlyCreditsLabel(credits).replace(" / Monat", "")} · Text, Bild & Agent inklusive`,
     creator: `${formatMonthlyCreditsLabel(credits).replace(" / Monat", "")} · Viral Score & Thumbnail Konzept`,
     pro: `${formatMonthlyCreditsLabel(credits).replace(" / Monat", "")} · HQ-Rendering · Avatar, Stimme & Priorität`,
     business: `${formatMonthlyCreditsLabel(credits).replace(" / Monat", "")} · Team, API & Whitelabel`,

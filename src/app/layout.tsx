@@ -11,6 +11,7 @@ import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { AccountDeletedNotice } from "@/components/auth/AccountDeletedNotice";
+import { SiteLegalComplianceNav } from "@/components/legal/SiteLegalComplianceNav";
 import {
   buildHreflangAlternates,
   getHomeSeo,
@@ -166,6 +167,7 @@ export default async function RootLayout({
           color: "var(--white, #F0EFE8)",
         }}
       >
+        <SiteLegalComplianceNav />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <TenantProvider branding={branding} isTenantRoute={isTenantRoute}>
             <ObsidianShell />

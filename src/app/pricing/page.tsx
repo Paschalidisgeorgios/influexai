@@ -109,6 +109,11 @@ export default function PricingPage() {
           <p className="influex-pricing-credits-info__body">{t("credit_outcome_body")}</p>
         </div>
 
+        <p className="influex-pricing-hero__availability-note">
+          Provider-abhängige Features (Video-Avatar, LoRA-Training u. a.) werden schrittweise
+          freigeschaltet und sind derzeit nicht verfügbar.
+        </p>
+
         <StripeTestModeNotice variant="pricing" className="mt-6 max-w-2xl" />
       </header>
 

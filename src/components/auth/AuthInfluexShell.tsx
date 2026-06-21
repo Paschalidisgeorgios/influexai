@@ -8,6 +8,7 @@ import {
   AuthEditorialPanel,
   type AuthEditorialVariant,
 } from "@/components/auth/AuthEditorialPanel";
+import { LegalFooterLinks } from "@/components/legal/LegalPageLayout";
 
 function resolveVariant(pathname: string): AuthEditorialVariant {
   if (pathname.includes("signup") || pathname.includes("sign-up")) {
@@ -40,6 +41,7 @@ export function AuthInfluexShell({ children }: AuthInfluexShellProps) {
           <LanguageSwitcher compact />
         </div>
         {children}
+        <LegalFooterLinks className="influex-auth-form-wrap__legal-footer" />
       </div>
     </AuthShell>
   );

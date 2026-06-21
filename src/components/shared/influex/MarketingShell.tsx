@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "./cn";
 import { InfluexPageShell } from "./InfluexPageShell";
+import { LegalFooterLinks } from "@/components/legal/LegalPageLayout";
 
 export type MarketingShellProps = {
   toolbar?: ReactNode;
@@ -25,6 +26,13 @@ export function MarketingShell({
   containerClassName,
   withBackground = true,
 }: MarketingShellProps) {
+  const resolvedFooter =
+    footer === undefined ? (
+      <LegalFooterLinks className="influex-marketing-shell__legal-footer" />
+    ) : (
+      footer
+    );
+
   return (
     <InfluexPageShell
       variant="marketing"
@@ -43,8 +51,8 @@ export function MarketingShell({
         </div>
       </main>
 
-      {footer ? (
-        <footer className="influex-marketing-shell__footer">{footer}</footer>
+      {resolvedFooter ? (
+        <footer className="influex-marketing-shell__footer">{resolvedFooter}</footer>
       ) : null}
     </InfluexPageShell>
   );
