@@ -2,11 +2,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import {
+  ACTIVE_CREDIT_PACK_ENV_KEYS,
   getPackageById,
   getStripePriceEnvKeysForPackage,
   getStripePriceIdForPackage,
   STRIPE_CREDITS_25_ENV,
-  STRIPE_CREDITS_50_LEGACY_ENV,
+  STRIPE_CREDITS_50_ENV,
+  STRIPE_CREDITS_150_ENV,
+  STRIPE_CREDITS_350_ENV,
+  STRIPE_CREDITS_800_ENV,
 } from "@/lib/credit-packages";
 import {
   creditsForStripePriceId,
@@ -52,44 +56,55 @@ function collectStrings(value: unknown, out: string[] = []): string[] {
 
 describe("credit contract", () => {
   describe("credit packs", () => {
-    it("Small pack grants 25 credits, not 50", () => {
-      const small = getPackageById("small");
-      expect(small).toBeDefined();
-      expect(small!.credits).toBe(25);
-      expect(small!.envKey).toBe(STRIPE_CREDITS_25_ENV);
-    });
-
-    it("prefers STRIPE_CREDITS_25 over legacy STRIPE_CREDITS_50", () => {
-      const small = getPackageById("small")!;
-      expect(getStripePriceEnvKeysForPackage(small)).toEqual([
+    it("active backup packs are 25/50/150/350/800 credits", () => {
+      expect(ACTIVE_CREDIT_PACK_ENV_KEYS).toEqual([
         STRIPE_CREDITS_25_ENV,
-        STRIPE_CREDITS_50_LEGACY_ENV,
+        STRIPE_CREDITS_50_ENV,
+        STRIPE_CREDITS_150_ENV,
+        STRIPE_CREDITS_350_ENV,
+        STRIPE_CREDITS_800_ENV,
       ]);
+      expect(getPackageById("micro")!.credits).toBe(25);
+      expect(getPackageById("small")!.credits).toBe(50);
+      expect(getPackageById("medium")!.credits).toBe(150);
+      expect(getPackageById("large")!.credits).toBe(350);
+      expect(getPackageById("xl")!.credits).toBe(800);
     });
 
-    it("maps Stripe price whitelist to 25 credits for Small pack", () => {
-      const small = getPackageById("small")!;
-      vi.stubEnv(STRIPE_CREDITS_25_ENV, "price_small_25");
-      vi.stubEnv(STRIPE_CREDITS_50_LEGACY_ENV, "price_small_legacy");
+    it("each pack uses a single dedicated Stripe env key", () => {
+      for (const pkg of [
+        getPackageById("micro")!,
+        getPackageById("small")!,
+        getPackageById("medium")!,
+        getPackageById("large")!,
+        getPackageById("xl")!,
+      ]) {
+        expect(getStripePriceEnvKeysForPackage(pkg)).toEqual([pkg.envKey]);
+      }
+    });
+
+    it("maps Stripe price whitelist to pack credits", () => {
+      vi.stubEnv(STRIPE_CREDITS_25_ENV, "price_pack_25");
+      vi.stubEnv(STRIPE_CREDITS_50_ENV, "price_pack_50");
+      vi.stubEnv(STRIPE_CREDITS_150_ENV, "price_pack_150");
+      vi.stubEnv(STRIPE_CREDITS_350_ENV, "price_pack_350");
+      vi.stubEnv(STRIPE_CREDITS_800_ENV, "price_pack_800");
 
       const map = getCreditsByStripePriceId();
-      expect(map.price_small_25).toBe(25);
-      expect(creditsForStripePriceId("price_small_25")).toBe(25);
-      expect(getStripePriceIdForPackage(small)).toBe("price_small_25");
-    });
-
-    it("falls back to STRIPE_CREDITS_50 when STRIPE_CREDITS_25 is unset", () => {
-      const small = getPackageById("small")!;
-      vi.unstubAllEnvs();
-      vi.stubEnv(STRIPE_CREDITS_50_LEGACY_ENV, "price_small_legacy_only");
-
-      expect(getStripePriceIdForPackage(small)).toBe("price_small_legacy_only");
-      expect(creditsForStripePriceId("price_small_legacy_only")).toBe(25);
+      expect(map.price_pack_25).toBe(25);
+      expect(map.price_pack_50).toBe(50);
+      expect(map.price_pack_150).toBe(150);
+      expect(map.price_pack_350).toBe(350);
+      expect(map.price_pack_800).toBe(800);
+      expect(creditsForStripePriceId("price_pack_25")).toBe(25);
+      expect(getStripePriceIdForPackage(getPackageById("micro")!)).toBe(
+        "price_pack_25"
+      );
     });
   });
 
   describe("top-up copy", () => {
-    it("does not advertise €5 (50 Credits) for the small top-up pack", () => {
+    it("does not advertise €5 (50 Credits) for the micro top-up pack", () => {
       const suffixes = readJsonMessages()
         .map((doc) => {
           const pricing = (doc as { landingPage?: { pricing?: { extra_credits_suffix?: string } } })
@@ -102,8 +117,6 @@ describe("credit contract", () => {
       for (const suffix of suffixes) {
         expect(suffix).not.toMatch(/€5 \(50 credits?\)/i);
         expect(suffix).not.toMatch(/€5 \(50 Credits?\)/);
-        expect(suffix).not.toMatch(/50 créditos\)/i);
-        expect(suffix).not.toMatch(/50 kredi\)/i);
       }
     });
   });

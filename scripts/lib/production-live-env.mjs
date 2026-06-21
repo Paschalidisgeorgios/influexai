@@ -11,6 +11,41 @@ import { priceIdEnvStatus } from "./stripe-price-id-env.mjs";
 import { collectStripeEnvKeys } from "./sync-vercel-preview-env.mjs";
 
 export const LIVE_CONFIRM_VALUE = "I_UNDERSTAND_THIS_GOES_LIVE";
+export const LIVE_ENV_SYNC_CONFIRM_VALUE =
+  "I_UNDERSTAND_THIS_UPDATES_VERCEL_PRODUCTION_ENV";
+export const LIVE_DEPLOY_CONFIRM_VALUE = "I_UNDERSTAND_THIS_DEPLOYS_TO_PRODUCTION";
+
+export function isLaunchCheckOnly(env) {
+  return ["true", "1", "yes"].includes(
+    String(env.LAUNCH_CHECK_ONLY ?? "").trim().toLowerCase()
+  );
+}
+
+export function auditEnvSyncGate(env) {
+  const blockers = [];
+  if (env.LIVE_ENV_SYNC_CONFIRM?.trim() !== LIVE_ENV_SYNC_CONFIRM_VALUE) {
+    blockers.push("live_env_sync_confirm_missing");
+  }
+  return {
+    pass: blockers.length === 0,
+    blockers,
+    required_command: `$env:LIVE_ENV_SYNC_CONFIRM='${LIVE_ENV_SYNC_CONFIRM_VALUE}'`,
+    secrets_logged: false,
+  };
+}
+
+export function auditDeployGate(env) {
+  const blockers = [];
+  if (env.LIVE_DEPLOY_CONFIRM?.trim() !== LIVE_DEPLOY_CONFIRM_VALUE) {
+    blockers.push("live_deploy_confirm_missing");
+  }
+  return {
+    pass: blockers.length === 0,
+    blockers,
+    required_command: `$env:LIVE_DEPLOY_CONFIRM='${LIVE_DEPLOY_CONFIRM_VALUE}'`,
+    secrets_logged: false,
+  };
+}
 
 export const REQUIRED_SUBSCRIPTION_PRICE_KEYS = [
   "NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY",
@@ -29,6 +64,13 @@ export const REQUIRED_CREDIT_PRICE_KEYS = [
   "STRIPE_CREDITS_150",
   "STRIPE_CREDITS_350",
   "STRIPE_CREDITS_800",
+];
+
+/** Wrong LIVE-2H keys — must not be required or used in checkout. */
+export const LEGACY_INACTIVE_CREDIT_PRICE_KEYS = [
+  "STRIPE_CREDITS_70",
+  "STRIPE_CREDITS_160",
+  "STRIPE_CREDITS_320",
 ];
 
 export function mergeLaunchEnv(localEnv, productionEnv) {

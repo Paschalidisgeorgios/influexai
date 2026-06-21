@@ -45,19 +45,19 @@ describe("pricing surface", () => {
     expect(plans.map((p) => p.monthlyCredits)).toEqual([50, 300, 800, 2500]);
   });
 
-  it("small credit pack shows 25 credits, not 50", () => {
-    const small = getPackageById("small");
-    expect(small?.credits).toBe(25);
-    const display = getCreditPackDisplay(small!);
+  it("micro credit pack shows 25 credits", () => {
+    const micro = getPackageById("micro");
+    expect(micro?.credits).toBe(25);
+    const display = getCreditPackDisplay(micro!);
     expect(display.credits).toBe(25);
     expect(display.creditsLabel).toBe("25 Credits");
     expect(display.priceLabel).toBe("€5,00");
   });
 
-  it("credit pack displays match credit-packages.ts", () => {
+  it("credit pack displays match credit-packages.ts backup tiers", () => {
     const displays = listCreditPackDisplays();
-    expect(displays.map((d) => d.credits)).toEqual([25, 70, 160, 320]);
-    expect(displays.map((d) => d.priceEur)).toEqual([5, 12, 25, 45]);
+    expect(displays.map((d) => d.credits)).toEqual([25, 50, 150, 350, 800]);
+    expect(displays.map((d) => d.priceEur)).toEqual([5, 10, 30, 70, 160]);
   });
 
   it("plan feature credits label derives from subscription plans", () => {

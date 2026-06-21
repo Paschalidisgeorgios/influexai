@@ -6,6 +6,17 @@
  *   LIVE_LAUNCH_CONFIRM=I_UNDERSTAND_THIS_GOES_LIVE
  *   Live credentials in .env.production.local (preferred) or .env.local
  *
+ * Check-only (Steps 0–2, no env sync / deploy):
+ *   npm run launch:production:check
+ *   --check-only
+ *   LAUNCH_CHECK_ONLY=true
+ *
+ * Step 3 env sync additionally requires:
+ *   LIVE_ENV_SYNC_CONFIRM=I_UNDERSTAND_THIS_UPDATES_VERCEL_PRODUCTION_ENV
+ *
+ * Step 4 deploy additionally requires:
+ *   LIVE_DEPLOY_CONFIRM=I_UNDERSTAND_THIS_DEPLOYS_TO_PRODUCTION
+ *
  * Run: npm run launch:production
  */
 import { parse } from "dotenv";
@@ -17,10 +28,15 @@ import { createClient } from "@supabase/supabase-js";
 import {
   auditLaunchGates,
   auditRequiredLiveEnv,
+  auditEnvSyncGate,
+  auditDeployGate,
+  isLaunchCheckOnly,
   buildProductionLiveClosedMap,
   buildProductionLiveOpenMap,
   auditProductionLiveMap,
   LIVE_CONFIRM_VALUE,
+  LIVE_ENV_SYNC_CONFIRM_VALUE,
+  LIVE_DEPLOY_CONFIRM_VALUE,
 } from "./lib/production-live-env.mjs";
 import { checkProductionSupabaseReadiness } from "./lib/production-supabase-readiness.mjs";
 import { syncProductionEnvFromMap } from "./lib/sync-vercel-production-env.mjs";
@@ -38,9 +54,16 @@ const TARGET_CREDITS = 75;
 const PROMPT =
   "Minimal premium product visual of a translucent lime green glass cube on soft ivory background, studio lighting, no text, no logo, no watermark";
 
+const CHECK_ONLY =
+  process.argv.includes("--check-only") ||
+  ["true", "1", "yes"].includes(
+    String(process.env.LAUNCH_CHECK_ONLY ?? "").trim().toLowerCase()
+  );
+
 const report = {
-  phase: "production-live-launch-gate",
+  phase: CHECK_ONLY ? "production-live-launch-check" : "production-live-launch-gate",
   domain: DOMAIN,
+  check_only: CHECK_ONLY,
   provider_runs: 0,
   blockers: [],
   diagnosis: null,
@@ -68,6 +91,9 @@ function loadEnvFiles() {
   for (const key of [
     "LAUNCH_MODE",
     "LIVE_LAUNCH_CONFIRM",
+    "LIVE_ENV_SYNC_CONFIRM",
+    "LIVE_DEPLOY_CONFIRM",
+    "LAUNCH_CHECK_ONLY",
     "LAUNCH_QA_PASSWORD",
     "DATABASE_URL",
     "SUPABASE_DB_PASSWORD",
@@ -373,7 +399,8 @@ Generated: ${new Date().toISOString()}
 
 | Check | Result |
 |-------|--------|
-| Live Launch Status | ${r.diagnosis === "live_1_pass" ? "**GO (Image MVP ready)**" : "**NO-GO**"} |
+| Live Launch Status | ${r.diagnosis === "live_1_pass" ? "**GO (Image MVP ready)**" : r.diagnosis === "live_check_only_pass" ? "**CHECK-ONLY PASS (Steps 0–2)**" : "**NO-GO**"} |
+| Check-only mode | ${r.check_only ? "yes" : "no"} |
 | Provider runs | ${r.provider_runs} (max 1) |
 | Secrets logged | **no** |
 
@@ -400,6 +427,21 @@ Generated: ${new Date().toISOString()}
 - deduct_credits RPC: ${r.supabase_readiness?.rpc?.ok ? "ok" : "fail"}
 - Storage: ${r.supabase_readiness?.storage?.ok ? "ok" : "fail"}
 - Readiness: ${r.supabase_readiness?.pass ? "PASS" : "FAIL"}
+
+## Migration Query Diagnostics
+
+- Query: \`${r.supabase_readiness?.migration_query_diagnostics?.query ?? "select version from supabase_migrations.schema_migrations order by version"}\`
+- Transport: ${r.supabase_readiness?.migration_query_diagnostics?.transport ?? "postgres_direct_pooler"}
+- Connection method: ${r.supabase_readiness?.migration_query_diagnostics?.connection_method ?? "n/a"}
+- Connection ref: ${r.supabase_readiness?.migration_query_diagnostics?.connection_ref ?? "n/a"}
+- Supabase URL ref: ${r.supabase_readiness?.migration_query_diagnostics?.supabase_url_ref ?? "n/a"}
+- Production ref checked: ${r.supabase_readiness?.migration_query_diagnostics?.is_production_ref ? "yes" : "no"}
+- Connect OK: ${r.supabase_readiness?.migration_query_diagnostics?.connect_ok ? "yes" : "no"}
+- Migration schema exists: ${r.supabase_readiness?.migration_query_diagnostics?.migration_schema_exists === true ? "yes" : r.supabase_readiness?.migration_query_diagnostics?.migration_schema_exists === false ? "no" : "n/a"}
+- Migration table query OK: ${r.supabase_readiness?.migration_query_diagnostics?.migration_table_query_ok ? "yes" : "no"}
+- Error class: ${r.supabase_readiness?.migration_query_diagnostics?.error?.error_class ?? r.supabase_readiness?.remote_migrations?.error_detail?.error_class ?? "n/a"}
+- Error code: ${r.supabase_readiness?.migration_query_diagnostics?.error?.code ?? r.supabase_readiness?.remote_migrations?.error_detail?.code ?? "n/a"}
+- Sanitized error: ${r.supabase_readiness?.migration_query_diagnostics?.error?.message ?? r.supabase_readiness?.remote_migrations?.error ?? "none"}
 
 ## Dry-Run Deploy (Provider Disabled)
 
@@ -455,7 +497,11 @@ async function closeProviderOnProduction(liveEnv) {
   return deployProduction();
 }
 
-console.log("=== Production Launch Operator (LIVE-1) ===\n");
+console.log(
+  CHECK_ONLY
+    ? "=== Production Launch Operator (CHECK-ONLY Steps 0–2) ===\n"
+    : "=== Production Launch Operator (LIVE-1) ===\n"
+);
 
 delete process.env.VERCEL_DEBUG;
 delete process.env.DEBUG;
@@ -507,7 +553,7 @@ if (!report.required_env.pass) {
     "Populate .env.production.local (never commit) with:",
     "- Production Supabase (ref hszjafdelcydnppyolkm): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY",
     "- Stripe Live: STRIPE_MODE=live, NEXT_PUBLIC_STRIPE_MODE=live, STRIPE_SECRET_KEY (sk_live_), NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (pk_live_), STRIPE_WEBHOOK_SECRET",
-    "- Live price IDs: all NEXT_PUBLIC_STRIPE_INFLUEXAI_* + STRIPE_CREDITS_* (incl. STRIPE_CREDITS_50)",
+    "- Live price IDs: all NEXT_PUBLIC_STRIPE_INFLUEXAI_* + STRIPE_CREDITS_25/50/150/350/800",
     "- Provider start closed: PROVIDERS_DISABLED=true, NEXT_PUBLIC_PROVIDERS_DISABLED=true, ALLOW_SAFE_DEV_PROVIDER_SMOKE=false",
     "- FAL_API_KEY or FAL_KEY",
     "- Optional migration check: DATABASE_URL or SUPABASE_DB_PASSWORD",
@@ -524,6 +570,20 @@ report.supabase_readiness = await checkProductionSupabaseReadiness(liveEnv);
 if (!report.supabase_readiness.pass) {
   console.error("❌ Production Supabase not ready.");
   console.error("Blockers:", report.supabase_readiness.blockers.join(", "));
+  const mig = report.supabase_readiness.migration_query_diagnostics;
+  if (mig) {
+    console.error("Migration diagnostics:", JSON.stringify({
+      connection_method: mig.connection_method,
+      connection_ref: mig.connection_ref,
+      supabase_url_ref: mig.supabase_url_ref,
+      is_production_ref: mig.is_production_ref,
+      connect_ok: mig.connect_ok,
+      migration_schema_exists: mig.migration_schema_exists,
+      migration_table_query_ok: mig.migration_table_query_ok,
+      error: mig.error ?? report.supabase_readiness.remote_migrations?.error_detail ?? null,
+      secrets_logged: false,
+    }, null, 2));
+  }
   if (report.supabase_readiness.migration_plan_command) {
     console.error("Migration plan:", report.supabase_readiness.migration_plan_command);
   }
@@ -537,6 +597,36 @@ if (!report.supabase_readiness.pass) {
 }
 console.log("✅ Production Supabase readiness OK");
 
+if (CHECK_ONLY) {
+  report.diagnosis = "live_check_only_pass";
+  report.next_action = [
+    "Check-only complete. No Vercel env sync, no deploy, no provider.",
+    "Next (manual): set LIVE_ENV_SYNC_CONFIRM then re-run for Step 3 only via full operator.",
+    `$env:LIVE_ENV_SYNC_CONFIRM='${LIVE_ENV_SYNC_CONFIRM_VALUE}'`,
+    `$env:LIVE_DEPLOY_CONFIRM='${LIVE_DEPLOY_CONFIRM_VALUE}'`,
+    "npm run launch:production",
+  ].join("\n");
+  writeReport();
+  console.log("\n✅ Check-only PASS — stopped after Step 2 (no env sync, no deploy).");
+  process.exit(0);
+}
+
+console.log("\nStep 3 gate: Vercel Production env sync confirmation…");
+report.env_sync_gate = auditEnvSyncGate({
+  ...liveEnv,
+  LIVE_ENV_SYNC_CONFIRM: process.env.LIVE_ENV_SYNC_CONFIRM,
+});
+if (!report.env_sync_gate.pass) {
+  console.error("❌ Env sync blocked — explicit confirmation required.");
+  console.error(`Required: $env:LIVE_ENV_SYNC_CONFIRM='${LIVE_ENV_SYNC_CONFIRM_VALUE}'`);
+  report.blockers.push(...report.env_sync_gate.blockers);
+  report.diagnosis = "env_sync_gate_blocked";
+  report.next_action = report.env_sync_gate.required_command;
+  writeReport();
+  process.exit(1);
+}
+console.log("✅ Env sync confirmation OK");
+
 console.log("\nStep 3: Sync Production env — Phase 1 (providers disabled)…");
 const closedMap = buildProductionLiveClosedMap(liveEnv);
 const closedAudit = auditProductionLiveMap(closedMap, { providersOpen: false });
@@ -547,6 +637,22 @@ const sync1 = syncProductionEnvFromMap(closedMap, process.env);
 report.env_sync_phase1 = { synced: sync1.synced.length, failed: sync1.failed };
 if (!sync1.ok) fail(`Production env sync failed: ${sync1.failed.join(", ")}`);
 console.log(`✅ Phase 1 env synced (${sync1.synced.length} keys)`);
+
+console.log("\nStep 4 gate: Production deploy confirmation…");
+report.deploy_gate = auditDeployGate({
+  ...liveEnv,
+  LIVE_DEPLOY_CONFIRM: process.env.LIVE_DEPLOY_CONFIRM,
+});
+if (!report.deploy_gate.pass) {
+  console.error("❌ Deploy blocked — explicit confirmation required.");
+  console.error(`Required: $env:LIVE_DEPLOY_CONFIRM='${LIVE_DEPLOY_CONFIRM_VALUE}'`);
+  report.blockers.push(...report.deploy_gate.blockers);
+  report.diagnosis = "deploy_gate_blocked";
+  report.next_action = report.deploy_gate.required_command;
+  writeReport();
+  process.exit(1);
+}
+console.log("✅ Deploy confirmation OK");
 
 console.log("\nStep 4: Production deploy — Phase 1…");
 const deploy1 = deployProduction();

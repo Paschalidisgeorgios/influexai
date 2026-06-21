@@ -52,6 +52,7 @@
     "launch:operator": "node scripts/launch-operator.mjs",
     "launch:provider-ui-smoke": "node scripts/launch-provider-ui-smoke.mjs",
     "launch:production": "node scripts/production-launch-operator.mjs",
+    "launch:production:check": "node scripts/production-launch-operator.mjs --check-only",
     "smoke:stripe:subscription-double-credit": "node scripts/stripe-subscription-double-credit-smoke.mjs"
   },
   "dependencies": {

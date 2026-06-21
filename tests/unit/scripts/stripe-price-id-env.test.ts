@@ -19,11 +19,12 @@ describe("stripe price id env helpers", () => {
 
   it("detects invalid checkout config", () => {
     const bad = hasInvalidCheckoutPriceIds({
-      creditPack25: "invalid_placeholder",
       subscriptionPriceIds: {
         NEXT_PUBLIC_STRIPE_INFLUEXAI_STARTER_MONTHLY: "price_id_set",
       },
-      creditPackPriceIds: {},
+      creditPackPriceIds: {
+        STRIPE_CREDITS_25: "invalid_placeholder",
+      },
     });
     expect(bad).toBe(true);
   });

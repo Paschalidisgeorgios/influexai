@@ -22,19 +22,21 @@ export function priceIdEnvStatus(value) {
   return "invalid_format";
 }
 
+export const ACTIVE_CREDIT_PRICE_KEYS = [
+  "STRIPE_CREDITS_25",
+  "STRIPE_CREDITS_50",
+  "STRIPE_CREDITS_150",
+  "STRIPE_CREDITS_350",
+  "STRIPE_CREDITS_800",
+];
+
 export function hasInvalidCheckoutPriceIds(report) {
   const subscription = Object.values(report.subscriptionPriceIds ?? {});
-  const creditRequired = [report.creditPack25];
-  const creditOptionalLegacy =
-    report.creditPack25 === "price_id_set"
-      ? []
-      : [report.creditPackPriceIds?.STRIPE_CREDITS_50].filter(Boolean);
+  const creditActive = ACTIVE_CREDIT_PRICE_KEYS.map(
+    (key) => report.creditPackPriceIds?.[key]
+  );
 
-  const creditOther = ["STRIPE_CREDITS_150", "STRIPE_CREDITS_350", "STRIPE_CREDITS_800"]
-    .map((key) => report.creditPackPriceIds?.[key])
-    .filter(Boolean);
-
-  const all = [...subscription, ...creditRequired, ...creditOptionalLegacy, ...creditOther];
+  const all = [...subscription, ...creditActive];
   return all.some(
     (status) =>
       status === "missing" || status === "invalid_placeholder" || status === "invalid_format"

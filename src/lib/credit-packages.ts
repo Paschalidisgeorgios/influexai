@@ -1,11 +1,11 @@
-export type CreditPackageId = "small" | "medium" | "large" | "xl";
+export type CreditPackageId = "micro" | "small" | "medium" | "large" | "xl";
 
 export type CreditPackage = {
   id: CreditPackageId;
   label: string;
   /** Total credits granted after purchase (incl. bonus). */
   credits: number;
-  /** Bonus credits included on top of the base rate (0 for Small). */
+  /** Bonus credits included on top of the base rate (0 for backup packs). */
   bonusCredits: number;
   /** Optional highlight ribbon on canvas / pricing cards. */
   highlightBadge?: string;
@@ -37,25 +37,26 @@ function buildCreditPackage(
   };
 }
 
-/** Preferred Stripe price env for the 25-credit Small pack. */
+/** Active one-time credit pack Stripe price env keys (backup source of truth). */
 export const STRIPE_CREDITS_25_ENV = "STRIPE_CREDITS_25";
+export const STRIPE_CREDITS_50_ENV = "STRIPE_CREDITS_50";
+export const STRIPE_CREDITS_150_ENV = "STRIPE_CREDITS_150";
+export const STRIPE_CREDITS_350_ENV = "STRIPE_CREDITS_350";
+export const STRIPE_CREDITS_800_ENV = "STRIPE_CREDITS_800";
 
-/**
- * @deprecated Legacy env name — still supported as fallback for Small pack.
- * The Small pack grants 25 credits, not 50.
- */
-export const STRIPE_CREDITS_50_LEGACY_ENV = "STRIPE_CREDITS_50";
-
-const SMALL_PACK_STRIPE_ENV_KEYS = [
+export const ACTIVE_CREDIT_PACK_ENV_KEYS = [
   STRIPE_CREDITS_25_ENV,
-  STRIPE_CREDITS_50_LEGACY_ENV,
+  STRIPE_CREDITS_50_ENV,
+  STRIPE_CREDITS_150_ENV,
+  STRIPE_CREDITS_350_ENV,
+  STRIPE_CREDITS_800_ENV,
 ] as const;
 
 /** One-time credit top-ups for users with an active plan */
 export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
-    id: "small",
-    label: "Small",
+    id: "micro",
+    label: "Micro",
     credits: 25,
     bonusCredits: 0,
     price: "5,00 €",
@@ -65,37 +66,48 @@ export const CREDIT_PACKS: CreditPackage[] = [
     popular: false,
   }),
   buildCreditPackage({
+    id: "small",
+    label: "Small",
+    credits: 50,
+    bonusCredits: 0,
+    price: "10,00 €",
+    priceNumeric: 10.0,
+    envKey: STRIPE_CREDITS_50_ENV,
+    description: "Kompakter Top-up",
+    popular: false,
+  }),
+  buildCreditPackage({
     id: "medium",
     label: "Medium",
-    credits: 70,
-    bonusCredits: 10,
-    price: "12,00 €",
-    priceNumeric: 12.0,
-    envKey: "STRIPE_CREDITS_150",
+    credits: 150,
+    bonusCredits: 0,
+    price: "30,00 €",
+    priceNumeric: 30.0,
+    envKey: STRIPE_CREDITS_150_ENV,
     description: "Mehr Output pro Euro",
     popular: false,
   }),
   buildCreditPackage({
     id: "large",
     label: "Large",
-    credits: 160,
-    bonusCredits: 35,
+    credits: 350,
+    bonusCredits: 0,
     highlightBadge: "BESTE WAHL",
-    price: "25,00 €",
-    priceNumeric: 25.0,
-    envKey: "STRIPE_CREDITS_350",
+    price: "70,00 €",
+    priceNumeric: 70.0,
+    envKey: STRIPE_CREDITS_350_ENV,
     description: "Für aktive Creator",
     popular: true,
   }),
   buildCreditPackage({
     id: "xl",
     label: "XL",
-    credits: 320,
-    bonusCredits: 90,
+    credits: 800,
+    bonusCredits: 0,
     highlightBadge: "MAXIMALER WERT",
-    price: "45,00 €",
-    priceNumeric: 45.0,
-    envKey: "STRIPE_CREDITS_800",
+    price: "160,00 €",
+    priceNumeric: 160.0,
+    envKey: STRIPE_CREDITS_800_ENV,
     description: "Maximum Power",
     popular: false,
   }),
@@ -109,22 +121,18 @@ export function getPackageById(id: string): CreditPackage | undefined {
   return CREDIT_PACKAGES.find((p) => p.id === id);
 }
 
-/** Stripe price env keys to try, in order (preferred first). */
+/** Stripe price env keys for a pack (one active key per tier). */
 export function getStripePriceEnvKeysForPackage(
   pkg: CreditPackage
 ): readonly string[] {
-  if (pkg.id === "small") return SMALL_PACK_STRIPE_ENV_KEYS;
   return [pkg.envKey];
 }
 
 export function getStripePriceIdForPackage(
   pkg: CreditPackage
 ): string | undefined {
-  for (const key of getStripePriceEnvKeysForPackage(pkg)) {
-    const value = process.env[key]?.trim();
-    if (value) return value;
-  }
-  return undefined;
+  const value = process.env[pkg.envKey]?.trim();
+  return value || undefined;
 }
 
 export function formatBonusLabel(bonusCredits: number): string | null {
@@ -134,12 +142,13 @@ export function formatBonusLabel(bonusCredits: number): string | null {
 
 /** Smallest pack that covers the credit shortfall (by missing amount). */
 export function recommendCreditPackageId(missing: number): CreditPackageId {
-  if (missing <= 25) return "small";
-  if (missing <= 70) return "medium";
-  if (missing <= 160) return "large";
+  if (missing <= 25) return "micro";
+  if (missing <= 50) return "small";
+  if (missing <= 150) return "medium";
+  if (missing <= 350) return "large";
   return "xl";
 }
 
-export const CREDIT_CALCULATOR_TIERS = [25, 70, 160, 320] as const;
+export const CREDIT_CALCULATOR_TIERS = [25, 50, 150, 350, 800] as const;
 
 export const EXTRA_CREDIT_RATE_LABEL = "€0,20 / Credit";

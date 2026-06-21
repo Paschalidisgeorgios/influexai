@@ -1,38 +1,54 @@
 # Production Live Launch Gate — LIVE-1
 
-Generated: 2026-06-21T07:06:12.323Z
+Generated: 2026-06-21T09:42:50.133Z
 
 ## Go/No-Go
 
 | Check | Result |
 |-------|--------|
-| Live Launch Status | **NO-GO** |
+| Live Launch Status | **CHECK-ONLY PASS (Steps 0–2)** |
+| Check-only mode | yes |
 | Provider runs | 0 (max 1) |
 | Secrets logged | **no** |
 
 ## Safety
 
 - Branch: `master`
-- HEAD: `6f49e98 docs: record production dry run gate`
+- HEAD: `93c709c docs: add production local env example template`
 - Production deploy: no
 - Provider window closed on failure: n/a
 
 ## Required Env
 
-- Production Supabase ref: jvjmqtxlqfqaoyjklpxh
-- Stripe mode: test
-- Stripe key mode: sk_test_
+- Production Supabase ref: hszjafdelcydnppyolkm
+- Stripe mode: live
+- Stripe key mode: sk_live_
 - Provider key: FAL_API_KEY
-- Missing env keys: STRIPE_CREDITS_50
+- Missing env keys: none
 
 ## Production Supabase Readiness
 
-- Local migrations max: n/a / 68
-- Remote migration 068: no/unknown
-- Tables: n/a
-- deduct_credits RPC: fail
-- Storage: fail
-- Readiness: FAIL
+- Local migrations max: 68 / 68
+- Remote migration 068: yes
+- Tables: profiles=ok, generations=ok, credit_transactions=ok
+- deduct_credits RPC: ok
+- Storage: ok
+- Readiness: PASS
+
+## Migration Query Diagnostics
+
+- Query: `select version from supabase_migrations.schema_migrations order by version`
+- Transport: postgres_direct_pooler
+- Connection method: DATABASE_URL
+- Connection ref: hszjafdelcydnppyolkm
+- Supabase URL ref: hszjafdelcydnppyolkm
+- Production ref checked: yes
+- Connect OK: yes
+- Migration schema exists: yes
+- Migration table query OK: yes
+- Error class: n/a
+- Error code: n/a
+- Sanitized error: none
 
 ## Dry-Run Deploy (Provider Disabled)
 
@@ -65,33 +81,19 @@ Generated: 2026-06-21T07:06:12.323Z
 
 ## Blockers
 
-- missing_STRIPE_CREDITS_50
-- supabase_url_not_production_ref
-- supabase_anon_not_production_ref
-- staging_supabase_in_live_env
-- stripe_mode_not_live
-- next_public_stripe_mode_not_live
-- stripe_secret_not_live
-- stripe_publishable_not_live
-- stripe_test_secret_in_live
-- stripe_test_publishable_in_live
-- public_providers_must_start_disabled
+- none
 
 ## Diagnosis
 
-**missing_live_env**
+**live_check_only_pass**
 
 ## Immediate Next Action
 
-Populate .env.production.local (never commit) with:
-- Production Supabase (ref hszjafdelcydnppyolkm): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
-- Stripe Live: STRIPE_MODE=live, NEXT_PUBLIC_STRIPE_MODE=live, STRIPE_SECRET_KEY (sk_live_), NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (pk_live_), STRIPE_WEBHOOK_SECRET
-- Live price IDs: all NEXT_PUBLIC_STRIPE_INFLUEXAI_* + STRIPE_CREDITS_* (incl. STRIPE_CREDITS_50)
-- Provider start closed: PROVIDERS_DISABLED=true, NEXT_PUBLIC_PROVIDERS_DISABLED=true, ALLOW_SAFE_DEV_PROVIDER_SMOKE=false
-- FAL_API_KEY or FAL_KEY
-- Optional migration check: DATABASE_URL or SUPABASE_DB_PASSWORD
-- Smoke: LAUNCH_QA_PASSWORD
-Then: $env:LAUNCH_MODE='live'; $env:LIVE_LAUNCH_CONFIRM='I_UNDERSTAND_THIS_GOES_LIVE'; npm run launch:production
+Check-only complete. No Vercel env sync, no deploy, no provider.
+Next (manual): set LIVE_ENV_SYNC_CONFIRM then re-run for Step 3 only via full operator.
+$env:LIVE_ENV_SYNC_CONFIRM='I_UNDERSTAND_THIS_UPDATES_VERCEL_PRODUCTION_ENV'
+$env:LIVE_DEPLOY_CONFIRM='I_UNDERSTAND_THIS_DEPLOYS_TO_PRODUCTION'
+npm run launch:production
 
 ---
 No secrets in this report.

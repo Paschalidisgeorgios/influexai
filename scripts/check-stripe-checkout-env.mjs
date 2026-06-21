@@ -6,6 +6,7 @@
 import fs from "fs";
 import path from "path";
 import {
+  ACTIVE_CREDIT_PRICE_KEYS,
   hasInvalidCheckoutPriceIds,
   priceIdEnvStatus,
 } from "./lib/stripe-price-id-env.mjs";
@@ -67,20 +68,11 @@ const subscriptionKeys = [
   "NEXT_PUBLIC_STRIPE_INFLUEXAI_BUSINESS_YEARLY",
 ];
 
-const creditKeys = [
-  "STRIPE_CREDITS_25",
-  "STRIPE_CREDITS_50",
-  "STRIPE_CREDITS_150",
-  "STRIPE_CREDITS_350",
-  "STRIPE_CREDITS_800",
-];
-
-const creditPack25 = priceIdEnvStatus(vars.STRIPE_CREDITS_25 ?? vars.STRIPE_CREDITS_50);
 const subscriptionPriceIds = Object.fromEntries(
   subscriptionKeys.map((key) => [key, priceIdEnvStatus(vars[key])])
 );
 const creditPackPriceIds = Object.fromEntries(
-  creditKeys.map((key) => [key, priceIdEnvStatus(vars[key])])
+  ACTIVE_CREDIT_PRICE_KEYS.map((key) => [key, priceIdEnvStatus(vars[key])])
 );
 
 const report = {
@@ -94,16 +86,9 @@ const report = {
   stripeSecretKind: keyKind(vars.STRIPE_SECRET_KEY, "sk_"),
   stripePublishableKind: keyKind(vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, "pk_"),
   safeCheckoutOverride: vars.ALLOW_SAFE_DEV_STRIPE_TEST_CHECKOUT === "true",
-  creditPack25Source: vars.STRIPE_CREDITS_25
-    ? "STRIPE_CREDITS_25"
-    : vars.STRIPE_CREDITS_50
-      ? "STRIPE_CREDITS_50_legacy"
-      : "none",
-  creditPack25,
   subscriptionPriceIds,
   creditPackPriceIds,
   checkoutPriceIdsReady: !hasInvalidCheckoutPriceIds({
-    creditPack25,
     subscriptionPriceIds,
     creditPackPriceIds,
   }),

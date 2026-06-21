@@ -1,5 +1,6 @@
 import {
   CREDIT_PACKAGES,
+  getStripePriceEnvKeysForPackage,
   getStripePriceIdForPackage,
   type CreditPackage,
 } from "@/lib/credit-packages";
@@ -8,8 +9,10 @@ import {
 export function getCreditsByStripePriceId(): Record<string, number> {
   const map: Record<string, number> = {};
   for (const pkg of CREDIT_PACKAGES) {
-    const priceId = getStripePriceIdForPackage(pkg);
-    if (priceId) map[priceId] = pkg.credits;
+    for (const envKey of getStripePriceEnvKeysForPackage(pkg)) {
+      const priceId = process.env[envKey]?.trim();
+      if (priceId) map[priceId] = pkg.credits;
+    }
   }
   return map;
 }
