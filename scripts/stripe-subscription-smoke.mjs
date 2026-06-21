@@ -119,10 +119,9 @@ function auditEnv() {
       },
       creditPackPriceIds: {
         STRIPE_CREDITS_25: "price_id_set",
-        STRIPE_CREDITS_50: "price_id_set",
-        STRIPE_CREDITS_150: "price_id_set",
-        STRIPE_CREDITS_350: "price_id_set",
-        STRIPE_CREDITS_800: "price_id_set",
+        STRIPE_CREDITS_70: "price_id_set",
+        STRIPE_CREDITS_160: "price_id_set",
+        STRIPE_CREDITS_320: "price_id_set",
       },
     }),
     blockers,

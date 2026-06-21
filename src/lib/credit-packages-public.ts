@@ -8,7 +8,6 @@ export const CLIENT_STRIPE_CREDIT_PRICE_ENV: Record<CreditPackageId, string> = {
   small: "NEXT_PUBLIC_STRIPE_PRICE_SMALL",
   medium: "NEXT_PUBLIC_STRIPE_PRICE_MEDIUM",
   large: "NEXT_PUBLIC_STRIPE_PRICE_LARGE",
-  xl: "NEXT_PUBLIC_STRIPE_PRICE_XL",
 };
 
 export function getClientStripeCreditPriceId(

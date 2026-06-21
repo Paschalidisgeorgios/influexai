@@ -7,10 +7,9 @@ import {
   getStripePriceEnvKeysForPackage,
   getStripePriceIdForPackage,
   STRIPE_CREDITS_25_ENV,
-  STRIPE_CREDITS_50_ENV,
-  STRIPE_CREDITS_150_ENV,
-  STRIPE_CREDITS_350_ENV,
-  STRIPE_CREDITS_800_ENV,
+  STRIPE_CREDITS_70_ENV,
+  STRIPE_CREDITS_160_ENV,
+  STRIPE_CREDITS_320_ENV,
 } from "@/lib/credit-packages";
 import {
   creditsForStripePriceId,
@@ -56,19 +55,17 @@ function collectStrings(value: unknown, out: string[] = []): string[] {
 
 describe("credit contract", () => {
   describe("credit packs", () => {
-    it("active backup packs are 25/50/150/350/800 credits", () => {
+    it("active pay-as-you-go packs are 25/70/160/320 credits", () => {
       expect(ACTIVE_CREDIT_PACK_ENV_KEYS).toEqual([
         STRIPE_CREDITS_25_ENV,
-        STRIPE_CREDITS_50_ENV,
-        STRIPE_CREDITS_150_ENV,
-        STRIPE_CREDITS_350_ENV,
-        STRIPE_CREDITS_800_ENV,
+        STRIPE_CREDITS_70_ENV,
+        STRIPE_CREDITS_160_ENV,
+        STRIPE_CREDITS_320_ENV,
       ]);
       expect(getPackageById("micro")!.credits).toBe(25);
-      expect(getPackageById("small")!.credits).toBe(50);
-      expect(getPackageById("medium")!.credits).toBe(150);
-      expect(getPackageById("large")!.credits).toBe(350);
-      expect(getPackageById("xl")!.credits).toBe(800);
+      expect(getPackageById("small")!.credits).toBe(70);
+      expect(getPackageById("medium")!.credits).toBe(160);
+      expect(getPackageById("large")!.credits).toBe(320);
     });
 
     it("each pack uses a single dedicated Stripe env key", () => {
@@ -77,7 +74,6 @@ describe("credit contract", () => {
         getPackageById("small")!,
         getPackageById("medium")!,
         getPackageById("large")!,
-        getPackageById("xl")!,
       ]) {
         expect(getStripePriceEnvKeysForPackage(pkg)).toEqual([pkg.envKey]);
       }
@@ -85,17 +81,15 @@ describe("credit contract", () => {
 
     it("maps Stripe price whitelist to pack credits", () => {
       vi.stubEnv(STRIPE_CREDITS_25_ENV, "price_pack_25");
-      vi.stubEnv(STRIPE_CREDITS_50_ENV, "price_pack_50");
-      vi.stubEnv(STRIPE_CREDITS_150_ENV, "price_pack_150");
-      vi.stubEnv(STRIPE_CREDITS_350_ENV, "price_pack_350");
-      vi.stubEnv(STRIPE_CREDITS_800_ENV, "price_pack_800");
+      vi.stubEnv(STRIPE_CREDITS_70_ENV, "price_pack_70");
+      vi.stubEnv(STRIPE_CREDITS_160_ENV, "price_pack_160");
+      vi.stubEnv(STRIPE_CREDITS_320_ENV, "price_pack_320");
 
       const map = getCreditsByStripePriceId();
       expect(map.price_pack_25).toBe(25);
-      expect(map.price_pack_50).toBe(50);
-      expect(map.price_pack_150).toBe(150);
-      expect(map.price_pack_350).toBe(350);
-      expect(map.price_pack_800).toBe(800);
+      expect(map.price_pack_70).toBe(70);
+      expect(map.price_pack_160).toBe(160);
+      expect(map.price_pack_320).toBe(320);
       expect(creditsForStripePriceId("price_pack_25")).toBe(25);
       expect(getStripePriceIdForPackage(getPackageById("micro")!)).toBe(
         "price_pack_25"

@@ -54,10 +54,10 @@ describe("pricing surface", () => {
     expect(display.priceLabel).toBe("€5,00");
   });
 
-  it("credit pack displays match credit-packages.ts backup tiers", () => {
+  it("credit pack displays match credit-packages.ts pricing UI tiers", () => {
     const displays = listCreditPackDisplays();
-    expect(displays.map((d) => d.credits)).toEqual([25, 50, 150, 350, 800]);
-    expect(displays.map((d) => d.priceEur)).toEqual([5, 10, 30, 70, 160]);
+    expect(displays.map((d) => d.credits)).toEqual([25, 70, 160, 320]);
+    expect(displays.map((d) => d.priceEur)).toEqual([5, 12, 25, 45]);
   });
 
   it("plan feature credits label derives from subscription plans", () => {

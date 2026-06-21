@@ -1,4 +1,4 @@
-export type CreditPackageId = "micro" | "small" | "medium" | "large" | "xl";
+export type CreditPackageId = "micro" | "small" | "medium" | "large";
 
 export type CreditPackage = {
   id: CreditPackageId;
@@ -37,19 +37,17 @@ function buildCreditPackage(
   };
 }
 
-/** Active one-time credit pack Stripe price env keys (backup source of truth). */
+/** Active one-time credit pack Stripe price env keys (pricing UI source of truth). */
 export const STRIPE_CREDITS_25_ENV = "STRIPE_CREDITS_25";
-export const STRIPE_CREDITS_50_ENV = "STRIPE_CREDITS_50";
-export const STRIPE_CREDITS_150_ENV = "STRIPE_CREDITS_150";
-export const STRIPE_CREDITS_350_ENV = "STRIPE_CREDITS_350";
-export const STRIPE_CREDITS_800_ENV = "STRIPE_CREDITS_800";
+export const STRIPE_CREDITS_70_ENV = "STRIPE_CREDITS_70";
+export const STRIPE_CREDITS_160_ENV = "STRIPE_CREDITS_160";
+export const STRIPE_CREDITS_320_ENV = "STRIPE_CREDITS_320";
 
 export const ACTIVE_CREDIT_PACK_ENV_KEYS = [
   STRIPE_CREDITS_25_ENV,
-  STRIPE_CREDITS_50_ENV,
-  STRIPE_CREDITS_150_ENV,
-  STRIPE_CREDITS_350_ENV,
-  STRIPE_CREDITS_800_ENV,
+  STRIPE_CREDITS_70_ENV,
+  STRIPE_CREDITS_160_ENV,
+  STRIPE_CREDITS_320_ENV,
 ] as const;
 
 /** One-time credit top-ups for users with an active plan */
@@ -68,48 +66,36 @@ export const CREDIT_PACKS: CreditPackage[] = [
   buildCreditPackage({
     id: "small",
     label: "Small",
-    credits: 50,
+    credits: 70,
     bonusCredits: 0,
-    price: "10,00 €",
-    priceNumeric: 10.0,
-    envKey: STRIPE_CREDITS_50_ENV,
+    price: "12,00 €",
+    priceNumeric: 12.0,
+    envKey: STRIPE_CREDITS_70_ENV,
     description: "Kompakter Top-up",
     popular: false,
   }),
   buildCreditPackage({
     id: "medium",
     label: "Medium",
-    credits: 150,
+    credits: 160,
     bonusCredits: 0,
-    price: "30,00 €",
-    priceNumeric: 30.0,
-    envKey: STRIPE_CREDITS_150_ENV,
+    price: "25,00 €",
+    priceNumeric: 25.0,
+    envKey: STRIPE_CREDITS_160_ENV,
     description: "Mehr Output pro Euro",
     popular: false,
   }),
   buildCreditPackage({
     id: "large",
     label: "Large",
-    credits: 350,
+    credits: 320,
     bonusCredits: 0,
     highlightBadge: "BESTE WAHL",
-    price: "70,00 €",
-    priceNumeric: 70.0,
-    envKey: STRIPE_CREDITS_350_ENV,
+    price: "45,00 €",
+    priceNumeric: 45.0,
+    envKey: STRIPE_CREDITS_320_ENV,
     description: "Für aktive Creator",
     popular: true,
-  }),
-  buildCreditPackage({
-    id: "xl",
-    label: "XL",
-    credits: 800,
-    bonusCredits: 0,
-    highlightBadge: "MAXIMALER WERT",
-    price: "160,00 €",
-    priceNumeric: 160.0,
-    envKey: STRIPE_CREDITS_800_ENV,
-    description: "Maximum Power",
-    popular: false,
   }),
 ];
 
@@ -143,12 +129,11 @@ export function formatBonusLabel(bonusCredits: number): string | null {
 /** Smallest pack that covers the credit shortfall (by missing amount). */
 export function recommendCreditPackageId(missing: number): CreditPackageId {
   if (missing <= 25) return "micro";
-  if (missing <= 50) return "small";
-  if (missing <= 150) return "medium";
-  if (missing <= 350) return "large";
-  return "xl";
+  if (missing <= 70) return "small";
+  if (missing <= 160) return "medium";
+  return "large";
 }
 
-export const CREDIT_CALCULATOR_TIERS = [25, 50, 150, 350, 800] as const;
+export const CREDIT_CALCULATOR_TIERS = [25, 70, 160, 320] as const;
 
 export const EXTRA_CREDIT_RATE_LABEL = "€0,20 / Credit";

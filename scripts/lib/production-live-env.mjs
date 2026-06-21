@@ -60,10 +60,9 @@ export const REQUIRED_SUBSCRIPTION_PRICE_KEYS = [
 
 export const REQUIRED_CREDIT_PRICE_KEYS = [
   "STRIPE_CREDITS_25",
-  "STRIPE_CREDITS_50",
-  "STRIPE_CREDITS_150",
-  "STRIPE_CREDITS_350",
-  "STRIPE_CREDITS_800",
+  "STRIPE_CREDITS_70",
+  "STRIPE_CREDITS_160",
+  "STRIPE_CREDITS_320",
 ];
 
 export const REQUIRED_AGENCY_PRICE_KEYS = [
@@ -82,11 +81,12 @@ export const ALL_REQUIRED_STRIPE_PRICE_KEYS = [
   ...REQUIRED_AGENCY_PRICE_KEYS,
 ];
 
-/** Wrong LIVE-2H keys — must not be required or used in checkout. */
+/** Legacy pay-as-you-go keys — must not be required or used in checkout. */
 export const LEGACY_INACTIVE_CREDIT_PRICE_KEYS = [
-  "STRIPE_CREDITS_70",
-  "STRIPE_CREDITS_160",
-  "STRIPE_CREDITS_320",
+  "STRIPE_CREDITS_50",
+  "STRIPE_CREDITS_150",
+  "STRIPE_CREDITS_350",
+  "STRIPE_CREDITS_800",
 ];
 
 export function mergeLaunchEnv(localEnv, productionEnv) {

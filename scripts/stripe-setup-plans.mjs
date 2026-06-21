@@ -49,27 +49,21 @@ const CREDIT_PACKS = [
   },
   {
     id: "small",
-    name: "InfluexAI Credits Small (50)",
-    eur: 10,
-    env: "STRIPE_CREDITS_50",
+    name: "InfluexAI Credits Small (70)",
+    eur: 12,
+    env: "STRIPE_CREDITS_70",
   },
   {
     id: "medium",
-    name: "InfluexAI Credits Medium (150)",
-    eur: 30,
-    env: "STRIPE_CREDITS_150",
+    name: "InfluexAI Credits Medium (160)",
+    eur: 25,
+    env: "STRIPE_CREDITS_160",
   },
   {
     id: "large",
-    name: "InfluexAI Credits Large (350)",
-    eur: 70,
-    env: "STRIPE_CREDITS_350",
-  },
-  {
-    id: "xl",
-    name: "InfluexAI Credits XL (800)",
-    eur: 160,
-    env: "STRIPE_CREDITS_800",
+    name: "InfluexAI Credits Large (320)",
+    eur: 45,
+    env: "STRIPE_CREDITS_320",
   },
 ];
 

@@ -61,10 +61,9 @@ Never mix declared mode and key prefix (e.g. `STRIPE_MODE=test` + `sk_live_`).
 | Variable | Description |
 |----------|-------------|
 | `STRIPE_CREDITS_25` | Micro pack (25 credits) one-time Price ID |
-| `STRIPE_CREDITS_50` | Small pack (50 credits) one-time Price ID |
-| `STRIPE_CREDITS_150` | Medium pack (150 credits) one-time Price ID |
-| `STRIPE_CREDITS_350` | Large pack (350 credits) one-time Price ID |
-| `STRIPE_CREDITS_800` | XL pack (800 credits) one-time Price ID |
+| `STRIPE_CREDITS_70` | Small pack (70 credits) one-time Price ID |
+| `STRIPE_CREDITS_160` | Medium pack (160 credits) one-time Price ID |
+| `STRIPE_CREDITS_320` | Large pack (320 credits) one-time Price ID |
 
 ## Stripe — Agency / White Label (server only)
 
