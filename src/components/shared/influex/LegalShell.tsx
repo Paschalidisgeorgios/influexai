@@ -21,7 +21,7 @@ export function LegalShell({
   title,
   children,
   backHref = "/",
-  backLabel = "← InfluexAI",
+  backLabel = "← Zur Startseite",
   toc,
   className,
   articleClassName,

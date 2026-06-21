@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   UserRound,
@@ -10,6 +11,7 @@ import {
   Palette,
   Settings,
   Coins,
+  Home,
 } from "lucide-react";
 import {
   DASHBOARD_PRIMARY_NAV,
@@ -50,6 +52,7 @@ function isMobileNavActive(
 export function DashboardMobileNav() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
+  const t = useTranslations("nav");
 
   return (
     <div
@@ -64,6 +67,16 @@ export function DashboardMobileNav() {
         className="flex items-stretch overflow-x-auto"
         style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
       >
+        <Link
+          href="/"
+          className="flex min-w-[4.5rem] shrink-0 flex-col items-center justify-center gap-0.5 px-2 py-2.5 transition-colors active:bg-white/[0.04]"
+          aria-label={t("view_website")}
+        >
+          <Home size={17} strokeWidth={1.75} style={{ color: "rgba(255,255,255,0.32)" }} />
+          <span className="max-w-[4.25rem] truncate text-[9px] font-medium leading-tight text-white/32">
+            Website
+          </span>
+        </Link>
         {DASHBOARD_MOBILE_NAV.map((item) => {
           const active = isMobileNavActive(item, pathname, searchParams);
           const Icon = item.icon;

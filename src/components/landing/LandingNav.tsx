@@ -10,21 +10,21 @@ import { createClient } from "@/lib/supabase/client";
 import { hasActivePlan, isPlatformAdmin } from "@/lib/access";
 
 type NavLinkItem = {
-  key: "nav_showcase" | "nav_for_brands" | "nav_pricing" | "nav_agency";
+  key: "nav_home" | "nav_showcase" | "nav_for_brands" | "nav_pricing" | "nav_agency";
   href: string;
   external?: boolean;
 };
 
 const NAV_LINKS: NavLinkItem[] = [
+  { key: "nav_home", href: "/", external: true },
   { key: "nav_for_brands", href: "/business", external: true },
   { key: "nav_pricing", href: "/pricing", external: true },
   { key: "nav_agency", href: "/agency", external: true },
 ];
 
-const CAMPAIGN_NAV_LINKS: NavLinkItem[] = [
-  { key: "nav_showcase", href: "#showcase" },
+const PRICING_NAV_LINKS: NavLinkItem[] = [
+  { key: "nav_home", href: "/", external: true },
   { key: "nav_pricing", href: "/pricing", external: true },
-  { key: "nav_agency", href: "/agency", external: true },
 ];
 
 const LANDING_NAV_LINK =
@@ -121,7 +121,7 @@ export function LandingNav({
   const showMemberNav = mounted && navSession.user && (navSession.hasPlan || navSession.isAdmin);
   const showNoPlanNav = mounted && navSession.user && !navSession.hasPlan && !navSession.isAdmin;
 
-  const navLinks = darkNav && !agencyMode ? CAMPAIGN_NAV_LINKS : NAV_LINKS;
+  const navLinks = darkNav && !agencyMode ? PRICING_NAV_LINKS : NAV_LINKS;
 
   const headerShellClass = HEADER_CLASS;
 
@@ -151,11 +151,6 @@ export function LandingNav({
               </>
             ) : (
               <>
-                {darkNav && !agencyMode ? (
-                  <a href="#showcase" className={navLinkClass}>
-                    {t("nav_showcase")}
-                  </a>
-                ) : null}
                 {navLinks.map((l) =>
                   l.external ? (
                     <Link key={l.href} href={l.href} className={navLinkClass}>
@@ -330,16 +325,6 @@ export function LandingNav({
                 </>
               ) : (
                 <>
-                  {darkNav ? (
-                    <a
-                      href="#showcase"
-                      onClick={closeMenu}
-                      className="mobile-nav-link py-4 text-[20px] text-white/85"
-                    >
-                      {t("nav_showcase")}
-                      <span className="text-xl">↗</span>
-                    </a>
-                  ) : null}
                   {navLinks.map((l) =>
                     l.external ? (
                       <Link

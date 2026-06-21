@@ -36,7 +36,7 @@ export function AuthInfluexShell({ children }: AuthInfluexShellProps) {
       <div className="influex-auth-form-wrap">
         <div className="influex-auth-form-wrap__toolbar">
           <Link href="/" className="influex-auth-form-wrap__home">
-            ← InfluexAI
+            ← Zur Startseite
           </Link>
           <LanguageSwitcher compact />
         </div>

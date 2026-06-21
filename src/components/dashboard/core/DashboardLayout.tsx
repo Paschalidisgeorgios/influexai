@@ -28,6 +28,7 @@ import {
 } from "./DashboardSurface";
 import { STUDIO_SHELL_BG } from "../studio-ui/tokens";
 import { SidebarCreditsLink } from "../studio-ui";
+import { DashboardWebsiteLink } from "./DashboardWebsiteLink";
 import { calculateExactCredits } from "@/lib/dashboard/promptOptimizer";
 import { GalleryGrid, type GalleryItem } from "./GalleryGrid";
 import { AnimatePresence, motion } from "framer-motion";
@@ -144,12 +145,13 @@ function LeftSidebar({
         <DashboardSecondaryNav />
       </nav>
 
-      {/* ── Credits + Logout ───────────────────────────────────────────────── */}
+      {/* ── Credits + Website + Logout ─────────────────────────────────────── */}
       <div
         className="shrink-0 px-3 py-4"
         style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
       >
         <SidebarCreditsLink credits={credits} loaded={creditsLoaded} />
+        <DashboardWebsiteLink className="mt-1 px-0" />
 
         <button
           type="button"

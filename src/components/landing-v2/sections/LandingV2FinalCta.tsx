@@ -23,7 +23,7 @@ export function LandingV2FinalCta() {
       <div className="landing-v2-final-cta mx-auto max-w-4xl px-6 py-12 text-center md:px-12 md:py-14">
         <p className="landing-v2-kicker mb-4 justify-center" data-lv2-eyebrow>
           <span className="landing-v2-kicker__dot" aria-hidden />
-          Creator Operating System
+          InfluexAI Creator Studio
         </p>
         <h2
           className="landing-v2-headline landing-v2-final-cta__title text-[var(--lv2-text-light)]"

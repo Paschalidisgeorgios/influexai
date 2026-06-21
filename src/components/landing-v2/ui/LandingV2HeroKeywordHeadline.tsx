@@ -12,8 +12,6 @@ type LandingV2HeroKeywordHeadlineProps = {
 const copy = LANDING_V2_COPY.hero;
 const keywords = copy.rotatingKeywords;
 
-const LONG_KEYWORD_LENGTH = 14;
-
 export function LandingV2HeroKeywordHeadline({
   id = "lv2-hero-heading",
   className = "",
@@ -31,7 +29,6 @@ export function LandingV2HeroKeywordHeadline({
   );
 
   const activeKeyword = keywords[activeIndex] ?? keywords[0];
-  const isLongKeyword = activeKeyword.length >= LONG_KEYWORD_LENGTH;
 
   useHeroKeywordRotate({
     keywordRef,
@@ -39,7 +36,7 @@ export function LandingV2HeroKeywordHeadline({
     setActiveIndex,
   });
 
-  const rootClass = ["landing-v2-hero-headline", "landing-v2-hero-headline--studio-for", className]
+  const rootClass = ["landing-v2-hero-headline", "landing-v2-hero-headline--editorial", className]
     .filter(Boolean)
     .join(" ");
 
@@ -51,16 +48,14 @@ export function LandingV2HeroKeywordHeadline({
       data-hero-keyword-headline
     >
       <span
-        className="landing-v2-hero__headline-line landing-v2-hero__headline-line--lead"
+        className="landing-v2-hero__headline-line landing-v2-hero__headline-line--primary"
         data-hero-headline-line
       >
-        {copy.primaryHeadlineLead}
+        {copy.primaryHeadlineFull}
       </span>
 
       <span
-        className={`landing-v2-hero__headline-line landing-v2-hero__headline-line--keyword${
-          isLongKeyword ? " landing-v2-hero__headline-line--keyword-long" : ""
-        }`}
+        className="landing-v2-hero__headline-line landing-v2-hero__headline-line--accent"
         data-hero-headline-line
         data-hero-keyword-line
       >
@@ -70,17 +65,16 @@ export function LandingV2HeroKeywordHeadline({
           </span>
           <span
             ref={keywordRef}
-            className={`landing-v2-hero-keyword landing-v2-hero-keyword-slot__word${
-              isLongKeyword ? " is-long" : ""
-            }`}
+            className="landing-v2-hero-keyword landing-v2-hero-keyword-slot__word"
             data-hero-rotating-keyword
           >
             {activeKeyword}
           </span>
         </span>
-        <span className="sr-only">
-          {copy.primaryHeadlineLead} {activeKeyword}.
-        </span>
+      </span>
+
+      <span className="sr-only">
+        {copy.primaryHeadlineFull} {activeKeyword}
       </span>
     </h1>
   );

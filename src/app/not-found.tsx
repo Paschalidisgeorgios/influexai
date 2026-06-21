@@ -41,11 +41,11 @@ export default async function NotFound() {
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/dashboard" className="btn-acid">
-          {t("cta_dashboard")}
-        </Link>
-        <Link href="/" className="btn-ghost">
+        <Link href="/" className="btn-acid">
           {t("cta_home")}
+        </Link>
+        <Link href="/dashboard" className="btn-ghost">
+          {t("cta_dashboard")}
         </Link>
       </div>
     </div>

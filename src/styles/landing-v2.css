@@ -5363,3 +5363,52 @@ h1.landing-v2-hero-headline,
     line-height: 0.92 !important;
   }
 }
+
+/* Editorial hero headline — softer, sentence case, stable layout */
+.landing-v2-hero-headline--editorial {
+  gap: 0.5rem;
+  text-transform: none !important;
+  font-weight: 700 !important;
+}
+
+.landing-v2-hero-headline--editorial .landing-v2-hero__headline-line--primary {
+  display: block;
+  max-width: 20ch;
+  font-size: clamp(1.75rem, 3.6vw, 3rem) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.025em !important;
+  font-weight: 700 !important;
+  color: #f5f2ea !important;
+}
+
+.landing-v2-hero-headline--editorial .landing-v2-hero__headline-line--accent {
+  display: block;
+  min-height: 1.35em;
+  max-width: none !important;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.015em !important;
+  font-weight: 600 !important;
+  color: #b4ff00 !important;
+}
+
+.landing-v2-hero-headline--editorial .landing-v2-hero-keyword-slot__word {
+  color: #b4ff00;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .landing-v2-hero-headline--editorial .landing-v2-hero__headline-line--primary {
+    max-width: 100%;
+    font-size: clamp(1.625rem, 6.2vw, 2.25rem) !important;
+    line-height: 1.14 !important;
+  }
+
+  .landing-v2-hero-headline--editorial .landing-v2-hero__headline-line--accent {
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem) !important;
+  }
+
+  .landing-v2-hero-headline--editorial .landing-v2-hero-keyword-slot__word {
+    white-space: normal;
+  }
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DashboardPrimaryNav } from "./DashboardPrimaryNav";
 import { DashboardSecondaryNav } from "./DashboardSecondaryNav";
 import { DashboardMobileNav } from "./DashboardMobileNav";
+import { DashboardWebsiteLink } from "./DashboardWebsiteLink";
 import {
   DASHBOARD_ACCENT,
   DASHBOARD_SHELL_BG,
@@ -53,6 +54,12 @@ export function DashboardStandaloneChrome({
         <div className="flex-1 overflow-y-auto">
           <DashboardPrimaryNav />
           <DashboardSecondaryNav />
+        </div>
+        <div
+          className="shrink-0 border-t px-2 py-3"
+          style={{ borderColor: "rgba(255,255,255,0.06)" }}
+        >
+          <DashboardWebsiteLink />
         </div>
       </aside>
 

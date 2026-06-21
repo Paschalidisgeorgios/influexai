@@ -15,6 +15,12 @@ export default function DashboardNotFound() {
       >
         Zum Dashboard →
       </Link>
+      <Link
+        href="/"
+        className="text-white/70 font-semibold text-sm hover:underline"
+      >
+        Zur Startseite →
+      </Link>
     </div>
   );
 }
