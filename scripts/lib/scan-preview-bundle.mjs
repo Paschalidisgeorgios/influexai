@@ -78,6 +78,12 @@ export async function scanPreviewBundle(previewBase) {
         !anonRefs.includes(PROD_REF) &&
         anonRefs.includes(STAGING_REF) &&
         !urlAnonMismatch,
+      production_live_bundle_gate_pass:
+        urlRefs.includes(PROD_REF) &&
+        anonRefs.includes(PROD_REF) &&
+        !urlRefs.includes(STAGING_REF) &&
+        !anonRefs.includes(STAGING_REF) &&
+        !urlAnonMismatch,
     };
   } catch (err) {
     return { error: String(err.message ?? err).slice(0, 200) };

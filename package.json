@@ -51,6 +51,7 @@
     "launch:auth-truth": "node scripts/visual-qa-auth-truth.mjs",
     "launch:operator": "node scripts/launch-operator.mjs",
     "launch:provider-ui-smoke": "node scripts/launch-provider-ui-smoke.mjs",
+    "launch:production": "node scripts/production-launch-operator.mjs",
     "smoke:stripe:subscription-double-credit": "node scripts/stripe-subscription-double-credit-smoke.mjs"
   },
   "dependencies": {
